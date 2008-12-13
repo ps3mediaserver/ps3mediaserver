@@ -1,0 +1,111 @@
+Frequently Asked Questions
+v0.20
+
+
+1. PS3 Media Server does not appears on XMB
+-------------------------------------------
+
+First of all, you need to make sure UPNP network discovery is enabled on your computer.
+On Windows XP, it's a service called "SSDP Network Discovery", on Vista, it's just called "Network Discovery".
+More infos here:
+
+http://www.mydigitallife.info/2007/02/12/turn-on-and-enable-upnp-or-network-discovery-in-windows-vista/
+http://www.bitwiseim.com/wiki/index.php?title=Using_UPnP_on_Windows_XP#Enabling_UPnP_in_Windows_XP
+
+If it's the case, you may have a problem with your router, have you enabled port forwarding ?
+The default port of the application is 5001. You can also try to change this default port,
+or force the IP of your computer in the "General configuration" Tab (you need to restart, after modified and saved values)
+Also, the application isn't exempt of bug, see Help at the end of this file.
+
+
+2. My video playback is stuttering. What can I do ?
+---------------------------------------------------
+
+The answer depends on the video type, your network configuration, and cpu power.
+For almost SD/DVD videos, transcode should be fine. But if you are using default settings, and willing
+to play HD videos (or very, very good looking SD videos) on a WiFi/CPL connection, the stuttering is normal.
+You'll need to set a limit to the bandwidth used by the program, in the "Transcoding Settings->Encoder settings
+->Maximum Bandwidth" textbox. A value of 14, or 15 (in Mbits) is an average value for Wifi/CPL. But you can set more or less,
+depends on the strength of your network. Please also be advised that reducing the bitrate will stress even more your CPU.
+
+That's why, if after setting a fair value for your network, or if you are on a wired connection, stuttering still occurs,
+it may be caused by an old (or not shiny anymore :p) CPU. Actually a Core2Duo CPU is enough to transcode 1080p with default
+network/quality settings, but a P4 is the very low limit in order to play a 720p video. If you stand
+between these two, you can adjust the video quality settings ("Transcoding Settings->Encoder settings")
+and test the examples provided in the drop down (you can also play with the parameters vqscale, vqmin, etc.)
+It's also recommended if you are on Windows, to try the AviSynth/Mencoder trancoding engine, as you could play your videos
+with CoreAVC, a fast H264 decoder (see Readme for instructions).
+Try also to reduce the number of channels. By default the application output a 5.1 channel video, so if you switch to
+stereo, the transcode will be a little faster. The good behavior of the transcoder is dependant on many parameters.
+It's up to you to find the most adapted ones to your configuration !
+
+
+3. I've got picture quality loss compared to other conversion tools !
+---------------------------------------------------------------------
+
+If you haven't changed any network related / quality parameters, and are playing some AVI/MPG/MPEG2/MP4 video files, I'm not sure
+there are visible differences with the source. But it can happens if your are playing some AVC/H264 files with the Mencoder engine,
+as there's an option here called SkipLoopFilter, enabled by default, which could slightly degrade video quality.
+This option allows Mencoder to decode H264 videos faster, but can also introduces some artefacts. If you CPU can handle it,
+it's recommended to disable it. Btw, it's only a matter of time before Mencoder supports multithreaded H264 frames decoding.
+Also, if you've downsized the network maximum bandwidth, you can also have a reduced quality (there's no free lunch, see question 1.)
+
+
+4. I've got a black screen or "unsupported data" message when I launch a transcoded video file
+----------------------------------------------------------------------------------------------
+
+	4.1 with MEncoder alone
+
+If this is happening with Mencoder, the culprit would be most likely the inter communication process between java and mencoder, as
+Mplayer/Mencoder is a great app who takes virtually anything you throw at it. So, either your video must be really messed up,
+or there's a bug or a wrong configuration/incompatibility with your system. In both cases, looking at the debug.log file is the only solution.
+
+	4.2 with AviSynth/MEncoder
+
+You can first check if the video is playing in Windows Media Player / Media Player Classic. If yes, maybe you are
+using some srt/sub subtitles files and haven't installed VobSub (the VSfilter.dll must be in the path, elsewhere you can copy it in the
+AviSynth plugins folders). If this is not the case, you obviously met a bug, see question 3.1.
+
+	4.3 with tsMuxer
+
+tsMuxer has not a large codec type support on PS3. It accepts AVC/H264, MPEG2, MP2, AC3, PCM codecs and MPG, TS, M2TS, MKV as input.
+Also, H264 encoded with level 5 or exotic settings (reduce to Level 4.1 is just a header change, with no success garanty)
+will not play on the PS3, hence your black screen maybe.
+
+
+5. Can I transcode subtitles without reencode ?
+-----------------------------------------------
+
+Unfortunately you can't. PS3 does not support soft subtitles while streaming videos, expect for DivX
+and their proprietary XSUB format (managed by a program like AVIAddXSubs), which I think isn't very used by many people
+(maybe for a future release)
+
+
+6. I've got A/V out of synch on some of my files !
+--------------------------------------------------
+
+	5.1 with MEncoder alone
+
+Try unchecking the "A/V out of sync correction" checkbox in the "Transcoder settings->Mencoder Player Tab".
+
+	5.2 with AviSynth/MEncoder
+
+You should have the same out of sync when playing the file in Media Player. Check your video. Try also to uncheck the
+convertfps parameter on the AviSynth settings tab (useful only for variable framerates).
+
+	5.3 with tsMuxer
+
+Try unchecking the "Force FPS" checkbox in the "Transcoder settings->tsMuxer Tab".
+
+	5.4 with any Web streaming engine
+
+Could be. Not really focusing on web streaming right now
+
+
+
+Help
+----
+
+You can drop an email at ps3mediaserver@gmail.com, but if you are joining a debug.log file,
+please indicates your computer configuration, network type, name and type of faulty video/audio, etc.
+
