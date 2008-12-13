@@ -140,17 +140,22 @@ v1.00:
 
 - New Features
 
+GPL licensing :)
 IDX/SUB support for AviSynth ONLY
 Revamped some UI, especially transcoding settings
+First attempt to make an LPCM or AC3 automatic conversion with tsMuxer (seeking isn't working well and demuxed audio delays are not managed)
+AviSynth script is now really fully customizable
 
 - Fixes
-... General
+
 VIDEO_TS folders are now case insensitive
 Yet another flac parsing bug
-... MEncoder related:
+Sync issues management for xvid/mp3
+.ass subtitles files support
+UUID random generation, it's now possible to launch multiple servers on one network.
 Added wmv binary codecs in Windows package for smooth WMV-HD transcoding  
-Switch to ac3/dts libavcodec decoder, should suppress these annoying random audio clicks ?
-Rare and random video glitchs due to another seeking bug
+Switch to ac3/dts libavcodec decoder, should suppress these annoying random audio pops ? (can affect pcm channels order as well)
+Rare and random video glitch due to another seeking bug
 
 
 v0.99:
