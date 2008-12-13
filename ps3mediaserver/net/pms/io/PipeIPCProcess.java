@@ -1,0 +1,124 @@
+/*
+ * PS3 Media Server, for streaming any medias to your PS3.
+ * Copyright (C) 2008  A.Brochard
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+package net.pms.io;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+
+import net.pms.PMS;
+
+public class PipeIPCProcess extends Thread implements ProcessWrapper {
+	
+	private PipeProcess mkin;
+	private PipeProcess mkout;
+	
+	public PipeIPCProcess(String pipeName, String pipeNameOut, boolean forcereconnect1, boolean forcereconnect2) {
+		mkin = new PipeProcess(pipeName, forcereconnect1?"reconnect":"dummy");
+		mkout = new PipeProcess(pipeName, "out", forcereconnect2?"reconnect":"dummy");
+	}
+	
+	public void run() {
+		byte b [] = new byte [4096];
+		int n = -1;
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			in = mkin.getInputStream();
+			out = mkout.getOutputStream();
+		
+			while ((n=in.read(b)) > -1) {
+				out.write(b, 0, n);
+			}
+		} catch (IOException e) {
+			PMS.info("Error :" + e.getMessage());
+		} finally {
+			try {
+				in.close();
+				out.close();
+			} catch (IOException e) {
+				PMS.info("Error :" + e.getMessage());
+			}
+		}
+		
+	}
+	
+	public String getInputPipe() {
+		return mkin.getInputPipe();
+	}
+
+	public String getOutputPipe() {
+		return mkout.getOutputPipe();
+	}
+	
+	public ProcessWrapper getPipeProcess() {
+		return this;
+	}
+	
+	public void deleteLater() {
+		mkin.deleteLater();
+		mkout.deleteLater();
+	}
+	
+	public InputStream getInputStream() throws IOException {
+		return mkin.getInputStream();
+	}
+	
+	public OutputStream getOutputStream() throws IOException {
+		return mkout.getOutputStream();
+	}
+
+	@Override
+	public InputStream getInputStream(long seek) throws IOException {
+		return null;
+	}
+
+	@Override
+	public ArrayList<String> getResults() {
+		return null;
+	}
+
+	@Override
+	public boolean isDestroyed() {
+		return isAlive();
+	}
+
+	@Override
+	public void runInNewThread() {
+		start();
+	}
+
+	@Override
+	public boolean isReadyToStop() {
+		return false;
+	}
+
+	@Override
+	public void setReadyToStop(boolean nullable) {
+		
+	}
+
+	@Override
+	public void stopProcess() {
+		this.interrupt();
+		mkin.getPipeProcess().stopProcess();
+		mkout.getPipeProcess().stopProcess();
+	}
+}
