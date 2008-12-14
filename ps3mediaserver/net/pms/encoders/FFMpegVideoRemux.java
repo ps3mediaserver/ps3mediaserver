@@ -18,9 +18,19 @@
  */
 package net.pms.encoders;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 import javax.swing.JComponent;
+import javax.swing.JTextField;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
@@ -98,6 +108,8 @@ public class FFMpegVideoRemux extends Player {
 		
 		String cmdArray [] = new String [8+args().length];
 		cmdArray[0] = executable();
+		if (PMS.get().getAlternativeffmpegPath() != null && PMS.get().getAlternativeffmpegPath().length() > 0)
+			cmdArray[0] = PMS.get().getAlternativeffmpegPath();
 		cmdArray[1] = "-title";
 		cmdArray[2] = "dummy";
 		
@@ -118,6 +130,16 @@ public class FFMpegVideoRemux extends Player {
 		for(int i=0;i<args().length;i++)
 			cmdArray[7+i] = args()[i];
 		
+		StringTokenizer st = new StringTokenizer(PMS.get().getFfmpegSettings(), " ");
+		if (st.countTokens() > 0) {
+			int i=cmdArray.length-1;
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +st.countTokens());
+			while (st.hasMoreTokens()) {
+				cmdArray[i] = st.nextToken();
+				i++;
+			}
+		}
+		
 		cmdArray[cmdArray.length-1] = "pipe:";
 			
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
@@ -125,11 +147,40 @@ public class FFMpegVideoRemux extends Player {
 		pw.runInNewThread();
 		return pw;
 	}
+	
+	private JTextField altffpath;
 
 	@Override
 	public JComponent config() {
-		// TODO Auto-generated method stub
-		return null;
+		FormLayout layout = new FormLayout(
+                "left:pref, 3dlu, p, 3dlu, 0:grow",
+                "p, 3dlu, p, 3dlu, 0:grow");
+         PanelBuilder builder = new PanelBuilder(layout);
+        builder.setBorder(Borders.EMPTY_BORDER);
+        builder.setOpaque(false);
+
+        CellConstraints cc = new CellConstraints();
+        
+        
+        builder.addSeparator("Settings for DVR-MS remuxing",  cc.xyw(1, 1, 5));
+        
+        builder.addLabel("Alternative FFmpeg Path:", cc.xy(1, 3));
+        altffpath = new JTextField(PMS.get().getAlternativeffmpegPath());
+        altffpath.addKeyListener(new KeyListener() {
+
+    		@Override
+    		public void keyPressed(KeyEvent e) {}
+    		@Override
+    		public void keyTyped(KeyEvent e) {}
+    		@Override
+    		public void keyReleased(KeyEvent e) {
+    			PMS.get().setAlternativeffmpegPath(altffpath.getText());
+    		}
+        	   
+           });
+        builder.add(altffpath, cc.xyw(3, 3, 3));
+        
+		return builder.getPanel();
 	}
 	
 }

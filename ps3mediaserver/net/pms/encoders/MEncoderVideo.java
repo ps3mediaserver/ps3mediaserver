@@ -211,7 +211,7 @@ private JTextField mencoder_ass_scale;
           });
        builder.add(defaultsubs, cc.xyw(3, 17, 4));
        
-       builder.addLabel("Subtitles codepage:", cc.xy(9, 17));
+       builder.addLabel("Subtitles codepage:", cc.xy(1, 21));
        /*subcp = new JTextField(PMS.get().getMencoder_subcp());
        subcp.addKeyListener(new KeyListener() {
 
@@ -226,9 +226,30 @@ private JTextField mencoder_ass_scale;
        	   
           });*/
        Object data [] = new Object [] { PMS.get().getMencoder_subcp(),
-    		   "cp1252  /* Occidental */",
-    		   "cp1255  /* Hebrew */",
-    		   "cp1256  /* Arabic */"};
+    		   "cp1250  /* Windows - Eastern Europe */",
+    		   "cp1251  /* Windows - Cyrillic */",
+    		   "cp1252  /* Windows - Western Europe */",
+    		   "cp1253  /* Windows - Greek */",
+    		   "cp1254  /* Windows - Turkish */",
+    		   "cp1255  /* Windows - Hebrew */",
+    		   "cp1256  /* Windows - Arabic */",
+    		   "cp1257  /* Windows - Baltic */",
+    		   "cp1258  /* Windows - Vietnamese */",
+    		   "ISO 8859-1 /* Western Europe */",
+    		   "ISO 8859-2 /* Western and Central Europe */",
+    		   "ISO 8859-3 /* Western Europe and South European */",
+    		   "ISO 8859-4 /* Western Europe and Baltic countries */",
+    		   "ISO 8859-5 /* Cyrillic alphabet */",
+    		   "ISO 8859-6 /* Arabic */",
+    		   "ISO 8859-7 /* Greek */",
+    		   "ISO 8859-8 /* Hebrew */",
+    		   "ISO 8859-9 /* Western Europe with amended Turkish */",
+    		   "ISO 8859-10 /* Western Europe with Nordic languages */",
+    		   "ISO 8859-11 /* Thai */",
+    		   "ISO 8859-13 /* Baltic languages plus Polish */",
+    		   "ISO 8859-14 /* Celtic languages */",
+    		   "ISO 8859-15 /* Added the Euro sign */",
+    		   "ISO 8859-16 /* Central European languages */"};
        MyComboBoxModel cbm = new MyComboBoxModel(data);
        
        subcp = new JComboBox(cbm);
@@ -246,7 +267,7 @@ private JTextField mencoder_ass_scale;
        	
        });
        subcp.setEditable(true);
-       builder.add(subcp, cc.xyw(11, 17,5));
+       builder.add(subcp, cc.xyw(3, 21,7));
        
        fribidi = new JCheckBox("FriBiDi mode");
        fribidi.setContentAreaFilled(false);
@@ -420,7 +441,7 @@ private JTextField mencoder_ass_scale;
        ass.setSelected(PMS.get().isMencoder_ass());
       ass.getItemListeners()[0].itemStateChanged(null);
      
-      fc = new JCheckBox("Fontconfig / Embedded fonts");
+      fc = new JCheckBox("Fontconfig / Embedded fonts [Unstable on some configs!]");
       fc.setContentAreaFilled(false);
       fc.addItemListener(new ItemListener() {
 
@@ -593,7 +614,7 @@ private JTextField mencoder_ass_scale;
 			add = " -lavdopts debug=0";
 		}
 		
-		String alternativeCodec = "-ac ffac3,ffdca, "; 
+		String alternativeCodec = "";//"-ac ffac3,ffdca, "; 
 		if (dvd)
 			alternativeCodec = "";
 		StringTokenizer st = new StringTokenizer(alternativeCodec + "-channels " + PMS.get().getAudiochannels() + " " + PMS.get().getMencoder_decode() + add, " ");

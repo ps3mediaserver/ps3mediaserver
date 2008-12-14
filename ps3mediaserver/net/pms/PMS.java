@@ -48,6 +48,7 @@ import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.FFMpegAudio;
 import net.pms.encoders.FFMpegVideo;
 
+import net.pms.encoders.FFMpegVideoRemux;
 import net.pms.encoders.MEncoderAviSynth;
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.MEncoderWebVideo;
@@ -507,17 +508,17 @@ public class PMS {
 	public void setHidevideosettings(boolean hidevideosettings) {
 		this.hidevideosettings = hidevideosettings;
 	}
-/*
-	public String webaudioengines;
+
+	private String alternativeffmpegPath;
 	
-	public String getWebaudioengines() {
-		return webaudioengines;
+	public String getAlternativeffmpegPath() {
+		return alternativeffmpegPath;
 	}
 
-	public void setWebaudioengines(String webengines) {
-		this.webaudioengines = webengines;
+	public void setAlternativeffmpegPath(String alternativeffmpegPath) {
+		this.alternativeffmpegPath = alternativeffmpegPath;
 	}
-*/
+
 	private String ffmpegPath;
 	public String getFFmpegPath() {
 		return ffmpegPath;
@@ -903,6 +904,8 @@ public class PMS {
 					filebuffer = value.trim().equals("file");
 				} else if (key.equals("ffmpeg_path") && value.length() > 0) {
 					ffmpegPath = value.trim();
+				} else if (key.equals("alternativeffmpegpath") && value.length() > 0) {
+					alternativeffmpegPath = value.trim();
 				} else if (key.equals("mencoder_path") && value.length() > 0) {
 					mencoderPath = value.trim();
 				} else if (key.equals("mplayer_path") && value.length() > 0) {
@@ -1280,7 +1283,7 @@ public class PMS {
 		registerPlayer(new TSMuxerVideo());
 		registerPlayer(new VideoLanAudioStreaming());
 		registerPlayer(new VideoLanVideoStreaming());
-		//registerPlayer(new FFMpegVideoRemux());
+		registerPlayer(new FFMpegVideoRemux());
 		
 		frame.addEngines();
 	}
@@ -1613,6 +1616,8 @@ public class PMS {
 		saveFile.println("mencoder_ass=" + getTrue(mencoder_ass));
 		saveFile.println("mencoder_disablesubs=" + getTrue(mencoder_disablesubs));
 		saveFile.println("ffmpeg=" + (ffmpeg!=null?ffmpeg:""));
+		if (alternativeffmpegPath != null)
+			saveFile.println("alternativeffmpegpath=" + alternativeffmpegPath);
 		saveFile.flush();
 		saveFile.close();
 	}
