@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Main-Class: net.pms.PMS
+Class-Path: java-unrar-0.2.jar 
+ commons-logging-api-1.0.4.jar 
+ nanoxml-2.2.3.jar 
+ looks-2.2.1.jar 
+ jna.jar 
+ forms-1.2.1.jar 
+ entagged-cvs.jar 
+ 
+ 
