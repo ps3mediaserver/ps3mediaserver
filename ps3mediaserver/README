@@ -154,7 +154,6 @@ Sync issues management for xvid/mp3
 .ass subtitles files support
 UUID random generation, it's now possible to launch multiple servers on one network.
 Added wmv binary codecs in Windows package for smooth WMV-HD transcoding  
-Switch to ac3/dts libavcodec decoder, should suppress these annoying random audio pops ? (can affect pcm channels order as well)
 Rare and random video glitch due to another seeking bug
 
 

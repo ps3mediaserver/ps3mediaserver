@@ -76,7 +76,7 @@ public class UPNPHelper {
 		PMS.debug("Sending message from multicast socket on network interface: " + ssdpSocket.getNetworkInterface());
 		PMS.debug("Multicast socket is on interface: " + ssdpSocket.getInterface());
 		ssdpSocket.setTimeToLive(32);
-		ssdpSocket.setLoopbackMode(true);
+		//ssdpSocket.setLoopbackMode(true);
 		ssdpSocket.joinGroup(getUPNPAddress());
 		PMS.debug("Socket Timeout: " + ssdpSocket.getSoTimeout());
 		PMS.debug("Socket TTL: " + ssdpSocket.getTimeToLive());
