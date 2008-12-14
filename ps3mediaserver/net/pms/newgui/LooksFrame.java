@@ -264,15 +264,15 @@ public class LooksFrame extends JFrame implements IFrame {
 		 tr = new TrTab2();
 		 nt = new NetworkTab();
 		 
-		 tabbedPane.addTab("Status", readImageIcon("server-16.png"), st.build());
-		 tabbedPane.addTab("Traces", readImageIcon("mail_new-16.png"), tt.build());
+		 tabbedPane.addTab("Status",/* readImageIcon("server-16.png"),*/ st.build());
+		 tabbedPane.addTab("Traces",/* readImageIcon("mail_new-16.png"),*/ tt.build());
 		 
-		 tabbedPane.addTab("General Configuration", readImageIcon("advanced-16.png"), nt.build());
-		 tabbedPane.addTab("Transcoding Settings", readImageIcon("player_play-16.png"),tr.build());
-		 tabbedPane.addTab("Folders Sharing", readImageIcon("bookmark-16.png"), new FoldTab().build());
-		 tabbedPane.addTab("Readme",  readImageIcon("mail_new-16.png"), new AboutTab().build());
-		 tabbedPane.addTab("FAQ / Help",  readImageIcon("mail_new-16.png"), new FAQTab().build());
-		 tabbedPane.addTab("About", readImageIcon("documentinfo-16.png"), new LinksTab().build());
+		 tabbedPane.addTab("General Configuration",/* readImageIcon("advanced-16.png"),*/ nt.build());
+		 tabbedPane.addTab("Transcoding Settings",/* readImageIcon("player_play-16.png"),*/tr.build());
+		 tabbedPane.addTab("Folders Sharing", /*readImageIcon("bookmark-16.png"),*/ new FoldTab().build());
+		 tabbedPane.addTab("Readme",/*  readImageIcon("mail_new-16.png"), */new AboutTab().build());
+		 tabbedPane.addTab("FAQ / Help", /* readImageIcon("mail_new-16.png"), */new FAQTab().build());
+		 tabbedPane.addTab("About", /*readImageIcon("documentinfo-16.png"),*/ new LinksTab().build());
 
 	        tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		return tabbedPane;

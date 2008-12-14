@@ -369,7 +369,7 @@ public class TrTab2 {
 
         });
         
-       builder.addLabel("AC3 Audio bitrate (in Kbits/s):", cc.xy(1, 5));
+       builder.addLabel("AC3 Audio bitrate (in Kbits/s) (ex: 384, 576, 640):", cc.xy(1, 5));
        builder.add(abitrate, cc.xy(3, 5));
        
        builder.addLabel("Maximum bandwidth in Mbits/s (0 means no limit):", cc.xy(1, 9));

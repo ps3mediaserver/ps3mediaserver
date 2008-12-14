@@ -116,7 +116,7 @@ public class MEncoderAviSynth extends MEncoderVideo {
         builder.addLabel("<sub>: insert the complete TextSub/VobSub instruction if there's any detected srt/sub/ass subtitle file", cc.xy(2, 13));
         builder.addLabel("<moviefilename>: variable of the movie filename, if you want to do all this by yourself", cc.xy(2, 15));*/
         JScrollPane pane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pane.setPreferredSize(new Dimension(500,250));
+        pane.setPreferredSize(new Dimension(500,350));
         builder.add(pane, cc.xy(2, 5));
         
         

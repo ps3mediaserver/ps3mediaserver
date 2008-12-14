@@ -279,7 +279,7 @@ public class NetworkTab {
        
        builder.addSeparator("Unused settings you shouldn't use :p",  cc.xyw(1, 35, 5));
        
-       tmcheckBox = new JCheckBox("Turbo mode (maximized socket buffer and set tcp_nodelay) / be careful, not sure if that's ok to do this");
+       tmcheckBox = new JCheckBox("Turbo mode (enable tcp_nodelay) / be careful, not sure if that's ok to do this");
        tmcheckBox.setContentAreaFilled(false);
        tmcheckBox.setSelected(PMS.get().isTurbomode());
        tmcheckBox.addItemListener(new ItemListener() {
@@ -300,7 +300,7 @@ public class NetworkTab {
 			}
        	
        }); builder.add(blockBox,          cc.xyw(1,  39, 5));
-        
+       blockBox.setEnabled(false);
         return builder.getPanel();
 	}
 	
