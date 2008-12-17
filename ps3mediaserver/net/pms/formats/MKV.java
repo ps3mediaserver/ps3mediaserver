@@ -25,7 +25,7 @@ public class MKV extends MPG {
 	}
 
 	public String [] getId() {
-		return new String [] { "mkv", "mov", "ogm", "hdmov", "rmvb", "rm", "asf", "evo", "asx", "m4v" };
+		return new String [] { "mkv", "mov", "ogm", "hdmov", "rmvb", "rm", "asf", "evo", "asx", "m4v", "flv" };
 	}
 
 }

@@ -31,7 +31,7 @@ public class MP3 extends Format {
 
 	@Override
 	public String [] getId() {
-		return new String [] { "mp3", "wav", "wma", "m4a", "aac" };
+		return new String [] { "mp3", "wav", "wma"};
 	}
 
 	@Override

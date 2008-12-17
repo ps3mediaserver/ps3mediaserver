@@ -46,7 +46,7 @@ public class OGG extends MP3 {
 
 	@Override
 	public String[] getId() {
-		return new String [] { "dts", "ape", "ogg", "flac", "mpc", "ra", "mp2" };
+		return new String [] { "dts", "ape", "ogg", "mpc", "ra", "mp2", "wv" };
 	}
 
 	@Override

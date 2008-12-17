@@ -444,7 +444,7 @@ public class FFMpegVideo extends Player {
         
         
        
-       builder.addSeparator("Video decoder settings for FFmpeg engine only (PREFER MENCODER)",  cc.xyw(2, 1, 1));
+       builder.addSeparator("Encoder settings for AviSynth/FFmpeg engine only (PREFER MENCODER)",  cc.xyw(2, 1, 1));
        ffmpeg = new JTextField(PMS.get().getFfmpegSettings());
        ffmpeg.addKeyListener(new KeyListener() {
 

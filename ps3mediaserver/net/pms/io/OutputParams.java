@@ -29,6 +29,7 @@ public class OutputParams {
 	public double minBufferSize;
 	public double maxBufferSize;
 	public double timeseek;
+	public double timeend;
 	public int fromFrame;
 	public int toFrame;
 	public int waitbeforestart;
