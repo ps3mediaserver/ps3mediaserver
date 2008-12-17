@@ -78,8 +78,8 @@ public class RequestHandler implements Runnable {
 							request.setHttp10(true);
 					} else if (request != null && temp.equals("SOAPACTION:")) {
 						request.setSoapaction(s.nextToken());
-					} else if (headerLine.indexOf("Content-Length:") > -1) {
-						receivedContentLength = Integer.parseInt(headerLine.substring(headerLine.indexOf("Content-Length: ")+16));
+					} else if (headerLine.toUpperCase().contains("CONTENT-LENGTH:")) {
+						receivedContentLength = Integer.parseInt(headerLine.substring(headerLine.toUpperCase().indexOf("CONTENT-LENGTH: ")+16));
 					} else if (headerLine.indexOf("Range: bytes=") > -1) {
 						String nums = headerLine.substring(headerLine.indexOf("Range: bytes=")+13).trim();
 						StringTokenizer st = new StringTokenizer(nums, "-");
