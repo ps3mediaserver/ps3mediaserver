@@ -640,7 +640,7 @@ private JTextField mencoder_ass_scale;
 		}
 		//}
 		if (PMS.get().getMencoderMainSettings() != null) {
-			String encodeSettings = "-psprobe 10000 -lavcopts vcodec=mpeg2video:acodec=ac3:abitrate=" + PMS.get().getAudiobitrate() + ":threads=" + PMS.get().getNbcores() + ":" + PMS.get().getMencoderMainSettings();
+			String encodeSettings = "-psprobe 10000 -lavcopts autoaspect=1:vcodec=mpeg2video:acodec=ac3:abitrate=" + PMS.get().getAudiobitrate() + ":threads=" + PMS.get().getNbcores() + ":" + PMS.get().getMencoderMainSettings();
 			String m = PMS.get().getMaximumbitrate();
 			int bufs = 0;
 			if (m.contains("(") && m.contains(")")) {
@@ -805,9 +805,9 @@ private JTextField mencoder_ass_scale;
 				cmdArray[6+i] += ":preload=" + params.timeseek;
 				params.timeseek = 0; 
 			}
-			if (arguments[i].contains("format=mpeg2") && media.aspect != null && media.getValidAspect(true) != null) {
+			/*if (arguments[i].contains("format=mpeg2") && media.aspect != null && media.getValidAspect(true) != null) {
 				cmdArray[6+i] += ":vaspect=" + media.getValidAspect(true);
-			}
+			}*/
 		}
 		
 		
@@ -910,7 +910,7 @@ private JTextField mencoder_ass_scale;
 		
 		
 		// force srate when sample rate < 32000 or > 48000 -> ac3's mencoder doesn't like that
-		if (media != null && !pcm && !ac3 && ((media.getSampleRate() > 0 && media.getSampleRate() < 32000) || media.getSampleRate() > 48000)) {
+		if (media != null && !pcm && !ac3 && ((media.getSampleRate() > 0 && media.getSampleRate() < 32000) || media.getSampleRate() >= 48000)) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
 			cmdArray[cmdArray.length-4] = "-srate";
 			cmdArray[cmdArray.length-3] = "48000";
