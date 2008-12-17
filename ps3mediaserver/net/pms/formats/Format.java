@@ -29,12 +29,19 @@ public abstract class Format implements Cloneable {
 	public int getType() {
 		return type;
 	}
-	public static final int UNKNOWN = -1;
-	public static final int VIDEO = 0;
+	public static final int UNKNOWN = 8;
+	public static final int VIDEO = 4;
 	public static final int AUDIO = 1;
 	public static final int IMAGE = 2;
 	
 	protected int type = UNKNOWN;
+	protected Format secondaryFormat;
+	public Format getSecondaryFormat() {
+		return secondaryFormat;
+	}
+	public void setSecondaryFormat(Format secondaryFormat) {
+		this.secondaryFormat = secondaryFormat;
+	}
 	public void setType(int type) {
 		if (isUnknown())
 			this.type = type;
@@ -59,17 +66,18 @@ public abstract class Format implements Cloneable {
 		}
 		return match;
 	}
+	
 	public boolean isVideo() {
-		return type == VIDEO;
+		return (type&VIDEO) == VIDEO;
 	}
 	public boolean isAudio() {
-		return type == AUDIO;
+		return (type&AUDIO) == AUDIO;
 	}
 	public boolean isImage() {
-		return type == IMAGE;
+		return (type&IMAGE) == IMAGE;
 	}
 	public boolean isUnknown() {
-		return type == UNKNOWN;
+		return (type&UNKNOWN) == UNKNOWN;
 	}
 	@Override
 	protected Object clone() {

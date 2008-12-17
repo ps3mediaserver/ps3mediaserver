@@ -136,36 +136,78 @@ public class TSMuxerVideo extends Player {
 		PipeIPCProcess ffAudioPipe = null;
 		ProcessWrapperImpl ffAudio = null;
 		
-		if ((PMS.get().isTsmuxer_preremux_pcm() && media.losslessaudio) || PMS.get().isTsmuxer_preremux_ac3()) {
-			ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegvideo", System.currentTimeMillis() + "videoout", false, true);
-			String outputType = "h264";
-			if (videoType.indexOf("MPEG-2") > -1)
-				outputType = "mpeg2video";
-			String ffmpegLPCMextract [] = new String [] { PMS.get().getFFmpegPath(), "-ss", "0", "-i", fileName, "-f", outputType, "-vbsf", "h264_mp4toannexb", "-vcodec", "copy", "-an", "-y", ffVideoPipe.getInputPipe() };
-			//String ffmpegLPCMextract []= new String [] { PMS.get().getMPlayerPath(), "-ss", "0", fileName, "-dumpvideo", "-dumpfile", ffVideoPipe.getInputPipe()};
+		
+		if (this instanceof TsMuxerAudio) {
 			
-			if (params.timeseek > 0)
-				ffmpegLPCMextract [2] = "" + params.timeseek;
+			ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "fakevideo", System.currentTimeMillis() + "videoout", false, true);
+			String ffmpegLPCMextract [] = new String [] { PMS.get().getFFmpegPath(), "-t", "" +params.timeend, "-loop_input", "-i", "lib/fake.jpg", "-f", "h264", "-vcodec", "libx264", "-an", "-y", ffVideoPipe.getInputPipe() };
+			//videoType = "V_MPEG-2";
+			videoType = "V_MPEG4/ISO/AVC";
+			if (params.timeend < 1) {
+				ffmpegLPCMextract [1] = "-title";
+				ffmpegLPCMextract [2] = "dummy";
+			}
+				
 			OutputParams ffparams = new OutputParams();
 			ffparams.maxBufferSize = 1;
 			ffVideo = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
 			
-			ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio", System.currentTimeMillis() + "audioout", false, true);
-			if (PMS.get().isTsmuxer_preremux_pcm() && media.losslessaudio) {
-				ffmpegLPCMextract = new String [] { PMS.get().getFFmpegPath(), "-ss", "0", "-i", fileName, "-f", "wav", "-acodec", "pcm_s16le", "-ac", "6", "-vn", "-y", ffAudioPipe.getInputPipe() };
-			} else if (PMS.get().isTsmuxer_preremux_ac3())
-				ffmpegLPCMextract = new String [] { PMS.get().getFFmpegPath(), "-ss", "0", "-i", fileName, "-f", "ac3", "-ab", "" + PMS.get().getAudiobitrate()*1000 + "", "-ac", "6", "-vn", "-y", ffAudioPipe.getInputPipe() };
-			
-			
-			//ffmpegLPCMextract = new String [] { PMS.get().getMPlayerPath(), "-ss", "0", fileName, "-channels", "6", "-vc", "null",  "-vo", "null", "-quiet", "-ao", "pcm:fast:waveheader:file=" + ffAudioPipe.getInputPipe()};
-			if (params.timeseek > 0) {
-				ffmpegLPCMextract [2] = "" + params.timeseek;
+			if (fileName.toLowerCase().endsWith(".flac") && media != null && media.bitsperSample >=24 && media.getSampleRate()%48000==0) {
+				ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "flacaudio", System.currentTimeMillis() + "audioout", false, true);
+				String flacCmd [] = new String [] { PMS.get().getFlacPath(), "--output-name=" + ffAudioPipe.getInputPipe(), "-d", "-F", fileName };
+				
+				ffparams = new OutputParams();
+				ffparams.maxBufferSize = 1;
+				ffAudio = new ProcessWrapperImpl(flacCmd, ffparams);
+			} else {
+				ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "mlpaudio", System.currentTimeMillis() + "audioout", false, true);
+				String depth = "pcm_s16le";
+				String rate = "48000";
+				if (media != null && media.bitsperSample >=24)
+					depth = "pcm_s24le";
+				if (media != null && media.getSampleRate() >48000)
+					rate = "96000";
+				String flacCmd [] = new String [] { PMS.get().getFFmpegPath(), "-ar", rate, "-i", fileName , "-f", "wav", "-acodec", depth, "-y", ffAudioPipe.getInputPipe() };
+				
+				ffparams = new OutputParams();
+				ffparams.maxBufferSize = 1;
+				ffAudio = new ProcessWrapperImpl(flacCmd, ffparams);
 			}
-			ffparams = new OutputParams();
-			ffparams.maxBufferSize = 1;
-			ffAudio = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
-		}
+			
+		} else {
 		
+			if ((PMS.get().isTsmuxer_preremux_pcm() && media.losslessaudio) || PMS.get().isTsmuxer_preremux_ac3()) {
+				ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegvideo", System.currentTimeMillis() + "videoout", false, true);
+				String outputType = "h264";
+				if (videoType.indexOf("MPEG-2") > -1)
+					outputType = "mpeg2video";
+				String ffmpegLPCMextract [] = new String [] { PMS.get().getFFmpegPath(), "-ss", "0", "-i", fileName, "-f", outputType, "-vbsf", "h264_mp4toannexb", "-vcodec", "copy", "-an", "-y", ffVideoPipe.getInputPipe() };
+				//String ffmpegLPCMextract []= new String [] { PMS.get().getMPlayerPath(), "-ss", "0", fileName, "-dumpvideo", "-dumpfile", ffVideoPipe.getInputPipe()};
+				
+				if (params.timeseek > 0)
+					ffmpegLPCMextract [2] = "" + params.timeseek;
+				OutputParams ffparams = new OutputParams();
+				ffparams.maxBufferSize = 1;
+				ffVideo = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
+				
+				
+				ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio", System.currentTimeMillis() + "audioout", false, true);
+				if (PMS.get().isTsmuxer_preremux_pcm() && media.losslessaudio) {
+					ffmpegLPCMextract = new String [] { PMS.get().getFFmpegPath(), "-ss", "0", "-i", fileName, "-f", "wav", "-acodec", "pcm_s16le", "-ac", "6", "-vn", "-y", ffAudioPipe.getInputPipe() };
+				} else if (PMS.get().isTsmuxer_preremux_ac3())
+					ffmpegLPCMextract = new String [] { PMS.get().getFFmpegPath(), "-ss", "0", "-i", fileName, "-f", "ac3", "-ab", "" + PMS.get().getAudiobitrate()*1000 + "", "-ac", "6", "-vn", "-y", ffAudioPipe.getInputPipe() };
+				
+				
+				//ffmpegLPCMextract = new String [] { PMS.get().getMPlayerPath(), "-ss", "0", fileName, "-channels", "6", "-vc", "null",  "-vo", "null", "-quiet", "-ao", "pcm:fast:waveheader:file=" + ffAudioPipe.getInputPipe()};
+				if (params.timeseek > 0) {
+					ffmpegLPCMextract [2] = "" + params.timeseek;
+				}
+				ffparams = new OutputParams();
+				ffparams.maxBufferSize = 1;
+				ffAudio = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
+			}
+			
+		}
 		
 		File f = new File(PMS.get().getTempFolder(), "pms-tsmuxer.meta");
 		params.log = false;
@@ -173,6 +215,8 @@ public class TSMuxerVideo extends Player {
 		pw.print("MUXOPT --no-pcr-on-video-pid ");
 		//if (ffVideo == null)
 			pw.print("--new-audio-pes ");
+		if (ffVideo != null)
+				pw.print("--no-asyncio ");
 		pw.print(" --vbr");
 		if (params.timeseek > 0 && ffVideoPipe == null) {
 			pw.print(" --cut-start=" + params.timeseek + "s ");
@@ -214,11 +258,14 @@ public class TSMuxerVideo extends Player {
 				}
 			}
 			if (ffVideoPipe != null) {
-				pw.println(videoType + ", \"" + ffVideoPipe.getOutputPipe() + "\", "  + (fps!=null?("fps=" +fps + ", "):"") + "level=4.1, insertSEI, contSPS, track=1");
+				String videoparams = "level=4.1, insertSEI, contSPS, track=1";
+				if (this instanceof TsMuxerAudio)
+					videoparams = "track=224";
+				pw.println(videoType + ", \"" + ffVideoPipe.getOutputPipe() + "\", "  + (fps!=null?("fps=" +fps + ", "):"") + videoparams);
 			}
 			if (ffAudioPipe != null) {
 				String type = "A_AC3";
-				if (PMS.get().isTsmuxer_preremux_pcm() && media.losslessaudio)
+				if ((PMS.get().isTsmuxer_preremux_pcm() && media.losslessaudio) || this instanceof TsMuxerAudio)
 					type = "A_LPCM";
 				pw.println(type + ", \"" + ffAudioPipe.getOutputPipe() + "\", track=2");
 			}
@@ -326,7 +373,7 @@ public class TSMuxerVideo extends Player {
         });
         builder.add(tsmuxerforcefps, cc.xy(2, 3));
         
-        tsmuxerforcepcm = new JCheckBox("Force PCM remuxing with DTS/FLAC audio [Careful, seeking not working well]");
+        tsmuxerforcepcm = new JCheckBox("Force PCM remuxing with DTS/FLAC audio");
         tsmuxerforcepcm.setContentAreaFilled(false);
         if (PMS.get().isTsmuxer_preremux_pcm())
         	tsmuxerforcepcm.setSelected(true);
@@ -340,7 +387,7 @@ public class TSMuxerVideo extends Player {
         });
         builder.add(tsmuxerforcepcm, cc.xy(2, 5));
         
-        tsmuxerforceac3 = new JCheckBox("Force AC3 remuxing with all files [Careful, seeking not working well]");
+        tsmuxerforceac3 = new JCheckBox("Force AC3 remuxing with all files");
         tsmuxerforceac3.setContentAreaFilled(false);
         if (PMS.get().isTsmuxer_preremux_ac3())
         	tsmuxerforceac3.setSelected(true);

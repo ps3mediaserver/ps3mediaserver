@@ -72,7 +72,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public static int systemUpdateId = 1;
 	public boolean noName;
 	private int nametruncate;
-	
+	private boolean second;
 	protected int aid = -1;
 	protected String alang;
 	protected int sid = -1;
@@ -112,7 +112,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			children.add(child);
 			child.parent = this;
 			
-			if (child.ext != null && child.ext.transcodable()) {
+			if (child.ext != null && child.ext.transcodable() && child.media == null) {
 			
 				child.media = new DLNAMediaInfo();
 				
@@ -181,6 +181,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						children.remove(child);
 					}
 				//}
+			}
+			
+			if (child.ext != null && child.ext.getSecondaryFormat() != null && child.media != null) {
+				DLNAResource newChild = (DLNAResource) child.clone();
+				newChild.ext = newChild.ext.getSecondaryFormat();
+				newChild.second = true;
+				if (!newChild.ext.ps3compatible() && newChild.ext.getProfiles().size() > 0) {
+					newChild.player = PMS.get().getPlayer(newChild.ext.getProfiles().get(0), newChild.getType());
+				}
+				addChild(newChild);
 			}
 		}
 	}
@@ -580,16 +590,20 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		}
 		
 		String uclass = null;
-		if (isFolder()) {
-			uclass = "object.container";
-		} else if (ext != null && ext.isVideo()) {
-			uclass = "object.item.videoItem";
-		} else if (ext != null && ext.isImage()) {
-			uclass = "object.item.imageItem";
-		} else if (ext != null && ext.isAudio()) {
-			uclass = "object.item.audioItem";
-		} else
-			uclass = "object.item.videoItem";
+		if (second && media != null && !media.secondaryFormatValid) {
+			uclass = "dummy";
+		} else {
+			if (isFolder()) {
+				uclass = "object.container";
+			} else if (ext != null && ext.isVideo()) {
+				uclass = "object.item.videoItem";
+			} else if (ext != null && ext.isImage()) {
+				uclass = "object.item.imageItem";
+			} else if (ext != null && ext.isAudio()) {
+				uclass = "object.item.audioItem";
+			} else
+				uclass = "object.item.videoItem";
+		}
 		if (uclass != null)
 			addXMLTagAndAttribute(sb, "upnp:class", uclass);
 		

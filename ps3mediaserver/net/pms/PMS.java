@@ -57,13 +57,16 @@ import net.pms.encoders.MPlayerWebAudio;
 import net.pms.encoders.MPlayerWebVideoDump;
 import net.pms.encoders.Player;
 import net.pms.encoders.TSMuxerVideo;
+import net.pms.encoders.TsMuxerAudio;
 import net.pms.encoders.VideoLanAudioStreaming;
 import net.pms.encoders.VideoLanVideoStreaming;
 import net.pms.formats.DVRMS;
+import net.pms.formats.FLAC;
 import net.pms.formats.Format;
 import net.pms.formats.GIF;
 import net.pms.formats.ISO;
 import net.pms.formats.JPG;
+import net.pms.formats.M4A;
 import net.pms.formats.MKV;
 import net.pms.formats.MP3;
 import net.pms.formats.MPG;
@@ -81,6 +84,10 @@ import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
 
 public class PMS {
+	
+	public static final String VERSION = "1.01";
+	public static final String AVS_SEPARATOR = "\1";
+	
 	
 	public String getMencoder_ass_scale() {
 		return mencoder_ass_scale;
@@ -146,8 +153,6 @@ public class PMS {
 		this.mencoder_noass_outline = mencoder_noass_outline;
 	}
 
-	public static final String VERSION = "1.00";
-	public static final String AVS_SEPARATOR = "\1";
 	
 	public void setPort(int port) {
 		this.port = port;
@@ -517,6 +522,16 @@ public class PMS {
 
 	public void setAlternativeffmpegPath(String alternativeffmpegPath) {
 		this.alternativeffmpegPath = alternativeffmpegPath;
+	}
+	
+	private String flacPath;
+
+	public String getFlacPath() {
+		return flacPath;
+	}
+
+	public void setFlacPath(String flacPath) {
+		this.flacPath = flacPath;
 	}
 
 	private String ffmpegPath;
@@ -985,6 +1000,7 @@ public class PMS {
 			vlcPath = "videolan/vlc.exe";
 			mencoderPath = "win32/mencoder.exe";
 			tsmuxerPath = "win32/tsMuxeR.exe";
+			flacPath = "win32/flac.exe";
 		} else {
 			mkfifoPath = "mkfifo";
 			ffmpegPath = "ffmpeg";
@@ -992,6 +1008,7 @@ public class PMS {
 			vlcPath = "vlc";
 			mencoderPath = "mencoder";
 			tsmuxerPath = "linux/tsMuxeR";
+			flacPath = "flac";
 		}
 		
 			
@@ -1059,10 +1076,10 @@ public class PMS {
 		if (!checkProcessExistence("VLC", false, vlcPath, "-I", "dummy", windows?"--dummy-quiet":"-Z", "vlc://quit")) {
 			vlcPath = null;
 		}
-		if (!checkProcessExistence("mkfifo", true, mkfifoPath, windows?"":"--help")) {
+		/*if (!checkProcessExistence("mkfifo", true, mkfifoPath, windows?"":"--help")) {
 			mkfifoPath = null;
 			PMS.minimal("SERIOUS ERROR / Mkfifo mechanism not available !?");
-		}
+		}*/
 		
 		/*if (forceMPlayer && PMS.get().isExpert())
 			forceMPlayer = false;
@@ -1260,6 +1277,7 @@ public class PMS {
 	private void registerExtensions() {
 		extensions.add(new MKV());
 		extensions.add(new WEB());
+		extensions.add(new M4A());
 		extensions.add(new MP3());
 		extensions.add(new ISO());
 		extensions.add(new MPG());
@@ -1268,6 +1286,7 @@ public class PMS {
 		extensions.add(new PNG());
 		extensions.add(new GIF());
 		extensions.add(new TIF());
+		extensions.add(new FLAC());
 		extensions.add(new DVRMS());
 	}
 	
@@ -1281,6 +1300,7 @@ public class PMS {
 		registerPlayer(new MPlayerWebVideoDump());
 		registerPlayer(new MPlayerWebAudio());
 		registerPlayer(new TSMuxerVideo());
+		registerPlayer(new TsMuxerAudio());
 		registerPlayer(new VideoLanAudioStreaming());
 		registerPlayer(new VideoLanVideoStreaming());
 		registerPlayer(new FFMpegVideoRemux());

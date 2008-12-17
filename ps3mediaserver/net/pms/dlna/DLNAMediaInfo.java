@@ -50,8 +50,8 @@ import net.pms.network.HTTPResource;
 
 public class DLNAMediaInfo {
 		
-	public static final long ENDFILE_POS = 99999475712L;
-	public static final long TRANS_SIZE = 100000000000L;
+	public static final long ENDFILE_POS = 9999475712L;
+	public static final long TRANS_SIZE = 10000000000L;
 	
 	public String duration;
 	//public long durationtime;
@@ -66,6 +66,7 @@ public class DLNAMediaInfo {
 	public String aspect;
 	public byte thumb [];
 	public String mimeType;
+	public int bitsperSample = 16;
 	public String album;
 	public String artist;
 	public String songname;
@@ -81,6 +82,7 @@ public class DLNAMediaInfo {
 	public boolean losslessaudio;
 	public int dvdtrack;
 	public int maxsubid;
+	public boolean secondaryFormatValid;
 	//public int aids [] = new int [256];
 	//public int sids [] = new int [256];
 	
@@ -124,8 +126,10 @@ public class DLNAMediaInfo {
 				pw.stopProcess();
 			}
 		};
-		new Thread(r).start();
+		Thread failsafe = new Thread(r);
+		failsafe.start();
 		pw.run();
+		
 		return pw;
 	}
 
@@ -202,15 +206,19 @@ public class DLNAMediaInfo {
 			size = f.length();
 			ProcessWrapperImpl pw = null;
 			boolean ffmpeg_parsing = true;
-			if (type == Format.AUDIO) {
+			if (type == Format.AUDIO || f.getName().toLowerCase().endsWith("flac")) {
 				ffmpeg_parsing = false;
 				try {
 					AudioFile af = AudioFileIO.read(f);
 					float length = af.getPreciseLength();
 					int rate = af.getSamplingRate();
-					if (rate == 32000 && af.getEncodingType().toLowerCase().contains("flac") && af.getEncodingType().toLowerCase().contains("24")) {
-						rate = 3* rate;
-						length = length /3;
+					if (af.getEncodingType().toLowerCase().contains("flac 24")) {
+						bitsperSample=24;
+						if (rate == 32000) {
+							rate = 3* rate;
+							length = length /3;
+						}
+						secondaryFormatValid = true;
 					}
 					sampleFrequency = "" + rate;
 					setDurationString(length);
@@ -310,6 +318,10 @@ public class DLNAMediaInfo {
 									nrAudioChannels = 6;
 								} else if (token.equals("4 channels")) {
 									nrAudioChannels = 4;
+								} else if (token.equals("s32")) {
+									bitsperSample = 32;
+								} else if (token.equals("s24")) {
+									bitsperSample = 24;
 								}
 							}
 						} else if (line.indexOf("Video:") > -1) {
@@ -340,44 +352,45 @@ public class DLNAMediaInfo {
 						}
 					}
 				}
-			}
 			
-			if (type == Format.VIDEO && pw != null) {
-				InputStream is;
-				try {
-					is = pw.getInputStream(0);
-					int sz = is.available();
-					if (sz > 0) {
-						thumb = new byte [sz];
-						is.read(thumb);
-					}
-					is.close();
-					
-					if (sz > 0) {
-						BufferedImage image = ImageIO.read(new ByteArrayInputStream(thumb));
-						if (image != null) {
-							Graphics g = image.getGraphics();
-							g.setColor(Color.WHITE);
-							g.setFont(new Font("Arial", Font.PLAIN, 14));
-							int low = 0;
-							if (resolution != null) {
-								if (resolution.startsWith("1920") || resolution.startsWith("1440"))
-									g.drawString("1080p", 0, low+=18);
-								else if (resolution.startsWith("1280"))
-									g.drawString("720p", 0, low+=18);
-							}
-							if (nrAudioChannels > 0) {
-								g.drawString(nrAudioChannels + " channels " + (codecA!=null?codecA:""), 0, low+=18);
-							}
-							ByteArrayOutputStream out = new ByteArrayOutputStream();
-							ImageIO.write(image, "jpeg", out);
-							thumb = out.toByteArray();
+				if (type == Format.VIDEO && pw != null) {
+					InputStream is;
+					try {
+						is = pw.getInputStream(0);
+						int sz = is.available();
+						if (sz > 0) {
+							thumb = new byte [sz];
+							is.read(thumb);
 						}
+						is.close();
+						
+						if (sz > 0) {
+							BufferedImage image = ImageIO.read(new ByteArrayInputStream(thumb));
+							if (image != null) {
+								Graphics g = image.getGraphics();
+								g.setColor(Color.WHITE);
+								g.setFont(new Font("Arial", Font.PLAIN, 14));
+								int low = 0;
+								if (resolution != null) {
+									if (resolution.startsWith("1920") || resolution.startsWith("1440"))
+										g.drawString("1080p", 0, low+=18);
+									else if (resolution.startsWith("1280"))
+										g.drawString("720p", 0, low+=18);
+								}
+								if (nrAudioChannels > 0) {
+									g.drawString(nrAudioChannels + " channels " + (codecA!=null?codecA:""), 0, low+=18);
+								}
+								ByteArrayOutputStream out = new ByteArrayOutputStream();
+								ImageIO.write(image, "jpeg", out);
+								thumb = out.toByteArray();
+							}
+						}
+						
+					} catch (IOException e) {
+						PMS.info("Error while decoding thumbnail of " + f.getAbsolutePath() + " : " + e.getMessage());
 					}
-					
-				} catch (IOException e) {
-					PMS.info("Error while decoding thumbnail of " + f.getAbsolutePath() + " : " + e.getMessage());
 				}
+				
 			}
 			finalize(type);
 			mediaparsed = true;
