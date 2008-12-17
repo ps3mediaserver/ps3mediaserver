@@ -64,6 +64,7 @@ public class UPNPHelper {
 	
 	private static MulticastSocket getNewMulticastSocket() throws IOException {
 		MulticastSocket ssdpSocket = new MulticastSocket();
+		ssdpSocket.setReuseAddress(true);
 		if (PMS.get().getHostname() != null && PMS.get().getHostname().length() > 0) {
 			PMS.debug("Searching network interface for " + PMS.get().getHostname());
 			NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.get().getHostname()));
@@ -156,7 +157,7 @@ public class UPNPHelper {
 				        String s = new String(packet_r.getData());
 						
 						if (s.startsWith("M-SEARCH")) {
-							PMS.minimal( "Receiving search request from " + packet_r.getAddress().getCanonicalHostName() + "! Sending alive message...");
+							PMS.minimal( "Receiving search request from " + packet_r.getAddress().getHostAddress() + "! Sending alive message...");
 							sendAlive();
 							//listen();
 						}
