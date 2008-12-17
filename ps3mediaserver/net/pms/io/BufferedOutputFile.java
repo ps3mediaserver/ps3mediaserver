@@ -285,8 +285,8 @@ public class BufferedOutputFile extends OutputStream  {
 	}
 	
 	private boolean shiftAudio(int mb, boolean mod) {
-		boolean bb = (!mod && buffer[mb-10] == -67 && buffer[mb-11] == 1 && buffer[mb-12] == 0 && buffer[mb-13] == 0 && /*buffer[mb-7] == -128*/(buffer[mb-7]&128)==128 && buffer[mb-6] == -128)
-		|| (mod && buffer[modulo(mb-10)] == -67 && buffer[modulo(mb-11)] == 1 && buffer[modulo(mb-12)] == 0 && buffer[modulo(mb-13)] == 0 && /*buffer[modulo(mb-7)] == -128*/(buffer[modulo(mb-7)]&128)==128 && buffer[modulo(mb-6)] == -128);
+		boolean bb = (!mod && (buffer[mb-10] == -67 || buffer[mb-10] == -64) && buffer[mb-11] == 1 && buffer[mb-12] == 0 && buffer[mb-13] == 0 && /*(buffer[mb-7]&128)==128 &&*/ (buffer[mb-6]&128)==128/*buffer[mb-6] == -128*/)
+		|| (mod && (buffer[modulo(mb-10)] == -67  || buffer[modulo(mb-10)] == -64) && buffer[modulo(mb-11)] == 1 && buffer[modulo(mb-12)] == 0 && buffer[modulo(mb-13)] == 0 && /*(buffer[modulo(mb-7)]&128)==128 && */(buffer[modulo(mb-6)]&128)==128/*buffer[modulo(mb-6)] == -128*/);
 		if (bb) {
 			int pts = (((((buffer[modulo(mb-3)]&0xff)<<8) + (buffer[modulo(mb-2)]&0xff))>>1)<<15) + ((((buffer[modulo(mb-1)]&0xff)<<8) + (buffer[modulo(mb)]&0xff))>>1);
 			pts += (int) (timeseek*90000);
@@ -297,8 +297,8 @@ public class BufferedOutputFile extends OutputStream  {
 	}
 	
 	private boolean shiftVideo(int mb, boolean mod) {
-		boolean bb = (!mod && (buffer[mb-15] == -32 /*|| buffer[mb-15] == -3*/) && buffer[mb-16] == 1 && buffer[mb-17] == 0 && buffer[mb-18] == 0 && /*&& buffer[mb-12] == -128*/(buffer[mb-12]&128)==128&& (buffer[mb-11]&128)==128 && (buffer[mb-9]&48)==48/* && (buffer[mb-4]&16)==16*/)
-		|| (mod && (buffer[modulo(mb-15)] == -32 /*|| buffer[modulo(mb-15)] == -3*/) && buffer[modulo(mb-16)] == 1 && buffer[modulo(mb-17)] == 0 && buffer[modulo(mb-18)] == 0 && /*buffer[modulo(mb-12)] == -128*/(buffer[modulo(mb-12)]&128)==128 && (buffer[modulo(mb-11)]&128)==128 && (buffer[modulo(mb-9)]&48)==48 /*&& (buffer[modulo(mb-4)]&16)==16*/);
+		boolean bb = (!mod && (buffer[mb-15] == -32|| buffer[mb-15] == -3) && buffer[mb-16] == 1 && buffer[mb-17] == 0 && buffer[mb-18] == 0 && /*&& buffer[mb-12] == -128*//*(buffer[mb-12]&128)==128&&*/ (buffer[mb-11]&128)==128 && (buffer[mb-9]&32)==32/* && (buffer[mb-4]&16)==16*/)
+		|| (mod && (buffer[modulo(mb-15)] == -32 || buffer[modulo(mb-15)] == -3) && buffer[modulo(mb-16)] == 1 && buffer[modulo(mb-17)] == 0 && buffer[modulo(mb-18)] == 0 && /*buffer[modulo(mb-12)] == -128*//*(buffer[modulo(mb-12)]&128)==128 && */(buffer[modulo(mb-11)]&128)==128 && (buffer[modulo(mb-9)]&32)==32 /*&& (buffer[modulo(mb-4)]&16)==16*/);
 		if (bb) { // check EO or FD (tsmuxer)
 			int pts = getTS(mb-5, mod);
 			int dts = 0;

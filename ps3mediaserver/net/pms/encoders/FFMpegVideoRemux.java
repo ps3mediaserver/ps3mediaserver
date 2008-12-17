@@ -78,7 +78,7 @@ public class FFMpegVideoRemux extends Player {
 	}
 	
 	protected String [] getDefaultArgs() {
-		return new String [] { "-f", "vob", "-vcodec", "copy", "-acodec", "copy" };
+		return new String [] { "-f", "vob", "-copyts", "-vcodec", "copy", "-acodec", "copy" };
 	}
 
 	@Override
@@ -123,9 +123,9 @@ public class FFMpegVideoRemux extends Player {
 		cmdArray[5] = "-title";
 		cmdArray[6] = "dummy";
 		if (params.timeseek > 0 && !PMS.get().isForceMPlayer() && !mplayer()) {
-			cmdArray[5] = "-ss";
-			cmdArray[6] = "" + params.timeseek;
-			 params.timeseek = 0;
+			cmdArray[1] = "-ss";
+			cmdArray[2] = "" + params.timeseek;
+			 //params.timeseek = 0;
 		}
 		for(int i=0;i<args().length;i++)
 			cmdArray[7+i] = args()[i];
