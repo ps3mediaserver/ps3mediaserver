@@ -1,0 +1,106 @@
+
+Changelog:
+==========
+
+v1.01:
+
+- New features
+
+Audio High Fidelity engine: 24bits/96kHz/5.1 FLAC support (HDMI receiver mandatory)
+
+- Fixes:
+
+m4a and aac are now transcoded by default (iTunes Apple Lossless compatibility)
+seeking issues with dvr-ms and tsMuxer with AC3/PCM mode
+Displayed aspect ratio preserved
+
+
+v1.00:
+
+- New Features
+
+GPL licensing :)
+IDX/SUB support for AviSynth ONLY
+Revamped some UI, especially transcoding settings
+First attempt to make an LPCM or AC3 automatic conversion with tsMuxer (seeking isn't working well and demuxed audio delays are not managed)
+AviSynth script is now really fully customizable
+
+- Fixes
+
+VIDEO_TS folders are now case insensitive
+Yet another flac parsing bug
+Sync issues management for xvid/mp3
+.ass subtitles files support
+UUID random generation, it's now possible to launch multiple servers on one network.
+Added wmv binary codecs in Windows package for smooth WMV-HD transcoding  
+Rare and random video glitch due to another seeking bug
+
+
+v0.99:
+
+- New features:
+
+DVD ISOs images / VIDEO_TS Folder transcoder
+DVR-MS support (need feedback)
+Better subtitles configuration
+Small things: FAQ, Thumbnail seeking position, UI changes, New Options, etc.
+
+- Fixes:
+
+Network/Transcode optimization: Wifi/Homeplug streaming should be smoother
+A/V out of sync correction
+Unsupported data error on almost SD videos when maximum bitrate was fixed
+tsMuxer broken on Linux
+Videos with FLAC audio tracks are now muxable to LPCM, along with DTS
+Videos paused due to seeking bug
+Audio files parsing method changes (Hope this will solve issues with some flac files)
+Faster transcode start
+Better support for audio low sample rates (<= 22kHz) based files
+Subtitle files: .sub support was broken
+
+
+v0.98:
+
+- New features:
+Lossless 5.1 PCM transcoding with DTS movies (Disabled by default, check the previous paragraph first)
+Customizable AviSynth script
+Audio podcasts, just tested the one from Engadget
+tsMuxer now working on Linux for basic muxing (don't forget to give it execution rights)
+Web video streamdump engine (Useful for streams natively supported by ps3, such as mpeg on rtsp)
+Maximum bitrate management
+Small things: Runnable in console mode under Linux ("PMS.sh console"), Folder prioritization of a specific streaming/transcoding engine, Custom cover art, additional infos on thumbnails
+
+- Fixes:
+Potential network problem with Java/Vista + increase of packet ttl
+Transcode will not start with potential error 80710091
+Flac transcoder
+Audio tags for all audio codecs
+Faster start of audio transcoded files
+
+- Changes:
+Revamped inter process communication on Windows between Java/Mencoder/tsMuxer (much more elegant now).
+
+v0.97:
+- Added:   GUI Configuration (at last!) / Transcoding options, encoding presets, etc.
+- Added:   Ability to choose the default transcoding engine (mencoder only, avisynth+mencoder, avisynth+ffmpeg, tsmuxer, or none)
+- Added:   tsMuxer as a real time muxer (Kinda experimental)
+- Added:   A good audio tag reader library (http://entagged.sourceforge.net/)
+- Fixed:   Bugs in UPNP advertising.
+- Fixed:   Mencoder font cache bug which prevents transcode to start
+- Fixed:   DLNA errors due to character encoding
+- Fixed:   New folders were not refreshed/rescanned automatically
+- Fixed:   (maybe) Network streaming (no transcode) performance issue (need feedback on this)
+v0.96:
+- Added:   Interactive way of choosing your audio language, subtitles and transcoder mode (see #Transcoded# Folder)
+- Added:   Interactive settings (see #Settings# Folder)
+- Added:   Better subtitles looking
+- Fixed:   Folders browsing optimization
+- Fixed:   Several network errors fixes with 2.52 firmware
+- Fixed:   A lot of small things
+v0.95: MEncoder now included as it's used for the transcoding part (Avisynth or not), Fixes with the 2.50 firmware,
+       Better transcoding performance (but greater bitrates !), Lighter configuration file
+v0.94: Fixes: 2.50 Firmware problem, better pipes and sub processes management 
+v0.93: Fixed bug in the server IP adress binding
+v0.92: Linux compatible version / Many bugs fixes / No more A/V temp files created (full use of pipes)
+v0.91: Better memory handling / automatic detection of VLC and AviSynth
+v0.90: First release, some bugs, experimental stuff done for myself (at first!)

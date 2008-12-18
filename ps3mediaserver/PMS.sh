@@ -45,6 +45,5 @@ if $cygwin; then
 fi
 
 # Execute the JVM
-# Im' forced to set a file encoding -> not prety isn't it ?
 exec "$JAVA" $JAVA_OPTS -Xmx768M -Djava.encoding=UTF-8 -classpath $PMS_CLASSPATH net.pms.PMS "$@"
 

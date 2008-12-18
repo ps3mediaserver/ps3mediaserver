@@ -20,6 +20,9 @@
     	<mkdir dir="dist"/>
     	<zip basedir="." destfile="dist/pms-win32-${version}.zip" excludes="lib/wholepms.jar,debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*" includes="README,FAQ,PMS.exe,PMS.sh,PMS.conf,WEB.conf,lib/**,win32/**"/>
     	<zip basedir="." destfile="dist/pms-linux-${version}.zip" excludes="lib/wholepms.jar,debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*" includes="README,FAQ,PMS.sh,PMS.conf,WEB.conf,lib/**,linux/**"/>
+    	<zip basedir="." destfile="dist/pms-osx-${version}.zip" excludes="lib/wholepms.jar,debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*,osx/PMS.sh,osx/untested/**" includes="OSX_README.txt,README,FAQ,PMS.conf,WEB.conf,lib/**,osx/**">
+    		<zipfileset dir="osx" includes="PMS.sh" fullpath="PMS.sh"/> 
+    	</zip>
     	<!--
     	<delete file="lib/wholepms.jar"/>
     	<jar destfile="lib/wholepms.jar">
@@ -69,7 +72,7 @@
           target: depends                      
          - - - - - - - - - - - - - - - - - -->
     <target name="depends">
-    	<property name="version" value="1.00"/>
+    	<property name="version" value="1.01"/>
     	<!--<property name="gcj" value="D:\\DEV\\thisiscool-gcc\\gcc-ecj\\bin\\gcj.exe"/>-->
     	<property name="gcj" value="D:\\DEV\\gcc-122233-win\\bin\\gcj.exe"/>
     	<property name="swtjar" value="D:\\DEV\\thisiscool-gcc\\swt\\win32\\3218\\swt.jar"/>
