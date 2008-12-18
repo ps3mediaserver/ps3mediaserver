@@ -19,6 +19,7 @@
 
 package net.pms;
 
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,6 +34,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.UUID;
+
+import com.sun.jna.Platform;
 
 import net.pms.dlna.AudiosFeed;
 import net.pms.dlna.DLNAResource;
@@ -1002,13 +1005,23 @@ public class PMS {
 			tsmuxerPath = "win32/tsMuxeR.exe";
 			flacPath = "win32/flac.exe";
 		} else {
-			mkfifoPath = "mkfifo";
-			ffmpegPath = "ffmpeg";
-			mplayerPath = "mplayer";
-			vlcPath = "vlc";
-			mencoderPath = "mencoder";
-			tsmuxerPath = "linux/tsMuxeR";
-			flacPath = "flac";
+			if (Platform.isMac()) {
+				mkfifoPath = "mkfifo";
+				ffmpegPath = "osx/ffmpeg";
+				mplayerPath = "osx/mplayer";
+				vlcPath = "vlc";
+				mencoderPath = "osx/mencoder";
+				tsmuxerPath = null;
+				flacPath = null;
+			} else {
+				mkfifoPath = "mkfifo";
+				ffmpegPath = "ffmpeg";
+				mplayerPath = "mplayer";
+				vlcPath = "vlc";
+				mencoderPath = "mencoder";
+				tsmuxerPath = "linux/tsMuxeR";
+				flacPath = "flac";
+			}
 		}
 		
 			
@@ -1523,6 +1536,11 @@ public class PMS {
 	public static void main(String args[]) throws IOException {
 		if (args.length > 0 && args[0].equals("console"))
 			System.setProperty("console", "true");
+		try {
+			Toolkit.getDefaultToolkit();
+		} catch (Throwable t) {
+			System.setProperty("console", "true");
+		}
 		PMS.get();
 		try {
 			// let's allow us time to show up serious errors in the GUI before quitting
