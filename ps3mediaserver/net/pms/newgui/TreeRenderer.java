@@ -24,6 +24,9 @@ import java.awt.Font;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import net.pms.PMS;
+import net.pms.encoders.Player;
+
 public class TreeRenderer extends DefaultTreeCellRenderer {
 	
 	/**
@@ -50,12 +53,17 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
 			hasFocus);
 			if (leaf && value instanceof TreeNodeSettings) {
 				if (((TreeNodeSettings) value).getPlayer() == null) {
-					setIcon(LooksFrame.readImageIcon("advanced-16.png"));
+					setIcon(LooksFrame.readImageIcon("advanced-16.png")); //$NON-NLS-1$
 				} else {
-				if (((TreeNodeSettings) value).isEnable())
-			setIcon(LooksFrame.readImageIcon("Play1Hot_16.png"));
+				if (((TreeNodeSettings) value).isEnable()) {
+					Player p = ((TreeNodeSettings) value).getPlayer();
+					if (PMS.get().getPlayers().contains(p))
+						setIcon(LooksFrame.readImageIcon("Play1Hot_16.png")); //$NON-NLS-1$
+					else
+						setIcon(LooksFrame.readImageIcon("messagebox_warning-16.png")); //$NON-NLS-1$
+				}
 				else
-					setIcon(LooksFrame.readImageIcon("agt_action_fail1-16.png"));
+					setIcon(LooksFrame.readImageIcon("agt_action_fail1-16.png")); //$NON-NLS-1$
 				}
 				
 				if (((TreeNodeSettings) value).getPlayer() != null && ((TreeNodeSettings) value).getParent().getIndex((TreeNodeSettings) value) == 0) {
@@ -63,7 +71,7 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
 					} else
 						setFont(getFont().deriveFont(Font.PLAIN));	
 			} else {
-				setIcon(LooksFrame.readImageIcon("advanced-16.png"));
+				setIcon(LooksFrame.readImageIcon("advanced-16.png")); //$NON-NLS-1$
 			}
 
 			return this;

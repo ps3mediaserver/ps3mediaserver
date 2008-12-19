@@ -31,6 +31,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
+import net.pms.Messages;
 import net.pms.PMS;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -58,26 +59,26 @@ public class LinksTab {
 
 	public JComponent build() {
 		 FormLayout layout = new FormLayout(
-	                "0:grow, pref, 0:grow",
-	                "pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p");
+	                "0:grow, pref, 0:grow", //$NON-NLS-1$
+	                "pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
 
 	        PanelBuilder builder = new PanelBuilder(layout);
 	        builder.setDefaultDialogBorder();
 	        builder.setOpaque(false);
 	        CellConstraints cc = new CellConstraints();
 
-	       jl = new JLabel("PS3 Media Server v" + PMS.VERSION);
-	        builder.add(jl, cc.xy(2, 1, "center, fill"));
+	       jl = new JLabel("PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$
+	        builder.add(jl, cc.xy(2, 1, "center, fill")); //$NON-NLS-1$
 	         imagePanel = buildImagePanel();
-	        builder.add(imagePanel, cc.xy(2, 3, "center, fill"));
+	        builder.add(imagePanel, cc.xy(2, 3, "center, fill")); //$NON-NLS-1$
 	        
 	       
-	        builder.addLabel("Helpful links:",  cc.xy(2,  5, "center, fill"));
-	        builder.addLabel("<html>tsMuxer (c) SMartlabs: <a href='http://www.smlabs.net/tsmuxer_en.html'>http://www.smlabs.net/tsmuxer_en.html</a></html>",  cc.xy(2,  7, "center, fill")).addMouseListener(new MouseListener() {
+	        builder.addLabel(Messages.getString("LinksTab.5"),  cc.xy(2,  5, "center, fill")); //$NON-NLS-1$ //$NON-NLS-2$
+	        builder.addLabel("<html>tsMuxer (c) SMartlabs: <a href='http://www.smlabs.net/tsmuxer_en.html'>http://www.smlabs.net/tsmuxer_en.html</a></html>",  cc.xy(2,  7, "center, fill")).addMouseListener(new MouseListener() { //$NON-NLS-1$ //$NON-NLS-2$
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					try {
-						Desktop.getDesktop().browse(new URI("http://www.smlabs.net/tsmuxer_en.html"));
+						Desktop.getDesktop().browse(new URI("http://www.smlabs.net/tsmuxer_en.html")); //$NON-NLS-1$
 					} catch (Exception e1) {}
 				}
 				@Override
@@ -90,11 +91,11 @@ public class LinksTab {
 				public void mouseReleased(MouseEvent e) {}
 	        });
 	       
-	        builder.addLabel("<html>FFmpeg: <a href='http://ffmpeg.mplayerhq.hu'>http://ffmpeg.mplayerhq.hu</a></html>",  cc.xy(2,  9, "center, fill")).addMouseListener(new MouseListener() {
+	        builder.addLabel("<html>FFmpeg: <a href='http://ffmpeg.mplayerhq.hu'>http://ffmpeg.mplayerhq.hu</a></html>",  cc.xy(2,  9, "center, fill")).addMouseListener(new MouseListener() { //$NON-NLS-1$ //$NON-NLS-2$
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					try {
-						Desktop.getDesktop().browse(new URI("http://ffmpeg.mplayerhq.hu"));
+						Desktop.getDesktop().browse(new URI("http://ffmpeg.mplayerhq.hu")); //$NON-NLS-1$
 					} catch (Exception e1) {}
 				}
 				@Override
@@ -107,11 +108,11 @@ public class LinksTab {
 				public void mouseReleased(MouseEvent e) {}
 	        });
 	       
-	        builder.addLabel("<html>MPlayer: <a href='http://www.mplayerhq.hu/'>http://www.mplayerhq.hu/</a></html>",  cc.xy(2,  11, "center, fill")).addMouseListener(new MouseListener() {
+	        builder.addLabel("<html>MPlayer: <a href='http://www.mplayerhq.hu/'>http://www.mplayerhq.hu/</a></html>",  cc.xy(2,  11, "center, fill")).addMouseListener(new MouseListener() { //$NON-NLS-1$ //$NON-NLS-2$
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					try {
-						Desktop.getDesktop().browse(new URI("http://www.mplayerhq.hu/"));
+						Desktop.getDesktop().browse(new URI("http://www.mplayerhq.hu/")); //$NON-NLS-1$
 					} catch (Exception e1) {}
 				}
 				@Override
@@ -124,11 +125,11 @@ public class LinksTab {
 				public void mouseReleased(MouseEvent e) {}
 	        });
 	       
-	        builder.addLabel("<html>MPlayer's Sherpya Builds: <a href='http://oss.netfarm.it/mplayer-win32.php'>http://oss.netfarm.it/mplayer-win32.php</a></html>",  cc.xy(2,  13, "center, fill")).addMouseListener(new MouseListener() {
+	        builder.addLabel("<html>MPlayer's Sherpya Builds: <a href='http://oss.netfarm.it/mplayer-win32.php'>http://oss.netfarm.it/mplayer-win32.php</a></html>",  cc.xy(2,  13, "center, fill")).addMouseListener(new MouseListener() { //$NON-NLS-1$ //$NON-NLS-2$
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					try {
-						Desktop.getDesktop().browse(new URI("http://oss.netfarm.it/mplayer-win32.php"));
+						Desktop.getDesktop().browse(new URI("http://oss.netfarm.it/mplayer-win32.php")); //$NON-NLS-1$
 					} catch (Exception e1) {}
 				}
 				@Override
@@ -149,7 +150,7 @@ public class LinksTab {
 	public ImagePanel buildImagePanel() {
 		BufferedImage bi = null;
 		try {
-			bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/Play1Hot_256.png"));
+			bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/Play1Hot_256.png")); //$NON-NLS-1$
 		} catch (IOException e) {
 		}
 		return new ImagePanel(bi);

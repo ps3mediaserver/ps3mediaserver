@@ -84,8 +84,8 @@ public class AboutTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 0:grow",
-                "pref, fill:default:grow");
+                "left:pref, 0:grow", //$NON-NLS-1$
+                "pref, fill:default:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
       //  builder.setBorder(Borders.DLU14_BORDER);
         builder.setOpaque(false);
@@ -96,10 +96,10 @@ public class AboutTab {
 		jList.setEditable(false);
 		jList.setWrapStyleWord(false);
 		jList.setBackground(Color.WHITE);
-		jList.setFont(new Font("Courier New", Font.PLAIN, 12));
+		jList.setFont(new Font("Courier New", Font.PLAIN, 12)); //$NON-NLS-1$
 		FileInputStream fIN;
 		try {
-			fIN = new FileInputStream("README");
+			fIN = new FileInputStream("README"); //$NON-NLS-1$
 			byte buf [] = new byte [fIN.available()];
 			fIN.read(buf);
 			fIN.close();

@@ -25,6 +25,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -32,8 +33,10 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
+import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.io.CacheManager;
+import net.pms.util.KeyedComboBoxModel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
@@ -53,18 +56,19 @@ public class NetworkTab {
 	private JTextField port; 
 	private JTextField encoding ;
 	private JComboBox nbcores ;
+	private JComboBox langs ;
 	
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 2dlu, p, 100dlu , pref:grow",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 15dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu ");
+                "left:pref, 2dlu, p, 2dlu , p, 2dlu, p, 2dlu, pref:grow", //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p,  15dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 15dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu "); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.DLU4_BORDER);
         builder.setOpaque(false);
 
         CellConstraints cc = new CellConstraints();
         
-         tncheckBox = new JCheckBox("Thumbnails generation");
+         tncheckBox = new JCheckBox(Messages.getString("NetworkTab.2")); //$NON-NLS-1$
         tncheckBox.setContentAreaFilled(false);
         tncheckBox.addItemListener(new ItemListener() {
 
@@ -76,7 +80,7 @@ public class NetworkTab {
         if (PMS.get().isThumbnails())
         	tncheckBox.setSelected(true);
         
-         smcheckBox = new JCheckBox("Start minimized");
+         smcheckBox = new JCheckBox(Messages.getString("NetworkTab.3")); //$NON-NLS-1$
         smcheckBox.setContentAreaFilled(false);
         smcheckBox.addItemListener(new ItemListener() {
 
@@ -88,7 +92,7 @@ public class NetworkTab {
         if (PMS.get().isMinimized())
         	smcheckBox.setSelected(true);
         
-        maxbuffer = new JTextField("" + PMS.get().getMaxMemoryBufferSize());
+        maxbuffer = new JTextField("" + PMS.get().getMaxMemoryBufferSize()); //$NON-NLS-1$
         maxbuffer.addKeyListener(new KeyListener() {
 
     		@Override
@@ -109,17 +113,17 @@ public class NetworkTab {
         	   
            });
         
-        builder.addSeparator("General settings",  cc.xyw(1, 1, 5));
+        builder.addSeparator(Messages.getString("NetworkTab.5"),  cc.xyw(1, 1, 9)); //$NON-NLS-1$
         
-        builder.addLabel("Transcode buffer maximum size, in megabytes (maximum: 650):",  cc.xy(1,  3));
-        builder.add(maxbuffer,          cc.xyw(3,  3, 2)); 
+        builder.addLabel(Messages.getString("NetworkTab.6"),  cc.xy(1,  3)); //$NON-NLS-1$
+        builder.add(maxbuffer,          cc.xyw(3,  3, 7)); 
         
-        builder.addLabel("Number of cores used for transcoding: (it seems you have " + Runtime.getRuntime().availableProcessors() + " core(s) available)",  cc.xy(1,  5));
+        builder.addLabel(Messages.getString("NetworkTab.7") + Runtime.getRuntime().availableProcessors() + Messages.getString("NetworkTab.8"),  cc.xy(1,  5)); //$NON-NLS-1$ //$NON-NLS-2$
         
-        nbcores = new JComboBox(new Object [] {"1", "2", "4", "8"});
+        nbcores = new JComboBox(new Object [] {"1", "2", "4", "8"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         nbcores.setEditable(false);
         if (PMS.get().getNbcores() >0 && PMS.get().getNbcores() < 32) {
-        	nbcores.setSelectedItem("" + PMS.get().getNbcores());
+        	nbcores.setSelectedItem("" + PMS.get().getNbcores()); //$NON-NLS-1$
         } else
         	nbcores.setSelectedIndex(0);
   
@@ -130,10 +134,10 @@ public class NetworkTab {
  			}
         	
         });
-        builder.add(nbcores,          cc.xyw(3,  5, 2)); 
+        builder.add(nbcores,          cc.xyw(3,  5, 7)); 
         
        
-       seekpos = new JTextField("" + PMS.get().getThumbnail_seek_pos());
+       seekpos = new JTextField("" + PMS.get().getThumbnail_seek_pos()); //$NON-NLS-1$
        seekpos.addKeyListener(new KeyListener() {
 
    		@Override
@@ -152,8 +156,35 @@ public class NetworkTab {
        	   
           });
        
+       builder.addLabel(Messages.getString("NetworkTab.0"),  cc.xy(1,  7)); //$NON-NLS-1$
+       final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "en", "fr" }, new Object[] { Messages.getString("NetworkTab.9"), Messages.getString("NetworkTab.10") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+       langs = new JComboBox(kcbm);
+      langs.setEditable(false);
+      //langs.setSelectedIndex(0);
+      String defaultLang = null;
+      if (PMS.get().getLanguage() != null && PMS.get().getLanguage().length() > 0)
+    	  defaultLang = PMS.get().getLanguage();
+      else {
+    	  defaultLang = Locale.getDefault().getLanguage();
+    	 
+      }
+     kcbm.setSelectedKey(defaultLang);
+     if (langs.getSelectedIndex() == -1)
+    	 langs.setSelectedIndex(0);
+      
+      langs.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					PMS.get().setLanguage((String) kcbm.getSelectedKey());
+					
+				}
+			}
+     	
+     });
+       builder.add(langs, cc.xyw(3, 7,7));
        
-       builder.add(smcheckBox,          cc.xy(1,  7));
+       builder.add(smcheckBox,          cc.xy(3,  9));
        /*
        JButton service = new JButton("Install PMS Service");
        service.addActionListener(new ActionListener() {
@@ -178,15 +209,15 @@ public class NetworkTab {
 	  builder.add(serviceun,          cc.xyw(4,  7, 1));
     */
        
-       builder.addSeparator("Navigation/Parsing settings",  cc.xyw(1, 9, 5));
+       builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 11, 9)); //$NON-NLS-1$
        
-       builder.add(tncheckBox,          cc.xyw(1,  11, 5));
+       builder.add(tncheckBox,          cc.xy(1,  13));
        
-       builder.addLabel("Thumbnail seeking position (in seconds):",  cc.xy(1,  13));
-       builder.add(seekpos,          cc.xyw(3,  13, 2));
+       builder.addLabel(Messages.getString("NetworkTab.16"),  cc.xy(1,  15)); //$NON-NLS-1$
+       builder.add(seekpos,          cc.xyw(3,  15, 5));
       
 
-       cacheenable = new JCheckBox("Enable the parsing/metadata files cache (Parsing is only done at first access of a folder)");
+       cacheenable = new JCheckBox(Messages.getString("NetworkTab.17")); //$NON-NLS-1$
        cacheenable.setContentAreaFilled(false);
        cacheenable.addItemListener(new ItemListener() {
 
@@ -199,10 +230,10 @@ public class NetworkTab {
     	  cacheenable.setSelected(true);
        cacheenable.setEnabled(false);
        
-    	  builder.add(cacheenable,          cc.xyw(1,  15, 5));
+    	  builder.add(cacheenable,          cc.xyw(1,  17, 5));
     	  
     	  
-    	  JButton cachereset = new JButton("Reset Cache");
+    	  JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
     	  cachereset.addActionListener(new ActionListener() {
 
 			@Override
@@ -210,12 +241,12 @@ public class NetworkTab {
 				try {
 					CacheManager.resetCache();
 				} catch (IOException e1) {
-					PMS.debug("Cache unexpected error: " + e1.getMessage());
+					PMS.debug("Cache unexpected error: " + e1.getMessage()); //$NON-NLS-1$
 				}
 			}
     		  
     	  });
-    	  builder.add(cachereset,          cc.xyw(1,  17, 1));
+    	  builder.add(cachereset,          cc.xyw(3,  17, 5));
     	  cachereset.setEnabled(false);
        
         host = new JTextField(PMS.get().getHostname());
@@ -231,7 +262,7 @@ public class NetworkTab {
        			
        		}
         });
-        port = new JTextField(PMS.get().getPort()!=5001?"" + PMS.get().getPort():"");
+        port = new JTextField(PMS.get().getPort()!=5001?"" + PMS.get().getPort():""); //$NON-NLS-1$ //$NON-NLS-2$
         port.addKeyListener(new KeyListener() {
 
     		@Override
@@ -248,14 +279,14 @@ public class NetworkTab {
        		}
         });
         
-        builder.addSeparator("Network Settings, change them only if troubles",  cc.xyw(1, 19, 5));
-        builder.addLabel("Force IP of the server: [Need Application Restart]",  cc.xy(1,  21));
-        builder.add(host,          cc.xyw(3,  21, 2)); 
-        builder.addLabel("Force port of the server (5001 by default) [Need Application Restart]:",  cc.xy(1, 25));
-        builder.add(port,          cc.xyw(3,  25, 2)); 
+        builder.addSeparator(Messages.getString("NetworkTab.22"),  cc.xyw(1, 19,9)); //$NON-NLS-1$
+        builder.addLabel(Messages.getString("NetworkTab.23"),  cc.xy(1,  21)); //$NON-NLS-1$
+        builder.add(host,          cc.xyw(3,  21, 7)); 
+        builder.addLabel(Messages.getString("NetworkTab.24"),  cc.xy(1, 25)); //$NON-NLS-1$
+        builder.add(port,          cc.xyw(3,  25, 7)); 
        
        
-       builder.addSeparator("PS3 Settings",  cc.xyw(1, 29, 5));
+       builder.addSeparator(Messages.getString("NetworkTab.25"),  cc.xyw(1, 29, 9)); //$NON-NLS-1$
        encoding = new JTextField(PMS.get().getEncoding());
        
        encoding.addKeyListener(new KeyListener() {
@@ -274,12 +305,12 @@ public class NetworkTab {
    		}
        	   
           });
-       builder.addLabel("Character encoding of your PS3 file names (see XMB->System settings->Charset):",  cc.xy(1,  31));
+       builder.addLabel(Messages.getString("NetworkTab.26"),  cc.xy(1,  31)); //$NON-NLS-1$
        builder.add(encoding,          cc.xyw(3,  31, 2)); 
        
-       builder.addSeparator("Unused settings you shouldn't use :p",  cc.xyw(1, 35, 5));
+       builder.addSeparator(Messages.getString("NetworkTab.27"),  cc.xyw(1, 35, 9)); //$NON-NLS-1$
        
-       tmcheckBox = new JCheckBox("Turbo mode (enable tcp_nodelay) / be careful, not sure if that's ok to do this");
+       tmcheckBox = new JCheckBox(Messages.getString("NetworkTab.28")); //$NON-NLS-1$
        tmcheckBox.setContentAreaFilled(false);
        tmcheckBox.setSelected(PMS.get().isTurbomode());
        tmcheckBox.addItemListener(new ItemListener() {
@@ -290,7 +321,7 @@ public class NetworkTab {
        	
        }); builder.add(tmcheckBox,          cc.xyw(1,  37, 5));
        
-       blockBox = new JCheckBox("Block incoming request for the same file from PS3 when transcode has started");
+       blockBox = new JCheckBox(Messages.getString("NetworkTab.29")); //$NON-NLS-1$
        blockBox.setContentAreaFilled(false);
        blockBox.setSelected(PMS.get().isTranscode_block_multiple_connections());
        blockBox.addItemListener(new ItemListener() {

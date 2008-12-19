@@ -32,6 +32,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import net.pms.Messages;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -85,8 +87,8 @@ public class TracesTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 0:grow",
-                "pref, fill:default:grow");
+                "left:pref, 0:grow", //$NON-NLS-1$
+                "pref, fill:default:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
       //  builder.setBorder(Borders.DLU14_BORDER);
         builder.setOpaque(false);
@@ -96,13 +98,13 @@ public class TracesTab {
         jList = new JTextArea();
 		jList.setEditable(false);
 		jList.setBackground(Color.WHITE);
-		jList.setFont(new Font("Arial", Font.PLAIN, 12));
+		jList.setFont(new Font("Arial", Font.PLAIN, 12)); //$NON-NLS-1$
 		final JPopupMenu popup = new JPopupMenu();
-		JMenuItem defaultItem = new JMenuItem("Clear");
+		JMenuItem defaultItem = new JMenuItem(Messages.getString("TracesTab.3")); //$NON-NLS-1$
 		
 		defaultItem.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			jList.setText("");
+			jList.setText(""); //$NON-NLS-1$
 		}
 		});
 

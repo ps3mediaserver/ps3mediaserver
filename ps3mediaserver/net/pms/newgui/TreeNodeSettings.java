@@ -18,10 +18,22 @@
  */
 package net.pms.newgui;
 
+import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
+import net.pms.Messages;
+import net.pms.PMS;
 import net.pms.encoders.Player;
 
 public class TreeNodeSettings extends DefaultMutableTreeNode {
@@ -30,6 +42,7 @@ public class TreeNodeSettings extends DefaultMutableTreeNode {
 	private Player p;
 	private JComponent otherConfigPanel;
 	private boolean enable = true;
+	private JPanel warningPanel;
 	
 	public boolean isEnable() {
 		return enable;
@@ -55,7 +68,7 @@ public class TreeNodeSettings extends DefaultMutableTreeNode {
 		if (p != null)
 			return p.id();
 		else if (otherConfigPanel != null)
-			return "" + otherConfigPanel.hashCode();
+			return "" + otherConfigPanel.hashCode(); //$NON-NLS-1$
 		else
 			return null;
 			
@@ -63,11 +76,43 @@ public class TreeNodeSettings extends DefaultMutableTreeNode {
 	
 	public JComponent getConfigPanel() {
 		if (p != null) {
-			return p.config();
+			if (PMS.get().getPlayers().contains(p))
+				return p.config();
+			else
+				return getWarningPanel();
 		} else if (otherConfigPanel != null)
 			return otherConfigPanel;
 		else
 			return new JPanel();
+	}
+	
+	public JPanel getWarningPanel() {
+		if (warningPanel == null) {
+			BufferedImage bi = null;
+			try {
+				bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/messagebox_warning-256.png")); //$NON-NLS-1$
+			} catch (IOException e) {
+			}
+			ImagePanel ip = new ImagePanel(bi);
+			
+			 FormLayout layout = new FormLayout(
+		                "0:grow, pref, 0:grow", //$NON-NLS-1$
+		                "pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
+
+		        PanelBuilder builder = new PanelBuilder(layout);
+		        builder.setDefaultDialogBorder();
+		        builder.setOpaque(false);
+		        CellConstraints cc = new CellConstraints();
+
+		        JLabel jl = new JLabel(Messages.getString("TreeNodeSettings.4")); //$NON-NLS-1$
+		         builder.add(jl, cc.xy(2, 1, "center, fill")); //$NON-NLS-1$
+		         jl.setFont(jl.getFont().deriveFont(Font.BOLD));
+			       
+		        builder.add(ip, cc.xy(2, 3, "center, fill")); //$NON-NLS-1$
+		        
+		        warningPanel = builder.getPanel();
+		}
+		return warningPanel;
 	}
 
 }

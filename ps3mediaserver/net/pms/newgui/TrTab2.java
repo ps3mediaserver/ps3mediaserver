@@ -45,6 +45,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.encoders.Player;
 
@@ -87,7 +88,7 @@ public class TrTab2 {
 						TreeNodeSettings tns = (TreeNodeSettings) secondChild;
 						if (tns.isEnable() && tns.getPlayer() != null) {
 							if (sb.length() > 0)
-								sb.append(",");
+								sb.append(","); //$NON-NLS-1$
 							sb.append(tns.getPlayer().id());
 							engines.add(tns.getPlayer().id());
 						}
@@ -102,8 +103,8 @@ public class TrTab2 {
 	
 	public JComponent build() {
 		FormLayout mainlayout = new FormLayout(
-				"left:pref, pref, 7dlu, pref, pref, 0:grow",
-				"p, 3dlu" );
+				"left:pref, pref, 7dlu, pref, pref, 0:grow", //$NON-NLS-1$
+				"p, 3dlu" ); //$NON-NLS-1$
 		PanelBuilder builder = new PanelBuilder(mainlayout);
         builder.setBorder(Borders.DLU4_BORDER);
 		
@@ -127,8 +128,8 @@ public class TrTab2 {
 	
 	public JComponent buildLeft() {
 		FormLayout layout = new FormLayout(
-                "left:pref, pref, pref, pref, 0:grow",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 30dlu, 0:grow");
+                "left:pref, pref, pref, pref, 0:grow", //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 30dlu, 0:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -138,8 +139,8 @@ public class TrTab2 {
         CellConstraints cc = new CellConstraints();
       
        
-       JButton but = new JButton(LooksFrame.readImageIcon("kdevelop_down-32.png"));
-       but.setToolTipText("Sort the transcoding engines list. First one will appears in the original video folder");
+       JButton but = new JButton(LooksFrame.readImageIcon("kdevelop_down-32.png")); //$NON-NLS-1$
+       but.setToolTipText(Messages.getString("TrTab2.6")); //$NON-NLS-1$
        but.setBorder(BorderFactory.createEmptyBorder());
        but.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -167,8 +168,8 @@ public class TrTab2 {
        
        
        builder.add(but,          cc.xy(2,  3));
-       JButton but2 = new JButton(LooksFrame.readImageIcon("up-32.png"));
-       but2.setToolTipText("Sort the transcoding engines list. First one will appears in the original video folder");
+       JButton but2 = new JButton(LooksFrame.readImageIcon("up-32.png")); //$NON-NLS-1$
+       but2.setToolTipText(Messages.getString("TrTab2.6")); //$NON-NLS-1$
        but2.setBorder(BorderFactory.createEmptyBorder());
        but2.addActionListener(new ActionListener() {
    		public void actionPerformed(ActionEvent e) {
@@ -193,8 +194,8 @@ public class TrTab2 {
    		}   	   
           });
        builder.add(but2,          cc.xy(3,  3));
-       JButton but3 = new JButton(LooksFrame.readImageIcon("connect_no-32.png"));
-       but3.setToolTipText("Enable/disable a transcoding engine");
+       JButton but3 = new JButton(LooksFrame.readImageIcon("connect_no-32.png")); //$NON-NLS-1$
+       but3.setToolTipText(Messages.getString("TrTab2.0")); //$NON-NLS-1$
        but3.setBorder(BorderFactory.createEmptyBorder());
        but3.addActionListener(new ActionListener() {
 
@@ -212,20 +213,20 @@ public class TrTab2 {
        });
        builder.add(but3,          cc.xy(4,  3));
        
-       DefaultMutableTreeNode root = new DefaultMutableTreeNode("Engines");
-       TreeNodeSettings commonDec = new TreeNodeSettings("Common decoder settings", null, buildCommon());
+       DefaultMutableTreeNode root = new DefaultMutableTreeNode(Messages.getString("TrTab2.11")); //$NON-NLS-1$
+       TreeNodeSettings commonDec = new TreeNodeSettings(Messages.getString("TrTab2.12"), null, buildCommon()); //$NON-NLS-1$
        tabbedPane.add(commonDec.id(), commonDec.getConfigPanel());
-       TreeNodeSettings commonEnc = new TreeNodeSettings("Common encoder settings", null, buildMEncoder());
+       TreeNodeSettings commonEnc = new TreeNodeSettings(Messages.getString("TrTab2.13"), null, buildMEncoder()); //$NON-NLS-1$
        tabbedPane.add(commonEnc.id(), commonEnc.getConfigPanel());
        root.add(commonDec);
        root.add(commonEnc);
        
        parent = new DefaultMutableTreeNode[5];
-       parent[0] = new DefaultMutableTreeNode("Video Files Engines");
-       parent[1] = new DefaultMutableTreeNode("Audio Files Engines");
-       parent[2] = new DefaultMutableTreeNode("Video Web Streaming Engines");
-       parent[3] = new DefaultMutableTreeNode("Audio Web Streaming Engines");
-       parent[4] = new DefaultMutableTreeNode("Misc Engines");
+       parent[0] = new DefaultMutableTreeNode(Messages.getString("TrTab2.14")); //$NON-NLS-1$
+       parent[1] = new DefaultMutableTreeNode(Messages.getString("TrTab2.15")); //$NON-NLS-1$
+       parent[2] = new DefaultMutableTreeNode(Messages.getString("TrTab2.16")); //$NON-NLS-1$
+       parent[3] = new DefaultMutableTreeNode(Messages.getString("TrTab2.17")); //$NON-NLS-1$
+       parent[4] = new DefaultMutableTreeNode(Messages.getString("TrTab2.18")); //$NON-NLS-1$
        root.add(parent[0]);
        root.add(parent[1]);
        root.add(parent[2]);
@@ -263,8 +264,8 @@ public class TrTab2 {
        
        builder.add(pane,          cc.xyw(2,  1, 4));
        
-       builder.addLabel("Engine in bold will be the priority one", cc.xyw(2, 5, 4));
-       builder.addLabel("and will replace the original video", cc.xyw(2, 7, 4));
+       builder.addLabel(Messages.getString("TrTab2.19"), cc.xyw(2, 5, 4)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("TrTab2.20"), cc.xyw(2, 7, 4)); //$NON-NLS-1$
     //   
        
         return builder.getPanel();
@@ -307,15 +308,15 @@ public class TrTab2 {
 	
 	public JComponent buildEmpty() {
 		FormLayout layout = new FormLayout(
-				"left:pref, 2dlu, pref:grow",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p , 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 20dlu, p, 3dlu, p, 3dlu, p");
+				"left:pref, 2dlu, pref:grow", //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p , 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 20dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
 
         CellConstraints cc = new CellConstraints();
         
-        builder.addSeparator("No settings for now",  cc.xyw(1, 1, 3));
+        builder.addSeparator(Messages.getString("TrTab2.1"),  cc.xyw(1, 1, 3)); //$NON-NLS-1$
         
         return builder.getPanel();
         
@@ -323,17 +324,17 @@ public class TrTab2 {
 	
 	public JComponent buildMEncoder() {
 		FormLayout layout = new FormLayout(
-				"left:pref, 2dlu, pref:grow",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p , 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 20dlu, p, 3dlu, p, 3dlu, p");
+				"left:pref, 2dlu, pref:grow", //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p , 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 20dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
 
         CellConstraints cc = new CellConstraints();
         
-        builder.addSeparator("Video encoder settings with following engines: Mencoder/AviSynth/FFmpeg",  cc.xyw(1, 1, 3));
+        builder.addSeparator(Messages.getString("TrTab2.2"),  cc.xyw(1, 1, 3)); //$NON-NLS-1$
         
-        forcePCM = new JCheckBox("DTS/FLAC -> LPCM remux (You need an HDMI receiver for streaming PCM 5.1 ! Average Bitrate = 4.6Mbps)");
+        forcePCM = new JCheckBox(Messages.getString("TrTab2.27")); //$NON-NLS-1$
         forcePCM.setContentAreaFilled(false);
        /* if (!PMS.get().isWindows())
         	forcePCM.setEnabled(false);
@@ -351,7 +352,7 @@ public class TrTab2 {
        
         builder.add(forcePCM, cc.xyw(1, 3, 3));
         
-        abitrate = new JTextField("" + PMS.get().getAudiobitrate());
+        abitrate = new JTextField("" + PMS.get().getAudiobitrate()); //$NON-NLS-1$
         abitrate.addKeyListener(new KeyListener() {
 
  		@Override
@@ -369,12 +370,12 @@ public class TrTab2 {
 
         });
         
-       builder.addLabel("AC3 Audio bitrate (in Kbits/s) (ex: 384, 576, 640):", cc.xy(1, 5));
+       builder.addLabel(Messages.getString("TrTab2.29"), cc.xy(1, 5)); //$NON-NLS-1$
        builder.add(abitrate, cc.xy(3, 5));
        
-       builder.addLabel("Maximum bandwidth in Mbits/s (0 means no limit):", cc.xy(1, 9));
+       builder.addLabel(Messages.getString("TrTab2.30"), cc.xy(1, 9)); //$NON-NLS-1$
        
-       maxbitrate = new JTextField("" + PMS.get().getMaximumbitrate());
+       maxbitrate = new JTextField("" + PMS.get().getMaximumbitrate()); //$NON-NLS-1$
        maxbitrate.addKeyListener(new KeyListener() {
 
 		@Override
@@ -389,13 +390,13 @@ public class TrTab2 {
        });
        builder.add(maxbitrate, cc.xy(3, 9));
       
-       builder.addLabel("Mpeg2 Video quality settings (Some presets are available in the drop-down, you can also edit values, but be careful):", cc.xyw(1, 13, 3));
+       builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 13, 3)); //$NON-NLS-1$
        
         Object data [] = new Object [] { PMS.get().getMencoderMainSettings(),
-    		   "keyint=1:vqscale=1:vqmin=2  /* Best Quality */",
-    		   "keyint=1:vqscale=1:vqmin=1  /* Lossless Quality, Crazy Bitrate */",
-    		   "keyint=3:vqscale=2:vqmin=3  /* Good quality */",
-    		   "keyint=5:vqscale=3:vqmin=5  /* Medium quality, Low-end CPU or HD Wifi Transcoding */"};
+    		   "keyint=1:vqscale=1:vqmin=2  /* Best Quality */", //$NON-NLS-1$
+    		   "keyint=1:vqscale=1:vqmin=1  /* Lossless Quality, Crazy Bitrate */", //$NON-NLS-1$
+    		   "keyint=3:vqscale=2:vqmin=3  /* Good quality */", //$NON-NLS-1$
+    		   "keyint=5:vqscale=3:vqmin=5  /* Medium quality, Low-end CPU or HD Wifi Transcoding */"}; //$NON-NLS-1$
        MyComboBoxModel cbm = new MyComboBoxModel(data);
        
        vq = new JComboBox(cbm);
@@ -404,8 +405,8 @@ public class TrTab2 {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					String s = (String) e.getItem();
-					if (s.indexOf("/*") > -1) {
-						s = s.substring(0, s.indexOf("/*")).trim();
+					if (s.indexOf("/*") > -1) { //$NON-NLS-1$
+						s = s.substring(0, s.indexOf("/*")).trim(); //$NON-NLS-1$
 					}
 					PMS.get().setMencoder_main(s);
 				}
@@ -415,12 +416,12 @@ public class TrTab2 {
        vq.setEditable(true);
        builder.add(vq,          cc.xyw(1,  15, 3));
        
-      String help1 = "Encoder Tips:\n\nThe video is automatically transcoded and muxed to a MPEG-PS / AC3 audio (highly compatible on PS3)";
-      help1 += "\nYou can play with the vqscale, vqmin and keyint parameters to achieve good, even almost lossless transcoding quality.";
-      help1 += "\nDrawback to this is the VBR bitrate who can peaks sometimes above your max network capacity.";
-      help1 += "\nThat's why you can also set the bandwith if you're on WiFi, CPL, etc. However, the transcoding quality";
-     help1 += "\nis a balance between network speed and cpu power: the more quality you will put in a constrained bitrate,";
-   help1 += 	"\nthe more your cpu will suffer! Also, don't expect to fit a 1080p action movie in the purest quality in 15Mbps :p";
+      String help1 = Messages.getString("TrTab2.39"); //$NON-NLS-1$
+      help1 += Messages.getString("TrTab2.40"); //$NON-NLS-1$
+      help1 += Messages.getString("TrTab2.41"); //$NON-NLS-1$
+      help1 += Messages.getString("TrTab2.42"); //$NON-NLS-1$
+     help1 += Messages.getString("TrTab2.43"); //$NON-NLS-1$
+   help1 += 	Messages.getString("TrTab2.44"); //$NON-NLS-1$
    
       
        JTextArea decodeTips = new JTextArea(help1);
@@ -438,8 +439,8 @@ public class TrTab2 {
 
 	public JComponent buildCommon() {
 		FormLayout layout = new FormLayout(
-				"left:pref, 2dlu, pref:grow",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow");
+				"left:pref, 2dlu, pref:grow", //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -447,9 +448,9 @@ public class TrTab2 {
         CellConstraints cc = new CellConstraints();
         
         
-        builder.addSeparator("Video decoder settings, apply to following decoders: Mencoder/AviSynth/FFmpeg",  cc.xyw(1, 1, 3));
+        builder.addSeparator(Messages.getString("TrTab2.3"),  cc.xyw(1, 1, 3)); //$NON-NLS-1$
         
-        channels = new JComboBox(new Object [] {"2 channels Stereo", "6 channels 5.1" /*, "8 channels 7.1" */ }); // 7.1 not supported by Mplayer :\
+        channels = new JComboBox(new Object [] {"2 channels Stereo", "6 channels 5.1" /*, "8 channels 7.1" */ }); // 7.1 not supported by Mplayer :\ //$NON-NLS-1$ //$NON-NLS-2$
         channels.setEditable(false);
         if (PMS.get().getAudiochannels() == 2)
      	   channels.setSelectedIndex(0);
@@ -463,10 +464,10 @@ public class TrTab2 {
         	
         });
         
-        builder.addLabel("Number of audio channels:", cc.xy(1, 3));
+        builder.addLabel(Messages.getString("TrTab2.50"), cc.xy(1, 3)); //$NON-NLS-1$
         builder.add(channels, cc.xy(3, 3));
        
-        disableSubs = new JCheckBox("Definitely disable subtitles");
+        disableSubs = new JCheckBox(Messages.getString("TrTab2.51")); //$NON-NLS-1$
         disableSubs.setContentAreaFilled(false);
       
         builder.add(disableSubs,          cc.xy(1,  5));

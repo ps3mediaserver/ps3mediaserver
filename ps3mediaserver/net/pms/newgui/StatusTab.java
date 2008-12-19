@@ -26,6 +26,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
+import net.pms.Messages;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -53,28 +55,28 @@ public class StatusTab {
 
 	public JComponent build() {
 		 FormLayout layout = new FormLayout(
-	                "0:grow, pref, 0:grow",
-	                "pref, 9dlu, pref, 3dlu, pref, 15dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p");
+	                "0:grow, pref, 0:grow", //$NON-NLS-1$
+	                "pref, 9dlu, pref, 3dlu, pref, 15dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
 
 	        PanelBuilder builder = new PanelBuilder(layout);
 	        builder.setDefaultDialogBorder();
 	        builder.setOpaque(false);
 	        CellConstraints cc = new CellConstraints();
 
-	        builder.addSeparator("Status",  cc.xy(2, 1));
-		         jl = new JLabel("Waiting...");
+	        builder.addSeparator(Messages.getString("StatusTab.2"),  cc.xy(2, 1)); //$NON-NLS-1$
+		         jl = new JLabel(Messages.getString("StatusTab.3")); //$NON-NLS-1$
 	        builder.add(jl, cc.xy(2, 3));
 	         imagePanel = buildImagePanel();
-	        builder.add(imagePanel, cc.xy(2, 5, "center, fill"));
+	        builder.add(imagePanel, cc.xy(2, 5, "center, fill")); //$NON-NLS-1$
 	        
 	        jpb = new JProgressBar(0, 100);
 	        jpb.setStringPainted(true);
-	        jpb.setString("Empty");
+	        jpb.setString(Messages.getString("StatusTab.5")); //$NON-NLS-1$
 	        
-	        builder.addLabel("Transcoding buffer status:",  cc.xy(2,  7));
+	        builder.addLabel(Messages.getString("StatusTab.6"),  cc.xy(2,  7)); //$NON-NLS-1$
 	        builder.add(jpb, cc.xy(2, 9));
-	        builder.addLabel("I/O statistics:",  cc.xy(2,  11));
-	        jio = new JLabel("Current bitrate: 0 kB/s");
+	        builder.addLabel(Messages.getString("StatusTab.7"),  cc.xy(2,  11)); //$NON-NLS-1$
+	        jio = new JLabel(Messages.getString("StatusTab.8")); //$NON-NLS-1$
 	        builder.add(jio, cc.xy(2, 13));
 	        return builder.getPanel();
 	}
@@ -86,7 +88,7 @@ public class StatusTab {
 			int sizeinKb = (int) ((v - rc) / 125);
 			if (sizeinKb > peak)
 				peak = sizeinKb;
-			jio.setText("Current bitrate: " + sizeinKb + " kb/s    |   Peak bitrate: " + peak + " kb/s");
+			jio.setText(Messages.getString("StatusTab.8") + sizeinKb + Messages.getString("StatusTab.10") + peak + Messages.getString("StatusTab.11")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			rc = v;
 		}
 	}
@@ -94,7 +96,7 @@ public class StatusTab {
 	public ImagePanel buildImagePanel() {
 		BufferedImage bi = null;
 		try {
-			bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/PS3_2.png"));
+			bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/PS3_2.png")); //$NON-NLS-1$
 		} catch (IOException e) {
 		}
 		return new ImagePanel(bi);

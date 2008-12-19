@@ -51,6 +51,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.gui.IFrame;
 import net.pms.io.WindowsNamedPipe;
@@ -84,7 +85,7 @@ public class LooksFrame extends JFrame implements IFrame {
 		return reload;
 	}
 
-	protected static final Dimension PREFERRED_SIZE = new Dimension(880, 640);
+	protected static final Dimension PREFERRED_SIZE = new Dimension(960, 680);
 
 
 	/**
@@ -126,16 +127,16 @@ public class LooksFrame extends JFrame implements IFrame {
         try {
             UIManager.setLookAndFeel(selectedLaf);
         } catch (Exception e) {
-            System.out.println("Can't change L&F: " + e);
+            System.out.println("Can't change L&F: " + e); //$NON-NLS-1$
         }
         
-        setTitle("Test");
-        setIconImage(readImageIcon("Play1Hot_32.png").getImage());
+        setTitle("Test"); //$NON-NLS-1$
+        setIconImage(readImageIcon("Play1Hot_32.png").getImage()); //$NON-NLS-1$
         
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         setContentPane(buildContent());
-        this.setTitle("Java PS3 Media Server v" + PMS.VERSION);
+        this.setTitle("Java PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		 setSize(PREFERRED_SIZE);
 	        setResizable(false);
@@ -149,11 +150,11 @@ public class LooksFrame extends JFrame implements IFrame {
 		if (SystemTray.isSupported()) {
 			SystemTray tray = SystemTray.getSystemTray();
 
-			Image image = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/resources/images/Play1Hot_256.png"));
+			Image image = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/resources/images/Play1Hot_256.png")); //$NON-NLS-1$
 
 			PopupMenu popup = new PopupMenu();
-			MenuItem defaultItem = new MenuItem("Quit");
-			MenuItem traceItem = new MenuItem("Main Panel");
+			MenuItem defaultItem = new MenuItem(Messages.getString("LooksFrame.5")); //$NON-NLS-1$
+			MenuItem traceItem = new MenuItem(Messages.getString("LooksFrame.6")); //$NON-NLS-1$
 
 			defaultItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -170,7 +171,7 @@ public class LooksFrame extends JFrame implements IFrame {
 			popup.add(traceItem);
 			popup.add(defaultItem);
 
-			final TrayIcon trayIcon = new TrayIcon(image, "Java PS3 Media Server v" + PMS.VERSION, popup);
+			final TrayIcon trayIcon = new TrayIcon(image, "Java PS3 Media Server v" + PMS.VERSION, popup); //$NON-NLS-1$
 
 			trayIcon.setImageAutoSize(true);
 			trayIcon.addActionListener(new ActionListener() {
@@ -202,7 +203,7 @@ public class LooksFrame extends JFrame implements IFrame {
 	
 	
 	protected static ImageIcon readImageIcon(String filename) {
-        URL url = LooksFrame.class.getResource("/resources/images/" + filename);
+        URL url = LooksFrame.class.getResource("/resources/images/" + filename); //$NON-NLS-1$
         return new ImageIcon(url);
     }
 
@@ -214,7 +215,7 @@ public class LooksFrame extends JFrame implements IFrame {
         toolBar.putClientProperty(WindowsLookAndFeel.BORDER_STYLE_KEY, BorderStyle.EMPTY);
         
         toolBar.add(new JPanel());
-        AbstractButton save = createToolBarButton("Save", "filesave-48.png", "Save");
+        AbstractButton save = createToolBarButton(Messages.getString("LooksFrame.9"), "filesave-48.png", Messages.getString("LooksFrame.9")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         save.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -224,7 +225,7 @@ public class LooksFrame extends JFrame implements IFrame {
         });
         toolBar.add(save);
         toolBar.addSeparator();
-        reload = createToolBarButton("Restart HTTP", "reload_page-48.png", "Restart HTTP Server");
+        reload = createToolBarButton(Messages.getString("LooksFrame.12"), "reload_page-48.png", Messages.getString("LooksFrame.12")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         reload.setEnabled(false);
         reload.addActionListener(new ActionListener() {
 
@@ -239,7 +240,7 @@ public class LooksFrame extends JFrame implements IFrame {
         });
         toolBar.add(reload);
         toolBar.addSeparator();
-        AbstractButton quit = createToolBarButton("Quit", "exit-48.png", "Quit");
+        AbstractButton quit = createToolBarButton(Messages.getString("LooksFrame.5"), "exit-48.png", Messages.getString("LooksFrame.5")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         quit.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -264,15 +265,15 @@ public class LooksFrame extends JFrame implements IFrame {
 		 tr = new TrTab2();
 		 nt = new NetworkTab();
 		 
-		 tabbedPane.addTab("Status",/* readImageIcon("server-16.png"),*/ st.build());
-		 tabbedPane.addTab("Traces",/* readImageIcon("mail_new-16.png"),*/ tt.build());
+		 tabbedPane.addTab(Messages.getString("LooksFrame.18"),/* readImageIcon("server-16.png"),*/ st.build()); //$NON-NLS-1$
+		 tabbedPane.addTab(Messages.getString("LooksFrame.19"),/* readImageIcon("mail_new-16.png"),*/ tt.build()); //$NON-NLS-1$
 		 
-		 tabbedPane.addTab("General Configuration",/* readImageIcon("advanced-16.png"),*/ nt.build());
-		 tabbedPane.addTab("Transcoding Settings",/* readImageIcon("player_play-16.png"),*/tr.build());
-		 tabbedPane.addTab("Folders Sharing", /*readImageIcon("bookmark-16.png"),*/ new FoldTab().build());
-		 tabbedPane.addTab("Readme",/*  readImageIcon("mail_new-16.png"), */new AboutTab().build());
-		 tabbedPane.addTab("FAQ / Help", /* readImageIcon("mail_new-16.png"), */new FAQTab().build());
-		 tabbedPane.addTab("About", /*readImageIcon("documentinfo-16.png"),*/ new LinksTab().build());
+		 tabbedPane.addTab(Messages.getString("LooksFrame.20"),/* readImageIcon("advanced-16.png"),*/ nt.build()); //$NON-NLS-1$
+		 tabbedPane.addTab(Messages.getString("LooksFrame.21"),/* readImageIcon("player_play-16.png"),*/tr.build()); //$NON-NLS-1$
+		 tabbedPane.addTab(Messages.getString("LooksFrame.22"), /*readImageIcon("bookmark-16.png"),*/ new FoldTab().build()); //$NON-NLS-1$
+		 tabbedPane.addTab(Messages.getString("LooksFrame.23"),/*  readImageIcon("mail_new-16.png"), */new AboutTab().build()); //$NON-NLS-1$
+		 tabbedPane.addTab(Messages.getString("LooksFrame.24"), /* readImageIcon("mail_new-16.png"), */new FAQTab().build()); //$NON-NLS-1$
+		 tabbedPane.addTab(Messages.getString("LooksFrame.25"), /*readImageIcon("documentinfo-16.png"),*/ new LinksTab().build()); //$NON-NLS-1$
 
 	        tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		return tabbedPane;
@@ -308,7 +309,7 @@ public class LooksFrame extends JFrame implements IFrame {
 	public void setStatusCode(int code, String msg, String icon) {
 		st.getJl().setText(msg);
 		try {
-			st.getImagePanel().set(ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/" + icon)));
+			st.getImagePanel().set(ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/" + icon))); //$NON-NLS-1$
 		} catch (IOException e) {
 			PMS.error(null, e);
 		}
