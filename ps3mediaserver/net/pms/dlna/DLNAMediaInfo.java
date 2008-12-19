@@ -572,4 +572,42 @@ public class DLNAMediaInfo {
 		return sr;
 	}
 	
+	public int [] getAudioSubLangIds() {
+		int audiosubs [] = null;
+		if (PMS.get().getMencoder_audiosublangs() != null && PMS.get().getMencoder_audiosublangs().length() > 0) {
+			int aid = -1;
+			int sid = -1;
+			try {
+				StringTokenizer st1 = new StringTokenizer(PMS.get().getMencoder_audiosublangs(), ";");
+				while (st1.hasMoreTokens() && aid == -1 && sid == -1) {
+					String pair = st1.nextToken();
+					String audio = pair.substring(0, pair.indexOf(","));
+					String sub = pair.substring(pair.indexOf(",")+1);
+					for(DLNAMediaLang lang:audioCodes) {
+						if (lang.lang.equals(audio)) {
+							for(DLNAMediaLang sublang:subtitlesCodes) {
+								if (sublang.lang.equals(sub)) {
+									aid = lang.id;
+									sid = sublang.id;
+								}
+							}
+							if (sid == -1 && sub.equals("off")) {
+								aid = lang.id;
+								sid = maxsubid+1;
+							}
+						}
+					}
+				}
+			} catch (Throwable t) {
+				PMS.info("Unexpected error while parsing the audio/sub languages value: " + t.getMessage());
+			}
+			if (aid > -1 && sid > -1) {
+				audiosubs = new int [2];
+				audiosubs[0] = aid;
+				audiosubs[1] = sid;
+			}
+		}
+		return audiosubs;
+	}
+	
 }
