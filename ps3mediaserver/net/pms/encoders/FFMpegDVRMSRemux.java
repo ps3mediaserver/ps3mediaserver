@@ -32,6 +32,7 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.formats.Format;
@@ -39,9 +40,9 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 
-public class FFMpegVideoRemux extends Player {
+public class FFMpegDVRMSRemux extends Player {
 	
-	public static final String ID = "ffmpegdvrmsremux";
+	public static final String ID = "ffmpegdvrmsremux"; //$NON-NLS-1$
 	
 	@Override
 	public int purpose() {
@@ -64,12 +65,12 @@ public class FFMpegVideoRemux extends Player {
 	}
 
 	
-	public FFMpegVideoRemux() {
+	public FFMpegDVRMSRemux() {
 	}
 
 	@Override
 	public String name() {
-		return "FFmpeg DVR-MS Remux";
+		return "FFmpeg DVR-MS Remux"; //$NON-NLS-1$
 	}
 
 	@Override
@@ -78,7 +79,7 @@ public class FFMpegVideoRemux extends Player {
 	}
 	
 	protected String [] getDefaultArgs() {
-		return new String [] { "-f", "vob", "-copyts", "-vcodec", "copy", "-acodec", "copy" };
+		return new String [] { "-f", "vob", "-copyts", "-vcodec", "copy", "-acodec", "copy" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 	}
 
 	@Override
@@ -89,7 +90,7 @@ public class FFMpegVideoRemux extends Player {
 
 	@Override
 	public String mimeType() {
-		return "video/mpeg";
+		return "video/mpeg"; //$NON-NLS-1$
 	}
 
 	@Override
@@ -110,27 +111,27 @@ public class FFMpegVideoRemux extends Player {
 		cmdArray[0] = executable();
 		if (PMS.get().getAlternativeffmpegPath() != null && PMS.get().getAlternativeffmpegPath().length() > 0)
 			cmdArray[0] = PMS.get().getAlternativeffmpegPath();
-		cmdArray[1] = "-title";
-		cmdArray[2] = "dummy";
+		cmdArray[1] = "-title"; //$NON-NLS-1$
+		cmdArray[2] = "dummy"; //$NON-NLS-1$
 		
 		/*cmdArray[3] = "-f";
 		cmdArray[4] = "asf";
 		if (params.forceType != null) {
 			cmdArray[4] = params.forceType;
 		}*/
-		cmdArray[3] = "-i";
+		cmdArray[3] = "-i"; //$NON-NLS-1$
 		cmdArray[4] = fileName;
-		cmdArray[5] = "-title";
-		cmdArray[6] = "dummy";
+		cmdArray[5] = "-title"; //$NON-NLS-1$
+		cmdArray[6] = "dummy"; //$NON-NLS-1$
 		if (params.timeseek > 0 && !PMS.get().isForceMPlayer() && !mplayer()) {
-			cmdArray[1] = "-ss";
-			cmdArray[2] = "" + params.timeseek;
+			cmdArray[1] = "-ss"; //$NON-NLS-1$
+			cmdArray[2] = "" + params.timeseek; //$NON-NLS-1$
 			 //params.timeseek = 0;
 		}
 		for(int i=0;i<args().length;i++)
 			cmdArray[7+i] = args()[i];
 		
-		StringTokenizer st = new StringTokenizer(PMS.get().getFfmpegSettings(), " ");
+		StringTokenizer st = new StringTokenizer(PMS.get().getFfmpegSettings(), " "); //$NON-NLS-1$
 		if (st.countTokens() > 0) {
 			int i=cmdArray.length-1;
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +st.countTokens());
@@ -140,7 +141,7 @@ public class FFMpegVideoRemux extends Player {
 			}
 		}
 		
-		cmdArray[cmdArray.length-1] = "pipe:";
+		cmdArray[cmdArray.length-1] = "pipe:"; //$NON-NLS-1$
 			
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 			
@@ -153,8 +154,8 @@ public class FFMpegVideoRemux extends Player {
 	@Override
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 3dlu, p, 3dlu, 0:grow",
-                "p, 3dlu, p, 3dlu, 0:grow");
+                "left:pref, 3dlu, p, 3dlu, 0:grow", //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, 0:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -162,9 +163,9 @@ public class FFMpegVideoRemux extends Player {
         CellConstraints cc = new CellConstraints();
         
         
-        builder.addSeparator("Settings for DVR-MS remuxing",  cc.xyw(1, 1, 5));
+        builder.addSeparator(Messages.getString("FFMpegDVRMSRemux.1"),  cc.xyw(1, 1, 5)); //$NON-NLS-1$
         
-        builder.addLabel("Alternative FFmpeg Path:", cc.xy(1, 3));
+        builder.addLabel(Messages.getString("FFMpegDVRMSRemux.0"), cc.xy(1, 3)); //$NON-NLS-1$
         altffpath = new JTextField(PMS.get().getAlternativeffmpegPath());
         altffpath.addKeyListener(new KeyListener() {
 

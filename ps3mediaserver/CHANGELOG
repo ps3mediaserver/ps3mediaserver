@@ -6,7 +6,11 @@ v1.01:
 
 - New features
 
+Mac OSX version !! (thanks to Robin Mulder)
 Audio High Fidelity engine: 24bits/96kHz/5.1 FLAC support (HDMI receiver mandatory)
+French localization
+Audio/Subtitles priority settings (same as Haali Media Splitter)
+Truetype font setting, with some new codepages, for asian subtitles
 
 - Fixes:
 

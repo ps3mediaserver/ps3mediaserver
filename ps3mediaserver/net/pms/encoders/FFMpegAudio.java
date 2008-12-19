@@ -30,7 +30,7 @@ import net.pms.io.ProcessWrapper;
 
 public class FFMpegAudio extends FFMpegVideo {
 	
-	public static final String ID = "ffmpegaudio";
+	public static final String ID = "ffmpegaudio"; //$NON-NLS-1$
 	
 	@Override
 	public JComponent config() {
@@ -62,7 +62,7 @@ public class FFMpegAudio extends FFMpegVideo {
 
 	@Override
 	public String name() {
-		return "FFmpeg Audio";
+		return "FFmpeg Audio"; //$NON-NLS-1$
 	}
 
 	@Override
@@ -75,12 +75,12 @@ public class FFMpegAudio extends FFMpegVideo {
 		/*if (overridenArgs != null)
 			return overridenArgs;
 		else*/
-			return new String [] { "-f", "wav"};
+			return new String [] { "-f", "wav"}; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	@Override
 	public String mimeType() {
-		return "audio/wav";
+		return "audio/wav"; //$NON-NLS-1$
 	}
 
 	/*@Override

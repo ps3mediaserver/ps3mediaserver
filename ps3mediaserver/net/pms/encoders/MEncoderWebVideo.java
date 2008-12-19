@@ -33,7 +33,7 @@ public class MEncoderWebVideo extends MEncoderVideo {
 		return null;
 	}
 	
-	public static final String ID = "mencoderwebvideo";
+	public static final String ID = "mencoderwebvideo"; //$NON-NLS-1$
 	
 	@Override
 	public String id() {
@@ -52,12 +52,12 @@ public class MEncoderWebVideo extends MEncoderVideo {
 
 	@Override
 	public String mimeType() {
-		return "video/mpeg";
+		return "video/mpeg"; //$NON-NLS-1$
 	}
 
 	@Override
 	protected String[] getDefaultArgs() {
-		return new String [] { "-quiet", "-oac", "lavc", "-of", "lavf", "-lavfopts", "format=dvd", "-ovc", "lavc", "-lavcopts", "vcodec=mpeg2video:vbitrate=4096:threads=2:acodec=mp2:abitrate=128" };
+		return new String [] { "-quiet", "-oac", "lavc", "-of", "lavf", "-lavfopts", "format=dvd", "-ovc", "lavc", "-lavcopts", "vcodec=mpeg2video:vbitrate=4096:threads=2:acodec=mp2:abitrate=128" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
 	}
 
 	public MEncoderWebVideo() {
@@ -79,7 +79,7 @@ public class MEncoderWebVideo extends MEncoderVideo {
 	
 	@Override
 	public String name() {
-		return "MEncoder Web";
+		return "MEncoder Web"; //$NON-NLS-1$
 	}
 
 }

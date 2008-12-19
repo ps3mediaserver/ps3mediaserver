@@ -33,7 +33,7 @@ import net.pms.io.ProcessWrapperImpl;
 
 public class MPlayerAudio extends Player {
 
-	public static final String ID = "mplayeraudio";
+	public static final String ID = "mplayeraudio"; //$NON-NLS-1$
 	
 	@Override
 	public String id() {
@@ -62,9 +62,9 @@ public class MPlayerAudio extends Player {
 		if (!(this instanceof MPlayerWebAudio) && !(this instanceof MPlayerWebVideoDump))
 			params.waitbeforestart = 2000;
 		params.maxBufferSize = PMS.get().getMaxaudiobuffer();
-		PipeProcess audioP = new PipeProcess("mplayer_aud" + System.currentTimeMillis());
+		PipeProcess audioP = new PipeProcess("mplayer_aud" + System.currentTimeMillis()); //$NON-NLS-1$
 			
-		String mPlayerdefaultAudioArgs [] = new String [] { PMS.get().getMPlayerPath(), fileName, "-af", "channels=2", "-srate", "44100", "-vo", "null", "-ao", "pcm:waveheader:fast:file=" + audioP.getInputPipe(), "-quiet" };
+		String mPlayerdefaultAudioArgs [] = new String [] { PMS.get().getMPlayerPath(), fileName, "-af", "channels=2", "-srate", "44100", "-vo", "null", "-ao", "pcm:waveheader:fast:file=" + audioP.getInputPipe(), "-quiet" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
 		params.input_pipes [0]= audioP;
 			
 		ProcessWrapper mkfifo_process = audioP.getPipeProcess();
@@ -86,12 +86,12 @@ public class MPlayerAudio extends Player {
 
 	@Override
 	public String mimeType() {
-		return "audio/wav";
+		return "audio/wav"; //$NON-NLS-1$
 	}
 
 	@Override
 	public String name() {
-		return "MPlayer Audio";
+		return "MPlayer Audio"; //$NON-NLS-1$
 	}
 
 	@Override

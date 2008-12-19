@@ -32,7 +32,7 @@ import net.pms.io.ProcessWrapperImpl;
 
 public class VideoLanVideoStreaming extends Player {
 
-	public static final String ID = "vlcvideo";
+	public static final String ID = "vlcvideo"; //$NON-NLS-1$
 	
 	@Override
 	public int purpose() {
@@ -51,7 +51,7 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public String name() {
-		return "VideoLan Video Streaming";
+		return "VideoLan Video Streaming"; //$NON-NLS-1$
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public String mimeType() {
-		return "video/mpeg";
+		return "video/mpeg"; //$NON-NLS-1$
 	}
 
 	@Override
@@ -72,18 +72,18 @@ public class VideoLanVideoStreaming extends Player {
 	}
 	
 	protected String getEncodingArgs() {
-		return "vcodec=mp2v,vb=4096,acodec=mp3,ab=128,channels=2";
+		return "vcodec=mp2v,vb=4096,acodec=mp3,ab=128,channels=2"; //$NON-NLS-1$
 	}
 	
 	protected String getMux() {
-		return "ts";
+		return "ts"; //$NON-NLS-1$
 	}
 
 	@Override
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
 		
 		
-		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis());
+		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis()); //$NON-NLS-1$
 		params.input_pipes[0] = tsPipe;
 		
 		
@@ -92,16 +92,16 @@ public class VideoLanVideoStreaming extends Player {
 		
 		String cmdArray [] = new String [6];
 		cmdArray[0] = executable();
-		cmdArray[1] = "-I";
-		cmdArray[2] = "dummy";
-		String trans = "#transcode{" + getEncodingArgs() + "}:duplicate{dst=std{access=file,mux=" + getMux() + ",dst=\"" +tsPipe.getInputPipe() + "\"}}";
+		cmdArray[1] = "-I"; //$NON-NLS-1$
+		cmdArray[2] = "dummy"; //$NON-NLS-1$
+		String trans = "#transcode{" + getEncodingArgs() + "}:duplicate{dst=std{access=file,mux=" + getMux() + ",dst=\"" +tsPipe.getInputPipe() + "\"}}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		if (PMS.get().isWindows()) {
-			cmdArray[3] = "--dummy-quiet";
+			cmdArray[3] = "--dummy-quiet"; //$NON-NLS-1$
 			cmdArray[4] = fileName;
-			cmdArray[5] = ":sout=" + trans;
+			cmdArray[5] = ":sout=" + trans; //$NON-NLS-1$
 		} else {
 			cmdArray[3] = fileName;
-			cmdArray[4] = "--sout";
+			cmdArray[4] = "--sout"; //$NON-NLS-1$
 			cmdArray[5] = trans;
 		}
 				

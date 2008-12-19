@@ -28,7 +28,7 @@ import net.pms.io.ProcessWrapper;
 
 public class TsMuxerAudio extends TSMuxerVideo {
 	
-	public static final String ID = "tsmuxeraudio";
+	public static final String ID = "tsmuxeraudio"; //$NON-NLS-1$
 
 	@Override
 	public JComponent config() {
@@ -55,7 +55,7 @@ public class TsMuxerAudio extends TSMuxerVideo {
 
 	@Override
 	public String name() {
-		return "Audio High Fidelity";
+		return "Audio High Fidelity"; //$NON-NLS-1$
 	}
 
 	@Override

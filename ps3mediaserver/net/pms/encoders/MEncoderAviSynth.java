@@ -30,6 +30,7 @@ import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import net.pms.Messages;
 import net.pms.PMS;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -45,8 +46,8 @@ public class MEncoderAviSynth extends MEncoderVideo {
 	@Override
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 0:grow",
-                "p, 3dlu, p, 3dlu, p, 3dlu,  0:grow");
+                "left:pref, 0:grow", //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu,  0:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -54,9 +55,9 @@ public class MEncoderAviSynth extends MEncoderVideo {
         CellConstraints cc = new CellConstraints();
         
         
-        builder.addSeparator("Video decoder settings for AviSynth engine only",  cc.xyw(2, 1, 1));
+        builder.addSeparator(Messages.getString("MEncoderAviSynth.2"),  cc.xyw(2, 1, 1)); //$NON-NLS-1$
         
-        convertfps = new JCheckBox("Enable AviSynth variable framerate change into a constant framerate (convertfps=true)");
+        convertfps = new JCheckBox(Messages.getString("MEncoderAviSynth.3")); //$NON-NLS-1$
         convertfps.setContentAreaFilled(false);
         if (PMS.get().isAvisynth_convertfps())
         	convertfps.setSelected(true);
@@ -71,13 +72,13 @@ public class MEncoderAviSynth extends MEncoderVideo {
         
         String clip = PMS.get().getAvisynth_script();
         if (clip == null)
-        	clip = "";
+        	clip = ""; //$NON-NLS-1$
         StringBuffer sb = new StringBuffer();
         StringTokenizer st = new StringTokenizer(clip, PMS.AVS_SEPARATOR);
         int i=0;
         while (st.hasMoreTokens()) {
         	if (i> 0)
-        		sb.append("\n");
+        		sb.append("\n"); //$NON-NLS-1$
         	sb.append(st.nextToken());
         	i++;
         }
@@ -91,7 +92,7 @@ public class MEncoderAviSynth extends MEncoderVideo {
        		@Override
        		public void keyReleased(KeyEvent e) {
        			StringBuffer sb = new StringBuffer();
-       			StringTokenizer st = new StringTokenizer(textArea.getText(), "\n");
+       			StringTokenizer st = new StringTokenizer(textArea.getText(), "\n"); //$NON-NLS-1$
        	        int i=0;
        	        while (st.hasMoreTokens()) {
        	        	if (i> 0)
@@ -128,7 +129,7 @@ public class MEncoderAviSynth extends MEncoderVideo {
 		return VIDEO_SIMPLEFILE_PLAYER;
 	}
 	
-	public static final String ID = "avsmencoder";
+	public static final String ID = "avsmencoder"; //$NON-NLS-1$
 	
 	@Override
 	public String id() {
@@ -142,7 +143,7 @@ public class MEncoderAviSynth extends MEncoderVideo {
 	
 	@Override
 	public String name() {
-		return "Avisynth/MEncoder";
+		return "Avisynth/MEncoder"; //$NON-NLS-1$
 	}
 
 }

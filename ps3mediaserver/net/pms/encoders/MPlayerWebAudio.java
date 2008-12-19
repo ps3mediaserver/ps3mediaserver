@@ -40,7 +40,7 @@ public class MPlayerWebAudio extends MPlayerAudio {
 	
 	@Override
 	public String id() {
-		return "mplayerwebaudio";
+		return "mplayerwebaudio"; //$NON-NLS-1$
 	}
 	
 	@Override
@@ -54,7 +54,7 @@ public class MPlayerWebAudio extends MPlayerAudio {
 
 	@Override
 	public String name() {
-		return "MPlayer Web";
+		return "MPlayer Web"; //$NON-NLS-1$
 	}
 	
 	@Override
