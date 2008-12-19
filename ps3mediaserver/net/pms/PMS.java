@@ -51,7 +51,7 @@ import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.FFMpegAudio;
 import net.pms.encoders.FFMpegVideo;
 
-import net.pms.encoders.FFMpegVideoRemux;
+import net.pms.encoders.FFMpegDVRMSRemux;
 import net.pms.encoders.MEncoderAviSynth;
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.MEncoderWebVideo;
@@ -88,10 +88,19 @@ import net.pms.network.UPNPHelper;
 
 public class PMS {
 	
-	public static final String VERSION = "1.01";
-	public static final String AVS_SEPARATOR = "\1";
+	public static final String VERSION = "1.01"; //$NON-NLS-1$
+	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 	
+	private String language = ""; //$NON-NLS-1$
 	
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
 	public String getMencoder_ass_scale() {
 		return mencoder_ass_scale;
 	}
@@ -177,6 +186,17 @@ public class PMS {
 		this.mencoder_decode = mencoder_decode;
 	}
 
+	private String mencoder_font;
+	
+	
+	public String getMencoder_font() {
+		return mencoder_font;
+	}
+
+	public void setMencoder_font(String mencoder_font) {
+		this.mencoder_font = mencoder_font;
+	}
+
 	private String mencoder_audiolangs;
 
 	public String getMencoder_audiolangs() {
@@ -187,6 +207,16 @@ public class PMS {
 		this.mencoder_audiolangs = mencoder_audiolangs;
 	}
 	
+	private String mencoder_audiosublangs;
+	
+	public String getMencoder_audiosublangs() {
+		return mencoder_audiosublangs;
+	}
+
+	public void setMencoder_audiosublangs(String mencoder_audiosublangs) {
+		this.mencoder_audiosublangs = mencoder_audiosublangs;
+	}
+
 	private String mencoder_sublangs;
 
 	public String getMencoder_sublangs() {
@@ -303,8 +333,8 @@ public class PMS {
 	private static byte[] lock = null;
 	static {
 		lock = new byte[0];
-		sdfHour = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
-		sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+		sdfHour = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US); //$NON-NLS-1$
+		sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US); //$NON-NLS-1$
 	}
 	
 	private boolean ps3found;
@@ -315,7 +345,7 @@ public class PMS {
 	public void setPs3found(boolean ps3found) {
 		this.ps3found = ps3found;
 		if (ps3found) {
-			frame.setStatusCode(0, "PS3 has been found !", "PS3_2.png");
+			frame.setStatusCode(0, Messages.getString("PMS.5"), "PS3_2.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -422,7 +452,7 @@ public class PMS {
 
 	private ProxyServer proxyServer;
 	private boolean turbomode;
-	private String charsetencoding = "ISO-8859-1";
+	private String charsetencoding = "ISO-8859-1"; //$NON-NLS-1$
 	
 	public String getEncoding() {
 		return charsetencoding;
@@ -476,9 +506,9 @@ public class PMS {
 		
 		//String frameClass = "net.pms.gui.SwingFrame";
 		//String frameClass = "net.pms.gui.SWTFrame";
-		String frameClass = "net.pms.newgui.LooksFrame";
-		if (System.getProperty("frameclass") != null)
-			frameClass = System.getProperty("frameclass").toString();
+		String frameClass = "net.pms.newgui.LooksFrame"; //$NON-NLS-1$
+		if (System.getProperty("frameclass") != null) //$NON-NLS-1$
+			frameClass = System.getProperty("frameclass").toString(); //$NON-NLS-1$
 		try {
 			frame = (IFrame) Class.forName(frameClass).newInstance();
 		} catch (Exception e) {
@@ -697,15 +727,15 @@ public class PMS {
 	}
 
 	private int proxy;
-	private String ffmpeg = "-threads 2 -g 1 -qscale 1 -qmin 2";
+	private String ffmpeg = "-threads 2 -g 1 -qscale 1 -qmin 2"; //$NON-NLS-1$
 	public void setFfmpeg(String ffmpeg) {
 		this.ffmpeg = ffmpeg;
 	}
 
 	private String mplayer;
-	private String mencoder_main = "";
+	private String mencoder_main = ""; //$NON-NLS-1$
 	//private String mencoder_style = "";
-	private String mencoder_decode ="" ;
+	private String mencoder_decode ="" ; //$NON-NLS-1$
 	public String getMencoder_decode() {
 		return mencoder_decode;
 	}
@@ -724,7 +754,7 @@ public class PMS {
 		return mplayer;
 	}
 
-	private String folders = "";
+	private String folders = ""; //$NON-NLS-1$
 	private boolean filebuffer;
 	
 	String hostname;
@@ -775,163 +805,170 @@ public class PMS {
 	}
 
 	private boolean isTrue(String s) {
-		return (s.toLowerCase().equals("yes") || s.toLowerCase().equals("ok") || s.toLowerCase().equals("y") || s.toLowerCase().equals("true"));
+		return (s.toLowerCase().equals("yes") || s.toLowerCase().equals("ok") || s.toLowerCase().equals("y") || s.toLowerCase().equals("true")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}
 	
 	private void loadConf() throws Exception {
-		BufferedReader br = new BufferedReader(new FileReader(new File("PMS.conf")));
+		BufferedReader br = new BufferedReader(new FileReader(new File("PMS.conf"))); //$NON-NLS-1$
 		
 		//ArrayList<KeyValue> remaining = new ArrayList<KeyValue>();
 		String line = null;
 		while ( (line = br.readLine()) != null) {
 			
 			line = line.trim();
-			if (!line.startsWith("#") && !line.startsWith(" ") && line.indexOf("=") > -1) {
+			if (!line.startsWith("#") && !line.startsWith(" ") && line.indexOf("=") > -1) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			
-				String key = line.substring(0, line.indexOf("="));
-				String value = line.substring(line.indexOf("=")+1);
-				if (key.equals("temp")) {
+				String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
+				String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
+				if (key.equals("temp")) { //$NON-NLS-1$
 					if (value !=  null) {
 						tempFolder = new File(value);
 						if (tempFolder.exists() && tempFolder.isDirectory()) {
-							debug("Setting temp folder to: " + tempFolder.getAbsolutePath());
+							debug("Setting temp folder to: " + tempFolder.getAbsolutePath()); //$NON-NLS-1$
 						} else {
-							minimal("Warning, folder " + tempFolder + " not valid");
+							minimal("Warning, folder " + tempFolder + " not valid"); //$NON-NLS-1$ //$NON-NLS-2$
 							tempFolder = null;
 						}
 					}
-				} else if (key.equals("vlc_path") && value.length() > 0) {
+				} else if (key.equals("vlc_path") && value.length() > 0) { //$NON-NLS-1$
 					vlcPath = value.trim();
-				} else if (key.equals("port") && value.length() > 0) {
+				} else if (key.equals("port") && value.length() > 0) { //$NON-NLS-1$
 					port = Integer.parseInt(value.trim());
 				} /*else if (key.equals("expert") && value.length() > 0) {
 					expert = true;
-				} */else if (key.equals("hostname") && value.length() > 0) {
+				} */else if (key.equals("hostname") && value.length() > 0) { //$NON-NLS-1$
 					hostname = value.trim();
-				} else if (key.equals("proxy") && value.length() > 0) {
+				} else if (key.equals("proxy") && value.length() > 0) { //$NON-NLS-1$
 					proxy = Integer.parseInt(value.trim());
-				} else if (key.equals("minvideobuffer") && value.length() > 0) {
+				} else if (key.equals("language") && value.length() > 0) { //$NON-NLS-1$
+					language = value.trim();
+					Locale.setDefault(new Locale(language));
+				} else if (key.equals("minvideobuffer") && value.length() > 0) { //$NON-NLS-1$
 					minMemoryBufferSize = Integer.parseInt(value.trim());
-				} else if (key.equals("maxvideobuffer") && value.length() > 0) {
+				} else if (key.equals("maxvideobuffer") && value.length() > 0) { //$NON-NLS-1$
 					maxMemoryBufferSize = Integer.parseInt(value.trim());
-				} else if (key.equals("thumbnail_seek_pos") && value.length() > 0) {
+				} else if (key.equals("thumbnail_seek_pos") && value.length() > 0) { //$NON-NLS-1$
 					thumbnail_seek_pos = Integer.parseInt(value.trim());
-				} else if (key.equals("minwebbuffer") && value.length() > 0) {
+				} else if (key.equals("minwebbuffer") && value.length() > 0) { //$NON-NLS-1$
 					minstreambuffer = Integer.parseInt(value.trim());
-				} else if (key.equals("maxaudiobuffer") && value.length() > 0) {
+				} else if (key.equals("maxaudiobuffer") && value.length() > 0) { //$NON-NLS-1$
 					maxaudiobuffer = Integer.parseInt(value.trim());
-				} else if (key.equals("audiochannels") && value.length() > 0) {
+				} else if (key.equals("audiochannels") && value.length() > 0) { //$NON-NLS-1$
 					audiochannels = Integer.parseInt(value.trim());
-				} else if (key.equals("audiobitrate") && value.length() > 0) {
+				} else if (key.equals("audiobitrate") && value.length() > 0) { //$NON-NLS-1$
 					audiobitrate = Integer.parseInt(value.trim());
-				} else if (key.equals("maximumbitrate") && value.length() > 0) {
+				} else if (key.equals("maximumbitrate") && value.length() > 0) { //$NON-NLS-1$
 					maximumbitrate = value.trim();
-				} else if (key.equals("level") && value.length() > 0) {
+				} else if (key.equals("level") && value.length() > 0) { //$NON-NLS-1$
 					level = Integer.parseInt(value.trim());
-				} else if (key.equals("nbcores") && value.length() > 0) {
+				} else if (key.equals("nbcores") && value.length() > 0) { //$NON-NLS-1$
 					nbcores = Integer.parseInt(value.trim());
-				} else if (key.equals("charsetencoding") && value.length() > 0) {
+				} else if (key.equals("charsetencoding") && value.length() > 0) { //$NON-NLS-1$
 					charsetencoding = value.trim();
-				} else if (key.equals("ffmpeg") && value.length() > 0) {
+				} else if (key.equals("ffmpeg") && value.length() > 0) { //$NON-NLS-1$
 					ffmpeg = value.trim();
-				} else if (key.equals("mplayer") && value.length() > 0) {
+				} else if (key.equals("mplayer") && value.length() > 0) { //$NON-NLS-1$
 					mplayer = value.trim();
-				} else if (key.equals("skiploopfilter") && value.length() > 0) {
+				} else if (key.equals("skiploopfilter") && value.length() > 0) { //$NON-NLS-1$
 					skiploopfilter = isTrue(value.trim());
-				} else if (key.equals("mencoder_nooutofsync") && value.length() > 0) {
+				} else if (key.equals("mencoder_nooutofsync") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_nooutofsync = isTrue(value.trim());
-				} else if (key.equals("minimized") && value.length() > 0) {
+				} else if (key.equals("minimized") && value.length() > 0) { //$NON-NLS-1$
 					minimized = isTrue(value.trim());
-				} else if (key.equals("thumbnails") && value.length() > 0) {
+				} else if (key.equals("thumbnails") && value.length() > 0) { //$NON-NLS-1$
 					thumbnails = isTrue(value.trim());
-				} else if (key.equals("mencoder_forcefps") && value.length() > 0) {
+				} else if (key.equals("mencoder_forcefps") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_forcefps = isTrue(value.trim());
-				} else if (key.equals("mencoder_fontconfig") && value.length() > 0) {
+				} else if (key.equals("mencoder_fontconfig") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_fontconfig = isTrue(value.trim());
-				} else if (key.equals("mencoder_subfribidi") && value.length() > 0) {
+				} else if (key.equals("mencoder_subfribidi") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_subfribidi = isTrue(value.trim());
-				} else if (key.equals("hidevideosettings") && value.length() > 0) {
+				} else if (key.equals("hidevideosettings") && value.length() > 0) { //$NON-NLS-1$
 					hidevideosettings = isTrue(value.trim());
-				} else if (key.equals("mencoder_intelligent_sync") && value.length() > 0) {
+				} else if (key.equals("mencoder_intelligent_sync") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_intelligent_sync = isTrue(value.trim());
-				} else if (key.equals("usecache") && value.length() > 0) {
+				} else if (key.equals("usecache") && value.length() > 0) { //$NON-NLS-1$
 					usecache = isTrue(value.trim());
-				} else if (key.equals("mencoder_ass_margin") && value.length() > 0) {
+				} else if (key.equals("mencoder_font") && value.length() > 0) { //$NON-NLS-1$
+					mencoder_font= value.trim();
+				} else if (key.equals("mencoder_ass_margin") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_ass_margin= value.trim();
-				} else if (key.equals("mencoder_ass_outline") && value.length() > 0) {
+				} else if (key.equals("mencoder_ass_outline") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_ass_outline= value.trim();
-				} else if (key.equals("mencoder_ass_scale") && value.length() > 0) {
+				} else if (key.equals("mencoder_ass_scale") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_ass_scale= value.trim();
-				} else if (key.equals("mencoder_ass_shadow") && value.length() > 0) {
+				} else if (key.equals("mencoder_ass_shadow") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_ass_shadow= value.trim();
-				} else if (key.equals("mencoder_noass_scale") && value.length() > 0) {
+				} else if (key.equals("mencoder_noass_scale") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_noass_scale= value.trim();
-				} else if (key.equals("mencoder_noass_subpos") && value.length() > 0) {
+				} else if (key.equals("mencoder_noass_subpos") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_noass_subpos= value.trim();
-				} else if (key.equals("mencoder_noass_blur") && value.length() > 0) {
+				} else if (key.equals("mencoder_noass_blur") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_noass_blur= value.trim();
-				} else if (key.equals("mencoder_noass_outline") && value.length() > 0) {
+				} else if (key.equals("mencoder_noass_outline") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_noass_outline= value.trim();
-				} else if (key.equals("mencoder_encode") && value.length() > 0) {
+				} else if (key.equals("mencoder_encode") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_main= value.trim();
-				} else if (key.equals("mencoder_decode") && value.length() > 0) {
+				} else if (key.equals("mencoder_decode") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_decode= value.trim();
 				} /*else if (key.equals("mencoder_substyle") && value.length() > 0) {
 					mencoder_style= value.trim();
-				}*/ else if (key.equals("mencoder_audiolangs") && value.length() > 0) {
+				}*/ else if (key.equals("mencoder_audiolangs") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_audiolangs = value.trim();
-				} else if (key.equals("mencoder_sublangs") && value.length() > 0) {
+				} else if (key.equals("mencoder_sublangs") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_sublangs = value.trim();
-				} else if (key.equals("mencoder_subcp") && value.length() > 0) {
+				} else if (key.equals("mencoder_audiosublangs") && value.length() > 0) { //$NON-NLS-1$
+					mencoder_audiosublangs = value.trim();
+				} else if (key.equals("mencoder_subcp") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_subcp = value.trim();
-				} else if (key.equals("autoloadsrt") && value.length() > 0) {
+				} else if (key.equals("autoloadsrt") && value.length() > 0) { //$NON-NLS-1$
 					usesubs = isTrue(value.trim());
-				} else if (key.equals("mencoder_ass") && value.length() > 0) {
+				} else if (key.equals("mencoder_ass") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_ass = isTrue(value.trim());
-				} else if (key.equals("mencoder_disablesubs") && value.length() > 0) {
+				} else if (key.equals("mencoder_disablesubs") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_disablesubs = isTrue(value.trim());
-				} else if (key.equals("turbo") && value.length() > 0) {
+				} else if (key.equals("turbo") && value.length() > 0) { //$NON-NLS-1$
 					turbomode = isTrue(value.trim());
-				} else if (key.equals("mencoder_usepcm") && value.length() > 0) {
+				} else if (key.equals("mencoder_usepcm") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_usepcm = /*PMS.get().isWindows() &&*/ isTrue(value.trim());
-				} else if (key.equals("tsmuxer_preremux_pcm") && value.length() > 0) {
+				} else if (key.equals("tsmuxer_preremux_pcm") && value.length() > 0) { //$NON-NLS-1$
 					tsmuxer_preremux_pcm = isTrue(value.trim());
-				} else if (key.equals("tsmuxer_preremux_ac3") && value.length() > 0) {
+				} else if (key.equals("tsmuxer_preremux_ac3") && value.length() > 0) { //$NON-NLS-1$
 					tsmuxer_preremux_ac3 = isTrue(value.trim());
-				} else if (key.equals("engines") && value.length() > 0) {
+				} else if (key.equals("engines") && value.length() > 0) { //$NON-NLS-1$
 					engines = value.trim();
-					if (!engines.equals("none")) {
+					if (!engines.equals("none")) { //$NON-NLS-1$
 						enginesAsList = new ArrayList<String>();
-						StringTokenizer st = new StringTokenizer(engines, ",");
+						StringTokenizer st = new StringTokenizer(engines, ","); //$NON-NLS-1$
 						while (st.hasMoreTokens()) {
 							String engine = st.nextToken();
 							enginesAsList.add(engine);
 						}
 					}
-				} else if (key.equals("avisynth_convertfps") && value.length() > 0) {
+				} else if (key.equals("avisynth_convertfps") && value.length() > 0) { //$NON-NLS-1$
 					avisynth_convertfps = isTrue(value.trim());
-				} else if (key.equals("transcode_block_multiple_connections") && value.length() > 0) {
+				} else if (key.equals("transcode_block_multiple_connections") && value.length() > 0) { //$NON-NLS-1$
 					transcode_block_multiple_connections = isTrue(value.trim());
-				} else if (key.equals("tsmuxer_forcefps") && value.length() > 0) {
+				} else if (key.equals("tsmuxer_forcefps") && value.length() > 0) { //$NON-NLS-1$
 					tsmuxer_forcefps = isTrue(value.trim());
-				} else if (key.equals("folders") && value.length() > 0) {
+				} else if (key.equals("folders") && value.length() > 0) { //$NON-NLS-1$
 					folders = value.trim();
-				} else if (key.equals("avisynth_script") && value.length() > 0) {
+				} else if (key.equals("avisynth_script") && value.length() > 0) { //$NON-NLS-1$
 					avisynth_script = value.trim();
-				} else if (key.equals("buffertype") && value.length() > 0) {
-					filebuffer = value.trim().equals("file");
-				} else if (key.equals("ffmpeg_path") && value.length() > 0) {
+				} else if (key.equals("buffertype") && value.length() > 0) { //$NON-NLS-1$
+					filebuffer = value.trim().equals("file"); //$NON-NLS-1$
+				} else if (key.equals("ffmpeg_path") && value.length() > 0) { //$NON-NLS-1$
 					ffmpegPath = value.trim();
-				} else if (key.equals("alternativeffmpegpath") && value.length() > 0) {
+				} else if (key.equals("alternativeffmpegpath") && value.length() > 0) { //$NON-NLS-1$
 					alternativeffmpegPath = value.trim();
-				} else if (key.equals("mencoder_path") && value.length() > 0) {
+				} else if (key.equals("mencoder_path") && value.length() > 0) { //$NON-NLS-1$
 					mencoderPath = value.trim();
-				} else if (key.equals("mplayer_path") && value.length() > 0) {
+				} else if (key.equals("mplayer_path") && value.length() > 0) { //$NON-NLS-1$
 					mplayerPath = value.trim();
-				} else if (key.equals("tsmuxer_path") && value.length() > 0) {
+				} else if (key.equals("tsmuxer_path") && value.length() > 0) { //$NON-NLS-1$
 					tsmuxerPath = value.trim();
-				} else if (key.equals("encoding") && value.length() > 0) {
-					System.setProperty("file.encoding", value.trim());
+				} else if (key.equals("encoding") && value.length() > 0) { //$NON-NLS-1$
+					System.setProperty("file.encoding", value.trim()); //$NON-NLS-1$
 				} 
 				
 			}
@@ -949,7 +986,7 @@ public class PMS {
 	}
 
 	private boolean checkProcessExistence(String name, boolean error, String...params) throws Exception {
-		PMS.info("launching: " + params[0]);
+		PMS.info("launching: " + params[0]); //$NON-NLS-1$
 		/*ProcessBuilder pb = new ProcessBuilder(params);
 		Process process = pb.start();*/
 		try {
@@ -963,28 +1000,28 @@ public class PMS {
 			
 			process.waitFor();
 			
-			if (params[0].equals("vlc") && stderrConsumer.getResults().get(0).startsWith("VLC"))
+			if (params[0].equals("vlc") && stderrConsumer.getResults().get(0).startsWith("VLC")) //$NON-NLS-1$ //$NON-NLS-2$
 				return true;
-			if (params[0].equals("ffmpeg") && stderrConsumer.getResults().get(0).startsWith("FF"))
+			if (params[0].equals("ffmpeg") && stderrConsumer.getResults().get(0).startsWith("FF")) //$NON-NLS-1$ //$NON-NLS-2$
 				return true;
 			int exit = 0;
 			process.exitValue();
 			if (exit != 0) {
 				if (error)
-					PMS.minimal("[" + exit + "] Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ...");
+					PMS.minimal("[" + exit + "] Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ..."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 				return false;
 			}
 			return true;
 		} catch (Exception e) {
 			if (error)
-				PMS.error("Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ...", e);
+				PMS.error("Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ...", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return false;
 		}
 	}
 	
 	private boolean init () throws Exception {
 		
-		windows = System.getProperty("os.name").toUpperCase().startsWith("WIN");
+		windows = System.getProperty("os.name").toUpperCase().startsWith("WIN"); //$NON-NLS-1$ //$NON-NLS-2$
 		/*if (!windows) {
 			forceMPlayer = true;
 		} else {
@@ -997,36 +1034,36 @@ public class PMS {
 			}
 		}*/
 		if (windows) {
-			ffmpegPath = "win32/ffmpeg.exe";
-			mplayerPath = "win32/mplayer.exe";
-			mkfifoPath = "win32/mkfifo.exe";
-			vlcPath = "videolan/vlc.exe";
-			mencoderPath = "win32/mencoder.exe";
-			tsmuxerPath = "win32/tsMuxeR.exe";
-			flacPath = "win32/flac.exe";
+			ffmpegPath = "win32/ffmpeg.exe"; //$NON-NLS-1$
+			mplayerPath = "win32/mplayer.exe"; //$NON-NLS-1$
+			mkfifoPath = "win32/mkfifo.exe"; //$NON-NLS-1$
+			vlcPath = "videolan/vlc.exe"; //$NON-NLS-1$
+			mencoderPath = "win32/mencoder.exe"; //$NON-NLS-1$
+			tsmuxerPath = "win32/tsMuxeR.exe"; //$NON-NLS-1$
+			flacPath = "win32/flac.exe"; //$NON-NLS-1$
 		} else {
 			if (Platform.isMac()) {
-				mkfifoPath = "mkfifo";
-				ffmpegPath = "osx/ffmpeg";
-				mplayerPath = "osx/mplayer";
-				vlcPath = "vlc";
-				mencoderPath = "osx/mencoder";
+				mkfifoPath = "mkfifo"; //$NON-NLS-1$
+				ffmpegPath = "osx/ffmpeg"; //$NON-NLS-1$
+				mplayerPath = "osx/mplayer"; //$NON-NLS-1$
+				vlcPath = "vlc"; //$NON-NLS-1$
+				mencoderPath = "osx/mencoder"; //$NON-NLS-1$
 				tsmuxerPath = null;
 				flacPath = null;
 			} else {
-				mkfifoPath = "mkfifo";
-				ffmpegPath = "ffmpeg";
-				mplayerPath = "mplayer";
-				vlcPath = "vlc";
-				mencoderPath = "mencoder";
-				tsmuxerPath = "linux/tsMuxeR";
-				flacPath = "flac";
+				mkfifoPath = "mkfifo"; //$NON-NLS-1$
+				ffmpegPath = "ffmpeg"; //$NON-NLS-1$
+				mplayerPath = "mplayer"; //$NON-NLS-1$
+				vlcPath = "vlc"; //$NON-NLS-1$
+				mencoderPath = "mencoder"; //$NON-NLS-1$
+				tsmuxerPath = "linux/tsMuxeR"; //$NON-NLS-1$
+				flacPath = "flac"; //$NON-NLS-1$
 			}
 		}
 		
 			
 		try {
-			pw = new PrintWriter(new FileWriter(new File("debug.log")));
+			pw = new PrintWriter(new FileWriter(new File("debug.log"))); //$NON-NLS-1$
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -1041,20 +1078,20 @@ public class PMS {
 		loadConf();
 		
 		
-		if (System.getProperty("console") == null)
+		if (System.getProperty("console") == null) //$NON-NLS-1$
 			initGFX();
 		else
 			frame = new DummyFrame();
 		
-		frame.setStatusCode(0, "Contacting PS3...", "connect_no-256.png");
+		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		minimal("Starting Java PS3 Media Server v" + PMS.VERSION);
-		minimal("by shagrath / 2008");
-		minimal("http://ps3mediaserver.blogspot.com");
-		minimal("");
-		minimal("Java " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor"));
-		minimal("OS " + System.getProperty("os.name") + " " + System.getProperty("os.arch")  + " " + System.getProperty("os.version"));
-		minimal("Encoding: " + System.getProperty("file.encoding"));
+		minimal("Starting Java PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$
+		minimal("by shagrath / 2008"); //$NON-NLS-1$
+		minimal("http://ps3mediaserver.blogspot.com"); //$NON-NLS-1$
+		minimal(""); //$NON-NLS-1$
+		minimal("Java " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		minimal("OS " + System.getProperty("os.name") + " " + System.getProperty("os.arch")  + " " + System.getProperty("os.version")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		minimal("Encoding: " + System.getProperty("file.encoding")); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 		
@@ -1063,7 +1100,7 @@ public class PMS {
 			String vlc = registry.getVlcp();
 			String version = registry.getVlcv();
 			if (new File(vlc).exists() && version != null) {
-				PMS.info("Found VLC version " + version + " in Windows Registry: " + vlc);
+				PMS.info("Found VLC version " + version + " in Windows Registry: " + vlc); //$NON-NLS-1$ //$NON-NLS-2$
 				vlcPath = vlc;
 			}
 		}
@@ -1071,22 +1108,22 @@ public class PMS {
 		if (enginesAsList != null) {
 			for(int i=enginesAsList.size()-1;i>=0;i--) {
 				String engine = enginesAsList.get(i);
-				if (engine.startsWith("avs") && !registry.isAvis() && PMS.get().isWindows()) {
-					PMS.minimal("AviSynth in not installed ! You cannot use " + engine + " as transcoding engine !");
+				if (engine.startsWith("avs") && !registry.isAvis() && PMS.get().isWindows()) { //$NON-NLS-1$
+					PMS.minimal("AviSynth in not installed ! You cannot use " + engine + " as transcoding engine !"); //$NON-NLS-1$ //$NON-NLS-2$
 					enginesAsList.remove(i);
 				}
 			}
 		}
 		
-		if (!checkProcessExistence("FFmpeg", true, ffmpegPath, "-h"))
+		if (!checkProcessExistence("FFmpeg", true, ffmpegPath, "-h")) //$NON-NLS-1$ //$NON-NLS-2$
 			ffmpegPath = null;
 		//if (forceMPlayer) {
-			if (!checkProcessExistence("MPlayer", true, mplayerPath))
+			if (!checkProcessExistence("MPlayer", true, mplayerPath)) //$NON-NLS-1$
 				mplayerPath = null;
-			if (!checkProcessExistence("MEncoder", true, mencoderPath, "-oac", "help"))
+			if (!checkProcessExistence("MEncoder", true, mencoderPath, "-oac", "help")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				mencoderPath = null;
 		//}
-		if (!checkProcessExistence("VLC", false, vlcPath, "-I", "dummy", windows?"--dummy-quiet":"-Z", "vlc://quit")) {
+		if (!checkProcessExistence("VLC", false, vlcPath, "-I", "dummy", windows?"--dummy-quiet":"-Z", "vlc://quit")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 			vlcPath = null;
 		}
 		/*if (!checkProcessExistence("mkfifo", true, mkfifoPath, windows?"":"--help")) {
@@ -1114,8 +1151,8 @@ public class PMS {
 			binding = server.start();
 		} catch (BindException b) {
 			
-			PMS.minimal("FATAL ERROR : Unable to bind on port: " + port + " cause: " + b.getMessage());
-			PMS.minimal("Maybe another process is running or hostname is wrong...");
+			PMS.minimal("FATAL ERROR : Unable to bind on port: " + port + " cause: " + b.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			PMS.minimal("Maybe another process is running or hostname is wrong..."); //$NON-NLS-1$
 			
 		}
 		new Thread() {
@@ -1124,7 +1161,7 @@ public class PMS {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {}
 				if (!ps3found) {
-					frame.setStatusCode(0, "PS3 has not been found. Is it on? You can also check traces and/or configuration, or also the debug.log file", "messagebox_critical-256.png");
+					frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}.start();
@@ -1132,7 +1169,7 @@ public class PMS {
 			return false;
 		}
 		if (proxy > 0) {
-			minimal("Starting HTTP Proxy Server on port: " + proxy);
+			minimal("Starting HTTP Proxy Server on port: " + proxy); //$NON-NLS-1$
 			proxyServer = new ProxyServer(proxy);
 		}
 		
@@ -1145,12 +1182,12 @@ public class PMS {
 			public void run() {
 				try {
 					UPNPHelper.sendByeBye();
-					PMS.info("Forcing shutdown of all active processes");
+					PMS.info("Forcing shutdown of all active processes"); //$NON-NLS-1$
 					for(Process p:currentProcesses) {
 						try {
 							p.exitValue();
 						} catch (IllegalThreadStateException ise) {
-							PMS.debug("Forcing shutdown of process " + p);
+							PMS.debug("Forcing shutdown of process " + p); //$NON-NLS-1$
 							p.destroy();
 						}
 					}
@@ -1164,7 +1201,7 @@ public class PMS {
 		//debug("Waiting 500 milliseconds...");
 		//Thread.sleep(500);
 		UPNPHelper.sendAlive();
-		debug("Waiting 250 milliseconds...");
+		debug("Waiting 250 milliseconds..."); //$NON-NLS-1$
 		Thread.sleep(250);
 		UPNPHelper.listen();
 		
@@ -1182,29 +1219,29 @@ public class PMS {
 		rootFolder.browse(files);
 		
 		
-		File webConf = new File("WEB.conf");
+		File webConf = new File("WEB.conf"); //$NON-NLS-1$
 		if (webConf.exists()) {
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(webConf));
 				String line = null;
 				while ((line=br.readLine()) != null) {
 					line = line.trim();
-					if (line.length() > 0 && !line.startsWith("#") && line.indexOf("=") > -1) {
-						String key = line.substring(0, line.indexOf("="));
-						String value = line.substring(line.indexOf("=")+1);
+					if (line.length() > 0 && !line.startsWith("#") && line.indexOf("=") > -1) { //$NON-NLS-1$ //$NON-NLS-2$
+						String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
+						String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
 						String keys [] = parseFeedKey((String) key);
-						if (keys[0].equals("imagefeed") || keys[0].equals("audiofeed") || keys[0].equals("videofeed") || keys[0].equals("audiostream") || keys[0].equals("videostream")) {
+						if (keys[0].equals("imagefeed") || keys[0].equals("audiofeed") || keys[0].equals("videofeed") || keys[0].equals("audiostream") || keys[0].equals("videostream")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 							
 							String values [] = parseFeedValue((String) value);
 							DLNAResource parent = null;
 							if (keys[1] != null) {
-								StringTokenizer st = new StringTokenizer(keys[1], ",");
+								StringTokenizer st = new StringTokenizer(keys[1], ","); //$NON-NLS-1$
 								DLNAResource currentRoot = rootFolder;
 								while (st.hasMoreTokens()) {
 									String folder = st.nextToken();
 									parent = currentRoot.searchByName(folder);
 									if (parent == null) {
-										parent = new VirtualFolder(folder, "");
+										parent = new VirtualFolder(folder, ""); //$NON-NLS-1$
 										currentRoot.addChild(parent);
 									}
 									currentRoot = parent;
@@ -1212,22 +1249,22 @@ public class PMS {
 							}
 							if (parent == null)
 								parent = rootFolder;
-							if (keys[0].equals("imagefeed")) {
+							if (keys[0].equals("imagefeed")) { //$NON-NLS-1$
 								parent.addChild(new ImagesFeed(values[0]));
-							} else if (keys[0].equals("videofeed")) {
+							} else if (keys[0].equals("videofeed")) { //$NON-NLS-1$
 								parent.addChild(new VideosFeed(values[0]));
-							} else if (keys[0].equals("audiofeed")) {
+							} else if (keys[0].equals("audiofeed")) { //$NON-NLS-1$
 								parent.addChild(new AudiosFeed(values[0]));
-							} else if (keys[0].equals("audiostream")) {
+							} else if (keys[0].equals("audiostream")) { //$NON-NLS-1$
 								parent.addChild(new WebAudioStream(values[0], values[1], values[2]));
-							} else if (keys[0].equals("videostream")) {
+							} else if (keys[0].equals("videostream")) { //$NON-NLS-1$
 								parent.addChild(new WebVideoStream(values[0], values[1], values[2]));
 							}
 						}
 					}
 				}
 			} catch (Exception e) {
-				PMS.minimal("Unexpected error in WEB.conf: " + e.getMessage());
+				PMS.minimal("Unexpected error in WEB.conf: " + e.getMessage()); //$NON-NLS-1$
 			}
 		}
 		
@@ -1240,19 +1277,19 @@ public class PMS {
 		rootFolder.addChild(vf);*/
 		
 		if (!PMS.get().isHidevideosettings()) {
-		VirtualFolder vf = new VirtualFolder("#- VIDEO SETTINGS -#", null);
+		VirtualFolder vf = new VirtualFolder("#- VIDEO SETTINGS -#", null); //$NON-NLS-1$
 		/*VirtualFolder vf2 = new VirtualFolder("#- Encoding Profiles / TESTS -#", null);
 		vf2.addChild(new EncodingProfileAction("Enter here to (re)enable default encoding profile", null, DEFAULT_PROFILE));
 		for(String profile:otherEncodingProfiles) {
 			vf2.addChild(new EncodingProfileAction("Enter here to activate encoding profile: " + profile.toUpperCase(), null, profile));
 		}
 		vf.addChild(vf2);*/
-		vf.addChild(new SkipLoopAction("Enter this folder to enable SkipLoopFilter", null));
-		vf.addChild(new SkipLoopAction("Enter this folder to disable SkipLoopFilter", null));
-		vf.addChild(new AVSyncAction("Enter this folder to enable MEncoder A/V out of sync correction", null));
-		vf.addChild(new AVSyncAction("Enter this folder to disable MEncoder A/V out of sync correction", null));
-		vf.addChild(new AutoSubLoadingAction("Enter this folder to enable .srt/.sub Auto Loading", null));
-		vf.addChild(new AutoSubLoadingAction("Enter this folder to disable .srt/.sub Auto Loading", null));
+		vf.addChild(new SkipLoopAction(Messages.getString("PMS.193"), null)); //$NON-NLS-1$
+		vf.addChild(new SkipLoopAction(Messages.getString("PMS.194"), null)); //$NON-NLS-1$
+		vf.addChild(new AVSyncAction(Messages.getString("PMS.195"), null)); //$NON-NLS-1$
+		vf.addChild(new AVSyncAction(Messages.getString("PMS.196"), null)); //$NON-NLS-1$
+		vf.addChild(new AutoSubLoadingAction(Messages.getString("PMS.197"), null)); //$NON-NLS-1$
+		vf.addChild(new AutoSubLoadingAction(Messages.getString("PMS.198"), null)); //$NON-NLS-1$
 		//vf.addChild(new RefreshAction("Enter this folder to force refresh of all folders", null));
 		
 		/*vf.addChild(new VirtualAction("Enable/Disable SkipLoopFilter", "images/Play1Hot_256.png", "videos/action_success-512.mpg", "videos/button_cancel-512.mpg") {
@@ -1268,7 +1305,7 @@ public class PMS {
 	}
 	
 	private String [] parseFeedKey(String entry) {
-		StringTokenizer st = new StringTokenizer(entry, ".");
+		StringTokenizer st = new StringTokenizer(entry, "."); //$NON-NLS-1$
 		String results [] = new String [2];
 		int i = 0;
 		while (st.hasMoreTokens()) {
@@ -1278,7 +1315,7 @@ public class PMS {
 	}
 	
 	private String [] parseFeedValue(String entry) {
-		StringTokenizer st = new StringTokenizer(entry, ",");
+		StringTokenizer st = new StringTokenizer(entry, ","); //$NON-NLS-1$
 		String results [] = new String [3];
 		int i = 0;
 		while (st.hasMoreTokens()) {
@@ -1316,7 +1353,7 @@ public class PMS {
 		registerPlayer(new TsMuxerAudio());
 		registerPlayer(new VideoLanAudioStreaming());
 		registerPlayer(new VideoLanVideoStreaming());
-		registerPlayer(new FFMpegVideoRemux());
+		registerPlayer(new FFMpegDVRMSRemux());
 		
 		frame.addEngines();
 	}
@@ -1326,16 +1363,16 @@ public class PMS {
 		boolean ok = false;
 		if (windows) {
 			if (p.executable() == null) {
-				minimal("Executable of transcoder profile " + p + " not found!");
+				minimal("Executable of transcoder profile " + p + " not found!"); //$NON-NLS-1$ //$NON-NLS-2$
 				return;
 			}
 			File executable = new File(p.executable());
-			File executable2 = new File(p.executable() + ".exe");
+			File executable2 = new File(p.executable() + ".exe"); //$NON-NLS-1$
 			
 			if (executable.exists() || executable2.exists())
 				ok = true;
 			else {
-				minimal("Executable of transcoder profile " + p + " not found!");
+				minimal("Executable of transcoder profile " + p + " not found!"); //$NON-NLS-1$ //$NON-NLS-2$
 				return;
 			}
 			if (p.avisynth()) {
@@ -1343,14 +1380,14 @@ public class PMS {
 				if (registry.isAvis()) {
 					ok = true;
 				} else {
-					minimal("AVISynth not found! Transcoder profile " + p + " will not be used!");
+					minimal("AVISynth not found! Transcoder profile " + p + " will not be used!"); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		} else if (!p.avisynth()) {
 			ok = true;
 		}
 		if (ok) {
-			minimal("Registering transcoding engine " + p /*+ (p.avisynth()?(" with " + (forceMPlayer?"MPlayer":"AviSynth")):"")*/);
+			minimal("Registering transcoding engine " + p /*+ (p.avisynth()?(" with " + (forceMPlayer?"MPlayer":"AviSynth")):"")*/); //$NON-NLS-1$
 			players.add(p);
 		}
 	}
@@ -1359,7 +1396,7 @@ public class PMS {
 		if (folders == null || folders.length() == 0)
 			return null;
 		ArrayList<File> directories = new ArrayList<File>();
-		StringTokenizer st = new StringTokenizer(folders, ",");
+		StringTokenizer st = new StringTokenizer(folders, ","); //$NON-NLS-1$
 		while (st.hasMoreTokens()) {
 			String line = st.nextToken();
 			File file = new File(line);
@@ -1367,9 +1404,9 @@ public class PMS {
 				if (file.isDirectory()) {
 					directories.add(file);
 				} else
-					PMS.error("File " + line + " is not a directory!", null);
+					PMS.error("File " + line + " is not a directory!", null); //$NON-NLS-1$ //$NON-NLS-2$
 			} else {
-				PMS.error("File " + line + " does not exists!", null);
+				PMS.error("File " + line + " does not exists!", null); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		File f [] = new File[directories.size()];
@@ -1380,7 +1417,7 @@ public class PMS {
 
 	
 	public void reset() throws IOException {
-		debug("Waiting 1 seconds...");
+		debug("Waiting 1 seconds..."); //$NON-NLS-1$
 		UPNPHelper.sendByeBye();
 		manageRoot();
 		try {
@@ -1412,20 +1449,20 @@ public class PMS {
 		
 			String name = Thread.currentThread().getName();
 			if (name != null && message != null) {
-				String lev = "DEBUG ";
+				String lev = "DEBUG "; //$NON-NLS-1$
 				if (l == 1)
-					lev = "INFO  ";
+					lev = "INFO  "; //$NON-NLS-1$
 				if (l == 2)
-					lev = "TRACE ";
+					lev = "TRACE "; //$NON-NLS-1$
 				
 				
-				message = "[" + name + "] " + lev + sdfHour.format(new Date(System.currentTimeMillis())) + " " + message; 
+				message = "[" + name + "] " + lev + sdfHour.format(new Date(System.currentTimeMillis())) + " " + message;  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				if (l == 2)
 					System.out.println(message);
 				if (l >= level) {
 					
 					if (frame != null) {
-						frame.append(message.trim() + "\n");
+						frame.append(message.trim() + "\n"); //$NON-NLS-1$
 					}
 				}
 				pw.println(message);
@@ -1438,15 +1475,15 @@ public class PMS {
 		
 			String name = Thread.currentThread().getName();
 			if (error != null) {
-				String throwableMsg = "";
+				String throwableMsg = ""; //$NON-NLS-1$
 				if (t != null)
-					throwableMsg = ": " + t.getMessage();
-				error = "[" + name + "] " + sdfHour.format(new Date(System.currentTimeMillis())) + " " + error + throwableMsg;
+					throwableMsg = ": " + t.getMessage(); //$NON-NLS-1$
+				error = "[" + name + "] " + sdfHour.format(new Date(System.currentTimeMillis())) + " " + error + throwableMsg; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 			if (error != null) {
 				pw.println(error);
 				if (frame != null) {
-					frame.append(error.trim() + "\n");
+					frame.append(error.trim() + "\n"); //$NON-NLS-1$
 				}
 			}
 			if (t != null) {
@@ -1467,19 +1504,19 @@ public class PMS {
 			UUID u = UUID.randomUUID();
 			uuid = u.toString();
 		}
-		return "uuid:" + uuid + "::";
+		return "uuid:" + uuid + "::"; //$NON-NLS-1$ //$NON-NLS-2$
 		//return "uuid:1234567890TOTO::";
 	}
 	
 	public String getServerName() {
 		if (serverName == null) {
 			StringBuffer sb = new StringBuffer();
-			sb.append(System.getProperty("os.name"));
-			sb.append("-");
-			sb.append(System.getProperty("os.arch"));
-			sb.append("-");
-			sb.append(System.getProperty("os.version"));
-			sb.append(" UPnP/1.0, PMS");
+			sb.append(System.getProperty("os.name")); //$NON-NLS-1$
+			sb.append("-"); //$NON-NLS-1$
+			sb.append(System.getProperty("os.arch")); //$NON-NLS-1$
+			sb.append("-"); //$NON-NLS-1$
+			sb.append(System.getProperty("os.version")); //$NON-NLS-1$
+			sb.append(" UPnP/1.0, PMS"); //$NON-NLS-1$
 			serverName = sb.toString();
 		}
 		return serverName;
@@ -1493,9 +1530,9 @@ public class PMS {
 					instance = new PMS();
 					try {
 						if (instance.init())
-							PMS.minimal("It's ready! You should see the server appears on XMB");
+							PMS.minimal("It's ready! You should see the server appears on XMB"); //$NON-NLS-1$
 						else
-							PMS.minimal("Some serious errors occurs...");
+							PMS.minimal("Some serious errors occurs..."); //$NON-NLS-1$
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -1506,10 +1543,10 @@ public class PMS {
 	}
 	
 	public Format getAssociatedExtension(String filename) {
-		PMS.debug("Search extension for " + filename);
+		PMS.debug("Search extension for " + filename); //$NON-NLS-1$
 		for(Format ext:extensions) {
 			if (ext.match(filename)) {
-				PMS.debug("Found 1! " + ext.getClass().getName());
+				PMS.debug("Found 1! " + ext.getClass().getName()); //$NON-NLS-1$
 				return ext.duplicate();
 			}
 		}
@@ -1534,12 +1571,12 @@ public class PMS {
 	}
 	
 	public static void main(String args[]) throws IOException {
-		if (args.length > 0 && args[0].equals("console"))
-			System.setProperty("console", "true");
+		if (args.length > 0 && args[0].equals("console")) //$NON-NLS-1$
+			System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		try {
 			Toolkit.getDefaultToolkit();
 		} catch (Throwable t) {
-			System.setProperty("console", "true");
+			System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		PMS.get();
 		try {
@@ -1571,8 +1608,8 @@ public class PMS {
 
 	public File getTempFolder() {
 		if (tempFolder == null) {
-			File tmp = new File(System.getProperty("java.io.tmpdir"));
-			File myTMP = new File(tmp, "javaps3media");
+			File tmp = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
+			File myTMP = new File(tmp, "javaps3media"); //$NON-NLS-1$
 			if (!myTMP.exists())
 				myTMP.mkdir();
 			
@@ -1594,68 +1631,71 @@ public class PMS {
 	}
 	
 	private String getTrue(boolean value) {
-		return value?"true":"false";
+		return value?"true":"false"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	public void save() {
 		
 		PrintWriter saveFile = null;
 		try {
-			saveFile = new PrintWriter(new FileWriter(new File("PMS.conf")));
+			saveFile = new PrintWriter(new FileWriter(new File("PMS.conf"))); //$NON-NLS-1$
 		} catch (IOException e) {
 		PMS.error(null, e);
 		}
-		saveFile.println("folders=" + folders);
-		saveFile.println("hostname=" + (hostname!=null?hostname:""));
-		saveFile.println("port=" + (port!=5001?port:""));
-		saveFile.println("maxvideobuffer=" + maxMemoryBufferSize);
-		saveFile.println("thumbnails=" + getTrue(thumbnails));
-		saveFile.println("thumbnail_seek_pos=" + thumbnail_seek_pos);
-		saveFile.println("nbcores=" + nbcores);
-		saveFile.println("turbomode=" + getTrue(turbomode));
-		saveFile.println("minimized=" + getTrue(minimized));
-		saveFile.println("hidevideosettings=" + getTrue(hidevideosettings));
-		saveFile.println("usecache=" + getTrue(usecache));
-		saveFile.println("charsetencoding=" + (charsetencoding!=null?charsetencoding:""));
-		saveFile.println("engines=" + engines);
+		saveFile.println("folders=" + folders); //$NON-NLS-1$
+		saveFile.println("hostname=" + (hostname!=null?hostname:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("port=" + (port!=5001?port:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("language=" + language); //$NON-NLS-1$
+		saveFile.println("maxvideobuffer=" + maxMemoryBufferSize); //$NON-NLS-1$
+		saveFile.println("thumbnails=" + getTrue(thumbnails)); //$NON-NLS-1$
+		saveFile.println("thumbnail_seek_pos=" + thumbnail_seek_pos); //$NON-NLS-1$
+		saveFile.println("nbcores=" + nbcores); //$NON-NLS-1$
+		saveFile.println("turbomode=" + getTrue(turbomode)); //$NON-NLS-1$
+		saveFile.println("minimized=" + getTrue(minimized)); //$NON-NLS-1$
+		saveFile.println("hidevideosettings=" + getTrue(hidevideosettings)); //$NON-NLS-1$
+		saveFile.println("usecache=" + getTrue(usecache)); //$NON-NLS-1$
+		saveFile.println("charsetencoding=" + (charsetencoding!=null?charsetencoding:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("engines=" + engines); //$NON-NLS-1$
 		/*saveFile.println("audioengines=" + audioengines);
 		saveFile.println("webaudioengines=" + webaudioengines);
 		saveFile.println("webvideoengines=" + webvideoengines);*/
-		saveFile.println("autoloadsrt=" + getTrue(usesubs));
-		saveFile.println("avisynth_convertfps=" + getTrue(avisynth_convertfps));
-		saveFile.println("avisynth_script=" + (avisynth_script!=null?avisynth_script:""));
-		saveFile.println("transcode_block_multiple_connections=" + getTrue(transcode_block_multiple_connections));
-		saveFile.println("tsmuxer_forcefps=" + getTrue(tsmuxer_forcefps));
-		saveFile.println("tsmuxer_preremux_pcm=" + getTrue(tsmuxer_preremux_pcm));
-		saveFile.println("tsmuxer_preremux_ac3=" + getTrue(tsmuxer_preremux_ac3));
-		saveFile.println("audiochannels=" + audiochannels);
-		saveFile.println("audiobitrate=" + audiobitrate);
-		saveFile.println("maximumbitrate=" + maximumbitrate);
-		saveFile.println("skiploopfilter=" + getTrue(skiploopfilter));
-		saveFile.println("mencoder_fontconfig=" + getTrue(mencoder_fontconfig));
-		saveFile.println("mencoder_forcefps=" + getTrue(mencoder_forcefps));
-		saveFile.println("mencoder_usepcm=" + getTrue(mencoder_usepcm));
-		saveFile.println("mencoder_intelligent_sync=" + getTrue(mencoder_intelligent_sync));
-		saveFile.println("mencoder_decode=" + (mencoder_decode!=null?mencoder_decode:""));
-		saveFile.println("mencoder_encode=" + (mencoder_main!=null?mencoder_main:""));
-		saveFile.println("mencoder_nooutofsync=" + getTrue(mencoder_nooutofsync));
-		saveFile.println("mencoder_audiolangs=" + (mencoder_audiolangs!=null?mencoder_audiolangs:""));
-		saveFile.println("mencoder_sublangs=" + (mencoder_sublangs!=null?mencoder_sublangs:""));
-		saveFile.println("mencoder_subfribidi=" + getTrue(mencoder_subfribidi));
-		saveFile.println("mencoder_ass_scale=" + (mencoder_ass_scale!=null?mencoder_ass_scale:""));
-		saveFile.println("mencoder_ass_margin=" + (mencoder_ass_margin!=null?mencoder_ass_margin:""));
-		saveFile.println("mencoder_ass_outline=" + (mencoder_ass_outline!=null?mencoder_ass_outline:""));
-		saveFile.println("mencoder_ass_shadow=" + (mencoder_ass_shadow!=null?mencoder_ass_shadow:""));
-		saveFile.println("mencoder_noass_scale=" + (mencoder_noass_scale!=null?mencoder_noass_scale:""));
-		saveFile.println("mencoder_noass_subpos=" + (mencoder_noass_subpos!=null?mencoder_noass_subpos:""));
-		saveFile.println("mencoder_noass_blur=" + (mencoder_noass_blur!=null?mencoder_noass_blur:""));
-		saveFile.println("mencoder_noass_outline=" + (mencoder_noass_outline!=null?mencoder_noass_outline:""));
-		saveFile.println("mencoder_subcp=" + (mencoder_subcp!=null?mencoder_subcp:""));
-		saveFile.println("mencoder_ass=" + getTrue(mencoder_ass));
-		saveFile.println("mencoder_disablesubs=" + getTrue(mencoder_disablesubs));
-		saveFile.println("ffmpeg=" + (ffmpeg!=null?ffmpeg:""));
+		saveFile.println("autoloadsrt=" + getTrue(usesubs)); //$NON-NLS-1$
+		saveFile.println("avisynth_convertfps=" + getTrue(avisynth_convertfps)); //$NON-NLS-1$
+		saveFile.println("avisynth_script=" + (avisynth_script!=null?avisynth_script:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("transcode_block_multiple_connections=" + getTrue(transcode_block_multiple_connections)); //$NON-NLS-1$
+		saveFile.println("tsmuxer_forcefps=" + getTrue(tsmuxer_forcefps)); //$NON-NLS-1$
+		saveFile.println("tsmuxer_preremux_pcm=" + getTrue(tsmuxer_preremux_pcm)); //$NON-NLS-1$
+		saveFile.println("tsmuxer_preremux_ac3=" + getTrue(tsmuxer_preremux_ac3)); //$NON-NLS-1$
+		saveFile.println("audiochannels=" + audiochannels); //$NON-NLS-1$
+		saveFile.println("audiobitrate=" + audiobitrate); //$NON-NLS-1$
+		saveFile.println("maximumbitrate=" + maximumbitrate); //$NON-NLS-1$
+		saveFile.println("skiploopfilter=" + getTrue(skiploopfilter)); //$NON-NLS-1$
+		saveFile.println("mencoder_fontconfig=" + getTrue(mencoder_fontconfig)); //$NON-NLS-1$
+		saveFile.println("mencoder_font=" + (mencoder_font!=null?mencoder_font:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_forcefps=" + getTrue(mencoder_forcefps)); //$NON-NLS-1$
+		saveFile.println("mencoder_usepcm=" + getTrue(mencoder_usepcm)); //$NON-NLS-1$
+		saveFile.println("mencoder_intelligent_sync=" + getTrue(mencoder_intelligent_sync)); //$NON-NLS-1$
+		saveFile.println("mencoder_decode=" + (mencoder_decode!=null?mencoder_decode:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_encode=" + (mencoder_main!=null?mencoder_main:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_nooutofsync=" + getTrue(mencoder_nooutofsync)); //$NON-NLS-1$
+		saveFile.println("mencoder_audiolangs=" + (mencoder_audiolangs!=null?mencoder_audiolangs:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_sublangs=" + (mencoder_sublangs!=null?mencoder_sublangs:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_audiosublangs=" + (mencoder_audiosublangs!=null?mencoder_audiosublangs:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_subfribidi=" + getTrue(mencoder_subfribidi)); //$NON-NLS-1$
+		saveFile.println("mencoder_ass_scale=" + (mencoder_ass_scale!=null?mencoder_ass_scale:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_ass_margin=" + (mencoder_ass_margin!=null?mencoder_ass_margin:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_ass_outline=" + (mencoder_ass_outline!=null?mencoder_ass_outline:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_ass_shadow=" + (mencoder_ass_shadow!=null?mencoder_ass_shadow:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_noass_scale=" + (mencoder_noass_scale!=null?mencoder_noass_scale:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_noass_subpos=" + (mencoder_noass_subpos!=null?mencoder_noass_subpos:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_noass_blur=" + (mencoder_noass_blur!=null?mencoder_noass_blur:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_noass_outline=" + (mencoder_noass_outline!=null?mencoder_noass_outline:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_subcp=" + (mencoder_subcp!=null?mencoder_subcp:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_ass=" + getTrue(mencoder_ass)); //$NON-NLS-1$
+		saveFile.println("mencoder_disablesubs=" + getTrue(mencoder_disablesubs)); //$NON-NLS-1$
+		saveFile.println("ffmpeg=" + (ffmpeg!=null?ffmpeg:"")); //$NON-NLS-1$ //$NON-NLS-2$
 		if (alternativeffmpegPath != null)
-			saveFile.println("alternativeffmpegpath=" + alternativeffmpegPath);
+			saveFile.println("alternativeffmpegpath=" + alternativeffmpegPath); //$NON-NLS-1$
 		saveFile.flush();
 		saveFile.close();
 	}

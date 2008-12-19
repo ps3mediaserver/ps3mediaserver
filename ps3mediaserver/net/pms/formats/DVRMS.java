@@ -22,8 +22,7 @@ import java.util.ArrayList;
 
 import net.pms.PMS;
 
-import net.pms.encoders.FFMpegVideoRemux;
-import net.pms.encoders.MEncoderVideo;
+import net.pms.encoders.FFMpegDVRMSRemux;
 import net.pms.encoders.Player;
 
 
@@ -36,8 +35,8 @@ public class DVRMS extends Format {
 		for(String engine:PMS.get().getEnginesAsList()) {
 			/*if (engine.equals(MEncoderVideo.ID))
 				a.add(MEncoderVideo.class);*/
-			if (engine.equals(FFMpegVideoRemux.ID))
-				a.add(FFMpegVideoRemux.class);
+			if (engine.equals(FFMpegDVRMSRemux.ID))
+				a.add(FFMpegDVRMSRemux.class);
 		}
 		return a;
 	}
@@ -53,7 +52,7 @@ public class DVRMS extends Format {
 
 	@Override
 	public String[] getId() {
-		return new String [] { "dvr-ms" };
+		return new String [] { "dvr-ms" }; //$NON-NLS-1$
 	}
 
 	@Override

@@ -22,12 +22,12 @@ public class PNG extends JPG {
 
 	@Override
 	public String[] getId() {
-		return new String [] { "png" };
+		return new String [] { "png" }; //$NON-NLS-1$
 	}
 
 	@Override
 	public String mimeType() {
-		return "image/png";
+		return "image/png"; //$NON-NLS-1$
 	}
 
 }

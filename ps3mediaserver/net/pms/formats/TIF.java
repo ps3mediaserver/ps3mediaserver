@@ -22,12 +22,12 @@ public class TIF extends JPG {
 
 	@Override
 	public String[] getId() {
-		return new String [] { "tif", "tiff" };
+		return new String [] { "tif", "tiff" }; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	@Override
 	public String mimeType() {
-		return "image/tiff";
+		return "image/tiff"; //$NON-NLS-1$
 	}
 
 }

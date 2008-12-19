@@ -32,7 +32,7 @@ public class MPG extends Format {
 	
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
-		if (PMS.get().getEnginesAsList() == null || PMS.get().getEnginesAsList().size() == 0 || PMS.get().getEnginesAsList().contains("none"))
+		if (PMS.get().getEnginesAsList() == null || PMS.get().getEnginesAsList().size() == 0 || PMS.get().getEnginesAsList().contains("none")) //$NON-NLS-1$
 			return null;
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		for(String engine:PMS.get().getEnginesAsList()) {
@@ -59,7 +59,7 @@ public class MPG extends Format {
 
 	@Override
 	public String[] getId() {
-		return new String [] { "mpg", "mpeg", "ts", "m2t", "m2ts", "mts", "mp4", "avi", "wmv", "wm", "vob", "divx" };
+		return new String [] { "mpg", "mpeg", "mpe", "ts", "tp", "m2t", "m2ts", "mts", "mp4", "avi", "wmv", "wm", "vob", "divx" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$
 	}
 
 	@Override

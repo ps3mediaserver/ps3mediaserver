@@ -60,7 +60,7 @@ public class WEB extends Format {
 
 	@Override
 	public String [] getId() {
-		return new String[] { "http", "mms", "rtsp", "rtp" };
+		return new String[] { "http", "mms", "rtsp", "rtp" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}
 
 	@Override

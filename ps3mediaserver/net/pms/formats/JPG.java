@@ -31,7 +31,7 @@ public class JPG extends Format {
 
 	@Override
 	public String [] getId() {
-		return new String [] { "jpeg", "jpg" };
+		return new String [] { "jpeg", "jpg" }; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	@Override

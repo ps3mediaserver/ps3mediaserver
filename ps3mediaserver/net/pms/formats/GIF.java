@@ -22,12 +22,12 @@ public class GIF extends JPG {
 
 	@Override
 	public String[] getId() {
-		return new String [] { "gif" };
+		return new String [] { "gif" }; //$NON-NLS-1$
 	}
 	
 	@Override
 	public String mimeType() {
-		return "image/gif";
+		return "image/gif"; //$NON-NLS-1$
 	}
 
 }
