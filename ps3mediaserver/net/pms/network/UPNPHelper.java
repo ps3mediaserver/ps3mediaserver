@@ -48,7 +48,7 @@ public class UPNPHelper {
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:device:MediaServer:1", ALIVE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ContentDirectory:1", ALIVE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ConnectionManager:1", ALIVE);
-		//sendMessage(ssdpSocket,  "urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1", ALIVE);
+		sendMessage(ssdpSocket,  "urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1", ALIVE);
 		/*try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) { }
@@ -97,7 +97,7 @@ public class UPNPHelper {
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:device:MediaServer:1", BYEBYE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ContentDirectory:1", BYEBYE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ConnectionManager:1", ALIVE);
-		//sendMessage(ssdpSocket,  "urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1", ALIVE);
+		sendMessage(ssdpSocket,  "urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1", ALIVE);
 		/*try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) { }

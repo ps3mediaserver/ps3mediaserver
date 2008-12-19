@@ -209,6 +209,23 @@ public class Request extends HTTPResource {
 				s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "]");
 				inputStream = new ByteArrayInputStream(s.getBytes());
 			}
+		} else if (method.equals("POST") && argument.contains("MS_MediaReceiverRegistrar_control")) {
+			output(output, CONTENT_TYPE_UTF8);
+			response.append(HTTPXMLHelper.XML_HEADER);
+			response.append(CRLF);
+			response.append(HTTPXMLHelper.SOAP_ENCODING_HEADER);
+			response.append(CRLF);
+			if (soapaction != null && soapaction.contains("IsAuthorized")) {
+				response.append(HTTPXMLHelper.XBOX_2);
+				response.append(CRLF);
+			} else if (soapaction != null && soapaction.contains("IsValidated")) {
+				response.append(HTTPXMLHelper.XBOX_1);
+				response.append(CRLF);
+			}
+			response.append(HTTPXMLHelper.BROWSERESPONSE_FOOTER);
+			response.append(CRLF);
+			response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
+			response.append(CRLF);
 		} else if (method.equals("POST") && argument.equals("upnp/control/content_directory")) {
 			output(output, CONTENT_TYPE_UTF8);
 			if (soapaction.indexOf("ContentDirectory:1#GetSystemUpdateID") > -1) {

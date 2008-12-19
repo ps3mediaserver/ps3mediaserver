@@ -20,6 +20,7 @@ package net.pms.network;
 
 public class HTTPXMLHelper {
 	
+	public final static String CRLF = "\r\n";
 	public static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 	public static final String SOAP_ENCODING_HEADER = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>";
 	public static final String SOAP_ENCODING_FOOTER = "</s:Body> </s:Envelope>";
@@ -32,4 +33,7 @@ public class HTTPXMLHelper {
 	
 	public static final String DIDL_HEADER = "&lt;DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\"&gt;";
 	public static final String DIDL_FOOTER = "&lt;/DIDL-Lite&gt;";
+	
+	public static final String XBOX_1 = "<u:IsValidatedResponse xmlns:u=\"urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1\">" + CRLF + "<Result>1</Result>" + CRLF + "</u:IsValidatedResponse>";
+	public static final String XBOX_2 = "<u:IsAuthorizedResponse xmlns:u=\"urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1\">" + CRLF + "<Result>1</Result>" + CRLF + "</u:IsAuthorizedResponse>";
 }
