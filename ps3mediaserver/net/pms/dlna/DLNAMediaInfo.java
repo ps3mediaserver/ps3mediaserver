@@ -50,8 +50,8 @@ import net.pms.network.HTTPResource;
 
 public class DLNAMediaInfo {
 		
-	public static final long ENDFILE_POS = 9999475712L;
-	public static final long TRANS_SIZE = 10000000000L;
+	public static final long ENDFILE_POS = 99999475712L;
+	public static final long TRANS_SIZE = 100000000000L;
 	
 	public String duration;
 	//public long durationtime;
