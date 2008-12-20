@@ -21,9 +21,11 @@ package net.pms.network;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.util.Enumeration;
 
 import net.pms.PMS;
 
@@ -68,8 +70,19 @@ public class UPNPHelper {
 		if (PMS.get().getHostname() != null && PMS.get().getHostname().length() > 0) {
 			PMS.debug("Searching network interface for " + PMS.get().getHostname());
 			NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.get().getHostname()));
-			if (ni != null)
+			if (ni != null) {
 				ssdpSocket.setNetworkInterface(ni);
+				// force IPv4 address
+				Enumeration<InetAddress> enm = ni.getInetAddresses();
+				while (enm.hasMoreElements()) {
+					InetAddress ia = enm.nextElement();
+					if (!(ia instanceof Inet6Address)) {
+						ssdpSocket.setInterface(ia);
+						break;
+					}
+				}
+				
+			}
 		} else if ( PMS.get().getServer().getNi() != null) {
 			PMS.debug("Setting multicast network interface: " +  PMS.get().getServer().getNi());
 			ssdpSocket.setNetworkInterface( PMS.get().getServer().getNi());
