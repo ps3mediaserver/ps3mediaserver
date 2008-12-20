@@ -337,6 +337,16 @@ public class PMS {
 		sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US); //$NON-NLS-1$
 	}
 	
+	private boolean xboxfound;
+	
+	public boolean isXboxfound() {
+		return xboxfound;
+	}
+
+	public void setXboxfound(boolean xboxfound) {
+		this.xboxfound = xboxfound;
+	}
+
 	private boolean ps3found;
 	public boolean isPs3found() {
 		return ps3found;

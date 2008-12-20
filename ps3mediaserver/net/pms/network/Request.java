@@ -206,7 +206,18 @@ public class Request extends HTTPResource {
 				inputStream.read(b);
 				String s = new String(b);
 				s = s.replace("uuid:1234567890TOTO", PMS.get().usn().substring(0, PMS.get().usn().length()-2));
-				s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "]");
+				if (PMS.get().isXboxfound()) {
+					PMS.debug("Doing DLNA changes for Xbox360");
+					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "] : 1");
+					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect BLAH</modelName>");
+					s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
+							"<serviceType>urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1</serviceType>" + CRLF +
+							"<serviceId>urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar</serviceId>" + CRLF +
+							"<SCPDURL>_urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar_scpd.xml</SCPDURL>" + CRLF +
+							"<controlURL>_urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar_control</controlURL>" + CRLF +
+							"<eventSubURL>_urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar_event</eventSubURL>" + CRLF + "</service>" + CRLF);
+				} else
+					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "]");
 				inputStream = new ByteArrayInputStream(s.getBytes());
 			}
 		} else if (method.equals("POST") && argument.contains("MS_MediaReceiverRegistrar_control")) {
