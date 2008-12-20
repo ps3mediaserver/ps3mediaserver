@@ -85,7 +85,7 @@ public class LooksFrame extends JFrame implements IFrame {
 		return reload;
 	}
 
-	protected static final Dimension PREFERRED_SIZE = new Dimension(960, 680);
+	protected static final Dimension PREFERRED_SIZE = new Dimension(1000, 680);
 
 
 	/**
