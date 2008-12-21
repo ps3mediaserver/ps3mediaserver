@@ -20,6 +20,7 @@ package net.pms.formats;
 
 import java.util.ArrayList;
 
+import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.encoders.MEncoderWebVideo;
 import net.pms.encoders.MPlayerWebAudio;
@@ -60,7 +61,7 @@ public class WEB extends Format {
 
 	@Override
 	public String [] getId() {
-		return new String[] { "http", "mms", "rtsp", "rtp" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		return new String[] { "http", "mms", "rtsp", "rtp", "udp" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	}
 
 	@Override
