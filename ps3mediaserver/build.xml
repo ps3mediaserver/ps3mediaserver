@@ -8,76 +8,76 @@
      shagrath                                                                
      ====================================================================== -->
 <project name="PMS" default="PMS">
-    <description>
-            description
-    </description>
+    
+	<property name="pms.jar" value="pms.jar" />
 
+	<taskdef name="nsis" classname="net.sf.nsisant.Task" classpath="lib/nsisant-1.2.jar" />
+
+	<path id="lib.path.ref">
+		<fileset id="libs.ref" dir="lib" includes="*.jar"/>
+	</path>
+	
+	<target name="clean">
+		<delete dir="dist" quiet="true" />
+		<delete dir="classes" quiet="true" />
+		<delete file="${pms.jar}" />
+	</target>
+	
     <!-- ================================= 
           target: PMS              
          ================================= -->
-    <target name="PMS" depends="depends" description="description">
-        <jar basedir="." destfile="lib/pms.jar" includes="net/**,resources/**,proxycache/**" excludes="**/*.java" manifest="META-INF/MANIFEST.MF"/>
-    	<mkdir dir="dist"/>
-    	<zip basedir="." destfile="dist/pms-win32-${version}.zip" excludes="lib/wholepms.jar,debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*" includes="README,FAQ,PMS.exe,PMS.sh,PMS.conf,WEB.conf,lib/**,win32/**"/>
-    	<zip basedir="." destfile="dist/pms-linux-${version}.zip" excludes="lib/wholepms.jar,debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*" includes="README,FAQ,PMS.sh,PMS.conf,WEB.conf,lib/**,linux/**"/>
-    	<zip basedir="." destfile="dist/pms-osx-${version}.zip" excludes="lib/wholepms.jar,debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*,osx/PMS.sh,osx/untested/**" includes="OSX_README.txt,README,FAQ,PMS.conf,WEB.conf,lib/**,osx/**">
-    		<zipfileset dir="osx" includes="PMS.sh" fullpath="PMS.sh"/> 
-    	</zip>
-    	<!--
-    	<delete file="lib/wholepms.jar"/>
-    	<jar destfile="lib/wholepms.jar">
-    		<zipfileset src="lib/pms.jar" excludes="net/pms/gui/SwingFram*.*"/>
-    		<zipfileset src="lib/nanoxml-2.2.3.jar"/>
-    		<zipfileset src="lib/jid3lib-0.5.4.jar"/>
-    		<zipfileset src="lib/java-unrar-0.2.jar"/>
-    		<zipfileset src="lib/commons-logging-api-1.0.4.jar"/>
-    	</jar>
-    	
-    	<copy file="PMS.conf" todir="WinPMS"/>
-    	<copy file="WEB.conf" todir="WinPMS"/>
-    	<copy file="README" todir="WinPMS"/>
-    	<mkdir dir="WinPMS/win32"/>
-    	<copy todir="WinPMS/win32">
-    		<fileset dir="win32"/>
-    	</copy>
-    	
-    	<exec executable="${gcj}">
-    		<arg value="-s"/>
-    		<arg value="-fjni"/> 
-    		<arg value="-main=net.pms.PMS"/>
-    		<arg value="-classpath"/>
-    		<arg value="${swtjar}"/>
-    		<arg value="lib\wholepms.jar"/>
-    		<arg value="-L${swtdlldir}"/>
-    		<arg value="-Wl,-whole-archive"/>
-    		<arg value="-lswtimgloader"/>
-    		<arg value="-Wl,-no-whole-archive"/>
-    		<arg value="-lswt"/>
-    		<arg value="-mwindows"/>
-    		<arg value="-o"/>
-    		<arg value="WinPMS\pms.exe"/>
-    	</exec>
-    	
-    	<exec executable="${7z}" dir=".">
-    		<arg value="a"/>
-    		<arg value="-t7z"/>
-    		<arg value="-r"/>
-    		<arg value="WinPMS"/>
-    		<arg value="winpms-${version}.7z"/>
-    	</exec>
-    	    	-->
+    <target name="PMS" depends="depends, clean" description="description">
+		<mkdir dir="classes" />
+		<javac srcdir="." destdir="classes" target="1.5" classpathref="lib.path.ref" debug="on" debuglevel="lines,vars,source" />
+
+		<manifestclasspath property="jar.classpath" jarfile="${pms.jar}">
+			<classpath refid="lib.path.ref" />
+		</manifestclasspath>
+
+	    <jar basedir="classes" destfile="${pms.jar}" compress="off">	
+			<manifest>
+				<attribute name="Main-Class" value="net.pms.PMS" />
+			</manifest>
+			<zipfileset src="lib/commons-codec-1.3.jar" />
+			<zipfileset src="lib/commons-httpclient-3.1.jar" />
+			<zipfileset src="lib/commons-io-1.4.jar" />
+			<zipfileset src="lib/commons-logging-api-1.0.4.jar" />
+			<zipfileset src="lib/entagged-cvs.jar" />
+			<zipfileset src="lib/forms-1.2.1.jar" />
+			<zipfileset src="lib/hamcrest-all-1.2RC2.jar" />
+			<zipfileset src="lib/java-unrar-0.2.jar" />
+			<zipfileset src="lib/jna.jar" />
+			<zipfileset src="lib/looks-2.2.1.jar" />
+			<zipfileset src="lib/nanoxml-2.2.3.jar" />
+			<fileset dir="net" includes="**/*.class" excludes="**/*.java" />
+			<fileset dir="." includes="resources/**,net/pms/*.properties" />
+		</jar>
+		
+    	<mkdir dir="dist" />
+		<nsis script="nsis/setup.nsi" verbosity="1" path="${makensis.path}" nocd="yes">
+			<define name="VERSION" value="${version}" />
+		</nsis>
+		
+		<nsis script="nsis/pms.nsi" verbosity="1" path="${makensis.path}" nocd="yes">
+			<define name="VERSION" value="${version}" />
+		</nsis>
+		
+    	<zip basedir="." destfile="dist/pms-linux-${version}.zip" excludes="debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*" includes="LICENCE.txt,README,pms.jar,FAQ,PMS.sh,PMS.conf,WEB.conf,linux/**" />
+		
+    	<delete dir="classes" />
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - 
           target: depends                      
          - - - - - - - - - - - - - - - - - -->
     <target name="depends">
-    	<property name="version" value="1.01"/>
+    	<property name="version" value="1.01" />
     	<!--<property name="gcj" value="D:\\DEV\\thisiscool-gcc\\gcc-ecj\\bin\\gcj.exe"/>-->
-    	<property name="gcj" value="D:\\DEV\\gcc-122233-win\\bin\\gcj.exe"/>
-    	<property name="swtjar" value="D:\\DEV\\thisiscool-gcc\\swt\\win32\\3218\\swt.jar"/>
-    	<property name="swtdlldir" value="D:\\DEV\\thisiscool-gcc\\swt\\win32\\3218\\"/>
-    	<property name="7z" value="C:\\Program Files\\7-Zip\\7z.exe"/>
+    	<property name="gcj" value="D:\\DEV\\gcc-122233-win\\bin\\gcj.exe" />
+    	<property name="swtjar" value="D:\\DEV\\thisiscool-gcc\\swt\\win32\\3218\\swt.jar" />
+    	<property name="swtdlldir" value="D:\\DEV\\thisiscool-gcc\\swt\\win32\\3218\\" />
+    	<property name="7z" value="C:\\Program Files\\7-Zip\\7z.exe" />
+		<property name="makensis.path" value="c:\\program files\\nsis" />
     </target>
 
 </project>
