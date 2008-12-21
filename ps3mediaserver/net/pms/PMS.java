@@ -85,9 +85,12 @@ import net.pms.io.WinUtils;
 import net.pms.network.HTTPServer;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
+import net.pms.newgui.LooksFrame;
+import net.pms.update.AutoUpdater;
 
 public class PMS {
 	
+	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data";
 	public static final String VERSION = "1.01"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 	
@@ -512,7 +515,7 @@ public class PMS {
 	
 	IFrame frame;
 	
-	private void initGFX() {
+	/*private void initGFX() {
 		
 		//String frameClass = "net.pms.gui.SwingFrame";
 		//String frameClass = "net.pms.gui.SWTFrame";
@@ -525,7 +528,7 @@ public class PMS {
 			PMS.error(null, e);
 		}
 	
-	}
+	}*/
 	/*
 	private String audioengines;
 		
@@ -1087,10 +1090,12 @@ public class PMS {
 		
 		loadConf();
 		
+		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, PMS.VERSION);
 		
-		if (System.getProperty("console") == null) //$NON-NLS-1$
-			initGFX();
-		else
+		if (System.getProperty("console") == null) {//$NON-NLS-1$
+			frame = new LooksFrame(autoUpdater);
+			autoUpdater.pollServer();
+		} else
 			frame = new DummyFrame();
 		
 		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-256.png"); //$NON-NLS-1$ //$NON-NLS-2$

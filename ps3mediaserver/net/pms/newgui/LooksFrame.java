@@ -18,6 +18,9 @@
  */
 package net.pms.newgui;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -31,6 +34,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
@@ -55,14 +60,17 @@ import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.gui.IFrame;
 import net.pms.io.WindowsNamedPipe;
+import net.pms.newgui.update.AutoUpdateDialog;
+import net.pms.update.AutoUpdater;
 
 import com.jgoodies.looks.BorderStyle;
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.windows.WindowsLookAndFeel;
 
-public class LooksFrame extends JFrame implements IFrame {
+public class LooksFrame extends JFrame implements IFrame, Observer {
 	
+	private final AutoUpdater autoUpdater;
 	/**
 	 * 
 	 */
@@ -92,8 +100,11 @@ public class LooksFrame extends JFrame implements IFrame {
      * Constructs a <code>DemoFrame</code>, configures the UI,
      * and builds the content.
      */
-    public LooksFrame() {
-       
+    public LooksFrame(AutoUpdater autoUpdater) {
+    	this.autoUpdater = autoUpdater;
+    	assertThat(this.autoUpdater, notNullValue());
+    	autoUpdater.addObserver(this);
+    	update(autoUpdater, null);
     	Options.setDefaultIconSize(new Dimension(18, 18));
 
         Options.setUseNarrowButtons(true);
@@ -190,7 +201,7 @@ public class LooksFrame extends JFrame implements IFrame {
     }
 	
 	public static void main(String[] args) {
-        LooksFrame instance = new LooksFrame();
+        LooksFrame instance = new LooksFrame(null);
         instance.setSize(PREFERRED_SIZE);
         instance.setResizable(false);
         Dimension paneSize = instance.getSize();
@@ -329,5 +340,11 @@ public class LooksFrame extends JFrame implements IFrame {
 	@Override
 	public void addEngines() {
 		tr.addEngines();
+	}
+	
+	public void update(Observable o, Object arg) {
+		if (o == autoUpdater) {
+			AutoUpdateDialog.showIfNecessary(this, autoUpdater);
+		}
 	}
 }

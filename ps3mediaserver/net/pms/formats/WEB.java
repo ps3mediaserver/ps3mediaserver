@@ -20,7 +20,6 @@ package net.pms.formats;
 
 import java.util.ArrayList;
 
-import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.encoders.MEncoderWebVideo;
 import net.pms.encoders.MPlayerWebAudio;
