@@ -66,7 +66,7 @@ public class HTTPServer implements Runnable {
 		while (enm.hasMoreElements()) {
 			ni = enm.nextElement();
 			PMS.info("Scanning network interface " + ni.getDisplayName());
-			if (!ni.isLoopback() && !ni.getDisplayName().toLowerCase().contains("vmware")) {
+			if (!ni.isLoopback() && ni.getDisplayName() != null && !ni.getDisplayName().toLowerCase().contains("vmware")) {
 				Enumeration<InetAddress> addrs = ni.getInetAddresses();
 				while (addrs.hasMoreElements()) {
 					ia = addrs.nextElement();
