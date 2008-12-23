@@ -2,6 +2,14 @@
 Changelog:
 ==========
 
+v1.02
+
+- New features
+
+- Fixes
+
+Regression since 0.98, server would not start on some machines
+
 v1.01:
 
 - New features
