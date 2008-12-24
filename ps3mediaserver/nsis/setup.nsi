@@ -53,12 +53,12 @@ SectionEnd
  
 Section "Start Menu Shortcuts"
   SetShellVarContext all
-  CreateShortCut "$SMPROGRAMS\${Name}.lnk" "$INSTDIR\PMS.exe" "" "$INSTDIR\PMS.exe" 0
+  CreateShortCut "$SMPROGRAMS\PS3 Media Server.lnk" "$INSTDIR\PMS.exe" "" "$INSTDIR\PMS.exe" 0
 SectionEnd
  
 Section "Desktop shortcut"
   SetShellVarContext all
-  CreateShortCut "$DESKTOP\${Name}.lnk" "$INSTDIR\pms.exe"
+  CreateShortCut "$DESKTOP\PS3 Media Server.lnk" "$INSTDIR\pms.exe"
 SectionEnd
 
 Section "Uninstall"
@@ -67,8 +67,8 @@ Section "Uninstall"
   Delete /REBOOTOK "$INSTDIR\Uninst.exe"
   RMDir /R /REBOOTOK "$INSTDIR"
  
-  Delete /REBOOTOK "$DESKTOP\${Name}.lnk"
-  Delete /REBOOTOK "$SMPROGRAMS\${Name}.lnk"
+  Delete /REBOOTOK "$DESKTOP\PS3 Media Server.lnk"
+  Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server.lnk"
  
   DeleteRegKey HKEY_LOCAL_MACHINE $REG_KEY_UNINSTALL
   DeleteRegKey HKCU $REG_KEY_SOFTWARE

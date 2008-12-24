@@ -30,10 +30,6 @@
 		<mkdir dir="classes" />
 		<javac srcdir="." destdir="classes" target="1.5" classpathref="lib.path.ref" debug="on" debuglevel="lines,vars,source" />
 
-		<manifestclasspath property="jar.classpath" jarfile="${pms.jar}">
-			<classpath refid="lib.path.ref" />
-		</manifestclasspath>
-
 	    <jar basedir="classes" destfile="${pms.jar}" compress="off">	
 			<manifest>
 				<attribute name="Main-Class" value="net.pms.PMS" />
@@ -53,12 +49,12 @@
 			<fileset dir="." includes="resources/**,net/pms/*.properties" />
 		</jar>
 		
-    	<mkdir dir="dist" />
-		<nsis script="nsis/setup.nsi" verbosity="1" path="${makensis.path}" nocd="yes">
+		<nsis script="nsis/pms.nsi" verbosity="1" path="${makensis.path}" nocd="yes">
 			<define name="VERSION" value="${version}" />
 		</nsis>
 		
-		<nsis script="nsis/pms.nsi" verbosity="1" path="${makensis.path}" nocd="yes">
+    	<mkdir dir="dist" />
+		<nsis script="nsis/setup.nsi" verbosity="1" path="${makensis.path}" nocd="yes">
 			<define name="VERSION" value="${version}" />
 		</nsis>
 		
@@ -77,7 +73,7 @@
     	<property name="swtjar" value="D:\\DEV\\thisiscool-gcc\\swt\\win32\\3218\\swt.jar" />
     	<property name="swtdlldir" value="D:\\DEV\\thisiscool-gcc\\swt\\win32\\3218\\" />
     	<property name="7z" value="C:\\Program Files\\7-Zip\\7z.exe" />
-		<property name="makensis.path" value="c:\\program files\\nsis" />
+		<property name="makensis.path" value="third-party\\nsis" />
     </target>
 
 </project>
