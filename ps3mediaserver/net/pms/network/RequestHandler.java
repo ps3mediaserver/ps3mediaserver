@@ -112,7 +112,7 @@ public class RequestHandler implements Runnable {
 			}
 			
 			
-			if (receivedContentLength > -1) {
+			if (receivedContentLength > 0) {
 				
 				char buf [] = new char [receivedContentLength-1];
 				br.read(buf);
