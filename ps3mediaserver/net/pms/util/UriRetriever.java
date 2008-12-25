@@ -11,6 +11,11 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 
+/**
+ * Downloads URLs
+ * 
+ * @author Tim Cox (mail@tcox.org)
+ */
 public class UriRetriever {
 
 	private static final String HTTP_HEADER_CONTENT_LENGTH = "Content-Length";

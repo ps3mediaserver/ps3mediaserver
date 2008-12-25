@@ -15,6 +15,11 @@ import org.apache.commons.io.IOUtils;
 import net.pms.util.UriRetriever;
 import net.pms.util.UriRetrieverCallback;
 
+/**
+ * Checks for and downloads new versions of PMS.
+ * 
+ * @author Tim Cox (mail@tcox.org)
+ */
 public class AutoUpdater extends Observable implements UriRetrieverCallback {
 
 	private static final String TARGET_FILENAME = "new-version.exe";
