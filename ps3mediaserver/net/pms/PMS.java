@@ -666,6 +666,16 @@ public class PMS {
 		return mkfifoPath;
 	}
 	
+	private String eac3toPath;
+	
+	public String getEac3toPath() {
+		return eac3toPath;
+	}
+
+	public void setEac3toPath(String eac3toPath) {
+		this.eac3toPath = eac3toPath;
+	}
+
 	private String tsmuxerPath;
 	
 	public String getTsmuxerPath() {
@@ -693,9 +703,9 @@ public class PMS {
 		return audiobitrate;
 	}
 
-	private boolean windows;
+	
 	public boolean isWindows() {
-		return windows;
+		return Platform.isWindows();
 	}
 	
 	boolean thumbnails;
@@ -980,6 +990,8 @@ public class PMS {
 					mplayerPath = value.trim();
 				} else if (key.equals("tsmuxer_path") && value.length() > 0) { //$NON-NLS-1$
 					tsmuxerPath = value.trim();
+				} else if (key.equals("eac3to_path") && value.length() > 0) { //$NON-NLS-1$
+					eac3toPath = value.trim();
 				} else if (key.equals("encoding") && value.length() > 0) { //$NON-NLS-1$
 					System.setProperty("file.encoding", value.trim()); //$NON-NLS-1$
 				} 
@@ -1034,7 +1046,7 @@ public class PMS {
 	
 	private boolean init () throws Exception {
 		
-		windows = System.getProperty("os.name").toUpperCase().startsWith("WIN"); //$NON-NLS-1$ //$NON-NLS-2$
+		//windows = System.getProperty("os.name").toUpperCase().startsWith("WIN"); //$NON-NLS-1$ //$NON-NLS-2$
 		/*if (!windows) {
 			forceMPlayer = true;
 		} else {
@@ -1046,7 +1058,7 @@ public class PMS {
 				}
 			}
 		}*/
-		if (windows) {
+		if (isWindows()) {
 			ffmpegPath = "win32/ffmpeg.exe"; //$NON-NLS-1$
 			mplayerPath = "win32/mplayer.exe"; //$NON-NLS-1$
 			mkfifoPath = "win32/mkfifo.exe"; //$NON-NLS-1$
@@ -1054,6 +1066,7 @@ public class PMS {
 			mencoderPath = "win32/mencoder.exe"; //$NON-NLS-1$
 			tsmuxerPath = "win32/tsMuxeR.exe"; //$NON-NLS-1$
 			flacPath = "win32/flac.exe"; //$NON-NLS-1$
+			eac3toPath = "win32/eac3to/eac3to.exe";
 		} else {
 			if (Platform.isMac()) {
 				mkfifoPath = "mkfifo"; //$NON-NLS-1$
@@ -1063,6 +1076,7 @@ public class PMS {
 				mencoderPath = "osx/mencoder"; //$NON-NLS-1$
 				tsmuxerPath = null;
 				flacPath = null;
+				eac3toPath = null;
 			} else {
 				mkfifoPath = "mkfifo"; //$NON-NLS-1$
 				ffmpegPath = "ffmpeg"; //$NON-NLS-1$
@@ -1071,6 +1085,7 @@ public class PMS {
 				mencoderPath = "mencoder"; //$NON-NLS-1$
 				tsmuxerPath = "linux/tsMuxeR"; //$NON-NLS-1$
 				flacPath = "flac"; //$NON-NLS-1$
+				eac3toPath = "eac3to";
 			}
 		}
 		
@@ -1138,7 +1153,7 @@ public class PMS {
 			if (!checkProcessExistence("MEncoder", true, mencoderPath, "-oac", "help")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				mencoderPath = null;
 		//}
-		if (!checkProcessExistence("VLC", false, vlcPath, "-I", "dummy", windows?"--dummy-quiet":"-Z", "vlc://quit")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		if (!checkProcessExistence("VLC", false, vlcPath, "-I", "dummy", isWindows()?"--dummy-quiet":"-Z", "vlc://quit")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 			vlcPath = null;
 		}
 		/*if (!checkProcessExistence("mkfifo", true, mkfifoPath, windows?"":"--help")) {
@@ -1376,7 +1391,7 @@ public class PMS {
 	private void registerPlayer(Player p) {
 		allPlayers.add(p);
 		boolean ok = false;
-		if (windows) {
+		if (isWindows()) {
 			if (p.executable() == null) {
 				minimal("Executable of transcoder profile " + p + " not found!"); //$NON-NLS-1$ //$NON-NLS-2$
 				return;
