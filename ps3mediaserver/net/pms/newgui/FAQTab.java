@@ -88,7 +88,7 @@ public class FAQTab {
                 "pref, fill:default:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
       //  builder.setBorder(Borders.DLU14_BORDER);
-        builder.setOpaque(false);
+        builder.setOpaque(true);
 
         CellConstraints cc = new CellConstraints();
         

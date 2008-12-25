@@ -75,7 +75,7 @@ public class FoldTab {
                 "p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, fill:default:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.DLU4_BORDER);
-        builder.setOpaque(false);
+        builder.setOpaque(true);
 
         CellConstraints cc = new CellConstraints();
         

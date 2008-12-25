@@ -60,7 +60,7 @@ public class StatusTab {
 
 	        PanelBuilder builder = new PanelBuilder(layout);
 	        builder.setDefaultDialogBorder();
-	        builder.setOpaque(false);
+	        builder.setOpaque(true);
 	        CellConstraints cc = new CellConstraints();
 
 	        builder.addSeparator(Messages.getString("StatusTab.2"),  cc.xy(2, 1)); //$NON-NLS-1$

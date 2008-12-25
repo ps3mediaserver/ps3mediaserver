@@ -64,7 +64,7 @@ public class LinksTab {
 
 	        PanelBuilder builder = new PanelBuilder(layout);
 	        builder.setDefaultDialogBorder();
-	        builder.setOpaque(false);
+	        builder.setOpaque(true);
 	        CellConstraints cc = new CellConstraints();
 
 	       jl = new JLabel("PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$

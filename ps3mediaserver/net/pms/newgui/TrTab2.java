@@ -108,7 +108,7 @@ public class TrTab2 {
 		PanelBuilder builder = new PanelBuilder(mainlayout);
         builder.setBorder(Borders.DLU4_BORDER);
 		
-        builder.setOpaque(false);
+        builder.setOpaque(true);
 
         CellConstraints cc = new CellConstraints();
         builder.add(buildRightTabbedPane(), cc.xyw(4, 1, 3));
