@@ -35,7 +35,7 @@ if [ "x$JAVA" = "x" ]; then
 fi
 
 # Setup the classpath
-PMS_JAR="$PMS_HOME/lib/pms.jar"
+PMS_JAR="$PMS_HOME/pms.jar"
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
@@ -45,5 +45,5 @@ if $cygwin; then
 fi
 
 # Execute the JVM
-exec "$JAVA" $JAVA_OPTS -Xmx768M -Djava.encoding=UTF-8 -Djava.net.preferIPv4Stack=true -jar $PMS_JAR "$@"
+exec "$JAVA" $JAVA_OPTS -Xmx768M -Djava.encoding=UTF-8 -Djava.net.preferIPv4Stack=true -jar "$PMS_JAR" "$@"
 

@@ -49,19 +49,27 @@
 			<fileset dir="." includes="resources/**,net/pms/*.properties" />
 		</jar>
 		
+    	<mkdir dir="dist" />
+    	<zip basedir="." destfile="dist/pms-linux-${version}.zip" excludes="debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*" includes="LICENCE.txt,README,pms.jar,FAQ,PMS.sh,PMS.conf,WEB.conf,linux/**" />
+    	<delete dir="classes" />
+    	
+    	<condition property="isWindows">
+    	    <os family="windows"/>
+    	</condition>
+    	<antcall target="creatensis"/>
+    	
+    </target>
+	
+	<target name="creatensis" if="isWindows">
 		<nsis script="nsis/pms.nsi" verbosity="1" path="${makensis.path}" nocd="yes">
 			<define name="VERSION" value="${version}" />
 		</nsis>
 		
-    	<mkdir dir="dist" />
-		<nsis script="nsis/setup.nsi" verbosity="1" path="${makensis.path}" nocd="yes">
+    	<nsis script="nsis/setup.nsi" verbosity="1" path="${makensis.path}" nocd="yes">
 			<define name="VERSION" value="${version}" />
 		</nsis>
-		
-    	<zip basedir="." destfile="dist/pms-linux-${version}.zip" excludes="debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*" includes="LICENCE.txt,README,pms.jar,FAQ,PMS.sh,PMS.conf,WEB.conf,linux/**" />
-		
-    	<delete dir="classes" />
-    </target>
+				
+	</target>
 
     <!-- - - - - - - - - - - - - - - - - - 
           target: depends                      
