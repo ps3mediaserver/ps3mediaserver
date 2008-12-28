@@ -6,9 +6,13 @@ v1.02
 
 - New features
 
+Album art for audio files, better tags support
+
 - Fixes
 
+A/V out of sync issues on some medias
 Regression since 0.98, server would not start on some machines
+Small fixes
 
 v1.01:
 

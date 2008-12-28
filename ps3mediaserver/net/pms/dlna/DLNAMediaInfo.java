@@ -29,15 +29,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
 
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.AudioHeader;
+import org.jaudiotagger.tag.Tag;
 
 
-import entagged.audioformats.AudioFile;
-import entagged.audioformats.AudioFileIO;
-import entagged.audioformats.Tag;
 
 import net.pms.PMS;
 import net.pms.formats.Format;
@@ -210,27 +212,40 @@ public class DLNAMediaInfo {
 				ffmpeg_parsing = false;
 				try {
 					AudioFile af = AudioFileIO.read(f);
-					float length = af.getPreciseLength();
-					int rate = af.getSamplingRate();
-					if (af.getEncodingType().toLowerCase().contains("flac 24")) {
-						bitsperSample=24;
-						if (rate == 32000) {
-							rate = 3* rate;
-							length = length /3;
+					AudioHeader ah = af.getAudioHeader();
+					if (ah != null) {
+						int length = ah.getTrackLength();
+						int rate = ah.getSampleRateAsNumber();
+						if (ah.getEncodingType().toLowerCase().contains("flac 24")) {
+							bitsperSample=24;
+							/*if (rate == 32000) {
+								rate = 3* rate;
+								length = length /3;
+							}*/
+							secondaryFormatValid = true;
 						}
-						secondaryFormatValid = true;
+						sampleFrequency = "" + rate;
+						setDurationString(length);
+						bitrate = (int) ah.getBitRateAsNumber();
+						nrAudioChannels = 2;
+						if (ah.getChannels() != null && ah.getChannels().toLowerCase().contains("mono")) {
+							nrAudioChannels = 1;
+						} else if (ah.getChannels() != null && ah.getChannels().toLowerCase().contains("stereo")) {
+							nrAudioChannels = 2;
+						} else if (ah.getChannels() != null) {
+							nrAudioChannels = Integer.parseInt(ah.getChannels());
+						}
+						codecA = ah.getEncodingType().toLowerCase();
 					}
-					sampleFrequency = "" + rate;
-					setDurationString(length);
-					bitrate = af.getBitrate();
-					nrAudioChannels = af.getChannelNumber();
-					codecA = af.getEncodingType().toLowerCase();
 					Tag t = af.getTag();
 					if (t != null) {
 						album = t.getFirstAlbum();
 						artist = t.getFirstArtist();
 						songname = t.getFirstTitle();
 						String y = t.getFirstYear();
+						if (t.getArtworkList().size() > 0) {
+							thumb = t.getArtworkList().get(0).getBinaryData();
+						}
 						try {
 							if (y.length() > 4)
 								y = y.substring(0, 4);

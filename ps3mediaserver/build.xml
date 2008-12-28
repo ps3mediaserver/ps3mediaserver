@@ -38,7 +38,7 @@
 			<zipfileset src="lib/commons-httpclient-3.1.jar" />
 			<zipfileset src="lib/commons-io-1.4.jar" />
 			<zipfileset src="lib/commons-logging-api-1.0.4.jar" />
-			<zipfileset src="lib/entagged-cvs.jar" />
+			<zipfileset src="lib/jaudiotagger.jar" />
 			<zipfileset src="lib/forms-1.2.1.jar" />
 			<zipfileset src="lib/hamcrest-all-1.2RC2.jar" />
 			<zipfileset src="lib/java-unrar-0.2.jar" />

@@ -95,7 +95,7 @@ public class RealFile extends DLNAResource {
 					if (i == 0 && !(d instanceof VirtualFolder))
 						removedFiles.add(d);
 					boolean addcheck = d instanceof RealFile;
-					if (d.getName().equals(f.getName()) && (!addcheck || (addcheck && ((RealFile) d).file.lastModified() == f.lastModified()))) {
+					if (d.getName().equals(f.getName()) && (!addcheck || (addcheck && ((RealFile) d).lastmodified == f.lastModified()))) {
 						removedFiles.remove(d);
 						present = true;
 					}
@@ -129,10 +129,12 @@ public class RealFile extends DLNAResource {
 		return removedFiles.size() != 0 || addedFiles.size() != 0;
 	}
 
+	private long lastmodified;
 	private File file;
 	
 	public RealFile(File file) {
 		this.file = file;
+		lastmodified = file.lastModified();
 	}
 
 	public InputStream getInputStream() {
@@ -217,17 +219,16 @@ public class RealFile extends DLNAResource {
 
 	@Override
 	protected String getThumbnailURL() {
-		if (getType() == Format.IMAGE || getType() == Format.AUDIO) // no thumbnail support for now for real based disk images
+		if (getType() == Format.IMAGE) // no thumbnail support for now for real based disk images
 			return null;
 		StringBuffer sb = new StringBuffer();
 		sb.append(PMS.get().getServer().getURL());
 		sb.append("/");
 		if (media != null && media.thumb != null)
 			return super.getThumbnailURL();
-		/*else if (getType() == Format.AUDIO) {
-			sb.append("images/MicrophoneHot_256.png") ;
-			return sb.toString();
-		}*/
+		else if (getType() == Format.AUDIO) {
+			return null;
+		}
 		return super.getThumbnailURL();
 	}
 
