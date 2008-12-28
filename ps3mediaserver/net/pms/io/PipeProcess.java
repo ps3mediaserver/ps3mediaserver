@@ -54,7 +54,7 @@ public class PipeProcess {
 			linuxPipeName = getPipeName(pipeName);
 	}
 
-	private String getPipeName(String pipeName) {
+	private static String getPipeName(String pipeName) {
 		try {
 			return PMS.get().getTempFolder() + "/" + pipeName;
 		} catch (IOException e) {
