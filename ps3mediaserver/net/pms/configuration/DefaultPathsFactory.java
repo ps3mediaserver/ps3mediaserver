@@ -2,7 +2,7 @@ package net.pms.configuration;
 
 import com.sun.jna.Platform;
 
-public class DefaultPathsFactory {
+class DefaultPathsFactory {
 	public DefaultPaths get() {
 		if (Platform.isWindows()) {
 			return new WindowsDefaultPaths();

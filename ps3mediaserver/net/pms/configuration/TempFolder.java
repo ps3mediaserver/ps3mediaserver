@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
  * 
  * @author Tim Cox (mail@tcox.org)
  */
-public class TempFolder {
+class TempFolder {
 
 	private static final String DEFAULT_TEMP_FOLDER_NAME = "javaps3media";
 
