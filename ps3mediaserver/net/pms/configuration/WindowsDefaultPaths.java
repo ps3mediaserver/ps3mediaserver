@@ -1,6 +1,6 @@
 package net.pms.configuration;
 
-class WindowsDefaultPaths implements DefaultPaths {
+class WindowsDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getEac3toPath() {

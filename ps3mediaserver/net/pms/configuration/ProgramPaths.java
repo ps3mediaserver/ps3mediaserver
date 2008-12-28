@@ -1,6 +1,6 @@
 package net.pms.configuration;
 
-interface DefaultPaths {
+interface ProgramPaths {
 	String getFfmpegPath();
 	String getMplayerPath();
 	String getVlcPath();

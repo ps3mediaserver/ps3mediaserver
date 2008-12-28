@@ -3,7 +3,7 @@ package net.pms.configuration;
 import com.sun.jna.Platform;
 
 class DefaultPathsFactory {
-	public DefaultPaths get() {
+	public ProgramPaths get() {
 		if (Platform.isWindows()) {
 			return new WindowsDefaultPaths();
 		} else if (Platform.isMac()) {

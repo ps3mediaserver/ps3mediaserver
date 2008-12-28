@@ -1,6 +1,6 @@
 package net.pms.configuration;
 
-class LinuxDefaultPaths implements DefaultPaths {
+class LinuxDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getEac3toPath() {

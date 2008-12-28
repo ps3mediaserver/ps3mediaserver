@@ -1,6 +1,6 @@
 package net.pms.configuration;
 
-class MacDefaultPaths implements DefaultPaths {
+class MacDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getEac3toPath() {

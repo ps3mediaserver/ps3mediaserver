@@ -23,7 +23,7 @@ public class PmsConfiguration {
 	private final PropertiesConfiguration configuration;
 	private final TempFolder tempFolder;
 	private final WindowsRegistry windowsRegistry;
-	private final DefaultPaths defaultPaths;
+	private final ProgramPaths defaultPaths;
 	
 	private boolean disableVlc = false;
 	private boolean disableMencoder = false;
