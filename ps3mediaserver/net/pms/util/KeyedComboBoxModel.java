@@ -42,11 +42,10 @@
 package net.pms.util;
 
 import java.util.ArrayList;
+
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-
-import net.pms.Messages;
 
 /**
  * The KeyedComboBox model allows to define an internal key (the data element)
@@ -59,6 +58,7 @@ import net.pms.Messages;
  * elements.
  *
  * @author Thomas Morgner
+ * @author mail@tcox.org (Added generics)
  */
 public class KeyedComboBoxModel implements ComboBoxModel
 {
@@ -129,11 +129,11 @@ public class KeyedComboBoxModel implements ComboBoxModel
   /**
    * The data (contains ComboBoxItemPairs).
    */
-  private ArrayList data;
+  private ArrayList<ComboBoxItemPair> data;
   /**
    * The listeners.
    */
-  private ArrayList listdatalistener;
+  private ArrayList<ListDataListener> listdatalistener;
   /**
    * The cached listeners as array.
    */
@@ -145,8 +145,8 @@ public class KeyedComboBoxModel implements ComboBoxModel
    */
   public KeyedComboBoxModel()
   {
-    data = new ArrayList();
-    listdatalistener = new ArrayList();
+    data = new ArrayList<ComboBoxItemPair>();
+    listdatalistener = new ArrayList<ListDataListener>();
   }
 
   /**
