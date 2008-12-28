@@ -87,10 +87,11 @@ import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
 import net.pms.newgui.LooksFrame;
 import net.pms.update.AutoUpdater;
+import net.pms.util.ProcessUtil;
 
 public class PMS {
 	
-	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data";
+	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
 	public static final String VERSION = "1.01"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 	
@@ -950,7 +951,7 @@ public class PMS {
 					mencoder_ass = isTrue(value.trim());
 				} else if (key.equals("mencoder_disablesubs") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_disablesubs = isTrue(value.trim());
-				} else if (key.equals("turbo") && value.length() > 0) { //$NON-NLS-1$
+				} else if (key.equals("turbomode") && value.length() > 0) { //$NON-NLS-1$
 					turbomode = isTrue(value.trim());
 				} else if (key.equals("mencoder_usepcm") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_usepcm = /*PMS.get().isWindows() &&*/ isTrue(value.trim());
@@ -1066,13 +1067,13 @@ public class PMS {
 			mencoderPath = "win32/mencoder.exe"; //$NON-NLS-1$
 			tsmuxerPath = "win32/tsMuxeR.exe"; //$NON-NLS-1$
 			flacPath = "win32/flac.exe"; //$NON-NLS-1$
-			eac3toPath = "win32/eac3to/eac3to.exe";
+			eac3toPath = "win32/eac3to/eac3to.exe"; //$NON-NLS-1$
 		} else {
 			if (Platform.isMac()) {
 				mkfifoPath = "mkfifo"; //$NON-NLS-1$
 				ffmpegPath = "osx/ffmpeg"; //$NON-NLS-1$
 				mplayerPath = "osx/mplayer"; //$NON-NLS-1$
-				vlcPath = "vlc"; //$NON-NLS-1$
+				vlcPath = "osx/vlc"; //$NON-NLS-1$
 				mencoderPath = "osx/mencoder"; //$NON-NLS-1$
 				tsmuxerPath = null;
 				flacPath = null;
@@ -1085,7 +1086,7 @@ public class PMS {
 				mencoderPath = "mencoder"; //$NON-NLS-1$
 				tsmuxerPath = "linux/tsMuxeR"; //$NON-NLS-1$
 				flacPath = "flac"; //$NON-NLS-1$
-				eac3toPath = "eac3to";
+				eac3toPath = "eac3to"; //$NON-NLS-1$
 			}
 		}
 		
@@ -1218,7 +1219,7 @@ public class PMS {
 							p.exitValue();
 						} catch (IllegalThreadStateException ise) {
 							PMS.debug("Forcing shutdown of process " + p); //$NON-NLS-1$
-							p.destroy();
+							ProcessUtil.destroy(p);
 						}
 					}
 					PMS.get().getServer().stop();

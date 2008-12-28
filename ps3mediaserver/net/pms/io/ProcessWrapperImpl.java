@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import net.pms.PMS;
 import net.pms.encoders.AviDemuxerInputStream;
+import net.pms.util.ProcessUtil;
 
 public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	
@@ -150,7 +151,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 		PMS.info("Stopping process: " + this);
 		destroyed = true;
 		if (process != null) {
-			process.destroy();
+			ProcessUtil.destroy(process);
 		}
 		/*if (params != null && params.attachedPipeName != null) {
 			File pipe = new File(params.attachedPipeName);

@@ -32,6 +32,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperLiteImpl;
+import net.pms.util.ProcessUtil;
 
 
 public class AviDemuxerInputStream extends InputStream {
@@ -40,7 +41,7 @@ public class AviDemuxerInputStream extends InputStream {
 	public void close() throws IOException {
 		//closed = true;
 		if (process != null)
-			process.destroy();
+			ProcessUtil.destroy(process);
 		super.close();
 	}
 
