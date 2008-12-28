@@ -1,4 +1,4 @@
-package net.pms.util;
+package net.pms.configuration;
 
 import java.io.File;
 import java.io.IOException;
