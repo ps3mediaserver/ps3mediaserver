@@ -40,7 +40,7 @@ import org.apache.commons.lang.NotImplementedException;
 
 import com.sun.jna.Platform;
 
-import net.pms.configuration.Configuration;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.AudiosFeed;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.ImagesFeed;
@@ -100,7 +100,7 @@ public class PMS {
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
-	private static Configuration configuration;
+	private static PmsConfiguration configuration;
 	
 	private String language = ""; //$NON-NLS-1$
 	
@@ -1546,7 +1546,7 @@ public class PMS {
 		} catch (Throwable t) {
 			System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		configuration = new Configuration();
+		configuration = new PmsConfiguration();
 		PMS.get();
 		try {
 			// let's allow us time to show up serious errors in the GUI before quitting

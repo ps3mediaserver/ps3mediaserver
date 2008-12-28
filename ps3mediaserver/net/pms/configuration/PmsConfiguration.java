@@ -8,7 +8,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
 
-public class Configuration {
+public class PmsConfiguration {
 	private static final String CONFIGURATION_FILENAME = "PMS.conf";
 
 	private static final String KEY_TEMP_FOLDER_PATH = "temp";
@@ -30,7 +30,7 @@ public class Configuration {
 	private boolean disableFfmpeg = false;
 	private boolean disableMplayer = false;
 
-	public Configuration() throws ConfigurationException, IOException {
+	public PmsConfiguration() throws ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration(new File(CONFIGURATION_FILENAME));
 		tempFolder = new TempFolder(configuration.getString(KEY_TEMP_FOLDER_PATH));
 		windowsRegistry = new WindowsRegistry();
