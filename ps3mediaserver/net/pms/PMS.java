@@ -35,6 +35,8 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
+import org.apache.commons.configuration.ConfigurationException;
+
 import com.sun.jna.Platform;
 
 import net.pms.dlna.AudiosFeed;
@@ -94,6 +96,9 @@ public class PMS {
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
 	public static final String VERSION = "1.01"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
+
+	// TODO(tcox):  This shouldn't be static
+	private static Configuration configuration;
 	
 	private String language = ""; //$NON-NLS-1$
 	
@@ -398,7 +403,6 @@ public class PMS {
 	private String serverName;
 	private int maxMemoryBufferSize;
 	private int minMemoryBufferSize;
-	private File tempFolder;
 	private ArrayList<Format> extensions;
 	private ArrayList<Player> players;
 	private ArrayList<Player> allPlayers;
@@ -846,13 +850,7 @@ public class PMS {
 				String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
 				if (key.equals("temp")) { //$NON-NLS-1$
 					if (value !=  null) {
-						tempFolder = new File(value);
-						if (tempFolder.exists() && tempFolder.isDirectory()) {
-							debug("Setting temp folder to: " + tempFolder.getAbsolutePath()); //$NON-NLS-1$
-						} else {
-							minimal("Warning, folder " + tempFolder + " not valid"); //$NON-NLS-1$ //$NON-NLS-2$
-							tempFolder = null;
-						}
+						// do nothing - handled by Configuration.java now
 					}
 				} else if (key.equals("vlc_path") && value.length() > 0) { //$NON-NLS-1$
 					vlcPath = value.trim();
@@ -1123,6 +1121,7 @@ public class PMS {
 		minimal("Java " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		minimal("OS " + System.getProperty("os.name") + " " + System.getProperty("os.arch")  + " " + System.getProperty("os.version")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 		minimal("Encoding: " + System.getProperty("file.encoding")); //$NON-NLS-1$ //$NON-NLS-2$
+		minimal("Temp folder: " + getTempFolder());
 		
 		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 		
@@ -1601,7 +1600,7 @@ public class PMS {
 		return compatiblePlayers;
 	}
 	
-	public static void main(String args[]) throws IOException {
+	public static void main(String args[]) throws IOException, ConfigurationException {
 		if (args.length > 0 && args[0].equals("console")) //$NON-NLS-1$
 			System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		try {
@@ -1609,6 +1608,7 @@ public class PMS {
 		} catch (Throwable t) {
 			System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
+		configuration = new Configuration();
 		PMS.get();
 		try {
 			// let's allow us time to show up serious errors in the GUI before quitting
@@ -1635,18 +1635,6 @@ public class PMS {
 			}
 		}
 		return value;
-	}
-
-	public File getTempFolder() {
-		if (tempFolder == null) {
-			File tmp = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
-			File myTMP = new File(tmp, "javaps3media"); //$NON-NLS-1$
-			if (!myTMP.exists())
-				myTMP.mkdir();
-			
-			tempFolder = myTMP;
-		}
-		return tempFolder;
 	}
 
 	public int getMinMemoryBufferSize() {
@@ -1729,5 +1717,9 @@ public class PMS {
 			saveFile.println("alternativeffmpegpath=" + alternativeffmpegPath); //$NON-NLS-1$
 		saveFile.flush();
 		saveFile.close();
+	}
+
+	public File getTempFolder() throws IOException {
+		return configuration.getTempFolder();
 	}
 }

@@ -51,7 +51,16 @@ public class PipeProcess {
 		if (PMS.get().isWindows())
 			mk = new WindowsNamedPipe(pipeName, forcereconnect, in);
 		else
-			linuxPipeName = PMS.get().getTempFolder() + "/" + pipeName;
+			linuxPipeName = getPipeName(pipeName);
+	}
+
+	private String getPipeName(String pipeName) {
+		try {
+			return PMS.get().getTempFolder() + "/" + pipeName;
+		} catch (IOException e) {
+			PMS.error("Pipe may not be in temporary directory", e);
+			return pipeName;
+		}
 	}
 	
 	public String getInputPipe() {
