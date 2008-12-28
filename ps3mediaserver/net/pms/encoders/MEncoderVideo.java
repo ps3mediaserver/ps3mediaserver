@@ -135,7 +135,7 @@ private JTextField mencoder_ass_scale;
        
        intelligentsync = new JCheckBox(Messages.getString("MEncoderVideo.3")); //$NON-NLS-1$
        intelligentsync.setContentAreaFilled(false);
-       if (PMS.get().isMencoder_nooutofsync())
+       if (PMS.get().isMencoder_intelligent_sync())
     	   intelligentsync.setSelected(true);
        intelligentsync.addItemListener(new ItemListener() {
 
@@ -702,7 +702,7 @@ private JTextField mencoder_ass_scale;
 		}
 		//}
 		if (PMS.get().getMencoderMainSettings() != null) {
-			String encodeSettings = "-psprobe 10000 -lavcopts autoaspect=1:vcodec=mpeg2video:acodec=ac3:abitrate=" + PMS.get().getAudiobitrate() + ":threads=" + PMS.get().getNbcores() + ":" + PMS.get().getMencoderMainSettings(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			String encodeSettings = "-lavcopts autoaspect=1:vcodec=mpeg2video:acodec=ac3:abitrate=" + PMS.get().getAudiobitrate() + ":threads=" + PMS.get().getNbcores() + ":" + PMS.get().getMencoderMainSettings(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			String m = PMS.get().getMaximumbitrate();
 			int bufs = 0;
 			if (m.contains("(") && m.contains(")")) { //$NON-NLS-1$ //$NON-NLS-2$
@@ -754,7 +754,7 @@ private JTextField mencoder_ass_scale;
 				sb.append("-font " + PMS.get().getMencoder_font() + " "); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			if (PMS.get().isMencoder_ass()) {
-				sb.append("-ass-color ffffff00 -ass-font-scale " + PMS.get().getMencoder_ass_scale()); //$NON-NLS-1$
+				sb.append("-ass-color ffffff00 -ass-border-color 00000000 -ass-font-scale " + PMS.get().getMencoder_ass_scale()); //$NON-NLS-1$
 				sb.append(" -ass-force-style FontName=Arial,Outline=" + PMS.get().getMencoder_ass_outline() + ",Shadow=" + PMS.get().getMencoder_ass_shadow() + ",MarginV=" + PMS.get().getMencoder_ass_margin() + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			} else {
 				sb.append("-subfont-text-scale " + PMS.get().getMencoder_noass_scale()); //$NON-NLS-1$
@@ -870,9 +870,9 @@ private JTextField mencoder_ass_scale;
 				cmdArray[6+i] += ":preload=" + params.timeseek; //$NON-NLS-1$
 				params.timeseek = 0; 
 			}
-			/*if (arguments[i].contains("format=mpeg2") && media.aspect != null && media.getValidAspect(true) != null) {
-				cmdArray[6+i] += ":vaspect=" + media.getValidAspect(true);
-			}*/
+			if (arguments[i].contains("format=mpeg2") && media.aspect != null && media.getValidAspect(true) != null) { //$NON-NLS-1$
+				cmdArray[6+i] += ":vaspect=" + media.getValidAspect(true); //$NON-NLS-1$
+			}
 		}
 		
 		
@@ -890,7 +890,7 @@ private JTextField mencoder_ass_scale;
 				cmdArray[cmdArray.length-9] = "" + params.sid; //$NON-NLS-1$
 			} else {
 				int maxid = 1000;
-				if (media != null && media.maxsubid > 0)
+				if (media != null)
 					maxid = media.maxsubid+1;
 				cmdArray[cmdArray.length-9] = maxid + ""; //$NON-NLS-1$
 			}
@@ -899,9 +899,12 @@ private JTextField mencoder_ass_scale;
 				if (i < 2)
 					cmdArray[cmdArray.length-12+i] = defaultSubArgs[i];
 			}
-		} else {
-			/*cmdArray[cmdArray.length-10] = "-sid";
-			cmdArray[cmdArray.length-9] = "1000";*/
+		} else if (subString != null && media != null) {
+			cmdArray[cmdArray.length-10] = "-sid"; //$NON-NLS-1$
+			int maxid = 1000;
+			if (media != null)
+				maxid = media.maxsubid+1;
+			cmdArray[cmdArray.length-9] = ""+ maxid; //$NON-NLS-1$
 		}
 		if (params.aid == -1 && params.sid == -1) {
 			int as [] = media.getAudioSubLangIds();
