@@ -5,9 +5,9 @@ import java.io.File;
 import net.pms.PMS;
 import net.pms.io.WinUtils;
 
-public class WindowsRegistry {
+class WindowsRegistry {
 
-	public String getVlcPath() {
+	String getVlcPath() {
 		WinUtils registry = new WinUtils();
 		if (registry.getVlcp() != null) {
 			String vlc = registry.getVlcp();
