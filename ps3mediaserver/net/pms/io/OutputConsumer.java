@@ -31,6 +31,7 @@ public abstract class OutputConsumer extends Thread {
 		this.inputStream = inputStream;
 	}
 	
+	@Deprecated
 	public void destroy() {
 		try {
 			inputStream.close();
