@@ -2,11 +2,13 @@ package net.pms.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.lang.StringUtils;
 
 public class PmsConfiguration {
 
@@ -17,8 +19,11 @@ public class PmsConfiguration {
 	private static final String KEY_TSMUXER_PREREMIX_AC3 = "tsmuxer_preremix_ac3";
 	private static final String KEY_SERVER_PORT = "port";
 	private static final String KEY_SERVER_HOSTNAME = "hostname";
+	private static final String KEY_PROXY_SERVER_PORT = "proxy";
+	private static final String KEY_LANGUAGE = "language";
 
 	private static final int DEFAULT_SERVER_PORT = 5001;
+	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	
 	private static final String CONFIGURATION_FILENAME = "PMS.conf";
 
@@ -28,7 +33,7 @@ public class PmsConfiguration {
 
 	public PmsConfiguration() throws ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration(new File(CONFIGURATION_FILENAME));
-		tempFolder = new TempFolder(configuration.getString(KEY_TEMP_FOLDER_PATH));
+		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
 	}
 
@@ -129,13 +134,24 @@ public class PmsConfiguration {
 	}
 
 	public String getServerHostname() {
-		return configuration.getString(KEY_SERVER_HOSTNAME, null);
+		return getString(KEY_SERVER_HOSTNAME, null);
 	}
 
 	public void setHostname(String value) {
 		configuration.setProperty(KEY_SERVER_HOSTNAME, value);
 	}
+	
+	public int getProxyServerPort() {
+		return getInt(KEY_PROXY_SERVER_PORT, DEFAULT_PROXY_SERVER_PORT);
+	}
 
+
+	public String getLanguage() {
+		String def = Locale.getDefault().getLanguage();
+		String value = getString(KEY_LANGUAGE, def);
+		return StringUtils.isNotBlank(value) ? value.trim() : def;
+	}
+	
 	private int getInt(String key, int def) {
 		try {
 			return configuration.getInt(key, def);
@@ -143,4 +159,13 @@ public class PmsConfiguration {
 			return def;
 		}
 	}
+
+	private String getString(String key, String def) {
+		String value = configuration.getString(key, def);
+		if (value != null) {
+			value = value.trim();
+		}
+		return value;
+	}
+
 }

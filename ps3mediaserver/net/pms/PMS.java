@@ -796,6 +796,8 @@ public class PMS {
 	}
 	
 	private void loadConf() throws Exception {
+		Locale.setDefault(new Locale(configuration.getLanguage()));
+		
 		BufferedReader br = new BufferedReader(new FileReader(new File("PMS.conf"))); //$NON-NLS-1$
 		
 		//ArrayList<KeyValue> remaining = new ArrayList<KeyValue>();
@@ -808,12 +810,7 @@ public class PMS {
 				String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
 				String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
 				
-				if (key.equals("proxy") && value.length() > 0) { //$NON-NLS-1$
-					proxy = Integer.parseInt(value.trim());
-				} else if (key.equals("language") && value.length() > 0) { //$NON-NLS-1$
-					language = value.trim();
-					Locale.setDefault(new Locale(language));
-				} else if (key.equals("minvideobuffer") && value.length() > 0) { //$NON-NLS-1$
+				if (key.equals("minvideobuffer") && value.length() > 0) { //$NON-NLS-1$
 					minMemoryBufferSize = Integer.parseInt(value.trim());
 				} else if (key.equals("maxvideobuffer") && value.length() > 0) { //$NON-NLS-1$
 					maxMemoryBufferSize = Integer.parseInt(value.trim());
