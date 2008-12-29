@@ -52,12 +52,14 @@ public class PmsConfiguration {
 	
 	private static final String CONFIGURATION_FILENAME = "PMS.conf";
 
-	private final Configuration configuration;
+	private final PropertiesConfiguration configuration;
 	private final TempFolder tempFolder;
 	private final ProgramPathDisabler programPaths;
 
 	public PmsConfiguration() throws ConfigurationException, IOException {
-		configuration = new PropertiesConfiguration(new File(CONFIGURATION_FILENAME));
+		configuration = new PropertiesConfiguration();
+		configuration.setListDelimiter((char)0);
+		configuration.load(new File(CONFIGURATION_FILENAME));
 		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
 	}
