@@ -44,6 +44,11 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_FONT_CONFIG = "mencoder_fontconfig";
 	private static final String KEY_MENCODER_FORCE_FPS = "mencoder_forcefps";
 	private static final String KEY_MENCODER_DECODE = "mencoder_decode";	
+	private static final String KEY_MENCODER_YADIF = "mencoder_yadif";
+	private static final String KEY_MENCODER_SCALER = "mencoder_scaler";
+	private static final String KEY_MENCODER_SCALEX = "mencoder_scalex";
+	private static final String KEY_MENCODER_SCALEY = "mencoder_scaley";
+	private static final String KEY_OPEN_ARCHIVES = "enable_archive_browsing";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -403,5 +408,45 @@ public class PmsConfiguration {
 	public void setMencoderUsePcm(boolean value) {
 		configuration.setProperty(KEY_MENCODER_USE_PCM, value);
 	}
+	
+	public boolean isArchiveBrowsing() {
+		return getBoolean(KEY_OPEN_ARCHIVES, false);
+	}
+	
+	public void setArchiveBrowsing(boolean value) {
+		configuration.setProperty(KEY_OPEN_ARCHIVES, value);
+	}
+	
+	
+	public boolean isMencoderYadif() {
+		return getBoolean(KEY_MENCODER_YADIF, false);
+	}
+	
+	public void setMencoderYadif(boolean value) {
+		configuration.setProperty(KEY_MENCODER_YADIF, value);
+	}
+	
+	public boolean isMencoderScaler() {
+		return getBoolean(KEY_MENCODER_SCALER, false);
+	}
+	
+	public void setMencoderScaler(boolean value) {
+		configuration.setProperty(KEY_MENCODER_SCALER, value);
+	}
+	
+	public int getMencoderScaleX() {
+		return getInt(KEY_MENCODER_SCALEX, 0);
+	}
+	
+	public void setMencoderScaleX(int value) {
+		configuration.setProperty(KEY_MENCODER_SCALEX, value);
+	}
+	
+	public int getMencoderScaleY() {
+		return getInt(KEY_MENCODER_SCALEY, 0);
+	}
 
+	public void setMencoderScaleY(int value) {
+		configuration.setProperty(KEY_MENCODER_SCALEY, value);
+	}
 }
