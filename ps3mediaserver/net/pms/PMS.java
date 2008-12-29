@@ -707,7 +707,7 @@ public class PMS {
 		minimal("Java " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		minimal("OS " + System.getProperty("os.name") + " " + System.getProperty("os.arch")  + " " + System.getProperty("os.version")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 		minimal("Encoding: " + System.getProperty("file.encoding")); //$NON-NLS-1$ //$NON-NLS-2$
-		minimal("Temp folder: " + getTempFolder());
+		minimal("Temp folder: " + getTempFolder()); //$NON-NLS-1$
 		
 		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 				
@@ -740,7 +740,7 @@ public class PMS {
 		
 		
 		// disable jaudiotagger logging
-		LogManager.getLogManager().readConfiguration(new ByteArrayInputStream("org.jaudiotagger.level=OFF".getBytes()));
+		LogManager.getLogManager().readConfiguration(new ByteArrayInputStream("org.jaudiotagger.level=OFF".getBytes())); //$NON-NLS-1$
 		
 		// wrap System.err
 		System.setErr(new PrintStream(new SystemErrWrapper(), true));
@@ -881,7 +881,7 @@ public class PMS {
 		if (!PMS.get().isHidevideosettings()) {
 			VirtualFolder vf = new VirtualFolder("#- VIDEO SETTINGS -#", null); //$NON-NLS-1$
 			
-			vf.addChild(new VirtualVideoAction("A/V sync correction", mencoder_nooutofsync) {
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), mencoder_nooutofsync) { //$NON-NLS-1$
 				public boolean enable() {
 					mencoder_nooutofsync = !mencoder_nooutofsync;
 					
@@ -889,7 +889,7 @@ public class PMS {
 				}
 			});
 			
-			vf.addChild(new VirtualVideoAction("Deinterlace Filter", configuration.isMencoderYadif()) {
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.4"), configuration.isMencoderYadif()) { //$NON-NLS-1$
 				public boolean enable() {
 					configuration.setMencoderYadif(!configuration.isMencoderYadif());
 					
@@ -897,7 +897,7 @@ public class PMS {
 				}
 			});
 			
-			vf.addChild(new VirtualVideoAction("Auto load .srt/.sub subtitles", usesubs) {
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.6"), usesubs) { //$NON-NLS-1$
 				public boolean enable() {
 					usesubs = !usesubs;
 					
@@ -905,7 +905,7 @@ public class PMS {
 				}
 			});
 			
-			vf.addChild(new VirtualVideoAction("SkipLoopFilter for H264 Decoding [COULD DEGRADE QUALITY]", skiploopfilter) {
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.7"), skiploopfilter) { //$NON-NLS-1$
 				public boolean enable() {
 					skiploopfilter = !skiploopfilter;
 					

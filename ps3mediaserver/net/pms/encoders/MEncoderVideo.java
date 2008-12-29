@@ -174,7 +174,7 @@ private JTextField mencoder_ass_scale;
        
        builder.add(forcefps,          cc.xy(1,  7));
        
-       yadif = new JCheckBox("Deinterlace filter");
+       yadif = new JCheckBox(Messages.getString("MEncoderVideo.26")); //$NON-NLS-1$
        yadif.setContentAreaFilled(false);
        if (configuration.isMencoderYadif())
     	   yadif.setSelected(true);
@@ -188,7 +188,7 @@ private JTextField mencoder_ass_scale;
        
        builder.add(yadif,          cc.xyw(3,  7, 12));
        
-       scaler = new JCheckBox("Use Video Scaler");
+       scaler = new JCheckBox(Messages.getString("MEncoderVideo.27")); //$NON-NLS-1$
        scaler.setContentAreaFilled(false);
        scaler.addItemListener(new ItemListener() {
 
@@ -202,8 +202,8 @@ private JTextField mencoder_ass_scale;
        
        builder.add(scaler,          cc.xyw(1,  9, 2));
        
-       builder.addLabel("Width", cc.xyw(4, 9, 2, CellConstraints.RIGHT, CellConstraints.CENTER));
-       scaleX = new JTextField("" + configuration.getMencoderScaleX());
+       builder.addLabel(Messages.getString("MEncoderVideo.28"), cc.xyw(4, 9, 2, CellConstraints.RIGHT, CellConstraints.CENTER)); //$NON-NLS-1$
+       scaleX = new JTextField("" + configuration.getMencoderScaleX()); //$NON-NLS-1$
        scaleX.addKeyListener(new KeyListener() {
 
    		@Override
@@ -220,8 +220,8 @@ private JTextField mencoder_ass_scale;
           });
        builder.add(scaleX, cc.xyw(6, 9, 2));
        
-       builder.addLabel("Height", cc.xyw(8, 9, 2, CellConstraints.RIGHT, CellConstraints.CENTER));
-       scaleY = new JTextField("" + configuration.getMencoderScaleY());
+       builder.addLabel(Messages.getString("MEncoderVideo.30"), cc.xyw(8, 9, 2, CellConstraints.RIGHT, CellConstraints.CENTER)); //$NON-NLS-1$
+       scaleY = new JTextField("" + configuration.getMencoderScaleY()); //$NON-NLS-1$
        scaleY.addKeyListener(new KeyListener() {
 
    		@Override
@@ -1047,7 +1047,7 @@ private JTextField mencoder_ass_scale;
 		if (configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0)) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
 			cmdArray[cmdArray.length-4] = "-vf"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-3] = "scale=" + configuration.getMencoderScaleX() + ":" + configuration.getMencoderScaleY(); //$NON-NLS-1$
+			cmdArray[cmdArray.length-3] = "scale=" + configuration.getMencoderScaleX() + ":" + configuration.getMencoderScaleY(); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		if (PMS.get().isMencoder_nooutofsync()) {

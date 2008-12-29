@@ -216,7 +216,7 @@ public class NetworkTab {
        
        builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 11, 9)); //$NON-NLS-1$
        
-       archive = new JCheckBox("Browse .RAR/.ZIP/.CBR archives");
+       archive = new JCheckBox(Messages.getString("NetworkTab.1")); //$NON-NLS-1$
        archive.setContentAreaFilled(false);
        archive.addItemListener(new ItemListener() {
 
