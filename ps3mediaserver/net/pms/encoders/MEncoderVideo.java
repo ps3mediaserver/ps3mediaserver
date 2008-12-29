@@ -47,6 +47,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
@@ -58,10 +59,11 @@ import net.pms.newgui.LooksFrame;
 import net.pms.newgui.MyComboBoxModel;
 
 public class MEncoderVideo extends Player {
-	
+
 	public JCheckBox getCheckBox() {
 		return checkBox;
 	}
+	
 private JTextField mencoder_ass_scale;
 	private JTextField mencoder_ass_margin;
 	private JTextField mencoder_ass_outline;
@@ -91,6 +93,12 @@ private JTextField mencoder_ass_scale;
 	}
 	
 	private JCheckBox fribidi;
+	
+	private final PmsConfiguration configuration;
+	
+	public MEncoderVideo(PmsConfiguration configuration) {
+		this.configuration = configuration;
+	}
 	
 	@Override
 	public JComponent config() {
@@ -345,7 +353,7 @@ private JTextField mencoder_ass_scale;
  	  builder.add(fontselect,          cc.xyw(11,  23, 2));
        
        builder.addLabel(Messages.getString("MEncoderVideo.12"), cc.xy(1, 27)); //$NON-NLS-1$
-       mencoder_ass_scale = new JTextField(PMS.get().getMencoder_ass_scale());
+       mencoder_ass_scale = new JTextField(configuration.getMencoderAssScale());
        mencoder_ass_scale.addKeyListener(new KeyListener() {
 
    		@Override
@@ -354,13 +362,13 @@ private JTextField mencoder_ass_scale;
    		public void keyTyped(KeyEvent e) {}
    		@Override
    		public void keyReleased(KeyEvent e) {
-   			PMS.get().setMencoder_ass_scale(mencoder_ass_scale.getText());
+   			configuration.setMencoderAssScale(mencoder_ass_scale.getText());
    		}
        	   
           });
        
        builder.addLabel(Messages.getString("MEncoderVideo.13"), cc.xy(5, 27)); //$NON-NLS-1$
-       mencoder_ass_outline = new JTextField(PMS.get().getMencoder_ass_outline());
+       mencoder_ass_outline = new JTextField(configuration.getMencoderAssOutline());
        mencoder_ass_outline.addKeyListener(new KeyListener() {
 
    		@Override
@@ -369,13 +377,13 @@ private JTextField mencoder_ass_scale;
    		public void keyTyped(KeyEvent e) {}
    		@Override
    		public void keyReleased(KeyEvent e) {
-   			PMS.get().setMencoder_ass_outline(mencoder_ass_outline.getText());
+   			configuration.setMencoderAssOutline(mencoder_ass_outline.getText());
    		}
        	   
           });
        
        builder.addLabel(Messages.getString("MEncoderVideo.14"), cc.xy(9, 27)); //$NON-NLS-1$
-       mencoder_ass_shadow = new JTextField(PMS.get().getMencoder_ass_shadow());
+       mencoder_ass_shadow = new JTextField(configuration.getMencoderAssShadow());
        mencoder_ass_shadow.addKeyListener(new KeyListener() {
 
    		@Override
@@ -384,13 +392,13 @@ private JTextField mencoder_ass_scale;
    		public void keyTyped(KeyEvent e) {}
    		@Override
    		public void keyReleased(KeyEvent e) {
-   			PMS.get().setMencoder_ass_shadow(mencoder_ass_shadow.getText());
+   			configuration.setMencoderAssShadow(mencoder_ass_shadow.getText());
    		}
        	   
           });
        
        builder.addLabel(Messages.getString("MEncoderVideo.15"), cc.xy(13, 27)); //$NON-NLS-1$
-       mencoder_ass_margin = new JTextField(PMS.get().getMencoder_ass_margin());
+       mencoder_ass_margin = new JTextField(configuration.getMencoderAssMargin());
        mencoder_ass_margin.addKeyListener(new KeyListener() {
 
    		@Override
@@ -399,7 +407,7 @@ private JTextField mencoder_ass_scale;
    		public void keyTyped(KeyEvent e) {}
    		@Override
    		public void keyReleased(KeyEvent e) {
-   			PMS.get().setMencoder_ass_margin(mencoder_ass_margin.getText());
+   			configuration.setMencoderAssMargin(mencoder_ass_margin.getText());
    		}
        	   
           });
@@ -413,7 +421,7 @@ private JTextField mencoder_ass_scale;
        
        
        builder.addLabel(Messages.getString("MEncoderVideo.16"), cc.xy(1, 29)); //$NON-NLS-1$
-       mencoder_noass_scale = new JTextField(PMS.get().getMencoder_noass_scale());
+       mencoder_noass_scale = new JTextField(configuration.getMencoderNoAssScale());
        mencoder_noass_scale.addKeyListener(new KeyListener() {
 
    		@Override
@@ -422,13 +430,13 @@ private JTextField mencoder_ass_scale;
    		public void keyTyped(KeyEvent e) {}
    		@Override
    		public void keyReleased(KeyEvent e) {
-   			PMS.get().setMencoder_noass_scale(mencoder_noass_scale.getText());
+   			configuration.setMencoderNoAssScale(mencoder_noass_scale.getText());
    		}
        	   
           });
        
        builder.addLabel(Messages.getString("MEncoderVideo.17"), cc.xy(5, 29)); //$NON-NLS-1$
-       mencoder_noass_outline = new JTextField(PMS.get().getMencoder_noass_outline());
+       mencoder_noass_outline = new JTextField(configuration.getMencoderNoAssOutline());
        mencoder_noass_outline.addKeyListener(new KeyListener() {
 
    		@Override
@@ -437,13 +445,13 @@ private JTextField mencoder_ass_scale;
    		public void keyTyped(KeyEvent e) {}
    		@Override
    		public void keyReleased(KeyEvent e) {
-   			PMS.get().setMencoder_noass_outline(mencoder_noass_outline.getText());
+   			configuration.setMencoderNoAssOutline(mencoder_noass_outline.getText());
    		}
        	   
           });
        
        builder.addLabel(Messages.getString("MEncoderVideo.18"), cc.xy(9, 29)); //$NON-NLS-1$
-       mencoder_noass_blur = new JTextField(PMS.get().getMencoder_noass_blur());
+       mencoder_noass_blur = new JTextField(configuration.getMencoderNoAssBlur());
        mencoder_noass_blur.addKeyListener(new KeyListener() {
 
    		@Override
@@ -452,13 +460,13 @@ private JTextField mencoder_ass_scale;
    		public void keyTyped(KeyEvent e) {}
    		@Override
    		public void keyReleased(KeyEvent e) {
-   			PMS.get().setMencoder_noass_blur(mencoder_noass_blur.getText());
+   			configuration.setMencoderNoAssBlur(mencoder_noass_blur.getText());
    		}
        	   
           });
        
        builder.addLabel(Messages.getString("MEncoderVideo.19"), cc.xy(13, 29)); //$NON-NLS-1$
-       mencoder_noass_subpos = new JTextField(PMS.get().getMencoder_noass_subpos());
+       mencoder_noass_subpos = new JTextField(configuration.getMencoderNoAssSubPos());
        mencoder_noass_subpos.addKeyListener(new KeyListener() {
 
    		@Override
@@ -467,7 +475,7 @@ private JTextField mencoder_ass_scale;
    		public void keyTyped(KeyEvent e) {}
    		@Override
    		public void keyReleased(KeyEvent e) {
-   			PMS.get().setMencoder_noass_subpos(mencoder_noass_subpos.getText());
+   			configuration.setMencoderNoAssSubPos(mencoder_noass_subpos.getText());
    		}
        	   
           });
@@ -754,15 +762,15 @@ private JTextField mencoder_ass_scale;
 				sb.append("-font " + PMS.get().getMencoder_font() + " "); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			if (PMS.get().isMencoder_ass()) {
-				sb.append("-ass-color ffffff00 -ass-border-color 00000000 -ass-font-scale " + PMS.get().getMencoder_ass_scale()); //$NON-NLS-1$
-				sb.append(" -ass-force-style FontName=Arial,Outline=" + PMS.get().getMencoder_ass_outline() + ",Shadow=" + PMS.get().getMencoder_ass_shadow() + ",MarginV=" + PMS.get().getMencoder_ass_margin() + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				sb.append("-ass-color ffffff00 -ass-border-color 00000000 -ass-font-scale " + configuration.getMencoderAssScale()); //$NON-NLS-1$
+				sb.append(" -ass-force-style FontName=Arial,Outline=" + configuration.getMencoderAssOutline() + ",Shadow=" + configuration.getMencoderAssShadow() + ",MarginV=" + configuration.getMencoderAssMargin() + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			} else {
-				sb.append("-subfont-text-scale " + PMS.get().getMencoder_noass_scale()); //$NON-NLS-1$
-				sb.append(" -subfont-outline " + PMS.get().getMencoder_noass_outline()); //$NON-NLS-1$
-				sb.append(" -subfont-blur " + PMS.get().getMencoder_noass_blur()); //$NON-NLS-1$
+				sb.append("-subfont-text-scale " + configuration.getMencoderNoAssScale()); //$NON-NLS-1$
+				sb.append(" -subfont-outline " + configuration.getMencoderNoAssOutline()); //$NON-NLS-1$
+				sb.append(" -subfont-blur " + configuration.getMencoderNoAssBlur()); //$NON-NLS-1$
 				int subpos = 1;
 				try {
-					subpos = Integer.parseInt(PMS.get().getMencoder_noass_subpos());
+					subpos = Integer.parseInt(configuration.getMencoderNoAssSubPos());
 				} catch (NumberFormatException n) {}
 				sb.append(" -subpos " + (100-subpos)); //$NON-NLS-1$
 			}

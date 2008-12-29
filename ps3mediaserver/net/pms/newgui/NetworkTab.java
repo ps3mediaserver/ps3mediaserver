@@ -99,7 +99,7 @@ public class NetworkTab {
         if (PMS.get().isMinimized())
         	smcheckBox.setSelected(true);
         
-        maxbuffer = new JTextField("" + PMS.get().getMaxMemoryBufferSize()); //$NON-NLS-1$
+        maxbuffer = new JTextField("" + configuration.getMaxMemoryBufferSize()); //$NON-NLS-1$
         maxbuffer.addKeyListener(new KeyListener() {
 
     		@Override
@@ -110,9 +110,7 @@ public class NetworkTab {
     		public void keyReleased(KeyEvent e) {
     			try {
     				int ab = Integer.parseInt(maxbuffer.getText());
-    				if (ab > 630)
-    					ab = 630;
-    				PMS.get().setMaxMemoryBufferSize(ab);
+    				configuration.setMaxMemoryBufferSize(ab);
     			} catch (NumberFormatException nfe) {
     			}
     			

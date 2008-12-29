@@ -22,9 +22,20 @@ public class PmsConfiguration {
 	private static final String KEY_PROXY_SERVER_PORT = "proxy";
 	private static final String KEY_LANGUAGE = "language";
 	private static final String KEY_MIN_MEMORY_BUFFER_SIZE = "minvideobuffer";
+	private static final String KEY_MAX_MEMORY_BUFFER_SIZE = "maxvideobuffer";
+	private static final String KEY_MENCODER_ASS_MARGIN = "mencoder_ass_margin";
+	private static final String KEY_MENCODER_ASS_OUTLINE = "mencoder_ass_outline";
+	private static final String KEY_MENCODER_ASS_SCALE = "mencoder_ass_scale";
+	private static final String KEY_MENCODER_ASS_SHADOW = "mencoder_ass_shadow";
+	private static final String KEY_MENCODER_NOASS_SCALE = "mencoder_noass_scale";
+	private static final String KEY_MENCODER_NOASS_SUBPOS = "mencoder_noass_subpos";
+	private static final String KEY_MENCODER_NOASS_BLUR = "mencoder_noass_blur";
+	private static final String KEY_MENCODER_NOASS_OUTLINE = "mencoder_noass_outline";
 
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
+	
+	private static final int MAX_MAX_MEMORY_BUFFER_SIZE = 630;
 	
 	private static final String CONFIGURATION_FILENAME = "PMS.conf";
 
@@ -171,6 +182,81 @@ public class PmsConfiguration {
 
 	public int getMinMemoryBufferSize() {
 		return getInt(KEY_MIN_MEMORY_BUFFER_SIZE, 12);
+	}
+
+	public double getMaxMemoryBufferSize() {
+		return getInt(KEY_MAX_MEMORY_BUFFER_SIZE, 400);
+	}
+
+	public void setMaxMemoryBufferSize(int value) {
+		if (value > 630) {
+			value = MAX_MAX_MEMORY_BUFFER_SIZE;
+		}
+		configuration.setProperty(KEY_MAX_MEMORY_BUFFER_SIZE, value);		
+	}
+	
+	public String getMencoderAssScale() {
+		return getString(KEY_MENCODER_ASS_SCALE, "1.0");
+	}
+
+	public String getMencoderAssMargin() {
+		return getString(KEY_MENCODER_ASS_MARGIN, "10");
+	}
+
+	public String getMencoderAssOutline() {
+		return getString(KEY_MENCODER_ASS_OUTLINE, "1");
+	}
+
+	public String getMencoderAssShadow() {
+		return getString(KEY_MENCODER_ASS_SHADOW, "1");
+	}
+
+	public String getMencoderNoAssScale() {
+		return getString(KEY_MENCODER_NOASS_SCALE, "3");
+	}
+
+	public String getMencoderNoAssSubPos() {
+		return getString(KEY_MENCODER_NOASS_SUBPOS, "2");
+	}
+
+	public String getMencoderNoAssBlur() {
+		return getString(KEY_MENCODER_NOASS_BLUR, "1");
+	}
+
+	public String getMencoderNoAssOutline() {
+		return getString(KEY_MENCODER_ASS_OUTLINE, "3");
+	}
+
+	public void setMencoderNoAssOutline(String value) {
+		configuration.setProperty(KEY_MENCODER_NOASS_OUTLINE, value);
+	}
+
+	public void setMencoderAssMargin(String value) {
+		configuration.setProperty(KEY_MENCODER_ASS_MARGIN, value);
+	}
+
+	public void setMencoderAssOutline(String value) {
+		configuration.setProperty(KEY_MENCODER_ASS_OUTLINE, value);
+	}
+
+	public void setMencoderAssShadow(String value) {
+		configuration.setProperty(KEY_MENCODER_ASS_SHADOW, value);
+	}
+
+	public void setMencoderAssScale(String value) {
+		configuration.setProperty(KEY_MENCODER_ASS_SCALE, value);
+	}
+
+	public void setMencoderNoAssScale(String value) {
+		configuration.setProperty(KEY_MENCODER_NOASS_SCALE, value);
+	}
+
+	public void setMencoderNoAssBlur(String value) {
+		configuration.setProperty(KEY_MENCODER_NOASS_BLUR, value);
+	}
+
+	public void setMencoderNoAssSubPos(String value) {
+		configuration.setProperty(KEY_MENCODER_NOASS_SUBPOS, value);
 	}
 
 }

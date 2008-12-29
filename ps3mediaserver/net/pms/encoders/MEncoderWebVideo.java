@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import javax.swing.JComponent;
 
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
@@ -60,8 +61,8 @@ public class MEncoderWebVideo extends MEncoderVideo {
 		return new String [] { "-quiet", "-oac", "lavc", "-of", "lavf", "-lavfopts", "format=dvd", "-ovc", "lavc", "-lavcopts", "vcodec=mpeg2video:vbitrate=4096:threads=2:acodec=mp2:abitrate=128" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
 	}
 
-	public MEncoderWebVideo() {
-		super();
+	public MEncoderWebVideo(PmsConfiguration configuration) {
+		super(configuration);
 	}
 
 	@Override

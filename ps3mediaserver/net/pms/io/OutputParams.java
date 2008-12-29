@@ -55,7 +55,7 @@ public class OutputParams {
 		secondread_minsize = 1000000;
 		minFileSize = PMS.get().getMinstreambuffer();
 		minBufferSize = configuration.getMinMemoryBufferSize();
-		maxBufferSize = PMS.get().getMaxMemoryBufferSize();
+		maxBufferSize = configuration.getMaxMemoryBufferSize();
 		timeseek = 0;
 		outputFile = null;
 	}

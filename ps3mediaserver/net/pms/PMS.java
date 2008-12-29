@@ -114,71 +114,7 @@ public class PMS {
 	public void setLanguage(String language) {
 		this.language = language;
 	}
-
-	public String getMencoder_ass_scale() {
-		return mencoder_ass_scale;
-	}
-
-	public void setMencoder_ass_scale(String mencoder_ass_scale) {
-		this.mencoder_ass_scale = mencoder_ass_scale;
-	}
-
-	public String getMencoder_ass_margin() {
-		return mencoder_ass_margin;
-	}
-
-	public void setMencoder_ass_margin(String mencoder_ass_margin) {
-		this.mencoder_ass_margin = mencoder_ass_margin;
-	}
-
-	public String getMencoder_ass_outline() {
-		return mencoder_ass_outline;
-	}
-
-	public void setMencoder_ass_outline(String mencoder_ass_outline) {
-		this.mencoder_ass_outline = mencoder_ass_outline;
-	}
-
-	public String getMencoder_ass_shadow() {
-		return mencoder_ass_shadow;
-	}
-
-	public void setMencoder_ass_shadow(String mencoder_ass_shadow) {
-		this.mencoder_ass_shadow = mencoder_ass_shadow;
-	}
-
-	public String getMencoder_noass_scale() {
-		return mencoder_noass_scale;
-	}
-
-	public void setMencoder_noass_scale(String mencoder_noass_scale) {
-		this.mencoder_noass_scale = mencoder_noass_scale;
-	}
-
-	public String getMencoder_noass_subpos() {
-		return mencoder_noass_subpos;
-	}
-
-	public void setMencoder_noass_subpos(String mencoder_noass_subpos) {
-		this.mencoder_noass_subpos = mencoder_noass_subpos;
-	}
-
-	public String getMencoder_noass_blur() {
-		return mencoder_noass_blur;
-	}
-
-	public void setMencoder_noass_blur(String mencoder_noass_blur) {
-		this.mencoder_noass_blur = mencoder_noass_blur;
-	}
-
-	public String getMencoder_noass_outline() {
-		return mencoder_noass_outline;
-	}
-
-	public void setMencoder_noass_outline(String mencoder_noass_outline) {
-		this.mencoder_noass_outline = mencoder_noass_outline;
-	}
-
+	
 	public void setMencoder_main(String mencoder_main) {
 		this.mencoder_main = mencoder_main;
 	}
@@ -282,10 +218,6 @@ public class PMS {
 
 	public void setFolders(String folders) {
 		this.folders = folders;
-	}
-
-	public void setMaxMemoryBufferSize(int maxMemoryBufferSize) {
-		this.maxMemoryBufferSize = maxMemoryBufferSize;
 	}
 
 	public void setTurbomode(boolean turbomode) {
@@ -393,7 +325,6 @@ public class PMS {
 	private RootFolder rootFolder;
 	private HTTPServer server;
 	private String serverName;
-	private int maxMemoryBufferSize;
 	private ArrayList<Format> extensions;
 	private ArrayList<Player> players;
 	private ArrayList<Player> allPlayers;
@@ -665,15 +596,6 @@ public class PMS {
 	public boolean isUsesubs() {
 		return usesubs;
 	}
-	
-	private String mencoder_ass_scale;
-	private String mencoder_ass_margin;
-	private String mencoder_ass_outline;
-	private String mencoder_ass_shadow;
-	private String mencoder_noass_scale;
-	private String mencoder_noass_subpos;
-	private String mencoder_noass_blur;
-	private String mencoder_noass_outline;
 
 	private int maxaudiobuffer;
 	private int minstreambuffer;
@@ -778,9 +700,7 @@ public class PMS {
 				String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
 				String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
 				
-				if (key.equals("maxvideobuffer") && value.length() > 0) { //$NON-NLS-1$
-					maxMemoryBufferSize = Integer.parseInt(value.trim());
-				} else if (key.equals("thumbnail_seek_pos") && value.length() > 0) { //$NON-NLS-1$
+				if (key.equals("thumbnail_seek_pos") && value.length() > 0) { //$NON-NLS-1$
 					thumbnail_seek_pos = Integer.parseInt(value.trim());
 				} else if (key.equals("minwebbuffer") && value.length() > 0) { //$NON-NLS-1$
 					minstreambuffer = Integer.parseInt(value.trim());
@@ -824,22 +744,6 @@ public class PMS {
 					usecache = isTrue(value.trim());
 				} else if (key.equals("mencoder_font") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_font= value.trim();
-				} else if (key.equals("mencoder_ass_margin") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_ass_margin= value.trim();
-				} else if (key.equals("mencoder_ass_outline") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_ass_outline= value.trim();
-				} else if (key.equals("mencoder_ass_scale") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_ass_scale= value.trim();
-				} else if (key.equals("mencoder_ass_shadow") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_ass_shadow= value.trim();
-				} else if (key.equals("mencoder_noass_scale") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_noass_scale= value.trim();
-				} else if (key.equals("mencoder_noass_subpos") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_noass_subpos= value.trim();
-				} else if (key.equals("mencoder_noass_blur") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_noass_blur= value.trim();
-				} else if (key.equals("mencoder_noass_outline") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_noass_outline= value.trim();
 				} else if (key.equals("mencoder_encode") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_main= value.trim();
 				} else if (key.equals("mencoder_decode") && value.length() > 0) { //$NON-NLS-1$
@@ -965,7 +869,6 @@ public class PMS {
 			e.printStackTrace();
 		}
 		
-		maxMemoryBufferSize = 400;
 		maxaudiobuffer = 100;
 		minstreambuffer = 1;
 		proxy = -1;
@@ -1229,10 +1132,10 @@ public class PMS {
 		assertThat(configuration, notNullValue());
 		registerPlayer(new FFMpegVideo());
 		registerPlayer(new FFMpegAudio());
-		registerPlayer(new MEncoderVideo());
-		registerPlayer(new MEncoderAviSynth());
+		registerPlayer(new MEncoderVideo(configuration));
+		registerPlayer(new MEncoderAviSynth(configuration));
 		registerPlayer(new MPlayerAudio());
-		registerPlayer(new MEncoderWebVideo());
+		registerPlayer(new MEncoderWebVideo(configuration));
 		registerPlayer(new MPlayerWebVideoDump());
 		registerPlayer(new MPlayerWebAudio());
 		registerPlayer(new TSMuxerVideo(configuration));
@@ -1477,10 +1380,6 @@ public class PMS {
 	}
 
 
-	public int getMaxMemoryBufferSize() {
-		return maxMemoryBufferSize;
-	}
-	
 	public String replace(String value, String toReplace, String replaceBy) {
 		if(value != null) {
 			int n = replaceBy.length();
@@ -1491,10 +1390,6 @@ public class PMS {
 			}
 		}
 		return value;
-	}
-
-	public int getMinMemoryBufferSize() {
-		return configuration.getMinMemoryBufferSize();
 	}
 
 	public ArrayList<Format> getExtensions() {
@@ -1521,7 +1416,6 @@ public class PMS {
 		saveFile.println("hostname=" + (configuration.getServerHostname()!=null?configuration.getServerHostname():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("port=" + (configuration.getServerPort()!=5001?configuration.getServerPort():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("language=" + language); //$NON-NLS-1$
-		saveFile.println("maxvideobuffer=" + maxMemoryBufferSize); //$NON-NLS-1$
 		saveFile.println("thumbnails=" + getTrue(thumbnails)); //$NON-NLS-1$
 		saveFile.println("thumbnail_seek_pos=" + thumbnail_seek_pos); //$NON-NLS-1$
 		saveFile.println("nbcores=" + nbcores); //$NON-NLS-1$
@@ -1554,14 +1448,14 @@ public class PMS {
 		saveFile.println("mencoder_sublangs=" + (mencoder_sublangs!=null?mencoder_sublangs:"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_audiosublangs=" + (mencoder_audiosublangs!=null?mencoder_audiosublangs:"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_subfribidi=" + getTrue(mencoder_subfribidi)); //$NON-NLS-1$
-		saveFile.println("mencoder_ass_scale=" + (mencoder_ass_scale!=null?mencoder_ass_scale:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_ass_margin=" + (mencoder_ass_margin!=null?mencoder_ass_margin:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_ass_outline=" + (mencoder_ass_outline!=null?mencoder_ass_outline:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_ass_shadow=" + (mencoder_ass_shadow!=null?mencoder_ass_shadow:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_noass_scale=" + (mencoder_noass_scale!=null?mencoder_noass_scale:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_noass_subpos=" + (mencoder_noass_subpos!=null?mencoder_noass_subpos:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_noass_blur=" + (mencoder_noass_blur!=null?mencoder_noass_blur:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_noass_outline=" + (mencoder_noass_outline!=null?mencoder_noass_outline:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_ass_scale=" + (configuration.getMencoderAssScale()!=null?configuration.getMencoderAssScale():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_ass_margin=" + (configuration.getMencoderAssMargin()!=null?configuration.getMencoderAssMargin():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_ass_outline=" + (configuration.getMencoderAssOutline()!=null?configuration.getMencoderAssOutline():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_ass_shadow=" + (configuration.getMencoderAssShadow()!=null?configuration.getMencoderAssShadow():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_noass_scale=" + (configuration.getMencoderNoAssScale()!=null?configuration.getMencoderNoAssScale():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_noass_subpos=" + (configuration.getMencoderNoAssSubPos()!=null?configuration.getMencoderNoAssSubPos():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_noass_blur=" + (configuration.getMencoderNoAssBlur()!=null?configuration.getMencoderNoAssBlur():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_noass_outline=" + (configuration.getMencoderNoAssOutline()!=null?configuration.getMencoderNoAssOutline():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_subcp=" + (mencoder_subcp!=null?mencoder_subcp:"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_ass=" + getTrue(mencoder_ass)); //$NON-NLS-1$
 		saveFile.println("mencoder_disablesubs=" + getTrue(mencoder_disablesubs)); //$NON-NLS-1$

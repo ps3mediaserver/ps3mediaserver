@@ -32,6 +32,7 @@ import javax.swing.JTextArea;
 
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
@@ -40,6 +41,10 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class MEncoderAviSynth extends MEncoderVideo {
 
+	public MEncoderAviSynth(PmsConfiguration configuration) {
+		super(configuration);
+	}
+	
 	private JTextArea textArea;
 	private JCheckBox convertfps;
 	
