@@ -114,7 +114,7 @@ public class DLNAMediaInfo {
 			for(int i=5;i<=13;i++)
 				args[i] = "-an";
 		}
-		OutputParams params = new OutputParams();
+		OutputParams params = new OutputParams(PMS.configuration);
 		params.maxBufferSize = 1;
 		params.noexitcheck = true; // not serious if anything happens during the thumbnailer
 		final ProcessWrapperImpl pw = new ProcessWrapperImpl(args, params);

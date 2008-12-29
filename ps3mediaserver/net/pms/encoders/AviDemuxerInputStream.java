@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.io.Gob;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
@@ -144,7 +145,7 @@ public class AviDemuxerInputStream extends InputStream {
 	
 	public static void main(String args []) {
 		try {
-			OutputParams params = new OutputParams();
+			OutputParams params = new OutputParams(new PmsConfiguration());
 			//params.extras.put("audioin", "d:\\audio.1");
 			//params.extras.put("videoin", "d:\\video.1");
 			AviDemuxerInputStream av = new AviDemuxerInputStream(new FileInputStream("D:\\DEV\\PMS\\divers\\_\\speed.avi"), params, null); //$NON-NLS-1$

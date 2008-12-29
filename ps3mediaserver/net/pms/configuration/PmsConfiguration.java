@@ -21,6 +21,7 @@ public class PmsConfiguration {
 	private static final String KEY_SERVER_HOSTNAME = "hostname";
 	private static final String KEY_PROXY_SERVER_PORT = "proxy";
 	private static final String KEY_LANGUAGE = "language";
+	private static final String KEY_MIN_MEMORY_BUFFER_SIZE = "minvideobuffer";
 
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -166,6 +167,10 @@ public class PmsConfiguration {
 			value = value.trim();
 		}
 		return value;
+	}
+
+	public int getMinMemoryBufferSize() {
+		return getInt(KEY_MIN_MEMORY_BUFFER_SIZE, 12);
 	}
 
 }

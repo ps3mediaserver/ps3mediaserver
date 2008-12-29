@@ -35,7 +35,7 @@ public class DVDISOFile extends VirtualFolder {
 	
 		double titles [] = new double [99];
 		String cmd [] = new String [] { PMS.get().getMPlayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", f.getAbsolutePath(), "dvd://1" };
-		OutputParams params = new OutputParams();
+		OutputParams params = new OutputParams(PMS.configuration);
 		params.maxBufferSize = 1;
 		params.log = true;
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmd, params);

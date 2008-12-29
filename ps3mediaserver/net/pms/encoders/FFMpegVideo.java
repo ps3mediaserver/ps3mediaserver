@@ -293,7 +293,7 @@ public class FFMpegVideo extends Player {
 			
 			
 			String mPlayerdefaultVideoArgs [] = new String [] { fileName, seek_param, seek_value, "-vo", "yuv4mpeg:file=" + /*pipeprefix + videoPipe+(PMS.get().isWindows()?".1":"")*/videoP.getInputPipe(), "-ao", "null", "-nosound", "-benchmark", "-noframedrop", "-speed", "100", "-quiet" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
-			OutputParams mplayer_vid_params = new OutputParams();
+			OutputParams mplayer_vid_params = new OutputParams(PMS.configuration);
 			mplayer_vid_params.maxBufferSize = 1;
 			
 			String videoArgs [] = new String [1 + overiddenMPlayerArgs.length + mPlayerdefaultVideoArgs.length];
@@ -303,7 +303,7 @@ public class FFMpegVideo extends Player {
 			ProcessWrapperImpl mplayer_vid_process = new ProcessWrapperImpl(videoArgs, mplayer_vid_params);
 			
 			String mPlayerdefaultAudioArgs [] = new String [] { fileName, seek_param, seek_value, "-vo", "null", "-ao", "pcm:file=" +/* pipeprefix + audioPipe+(PMS.get().isWindows()?".1":"")*/audioP.getInputPipe(), "-ao", "pcm:fast", "-quiet", "-noframedrop"  }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-			OutputParams mplayer_aud_params = new OutputParams();
+			OutputParams mplayer_aud_params = new OutputParams(PMS.configuration);
 			mplayer_aud_params.maxBufferSize = 1;
 			
 			String audioArgs [] = new String [1 + overiddenMPlayerArgs.length + mPlayerdefaultAudioArgs.length];

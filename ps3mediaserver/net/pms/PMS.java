@@ -394,7 +394,6 @@ public class PMS {
 	private HTTPServer server;
 	private String serverName;
 	private int maxMemoryBufferSize;
-	private int minMemoryBufferSize;
 	private ArrayList<Format> extensions;
 	private ArrayList<Player> players;
 	private ArrayList<Player> allPlayers;
@@ -779,9 +778,7 @@ public class PMS {
 				String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
 				String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
 				
-				if (key.equals("minvideobuffer") && value.length() > 0) { //$NON-NLS-1$
-					minMemoryBufferSize = Integer.parseInt(value.trim());
-				} else if (key.equals("maxvideobuffer") && value.length() > 0) { //$NON-NLS-1$
+				if (key.equals("maxvideobuffer") && value.length() > 0) { //$NON-NLS-1$
 					maxMemoryBufferSize = Integer.parseInt(value.trim());
 				} else if (key.equals("thumbnail_seek_pos") && value.length() > 0) { //$NON-NLS-1$
 					thumbnail_seek_pos = Integer.parseInt(value.trim());
@@ -969,7 +966,6 @@ public class PMS {
 		}
 		
 		maxMemoryBufferSize = 400;
-		minMemoryBufferSize = 12;
 		maxaudiobuffer = 100;
 		minstreambuffer = 1;
 		proxy = -1;
@@ -1498,7 +1494,7 @@ public class PMS {
 	}
 
 	public int getMinMemoryBufferSize() {
-		return minMemoryBufferSize;
+		return configuration.getMinMemoryBufferSize();
 	}
 
 	public ArrayList<Format> getExtensions() {

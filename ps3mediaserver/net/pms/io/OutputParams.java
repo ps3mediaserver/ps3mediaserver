@@ -21,6 +21,7 @@ package net.pms.io;
 import java.io.File;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 
 public class OutputParams {
 	
@@ -47,13 +48,13 @@ public class OutputParams {
 	public String forceType;
 	
 	
-	public OutputParams() {
+	public OutputParams(PmsConfiguration configuration) {
 		waitbeforestart = 6000;
 		fromFrame = -1;
 		toFrame = -1;
 		secondread_minsize = 1000000;
 		minFileSize = PMS.get().getMinstreambuffer();
-		minBufferSize = PMS.get().getMinMemoryBufferSize();
+		minBufferSize = configuration.getMinMemoryBufferSize();
 		maxBufferSize = PMS.get().getMaxMemoryBufferSize();
 		timeseek = 0;
 		outputFile = null;

@@ -627,7 +627,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			return fis;
 		} else {
 			
-			OutputParams params = new OutputParams();
+			OutputParams params = new OutputParams(PMS.configuration);
 			params.aid = aid;
 			params.sid = sid;
 			
