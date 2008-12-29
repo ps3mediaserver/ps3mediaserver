@@ -24,6 +24,7 @@ import javax.swing.JComponent;
 
 import com.sun.jna.Platform;
 
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
@@ -35,10 +36,10 @@ public class VideoLanVideoStreaming extends Player {
 
 	public static final String ID = "vlcvideo"; //$NON-NLS-1$
 	
-	private final String vlcPath;
+	private final PmsConfiguration configuration;
 	
-	public VideoLanVideoStreaming(String vlcPath) {
-		this.vlcPath = vlcPath;
+	public VideoLanVideoStreaming(PmsConfiguration configuration) {
+		this.configuration = configuration;
 	}
 	
 	@Override
@@ -73,7 +74,7 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public String executable() {
-		return vlcPath;
+		return configuration.getVlcPath();
 	}
 	
 	protected String getEncodingArgs() {

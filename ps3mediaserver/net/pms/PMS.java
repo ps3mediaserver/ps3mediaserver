@@ -1303,8 +1303,8 @@ public class PMS {
 		registerPlayer(new MPlayerWebAudio());
 		registerPlayer(new TSMuxerVideo(configuration));
 		registerPlayer(new TsMuxerAudio(configuration));
-		registerPlayer(new VideoLanAudioStreaming(configuration.getVlcPath()));
-		registerPlayer(new VideoLanVideoStreaming(configuration.getVlcPath()));
+		registerPlayer(new VideoLanAudioStreaming(configuration));
+		registerPlayer(new VideoLanVideoStreaming(configuration));
 		registerPlayer(new FFMpegDVRMSRemux());
 		
 		frame.addEngines();

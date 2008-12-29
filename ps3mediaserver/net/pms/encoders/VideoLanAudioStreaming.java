@@ -18,14 +18,15 @@
  */
 package net.pms.encoders;
 
+import net.pms.configuration.PmsConfiguration;
 import net.pms.formats.Format;
 
 public class VideoLanAudioStreaming extends VideoLanVideoStreaming {
 
 	public static final String ID = "vlcaudio"; //$NON-NLS-1$
 	
-	public VideoLanAudioStreaming(String vlcPath) {
-		super(vlcPath);
+	public VideoLanAudioStreaming(PmsConfiguration configuration) {
+		super(configuration);
 	}
 	
 	@Override
