@@ -12,7 +12,6 @@
 	<property name="pms.jar" value="pms.jar" />
 
 	<taskdef name="nsis" classname="net.sf.nsisant.Task" classpath="lib/nsisant-1.2.jar" />
-	<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-1.0rc8.jar"/>
 
 	<path id="lib.path.ref">
 		<fileset id="libs.ref" dir="lib" includes="*.jar"/>
@@ -31,7 +30,7 @@
 		<mkdir dir="classes" />
 		<javac srcdir="." destdir="classes" target="1.5" classpathref="lib.path.ref" debug="on" debuglevel="lines,vars,source" />
 
-	    <jarjar basedir="classes" destfile="${pms.jar}" compress="off" duplicate="preserve">	
+	    <jar basedir="classes" destfile="${pms.jar}" compress="off" duplicate="preserve">	
 			<manifest>
 				<attribute name="Main-Class" value="net.pms.PMS" />
 			</manifest>
@@ -40,8 +39,7 @@
 			
 			<fileset dir="net" includes="**/*.class" excludes="**/*.java" />
 			<fileset dir="." includes="resources/**,net/pms/*.properties" />
-	    	<keep pattern="net.pms.*" />
-		</jarjar>
+		</jar>
 		
     	<mkdir dir="dist" />
     	<zip basedir="." destfile="dist/pms-linux-${version}.zip" excludes="debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*" includes="LICENCE.txt,README,pms.jar,FAQ,PMS.sh,PMS.conf,WEB.conf,linux/**" />

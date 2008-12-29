@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="lib/forms-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/looks-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/jna.jar"/>
-	<classpathentry kind="lib" path="lib/jarjar-1.0rc8.jar"/>
 	<classpathentry kind="lib" path="lib/commons-configuration-1.6.jar" sourcepath="lib/commons-configuration-1.6-sources.zip"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar" sourcepath="lib/commons-lang-2.4-sources.zip"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.1.jar" sourcepath="lib/commons-collections-3.2.1-sources.zip"/>
