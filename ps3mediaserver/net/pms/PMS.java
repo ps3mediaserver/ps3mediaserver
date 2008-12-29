@@ -105,16 +105,6 @@ public class PMS {
 	// TODO(tcox):  This shouldn't be static or public
 	public static PmsConfiguration configuration;
 	
-	private String language = ""; //$NON-NLS-1$
-	
-	public String getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(String language) {
-		this.language = language;
-	}
-	
 	public void setMencoder_main(String mencoder_main) {
 		this.mencoder_main = mencoder_main;
 	}
@@ -1415,7 +1405,7 @@ public class PMS {
 		saveFile.println("folders=" + folders); //$NON-NLS-1$
 		saveFile.println("hostname=" + (configuration.getServerHostname()!=null?configuration.getServerHostname():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("port=" + (configuration.getServerPort()!=5001?configuration.getServerPort():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("language=" + language); //$NON-NLS-1$
+		saveFile.println("language=" + configuration.getLanguage()); //$NON-NLS-1$
 		saveFile.println("thumbnails=" + getTrue(thumbnails)); //$NON-NLS-1$
 		saveFile.println("thumbnail_seek_pos=" + thumbnail_seek_pos); //$NON-NLS-1$
 		saveFile.println("nbcores=" + nbcores); //$NON-NLS-1$

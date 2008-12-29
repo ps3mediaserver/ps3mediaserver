@@ -259,4 +259,9 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_MENCODER_NOASS_SUBPOS, value);
 	}
 
+	public void setLanguage(String value) {
+		configuration.setProperty(KEY_LANGUAGE, value);
+		Locale.setDefault(new Locale(getLanguage()));
+	}
+
 }

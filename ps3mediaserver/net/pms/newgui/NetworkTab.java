@@ -167,11 +167,10 @@ public class NetworkTab {
       langs.setEditable(false);
       //langs.setSelectedIndex(0);
       String defaultLang = null;
-      if (PMS.get().getLanguage() != null && PMS.get().getLanguage().length() > 0)
-    	  defaultLang = PMS.get().getLanguage();
-      else {
+      if (configuration.getLanguage() != null && configuration.getLanguage().length() > 0) {
+    	  defaultLang = configuration.getLanguage();
+      } else {
     	  defaultLang = Locale.getDefault().getLanguage();
-    	 
       }
      kcbm.setSelectedKey(defaultLang);
      if (langs.getSelectedIndex() == -1)
@@ -181,7 +180,7 @@ public class NetworkTab {
 
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					PMS.get().setLanguage((String) kcbm.getSelectedKey());
+					configuration.setLanguage((String) kcbm.getSelectedKey());
 					
 				}
 			}
