@@ -104,95 +104,6 @@ public class PMS {
 
 	// TODO(tcox):  This shouldn't be static or public
 	public static PmsConfiguration configuration;
-	
-	public void setMencoder_main(String mencoder_main) {
-		this.mencoder_main = mencoder_main;
-	}
-
-	public void setMencoder_decode(String mencoder_decode) {
-		this.mencoder_decode = mencoder_decode;
-	}
-
-	private String mencoder_font;
-	
-	
-	public String getMencoder_font() {
-		return mencoder_font;
-	}
-
-	public void setMencoder_font(String mencoder_font) {
-		this.mencoder_font = mencoder_font;
-	}
-
-	private String mencoder_audiolangs;
-
-	public String getMencoder_audiolangs() {
-		return mencoder_audiolangs;
-	}
-
-	public void setMencoder_audiolangs(String mencoder_audiolangs) {
-		this.mencoder_audiolangs = mencoder_audiolangs;
-	}
-	
-	private String mencoder_audiosublangs;
-	
-	public String getMencoder_audiosublangs() {
-		return mencoder_audiosublangs;
-	}
-
-	public void setMencoder_audiosublangs(String mencoder_audiosublangs) {
-		this.mencoder_audiosublangs = mencoder_audiosublangs;
-	}
-
-	private String mencoder_sublangs;
-
-	public String getMencoder_sublangs() {
-		return mencoder_sublangs;
-	}
-
-	public void setMencoder_sublangs(String mencoder_sublangs) {
-		this.mencoder_sublangs = mencoder_sublangs;
-	}
-	
-	private String mencoder_subcp;
-
-	public String getMencoder_subcp() {
-		return mencoder_subcp;
-	}
-
-	public void setMencoder_subcp(String mencoder_subcp) {
-		this.mencoder_subcp = mencoder_subcp;
-	}
-	
-	private boolean mencoder_subfribidi;
-	
-	public boolean isMencoder_subfribidi() {
-		return mencoder_subfribidi;
-	}
-
-	public void setMencoder_subfribidi(boolean mencoder_subfribidi) {
-		this.mencoder_subfribidi = mencoder_subfribidi;
-	}
-
-	private boolean mencoder_ass = true;
-
-	public boolean isMencoder_ass() {
-		return mencoder_ass;
-	}
-
-	public void setMencoder_ass(boolean mencoder_ass) {
-		this.mencoder_ass = mencoder_ass;
-	}
-	
-	private boolean mencoder_disablesubs;
-
-	public boolean isMencoder_disablesubs() {
-		return mencoder_disablesubs;
-	}
-
-	public void setMencoder_disablesubs(boolean mencoder_disablesubs) {
-		this.mencoder_disablesubs = mencoder_disablesubs;
-	}
 
 	public String getCharsetencoding() {
 		return charsetencoding;
@@ -272,36 +183,6 @@ public class PMS {
 		}
 	}
 	
-	private boolean tsmuxer_preremux_ac3;
-
-	public boolean isTsmuxer_preremux_ac3() {
-		return tsmuxer_preremux_ac3;
-	}
-
-	public void setTsmuxer_preremux_ac3(boolean tsmuxer_preremux_ac3) {
-		this.tsmuxer_preremux_ac3 = tsmuxer_preremux_ac3;
-	}
-
-	private boolean tsmuxer_preremux_pcm;
-	
-	public boolean isTsmuxer_preremux_pcm() {
-		return tsmuxer_preremux_pcm;
-	}
-
-	public void setTsmuxer_preremux_pcm(boolean tsmuxer_preremux_pcm) {
-		this.tsmuxer_preremux_pcm = tsmuxer_preremux_pcm;
-	}
-
-	private boolean mencoder_usepcm;
-	
-	public boolean isMencoder_usepcm() {
-		return mencoder_usepcm;
-	}
-
-	public void setMencoder_usepcm(boolean mencoder_usepcm) {
-		this.mencoder_usepcm = mencoder_usepcm;
-	}
-
 	private RootFolder rootFolder;
 	private HTTPServer server;
 	private String serverName;
@@ -332,26 +213,6 @@ public class PMS {
 		this.tsmuxer_forcefps = tsmuxer_forcefps;
 	}
 	
-	private boolean mencoder_fontconfig;
-	
-	public boolean isMencoder_fontconfig() {
-		return mencoder_fontconfig;
-	}
-
-	public void setMencoder_fontconfig(boolean mencoder_fontconfig) {
-		this.mencoder_fontconfig = mencoder_fontconfig;
-	}
-
-	private boolean mencoder_forcefps;
-
-	public boolean isMencoder_forcefps() {
-		return mencoder_forcefps;
-	}
-
-	public void setMencoder_forcefps(boolean mencoder_forcefps) {
-		this.mencoder_forcefps = mencoder_forcefps;
-	}
-
 	private String maximumbitrate;
 	public String getMaximumbitrate() {
 		return maximumbitrate;
@@ -599,14 +460,13 @@ public class PMS {
 
 	private String mplayer;
 	private String mencoder_main = ""; //$NON-NLS-1$
-	private String mencoder_decode ="" ; //$NON-NLS-1$
-
-	public String getMencoder_decode() {
-		return mencoder_decode;
-	}
 
 	public String getMencoderMainSettings() {
 		return mencoder_main;
+	}
+	
+	public void setMencoderMainSettings(String value) {
+		mencoder_main = value;
 	}
 
 	public String getMplayerSettings() {
@@ -708,46 +568,18 @@ public class PMS {
 					minimized = isTrue(value.trim());
 				} else if (key.equals("thumbnails") && value.length() > 0) { //$NON-NLS-1$
 					thumbnails = isTrue(value.trim());
-				} else if (key.equals("mencoder_forcefps") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_forcefps = isTrue(value.trim());
-				} else if (key.equals("mencoder_fontconfig") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_fontconfig = isTrue(value.trim());
-				} else if (key.equals("mencoder_subfribidi") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_subfribidi = isTrue(value.trim());
 				} else if (key.equals("hidevideosettings") && value.length() > 0) { //$NON-NLS-1$
 					hidevideosettings = isTrue(value.trim());
 				} else if (key.equals("mencoder_intelligent_sync") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_intelligent_sync = isTrue(value.trim());
 				} else if (key.equals("usecache") && value.length() > 0) { //$NON-NLS-1$
 					usecache = isTrue(value.trim());
-				} else if (key.equals("mencoder_font") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_font= value.trim();
 				} else if (key.equals("mencoder_encode") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_main= value.trim();
-				} else if (key.equals("mencoder_decode") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_decode= value.trim();
-				} else if (key.equals("mencoder_audiolangs") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_audiolangs = value.trim();
-				} else if (key.equals("mencoder_sublangs") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_sublangs = value.trim();
-				} else if (key.equals("mencoder_audiosublangs") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_audiosublangs = value.trim();
-				} else if (key.equals("mencoder_subcp") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_subcp = value.trim();
 				} else if (key.equals("autoloadsrt") && value.length() > 0) { //$NON-NLS-1$
 					usesubs = isTrue(value.trim());
-				} else if (key.equals("mencoder_ass") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_ass = isTrue(value.trim());
-				} else if (key.equals("mencoder_disablesubs") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_disablesubs = isTrue(value.trim());
 				} else if (key.equals("turbomode") && value.length() > 0) { //$NON-NLS-1$
 					turbomode = isTrue(value.trim());
-				} else if (key.equals("mencoder_usepcm") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_usepcm = /*PMS.get().isWindows() &&*/ isTrue(value.trim());
-				} else if (key.equals("tsmuxer_preremux_pcm") && value.length() > 0) { //$NON-NLS-1$
-					tsmuxer_preremux_pcm = isTrue(value.trim());
-				} else if (key.equals("tsmuxer_preremux_ac3") && value.length() > 0) { //$NON-NLS-1$
-					tsmuxer_preremux_ac3 = isTrue(value.trim());
 				} else if (key.equals("engines") && value.length() > 0) { //$NON-NLS-1$
 					engines = value.trim();
 					if (!engines.equals("none")) { //$NON-NLS-1$
@@ -1408,24 +1240,24 @@ public class PMS {
 		saveFile.println("avisynth_script=" + (avisynth_script!=null?avisynth_script:"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("transcode_block_multiple_connections=" + getTrue(transcode_block_multiple_connections)); //$NON-NLS-1$
 		saveFile.println("tsmuxer_forcefps=" + getTrue(tsmuxer_forcefps)); //$NON-NLS-1$
-		saveFile.println("tsmuxer_preremux_pcm=" + getTrue(tsmuxer_preremux_pcm)); //$NON-NLS-1$
-		saveFile.println("tsmuxer_preremux_ac3=" + getTrue(tsmuxer_preremux_ac3)); //$NON-NLS-1$
+		saveFile.println("tsmuxer_preremux_pcm=" + configuration.isTsmuxerPreremuxPcm()); //$NON-NLS-1$
+		saveFile.println("tsmuxer_preremux_ac3=" + configuration.isTsmuxerPreremuxAc3()); //$NON-NLS-1$
 		saveFile.println("audiochannels=" + audiochannels); //$NON-NLS-1$
 		saveFile.println("audiobitrate=" + audiobitrate); //$NON-NLS-1$
 		saveFile.println("maximumbitrate=" + maximumbitrate); //$NON-NLS-1$
 		saveFile.println("skiploopfilter=" + getTrue(skiploopfilter)); //$NON-NLS-1$
-		saveFile.println("mencoder_fontconfig=" + getTrue(mencoder_fontconfig)); //$NON-NLS-1$
-		saveFile.println("mencoder_font=" + (mencoder_font!=null?mencoder_font:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_forcefps=" + getTrue(mencoder_forcefps)); //$NON-NLS-1$
-		saveFile.println("mencoder_usepcm=" + getTrue(mencoder_usepcm)); //$NON-NLS-1$
+		saveFile.println("mencoder_fontconfig=" + configuration.isMencoderFontConfig()); //$NON-NLS-1$
+		saveFile.println("mencoder_font=" + (configuration.getMencoderFont()!=null?configuration.getMencoderFont():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_forcefps=" + configuration.isMencoderForceFps()); //$NON-NLS-1$
+		saveFile.println("mencoder_usepcm=" + configuration.isMencoderUsePcm()); //$NON-NLS-1$
 		saveFile.println("mencoder_intelligent_sync=" + getTrue(mencoder_intelligent_sync)); //$NON-NLS-1$
-		saveFile.println("mencoder_decode=" + (mencoder_decode!=null?mencoder_decode:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_decode=" + (configuration.getMencoderDecode()!=null?configuration.getMencoderDecode():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_encode=" + (mencoder_main!=null?mencoder_main:"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_nooutofsync=" + getTrue(mencoder_nooutofsync)); //$NON-NLS-1$
-		saveFile.println("mencoder_audiolangs=" + (mencoder_audiolangs!=null?mencoder_audiolangs:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_sublangs=" + (mencoder_sublangs!=null?mencoder_sublangs:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_audiosublangs=" + (mencoder_audiosublangs!=null?mencoder_audiosublangs:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_subfribidi=" + getTrue(mencoder_subfribidi)); //$NON-NLS-1$
+		saveFile.println("mencoder_audiolangs=" + (configuration.getMencoderAudioLanguages()!=null?configuration.getMencoderAudioLanguages():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_sublangs=" + (configuration.getMencoderSubLanguages()!=null?configuration.getMencoderSubLanguages():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_audiosublangs=" + (configuration.getMencoderAudioSubLanguages()!=null?configuration.getMencoderAudioSubLanguages():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_subfribidi=" + getTrue(configuration.isMencoderSubFribidi())); //$NON-NLS-1$
 		saveFile.println("mencoder_ass_scale=" + (configuration.getMencoderAssScale()!=null?configuration.getMencoderAssScale():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_ass_margin=" + (configuration.getMencoderAssMargin()!=null?configuration.getMencoderAssMargin():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_ass_outline=" + (configuration.getMencoderAssOutline()!=null?configuration.getMencoderAssOutline():"")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1434,9 +1266,9 @@ public class PMS {
 		saveFile.println("mencoder_noass_subpos=" + (configuration.getMencoderNoAssSubPos()!=null?configuration.getMencoderNoAssSubPos():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_noass_blur=" + (configuration.getMencoderNoAssBlur()!=null?configuration.getMencoderNoAssBlur():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_noass_outline=" + (configuration.getMencoderNoAssOutline()!=null?configuration.getMencoderNoAssOutline():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_subcp=" + (mencoder_subcp!=null?mencoder_subcp:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_ass=" + getTrue(mencoder_ass)); //$NON-NLS-1$
-		saveFile.println("mencoder_disablesubs=" + getTrue(mencoder_disablesubs)); //$NON-NLS-1$
+		saveFile.println("mencoder_subcp=" + (configuration.getMencoderSubCp()!=null?configuration.getMencoderSubCp():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("mencoder_ass=" + configuration.isMencoderAss()); //$NON-NLS-1$
+		saveFile.println("mencoder_disablesubs=" + configuration.isMencoderDisableSubs()); //$NON-NLS-1$
 		saveFile.println("ffmpeg=" + (ffmpeg!=null?ffmpeg:"")); //$NON-NLS-1$ //$NON-NLS-2$
 		if (alternativeffmpegPath != null)
 			saveFile.println("alternativeffmpegpath=" + alternativeffmpegPath); //$NON-NLS-1$

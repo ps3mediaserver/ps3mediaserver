@@ -32,7 +32,19 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_NOASS_BLUR = "mencoder_noass_blur";
 	private static final String KEY_MENCODER_NOASS_OUTLINE = "mencoder_noass_outline";
 	private static final String KEY_THUMBNAIL_SEEK_POS = "thumbnail_seek_pos";
-
+	private static final String KEY_MENCODER_FONT = "mencoder_font"; 
+	private static final String KEY_MENCODER_SUB_FRIBIDI = "mencoder_subfribidi";
+	private static final String KEY_MENCODER_AUDIO_LANGS = "mencoder_audiolangs";
+	private static final String KEY_MENCODER_SUB_LANGS = "mencoder_sublangs";
+	private static final String KEY_MENCODER_AUDIO_SUB_LANGS = "mencoder_audiosublangs";
+	private static final String KEY_MENCODER_SUB_CP = "mencoder_subcp";
+	private static final String KEY_MENCODER_ASS = "mencoder_ass";
+	private static final String KEY_MENCODER_DISABLE_SUBS = "mencoder_disablesubs";
+	private static final String KEY_MENCODER_USE_PCM = "mencoder_usepcm";
+	private static final String KEY_MENCODER_FONT_CONFIG = "mencoder_fontconfig";
+	private static final String KEY_MENCODER_FORCE_FPS = "mencoder_forcefps";
+	private static final String KEY_MENCODER_DECODE = "mencoder_decode";	
+	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	
@@ -147,7 +159,12 @@ public class PmsConfiguration {
 	}
 
 	public String getServerHostname() {
-		return getString(KEY_SERVER_HOSTNAME, null);
+		String value = getString(KEY_SERVER_HOSTNAME, "");
+		if (StringUtils.isNotBlank(value)) {
+			return value;
+		} else {
+			return null;
+		}
 	}
 
 	public void setHostname(String value) {
@@ -168,6 +185,14 @@ public class PmsConfiguration {
 	private int getInt(String key, int def) {
 		try {
 			return configuration.getInt(key, def);
+		} catch (ConversionException e) {
+			return def;
+		}
+	}
+	
+	private boolean getBoolean(String key, boolean def) {
+		try {
+			return configuration.getBoolean(key, def);
 		} catch (ConversionException e) {
 			return def;
 		}
@@ -271,6 +296,110 @@ public class PmsConfiguration {
 
 	public void setThumbnailSeekPos(int value) {
 		configuration.setProperty(KEY_THUMBNAIL_SEEK_POS, value);
+	}
+
+	public boolean isMencoderAss() {
+		return getBoolean(KEY_MENCODER_ASS, true);
+	}
+
+	public boolean isMencoderDisableSubs() {
+		return getBoolean(KEY_MENCODER_DISABLE_SUBS, false);
+	}
+
+	public boolean isMencoderUsePcm() {
+		return getBoolean(KEY_MENCODER_USE_PCM, false);
+	}
+
+	public String getMencoderFont() {
+		return getString(KEY_MENCODER_FONT, "");
+	}
+
+	public String getMencoderAudioLanguages() {
+		return getString(KEY_MENCODER_AUDIO_LANGS, getDefaultLanguages());
+	}
+
+	private String getDefaultLanguages() {
+		if ("fr".equals(getLanguage())) {
+			return "fre,jpn,ger,eng";
+		} else {
+			return "eng,fre,jpn,ger";
+		}
+	}
+
+	public String getMencoderSubLanguages() {
+		return getString(KEY_MENCODER_SUB_LANGS, getDefaultLanguages());
+	}
+
+	public String getMencoderAudioSubLanguages() {
+		return getString(KEY_MENCODER_AUDIO_SUB_LANGS, "");
+	}
+
+	public boolean isMencoderSubFribidi() {
+		return getBoolean(KEY_MENCODER_SUB_FRIBIDI, false);
+	}
+
+	public String getMencoderSubCp() {
+		return getString(KEY_MENCODER_SUB_CP, "cp1252");
+	}
+
+	public boolean isMencoderFontConfig() {
+		return getBoolean(KEY_MENCODER_FONT_CONFIG, false);
+	}
+
+	public void setMencoderForceFps(boolean value) {
+		configuration.setProperty(KEY_MENCODER_FORCE_FPS, value);
+	}
+
+	public boolean isMencoderForceFps() {
+		return getBoolean(KEY_MENCODER_FORCE_FPS, false);
+	}
+
+	public void setMencoderAudioLanguages(String value) {
+		configuration.setProperty(KEY_MENCODER_AUDIO_LANGS, value);
+	}
+
+	public void setMencoderSubLanguages(String value) {
+		configuration.setProperty(KEY_MENCODER_SUB_LANGS, value);
+	}
+
+	public void setMencoderAudioSubLanguages(String value) {
+		configuration.setProperty(KEY_MENCODER_AUDIO_SUB_LANGS, value);		
+	}
+
+	public String getMencoderDecode() {
+		return getString(KEY_MENCODER_DECODE, "");
+	}
+
+	public void setMencoderDecode(String value) {
+		configuration.setProperty(KEY_MENCODER_DECODE, value);
+	}
+
+	public void setMencoderSubCp(String value) {
+		configuration.setProperty(KEY_MENCODER_SUB_CP, value);
+	}
+
+	public void setMencoderSubFribidi(boolean value) {
+		configuration.setProperty(KEY_MENCODER_SUB_FRIBIDI, value);
+	}
+
+	public void setMencoderFont(String value) {
+		configuration.setProperty(KEY_MENCODER_FONT, value);
+	}
+
+	public void setMencoderAss(boolean value) {
+		configuration.setProperty(KEY_MENCODER_ASS, value);		
+	}
+
+	public void setMencoderFontConfig(boolean value) {
+		configuration.setProperty(KEY_MENCODER_FONT_CONFIG, value);
+	}
+
+	public void setMencoderDisableSubs(boolean value) {
+		configuration.setProperty(KEY_MENCODER_DISABLE_SUBS, value);
+	}
+
+	public void setMencoderUsePcm(boolean value) {
+		configuration.setProperty(KEY_MENCODER_USE_PCM, value);
 	}
 
 }

@@ -47,6 +47,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.encoders.Player;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -55,6 +56,12 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class TrTab2 {
+	
+	private final PmsConfiguration configuration;
+	
+	TrTab2(PmsConfiguration configuration) {
+		this.configuration = configuration;
+	}
 	
 	private JCheckBox  disableSubs ;
 	
@@ -339,12 +346,12 @@ public class TrTab2 {
        /* if (!PMS.get().isWindows())
         	forcePCM.setEnabled(false);
         else {*/
-	        if (PMS.get().isMencoder_usepcm())
+	        if (configuration.isMencoderUsePcm())
 	        	forcePCM.setSelected(true);
 	        forcePCM.addItemListener(new ItemListener() {
 	
 				public void itemStateChanged(ItemEvent e) {
-					PMS.get().setMencoder_usepcm(e.getStateChange() == ItemEvent.SELECTED);
+					configuration.setMencoderUsePcm(e.getStateChange() == ItemEvent.SELECTED);
 				}
 	        	
 	        });
@@ -408,7 +415,7 @@ public class TrTab2 {
 					if (s.indexOf("/*") > -1) { //$NON-NLS-1$
 						s = s.substring(0, s.indexOf("/*")).trim(); //$NON-NLS-1$
 					}
-					PMS.get().setMencoder_main(s);
+					PMS.get().setMencoderMainSettings(s);
 				}
 			}
        	

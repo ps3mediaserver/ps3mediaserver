@@ -276,7 +276,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 
 		 st = new StatusTab();
 		 tt = new TracesTab();
-		 tr = new TrTab2();
+		 tr = new TrTab2(configuration);
 		 nt = new NetworkTab(configuration);
 		 
 		 tabbedPane.addTab(Messages.getString("LooksFrame.18"),/* readImageIcon("server-16.png"),*/ st.build()); //$NON-NLS-1$

@@ -89,7 +89,7 @@ public class DLNAMediaInfo {
 	
 	public ProcessWrapperImpl getFFMpegThumbnail(File media) {
 		String args [] = new String[14];
-		args[0] = PMS.get().getFFmpegPath();
+		args[0] = getFfmpegPath();
 		args[1] = "-ss";
 		args[2] = "" + PMS.configuration.getThumbnailSeekPos();
 		/*if (media.length() > 1000000000)
@@ -132,6 +132,17 @@ public class DLNAMediaInfo {
 		pw.run();
 		
 		return pw;
+	}
+
+
+	private String getFfmpegPath() {
+		String value = PMS.get().getFFmpegPath();
+		if (value == null) {
+			PMS.minimal("No ffmpeg - unable to thumbnail");
+			throw new RuntimeException("No ffmpeg - unable to thumbnail");
+		} else {
+			return value;
+		}
 	}
 
 	
@@ -588,11 +599,11 @@ public class DLNAMediaInfo {
 	
 	public int [] getAudioSubLangIds() {
 		int audiosubs [] = null;
-		if (PMS.get().getMencoder_audiosublangs() != null && PMS.get().getMencoder_audiosublangs().length() > 0) {
+		if (PMS.configuration.getMencoderAudioSubLanguages() != null && PMS.configuration.getMencoderAudioSubLanguages().length() > 0) {
 			int aid = -1;
 			int sid = -1;
 			try {
-				StringTokenizer st1 = new StringTokenizer(PMS.get().getMencoder_audiosublangs(), ";");
+				StringTokenizer st1 = new StringTokenizer(PMS.configuration.getMencoderAudioSubLanguages(), ";");
 				while (st1.hasMoreTokens() && aid == -1 && sid == -1) {
 					String pair = st1.nextToken();
 					String audio = pair.substring(0, pair.indexOf(","));
