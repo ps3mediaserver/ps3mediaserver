@@ -91,7 +91,7 @@ public class DLNAMediaInfo {
 		String args [] = new String[14];
 		args[0] = PMS.get().getFFmpegPath();
 		args[1] = "-ss";
-		args[2] = "" + PMS.get().getThumbnail_seek_pos();
+		args[2] = "" + PMS.configuration.getThumbnailSeekPos();
 		/*if (media.length() > 1000000000)
 			args[2] = "20";
 		else if (media.length() > 100000000)

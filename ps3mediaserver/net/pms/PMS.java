@@ -226,16 +226,6 @@ public class PMS {
 		this.thumbnails = thumbnails;
 	}
 
-	private int thumbnail_seek_pos = 1;
-
-	public int getThumbnail_seek_pos() {
-		return thumbnail_seek_pos;
-	}
-
-	public void setThumbnail_seek_pos(int thumbnail_seek_pos) {
-		this.thumbnail_seek_pos = thumbnail_seek_pos;
-	}
-
 	public IFrame getFrame() {
 		return frame;
 	}
@@ -690,9 +680,7 @@ public class PMS {
 				String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
 				String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
 				
-				if (key.equals("thumbnail_seek_pos") && value.length() > 0) { //$NON-NLS-1$
-					thumbnail_seek_pos = Integer.parseInt(value.trim());
-				} else if (key.equals("minwebbuffer") && value.length() > 0) { //$NON-NLS-1$
+				if (key.equals("minwebbuffer") && value.length() > 0) { //$NON-NLS-1$
 					minstreambuffer = Integer.parseInt(value.trim());
 				} else if (key.equals("maxaudiobuffer") && value.length() > 0) { //$NON-NLS-1$
 					maxaudiobuffer = Integer.parseInt(value.trim());
@@ -1407,7 +1395,7 @@ public class PMS {
 		saveFile.println("port=" + (configuration.getServerPort()!=5001?configuration.getServerPort():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("language=" + configuration.getLanguage()); //$NON-NLS-1$
 		saveFile.println("thumbnails=" + getTrue(thumbnails)); //$NON-NLS-1$
-		saveFile.println("thumbnail_seek_pos=" + thumbnail_seek_pos); //$NON-NLS-1$
+		saveFile.println("thumbnail_seek_pos=" + configuration.getThumbnailSeekPos()); //$NON-NLS-1$
 		saveFile.println("nbcores=" + nbcores); //$NON-NLS-1$
 		saveFile.println("turbomode=" + getTrue(turbomode)); //$NON-NLS-1$
 		saveFile.println("minimized=" + getTrue(minimized)); //$NON-NLS-1$

@@ -31,6 +31,7 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_NOASS_SUBPOS = "mencoder_noass_subpos";
 	private static final String KEY_MENCODER_NOASS_BLUR = "mencoder_noass_blur";
 	private static final String KEY_MENCODER_NOASS_OUTLINE = "mencoder_noass_outline";
+	private static final String KEY_THUMBNAIL_SEEK_POS = "thumbnail_seek_pos";
 
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -262,6 +263,14 @@ public class PmsConfiguration {
 	public void setLanguage(String value) {
 		configuration.setProperty(KEY_LANGUAGE, value);
 		Locale.setDefault(new Locale(getLanguage()));
+	}
+
+	public String getThumbnailSeekPos() {
+		return getString(KEY_THUMBNAIL_SEEK_POS, "1");
+	}
+
+	public void setThumbnailSeekPos(int value) {
+		configuration.setProperty(KEY_THUMBNAIL_SEEK_POS, value);
 	}
 
 }

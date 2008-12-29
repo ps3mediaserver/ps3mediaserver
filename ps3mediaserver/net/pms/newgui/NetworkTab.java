@@ -142,7 +142,7 @@ public class NetworkTab {
         builder.add(nbcores,          cc.xyw(3,  5, 7)); 
         
        
-       seekpos = new JTextField("" + PMS.get().getThumbnail_seek_pos()); //$NON-NLS-1$
+       seekpos = new JTextField("" + configuration.getThumbnailSeekPos()); //$NON-NLS-1$
        seekpos.addKeyListener(new KeyListener() {
 
    		@Override
@@ -153,7 +153,7 @@ public class NetworkTab {
    		public void keyReleased(KeyEvent e) {
    			try {
    				int ab = Integer.parseInt(seekpos.getText());
-   				PMS.get().setThumbnail_seek_pos(ab);
+   				configuration.setThumbnailSeekPos(ab);
    			} catch (NumberFormatException nfe) {
    			}
    			
