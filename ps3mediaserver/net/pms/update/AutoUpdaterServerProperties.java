@@ -1,7 +1,6 @@
 package net.pms.update;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import net.pms.util.PmsProperties;
 
@@ -20,8 +19,6 @@ public class AutoUpdaterServerProperties {
 	private final PmsProperties properties = new PmsProperties();
 	private final OperatingSystem operatingSystem = new OperatingSystem();
 	
-	private static final Logger LOG = Logger.getLogger(AutoUpdaterServerProperties.class.getName());
-			
 	public void loadFrom(byte[] data) throws IOException {
 		properties.clear();
 		properties.loadFromByteArray(data);		

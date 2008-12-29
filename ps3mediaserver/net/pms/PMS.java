@@ -93,6 +93,9 @@ import net.pms.newgui.LooksFrame;
 import net.pms.update.AutoUpdater;
 import net.pms.util.ProcessUtil;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
@@ -670,10 +673,6 @@ public class PMS {
 
 	public String getTsmuxerPath() {
 		return configuration.getTsmuxerPath();
-	}
-
-	public String getVlcPath() {
-		return configuration.getVlcPath();
 	}
 
 	private int audiochannels;
@@ -1293,6 +1292,7 @@ public class PMS {
 	}
 	
 	private void registerPlayers() {
+		assertThat(configuration, notNullValue());
 		registerPlayer(new FFMpegVideo());
 		registerPlayer(new FFMpegAudio());
 		registerPlayer(new MEncoderVideo());
@@ -1303,8 +1303,8 @@ public class PMS {
 		registerPlayer(new MPlayerWebAudio());
 		registerPlayer(new TSMuxerVideo());
 		registerPlayer(new TsMuxerAudio());
-		registerPlayer(new VideoLanAudioStreaming());
-		registerPlayer(new VideoLanVideoStreaming());
+		registerPlayer(new VideoLanAudioStreaming(configuration.getVlcPath()));
+		registerPlayer(new VideoLanVideoStreaming(configuration.getVlcPath()));
 		registerPlayer(new FFMpegDVRMSRemux());
 		
 		frame.addEngines();

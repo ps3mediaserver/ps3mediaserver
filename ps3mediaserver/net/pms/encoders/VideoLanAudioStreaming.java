@@ -24,6 +24,10 @@ public class VideoLanAudioStreaming extends VideoLanVideoStreaming {
 
 	public static final String ID = "vlcaudio"; //$NON-NLS-1$
 	
+	public VideoLanAudioStreaming(String vlcPath) {
+		super(vlcPath);
+	}
+	
 	@Override
 	public int purpose() {
 		return AUDIO_WEBSTREAM_PLAYER;

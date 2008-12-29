@@ -22,7 +22,8 @@ import java.io.IOException;
 
 import javax.swing.JComponent;
 
-import net.pms.PMS;
+import com.sun.jna.Platform;
+
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
@@ -33,6 +34,12 @@ import net.pms.io.ProcessWrapperImpl;
 public class VideoLanVideoStreaming extends Player {
 
 	public static final String ID = "vlcvideo"; //$NON-NLS-1$
+	
+	private final String vlcPath;
+	
+	public VideoLanVideoStreaming(String vlcPath) {
+		this.vlcPath = vlcPath;
+	}
 	
 	@Override
 	public int purpose() {
@@ -66,9 +73,7 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public String executable() {
-		if (PMS.get().getVlcPath() == null)
-			return null;
-		return PMS.get().getVlcPath();
+		return vlcPath;
 	}
 	
 	protected String getEncodingArgs() {
@@ -95,7 +100,7 @@ public class VideoLanVideoStreaming extends Player {
 		cmdArray[1] = "-I"; //$NON-NLS-1$
 		cmdArray[2] = "dummy"; //$NON-NLS-1$
 		String trans = "#transcode{" + getEncodingArgs() + "}:duplicate{dst=std{access=file,mux=" + getMux() + ",dst=\"" +tsPipe.getInputPipe() + "\"}}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		if (PMS.get().isWindows()) {
+		if (Platform.isWindows()) {
 			cmdArray[3] = "--dummy-quiet"; //$NON-NLS-1$
 			cmdArray[4] = fileName;
 			cmdArray[5] = ":sout=" + trans; //$NON-NLS-1$
