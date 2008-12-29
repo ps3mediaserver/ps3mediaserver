@@ -183,10 +183,6 @@ public class PMS {
 		this.mencoder_main = mencoder_main;
 	}
 
-	/*public void setMencoder_style(String mencoder_style) {
-		this.mencoder_style = mencoder_style;
-	}*/
-
 	public void setMencoder_decode(String mencoder_decode) {
 		this.mencoder_decode = mencoder_decode;
 	}
@@ -603,33 +599,6 @@ public class PMS {
 	}
 
 	private ArrayList<String> enginesAsList;
-	/*private ArrayList<String> audioenginesAsList;
-	public ArrayList<String> getAudioenginesAsList() {
-		return audioenginesAsList;
-	}
-
-	public void setAudioenginesAsList(ArrayList<String> audioenginesAsList) {
-		this.audioenginesAsList = audioenginesAsList;
-	}
-
-	private ArrayList<String> webaudioenginesAsList;
-	private ArrayList<String> webvideoenginesAsList;
-
-	public ArrayList<String> getWebvideoenginesAsList() {
-		return webvideoenginesAsList;
-	}
-
-	public void setWebvideoenginesAsList(ArrayList<String> webvideoenginesAsList) {
-		this.webvideoenginesAsList = webvideoenginesAsList;
-	}
-
-	public ArrayList<String> getWebaudioenginesAsList() {
-		return webaudioenginesAsList;
-	}
-
-	public void setWebaudioenginesAsList(ArrayList<String> webenginesAsList) {
-		this.webaudioenginesAsList = webenginesAsList;
-	}*/
 
 	public void setEnginesAsList(ArrayList<String> enginesAsList) {
 		this.enginesAsList = enginesAsList;
@@ -878,9 +847,7 @@ public class PMS {
 					mencoder_main= value.trim();
 				} else if (key.equals("mencoder_decode") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_decode= value.trim();
-				} /*else if (key.equals("mencoder_substyle") && value.length() > 0) {
-					mencoder_style= value.trim();
-				}*/ else if (key.equals("mencoder_audiolangs") && value.length() > 0) { //$NON-NLS-1$
+				} else if (key.equals("mencoder_audiolangs") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_audiolangs = value.trim();
 				} else if (key.equals("mencoder_sublangs") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_sublangs = value.trim();
@@ -1568,9 +1535,6 @@ public class PMS {
 		saveFile.println("usecache=" + getTrue(usecache)); //$NON-NLS-1$
 		saveFile.println("charsetencoding=" + (charsetencoding!=null?charsetencoding:"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("engines=" + engines); //$NON-NLS-1$
-		/*saveFile.println("audioengines=" + audioengines);
-		saveFile.println("webaudioengines=" + webaudioengines);
-		saveFile.println("webvideoengines=" + webvideoengines);*/
 		saveFile.println("autoloadsrt=" + getTrue(usesubs)); //$NON-NLS-1$
 		saveFile.println("avisynth_convertfps=" + getTrue(avisynth_convertfps)); //$NON-NLS-1$
 		saveFile.println("avisynth_script=" + (avisynth_script!=null?avisynth_script:"")); //$NON-NLS-1$ //$NON-NLS-2$
