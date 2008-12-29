@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import javax.swing.JComponent;
 
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
@@ -30,6 +31,10 @@ public class TsMuxerAudio extends TSMuxerVideo {
 	
 	public static final String ID = "tsmuxeraudio"; //$NON-NLS-1$
 
+	public TsMuxerAudio(PmsConfiguration configuration) {
+		super(configuration);
+	}
+	
 	@Override
 	public JComponent config() {
 		return null;

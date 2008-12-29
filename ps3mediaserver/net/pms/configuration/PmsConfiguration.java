@@ -8,9 +8,14 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 public class PmsConfiguration {
-	private static final String CONFIGURATION_FILENAME = "PMS.conf";
 
 	private static final String KEY_TEMP_FOLDER_PATH = "temp";
+	private static final String KEY_TSMUXER_FORCEFPS = "tsmuxer_forcefps";
+	private static final String KEY_TSMUXER_PREREMUX_PCM = "tsmuxer_preremux_pcm";
+	private static final String KEY_AUDIO_BITRATE = "audiobitrate";
+	private static final String KEY_TSMUXER_PREREMIX_AC3 = "tsmuxer_preremix_ac3";
+
+	private static final String CONFIGURATION_FILENAME = "PMS.conf";
 
 	private final Configuration configuration;
 	private final TempFolder tempFolder;
@@ -79,6 +84,34 @@ public class PmsConfiguration {
 
 	public String getFlacPath() {
 		return programPaths.getFlacPath();
+	}
+
+	public boolean isTsmuxerForceFps() {
+		return configuration.getBoolean(KEY_TSMUXER_FORCEFPS, true);
+	}
+
+	public boolean isTsmuxerPreremuxAc3() {
+		return configuration.getBoolean(KEY_TSMUXER_PREREMIX_AC3, false);
+	}
+
+	public boolean isTsmuxerPreremuxPcm() {
+		return configuration.getBoolean(KEY_TSMUXER_PREREMUX_PCM, false);
+	}
+
+	public int getAudioBitrate() {
+		return configuration.getInt(KEY_AUDIO_BITRATE, 384);
+	}
+
+	public void setTsmuxerPreremuxAc3(boolean value) {
+		configuration.setProperty(KEY_TSMUXER_PREREMIX_AC3, value);
+	}
+
+	public void setTsmuxerPreremuxPcm(boolean value) {
+		configuration.setProperty(KEY_TSMUXER_PREREMUX_PCM, value);
+	}
+
+	public void setTsmuxerForceFps(boolean value) {
+		configuration.setProperty(KEY_TSMUXER_FORCEFPS, value);
 	}
 	
 }
