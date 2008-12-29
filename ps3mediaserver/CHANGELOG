@@ -6,11 +6,16 @@ v1.02
 
 - New features
 
-Album art for audio files, better tags support
+Auto-updater, default configuration, cleanups and windows/linux build scripts (thanks to Tim Cox)
+Preliminary album art support, better audio (flac) and tags parsing
+New options for video resolution, deinterlace filter, and archives browsing
+Better video settings with virtual PS3 menu (A/V sync, deinterlace, ...)
+
 
 - Fixes
 
 A/V out of sync issues on some medias
+External subtitles not always loaded
 Regression since 0.98, server would not start on some machines
 Small fixes
 

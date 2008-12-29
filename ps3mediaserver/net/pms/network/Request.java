@@ -176,9 +176,15 @@ public class Request extends HTTPResource {
 					}*/
 					CLoverride = files.get(0).length();
 					if (lowRange > 0 || highRange > 0) {
+						long totalsize = CLoverride;
 						if (highRange >= CLoverride)
 							highRange = CLoverride-1;
-						output(output, "CONTENT-RANGE: bytes " + lowRange + "-" + highRange + "/" +CLoverride);
+						if (CLoverride == -1) {
+							lowRange = 0;
+							totalsize = inputStream.available();
+							highRange = totalsize -1;
+						}
+						output(output, "CONTENT-RANGE: bytes " + lowRange + "-" + highRange + "/" +totalsize);
 					} /*else if (lowRange == 0 && highRange == DLNAMediaInfo.TRANS_SIZE) {
 						output(output, "CONTENT-RANGE: bytes 0-" + (CLoverride-1) + "/" + CLoverride);
 					}*/
@@ -254,6 +260,9 @@ public class Request extends HTTPResource {
 				response.append(CRLF);
 			} else if (soapaction.indexOf("ContentDirectory:1#Browse") > -1) {
 				objectID = getEnclosingValue(content, "<ObjectID>", "</ObjectID>");
+				if ((objectID == null || objectID.length() == 0) && PMS.get().isXboxfound()) {
+					objectID = getEnclosingValue(content, "<ContainerID>", "</ContainerID>");
+				}
 				Object sI = getEnclosingValue(content, "<StartingIndex>", "</StartingIndex>");
 				Object rC = getEnclosingValue(content, "<RequestedCount>", "</RequestedCount>");
 				browseFlag = getEnclosingValue(content, "<BrowseFlag>", "</BrowseFlag>");

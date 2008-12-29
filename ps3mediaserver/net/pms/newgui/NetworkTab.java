@@ -53,6 +53,7 @@ public class NetworkTab {
 	private JCheckBox  smcheckBox;
 	private JCheckBox  tmcheckBox;
 	private JCheckBox  blockBox;
+	private JCheckBox  archive;
 	private JTextField host;
 	private JTextField port; 
 	private JTextField encoding ;
@@ -215,7 +216,24 @@ public class NetworkTab {
        
        builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 11, 9)); //$NON-NLS-1$
        
-       builder.add(tncheckBox,          cc.xy(1,  13));
+       archive = new JCheckBox("Browse .RAR/.ZIP/.CBR archives");
+       archive.setContentAreaFilled(false);
+       archive.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				PMS.configuration.setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
+				PMS.get().getFrame().setReloadable(true);
+			}
+       	
+       });
+       if (PMS.configuration.isArchiveBrowsing())
+    	   archive.setSelected(true);
+       
+       
+       
+       builder.add(tncheckBox,          cc.xyw(1,  13, 2));
+       
+       builder.add(archive,          cc.xy(3,  13));
        
        builder.addLabel(Messages.getString("NetworkTab.16"),  cc.xy(1,  15)); //$NON-NLS-1$
        builder.add(seekpos,          cc.xyw(3,  15, 5));
