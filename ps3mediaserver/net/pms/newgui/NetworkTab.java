@@ -35,6 +35,7 @@ import javax.swing.JTextField;
 
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.io.CacheManager;
 import net.pms.util.KeyedComboBoxModel;
 
@@ -57,6 +58,12 @@ public class NetworkTab {
 	private JTextField encoding ;
 	private JComboBox nbcores ;
 	private JComboBox langs ;
+	
+	private final PmsConfiguration configuration;
+	
+	NetworkTab(PmsConfiguration configuration) {
+		this.configuration = configuration;
+	}
 	
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
@@ -258,11 +265,11 @@ public class NetworkTab {
     		public void keyTyped(KeyEvent e) {}
     		@Override
     		public void keyReleased(KeyEvent e) {
-       			PMS.get().setHostname(host.getText());
+       			configuration.setHostname(host.getText());
        			
        		}
         });
-        port = new JTextField(PMS.get().getPort()!=5001?"" + PMS.get().getPort():""); //$NON-NLS-1$ //$NON-NLS-2$
+        port = new JTextField(configuration.getServerPort()!=5001?"" + configuration.getServerPort():""); //$NON-NLS-1$ //$NON-NLS-2$
         port.addKeyListener(new KeyListener() {
 
     		@Override
@@ -273,7 +280,7 @@ public class NetworkTab {
     		public void keyReleased(KeyEvent e) {
        			try {
     				int ab = Integer.parseInt(port.getText());
-    				PMS.get().setPort(ab);
+    				configuration.setServerPort(ab);
     			} catch (NumberFormatException nfe) {}
        			
        		}

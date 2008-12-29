@@ -179,15 +179,6 @@ public class PMS {
 		this.mencoder_noass_outline = mencoder_noass_outline;
 	}
 
-	
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
-
 	public void setMencoder_main(String mencoder_main) {
 		this.mencoder_main = mencoder_main;
 	}
@@ -718,10 +709,7 @@ public class PMS {
 
 	private int maxaudiobuffer;
 	private int minstreambuffer;
-	private int port = 5001;
-	public int getPort() {
-		return port;
-	}
+
 
 	private int nbcores;
 	
@@ -741,17 +729,11 @@ public class PMS {
 
 	private String mplayer;
 	private String mencoder_main = ""; //$NON-NLS-1$
-	//private String mencoder_style = "";
 	private String mencoder_decode ="" ; //$NON-NLS-1$
+
 	public String getMencoder_decode() {
 		return mencoder_decode;
 	}
-
-	/*public String getMencoder_style() {
-		return mencoder_style;
-	}*/
-
-	
 
 	public String getMencoderMainSettings() {
 		return mencoder_main;
@@ -764,13 +746,11 @@ public class PMS {
 	private String folders = ""; //$NON-NLS-1$
 	private boolean filebuffer;
 	
-	String hostname;
-	
 	public boolean isForceMPlayer() {
 		return false;
 	}
 	public String getHostname() {
-		return hostname;
+		return configuration.getServerHostname();
 	}
 
 	public boolean isFilebuffer() {
@@ -827,13 +807,8 @@ public class PMS {
 			
 				String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
 				String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
-				if (key.equals("port") && value.length() > 0) { //$NON-NLS-1$
-					port = Integer.parseInt(value.trim());
-				} /*else if (key.equals("expert") && value.length() > 0) {
-					expert = true;
-				} */else if (key.equals("hostname") && value.length() > 0) { //$NON-NLS-1$
-					hostname = value.trim();
-				} else if (key.equals("proxy") && value.length() > 0) { //$NON-NLS-1$
+				
+				if (key.equals("proxy") && value.length() > 0) { //$NON-NLS-1$
 					proxy = Integer.parseInt(value.trim());
 				} else if (key.equals("language") && value.length() > 0) { //$NON-NLS-1$
 					language = value.trim();
@@ -1029,7 +1004,6 @@ public class PMS {
 			e.printStackTrace();
 		}
 		
-		port = 5001;
 		maxMemoryBufferSize = 400;
 		minMemoryBufferSize = 12;
 		maxaudiobuffer = 100;
@@ -1041,7 +1015,7 @@ public class PMS {
 		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, PMS.VERSION);
 		
 		if (System.getProperty("console") == null) {//$NON-NLS-1$
-			frame = new LooksFrame(autoUpdater);
+			frame = new LooksFrame(autoUpdater, configuration);
 			autoUpdater.pollServer();
 		} else
 			frame = new DummyFrame();
@@ -1090,7 +1064,7 @@ public class PMS {
 		extensions = new ArrayList<Format>();
 		players = new ArrayList<Player>();
 		allPlayers = new ArrayList<Player>();
-		server = new HTTPServer(port);
+		server = new HTTPServer(configuration.getServerPort());
 		
 		registerExtensions();
 		registerPlayers();
@@ -1102,7 +1076,7 @@ public class PMS {
 			binding = server.start();
 		} catch (BindException b) {
 			
-			PMS.minimal("FATAL ERROR : Unable to bind on port: " + port + " cause: " + b.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			PMS.minimal("FATAL ERROR : Unable to bind on port: " + configuration.getServerPort() + " cause: " + b.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 			PMS.minimal("Maybe another process is running or hostname is wrong..."); //$NON-NLS-1$
 			
 		}
@@ -1584,8 +1558,8 @@ public class PMS {
 		PMS.error(null, e);
 		}
 		saveFile.println("folders=" + folders); //$NON-NLS-1$
-		saveFile.println("hostname=" + (hostname!=null?hostname:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("port=" + (port!=5001?port:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("hostname=" + (configuration.getServerHostname()!=null?configuration.getServerHostname():"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("port=" + (configuration.getServerPort()!=5001?configuration.getServerPort():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("language=" + language); //$NON-NLS-1$
 		saveFile.println("maxvideobuffer=" + maxMemoryBufferSize); //$NON-NLS-1$
 		saveFile.println("thumbnails=" + getTrue(thumbnails)); //$NON-NLS-1$

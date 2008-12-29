@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 public class PmsConfiguration {
@@ -14,7 +15,11 @@ public class PmsConfiguration {
 	private static final String KEY_TSMUXER_PREREMUX_PCM = "tsmuxer_preremux_pcm";
 	private static final String KEY_AUDIO_BITRATE = "audiobitrate";
 	private static final String KEY_TSMUXER_PREREMIX_AC3 = "tsmuxer_preremix_ac3";
+	private static final String KEY_SERVER_PORT = "port";
+	private static final String KEY_SERVER_HOSTNAME = "hostname";
 
+	private static final int DEFAULT_SERVER_PORT = 5001;
+	
 	private static final String CONFIGURATION_FILENAME = "PMS.conf";
 
 	private final Configuration configuration;
@@ -28,8 +33,9 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Check if we have disabled something first, then check the Windows registry, 
-	 * then the config file, then check for a platform-specific default.
+	 * Check if we have disabled something first, then check the Windows
+	 * registry, then the config file, then check for a platform-specific
+	 * default.
 	 */
 	private static ProgramPathDisabler createProgramPathsChain(Configuration configuration) {
 		return  new ProgramPathDisabler(
@@ -99,7 +105,7 @@ public class PmsConfiguration {
 	}
 
 	public int getAudioBitrate() {
-		return configuration.getInt(KEY_AUDIO_BITRATE, 384);
+		return getInt(KEY_AUDIO_BITRATE, 384);
 	}
 
 	public void setTsmuxerPreremuxAc3(boolean value) {
@@ -113,5 +119,28 @@ public class PmsConfiguration {
 	public void setTsmuxerForceFps(boolean value) {
 		configuration.setProperty(KEY_TSMUXER_FORCEFPS, value);
 	}
-	
+
+	public int getServerPort() {
+		return getInt(KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
+	}
+
+	public void setServerPort(int value) {
+		configuration.setProperty(KEY_SERVER_PORT, value);
+	}
+
+	public String getServerHostname() {
+		return configuration.getString(KEY_SERVER_HOSTNAME, null);
+	}
+
+	public void setHostname(String value) {
+		configuration.setProperty(KEY_SERVER_HOSTNAME, value);
+	}
+
+	private int getInt(String key, int def) {
+		try {
+			return configuration.getInt(key, def);
+		} catch (ConversionException e) {
+			return def;
+		}
+	}
 }

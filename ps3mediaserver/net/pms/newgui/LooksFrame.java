@@ -58,6 +58,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.gui.IFrame;
 import net.pms.io.WindowsNamedPipe;
 import net.pms.newgui.update.AutoUpdateDialog;
@@ -71,9 +72,8 @@ import com.jgoodies.looks.windows.WindowsLookAndFeel;
 public class LooksFrame extends JFrame implements IFrame, Observer {
 	
 	private final AutoUpdater autoUpdater;
-	/**
-	 * 
-	 */
+	private final PmsConfiguration configuration;
+
 	private static final long serialVersionUID = 8723727186288427690L;
 	public TracesTab getTt() {
 		return tt;
@@ -100,9 +100,11 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
      * Constructs a <code>DemoFrame</code>, configures the UI,
      * and builds the content.
      */
-    public LooksFrame(AutoUpdater autoUpdater) {
+    public LooksFrame(AutoUpdater autoUpdater, PmsConfiguration configuration) {
     	this.autoUpdater = autoUpdater;
+    	this.configuration = configuration;
     	assertThat(this.autoUpdater, notNullValue());
+    	assertThat(this.configuration, notNullValue());
     	autoUpdater.addObserver(this);
     	update(autoUpdater, null);
     	Options.setDefaultIconSize(new Dimension(18, 18));
@@ -202,7 +204,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
     }
 	
 	public static void main(String[] args) {
-        LooksFrame instance = new LooksFrame(null);
+        LooksFrame instance = new LooksFrame(null, null);
         instance.setSize(PREFERRED_SIZE);
         instance.setResizable(false);
         Dimension paneSize = instance.getSize();
@@ -275,7 +277,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		 st = new StatusTab();
 		 tt = new TracesTab();
 		 tr = new TrTab2();
-		 nt = new NetworkTab();
+		 nt = new NetworkTab(configuration);
 		 
 		 tabbedPane.addTab(Messages.getString("LooksFrame.18"),/* readImageIcon("server-16.png"),*/ st.build()); //$NON-NLS-1$
 		 tabbedPane.addTab(Messages.getString("LooksFrame.19"),/* readImageIcon("mail_new-16.png"),*/ tt.build()); //$NON-NLS-1$
