@@ -52,6 +52,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	protected DLNAResource parent;
 	protected Format ext;
 	public DLNAMediaInfo media;
+	protected boolean notranscodefolder;
 	
 	protected Player player;
 	//protected DLNAResource original;
@@ -147,7 +148,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 							PMS.info("Switching " + child.getName() + " to player: " + pl.toString());
 						}
 							
-						if (child.ext.isVideo()) {
+						if (child.ext.isVideo() && !child.notranscodefolder) {
 							//search for transcode folder
 							for(DLNAResource r:children) {
 								if (r instanceof TranscodeVirtualFolder) {

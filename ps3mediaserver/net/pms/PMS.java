@@ -21,11 +21,13 @@ package net.pms;
 
 import java.awt.Toolkit;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.BindException;
 import java.text.SimpleDateFormat;
@@ -34,6 +36,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.UUID;
+import java.util.logging.LogManager;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.NotImplementedException;
@@ -48,9 +51,7 @@ import net.pms.dlna.RootFolder;
 import net.pms.dlna.VideosFeed;
 import net.pms.dlna.WebAudioStream;
 import net.pms.dlna.WebVideoStream;
-import net.pms.dlna.virtual.AVSyncAction;
-import net.pms.dlna.virtual.AutoSubLoadingAction;
-import net.pms.dlna.virtual.SkipLoopAction;
+import net.pms.dlna.virtual.VirtualVideoAction;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.FFMpegAudio;
 import net.pms.encoders.FFMpegVideo;
@@ -92,6 +93,7 @@ import net.pms.network.UPNPHelper;
 import net.pms.newgui.LooksFrame;
 import net.pms.update.AutoUpdater;
 import net.pms.util.ProcessUtil;
+import net.pms.util.SystemErrWrapper;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
@@ -656,6 +658,9 @@ public class PMS {
 		}
 	}
 	
+	@SuppressWarnings("unused")
+	private PrintStream stderr = System.err;  
+	
 	private boolean init () throws Exception {
 		
 		registry = new WinUtils();
@@ -733,6 +738,12 @@ public class PMS {
 			forceMPlayer = false;
 		*/
 		
+		
+		// disable jaudiotagger logging
+		LogManager.getLogManager().readConfiguration(new ByteArrayInputStream("org.jaudiotagger.level=OFF".getBytes()));
+		
+		// wrap System.err
+		System.setErr(new PrintStream(new SystemErrWrapper(), true));
 		
 		extensions = new ArrayList<Format>();
 		players = new ArrayList<Player>();
@@ -866,38 +877,43 @@ public class PMS {
 			}
 		}
 		
-		//VirtualFolder vf = new VirtualFolder("Expert Mode Folders", null);
-		//vf.setExpertMode();
-		/*for(File f:files) {
-			vf.addChild(new RealFile(f));
-		}
-		vf.closeChildren(0, false);
-		rootFolder.addChild(vf);*/
-		
+	
 		if (!PMS.get().isHidevideosettings()) {
-		VirtualFolder vf = new VirtualFolder("#- VIDEO SETTINGS -#", null); //$NON-NLS-1$
-		/*VirtualFolder vf2 = new VirtualFolder("#- Encoding Profiles / TESTS -#", null);
-		vf2.addChild(new EncodingProfileAction("Enter here to (re)enable default encoding profile", null, DEFAULT_PROFILE));
-		for(String profile:otherEncodingProfiles) {
-			vf2.addChild(new EncodingProfileAction("Enter here to activate encoding profile: " + profile.toUpperCase(), null, profile));
-		}
-		vf.addChild(vf2);*/
-		vf.addChild(new SkipLoopAction(Messages.getString("PMS.193"), null)); //$NON-NLS-1$
-		vf.addChild(new SkipLoopAction(Messages.getString("PMS.194"), null)); //$NON-NLS-1$
-		vf.addChild(new AVSyncAction(Messages.getString("PMS.195"), null)); //$NON-NLS-1$
-		vf.addChild(new AVSyncAction(Messages.getString("PMS.196"), null)); //$NON-NLS-1$
-		vf.addChild(new AutoSubLoadingAction(Messages.getString("PMS.197"), null)); //$NON-NLS-1$
-		vf.addChild(new AutoSubLoadingAction(Messages.getString("PMS.198"), null)); //$NON-NLS-1$
-		//vf.addChild(new RefreshAction("Enter this folder to force refresh of all folders", null));
-		
-		/*vf.addChild(new VirtualAction("Enable/Disable SkipLoopFilter", "images/Play1Hot_256.png", "videos/action_success-512.mpg", "videos/button_cancel-512.mpg") {
-			public boolean enable() {
-				skiploopfilter = !skiploopfilter;
-				return skiploopfilter;
-			}
-		});*/
-		vf.closeChildren(0, false);
-		rootFolder.addChild(vf);
+			VirtualFolder vf = new VirtualFolder("#- VIDEO SETTINGS -#", null); //$NON-NLS-1$
+			
+			vf.addChild(new VirtualVideoAction("A/V sync correction", mencoder_nooutofsync) {
+				public boolean enable() {
+					mencoder_nooutofsync = !mencoder_nooutofsync;
+					
+					return mencoder_nooutofsync;
+				}
+			});
+			
+			vf.addChild(new VirtualVideoAction("Deinterlace Filter", configuration.isMencoderYadif()) {
+				public boolean enable() {
+					configuration.setMencoderYadif(!configuration.isMencoderYadif());
+					
+					return  configuration.isMencoderYadif();
+				}
+			});
+			
+			vf.addChild(new VirtualVideoAction("Auto load .srt/.sub subtitles", usesubs) {
+				public boolean enable() {
+					usesubs = !usesubs;
+					
+					return usesubs;
+				}
+			});
+			
+			vf.addChild(new VirtualVideoAction("SkipLoopFilter for H264 Decoding [COULD DEGRADE QUALITY]", skiploopfilter) {
+				public boolean enable() {
+					skiploopfilter = !skiploopfilter;
+					
+					return skiploopfilter;
+				}
+			});
+			vf.closeChildren(0, false);
+			rootFolder.addChild(vf);
 		}
 		rootFolder.closeChildren(0, false);
 	}
@@ -936,6 +952,7 @@ public class PMS {
 		extensions.add(new TIF());
 		extensions.add(new FLAC());
 		extensions.add(new DVRMS());
+		//extensions.add(new RAW());
 	}
 	
 	private void registerPlayers() {
@@ -953,7 +970,7 @@ public class PMS {
 		registerPlayer(new VideoLanAudioStreaming(configuration));
 		registerPlayer(new VideoLanVideoStreaming(configuration));
 		registerPlayer(new FFMpegDVRMSRemux());
-		
+		//registerPlayer(new RAWPictureDecoding());
 		frame.addEngines();
 	}
 	
@@ -1246,6 +1263,7 @@ public class PMS {
 		saveFile.println("audiobitrate=" + audiobitrate); //$NON-NLS-1$
 		saveFile.println("maximumbitrate=" + maximumbitrate); //$NON-NLS-1$
 		saveFile.println("skiploopfilter=" + getTrue(skiploopfilter)); //$NON-NLS-1$
+		saveFile.println("enable_archive_browsing=" + configuration.isArchiveBrowsing()); //$NON-NLS-1$
 		saveFile.println("mencoder_fontconfig=" + configuration.isMencoderFontConfig()); //$NON-NLS-1$
 		saveFile.println("mencoder_font=" + (configuration.getMencoderFont()!=null?configuration.getMencoderFont():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_forcefps=" + configuration.isMencoderForceFps()); //$NON-NLS-1$
@@ -1269,6 +1287,10 @@ public class PMS {
 		saveFile.println("mencoder_subcp=" + (configuration.getMencoderSubCp()!=null?configuration.getMencoderSubCp():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_ass=" + configuration.isMencoderAss()); //$NON-NLS-1$
 		saveFile.println("mencoder_disablesubs=" + configuration.isMencoderDisableSubs()); //$NON-NLS-1$
+		saveFile.println("mencoder_yadif=" + configuration.isMencoderYadif()); //$NON-NLS-1$
+		saveFile.println("mencoder_scaler=" + configuration.isMencoderScaler()); //$NON-NLS-1$
+		saveFile.println("mencoder_scalex=" + configuration.getMencoderScaleX()); //$NON-NLS-1$
+		saveFile.println("mencoder_scaley=" + configuration.getMencoderScaleY()); //$NON-NLS-1$
 		saveFile.println("ffmpeg=" + (ffmpeg!=null?ffmpeg:"")); //$NON-NLS-1$ //$NON-NLS-2$
 		if (alternativeffmpegPath != null)
 			saveFile.println("alternativeffmpegpath=" + alternativeffmpegPath); //$NON-NLS-1$

@@ -33,7 +33,7 @@ public class DVDISOFile extends VirtualFolder {
 	public void init() {
 		
 	
-		double titles [] = new double [99];
+		double titles [] = new double [100];
 		String cmd [] = new String [] { PMS.get().getMPlayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", f.getAbsolutePath(), "dvd://1" };
 		OutputParams params = new OutputParams(PMS.configuration);
 		params.maxBufferSize = 1;

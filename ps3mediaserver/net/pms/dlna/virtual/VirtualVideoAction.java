@@ -22,34 +22,43 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import net.pms.PMS;
-import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.network.HTTPResource;
 
-public abstract class VirtualAction extends DLNAResource {
+public abstract class VirtualVideoAction extends DLNAResource {
 	
 	private boolean enabled;
 
 	protected String name;
-	private String thumbnailIcon;
+	private String thumbnailIconOK;
+	private String thumbnailIconKO;
 	private String thumbnailContentType;
 	private String videoOk;
 	private String videoKo;
+	private long timer1;
 	
-	public VirtualAction(String name, String thumbnailIcon, String videoOk, String videoKo) {
+	
+	public VirtualVideoAction(String name, boolean enabled) {
 		this.name = name;
-		this.thumbnailIcon = thumbnailIcon;
-		if (thumbnailIcon != null && thumbnailIcon.toLowerCase().endsWith(".png"))
-			thumbnailContentType = HTTPResource.PNG_TYPEMIME;
-		else
-			thumbnailContentType = HTTPResource.JPEG_TYPEMIME;
-		this.videoOk = videoOk;
-		this.videoKo = videoKo;
+		thumbnailContentType = HTTPResource.PNG_TYPEMIME;
+		thumbnailIconOK = "images/apply-256.png";
+		thumbnailIconKO = "images/button_cancel-256.png";
+		this.videoOk = "videos/action_success-512.mpg";
+		this.videoKo = "videos/button_cancel-512.mpg";
+		timer1 = -1;
+		notranscodefolder = true;
+		this.enabled = enabled; 
 	}
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		enabled = enable();
+		if (timer1 == -1)
+			timer1 = System.currentTimeMillis();
+		else if (System.currentTimeMillis() - timer1 < 2000){
+			timer1 = -1;
+		}
+		if (timer1 != -1)
+			enabled = enable();
 		return getResourceInputStream(enabled?videoOk:videoKo);
 	}
 	
@@ -67,7 +76,7 @@ public abstract class VirtualAction extends DLNAResource {
 
 	@Override
 	public long length() {
-		return DLNAMediaInfo.TRANS_SIZE;
+		return -1; //DLNAMediaInfo.TRANS_SIZE;
 	}
 
 	public long lastModified() {
@@ -81,7 +90,7 @@ public abstract class VirtualAction extends DLNAResource {
 	
 	@Override
 	public InputStream getThumbnailInputStream() {
-		return getResourceInputStream(thumbnailIcon);
+		return getResourceInputStream(enabled?thumbnailIconOK:thumbnailIconKO);
 	}
 	
 	@Override
