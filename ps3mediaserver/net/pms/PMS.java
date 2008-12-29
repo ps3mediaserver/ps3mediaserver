@@ -828,13 +828,7 @@ public class PMS {
 			
 				String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
 				String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
-				if (key.equals("temp")) { //$NON-NLS-1$
-					if (value !=  null) {
-						// do nothing - handled by Configuration.java now
-					}
-				} else if (key.equals("vlc_path") && value.length() > 0) { //$NON-NLS-1$
-					// do nothing - handled by Configuration.java now
-				} else if (key.equals("port") && value.length() > 0) { //$NON-NLS-1$
+				if (key.equals("port") && value.length() > 0) { //$NON-NLS-1$
 					port = Integer.parseInt(value.trim());
 				} /*else if (key.equals("expert") && value.length() > 0) {
 					expert = true;
@@ -959,18 +953,8 @@ public class PMS {
 					avisynth_script = value.trim();
 				} else if (key.equals("buffertype") && value.length() > 0) { //$NON-NLS-1$
 					filebuffer = value.trim().equals("file"); //$NON-NLS-1$
-				} else if (key.equals("ffmpeg_path") && value.length() > 0) { //$NON-NLS-1$
-					// do nothing - done by Configuration.java now
 				} else if (key.equals("alternativeffmpegpath") && value.length() > 0) { //$NON-NLS-1$
 					alternativeffmpegPath = value.trim();
-				} else if (key.equals("mencoder_path") && value.length() > 0) { //$NON-NLS-1$
-					// do nothing - done by Configuration.java now
-				} else if (key.equals("mplayer_path") && value.length() > 0) { //$NON-NLS-1$
-					// do nothing - done by Configuration.java now
-				} else if (key.equals("tsmuxer_path") && value.length() > 0) { //$NON-NLS-1$
-					// do nothing - done by Configuration.java now
-				} else if (key.equals("eac3to_path") && value.length() > 0) { //$NON-NLS-1$
-					// do nothing - handled by Configuration.java
 				} else if (key.equals("encoding") && value.length() > 0) { //$NON-NLS-1$
 					System.setProperty("file.encoding", value.trim()); //$NON-NLS-1$
 				} 
