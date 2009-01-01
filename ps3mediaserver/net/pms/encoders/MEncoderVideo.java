@@ -786,7 +786,7 @@ private JTextField mencoder_ass_scale;
 		//}
 		if (PMS.get().getMencoderMainSettings() != null) {
 			String encodeSettings = "-lavcopts autoaspect=1:vcodec=mpeg2video:acodec=ac3:abitrate=" + PMS.get().getAudiobitrate() + ":threads=" + PMS.get().getNbcores() + ":" + PMS.get().getMencoderMainSettings(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			String m = PMS.get().getMaximumbitrate();
+			String m = "" + PMS.get().getMaximumbitrate();
 			int bufs = 0;
 			if (m.contains("(") && m.contains(")")) { //$NON-NLS-1$ //$NON-NLS-2$
 				bufs = Integer.parseInt(m.substring(m.indexOf("(")+1, m.indexOf(")"))); //$NON-NLS-1$ //$NON-NLS-2$

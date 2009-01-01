@@ -49,9 +49,32 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_SCALEX = "mencoder_scalex";
 	private static final String KEY_MENCODER_SCALEY = "mencoder_scaley";
 	private static final String KEY_OPEN_ARCHIVES = "enable_archive_browsing";
+	private static final String KEY_AUDIO_CHANNEL_COUNT = "audiochannels";
+	private static final String KEY_MAX_BITRATE = "maximumbitrate";
+	private static final String KEY_THUMBNAILS_ENABLED = "thumbnails";
+	private static final String KEY_NUMBER_OF_CPU_CORES = "nbcores";
+	private static final String KEY_TURBO_MODE_ENABLED = "turbomode";
+	private static final String KEY_MINIMIZED = "minimized";
+	private static final String KEY_USE_SUBTITLES = "autoloadsrt";
+	private static final String KEY_HIDE_VIDEO_SETTINGS = "hidevideosettings";
+	private static final String KEY_USE_CACHE = "usecache";
+	private static final String KEY_AVISYNTH_CONVERT_FPS = "avisynth_convertfps";
+	private static final String KEY_AVISYNTH_SCRIPT = "avisynth_script";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
+	private static final int UNLIMITED_BITRATE = 0;
+	
+	private static final String DEFAULT_AVI_SYNTH_SCRIPT = 
+		  "#AviSynth script is now fully customisable !\n" 
+		+ "#You must use the following variables (\"clip\" being the avisynth variable of the movie):\n"
+		+ "#<movie>: insert the complete DirectShowSource instruction [ clip=DirectShowSource(movie, convertfps) ]" 
+		+ "#<sub>: insert the complete TextSub/VobSub instruction if there's any detected srt/sub/idx/ass subtitle file" 
+		+ "#<moviefilename>: variable of the movie filename, if you want to do all this by yourself" 
+		+ "#Be careful, the custom script MUST return the clip object"
+		+ "<movie>" 
+		+ "<sub>" 
+		+ "return clip";
 	
 	private static final int MAX_MAX_MEMORY_BUFFER_SIZE = 630;
 	
@@ -448,5 +471,97 @@ public class PmsConfiguration {
 
 	public void setMencoderScaleY(int value) {
 		configuration.setProperty(KEY_MENCODER_SCALEY, value);
+	}
+	
+	public int getAudioChannelCount() {
+		return getInt(KEY_AUDIO_CHANNEL_COUNT, 6);
+	}
+	
+	public void setAudioChannelCount(int value) {
+		configuration.setProperty(KEY_AUDIO_CHANNEL_COUNT, value);
+	}
+
+	public void setAudioBitrate(int value) {
+		configuration.setProperty(KEY_AUDIO_BITRATE, value);
+	}
+
+	public int getMaximumBitrate() {
+		return getInt(KEY_MAX_BITRATE, UNLIMITED_BITRATE);
+	}
+
+	public void setMaximumBitrate(String value) {
+		configuration.setProperty(KEY_MAX_BITRATE, value);
+	}
+
+	public boolean getThumbnailsEnabled() {
+		return getBoolean(KEY_THUMBNAILS_ENABLED, true);
+	}
+
+	public void setThumbnailsEnabled(boolean value) {
+		configuration.setProperty(KEY_THUMBNAILS_ENABLED, value);
+	}
+
+	public int getNumberOfCpuCores() {
+		return getInt(KEY_NUMBER_OF_CPU_CORES, 1);
+	}
+	
+	public void setNumberOfCpuCores(int value) {
+		configuration.setProperty(KEY_NUMBER_OF_CPU_CORES, value);
+	}
+
+	public boolean isTurboModeEnabled() {
+		return getBoolean(KEY_TURBO_MODE_ENABLED, false);
+	}
+
+	public void setTurboModeEnabled(boolean value) {
+		configuration.setProperty(KEY_TURBO_MODE_ENABLED, value);
+	}
+
+	public boolean isMinimized() {
+		return getBoolean(KEY_MINIMIZED, false);
+	}
+
+	public void setMinimized(boolean value) {
+		configuration.setProperty(KEY_MINIMIZED, value);
+	}
+
+	public boolean getUseSubtitles() {
+		return getBoolean(KEY_USE_SUBTITLES, true);
+	}
+	
+	public void setUseSubtitles(boolean value) {
+		configuration.setProperty(KEY_USE_SUBTITLES, value);
+	}
+
+	public boolean getHideVideoSettings() {
+		return getBoolean(KEY_HIDE_VIDEO_SETTINGS, false);
+	}
+
+	public void setHideVideoSettings(boolean value) {
+		configuration.setProperty(KEY_HIDE_VIDEO_SETTINGS, value);
+	}
+
+	public boolean getUseCache() {
+		return getBoolean(KEY_USE_CACHE, false);
+	}
+
+	public void setUseCache(boolean value) {
+		configuration.setProperty(KEY_USE_CACHE, value);
+	}
+
+	public void setAvisynthConvertFps(boolean value) {
+		configuration.setProperty(KEY_AVISYNTH_CONVERT_FPS, value);
+	}
+
+	public boolean getAvisynthConvertFps() {
+		return getBoolean(KEY_AVISYNTH_CONVERT_FPS, true);
+	}
+
+	public String getAvisynthScript() {
+		return getString(KEY_AVISYNTH_SCRIPT, DEFAULT_AVI_SYNTH_SCRIPT);
+	}
+
+	public void setAvisynthScript(String value) {
+		configuration.setProperty(KEY_AVISYNTH_SCRIPT, value);
 	}
 }

@@ -124,19 +124,19 @@ public class PMS {
 	}
 
 	public void setTurbomode(boolean turbomode) {
-		this.turbomode = turbomode;
+		configuration.setTurboModeEnabled(turbomode);
 	}
 
 	public void setAudiochannels(int audiochannels) {
-		this.audiochannels = audiochannels;
+		configuration.setAudioChannelCount(audiochannels);
 	}
 
 	public void setAudiobitrate(int audiobitrate) {
-		this.audiobitrate = audiobitrate;
+		configuration.setAudioBitrate(audiobitrate);
 	}
 
 	public void setThumbnails(boolean thumbnails) {
-		this.thumbnails = thumbnails;
+		configuration.setThumbnailsEnabled(thumbnails);
 	}
 
 	public IFrame getFrame() {
@@ -195,14 +195,12 @@ public class PMS {
 		return allPlayers;
 	}
 	
-	private boolean usecache;
-
 	public boolean isUsecache() {
-		return usecache;
+		return configuration.getUseCache();
 	}
 
 	public void setUsecache(boolean usecache) {
-		this.usecache = usecache;
+		configuration.setUseCache(usecache);
 	}
 
 	private boolean tsmuxer_forcefps;
@@ -215,13 +213,12 @@ public class PMS {
 		this.tsmuxer_forcefps = tsmuxer_forcefps;
 	}
 	
-	private String maximumbitrate;
-	public String getMaximumbitrate() {
-		return maximumbitrate;
+	public int getMaximumbitrate() {
+		return configuration.getMaximumBitrate();
 	}
 
 	public void setMaximumbitrate(String maximumbitrate) {
-		this.maximumbitrate = maximumbitrate;
+		configuration.setMaximumBitrate(maximumbitrate);
 	}
 
 	private boolean mencoder_intelligent_sync = true;
@@ -234,7 +231,6 @@ public class PMS {
 	}
 
 	private ProxyServer proxyServer;
-	private boolean turbomode;
 	private String charsetencoding = "ISO-8859-1"; //$NON-NLS-1$
 	
 	public String getEncoding() {
@@ -242,7 +238,7 @@ public class PMS {
 	}
 
 	public boolean isTurbomode() {
-		return turbomode;
+		return configuration.isTurboModeEnabled();
 	}
 
 	public ProxyServer getProxy() {
@@ -320,14 +316,12 @@ public class PMS {
 		this.webvideoengines = webvideoengines;
 	}
 */
-	private boolean hidevideosettings;
-	
 	public boolean isHidevideosettings() {
-		return hidevideosettings;
+		return configuration.getHideVideoSettings();
 	}
 
 	public void setHidevideosettings(boolean hidevideosettings) {
-		this.hidevideosettings = hidevideosettings;
+		configuration.setHideVideoSettings(hidevideosettings);
 	}
 
 	private String alternativeffmpegPath;
@@ -381,14 +375,12 @@ public class PMS {
 		return enginesAsList;
 	}
 	
-	private boolean minimized;
-	
 	public boolean isMinimized() {
-		return minimized;
+		return configuration.isMinimized();
 	}
 
 	public void setMinimized(boolean minimized) {
-		this.minimized = minimized;
+		configuration.setMinimized(minimized);
 	}
 
 	public String getMPlayerPath() {
@@ -408,16 +400,13 @@ public class PMS {
 		return configuration.getTsmuxerPath();
 	}
 
-	private int audiochannels;
-	
 	public int getAudiochannels() {
-		return audiochannels;
+		return configuration.getAudioChannelCount();
 	}
 	
-	private int audiobitrate;
 
 	public int getAudiobitrate() {
-		return audiobitrate;
+		return configuration.getAudioBitrate();
 	}
 
 	
@@ -425,33 +414,27 @@ public class PMS {
 		return Platform.isWindows();
 	}
 	
-	boolean thumbnails;
-
 	public boolean isThumbnails() {
-		return thumbnails;
+		return configuration.getThumbnailsEnabled();
 	}
 
-	private boolean usesubs = true;
 	public void setUsesubs(boolean usesubs) {
-		this.usesubs = usesubs;
+		configuration.setUseSubtitles(usesubs);
 	}
 
 	public boolean isUsesubs() {
-		return usesubs;
+		return configuration.getUseSubtitles();
 	}
 
 	private int maxaudiobuffer;
 	private int minstreambuffer;
 
-
-	private int nbcores;
-	
 	public int getNbcores() {
-		return nbcores;
+		return configuration.getNumberOfCpuCores();
 	}
 
 	public void setNbcores(int nbcores) {
-		this.nbcores = nbcores;
+		configuration.setNumberOfCpuCores(nbcores);
 	}
 
 	private int proxy;
@@ -503,24 +486,20 @@ public class PMS {
 		this.mencoder_nooutofsync = mencoder_nooutofsync;
 	}
 
-	private boolean avisynth_convertfps = true;
-	
 	public void setAvisynth_convertfps(boolean avisynth_convertfps) {
-		this.avisynth_convertfps = avisynth_convertfps;
+		configuration.setAvisynthConvertFps(avisynth_convertfps);
 	}
 
 	public boolean isAvisynth_convertfps() {
-		return avisynth_convertfps;
+		return configuration.getAvisynthConvertFps();
 	}
-	
-	private String avisynth_script;
 	
 	public String getAvisynth_script() {
-		return avisynth_script;
+		return configuration.getAvisynthScript();
 	}
 
-	public void setAvisynth_script(String avisynth_script) {
-		this.avisynth_script = avisynth_script;
+	public void setAvisynth_script(String value) {
+		configuration.setAvisynthScript(value);
 	}
 
 	private boolean isTrue(String s) {
@@ -546,16 +525,8 @@ public class PMS {
 					minstreambuffer = Integer.parseInt(value.trim());
 				} else if (key.equals("maxaudiobuffer") && value.length() > 0) { //$NON-NLS-1$
 					maxaudiobuffer = Integer.parseInt(value.trim());
-				} else if (key.equals("audiochannels") && value.length() > 0) { //$NON-NLS-1$
-					audiochannels = Integer.parseInt(value.trim());
-				} else if (key.equals("audiobitrate") && value.length() > 0) { //$NON-NLS-1$
-					audiobitrate = Integer.parseInt(value.trim());
-				} else if (key.equals("maximumbitrate") && value.length() > 0) { //$NON-NLS-1$
-					maximumbitrate = value.trim();
 				} else if (key.equals("level") && value.length() > 0) { //$NON-NLS-1$
 					level = Integer.parseInt(value.trim());
-				} else if (key.equals("nbcores") && value.length() > 0) { //$NON-NLS-1$
-					nbcores = Integer.parseInt(value.trim());
 				} else if (key.equals("charsetencoding") && value.length() > 0) { //$NON-NLS-1$
 					charsetencoding = value.trim();
 				} else if (key.equals("ffmpeg") && value.length() > 0) { //$NON-NLS-1$
@@ -566,22 +537,10 @@ public class PMS {
 					skiploopfilter = isTrue(value.trim());
 				} else if (key.equals("mencoder_nooutofsync") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_nooutofsync = isTrue(value.trim());
-				} else if (key.equals("minimized") && value.length() > 0) { //$NON-NLS-1$
-					minimized = isTrue(value.trim());
-				} else if (key.equals("thumbnails") && value.length() > 0) { //$NON-NLS-1$
-					thumbnails = isTrue(value.trim());
-				} else if (key.equals("hidevideosettings") && value.length() > 0) { //$NON-NLS-1$
-					hidevideosettings = isTrue(value.trim());
 				} else if (key.equals("mencoder_intelligent_sync") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_intelligent_sync = isTrue(value.trim());
-				} else if (key.equals("usecache") && value.length() > 0) { //$NON-NLS-1$
-					usecache = isTrue(value.trim());
 				} else if (key.equals("mencoder_encode") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_main= value.trim();
-				} else if (key.equals("autoloadsrt") && value.length() > 0) { //$NON-NLS-1$
-					usesubs = isTrue(value.trim());
-				} else if (key.equals("turbomode") && value.length() > 0) { //$NON-NLS-1$
-					turbomode = isTrue(value.trim());
 				} else if (key.equals("engines") && value.length() > 0) { //$NON-NLS-1$
 					engines = value.trim();
 					if (!engines.equals("none")) { //$NON-NLS-1$
@@ -592,16 +551,12 @@ public class PMS {
 							enginesAsList.add(engine);
 						}
 					}
-				} else if (key.equals("avisynth_convertfps") && value.length() > 0) { //$NON-NLS-1$
-					avisynth_convertfps = isTrue(value.trim());
 				} else if (key.equals("transcode_block_multiple_connections") && value.length() > 0) { //$NON-NLS-1$
 					transcode_block_multiple_connections = isTrue(value.trim());
 				} else if (key.equals("tsmuxer_forcefps") && value.length() > 0) { //$NON-NLS-1$
 					tsmuxer_forcefps = isTrue(value.trim());
 				} else if (key.equals("folders") && value.length() > 0) { //$NON-NLS-1$
 					folders = value.trim();
-				} else if (key.equals("avisynth_script") && value.length() > 0) { //$NON-NLS-1$
-					avisynth_script = value.trim();
 				} else if (key.equals("buffertype") && value.length() > 0) { //$NON-NLS-1$
 					filebuffer = value.trim().equals("file"); //$NON-NLS-1$
 				} else if (key.equals("alternativeffmpegpath") && value.length() > 0) { //$NON-NLS-1$
@@ -897,11 +852,12 @@ public class PMS {
 				}
 			});
 			
-			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.6"), usesubs) { //$NON-NLS-1$
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.6"), configuration.getUseSubtitles()) { //$NON-NLS-1$
 				public boolean enable() {
-					usesubs = !usesubs;
-					
-					return usesubs;
+					boolean oldValue = configuration.getUseSubtitles();
+					boolean newValue = ! oldValue;
+					configuration.setUseSubtitles( newValue );
+					return newValue;
 				}
 			});
 			
@@ -1243,25 +1199,25 @@ public class PMS {
 		saveFile.println("hostname=" + (configuration.getServerHostname()!=null?configuration.getServerHostname():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("port=" + (configuration.getServerPort()!=5001?configuration.getServerPort():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("language=" + configuration.getLanguage()); //$NON-NLS-1$
-		saveFile.println("thumbnails=" + getTrue(thumbnails)); //$NON-NLS-1$
+		saveFile.println("thumbnails=" + configuration.getThumbnailsEnabled()); //$NON-NLS-1$
 		saveFile.println("thumbnail_seek_pos=" + configuration.getThumbnailSeekPos()); //$NON-NLS-1$
-		saveFile.println("nbcores=" + nbcores); //$NON-NLS-1$
-		saveFile.println("turbomode=" + getTrue(turbomode)); //$NON-NLS-1$
-		saveFile.println("minimized=" + getTrue(minimized)); //$NON-NLS-1$
-		saveFile.println("hidevideosettings=" + getTrue(hidevideosettings)); //$NON-NLS-1$
-		saveFile.println("usecache=" + getTrue(usecache)); //$NON-NLS-1$
+		saveFile.println("nbcores=" + configuration.getNumberOfCpuCores()); //$NON-NLS-1$
+		saveFile.println("turbomode=" + configuration.isTurboModeEnabled()); //$NON-NLS-1$
+		saveFile.println("minimized=" + configuration.isMinimized()); //$NON-NLS-1$
+		saveFile.println("hidevideosettings=" + configuration.getHideVideoSettings()); //$NON-NLS-1$
+		saveFile.println("usecache=" + configuration.getUseCache()); //$NON-NLS-1$
 		saveFile.println("charsetencoding=" + (charsetencoding!=null?charsetencoding:"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("engines=" + engines); //$NON-NLS-1$
-		saveFile.println("autoloadsrt=" + getTrue(usesubs)); //$NON-NLS-1$
-		saveFile.println("avisynth_convertfps=" + getTrue(avisynth_convertfps)); //$NON-NLS-1$
-		saveFile.println("avisynth_script=" + (avisynth_script!=null?avisynth_script:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("autoloadsrt=" + configuration.getUseSubtitles()); //$NON-NLS-1$
+		saveFile.println("avisynth_convertfps=" + configuration.getAvisynthConvertFps()); //$NON-NLS-1$
+		saveFile.println("avisynth_script=" + configuration.getAvisynthScript()); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("transcode_block_multiple_connections=" + getTrue(transcode_block_multiple_connections)); //$NON-NLS-1$
 		saveFile.println("tsmuxer_forcefps=" + getTrue(tsmuxer_forcefps)); //$NON-NLS-1$
 		saveFile.println("tsmuxer_preremux_pcm=" + configuration.isTsmuxerPreremuxPcm()); //$NON-NLS-1$
 		saveFile.println("tsmuxer_preremux_ac3=" + configuration.isTsmuxerPreremuxAc3()); //$NON-NLS-1$
-		saveFile.println("audiochannels=" + audiochannels); //$NON-NLS-1$
-		saveFile.println("audiobitrate=" + audiobitrate); //$NON-NLS-1$
-		saveFile.println("maximumbitrate=" + maximumbitrate); //$NON-NLS-1$
+		saveFile.println("audiochannels=" + configuration.getAudioChannelCount()); //$NON-NLS-1$
+		saveFile.println("audiobitrate=" + configuration.getAudioBitrate()); //$NON-NLS-1$
+		saveFile.println("maximumbitrate=" + configuration.getMaximumBitrate()); //$NON-NLS-1$
 		saveFile.println("skiploopfilter=" + getTrue(skiploopfilter)); //$NON-NLS-1$
 		saveFile.println("enable_archive_browsing=" + configuration.isArchiveBrowsing()); //$NON-NLS-1$
 		saveFile.println("mencoder_fontconfig=" + configuration.isMencoderFontConfig()); //$NON-NLS-1$
