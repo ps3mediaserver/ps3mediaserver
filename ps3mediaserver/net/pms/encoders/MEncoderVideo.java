@@ -786,7 +786,7 @@ private JTextField mencoder_ass_scale;
 		//}
 		if (PMS.get().getMencoderMainSettings() != null) {
 			String encodeSettings = "-lavcopts autoaspect=1:vcodec=mpeg2video:acodec=ac3:abitrate=" + PMS.get().getAudiobitrate() + ":threads=" + PMS.get().getNbcores() + ":" + PMS.get().getMencoderMainSettings(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			String m = "" + PMS.get().getMaximumbitrate();
+			String m = "" + PMS.get().getMaximumbitrate(); //$NON-NLS-1$
 			int bufs = 0;
 			if (m.contains("(") && m.contains(")")) { //$NON-NLS-1$ //$NON-NLS-2$
 				bufs = Integer.parseInt(m.substring(m.indexOf("(")+1, m.indexOf(")"))); //$NON-NLS-1$ //$NON-NLS-2$
@@ -958,6 +958,7 @@ private JTextField mencoder_ass_scale;
 			}
 		}
 		
+		boolean nosubfound = false;
 		
 		cmdArray[cmdArray.length-12] = "-quiet"; //$NON-NLS-1$
 		cmdArray[cmdArray.length-11] = "-quiet"; //$NON-NLS-1$
@@ -978,6 +979,7 @@ private JTextField mencoder_ass_scale;
 				cmdArray[cmdArray.length-9] = maxid + ""; //$NON-NLS-1$
 			}
 		} else if (subString == null) {
+			nosubfound = true;
 			for(i=0;i<defaultSubArgs.length;i++) {
 				if (i < 2)
 					cmdArray[cmdArray.length-12+i] = defaultSubArgs[i];
@@ -996,6 +998,14 @@ private JTextField mencoder_ass_scale;
 				cmdArray[cmdArray.length-11] = "" + as[0]; //$NON-NLS-1$
 				cmdArray[cmdArray.length-10] = "-sid"; //$NON-NLS-1$
 				cmdArray[cmdArray.length-9] = "" + as[1]; //$NON-NLS-1$
+			}
+		}
+		
+		// disable ass if there are no subs (not safe ?)
+		if (nosubfound && media != null && (media.subtitlesCodes == null || media.subtitlesCodes.size() == 0)) {
+			for(int c=0;c<cmdArray.length;c++) {
+				if (cmdArray[c] != null && cmdArray[c].equals("-ass")) //$NON-NLS-1$
+					cmdArray[c] = "-quiet"; //$NON-NLS-1$
 			}
 		}
 		
@@ -1037,12 +1047,23 @@ private JTextField mencoder_ass_scale;
 			cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
 		}
 		
-		// set noskip and -mc 0
 		if (configuration.isMencoderYadif()) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
 			cmdArray[cmdArray.length-4] = "-vf"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-3] = "yadif"; //$NON-NLS-1$
 		}
+		
+		if (fileName.toLowerCase().endsWith("evo")) { //$NON-NLS-1$
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
+			cmdArray[cmdArray.length-4] = "-psprobe"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-3] = "10000"; //$NON-NLS-1$
+		}
+		
+		/*if (fileName.toLowerCase().endsWith("flv") || fileName.toLowerCase().endsWith("mov") || fileName.toLowerCase().endsWith("evo") || fileName.toLowerCase().endsWith("rmvb") || fileName.toLowerCase().endsWith("rm")) {
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
+			cmdArray[cmdArray.length-4] = "-vf"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-3] = "fixpts"; //$NON-NLS-1$
+		}*/
 		
 		if (configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0)) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
@@ -1050,6 +1071,7 @@ private JTextField mencoder_ass_scale;
 			cmdArray[cmdArray.length-3] = "scale=" + configuration.getMencoderScaleX() + ":" + configuration.getMencoderScaleY(); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
+		// set noskip and -mc 0
 		if (PMS.get().isMencoder_nooutofsync()) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +3);
 			cmdArray[cmdArray.length-5] = "-mc"; //$NON-NLS-1$
@@ -1058,8 +1080,8 @@ private JTextField mencoder_ass_scale;
 			
 			if (PMS.get().isMencoder_intelligent_sync()) {
 				if (media != null && media.codecA != null && media.codecV != null && ((media.codecA.equals("mp3") && media.codecV.equals("mpeg4")) //$NON-NLS-1$ //$NON-NLS-2$
-						|| (fileName.toLowerCase().endsWith("dvr-ms")))) { //$NON-NLS-1$
-					// correction A/V in mplayer for some xvid+mp3, and dvr-ms
+						|| media.container.equals("rm") || media.container.equals("flv"))) { //$NON-NLS-1$ //$NON-NLS-2$
+					// correction A/V in mplayer for xvid+mp3, flv and rm
 					cmdArray[cmdArray.length-4] = "0.1"; //$NON-NLS-1$
 					cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
 				}
@@ -1074,9 +1096,11 @@ private JTextField mencoder_ass_scale;
 		}
 		
 		
-		// force srate when sample rate < 32000 or > 48000 -> ac3's mencoder doesn't like that
-		if (media != null && !pcm && !ac3 && ((media.getSampleRate() > 0 && media.getSampleRate() < 32000) || media.getSampleRate() >= 48000)) {
-			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
+		// force srate when sample rate != 48000 -> cause ac3's mencoder doesn't like weird sample rates
+		if (media != null && !pcm && !ac3 && (media.getSampleRate() != 48000)) {
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +4);
+			cmdArray[cmdArray.length-6] = "-af"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-5] = "lavcresample=48000"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-4] = "-srate"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-3] = "48000"; //$NON-NLS-1$
 		}
