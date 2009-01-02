@@ -18,6 +18,7 @@
  */
 package net.pms.newgui;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -30,7 +31,10 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import net.pms.Messages;
 import net.pms.PMS;
@@ -41,6 +45,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.sun.jna.Platform;
 
 public class NetworkTab {
 	
@@ -67,7 +72,7 @@ public class NetworkTab {
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
                 "left:pref, 2dlu, p, 2dlu , p, 2dlu, p, 2dlu, pref:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p,  15dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 15dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu "); //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p,  15dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 15dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu "); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.DLU4_BORDER);
         builder.setOpaque(true);
@@ -188,31 +193,36 @@ public class NetworkTab {
        builder.add(langs, cc.xyw(3, 7,7));
        
        builder.add(smcheckBox,          cc.xy(3,  9));
-       /*
-       JButton service = new JButton("Install PMS Service");
+       
+       JButton service = new JButton(Messages.getString("NetworkTab.4")); //$NON-NLS-1$
        service.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new PMSService().install();
+				if (PMS.get().installWin32Service()) {
+					JOptionPane.showMessageDialog(
+							(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+		                    Messages.getString("NetworkTab.11") + //$NON-NLS-1$
+		                    Messages.getString("NetworkTab.12"), //$NON-NLS-1$
+		                    "Information", //$NON-NLS-1$
+		                    JOptionPane.INFORMATION_MESSAGE);
+					
+				} else {
+					JOptionPane.showMessageDialog(
+							(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+		                    Messages.getString("NetworkTab.14"), //$NON-NLS-1$
+		                    "Error", //$NON-NLS-1$
+		                    JOptionPane.ERROR_MESSAGE);
+				}
 			}
  		  
  	  });
- 	  builder.add(service,          cc.xyw(3,  7, 1));
-      
- 	 JButton serviceun = new JButton("Uninstall PMS Service");
- 	serviceun.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new PMSService().uninstall();
-			}
-		  
-	  });
-	  builder.add(serviceun,          cc.xyw(4,  7, 1));
-    */
+ 	  builder.add(service,          cc.xy(3,  11));
+      if (System.getProperty(LooksFrame.START_SERVICE) != null || !Platform.isWindows())
+    	  service.setEnabled(false);
+ 	
        
-       builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 11, 9)); //$NON-NLS-1$
+       builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 13, 9)); //$NON-NLS-1$
        
        archive = new JCheckBox(Messages.getString("NetworkTab.1")); //$NON-NLS-1$
        archive.setContentAreaFilled(false);
@@ -229,12 +239,12 @@ public class NetworkTab {
        
        
        
-       builder.add(tncheckBox,          cc.xyw(1,  13, 2));
+       builder.add(tncheckBox,          cc.xyw(1,  15, 2));
        
-       builder.add(archive,          cc.xy(3,  13));
+       builder.add(archive,          cc.xy(3,  15));
        
-       builder.addLabel(Messages.getString("NetworkTab.16"),  cc.xy(1,  15)); //$NON-NLS-1$
-       builder.add(seekpos,          cc.xyw(3,  15, 5));
+       builder.addLabel(Messages.getString("NetworkTab.16"),  cc.xy(1,  17)); //$NON-NLS-1$
+       builder.add(seekpos,          cc.xyw(3,  17, 5));
       
        final JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
  	  
@@ -254,7 +264,7 @@ public class NetworkTab {
       
        //cacheenable.setEnabled(false);
        
-    	  builder.add(cacheenable,          cc.xyw(1,  17, 2));
+    	  builder.add(cacheenable,          cc.xyw(1,  19, 2));
     	  
     	  
     	  cachereset.addActionListener(new ActionListener() {
@@ -265,7 +275,7 @@ public class NetworkTab {
 			}
     		  
     	  });
-    	  builder.add(cachereset,          cc.xyw(3,  17, 5));
+    	  builder.add(cachereset,          cc.xyw(3,  19, 5));
     	  
     	  cacheenable.setSelected(PMS.get().isUsecache());
     	  cachereset.setEnabled(PMS.get().isUsecache());
@@ -300,14 +310,14 @@ public class NetworkTab {
        		}
         });
         
-        builder.addSeparator(Messages.getString("NetworkTab.22"),  cc.xyw(1, 19,9)); //$NON-NLS-1$
-        builder.addLabel(Messages.getString("NetworkTab.23"),  cc.xy(1,  21)); //$NON-NLS-1$
-        builder.add(host,          cc.xyw(3,  21, 7)); 
-        builder.addLabel(Messages.getString("NetworkTab.24"),  cc.xy(1, 25)); //$NON-NLS-1$
-        builder.add(port,          cc.xyw(3,  25, 7)); 
+        builder.addSeparator(Messages.getString("NetworkTab.22"),  cc.xyw(1, 21,9)); //$NON-NLS-1$
+        builder.addLabel(Messages.getString("NetworkTab.23"),  cc.xy(1,  23)); //$NON-NLS-1$
+        builder.add(host,          cc.xyw(3,  23, 7)); 
+        builder.addLabel(Messages.getString("NetworkTab.24"),  cc.xy(1, 27)); //$NON-NLS-1$
+        builder.add(port,          cc.xyw(3,  27, 7)); 
        
        
-       builder.addSeparator(Messages.getString("NetworkTab.25"),  cc.xyw(1, 29, 9)); //$NON-NLS-1$
+       builder.addSeparator(Messages.getString("NetworkTab.25"),  cc.xyw(1, 31, 9)); //$NON-NLS-1$
        encoding = new JTextField(PMS.get().getEncoding());
        
        encoding.addKeyListener(new KeyListener() {
@@ -326,10 +336,10 @@ public class NetworkTab {
    		}
        	   
           });
-       builder.addLabel(Messages.getString("NetworkTab.26"),  cc.xy(1,  31)); //$NON-NLS-1$
-       builder.add(encoding,          cc.xyw(3,  31, 2)); 
+       builder.addLabel(Messages.getString("NetworkTab.26"),  cc.xy(1,  33)); //$NON-NLS-1$
+       builder.add(encoding,          cc.xyw(3,  33, 2)); 
        
-       builder.addSeparator(Messages.getString("NetworkTab.27"),  cc.xyw(1, 35, 9)); //$NON-NLS-1$
+       builder.addSeparator(Messages.getString("NetworkTab.27"),  cc.xyw(1, 37, 9)); //$NON-NLS-1$
        
        tmcheckBox = new JCheckBox(Messages.getString("NetworkTab.28")); //$NON-NLS-1$
        tmcheckBox.setContentAreaFilled(false);
@@ -340,7 +350,7 @@ public class NetworkTab {
 				PMS.get().setTurbomode(e.getStateChange() == ItemEvent.SELECTED);
 			}
        	
-       }); builder.add(tmcheckBox,          cc.xyw(1,  37, 5));
+       }); builder.add(tmcheckBox,          cc.xyw(1,  39, 5));
        
        blockBox = new JCheckBox(Messages.getString("NetworkTab.29")); //$NON-NLS-1$
        blockBox.setContentAreaFilled(false);
@@ -351,7 +361,7 @@ public class NetworkTab {
 				PMS.get().setTranscode_block_multiple_connections(e.getStateChange() == ItemEvent.SELECTED);
 			}
        	
-       }); builder.add(blockBox,          cc.xyw(1,  39, 5));
+       }); builder.add(blockBox,          cc.xyw(1,  41, 5));
        blockBox.setEnabled(false);
         return builder.getPanel();
 	}
