@@ -69,8 +69,10 @@ public class RequestHandler implements Runnable {
 				PMS.debug( "Received on socket: " + headerLine);
 				if (headerLine != null && headerLine.indexOf("PLAYSTATION") >-1)
 					PMS.get().setPs3found(true);
-				else if (headerLine != null && headerLine.indexOf("Xbox") >-1)
+				else if (headerLine != null && headerLine.indexOf("Xbox") >-1) {
 					PMS.get().setXboxfound(true);
+					request.setMediaRenderer(Request.XBOX);
+				}
 				try {
 					StringTokenizer s = new StringTokenizer(headerLine);
 					String temp = s.nextToken();

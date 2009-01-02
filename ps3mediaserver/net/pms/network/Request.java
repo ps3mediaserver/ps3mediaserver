@@ -47,6 +47,9 @@ public class Request extends HTTPResource {
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
 	
+	public static final int PS3 = 0;
+	public static final int XBOX = 1;
+	
 	private String method;
 	private String argument;
 	private String soapaction;
@@ -58,6 +61,16 @@ public class Request extends HTTPResource {
 	private String browseFlag;
 	private long lowRange;
 	private InputStream inputStream;
+	private int mediaRenderer;
+	
+	public int getMediaRenderer() {
+		return mediaRenderer;
+	}
+
+	public void setMediaRenderer(int mediaRenderer) {
+		this.mediaRenderer = mediaRenderer;
+	}
+
 	public InputStream getInputStream() {
 		return inputStream;
 	}
@@ -212,7 +225,7 @@ public class Request extends HTTPResource {
 				inputStream.read(b);
 				String s = new String(b);
 				s = s.replace("uuid:1234567890TOTO", PMS.get().usn().substring(0, PMS.get().usn().length()-2));
-				if (PMS.get().isXboxfound()) {
+				if (mediaRenderer == XBOX) {
 					PMS.debug("Doing DLNA changes for Xbox360");
 					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "] : 1");
 					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect BLAH</modelName>");
@@ -260,8 +273,15 @@ public class Request extends HTTPResource {
 				response.append(CRLF);
 			} else if (soapaction.indexOf("ContentDirectory:1#Browse") > -1) {
 				objectID = getEnclosingValue(content, "<ObjectID>", "</ObjectID>");
-				if ((objectID == null || objectID.length() == 0) && PMS.get().isXboxfound()) {
-					objectID = getEnclosingValue(content, "<ContainerID>", "</ContainerID>");
+				String containerID = null;
+				if ((objectID == null || objectID.length() == 0) && mediaRenderer == XBOX) {
+					containerID = getEnclosingValue(content, "<ContainerID>", "</ContainerID>");
+					if (!containerID.contains("$")) {
+						objectID = "0";
+					} else {
+						objectID = containerID;
+						containerID = null;
+					}
 				}
 				Object sI = getEnclosingValue(content, "<StartingIndex>", "</StartingIndex>");
 				Object rC = getEnclosingValue(content, "<RequestedCount>", "</RequestedCount>");
@@ -283,6 +303,8 @@ public class Request extends HTTPResource {
 				ArrayList<DLNAResource> files = PMS.get().getRootFolder().getDLNAResources(objectID, browseFlag!=null&&browseFlag.equals("BrowseDirectChildren"), startingIndex, requestCount);
 				if (files != null) {
 					for(DLNAResource uf:files) {
+						if (mediaRenderer == XBOX && containerID != null)
+							uf.setFakeParentId(containerID);
 						response.append(uf.toString());
 					}
 				}

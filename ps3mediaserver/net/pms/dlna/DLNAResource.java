@@ -609,7 +609,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			uclass = "dummy";
 		} else {
 			if (isFolder()) {
-				uclass = "object.container";
+				uclass = "object.container.storageFolder";
 			} else if (ext != null && ext.isVideo()) {
 				uclass = "object.item.videoItem";
 			} else if (ext != null && ext.isImage()) {
