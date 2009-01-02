@@ -30,6 +30,7 @@ import net.pms.PMS;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.formats.Format;
+import net.pms.util.ProcessUtil;
 
 public class RealFile extends DLNAResource {
 	
@@ -189,7 +190,7 @@ public class RealFile extends DLNAResource {
 
 	@Override
 	public String getSystemName() {
-		return file.getAbsolutePath();
+		return ProcessUtil.getShortFileNameIfWideChars(file.getAbsolutePath());
 	}
 
 	@Override

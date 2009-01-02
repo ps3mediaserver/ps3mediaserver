@@ -23,7 +23,13 @@ import java.lang.reflect.Method;
 import java.nio.CharBuffer;
 import java.util.prefs.Preferences;
 
+import net.pms.PMS;
+
+import com.sun.jna.Memory;
 import com.sun.jna.Native;
+import com.sun.jna.NativeLong;
+import com.sun.jna.Platform;
+import com.sun.jna.WString;
 import com.sun.jna.ptr.LongByReference;
 import com.sun.jna.win32.StdCallLibrary;
 
@@ -35,7 +41,8 @@ public class WinUtils {
 		Kernel32 SYNC_INSTANCE = (Kernel32) Native
 				.synchronizedLibrary(INSTANCE);
 		
-		  
+		NativeLong GetShortPathNameW(WString inPath, Memory outPathBuffer, NativeLong outPathBufferSize);
+		
 		boolean GetVolumeInformationW(
 				char[] lpRootPathName,
 				CharBuffer lpVolumeNameBuffer,
@@ -61,6 +68,36 @@ public class WinUtils {
 		System.out.println(rb.isAvis());
 		
 	}
+	
+	public String getShortPathNameW(String longPathName) {
+
+		boolean unicodeChars = false;
+		try {
+		byte b1 [] = longPathName.getBytes("UTF-8");
+		byte b2 [] = longPathName.getBytes("cp1252");
+		unicodeChars = b1.length != b2.length;
+		} catch (Exception e) {
+		return longPathName;
+		}
+
+		if (unicodeChars && Platform.isWindows()) {
+		try {
+		WString pathname = new WString(longPathName);
+		NativeLong bufferSize = new NativeLong((pathname.length()*2)+2);
+		Memory buffer = new Memory(bufferSize.longValue());
+
+		if (Kernel32.INSTANCE.GetShortPathNameW(pathname, buffer, bufferSize).longValue() == 0) {
+		PMS.minimal("File does not exists ? " + pathname);
+		return null;
+		}
+		PMS.info("Forcing short path name on " + pathname);
+		return buffer.getString(0, true);
+		} catch (Exception e) {
+		return longPathName;
+		}
+		}
+		return longPathName;
+		}
 	
 	public String getDiskLabel(File f) {
 		String driveName;

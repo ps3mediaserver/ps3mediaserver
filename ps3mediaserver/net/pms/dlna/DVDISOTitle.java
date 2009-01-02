@@ -26,12 +26,13 @@ import java.util.ArrayList;
 import net.pms.PMS;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.util.ProcessUtil;
 
 public class DVDISOTitle extends DLNAResource {
 	
 	@Override
 	public void resolve() {
-		String cmd [] = new String [] { PMS.get().getMPlayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", f.getAbsolutePath(), "dvd://"+title };
+		String cmd [] = new String [] { PMS.get().getMPlayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()), "dvd://"+title };
 		OutputParams params = new OutputParams(PMS.configuration);
 		params.maxBufferSize = 1;
 		params.log = true;
@@ -102,8 +103,10 @@ public class DVDISOTitle extends DLNAResource {
 			media.aspect = aspect;
 			media.maxsubid = maxsubid;
 			media.dvdtrack = title;
-			if (width != null && height != null)
-				media.resolution = width + "x" + height;
+			try {
+				media.width = Integer.parseInt(width);
+				media.height = Integer.parseInt(height);
+			} catch (NumberFormatException nfe) {}
 			media.mediaparsed = true;
 			
 		

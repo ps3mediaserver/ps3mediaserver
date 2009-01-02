@@ -25,6 +25,7 @@ import net.pms.PMS;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.util.ProcessUtil;
 
 public class DVDISOFile extends VirtualFolder {
 	
@@ -34,7 +35,7 @@ public class DVDISOFile extends VirtualFolder {
 		
 	
 		double titles [] = new double [100];
-		String cmd [] = new String [] { PMS.get().getMPlayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", f.getAbsolutePath(), "dvd://1" };
+		String cmd [] = new String [] { PMS.get().getMPlayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()), "dvd://1" };
 		OutputParams params = new OutputParams(PMS.configuration);
 		params.maxBufferSize = 1;
 		params.log = true;
