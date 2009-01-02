@@ -1,0 +1,175 @@
+package net.pms.dlna.virtual;
+
+import java.io.File;
+import java.util.ArrayList;
+
+import net.pms.PMS;
+import net.pms.dlna.DLNAMediaDatabase;
+import net.pms.dlna.DLNAResource;
+import net.pms.dlna.PlaylistFolder;
+import net.pms.dlna.RealFile;
+
+public class MediaLibraryFolder extends VirtualFolder {
+	
+	public static final int FILES = 0;
+	public static final int TEXTS = 1;
+	public static final int PLAYLISTS = 2;
+	private String sqls [];
+	private int expectedOutputs [];
+	
+	public MediaLibraryFolder(String name, String sql, int expectedOutput) {
+		this(name, new String [] { sql}, new int [] { expectedOutput });
+	}
+	
+	public MediaLibraryFolder(String name, String sql [], int expectedOutput []) {
+		super(name, null);
+		this.sqls = sql;
+		this.expectedOutputs = expectedOutput;
+	}
+
+	@Override
+	public void discoverChildren() {
+		if (sqls.length > 0) {
+			String sql = sqls[0];
+			int expectedOutput = expectedOutputs[0];
+			if (sql != null) {
+				sql = transformSQL(sql);
+				if (expectedOutput == FILES) {
+					ArrayList<File> list = PMS.get().getDatabase().getFiles(sql);
+					for(File f:list) {
+						addChild(new RealFile(f));
+					}
+				} else if (expectedOutput == PLAYLISTS) {
+					ArrayList<File> list = PMS.get().getDatabase().getFiles(sql);
+					for(File f:list) {
+						addChild(new PlaylistFolder(f));
+					}
+				} else if (expectedOutput == TEXTS) {
+					ArrayList<String> list = PMS.get().getDatabase().getStrings(sql);
+					for(String s:list) {
+						String sqls2 [] = new String [sqls.length-1];
+						int expectedOutputs2 [] = new int [expectedOutputs.length-1];
+						System.arraycopy(sqls, 1, sqls2, 0, sqls2.length);
+						System.arraycopy(expectedOutputs, 1, expectedOutputs2, 0, expectedOutputs2.length);
+						addChild(new MediaLibraryFolder(s, sqls2, expectedOutputs2));
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public void resolve() {
+		super.resolve();
+	}
+	
+	private String transformSQL(String sql) {
+		
+		sql = sql.replace("${0}", transformName(getName()));
+		if (parent != null) {
+			sql = sql.replace("${1}", transformName(getParent().getName()));
+			if (parent.getParent() != null) {
+				sql = sql.replace("${2}", transformName(getParent().getParent().getName()));
+				if (parent.getParent().getParent() != null) {
+					sql = sql.replace("${3}", transformName(getParent().getParent().getParent().getName()));
+				}
+			}
+		}
+		return sql;
+	}
+	
+	private String transformName(String name) {
+		if (name.equals(DLNAMediaDatabase.NONAME))
+			name = "";
+		return name;
+	}
+
+	@Override
+	public boolean refreshChildren() {
+		ArrayList<File> list = null;
+		ArrayList<String> strings = null;
+		int expectedOutput = 0;
+		if (sqls.length > 0) {
+			String sql = sqls[0];
+			expectedOutput = expectedOutputs[0];
+			if (sql != null) {
+				sql = transformSQL(sql);
+				if (expectedOutput == FILES || expectedOutput == PLAYLISTS) {
+					list = PMS.get().getDatabase().getFiles(sql);
+				} else if (expectedOutput == TEXTS) {
+					strings = PMS.get().getDatabase().getStrings(sql);
+				}
+			}
+		}
+		ArrayList<File> addedFiles = new ArrayList<File>();
+		ArrayList<String> addedString = new ArrayList<String>();
+		ArrayList<DLNAResource> removedFiles = new ArrayList<DLNAResource>();
+		ArrayList<DLNAResource> removedString = new ArrayList<DLNAResource>();
+		int i = 0;
+		if (list != null) {
+			for(File f:list) {
+				boolean present = false;
+				for(DLNAResource d:children) {
+					if (i == 0 && !(d instanceof TranscodeVirtualFolder))
+						removedFiles.add(d);
+					String name = d.getName();
+					long lm = d.getLastmodified();
+					if (f.getName().equals(name) && f.lastModified() == lm) {
+						removedFiles.remove(d);
+						present = true;
+					}
+				}
+				i++;
+				if (!present)
+					addedFiles.add(f);
+			}
+		}
+		i = 0;
+		if (strings != null) {
+			for(String f:strings) {
+				boolean present = false;
+				for(DLNAResource d:children) {
+					if (i == 0 && !(d instanceof TranscodeVirtualFolder))
+						removedString.add(d);
+					String name = d.getName();
+					if (f.equals(name)) {
+						removedString.remove(d);
+						present = true;
+					}
+				}
+				i++;
+				if (!present)
+					addedString.add(f);
+			}
+		}
+		
+		
+		
+		for(DLNAResource f:removedFiles) {
+			children.remove(f);
+		}
+		for(DLNAResource s:removedString) {
+			children.remove(s);
+		}
+		for(File f:addedFiles) {
+			if (expectedOutput == FILES) {
+				addChild(new RealFile(f));
+			} else if (expectedOutput == PLAYLISTS) {
+				addChild(new PlaylistFolder(f));
+			}
+		}
+		for(String f:addedString) {
+			if (expectedOutput == TEXTS) {
+				String sqls2 [] = new String [sqls.length-1];
+				int expectedOutputs2 [] = new int [expectedOutputs.length-1];
+				System.arraycopy(sqls, 1, sqls2, 0, sqls2.length);
+				System.arraycopy(expectedOutputs, 1, expectedOutputs2, 0, expectedOutputs2.length);
+				addChild(new MediaLibraryFolder(f, sqls2, expectedOutputs2));
+			}
+		}
+		
+		
+		return removedFiles.size() != 0 || addedFiles.size() != 0 || removedString.size() != 0 || addedString.size() != 0;
+	}
+
+}

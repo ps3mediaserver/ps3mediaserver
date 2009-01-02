@@ -24,7 +24,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.IOException;
 import java.util.Locale;
 
 import javax.swing.JButton;
@@ -36,7 +35,6 @@ import javax.swing.JTextField;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
-import net.pms.io.CacheManager;
 import net.pms.util.KeyedComboBoxModel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -250,9 +248,9 @@ public class NetworkTab {
       });
       if (PMS.get().isUsecache())
     	  cacheenable.setSelected(true);
-       cacheenable.setEnabled(false);
+       //cacheenable.setEnabled(false);
        
-    	  builder.add(cacheenable,          cc.xyw(1,  17, 5));
+    	  builder.add(cacheenable,          cc.xyw(1,  17, 2));
     	  
     	  
     	  JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
@@ -260,17 +258,12 @@ public class NetworkTab {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					CacheManager.resetCache();
-				} catch (IOException e1) {
-					PMS.debug("Cache unexpected error: " + e1.getMessage()); //$NON-NLS-1$
-				}
+				PMS.get().getDatabase().init(true);
 			}
     		  
     	  });
     	  builder.add(cachereset,          cc.xyw(3,  17, 5));
-    	  cachereset.setEnabled(false);
-       
+    	  
         host = new JTextField(PMS.get().getHostname());
         host.addKeyListener(new KeyListener() {
 

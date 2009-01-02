@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
@@ -42,7 +41,6 @@ import org.jaudiotagger.tag.Tag;
 
 import net.pms.PMS;
 import net.pms.formats.Format;
-import net.pms.io.CacheManager;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
@@ -71,7 +69,6 @@ public class DLNAMediaInfo {
 	public String album;
 	public String artist;
 	public String songname;
-	public String comment;
 	public String genre;
 	public String container;
 	public int year;
@@ -84,8 +81,7 @@ public class DLNAMediaInfo {
 	public int dvdtrack;
 	public int maxsubid;
 	public boolean secondaryFormatValid;
-	//public int aids [] = new int [256];
-	//public int sids [] = new int [256];
+	public boolean parsing = false;
 	
 	public ProcessWrapperImpl getFFMpegThumbnail(File media) {
 		String args [] = new String[14];
@@ -119,18 +115,20 @@ public class DLNAMediaInfo {
 		params.noexitcheck = true; // not serious if anything happens during the thumbnailer
 		final ProcessWrapperImpl pw = new ProcessWrapperImpl(args, params);
 		// FAILSAFE
+		parsing = true;
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(10000);
 				} catch (InterruptedException e) {}
 				pw.stopProcess();
+				parsing = false;
 			}
 		};
 		Thread failsafe = new Thread(r);
 		failsafe.start();
 		pw.run();
-		
+		parsing = false;
 		return pw;
 	}
 
@@ -146,75 +144,85 @@ public class DLNAMediaInfo {
 	}
 
 	
-	@SuppressWarnings("unchecked")
-	public void parse(File f, int type) {
+	public void parse(File f, Format ext, int type) {
+		int i=0;
+		while (parsing) {
+			if (i == 5) {
+				mediaparsed = true;
+				break;
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {}
+			i++;
+		}
 		if (mediaparsed)
 			return;
 		// interro cache
 		// si retour vide, parsing
-		boolean cached = false;
-		HashMap<String, Object> metadata = new HashMap<String, Object>();
-		String key = f.getAbsolutePath() + "-" + f.lastModified();
-		if (PMS.get().isUsecache()) {
-			try {
-				if (CacheManager.manageCacheData(key, metadata)) {
-					if (metadata.size() == 0) {
-						//nothing found
-					} else {
-						duration = (String) metadata.get("duration");
-						bitrate = (Integer) metadata.get("bitrate");
-						resolution = (String) metadata.get("resolution");
-						size = (Long) metadata.get("size");
-						nrAudioChannels = (Integer) metadata.get("nrAudioChannels");
-						sampleFrequency = (String) metadata.get("sampleFrequency");
-						codecV = (String) metadata.get("codecV");
-						codecA = (String) metadata.get("codecA");
-						frameRate = (String) metadata.get("frameRate");
-						aspect = (String) metadata.get("aspect");
-						thumb = (byte[]) metadata.get("thumb");
-						mimeType = (String) metadata.get("mimeType");
-						album = (String) metadata.get("album");
-						artist = (String) metadata.get("artist");
-						songname = (String) metadata.get("songname");
-						comment = (String) metadata.get("comment");
-						genre = (String) metadata.get("genre");
-						container = (String) metadata.get("container");
-						year = (Integer) metadata.get("year");
-						track = (Integer) metadata.get("track");
-						ArrayList<String> audios = (ArrayList<String>) metadata.get("audios");
-						if (audios != null) {
-							for(String audio:audios) {
-								StringTokenizer st = new StringTokenizer(audio, ";");
-								DLNAMediaLang lang = new DLNAMediaLang();
-								lang.id = Integer.parseInt(st.nextToken());
-								lang.lang = st.nextToken();
-								lang.format = st.nextToken();
-								audioCodes.add(lang);
-							}
-						}
-						ArrayList<String> subs = (ArrayList<String>) metadata.get("subs");
-						if (subs != null) {
-							for(String sub:subs) {
-								StringTokenizer st = new StringTokenizer(sub, ";");
-								DLNAMediaLang lang = new DLNAMediaLang();
-								lang.id = Integer.parseInt(st.nextToken());
-								if (lang.id > maxsubid)
-									maxsubid = lang.id;
-								lang.lang = st.nextToken();
-								subtitlesCodes.add(lang);
-							}
-						}
-						cached = true;
-						finalize(type);
-						mediaparsed = true;
-					}
-				}
-			} catch (IOException e) {
-				PMS.debug("Cache unexpected error: " + e.getMessage());
-			}
-		}
+//		boolean cached = false;
+//		HashMap<String, Object> metadata = new HashMap<String, Object>();
+//		String key = f.getAbsolutePath() + "-" + f.lastModified();
+//		if (PMS.get().isUsecache()) {
+//			try {
+//				if (CacheManager.manageCacheData(key, metadata)) {
+//					if (metadata.size() == 0) {
+//						//nothing found
+//					} else {
+//						duration = (String) metadata.get("duration");
+//						bitrate = (Integer) metadata.get("bitrate");
+//						resolution = (String) metadata.get("resolution");
+//						size = (Long) metadata.get("size");
+//						nrAudioChannels = (Integer) metadata.get("nrAudioChannels");
+//						sampleFrequency = (String) metadata.get("sampleFrequency");
+//						codecV = (String) metadata.get("codecV");
+//						codecA = (String) metadata.get("codecA");
+//						frameRate = (String) metadata.get("frameRate");
+//						aspect = (String) metadata.get("aspect");
+//						thumb = (byte[]) metadata.get("thumb");
+//						mimeType = (String) metadata.get("mimeType");
+//						album = (String) metadata.get("album");
+//						artist = (String) metadata.get("artist");
+//						songname = (String) metadata.get("songname");
+//						comment = (String) metadata.get("comment");
+//						genre = (String) metadata.get("genre");
+//						container = (String) metadata.get("container");
+//						year = (Integer) metadata.get("year");
+//						track = (Integer) metadata.get("track");
+//						ArrayList<String> audios = (ArrayList<String>) metadata.get("audios");
+//						if (audios != null) {
+//							for(String audio:audios) {
+//								StringTokenizer st = new StringTokenizer(audio, ";");
+//								DLNAMediaLang lang = new DLNAMediaLang();
+//								lang.id = Integer.parseInt(st.nextToken());
+//								lang.lang = st.nextToken();
+//								lang.format = st.nextToken();
+//								audioCodes.add(lang);
+//							}
+//						}
+//						ArrayList<String> subs = (ArrayList<String>) metadata.get("subs");
+//						if (subs != null) {
+//							for(String sub:subs) {
+//								StringTokenizer st = new StringTokenizer(sub, ";");
+//								DLNAMediaLang lang = new DLNAMediaLang();
+//								lang.id = Integer.parseInt(st.nextToken());
+//								if (lang.id > maxsubid)
+//									maxsubid = lang.id;
+//								lang.lang = st.nextToken();
+//								subtitlesCodes.add(lang);
+//							}
+//						}
+//						cached = true;
+//						finalize(type);
+//						mediaparsed = true;
+//					}
+//				}
+//			} catch (IOException e) {
+//				PMS.debug("Cache unexpected error: " + e.getMessage());
+//			}
+//		}
 		
-		if (!cached && f != null && f.isFile()) {
+		if (/*!cached && */f != null && f.isFile()) {
 			size = f.length();
 			ProcessWrapperImpl pw = null;
 			boolean ffmpeg_parsing = true;
@@ -232,7 +240,7 @@ public class DLNAMediaInfo {
 								rate = 3* rate;
 								length = length /3;
 							}*/
-							secondaryFormatValid = true;
+							
 						}
 						sampleFrequency = "" + rate;
 						setDurationString(length);
@@ -363,15 +371,13 @@ public class DLNAMediaInfo {
 										resolution = resolution.substring(0, resolution.indexOf(" ["));
 								}
 							}
-						} else if (line.indexOf("Subtitle:") > -1) {
+						} else if (line.indexOf("Subtitle:") > -1 && !line.contains("tx3g")) {
 							int a = line.indexOf("(");
 							int b = line.indexOf("):", a);
 							if (a > -1 && b > a) {
 								DLNAMediaLang lang = new DLNAMediaLang();
 								lang.lang = line.substring(a+1, b);
 								lang.id = subId++;
-								if (lang.id > maxsubid)
-									maxsubid = lang.id;
 								subtitlesCodes.add(lang);
 							}
 						}
@@ -424,43 +430,43 @@ public class DLNAMediaInfo {
 		
 			//remplissage cache
 			
-			if (!cached && PMS.get().isUsecache()) {
-				metadata.put("duration", duration);
-				metadata.put("bitrate", bitrate);
-				metadata.put("resolution", resolution);
-				metadata.put("size", size);
-				metadata.put("nrAudioChannels", nrAudioChannels);
-				metadata.put("sampleFrequency", sampleFrequency);
-				metadata.put("codecV", codecV);
-				metadata.put("codecA", codecA);
-				metadata.put("frameRate", frameRate);
-				metadata.put("aspect", aspect);
-				metadata.put("thumb", thumb);
-				metadata.put("mimeType", mimeType);
-				metadata.put("album", album);
-				metadata.put("artist", artist);
-				metadata.put("songname", songname);
-				metadata.put("comment", comment);
-				metadata.put("genre", genre);
-				metadata.put("container", container);
-				metadata.put("year", year);
-				metadata.put("track", track);
-				ArrayList<String> audios = new ArrayList<String>();
-				for(DLNAMediaLang lang:audioCodes) {
-					audios.add(lang.id+";" + lang.lang + ";" + lang.format);
-				}
-				metadata.put("audios", audios);
-				ArrayList<String> subs = new ArrayList<String>();
-				for(DLNAMediaLang lang:subtitlesCodes) {
-					subs.add(lang.id+";" + lang.lang + ";" + lang.format);
-				}
-				metadata.put("subs", subs);
-				try {
-					CacheManager.manageCacheData(key, metadata);
-				} catch (IOException e) {
-					PMS.debug("Cache unexpected error: " + e.getMessage());
-				}
-			}
+//			if (!cached && PMS.get().isUsecache()) {
+//				metadata.put("duration", duration);
+//				metadata.put("bitrate", bitrate);
+//				metadata.put("resolution", resolution);
+//				metadata.put("size", size);
+//				metadata.put("nrAudioChannels", nrAudioChannels);
+//				metadata.put("sampleFrequency", sampleFrequency);
+//				metadata.put("codecV", codecV);
+//				metadata.put("codecA", codecA);
+//				metadata.put("frameRate", frameRate);
+//				metadata.put("aspect", aspect);
+//				metadata.put("thumb", thumb);
+//				metadata.put("mimeType", mimeType);
+//				metadata.put("album", album);
+//				metadata.put("artist", artist);
+//				metadata.put("songname", songname);
+//				metadata.put("comment", comment);
+//				metadata.put("genre", genre);
+//				metadata.put("container", container);
+//				metadata.put("year", year);
+//				metadata.put("track", track);
+//				ArrayList<String> audios = new ArrayList<String>();
+//				for(DLNAMediaLang lang:audioCodes) {
+//					audios.add(lang.id+";" + lang.lang + ";" + lang.format);
+//				}
+//				metadata.put("audios", audios);
+//				ArrayList<String> subs = new ArrayList<String>();
+//				for(DLNAMediaLang lang:subtitlesCodes) {
+//					subs.add(lang.id+";" + lang.lang + ";" + lang.format);
+//				}
+//				metadata.put("subs", subs);
+//				try {
+//					CacheManager.manageCacheData(key, metadata);
+//				} catch (IOException e) {
+//					PMS.debug("Cache unexpected error: " + e.getMessage());
+//				}
+//			}
 		
 		
 	}
@@ -493,7 +499,7 @@ public class DLNAMediaInfo {
 		
 	}
 	
-	private void finalize(int type) {
+	public void finalize(int type) {
 		if (container != null && container.equals("avi")) {
 			mimeType = HTTPResource.AVI_TYPEMIME;
 		} else if (codecV != null && codecV.equals("mjpeg")) {
@@ -518,6 +524,16 @@ public class DLNAMediaInfo {
 		
 		if (codecA != null && (codecA.contains("pcm") || codecA.equals("dts") || codecA.equals("dca") || codecA.contains("flac")))
 				losslessaudio = true;
+		
+		if (bitsperSample == 24)
+			secondaryFormatValid = true;
+		
+		if (subtitlesCodes != null && subtitlesCodes.size() > 0) {
+			for(DLNAMediaLang lang:subtitlesCodes) {
+				if (lang.id > maxsubid)
+					maxsubid = lang.id;
+			}
+		}
 		
 		PMS.debug("Media info: mimeType: " + mimeType + " / " + toString());
 	}

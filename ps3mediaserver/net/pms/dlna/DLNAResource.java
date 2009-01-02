@@ -29,6 +29,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
+
 import net.pms.PMS;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
@@ -53,7 +55,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	protected Format ext;
 	public DLNAMediaInfo media;
 	protected boolean notranscodefolder;
-	
+	protected long lastmodified;
+	public long getLastmodified() {
+		return lastmodified;
+	}
+
 	protected Player player;
 	//protected DLNAResource original;
 	public Format getExt() {
@@ -79,7 +85,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	protected int sid = -1;
 	protected String slang;
 	protected String aformat;
+	protected String fakeParentId;
 	
+	public String getFakeParentId() {
+		return fakeParentId;
+	}
+	public void setFakeParentId(String fakeParentId) {
+		this.fakeParentId = fakeParentId;
+	}
 	protected boolean avisynth;
 	
 	public int getUpdateId() {
@@ -472,22 +485,22 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		if (isFolder()) {
 			addAttribute(sb, "childCount", childrenNumber());
 		}
-		addAttribute(sb, "parentId", parent==null?-1:parent.id);
+		addAttribute(sb, "parentId", fakeParentId!=null?fakeParentId:(parent==null?-1:parent.id));
 		addAttribute(sb, "restricted", "true");
 		endTag(sb);
 		
-		if (media != null && media.songname != null)
+		if (media != null && StringUtils.isNotBlank(media.songname))
 			addXMLTagAndAttribute(sb, "dc:title", encodeXML(media.songname + (player!=null?(" [" + player.name() + "]"):"")));
 		else
 			addXMLTagAndAttribute(sb, "dc:title", encodeXML(getDisplayName()));
 			
-		if (media != null && media.album != null) {
+		if (media != null && StringUtils.isNotBlank(media.album)) {
 			addXMLTagAndAttribute(sb, "upnp:album", encodeXML(media.album));
 		}
-		if (media != null && media.artist != null) {
+		if (media != null && StringUtils.isNotBlank(media.artist)) {
 			addXMLTagAndAttribute(sb, "upnp:artist", encodeXML(media.artist));
 		}
-		if (media != null && media.genre != null) {
+		if (media != null && StringUtils.isNotBlank(media.genre)) {
 			addXMLTagAndAttribute(sb, "upnp:genre", encodeXML(media.genre));
 		}
 		if (media != null && media.track > 0) {
@@ -586,9 +599,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			closeTag(sb, "upnp:albumArtURI");
 		}
 		
-		if (isFolder()) {
-			addXMLTagAndAttribute(sb, "dc:date", PMS.sdfDate.format(new Date(lastModified())));
-		}
+		//if (isFolder()) {
+		if (getLastmodified() > 0)
+			addXMLTagAndAttribute(sb, "dc:date", PMS.sdfDate.format(new Date(getLastmodified())));
+		//}
 		
 		String uclass = null;
 		if (second && media != null && !media.secondaryFormatValid) {
