@@ -176,6 +176,9 @@ public class UPNPHelper {
 						}
 					} catch (IOException e) {
 						PMS.error("UPNP network exception", e);
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e1) {}
 					}
 				}
 		

@@ -33,6 +33,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
 import net.pms.Messages;
@@ -86,6 +87,9 @@ public class FoldTab {
 			File f [] =  PMS.get().loadFoldersConf(PMS.get().getFolders());
 			for(File file:f) {
 				df.addElement(file.getAbsolutePath());
+			}
+			if (f == null || f.length == 0) {
+				df.addElement(ALL_DRIVES);
 			}
 		} catch (IOException e1) {
 			PMS.error(null, e1);
@@ -191,13 +195,36 @@ public class FoldTab {
        
        
       but5 = new JButton(LooksFrame.readImageIcon("search-32.png")); //$NON-NLS-1$
-       but5.setToolTipText("Scan library");
+       but5.setToolTipText(Messages.getString("FoldTab.2")); //$NON-NLS-1$
        but5.setBorder(BorderFactory.createEmptyBorder());
        but5.addActionListener(new ActionListener() {
    		public void actionPerformed(ActionEvent e) {
-   			if (PMS.get().isUsecache() && !PMS.get().getDatabase().isScanLibraryRunning()) {
-   				PMS.get().getDatabase().scanLibrary();
-   				but5.setEnabled(false);
+   			if (PMS.get().isUsecache()) {
+   				if (!PMS.get().getDatabase().isScanLibraryRunning()) {
+	   				int option = JOptionPane.showConfirmDialog(
+	   	                    (Component) PMS.get().getFrame(),
+	   	                    Messages.getString("FoldTab.3") + //$NON-NLS-1$
+	   	                    Messages.getString("FoldTab.4"), //$NON-NLS-1$
+	   	                    "Question", //$NON-NLS-1$
+	   	                    JOptionPane.YES_NO_OPTION
+	   	                    );
+	   				if (option == JOptionPane.YES_OPTION) {
+	   					PMS.get().getDatabase().scanLibrary();
+	   					but5.setIcon(LooksFrame.readImageIcon("viewmagfit-32.png")); //$NON-NLS-1$
+	   				}
+   				} else {
+   					int option = JOptionPane.showConfirmDialog(
+	   	                    (Component) PMS.get().getFrame(),
+	   	                    Messages.getString("FoldTab.10"), //$NON-NLS-1$
+	   	                    "Question", //$NON-NLS-1$
+	   	                    JOptionPane.YES_NO_OPTION
+	   	                    );
+	   				if (option == JOptionPane.YES_OPTION) {
+	   					PMS.get().getDatabase().stopScanLibrary();
+	   					((LooksFrame) PMS.get().getFrame()).setStatusLine(null);
+	   					but5.setIcon(LooksFrame.readImageIcon("search-32.png")); //$NON-NLS-1$
+	   				}
+   				}
    			}
    		}   	   
           });
@@ -212,6 +239,7 @@ public class FoldTab {
 	
 	public void setScanLibraryEnabled(boolean enabled) {
 		but5.setEnabled(enabled);
+		but5.setIcon(LooksFrame.readImageIcon("search-32.png")); //$NON-NLS-1$
 	}
 	
 }

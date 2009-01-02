@@ -26,47 +26,49 @@ public class PlaylistFolder extends DLNAResource {
 	}
 	
 	private void parse() {
-		ArrayList<String> entries = new ArrayList<String>();
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(playlistfile));
-			String line = null;
-			boolean pls = false;
-			while ((line=br.readLine()) !=null) {
-				if (!line.startsWith("#")) {
-					if (line.equals("[playlist]"))
-						pls = true;
-					if (!pls) {
-						entries.add(line);
-					} else {
-						if (line.startsWith("File")) {
-							line = line.substring(line.indexOf("=")+1);
+		if (playlistfile.length() < 1000000) {
+			ArrayList<String> entries = new ArrayList<String>();
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(playlistfile));
+				String line = null;
+				boolean pls = false;
+				while ((line=br.readLine()) !=null) {
+					if (!line.startsWith("#")) {
+						if (line.equals("[playlist]"))
+							pls = true;
+						if (!pls) {
 							entries.add(line);
+						} else {
+							if (line.startsWith("File")) {
+								line = line.substring(line.indexOf("=")+1);
+								entries.add(line);
+							}
+						}
+					}
+				}
+				br.close();
+			} catch (IOException e) {
+				PMS.error(null, e);
+			}
+			for(String entry:entries) {
+				if (!entry.toLowerCase().startsWith("http://") && !entry.toLowerCase().startsWith("mms://")) {
+					File en1= new File(playlistfile.getParentFile(), entry);
+					File en2= new File(entry);
+					if (en1.exists()) {
+						addChild(new RealFile(en1));
+						valid = true;
+					} else {
+						if (en2.exists()) {
+							addChild(new RealFile(en2));
+							valid = true;
 						}
 					}
 				}
 			}
-			br.close();
-		} catch (IOException e) {
-			PMS.error(null, e);
-		}
-		for(String entry:entries) {
-			if (!entry.toLowerCase().startsWith("http://") && !entry.toLowerCase().startsWith("mms://")) {
-				File en1= new File(playlistfile.getParentFile(), entry);
-				File en2= new File(entry);
-				if (en1.exists()) {
-					addChild(new RealFile(en1));
-					valid = true;
-				} else {
-					if (en2.exists()) {
-						addChild(new RealFile(en2));
-						valid = true;
-					}
+			if (PMS.get().isUsecache()) {
+				if (!PMS.get().getDatabase().isDataExists(playlistfile.getAbsolutePath(), playlistfile.lastModified())) {
+					PMS.get().getDatabase().insertData(playlistfile.getAbsolutePath(), playlistfile.lastModified(), Format.PLAYLIST, null);
 				}
-			}
-		}
-		if (PMS.get().isUsecache()) {
-			if (!PMS.get().getDatabase().isDataExists(playlistfile.getAbsolutePath(), playlistfile.lastModified())) {
-				PMS.get().getDatabase().insertData(playlistfile.getAbsolutePath(), playlistfile.lastModified(), Format.PLAYLIST, null);
 			}
 		}
 	}

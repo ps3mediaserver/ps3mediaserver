@@ -76,6 +76,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	
 	private final AutoUpdater autoUpdater;
 	private final PmsConfiguration configuration;
+	public static final String START_SERVICE = "start.service"; //$NON-NLS-1$
 
 	private static final long serialVersionUID = 8723727186288427690L;
 	public TracesTab getTt() {
@@ -170,7 +171,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	        setLocation(
 	            (screenSize.width  - paneSize.width)  / 2,
 	            (screenSize.height - paneSize.height) / 2);
-	        if (!PMS.get().isMinimized())
+	        if (!PMS.get().isMinimized() && System.getProperty(START_SERVICE) == null)
 	        setVisible(true);
 		if (SystemTray.isSupported()) {
 			SystemTray tray = SystemTray.getSystemTray();
@@ -261,10 +262,12 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
         	
         });
         toolBar.add(quit);
+        if (System.getProperty(START_SERVICE) != null)
+        	quit.setEnabled(false);
         toolBar.add(new JPanel());
         panel.add(toolBar, BorderLayout.NORTH);
         panel.add(buildMain(), BorderLayout.CENTER);
-        status = new JLabel(" ");
+        status = new JLabel(" "); //$NON-NLS-1$
         status.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(0, 5, 0, 5)));
         panel.add(status, BorderLayout.SOUTH);
         return panel;
@@ -348,13 +351,17 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	
 	public void update(Observable o, Object arg) {
 		if (o == autoUpdater) {
-			AutoUpdateDialog.showIfNecessary(this, autoUpdater);
+			try {
+				AutoUpdateDialog.showIfNecessary(this, autoUpdater);
+			} catch (NoClassDefFoundError ncdf) {
+				PMS.minimal("Class not found: " + ncdf.getMessage());
+			}
 		}
 	}
 	
 	public void setStatusLine(String line) {
 		if (line == null)
-			line = " ";
+			line = " "; //$NON-NLS-1$
 		status.setText(line);
 	}
 }

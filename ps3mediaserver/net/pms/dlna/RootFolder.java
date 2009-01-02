@@ -28,6 +28,8 @@ import net.pms.newgui.LooksFrame;
 
 public class RootFolder extends DLNAResource {
 	
+	private boolean running;
+	
 	public RootFolder() {
 		id = "0";
 	}
@@ -74,29 +76,38 @@ public class RootFolder extends DLNAResource {
 	}
 	
 	public void scan() {
+		running = true;
 		scan(this);
 		((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(true);
+		PMS.get().getDatabase().cleanup();
 		((LooksFrame) PMS.get().getFrame()).setStatusLine(null);
 	}
 	
+	public void stopscan() {
+		running = false;
+	}
+	
 	private void scan(DLNAResource resource) {
-		for(DLNAResource child:resource.children) {
-			if (child instanceof RealFile && child.isFolder()) {
-				String trace = "Scanning Folder: " + ((RealFile) child).file.getAbsolutePath();
-				PMS.info(trace);
-				((LooksFrame) PMS.get().getFrame()).setStatusLine(trace);
-				if (child.discovered) {
-					child.refreshChildren();
-					child.closeChildren(child.childrenNumber(), true);
-				} else {
-					child.discoverChildren();
-					child.closeChildren(0, false);
-					child.discovered = true;
+		if (running) {
+			for(DLNAResource child:resource.children) {
+				if (running && child instanceof RealFile && child.isFolder()) {
+					String trace = "Scanning Folder: " + ((RealFile) child).file.getAbsolutePath();
+					PMS.info(trace);
+					((LooksFrame) PMS.get().getFrame()).setStatusLine(trace);
+					if (child.discovered) {
+						child.refreshChildren();
+						child.closeChildren(child.childrenNumber(), true);
+					} else {
+						child.discoverChildren();
+						child.closeChildren(0, false);
+						child.discovered = true;
+					}
+					for(DLNAResource ch:child.children) {
+						if (running)
+							ch.resolve();
+					}
+					scan(child);
 				}
-				for(DLNAResource ch:child.children) {
-					ch.resolve();
-				}
-				scan(child);
 			}
 		}
 	}
