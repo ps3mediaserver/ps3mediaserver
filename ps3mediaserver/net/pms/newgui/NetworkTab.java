@@ -236,24 +236,27 @@ public class NetworkTab {
        builder.addLabel(Messages.getString("NetworkTab.16"),  cc.xy(1,  15)); //$NON-NLS-1$
        builder.add(seekpos,          cc.xyw(3,  15, 5));
       
-
+       final JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
+ 	  
        cacheenable = new JCheckBox(Messages.getString("NetworkTab.17")); //$NON-NLS-1$
        cacheenable.setContentAreaFilled(false);
        cacheenable.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
 				PMS.get().setUsecache(e.getStateChange() == ItemEvent.SELECTED);
+				cachereset.setEnabled(PMS.get().isUsecache());
+				if ((LooksFrame) PMS.get().getFrame() != null)
+					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(PMS.get().isUsecache());
 			}
       	
       });
-      if (PMS.get().isUsecache())
-    	  cacheenable.setSelected(true);
+     
+      
        //cacheenable.setEnabled(false);
        
     	  builder.add(cacheenable,          cc.xyw(1,  17, 2));
     	  
     	  
-    	  JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
     	  cachereset.addActionListener(new ActionListener() {
 
 			@Override
@@ -263,6 +266,9 @@ public class NetworkTab {
     		  
     	  });
     	  builder.add(cachereset,          cc.xyw(3,  17, 5));
+    	  
+    	  cacheenable.setSelected(PMS.get().isUsecache());
+    	  cachereset.setEnabled(PMS.get().isUsecache());
     	  
         host = new JTextField(PMS.get().getHostname());
         host.addKeyListener(new KeyListener() {

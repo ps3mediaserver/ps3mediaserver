@@ -847,9 +847,9 @@ public class PMS {
 		if (PMS.get().isUsecache()) {
 			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.2"), null); //$NON-NLS-1$
 			VirtualFolder vfAudio = new VirtualFolder(Messages.getString("PMS.1"), null); //$NON-NLS-1$
-			MediaLibraryFolder mlf = new MediaLibraryFolder(Messages.getString("PMS.11"), "TYPE = 1", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
+			MediaLibraryFolder mlf = new MediaLibraryFolder(Messages.getString("PMS.11"), "TYPE = 1 ORDER BY FILENAME ASC", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
 			vfAudio.addChild(mlf);
-			MediaLibraryFolder mlf2 = new MediaLibraryFolder(Messages.getString("PMS.9"), "TYPE = 16", MediaLibraryFolder.PLAYLISTS); //$NON-NLS-1$ //$NON-NLS-2$
+			MediaLibraryFolder mlf2 = new MediaLibraryFolder(Messages.getString("PMS.9"), "TYPE = 16 ORDER BY FILENAME ASC", MediaLibraryFolder.PLAYLISTS); //$NON-NLS-1$ //$NON-NLS-2$
 			vfAudio.addChild(mlf2);
 			MediaLibraryFolder mlf3 = new MediaLibraryFolder(Messages.getString("PMS.13"), new String [] {"SELECT DISTINCT ARTIST FROM FILES WHERE TYPE = 1 ORDER BY ARTIST ASC", "TYPE = 1 AND ARTIST = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			vfAudio.addChild(mlf3);
@@ -868,16 +868,22 @@ public class PMS {
 					"SELECT DISTINCT ALBUM FROM FILES WHERE TYPE = 1 AND GENRE = '${1}' AND ARTIST = '${0}' ORDER BY ALBUM ASC", //$NON-NLS-1$
 					"TYPE = 1 AND GENRE = '${2}' AND ARTIST = '${1}' AND ALBUM = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
 			vfAudio.addChild(mlf7);
+			MediaLibraryFolder mlfAudioDate = new MediaLibraryFolder("By Date", new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 1 ORDER BY MODIFIED DESC", "TYPE = 1 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES });
+			vfAudio.addChild(mlfAudioDate);
 			vf.addChild(vfAudio);
 			
 			VirtualFolder vfImage = new VirtualFolder(Messages.getString("PMS.31"), null); //$NON-NLS-1$
-			MediaLibraryFolder mlfPhoto01 = new MediaLibraryFolder(Messages.getString("PMS.32"), "TYPE = 2", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
+			MediaLibraryFolder mlfPhoto01 = new MediaLibraryFolder(Messages.getString("PMS.32"), "TYPE = 2 ORDER BY FILENAME ASC", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
 			vfImage.addChild(mlfPhoto01);
+			MediaLibraryFolder mlfPhoto02 = new MediaLibraryFolder("By Date", new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 2 ORDER BY MODIFIED DESC", "TYPE = 2 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES });
+			vfImage.addChild(mlfPhoto02);
 			vf.addChild(vfImage);
 			
 			VirtualFolder vfVideo = new VirtualFolder(Messages.getString("PMS.34"), null); //$NON-NLS-1$
-			MediaLibraryFolder mlfVideo01 = new MediaLibraryFolder(Messages.getString("PMS.35"), "TYPE = 4", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
+			MediaLibraryFolder mlfVideo01 = new MediaLibraryFolder(Messages.getString("PMS.35"), "TYPE = 4 ORDER BY FILENAME ASC", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
 			vfVideo.addChild(mlfVideo01);
+			MediaLibraryFolder mlfVideo02 = new MediaLibraryFolder("By Date", new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 4 ORDER BY MODIFIED DESC", "TYPE = 4 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES });
+			vfVideo.addChild(mlfVideo02);
 			vf.addChild(vfVideo);
 			
 			rootFolder.addChild(vf);

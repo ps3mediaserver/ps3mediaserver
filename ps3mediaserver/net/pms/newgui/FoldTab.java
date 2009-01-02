@@ -202,6 +202,7 @@ public class FoldTab {
    		}   	   
           });
        builder.add(but5,          cc.xy(6,  7));
+       but5.setEnabled(PMS.get().isUsecache());
        
        builder.add(pane,          cc.xyw(2,  9, 6));
        
@@ -209,8 +210,8 @@ public class FoldTab {
         return builder.getPanel();
 	}
 	
-	public void setScanLibraryReady() {
-		but5.setEnabled(true);
+	public void setScanLibraryEnabled(boolean enabled) {
+		but5.setEnabled(enabled);
 	}
 	
 }

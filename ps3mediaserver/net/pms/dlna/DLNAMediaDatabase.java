@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -76,7 +77,7 @@ public class DLNAMediaDatabase implements Runnable {
 				StringBuffer sb = new StringBuffer();
 				sb.append("CREATE TABLE FILES (");
 				sb.append("  FILENAME          VARCHAR2(1000)       NOT NULL");
-				sb.append(", MODIFIED          NUMERIC              NOT NULL");
+				sb.append(", MODIFIED          TIMESTAMP            NOT NULL");
 				sb.append(", TYPE              NUMERIC");
 				sb.append(", DURATION          VARCHAR2(255)");
 				sb.append(", BITRATE           NUMERIC");
@@ -150,7 +151,7 @@ public class DLNAMediaDatabase implements Runnable {
 			Connection conn = getConnection();
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM FILES WHERE FILENAME = ? AND MODIFIED = ?");
 			ps.setString(1, name);
-			ps.setLong(2, modified);
+			ps.setTimestamp(2, new Timestamp(modified));
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				DLNAMediaInfo media = new DLNAMediaInfo();
@@ -215,7 +216,7 @@ public class DLNAMediaDatabase implements Runnable {
 			Connection conn = getConnection();
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO FILES VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			ps.setString(1, name);
-			ps.setLong(2, modified);
+			ps.setTimestamp(2, new Timestamp(modified));
 			ps.setInt(3, type);
 			if (media != null) {
 				ps.setString(4, media.duration);
@@ -310,7 +311,7 @@ public class DLNAMediaDatabase implements Runnable {
 				if (StringUtils.isBlank(str)) {
 					if (!list.contains(NONAME))
 						list.add(NONAME);
-				} else
+				} else if (!list.contains(str))
 					list.add(str);
 			}
 			rs.close();
@@ -331,7 +332,7 @@ public class DLNAMediaDatabase implements Runnable {
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				String filename = rs.getString("FILENAME");
-				long modified = rs.getLong("MODIFIED");
+				long modified = rs.getTimestamp("MODIFIED").getTime();
 				File entry = new File(filename);
 				if (entry.exists() && entry.lastModified() == modified)
 					list.add(entry);
@@ -357,6 +358,7 @@ public class DLNAMediaDatabase implements Runnable {
 		} else if (scanner.isAlive()) {
 			PMS.minimal("Scanner is already running !");
 		} else {
+			scanner = new Thread(this);
 			scanner.start();
 		}
 	}

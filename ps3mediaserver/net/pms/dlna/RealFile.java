@@ -133,7 +133,7 @@ public class RealFile extends DLNAResource {
 	}
 
 	
-	private File file;
+	protected File file;
 	
 	public RealFile(File file) {
 		this.file = file;

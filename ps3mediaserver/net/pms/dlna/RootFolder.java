@@ -75,14 +75,14 @@ public class RootFolder extends DLNAResource {
 	
 	public void scan() {
 		scan(this);
-		((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryReady();
+		((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(true);
 		((LooksFrame) PMS.get().getFrame()).setStatusLine(null);
 	}
 	
 	private void scan(DLNAResource resource) {
 		for(DLNAResource child:resource.children) {
 			if (child instanceof RealFile && child.isFolder()) {
-				String trace = "Scanning Folder: " + child.getName();
+				String trace = "Scanning Folder: " + ((RealFile) child).file.getAbsolutePath();
 				PMS.info(trace);
 				((LooksFrame) PMS.get().getFrame()).setStatusLine(trace);
 				if (child.discovered) {
