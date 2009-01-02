@@ -29,6 +29,7 @@ public abstract class Format implements Cloneable {
 	public int getType() {
 		return type;
 	}
+	public static final int PLAYLIST = 16;
 	public static final int UNKNOWN = 8;
 	public static final int VIDEO = 4;
 	public static final int AUDIO = 1;
