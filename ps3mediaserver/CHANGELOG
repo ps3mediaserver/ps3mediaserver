@@ -7,16 +7,18 @@ v1.02
 - New features
 
 Auto-updater, default configuration, cleanups and windows/linux build scripts (thanks to Tim Cox)
+Parsing cache and media library (no folders scan for the time being) 
+Playlists (m3u/pls) support
 Preliminary album art support, better audio (flac) and tags parsing
 New options for video resolution, deinterlace filter, and archives browsing
 Better video settings with virtual PS3 menu (A/V sync, deinterlace, ...)
 
-
 - Fixes
 
-A/V out of sync issues on some medias
+A/V out of sync issues with some ISOs and medias / codecs support improvment
 External subtitles not always loaded
 Regression since 0.98, server would not start on some machines
+Newest builds of ffmpeg/mplayer for winn32
 Small fixes
 
 v1.01:
