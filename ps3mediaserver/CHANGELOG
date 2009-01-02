@@ -7,7 +7,7 @@ v1.02
 - New features
 
 Auto-updater, default configuration, cleanups and windows/linux build scripts (thanks to Tim Cox)
-Parsing cache and media library (no folders scan for the time being) 
+Parsing cache and media library
 Playlists (m3u/pls) support
 Preliminary album art support, better audio (flac) and tags parsing
 New options for video resolution, deinterlace filter, and archives browsing

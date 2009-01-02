@@ -49,6 +49,7 @@ public class FoldTab {
 	private JList FList;
 	private  DefaultListModel df;
 	private JCheckBox  hidevideosettings ;
+	private JButton but5;
 	
 	public DefaultListModel getDf() {
 		return df;
@@ -71,7 +72,7 @@ public class FoldTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-                "left:pref, pref, pref, pref, pref, 0:grow", //$NON-NLS-1$
+                "left:pref, pref, pref, pref, pref, pref, 0:grow", //$NON-NLS-1$
                 "p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, fill:default:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.DLU4_BORDER);
@@ -95,7 +96,7 @@ public class FoldTab {
 		FList.setModel(df);
         JScrollPane pane = new JScrollPane(FList);
         
-        builder.addSeparator(Messages.getString("FoldTab.1"),  cc.xyw(2, 1, 5)); //$NON-NLS-1$
+        builder.addSeparator(Messages.getString("FoldTab.1"),  cc.xyw(2, 1, 6)); //$NON-NLS-1$
         hidevideosettings = new JCheckBox(Messages.getString("FoldTab.6")); //$NON-NLS-1$
         hidevideosettings.setContentAreaFilled(false);
         if (PMS.get().isHidevideosettings())
@@ -109,10 +110,10 @@ public class FoldTab {
         	
         });
         
-        builder.add(hidevideosettings,          cc.xyw(2,  3, 5));
+        builder.add(hidevideosettings,          cc.xyw(2,  3, 6));
        
         
-        builder.addSeparator(Messages.getString("FoldTab.7"),  cc.xyw(2, 5, 5)); //$NON-NLS-1$
+        builder.addSeparator(Messages.getString("FoldTab.7"),  cc.xyw(2, 5, 6)); //$NON-NLS-1$
         
        JButton but = new JButton(LooksFrame.readImageIcon("folder_new-32.png")); //$NON-NLS-1$
        but.setBorder(BorderFactory.createEmptyBorder());
@@ -188,11 +189,28 @@ public class FoldTab {
           });
        builder.add(but4,          cc.xy(5,  7));
        
-       builder.add(pane,          cc.xyw(2,  9, 5));
+       
+      but5 = new JButton(LooksFrame.readImageIcon("search-32.png")); //$NON-NLS-1$
+       but5.setToolTipText("Scan library");
+       but5.setBorder(BorderFactory.createEmptyBorder());
+       but5.addActionListener(new ActionListener() {
+   		public void actionPerformed(ActionEvent e) {
+   			if (PMS.get().isUsecache() && !PMS.get().getDatabase().isScanLibraryRunning()) {
+   				PMS.get().getDatabase().scanLibrary();
+   				but5.setEnabled(false);
+   			}
+   		}   	   
+          });
+       builder.add(but5,          cc.xy(6,  7));
+       
+       builder.add(pane,          cc.xyw(2,  9, 6));
        
        
         return builder.getPanel();
 	}
 	
+	public void setScanLibraryReady() {
+		but5.setEnabled(true);
+	}
 	
 }

@@ -44,6 +44,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
@@ -52,7 +53,9 @@ import javax.swing.LookAndFeel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
@@ -78,6 +81,12 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	public TracesTab getTt() {
 		return tt;
 	}
+	
+	private FoldTab ft;
+
+	public FoldTab getFt() {
+		return ft;
+	}
 
 	private StatusTab st;
 	private TracesTab tt;
@@ -92,6 +101,8 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	 public AbstractButton getReload() {
 		return reload;
 	}
+	 
+	 private JLabel status;
 
 	protected static final Dimension PREFERRED_SIZE = new Dimension(1000, 680);
 
@@ -203,19 +214,6 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			}
     }
 	
-	public static void main(String[] args) {
-        LooksFrame instance = new LooksFrame(null, null);
-        instance.setSize(PREFERRED_SIZE);
-        instance.setResizable(false);
-        Dimension paneSize = instance.getSize();
-        Dimension screenSize = instance.getToolkit().getScreenSize();
-        instance.setLocation(
-            (screenSize.width  - paneSize.width)  / 2,
-            (screenSize.height - paneSize.height) / 2);
-        instance.setVisible(true);
-	}
-	
-	
 	protected static ImageIcon readImageIcon(String filename) {
         URL url = LooksFrame.class.getResource("/resources/images/" + filename); //$NON-NLS-1$
         return new ImageIcon(url);
@@ -266,7 +264,9 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
         toolBar.add(new JPanel());
         panel.add(toolBar, BorderLayout.NORTH);
         panel.add(buildMain(), BorderLayout.CENTER);
-        
+        status = new JLabel(" ");
+        status.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(0, 5, 0, 5)));
+        panel.add(status, BorderLayout.SOUTH);
         return panel;
 	}
 	
@@ -278,18 +278,19 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		 tt = new TracesTab();
 		 tr = new TrTab2(configuration);
 		 nt = new NetworkTab(configuration);
+		 ft = new FoldTab();
 		 
 		 tabbedPane.addTab(Messages.getString("LooksFrame.18"),/* readImageIcon("server-16.png"),*/ st.build()); //$NON-NLS-1$
 		 tabbedPane.addTab(Messages.getString("LooksFrame.19"),/* readImageIcon("mail_new-16.png"),*/ tt.build()); //$NON-NLS-1$
 		 
 		 tabbedPane.addTab(Messages.getString("LooksFrame.20"),/* readImageIcon("advanced-16.png"),*/ nt.build()); //$NON-NLS-1$
 		 tabbedPane.addTab(Messages.getString("LooksFrame.21"),/* readImageIcon("player_play-16.png"),*/tr.build()); //$NON-NLS-1$
-		 tabbedPane.addTab(Messages.getString("LooksFrame.22"), /*readImageIcon("bookmark-16.png"),*/ new FoldTab().build()); //$NON-NLS-1$
+		 tabbedPane.addTab(Messages.getString("LooksFrame.22"), /*readImageIcon("bookmark-16.png"),*/ ft.build()); //$NON-NLS-1$
 		 tabbedPane.addTab(Messages.getString("LooksFrame.23"),/*  readImageIcon("mail_new-16.png"), */new AboutTab().build()); //$NON-NLS-1$
 		 tabbedPane.addTab(Messages.getString("LooksFrame.24"), /* readImageIcon("mail_new-16.png"), */new FAQTab().build()); //$NON-NLS-1$
 		 tabbedPane.addTab(Messages.getString("LooksFrame.25"), /*readImageIcon("documentinfo-16.png"),*/ new LinksTab().build()); //$NON-NLS-1$
 
-	        tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+	        tabbedPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		return tabbedPane;
 	}
 	
@@ -349,5 +350,11 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		if (o == autoUpdater) {
 			AutoUpdateDialog.showIfNecessary(this, autoUpdater);
 		}
+	}
+	
+	public void setStatusLine(String line) {
+		if (line == null)
+			line = " ";
+		status.setText(line);
 	}
 }

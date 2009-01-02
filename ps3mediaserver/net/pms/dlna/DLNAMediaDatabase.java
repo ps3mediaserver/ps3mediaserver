@@ -16,10 +16,11 @@ import org.apache.commons.lang.StringUtils;
 import net.pms.PMS;
 
 
-public class DLNAMediaDatabase {
+public class DLNAMediaDatabase implements Runnable {
 	
 	private String name;
 	public static String NONAME = "###";
+	private Thread scanner;
 	
 	public DLNAMediaDatabase(String name) {
 		this.name = name;
@@ -101,7 +102,7 @@ public class DLNAMediaDatabase {
 				sb.append(", constraint PK1 primary key (FILENAME, MODIFIED))");
 				executeUpdate(conn, sb.toString());
 				executeUpdate(conn, "CREATE TABLE METADATA (KEY VARCHAR2(255) NOT NULL, VALUE VARCHAR2(255) NOT NULL)");
-				executeUpdate(conn, "INSERT INTO METADATA VALUES ('VERSION', '1.00')");
+				executeUpdate(conn, "INSERT INTO METADATA VALUES ('VERSION', '" + PMS.VERSION + "')");
 				executeUpdate(conn, "CREATE INDEX IDXARTIST on FILES (ARTIST asc);");
 				executeUpdate(conn, "CREATE INDEX IDXALBUM on FILES (ALBUM asc);");
 				executeUpdate(conn, "CREATE INDEX IDXGENRE on FILES (GENRE asc);");
@@ -343,6 +344,25 @@ public class DLNAMediaDatabase {
 			return null;
 		}
 		return list;
+	}
+	
+	public synchronized boolean isScanLibraryRunning() {
+		return scanner != null && scanner.isAlive();
+	}
+	
+	public synchronized void scanLibrary() {
+		if (scanner == null) {
+			scanner = new Thread(this);
+			scanner.start();
+		} else if (scanner.isAlive()) {
+			PMS.minimal("Scanner is already running !");
+		} else {
+			scanner.start();
+		}
+	}
+	
+	public void run() {
+		PMS.get().getRootFolder().scan();
 	}
 
 }

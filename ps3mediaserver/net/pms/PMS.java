@@ -630,6 +630,7 @@ public class PMS {
 		return null;
 	}
 	
+	
 	private boolean init () throws Exception {
 		
 		registry = new WinUtils();

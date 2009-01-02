@@ -35,6 +35,7 @@ public class RealFile extends DLNAResource {
 	
 	private String driveName;
 	
+	
 	@Override
 	public boolean isValid() {
 		checktype();

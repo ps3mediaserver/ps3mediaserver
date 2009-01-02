@@ -21,6 +21,9 @@ package net.pms.dlna;
 import java.io.File;
 import java.io.InputStream;
 
+import net.pms.PMS;
+import net.pms.newgui.LooksFrame;
+
 
 
 public class RootFolder extends DLNAResource {
@@ -68,6 +71,34 @@ public class RootFolder extends DLNAResource {
 	@Override
 	public boolean isValid() {
 		return true;
+	}
+	
+	public void scan() {
+		scan(this);
+		((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryReady();
+		((LooksFrame) PMS.get().getFrame()).setStatusLine(null);
+	}
+	
+	private void scan(DLNAResource resource) {
+		for(DLNAResource child:resource.children) {
+			if (child instanceof RealFile && child.isFolder()) {
+				String trace = "Scanning Folder: " + child.getName();
+				PMS.info(trace);
+				((LooksFrame) PMS.get().getFrame()).setStatusLine(trace);
+				if (child.discovered) {
+					child.refreshChildren();
+					child.closeChildren(child.childrenNumber(), true);
+				} else {
+					child.discoverChildren();
+					child.closeChildren(0, false);
+					child.discovered = true;
+				}
+				for(DLNAResource ch:child.children) {
+					ch.resolve();
+				}
+				scan(child);
+			}
+		}
 	}
 
 }

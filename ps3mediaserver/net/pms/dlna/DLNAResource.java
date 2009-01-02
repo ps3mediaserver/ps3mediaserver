@@ -71,7 +71,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public abstract InputStream getInputStream() throws IOException;
 	public abstract boolean isFolder();
 	public abstract long lastModified();
-	private boolean discovered = false;
+	protected boolean discovered = false;
 	private ProcessWrapper externalProcess;
 	protected String ifoFileURI;
 	protected boolean srtFile;

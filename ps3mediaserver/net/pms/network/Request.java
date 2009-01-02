@@ -32,6 +32,7 @@ import java.util.TimeZone;
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
+import net.pms.newgui.LooksFrame;
 
 public class Request extends HTTPResource {
 	
@@ -187,6 +188,7 @@ public class Request extends HTTPResource {
 						output(output, getTransferMode());
 						output(output, "contentFeatures.dlna.org: " + files.get(0).getFlags().substring(1));
 					}*/
+					((LooksFrame) PMS.get().getFrame()).setStatusLine("Serving " + files.get(0).getDisplayName());
 					CLoverride = files.get(0).length();
 					if (lowRange > 0 || highRange > 0) {
 						long totalsize = CLoverride;
@@ -365,6 +367,7 @@ public class Request extends HTTPResource {
 			if (lowRange != DLNAMediaInfo.ENDFILE_POS && !method.equals("HEAD"))
 				sendB = sendBytes(inputStream); //, ((lowRange > 0 && highRange > 0)?(highRange-lowRange):-1)
 			PMS.debug( "Sending stream: " + sendB + " bytes of " + argument);
+			((LooksFrame) PMS.get().getFrame()).setStatusLine(null);
 		} else {
 			if (lowRange > 0 && highRange > 0)
 				output(output, "Content-Length: " + (highRange-lowRange+1));
