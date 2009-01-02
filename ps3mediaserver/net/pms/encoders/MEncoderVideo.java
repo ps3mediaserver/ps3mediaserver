@@ -57,6 +57,7 @@ import net.pms.io.ProcessWrapperImpl;
 import net.pms.newgui.FontFileFilter;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.MyComboBoxModel;
+import net.pms.util.ProcessUtil;
 
 public class MEncoderVideo extends Player {
 
@@ -202,7 +203,7 @@ private JTextField mencoder_ass_scale;
        
        builder.add(scaler,          cc.xyw(1,  9, 2));
        
-       builder.addLabel(Messages.getString("MEncoderVideo.28"), cc.xyw(4, 9, 2, CellConstraints.RIGHT, CellConstraints.CENTER)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("MEncoderVideo.28"), cc.xyw(3, 9, 2, CellConstraints.LEFT, CellConstraints.CENTER)); //$NON-NLS-1$
        scaleX = new JTextField("" + configuration.getMencoderScaleX()); //$NON-NLS-1$
        scaleX.addKeyListener(new KeyListener() {
 
@@ -218,9 +219,9 @@ private JTextField mencoder_ass_scale;
    		}
        	   
           });
-       builder.add(scaleX, cc.xyw(6, 9, 2));
+       builder.add(scaleX, cc.xyw(6, 9, 4));
        
-       builder.addLabel(Messages.getString("MEncoderVideo.30"), cc.xyw(8, 9, 2, CellConstraints.RIGHT, CellConstraints.CENTER)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("MEncoderVideo.30"), cc.xyw(3, 11, 2, CellConstraints.LEFT, CellConstraints.CENTER)); //$NON-NLS-1$
        scaleY = new JTextField("" + configuration.getMencoderScaleY()); //$NON-NLS-1$
        scaleY.addKeyListener(new KeyListener() {
 
@@ -236,7 +237,7 @@ private JTextField mencoder_ass_scale;
    		}
        	   
           });
-       builder.add(scaleY, cc.xyw(10, 9, 2));
+       builder.add(scaleY, cc.xyw(6, 11, 4));
        
        if (configuration.isMencoderScaler())
     	   scaler.setSelected(true);
@@ -939,7 +940,7 @@ private JTextField mencoder_ass_scale;
 		}
 		if (avisynth && !fileName.toLowerCase().endsWith(".iso")) { //$NON-NLS-1$
 			File avsFile = FFMpegVideo.getAVSScript(fileName, params.fromFrame, params.toFrame);
-			cmdArray[4] = avsFile.getAbsolutePath();
+			cmdArray[4] = ProcessUtil.getShortFileNameIfWideChars(avsFile.getAbsolutePath());
 		} else
 			cmdArray[4] = fileName;
 		cmdArray[5] = "-quiet"; //$NON-NLS-1$

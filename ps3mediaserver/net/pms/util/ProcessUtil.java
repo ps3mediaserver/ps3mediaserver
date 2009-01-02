@@ -2,6 +2,8 @@ package net.pms.util;
 
 import java.lang.reflect.Field;
 
+import com.sun.jna.Platform;
+
 import net.pms.PMS;
 
 public class ProcessUtil {
@@ -21,6 +23,13 @@ public class ProcessUtil {
 				}
 			}
 		}
+	}
+	
+	public static String getShortFileNameIfWideChars(String name) {
+		if (Platform.isWindows()) {
+			return PMS.get().getRegistry().getShortPathNameW(name);
+		}
+		return name;
 	}
 
 }

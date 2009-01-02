@@ -43,6 +43,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.util.ProcessUtil;
 
 public class FFMpegVideo extends Player {
 	
@@ -168,7 +169,7 @@ public class FFMpegVideo extends Player {
 				cmdArray[6] = videoP.getOutputPipe();
 			} else if (avisynth()) {
 				File avsFile = getAVSScript(fileName, params.fromFrame, params.toFrame);
-				cmdArray[6] = avsFile.getAbsolutePath();
+				cmdArray[6] = ProcessUtil.getShortFileNameIfWideChars(avsFile.getAbsolutePath());
 			}
 		}
 		cmdArray[7] = "-title"; //$NON-NLS-1$
