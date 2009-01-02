@@ -39,7 +39,6 @@ import java.util.UUID;
 import java.util.logging.LogManager;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.lang.NotImplementedException;
 
 import com.sun.jna.Platform;
 
@@ -86,7 +85,9 @@ import net.pms.formats.TIF;
 import net.pms.formats.WEB;
 import net.pms.gui.DummyFrame;
 import net.pms.gui.IFrame;
+import net.pms.io.OutputParams;
 import net.pms.io.OutputTextConsumer;
+import net.pms.io.ProcessWrapperImpl;
 import net.pms.io.WinUtils;
 import net.pms.network.HTTPServer;
 import net.pms.network.ProxyServer;
@@ -388,9 +389,9 @@ public class PMS {
 		return configuration.getMplayerPath();
 	}
 
-	// TODO(tcox): Remove user of this method, since it probably isn't used any more either
+	// it's used on linux and mac osx :)
 	public String getMKfifoPath() {
-		throw new NotImplementedException();
+		return "mkfifo"; //$NON-NLS-1$
 	}
 	
 	public String getEac3toPath() {
@@ -708,6 +709,10 @@ public class PMS {
 			forceMPlayer = false;
 		*/
 		
+		// force use of specific dvr ms muxer when it's installed in the right place
+		File dvrsMsffmpegmuxer = new File("win32/dvrms/ffmpeg_MPGMUX.exe"); //$NON-NLS-1$
+		if (dvrsMsffmpegmuxer.exists())
+			setAlternativeffmpegPath(dvrsMsffmpegmuxer.getAbsolutePath());
 		
 		// disable jaudiotagger logging
 		LogManager.getLogManager().readConfiguration(new ByteArrayInputStream("org.jaudiotagger.level=OFF".getBytes())); //$NON-NLS-1$
@@ -787,7 +792,7 @@ public class PMS {
 	
 	private void manageRoot() throws IOException {
 		File files [] = loadFoldersConf(folders);
-		if (files == null)
+		if (files == null || files.length == 0)
 			files = File.listRoots();
 		if (PMS.get().isWindows()) {
 			
@@ -868,22 +873,37 @@ public class PMS {
 					"SELECT DISTINCT ALBUM FROM FILES WHERE TYPE = 1 AND GENRE = '${1}' AND ARTIST = '${0}' ORDER BY ALBUM ASC", //$NON-NLS-1$
 					"TYPE = 1 AND GENRE = '${2}' AND ARTIST = '${1}' AND ALBUM = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
 			vfAudio.addChild(mlf7);
-			MediaLibraryFolder mlfAudioDate = new MediaLibraryFolder("By Date", new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 1 ORDER BY MODIFIED DESC", "TYPE = 1 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES });
+			MediaLibraryFolder mlfAudioDate = new MediaLibraryFolder(Messages.getString("PMS.12"), new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 1 ORDER BY MODIFIED DESC", "TYPE = 1 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			vfAudio.addChild(mlfAudioDate);
+			
+			MediaLibraryFolder mlf8 = new MediaLibraryFolder("By Letter/Artist/Album", new String [] { //$NON-NLS-1$
+				"SELECT ID FROM REGEXP_RULES ORDER BY ORDR ASC", //$NON-NLS-1$
+				"SELECT DISTINCT ARTIST FROM FILES WHERE TYPE = 1 AND ARTIST REGEXP (SELECT RULE FROM REGEXP_RULES WHERE ID = '${0}') ORDER BY ARTIST ASC", //$NON-NLS-1$
+				"SELECT DISTINCT ALBUM FROM FILES WHERE TYPE = 1 AND ARTIST = '${0}' ORDER BY ALBUM ASC", //$NON-NLS-1$
+				"TYPE = 1 AND ARTIST = '${1}' AND ALBUM = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
+			vfAudio.addChild(mlf8);
 			vf.addChild(vfAudio);
 			
 			VirtualFolder vfImage = new VirtualFolder(Messages.getString("PMS.31"), null); //$NON-NLS-1$
 			MediaLibraryFolder mlfPhoto01 = new MediaLibraryFolder(Messages.getString("PMS.32"), "TYPE = 2 ORDER BY FILENAME ASC", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
 			vfImage.addChild(mlfPhoto01);
-			MediaLibraryFolder mlfPhoto02 = new MediaLibraryFolder("By Date", new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 2 ORDER BY MODIFIED DESC", "TYPE = 2 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES });
+			MediaLibraryFolder mlfPhoto02 = new MediaLibraryFolder(Messages.getString("PMS.12"), new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 2 ORDER BY MODIFIED DESC", "TYPE = 2 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			vfImage.addChild(mlfPhoto02);
+			MediaLibraryFolder mlfPhoto03 = new MediaLibraryFolder(Messages.getString("PMS.21"), new String[] { "SELECT MODEL FROM FILES WHERE TYPE = 2 AND MODEL IS NOT NULL ORDER BY MODEL ASC", "TYPE = 2 AND MODEL = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			vfImage.addChild(mlfPhoto03);
+			MediaLibraryFolder mlfPhoto04 = new MediaLibraryFolder(Messages.getString("PMS.25"), new String[] { "SELECT ISO FROM FILES WHERE TYPE = 2 AND ISO > 0 ORDER BY ISO ASC", "TYPE = 2 AND ISO = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			vfImage.addChild(mlfPhoto04);
 			vf.addChild(vfImage);
 			
 			VirtualFolder vfVideo = new VirtualFolder(Messages.getString("PMS.34"), null); //$NON-NLS-1$
 			MediaLibraryFolder mlfVideo01 = new MediaLibraryFolder(Messages.getString("PMS.35"), "TYPE = 4 ORDER BY FILENAME ASC", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
 			vfVideo.addChild(mlfVideo01);
-			MediaLibraryFolder mlfVideo02 = new MediaLibraryFolder("By Date", new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 4 ORDER BY MODIFIED DESC", "TYPE = 4 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES });
+			MediaLibraryFolder mlfVideo02 = new MediaLibraryFolder(Messages.getString("PMS.12"), new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 4 ORDER BY MODIFIED DESC", "TYPE = 4 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			vfVideo.addChild(mlfVideo02);
+			MediaLibraryFolder mlfVideo03 = new MediaLibraryFolder(Messages.getString("PMS.36"), "TYPE = 4 AND (WIDTH >= 1200 OR HEIGHT >= 700) ORDER BY FILENAME DESC", MediaLibraryFolder.FILES ); //$NON-NLS-1$ //$NON-NLS-2$
+			vfVideo.addChild(mlfVideo03);
+			MediaLibraryFolder mlfVideo04 = new MediaLibraryFolder(Messages.getString("PMS.39"), "TYPE = 4 AND (WIDTH < 1200 AND HEIGHT < 700) ORDER BY FILENAME DESC", MediaLibraryFolder.FILES ); //$NON-NLS-1$ //$NON-NLS-2$
+			vfVideo.addChild(mlfVideo04);
 			vf.addChild(vfVideo);
 			
 			rootFolder.addChild(vf);
@@ -929,6 +949,17 @@ public class PMS {
 		}
 		
 		rootFolder.closeChildren(0, false);
+	}
+	
+	public boolean installWin32Service() {
+		PMS.minimal(Messages.getString("PMS.41")); //$NON-NLS-1$
+		String cmdArray [] = new String[] { "win32/service/wrapper.exe", "-r", "wrapper.conf" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		ProcessWrapperImpl pwuninstall = new ProcessWrapperImpl(cmdArray, new OutputParams(PMS.configuration));
+		pwuninstall.run();
+		cmdArray = new String[] { "win32/service/wrapper.exe", "-i", "wrapper.conf" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		ProcessWrapperImpl pwinstall = new ProcessWrapperImpl(cmdArray, new OutputParams(PMS.configuration));
+		pwinstall.run();
+		return true; // TODO: check the validity of the service
 	}
 	
 	private String [] parseFeedKey(String entry) {

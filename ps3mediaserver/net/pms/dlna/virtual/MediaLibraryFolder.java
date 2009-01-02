@@ -36,17 +36,20 @@ public class MediaLibraryFolder extends VirtualFolder {
 				sql = transformSQL(sql);
 				if (expectedOutput == FILES) {
 					ArrayList<File> list = PMS.get().getDatabase().getFiles(sql);
+					if (list != null)
 					for(File f:list) {
 						addChild(new RealFile(f));
 					}
 				} else if (expectedOutput == PLAYLISTS) {
 					ArrayList<File> list = PMS.get().getDatabase().getFiles(sql);
-					for(File f:list) {
+					if (list != null)
+						for(File f:list) {
 						addChild(new PlaylistFolder(f));
 					}
 				} else if (expectedOutput == TEXTS) {
 					ArrayList<String> list = PMS.get().getDatabase().getStrings(sql);
-					for(String s:list) {
+					if (list != null)
+						for(String s:list) {
 						String sqls2 [] = new String [sqls.length-1];
 						int expectedOutputs2 [] = new int [expectedOutputs.length-1];
 						System.arraycopy(sqls, 1, sqls2, 0, sqls2.length);
@@ -72,6 +75,9 @@ public class MediaLibraryFolder extends VirtualFolder {
 				sql = sql.replace("${2}", transformName(getParent().getParent().getName()));
 				if (parent.getParent().getParent() != null) {
 					sql = sql.replace("${3}", transformName(getParent().getParent().getParent().getName()));
+					if (parent.getParent().getParent().getParent() != null) {
+						sql = sql.replace("${4}", transformName(getParent().getParent().getParent().getParent().getName()));
+					}
 				}
 			}
 		}

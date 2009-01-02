@@ -536,8 +536,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					addAttribute(sb, "size", DLNAMediaInfo.TRANS_SIZE);
 				if (media.duration != null)
 					addAttribute(sb, "duration", media.duration);
-				if (media.resolution != null)
-					addAttribute(sb, "resolution", media.resolution);
+				if (media.getResolution() != null)
+					addAttribute(sb, "resolution", media.getResolution());
 				if (media.nrAudioChannels > 0)
 					addAttribute(sb, "nrAudioChannels", media.nrAudioChannels);
 				if (player == null)
@@ -549,8 +549,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			} else if (ext != null && ext.isImage()) {
 				if (media != null && media.mediaparsed) {
 					addAttribute(sb, "size", media.size);
-					if (media.resolution != null)
-						addAttribute(sb, "resolution", media.resolution);
+					if (media.getResolution() != null)
+						addAttribute(sb, "resolution", media.getResolution());
 				} else
 					addAttribute(sb, "size", length());
 			} else if (ext != null && ext.isAudio()) {
