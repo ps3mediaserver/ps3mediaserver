@@ -19,9 +19,12 @@
 package net.pms.dlna;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import net.pms.PMS;
+import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.newgui.LooksFrame;
 
 
@@ -110,6 +113,46 @@ public class RootFolder extends DLNAResource {
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean refreshChildren() {
+		boolean refreshed = false;
+		File files[] = null;
+		try {
+			files = PMS.get().loadFoldersConf(PMS.get().getFolders());
+			if (files == null || files.length == 0)
+				files = File.listRoots();
+			int i = 0;
+			ArrayList<DLNAResource> removedFiles = new ArrayList<DLNAResource>();
+			ArrayList<File> addedFiles = new ArrayList<File>();
+			
+			for(File f:files) {
+				boolean present = false;
+				for(DLNAResource d:children) {
+					if (i == 0 && !(d instanceof VirtualFolder) ) {
+						removedFiles.add(d);
+					}
+					if (d instanceof RealFile && f.exists() && ((RealFile)d).file.getAbsolutePath().equals(f.getAbsolutePath())) {
+						removedFiles.remove(d);
+						present = true;
+					}
+				}
+				if (!present)
+					addedFiles.add(f);
+				i++;
+			}
+			for(DLNAResource f:removedFiles) {
+				children.remove(f);
+			}
+			for(File f:addedFiles) {
+				addChild(new RealFile(f));
+			}
+			refreshed = removedFiles.size() > 0 || addedFiles.size() > 0;
+		} catch (IOException e) {}
+		
+		
+		return refreshed;
 	}
 
 }
