@@ -265,6 +265,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						resource.closeChildren(resource.childrenNumber());
 					}*/
 					
+					if (count == 0) {
+	                    count = resource.children.size();
+	                }
 					ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(count);
 				 
 					int parallel_thread_number = 3;

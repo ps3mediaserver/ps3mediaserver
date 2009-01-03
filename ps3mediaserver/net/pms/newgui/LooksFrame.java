@@ -67,10 +67,8 @@ import net.pms.io.WindowsNamedPipe;
 import net.pms.newgui.update.AutoUpdateDialog;
 import net.pms.update.AutoUpdater;
 
-import com.jgoodies.looks.BorderStyle;
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.windows.WindowsLookAndFeel;
 
 public class LooksFrame extends JFrame implements IFrame, Observer {
 	
@@ -130,7 +128,11 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
         // Swing Settings
         LookAndFeel selectedLaf = null;
         if (PMS.get().isWindows()) {
-        	selectedLaf = new WindowsLookAndFeel();
+        	try {
+				selectedLaf = (LookAndFeel) Class.forName("com.jgoodies.looks.windows.WindowsLookAndFeel").newInstance(); //$NON-NLS-1$
+			} catch (Exception e) {
+				selectedLaf = new PlasticLookAndFeel();
+			}
         }
         else
         	selectedLaf = new PlasticLookAndFeel();
@@ -225,7 +227,6 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         toolBar.setRollover(true);
-        toolBar.putClientProperty(WindowsLookAndFeel.BORDER_STYLE_KEY, BorderStyle.EMPTY);
         
         toolBar.add(new JPanel());
         AbstractButton save = createToolBarButton(Messages.getString("LooksFrame.9"), "filesave-48.png", Messages.getString("LooksFrame.9")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -354,7 +355,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			try {
 				AutoUpdateDialog.showIfNecessary(this, autoUpdater);
 			} catch (NoClassDefFoundError ncdf) {
-				PMS.minimal("Class not found: " + ncdf.getMessage());
+				PMS.minimal("Class not found: " + ncdf.getMessage()); //$NON-NLS-1$
 			}
 		}
 	}

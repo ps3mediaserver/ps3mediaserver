@@ -210,7 +210,10 @@ public class Request extends HTTPResource {
 				}
 			}
 		} else if ((method.equals("GET") || method.equals("HEAD")) && (argument.toLowerCase().endsWith(".png") || argument.toLowerCase().endsWith(".jpg") || argument.toLowerCase().endsWith(".jpeg"))) {
-			output(output, "Content-Type: image/jpeg");
+			if (argument.toLowerCase().endsWith(".png"))
+				output(output, "Content-Type: image/png");
+			else
+				output(output, "Content-Type: image/jpeg");
 			output(output, "Accept-Ranges: bytes");
 			output(output, "Connection: keep-alive");
 			output(output, "Expires: " + getFUTUREDATE() + " GMT");

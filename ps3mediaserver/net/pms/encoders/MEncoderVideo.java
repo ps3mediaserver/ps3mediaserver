@@ -697,7 +697,7 @@ private JTextField mencoder_ass_scale;
 //	-af channels=6:6:0:0:1:2:2:3:3:5:4:1:5:4
 	
 	protected String [] getDefaultArgs() { // 6:0:0:1:4:2:5:3:2:4:1:5:3
-		return new String [] { "-quiet",/* pcm?"-quiet":"-af", pcm?"channels=6:6:0:0:1:2:2:3:3:5:4:1:5:5":"-quiet", */ /* pcm?"-format":"-quiet", pcm?"s24le":"", */ "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", (pcm||ac3)?"avi":"mpeg", /*"-lavfopts", "format=mpegts", */"-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", ovccopy?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
+		return new String [] { "-quiet",/* pcm?"-quiet":"-af", pcm?"channels=6:6:0:0:1:2:2:3:3:5:4:1:5:5":"-quiet", */ /* pcm?"-format":"-quiet", pcm?"s24le":"", */ "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", (pcm||ac3)?"avi":"mpeg", /*"-lavfopts", "format=mpegts", */"-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", ovccopy?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$
 	}
 
 	@Override

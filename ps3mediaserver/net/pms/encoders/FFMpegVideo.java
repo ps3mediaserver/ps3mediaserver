@@ -151,8 +151,8 @@ public class FFMpegVideo extends Player {
 		PipeIPCProcess videoP = null;
 		PipeIPCProcess audioP = null;
 		if (mplayer()) {
-			videoP = new PipeIPCProcess("mplayer_vid1" + System.currentTimeMillis(), "mplayer_vid2" + System.currentTimeMillis(), false, false); //$NON-NLS-1$
-			audioP = new PipeIPCProcess("mplayer_aud1" + System.currentTimeMillis(), "mplayer_aud2" + System.currentTimeMillis(), false, false); //$NON-NLS-1$
+			videoP = new PipeIPCProcess("mplayer_vid1" + System.currentTimeMillis(), "mplayer_vid2" + System.currentTimeMillis(), false, false); //$NON-NLS-1$ //$NON-NLS-2$
+			audioP = new PipeIPCProcess("mplayer_aud1" + System.currentTimeMillis(), "mplayer_aud2" + System.currentTimeMillis(), false, false); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		PipeProcess ffPipe = null;
 		
