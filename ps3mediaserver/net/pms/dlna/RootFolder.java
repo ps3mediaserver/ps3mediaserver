@@ -80,6 +80,7 @@ public class RootFolder extends DLNAResource {
 	
 	public void scan() {
 		running = true;
+		refreshChildren();
 		scan(this);
 		((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(true);
 		PMS.get().getDatabase().cleanup();

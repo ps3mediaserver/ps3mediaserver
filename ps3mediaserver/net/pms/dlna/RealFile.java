@@ -99,30 +99,23 @@ public class RealFile extends DLNAResource {
 					if (i == 0 && (!(d instanceof VirtualFolder) || (d instanceof DVDISOFile))) // specific for video_ts, we need to refresh it
 						removedFiles.add(d);
 					boolean video_ts_hack = (d instanceof DVDISOFile) && d.getName().startsWith(DVDISOFile.PREFIX) && d.getName().substring(DVDISOFile.PREFIX.length()).equals(f.getName());
-					/*if (video_ts_hack) {
-						PMS.minimal("d.getName(): " + d.getName());
-						PMS.minimal("f.getName(): " + f.getName());
-						PMS.minimal("d.lastmodified: " + d.lastmodified);
-						PMS.minimal("f.lastModified: " + f.lastModified());
-					}*/
 					if ((d.getName().equals(f.getName()) || video_ts_hack) && ((d instanceof RealFile && d.isFolder()) || d.lastmodified == f.lastModified())) { // && (!addcheck || (addcheck && d.lastmodified == f.lastModified()))
 						removedFiles.remove(d);
 						present = true;
 					}
 				}
-				if (!present && (f.isDirectory() || PMS.get().getAssociatedExtension(f.getName()) != null)/*
-						 && !f.getName().toLowerCase().endsWith(".iso") && !f.getName().toUpperCase().equals("VIDEO_TS")*/)
+				if (!present && (f.isDirectory() || PMS.get().getAssociatedExtension(f.getName()) != null))
 					addedFiles.add(f);
 			}
 			i++;
 		}
 		
 		for(DLNAResource f:removedFiles) {
-			PMS.minimal("Removed: " + f.getName());
+			PMS.info("File automatically removed: " + f.getName());
 		}
 		
 		for(File f:addedFiles) {
-			PMS.minimal("Added: " + f.getAbsolutePath());
+			PMS.info("File automatically added: " + f.getName());
 		}
 		
 		TranscodeVirtualFolder vf = null;

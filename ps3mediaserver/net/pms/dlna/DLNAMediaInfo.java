@@ -85,10 +85,9 @@ public class DLNAMediaInfo {
 	public ArrayList<DLNAMediaLang> audioCodes = new ArrayList<DLNAMediaLang>();
 	public ArrayList<DLNAMediaLang> subtitlesCodes = new ArrayList<DLNAMediaLang>();
 	public String model;
-	public double exposure;
+	public int exposure;
 	public int orientation;
 	public int iso;
-	public int flash;
 	
 	// no stored
 	public boolean mediaparsed;
@@ -254,23 +253,11 @@ public class DLNAMediaInfo {
 	
 							tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_EXPOSURE_TIME);
 							if (tf != null)
-								exposure = tf.getDoubleValue();
+								exposure = (int) (1000*tf.getDoubleValue());
 	
 							tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_ORIENTATION);
 							if (tf != null)
 								orientation = tf.getIntValue();
-	
-//							tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_DATE_TIME_ORIGINAL);
-//							if (tf != null) {
-//								try {
-//									Date date = sdfExif.parse(tf.getStringValue().trim());
-//									System.out.println(date);
-//								} catch (ParseException pe) {}
-//							}
-	
-							tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_FLASH);
-							if (tf != null)
-								flash = tf.getIntValue();
 	
 							tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_ISO);
 							if (tf != null)
@@ -279,7 +266,7 @@ public class DLNAMediaInfo {
 					}
 				} catch (Throwable e) {
 					ffmpeg_parsing = true;
-					PMS.error("Error during the parsing of image with Sanselan... switching to Ffmpeg", e);
+					PMS.minimal("Error during the parsing of image with Sanselan... switching to Ffmpeg: " + e.getMessage());
 				}
 			}
 			if (ffmpeg_parsing) {

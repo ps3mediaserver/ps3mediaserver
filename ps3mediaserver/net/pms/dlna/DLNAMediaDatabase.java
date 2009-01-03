@@ -35,6 +35,7 @@ public class DLNAMediaDatabase implements Runnable {
 			dir = "/" + PMS.get().getTempFolder().getAbsolutePath().replace('\\', '/') + "/database" ;
 			url = "jdbc:h2:" + dir + "/" + name;
 			PMS.info("Using database URL: " + url);
+			PMS.minimal("Using database located at : " + dir);
 		} catch (IOException e1) {
 		}
 		try {
@@ -113,7 +114,6 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append(", EXPOSURE          NUMERIC");
 				sb.append(", ORIENTATION       NUMERIC");
 				sb.append(", ISO               NUMERIC");
-				sb.append(", FLASH             NUMERIC");
 				sb.append(", constraint PK1 primary key (FILENAME, MODIFIED))");
 				executeUpdate(conn, sb.toString());
 				executeUpdate(conn, "CREATE TABLE METADATA (KEY VARCHAR2(255) NOT NULL, VALUE VARCHAR2(255) NOT NULL)");
@@ -123,10 +123,10 @@ public class DLNAMediaDatabase implements Runnable {
 				executeUpdate(conn, "CREATE INDEX IDXGENRE on FILES (GENRE asc);");
 				executeUpdate(conn, "CREATE INDEX IDXYEAR on FILES (YEAR asc);");
 				executeUpdate(conn, "CREATE TABLE REGEXP_RULES ( ID VARCHAR2(255) PRIMARY KEY, RULE VARCHAR2(255), ORDR NUMERIC);");
-				executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '###', '(?i)\\W.+', 0 );");
-				executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '0-9', '(?i)\\d.+', 1 );");
+				executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '###', '(?i)^\\W.+', 0 );");
+				executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '0-9', '(?i)^\\d.+', 1 );");
 				for(int i=65;i<=90;i++) {
-					executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '" + ((char) i) + "', '(?i)" + ((char) i) + ".+', " + (i-63) + " );");
+					executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '" + ((char) i) + "', '(?i)^" + ((char) i) + ".+', " + (i-63) + " );");
 				}
 				PMS.info("Database initialized");
 			} catch (SQLException se) {
@@ -220,10 +220,9 @@ public class DLNAMediaDatabase implements Runnable {
 					media.subtitlesCodes.add(lang);
 				}
 				media.model = rs.getString("MODEL");
-				media.exposure = rs.getDouble("EXPOSURE");
+				media.exposure = rs.getInt("EXPOSURE");
 				media.orientation = rs.getInt("ORIENTATION");
 				media.iso = rs.getInt("ISO");
-				media.flash = rs.getInt("FLASH");
 				media.mediaparsed = true;
 				list.add(media);
 			}
@@ -240,7 +239,7 @@ public class DLNAMediaDatabase implements Runnable {
 	public void insertData(String name, long modified, int type, DLNAMediaInfo media) {
 		try {
 			Connection conn = getConnection();
-			PreparedStatement ps = conn.prepareStatement("INSERT INTO FILES VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO FILES VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			ps.setString(1, name);
 			ps.setTimestamp(2, new Timestamp(modified));
 			ps.setInt(3, type);
@@ -288,10 +287,9 @@ public class DLNAMediaDatabase implements Runnable {
 				}
 				ps.setString(25, audios.toString());
 				ps.setString(26, media.model);
-				ps.setDouble(27, media.exposure);
+				ps.setInt(27, media.exposure);
 				ps.setInt(28, media.orientation);
 				ps.setInt(29, media.iso);
-				ps.setInt(30, media.flash);
 			} else {
 				ps.setString(4, null);
 				ps.setInt(5, 0);
@@ -316,10 +314,9 @@ public class DLNAMediaDatabase implements Runnable {
 				ps.setString(24, null);
 				ps.setString(25, null);
 				ps.setString(26, null);
-				ps.setDouble(27, 0);
+				ps.setInt(27, 0);
 				ps.setInt(28, 0);
 				ps.setInt(29, 0);
-				ps.setInt(30, 0);
 			}
 			ps.executeUpdate();
 			ps.close();

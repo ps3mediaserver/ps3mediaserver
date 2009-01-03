@@ -625,12 +625,13 @@ public class PMS {
 			if (database == null) {
 				database = new DLNAMediaDatabase("medias"); //$NON-NLS-1$
 				database.init(false);
-				try {
-					Server server = Server.createWebServer(null);
-					server.start();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+//				try {
+//					Server server = Server.createWebServer(null);
+//					server.start();
+//					PMS.minimal("Starting H2 console on port " + server.getPort());
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
 			}
 			return database;
 		}
@@ -979,7 +980,7 @@ public class PMS {
 		cmdArray = new String[] { "win32/service/wrapper.exe", "-i", "wrapper.conf" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		ProcessWrapperImpl pwinstall = new ProcessWrapperImpl(cmdArray, new OutputParams(PMS.configuration));
 		pwinstall.run();
-		return true; // TODO: check the validity of the service
+		return true; // TODO: check the validity of the service installation
 	}
 	
 	private String [] parseFeedKey(String entry) {

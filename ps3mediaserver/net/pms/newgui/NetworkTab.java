@@ -250,11 +250,13 @@ public class NetworkTab {
  	  
        cacheenable = new JCheckBox(Messages.getString("NetworkTab.17")); //$NON-NLS-1$
        cacheenable.setContentAreaFilled(false);
+       cacheenable.setSelected(PMS.get().isUsecache());
        cacheenable.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
 				PMS.get().setUsecache(e.getStateChange() == ItemEvent.SELECTED);
 				cachereset.setEnabled(PMS.get().isUsecache());
+				((LooksFrame) PMS.get().getFrame()).setReloadable(true);
 				if ((LooksFrame) PMS.get().getFrame() != null)
 					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(PMS.get().isUsecache());
 			}
@@ -277,7 +279,7 @@ public class NetworkTab {
     	  });
     	  builder.add(cachereset,          cc.xyw(3,  19, 5));
     	  
-    	  cacheenable.setSelected(PMS.get().isUsecache());
+    	  
     	  cachereset.setEnabled(PMS.get().isUsecache());
     	  
         host = new JTextField(PMS.get().getHostname());
