@@ -105,7 +105,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	 
 	 private JLabel status;
 
-	protected static final Dimension PREFERRED_SIZE = new Dimension(1000, 680);
+	protected static final Dimension PREFERRED_SIZE = new Dimension(1000, 700);
 
 
 	/**

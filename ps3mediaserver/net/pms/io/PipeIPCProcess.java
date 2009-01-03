@@ -32,7 +32,7 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 	
 	public PipeIPCProcess(String pipeName, String pipeNameOut, boolean forcereconnect1, boolean forcereconnect2) {
 		mkin = new PipeProcess(pipeName, forcereconnect1?"reconnect":"dummy");
-		mkout = new PipeProcess(pipeName, "out", forcereconnect2?"reconnect":"dummy");
+		mkout = new PipeProcess(pipeNameOut, "out", forcereconnect2?"reconnect":"dummy");
 	}
 	
 	public void run() {
@@ -43,7 +43,7 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 		try {
 			in = mkin.getInputStream();
 			out = mkout.getOutputStream();
-		
+			
 			while ((n=in.read(b)) > -1) {
 				out.write(b, 0, n);
 			}

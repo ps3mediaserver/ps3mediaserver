@@ -38,9 +38,7 @@ public abstract class Player {
 		return false;
 	}
 	
-	public boolean mplayer() {
-		return false;
-	}
+	
 	
 	public abstract int purpose();
 	public abstract JComponent config();

@@ -179,9 +179,13 @@ public class BufferedOutputFile extends OutputStream  {
 						try {
 							//buffer = Arrays.copyOf(buffer, maxMemorySize);
 							byte[] copy = new byte[maxMemorySize];
-					        System.arraycopy(buffer, 0, copy, 0,
-					                         Math.min(buffer!=null?buffer.length:0, maxMemorySize));
-					        buffer = copy;
+					       try {
+					    	   System.arraycopy(buffer, 0, copy, 0, Math.min(buffer!=null?buffer.length:0, maxMemorySize));
+					    	   buffer = copy;
+					       } catch (NullPointerException npe) {
+					    	   return;
+					       }
+					       
 						} catch (OutOfMemoryError ooe) {
 							PMS.minimal("FATAL ERROR: OutOfMemory / dumping stats");
 							PMS.debug("freeMemory: " + Runtime.getRuntime().freeMemory());

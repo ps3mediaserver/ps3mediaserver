@@ -123,7 +123,7 @@ public class FFMpegDVRMSRemux extends Player {
 		cmdArray[4] = fileName;
 		cmdArray[5] = "-title"; //$NON-NLS-1$
 		cmdArray[6] = "dummy"; //$NON-NLS-1$
-		if (params.timeseek > 0 && !PMS.get().isForceMPlayer() && !mplayer()) {
+		if (params.timeseek > 0) {
 			cmdArray[1] = "-ss"; //$NON-NLS-1$
 			cmdArray[2] = "" + params.timeseek; //$NON-NLS-1$
 			 //params.timeseek = 0;

@@ -18,10 +18,21 @@
  */
 package net.pms.network;
 
+import net.pms.PMS;
+
 public class HTMLConsole {
 	
 	public static String servePage(String resource) {
-		return "<img src='/images/Play1Hot_256.png'><br>Welcome on the hidden page of Java PS3 Media Server<br>";
+		StringBuffer sb = new StringBuffer();
+		sb.append("<html><title>PS3 Media Server HTML Console</title></html><body>");
+		if (resource.equals("compact") && PMS.get().isUsecache()) {
+			PMS.get().getDatabase().compact();
+			sb.append( "<p align=center><b>Database compacted!</b></p><br>" );
+		} 
+		
+		sb.append("<p align=center><img src='/images/Play1Hot_256.png'><br>PS3 Media Server HTML console<br><br>Menu:<br><a href=\"compact\">Compact media library</a></p>");
+		sb.append("</body></html>");
+		return sb.toString();
 	}
 
 }

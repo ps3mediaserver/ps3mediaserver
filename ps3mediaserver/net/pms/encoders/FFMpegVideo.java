@@ -40,6 +40,7 @@ import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
+import net.pms.io.PipeIPCProcess;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
@@ -118,6 +119,10 @@ public class FFMpegVideo extends Player {
 		return args;
 			
 	}
+	
+	public boolean mplayer() {
+		return false;
+	}
 
 	@Override
 	public String mimeType() {
@@ -143,15 +148,19 @@ public class FFMpegVideo extends Player {
 		if (!PMS.get().isWindows())
 			pipeprefix = PMS.get().getTempFolder() + "/";*/
 		
-		PipeProcess videoP = new PipeProcess("mplayer_vid" + System.currentTimeMillis()); //$NON-NLS-1$
-		PipeProcess audioP = new PipeProcess("mplayer_aud" + System.currentTimeMillis()); //$NON-NLS-1$
+		PipeIPCProcess videoP = null;
+		PipeIPCProcess audioP = null;
+		if (mplayer()) {
+			videoP = new PipeIPCProcess("mplayer_vid1" + System.currentTimeMillis(), "mplayer_vid2" + System.currentTimeMillis(), false, false); //$NON-NLS-1$
+			audioP = new PipeIPCProcess("mplayer_aud1" + System.currentTimeMillis(), "mplayer_aud2" + System.currentTimeMillis(), false, false); //$NON-NLS-1$
+		}
 		PipeProcess ffPipe = null;
 		
 		String cmdArray [] = new String [14+args().length];
 		cmdArray[0] = executable();
 		cmdArray[1] = "-title"; //$NON-NLS-1$
 		cmdArray[2] = "dummy"; //$NON-NLS-1$
-		if (params.timeseek > 0 && !PMS.get().isForceMPlayer() && !mplayer()) {
+		if (params.timeseek > 0 && !mplayer()) {
 			cmdArray[1] = "-ss"; //$NON-NLS-1$
 			cmdArray[2] = "" + params.timeseek; //$NON-NLS-1$
 		}
@@ -162,7 +171,7 @@ public class FFMpegVideo extends Player {
 		if (type() == Format.VIDEO) {
 			cmdArray[5] = "-i"; //$NON-NLS-1$
 			cmdArray[6] = fileName;
-			if (PMS.get().isForceMPlayer() || mplayer()) {
+			if (mplayer()) {
 				cmdArray[3] = "-f"; //$NON-NLS-1$
 				cmdArray[4] = "yuv4mpegpipe"; //$NON-NLS-1$
 				//cmdArray[6] = pipeprefix + videoPipe + (PMS.get().isWindows()?".2":"");
@@ -177,7 +186,7 @@ public class FFMpegVideo extends Player {
 		cmdArray[9] = "-title"; //$NON-NLS-1$
 		cmdArray[10] = "dummy"; //$NON-NLS-1$
 		if (type() == Format.VIDEO || type() == Format.AUDIO) {
-			if (type() == Format.VIDEO && (PMS.get().isForceMPlayer() || mplayer())) {
+			if (type() == Format.VIDEO && (mplayer())) {
 				cmdArray[7] = "-f"; //$NON-NLS-1$
 				cmdArray[8] = "wav"; //$NON-NLS-1$
 				cmdArray[9] = "-i"; //$NON-NLS-1$
@@ -257,7 +266,7 @@ public class FFMpegVideo extends Player {
 		
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		
-		if (type() != Format.AUDIO && (PMS.get().isForceMPlayer() || mplayer())) {
+		if (type() != Format.AUDIO && (mplayer())) {
 			
 			/*
 			OutputParams mkfifo_vid_params = new OutputParams();
@@ -279,21 +288,21 @@ public class FFMpegVideo extends Player {
 			}
 			
 			
-			String sMp = PMS.get().getMplayerSettings();
+			//String sMp = PMS.get().getMPlayerPath();
 			
 			String overiddenMPlayerArgs [] = null;
-			if (sMp != null) {
+			/*if (sMp != null) {
 				StringTokenizer st = new StringTokenizer(sMp, " "); //$NON-NLS-1$
 				overiddenMPlayerArgs = new String [st.countTokens()];
 				int i = 0;
 				while (st.hasMoreTokens()) {
 					overiddenMPlayerArgs[i++] = st.nextToken();
 				}
-			} else
+			} else*/
 				overiddenMPlayerArgs = new String [0];
 			
 			
-			String mPlayerdefaultVideoArgs [] = new String [] { fileName, seek_param, seek_value, "-vo", "yuv4mpeg:file=" + /*pipeprefix + videoPipe+(PMS.get().isWindows()?".1":"")*/videoP.getInputPipe(), "-ao", "null", "-nosound", "-benchmark", "-noframedrop", "-speed", "100", "-quiet" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+			String mPlayerdefaultVideoArgs [] = new String [] { fileName, seek_param, seek_value, "-vo", "yuv4mpeg:file=" + videoP.getInputPipe(), "-ao", "pcm:waveheader:file="+ audioP.getInputPipe(), "-benchmark", "-noframedrop", "-speed", "100"/*, "-quiet"*/ }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 			OutputParams mplayer_vid_params = new OutputParams(PMS.configuration);
 			mplayer_vid_params.maxBufferSize = 1;
 			
@@ -303,24 +312,24 @@ public class FFMpegVideo extends Player {
 			System.arraycopy(mPlayerdefaultVideoArgs, 0, videoArgs, 1 + overiddenMPlayerArgs.length, mPlayerdefaultVideoArgs.length);
 			ProcessWrapperImpl mplayer_vid_process = new ProcessWrapperImpl(videoArgs, mplayer_vid_params);
 			
-			String mPlayerdefaultAudioArgs [] = new String [] { fileName, seek_param, seek_value, "-vo", "null", "-ao", "pcm:file=" +/* pipeprefix + audioPipe+(PMS.get().isWindows()?".1":"")*/audioP.getInputPipe(), "-ao", "pcm:fast", "-quiet", "-noframedrop"  }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-			OutputParams mplayer_aud_params = new OutputParams(PMS.configuration);
-			mplayer_aud_params.maxBufferSize = 1;
-			
-			String audioArgs [] = new String [1 + overiddenMPlayerArgs.length + mPlayerdefaultAudioArgs.length];
-			audioArgs[0] = PMS.get().getMPlayerPath();
-			System.arraycopy(overiddenMPlayerArgs, 0, audioArgs, 1, overiddenMPlayerArgs.length);
-			System.arraycopy(mPlayerdefaultAudioArgs, 0, audioArgs, 1 + overiddenMPlayerArgs.length, mPlayerdefaultAudioArgs.length);
-			ProcessWrapperImpl mplayer_aud_process = new ProcessWrapperImpl(audioArgs, mplayer_aud_params);
-			
+//			String mPlayerdefaultAudioArgs [] = new String [] { fileName, seek_param, seek_value, "-vo", "null", "-ao", "pcm:file=" +/* pipeprefix + audioPipe+(PMS.get().isWindows()?".1":"")*/audioP.getInputPipe(), "-ao", "pcm:fast", "-quiet", "-noframedrop"  }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+//			OutputParams mplayer_aud_params = new OutputParams(PMS.configuration);
+//			mplayer_aud_params.maxBufferSize = 1;
+//			
+//			String audioArgs [] = new String [1 + overiddenMPlayerArgs.length + mPlayerdefaultAudioArgs.length];
+//			audioArgs[0] = PMS.get().getMPlayerPath();
+//			System.arraycopy(overiddenMPlayerArgs, 0, audioArgs, 1, overiddenMPlayerArgs.length);
+//			System.arraycopy(mPlayerdefaultAudioArgs, 0, audioArgs, 1 + overiddenMPlayerArgs.length, mPlayerdefaultAudioArgs.length);
+//			ProcessWrapperImpl mplayer_aud_process = new ProcessWrapperImpl(audioArgs, mplayer_aud_params);
+//			
 			if (type() == Format.VIDEO)
 				pw.attachProcess(mkfifo_vid_process);
 			if (type() == Format.VIDEO || type() == Format.AUDIO)
 				pw.attachProcess(mkfifo_aud_process);
 			if (type() == Format.VIDEO)
 				pw.attachProcess(mplayer_vid_process);
-			if (type() == Format.VIDEO || type() == Format.AUDIO)
-				pw.attachProcess(mplayer_aud_process);
+//			if (type() == Format.VIDEO || type() == Format.AUDIO)
+//				pw.attachProcess(mplayer_aud_process);
 			
 			if (type() == Format.VIDEO)
 				mkfifo_vid_process.runInNewThread();
@@ -330,21 +339,13 @@ public class FFMpegVideo extends Player {
 				Thread.sleep(250);
 			} catch (InterruptedException e) { }
 			if (type() == Format.VIDEO) {
-				/*if (!PMS.get().isWindows()) {
-					File f = new File(pipeprefix + videoPipe);
-					f.deleteOnExit();
-				}*/
 				videoP.deleteLater();
 				mplayer_vid_process.runInNewThread();
 			}
-			if (type() == Format.VIDEO || type() == Format.AUDIO) {
-				/*if (!PMS.get().isWindows()) {
-					File f = new File(pipeprefix + audioPipe);
-					f.deleteOnExit();
-				}*/
-				audioP.deleteLater();
-				mplayer_aud_process.runInNewThread();
-			}
+//			if (type() == Format.VIDEO || type() == Format.AUDIO) {
+//				audioP.deleteLater();
+//				mplayer_aud_process.runInNewThread();
+//			}
 			try {
 				Thread.sleep(250);
 			} catch (InterruptedException e) { }

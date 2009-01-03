@@ -139,7 +139,7 @@ private JTextField mencoder_ass_scale;
 
 			public void itemStateChanged(ItemEvent e) {
 				PMS.get().setMencoder_nooutofsync(e.getStateChange() == ItemEvent.SELECTED);
-				intelligentsync.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
+				//intelligentsync.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
 			}
        	
        });
@@ -157,8 +157,8 @@ private JTextField mencoder_ass_scale;
 			}
        	
        });
-       if (!PMS.get().isMencoder_nooutofsync())
-    	   intelligentsync.setEnabled(false);
+//       if (!PMS.get().isMencoder_nooutofsync())
+//    	   intelligentsync.setEnabled(false);
        builder.add(intelligentsync,          cc.xyw(3,  5, 12));
        
        forcefps = new JCheckBox(Messages.getString("MEncoderVideo.4")); //$NON-NLS-1$
@@ -681,7 +681,7 @@ private JTextField mencoder_ass_scale;
 	protected boolean pcm;
 	protected boolean ovccopy;
 	protected boolean dvd;
-	
+	protected boolean oaccopy;
 
 	protected String overridenMainArgs [];
 	protected String defaultSubArgs [];
@@ -697,7 +697,7 @@ private JTextField mencoder_ass_scale;
 //	-af channels=6:6:0:0:1:2:2:3:3:5:4:1:5:4
 	
 	protected String [] getDefaultArgs() { // 6:0:0:1:4:2:5:3:2:4:1:5:3
-		return new String [] { "-quiet",/* pcm?"-quiet":"-af", pcm?"channels=6:6:0:0:1:2:2:3:3:5:4:1:5:5":"-quiet", */ /* pcm?"-format":"-quiet", pcm?"s24le":"", */ "-oac", pcm?"pcm":"lavc", "-of", (pcm||ac3)?"avi":"mpeg", /*"-lavfopts", "format=mpegts", */"-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", ovccopy?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
+		return new String [] { "-quiet",/* pcm?"-quiet":"-af", pcm?"channels=6:6:0:0:1:2:2:3:3:5:4:1:5:5":"-quiet", */ /* pcm?"-format":"-quiet", pcm?"s24le":"", */ "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", (pcm||ac3)?"avi":"mpeg", /*"-lavfopts", "format=mpegts", */"-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", ovccopy?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
 	}
 
 	@Override
@@ -1039,6 +1039,8 @@ private JTextField mencoder_ass_scale;
 				// vobsub not supported in MEncoder :\
 				//cmdArray[cmdArray.length-4] = "-vobsub";
 				//cmdArray[cmdArray.length-3] = subString.substring(0, subString.length()-4);
+				cmdArray[cmdArray.length-4] = "-quiet"; //$NON-NLS-1$
+				cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
 			} else {
 				cmdArray[cmdArray.length-4] = "-sub"; //$NON-NLS-1$
 				cmdArray[cmdArray.length-3] = subString;
@@ -1072,12 +1074,16 @@ private JTextField mencoder_ass_scale;
 			cmdArray[cmdArray.length-3] = "scale=" + configuration.getMencoderScaleX() + ":" + configuration.getMencoderScaleY(); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
-		// set noskip and -mc 0
-		if (PMS.get().isMencoder_nooutofsync()) {
+		// set noskip and -mc , depending on options and file types
+		if (PMS.get().isMencoder_nooutofsync() || PMS.get().isMencoder_intelligent_sync()) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +3);
 			cmdArray[cmdArray.length-5] = "-mc"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-4] = "0"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-3] = "-noskip"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-4] = "-quiet"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
+			if (PMS.get().isMencoder_nooutofsync()) {
+				cmdArray[cmdArray.length-4] = "0"; //$NON-NLS-1$
+				cmdArray[cmdArray.length-3] = "-noskip"; //$NON-NLS-1$
+			}
 			
 			if (PMS.get().isMencoder_intelligent_sync()) {
 				if (media != null && media.codecA != null && media.codecV != null && ((media.codecA.equals("mp3") && media.codecV.equals("mpeg4")) //$NON-NLS-1$ //$NON-NLS-2$
@@ -1085,14 +1091,9 @@ private JTextField mencoder_ass_scale;
 					// correction A/V in mplayer for xvid+mp3, flv and rm
 					cmdArray[cmdArray.length-4] = "0.1"; //$NON-NLS-1$
 					cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
+				} else if (!PMS.get().isMencoder_nooutofsync()) {
+					cmdArray[cmdArray.length-5] = "-quiet"; //$NON-NLS-1$
 				}
-				/*if (media != null && media.codecA != null && media.codecV != null && (((media.codecA.equals("dts") || media.codecA.equals("dca") || media.codecA.equals("ac3")) && media.codecV.equals("h264")) ||
-						media.codecV.startsWith("RV"))) {
-					// NO A/V for H264+AC3/DTS ??
-					cmdArray[cmdArray.length-5] = "-quiet";
-					cmdArray[cmdArray.length-4] = "-quiet";
-					cmdArray[cmdArray.length-3] = "-quiet";
-				}*/
 			}
 		}
 		
