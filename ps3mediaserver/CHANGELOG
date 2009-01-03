@@ -7,21 +7,22 @@ v1.02
 - New features
 
 Auto-updater, default configuration, cleanups and windows/linux build scripts (thanks to Tim Cox)
-Media library (act also as a parsing cache)
+Media library (also act as a parsing cache)
 Playlists (m3u/pls) support
 Preliminary album art support, better audio (flac) and tags parsing
 New options for video resolution, deinterlace filter, and archives browsing
 Better video settings with virtual PS3 menu (A/V sync, deinterlace, ...)
 Windows service installer (working on 32 bits only)
 New image parsing library: Better performance / EXIF support (sort photos by camera model, etc.)
+DVR-MS addon
 
 - Fixes
 
-A/V out of sync issues with some ISOs and medias / codecs support improvment
+A/V out of sync issues with some ISOs and medias / codecs support improvment (flv, rmvb, hdmov, mp4, multichannels avi, etc.)
 External subtitles not always loaded
 Regression since 0.98, server would not start on some machines
 Newest builds of ffmpeg/mplayer for win32
-Usual small fixes
+Usual bunch of fixes
 
 v1.01:
 

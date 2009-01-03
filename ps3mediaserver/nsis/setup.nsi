@@ -18,8 +18,9 @@ SetCompressorDictSize 32
  
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN "$INSTDIR\PMS.exe"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\win.bmp"
 
-;!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
@@ -31,10 +32,10 @@ ShowUninstDetails show
 
 Section "Program Files"
   SetOutPath "$INSTDIR"
-  File /r "win32"
-  File "pms.exe"
+  File /r /x ".svn" "win32"
+  File "PMS.exe"
   File "pms.jar"
-  File "pms.conf"
+  File "PMS.conf"
   File "WEB.conf"
   File "README"
   File "FAQ"

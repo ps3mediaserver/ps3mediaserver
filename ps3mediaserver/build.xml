@@ -42,7 +42,7 @@
 		</jar>
 		
     	<mkdir dir="dist" />
-    	<zip basedir="." destfile="dist/pms-linux-${version}.zip" excludes="debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*" includes="LICENCE.txt,README,pms.jar,FAQ,PMS.sh,PMS.conf,WEB.conf,linux/**" />
+    	<tar basedir="." destfile="dist/pms-linux-${version}.tgz" compression="bzip2" excludes="debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*" includes="LICENCE.txt,README,pms.jar,FAQ,PMS.sh,PMS.conf,WEB.conf,linux/**" />
     	<delete dir="classes" />
     	
     	<condition property="isWindows">
