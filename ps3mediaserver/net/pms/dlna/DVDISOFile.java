@@ -29,7 +29,7 @@ import net.pms.util.ProcessUtil;
 
 public class DVDISOFile extends VirtualFolder {
 	
-	
+	public static final String PREFIX = "[DVD ISO] ";
 	
 	public void init() {
 		
@@ -39,7 +39,17 @@ public class DVDISOFile extends VirtualFolder {
 		OutputParams params = new OutputParams(PMS.configuration);
 		params.maxBufferSize = 1;
 		params.log = true;
-		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmd, params);
+		final ProcessWrapperImpl pw = new ProcessWrapperImpl(cmd, params);
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {}
+				pw.stopProcess();
+			}
+		};
+		Thread failsafe = new Thread(r);
+		failsafe.start();
 		pw.run();
 		ArrayList<String> lines = pw.getOtherResults();
 		for(String line:lines) {
@@ -65,8 +75,9 @@ public class DVDISOFile extends VirtualFolder {
 	private File f;
 	
 	public DVDISOFile(File f) {
-		super("[DVD ISO] " + (f.isFile()?f.getName():"VIDEO_TS"), null);
+		super(PREFIX + (f.isFile()?f.getName():"VIDEO_TS"), null);
 		this.f = f;
+		lastmodified = f.lastModified();
 		init();
 	}
 

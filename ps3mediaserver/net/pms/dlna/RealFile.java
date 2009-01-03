@@ -96,19 +96,33 @@ public class RealFile extends DLNAResource {
 			if (!f.isHidden()) {
 				boolean present = false;
 				for(DLNAResource d:children) {
-					if (i == 0 && !(d instanceof VirtualFolder))
+					if (i == 0 && (!(d instanceof VirtualFolder) || (d instanceof DVDISOFile))) // specific for video_ts, we need to refresh it
 						removedFiles.add(d);
-					boolean addcheck = d instanceof RealFile;
-					if (d.getName().equals(f.getName()) && (!addcheck || (addcheck && ((RealFile) d).lastmodified == f.lastModified()))) {
+					boolean video_ts_hack = (d instanceof DVDISOFile) && d.getName().startsWith(DVDISOFile.PREFIX) && d.getName().substring(DVDISOFile.PREFIX.length()).equals(f.getName());
+					/*if (video_ts_hack) {
+						PMS.minimal("d.getName(): " + d.getName());
+						PMS.minimal("f.getName(): " + f.getName());
+						PMS.minimal("d.lastmodified: " + d.lastmodified);
+						PMS.minimal("f.lastModified: " + f.lastModified());
+					}*/
+					if ((d.getName().equals(f.getName()) || video_ts_hack) && ((d instanceof RealFile && d.isFolder()) || d.lastmodified == f.lastModified())) { // && (!addcheck || (addcheck && d.lastmodified == f.lastModified()))
 						removedFiles.remove(d);
 						present = true;
 					}
 				}
-				if (!present && (f.isDirectory() || PMS.get().getAssociatedExtension(f.getName()) != null)
-						 && !f.getName().toLowerCase().endsWith(".iso") && !f.getName().toUpperCase().equals("VIDEO_TS"))
+				if (!present && (f.isDirectory() || PMS.get().getAssociatedExtension(f.getName()) != null)/*
+						 && !f.getName().toLowerCase().endsWith(".iso") && !f.getName().toUpperCase().equals("VIDEO_TS")*/)
 					addedFiles.add(f);
 			}
 			i++;
+		}
+		
+		for(DLNAResource f:removedFiles) {
+			PMS.minimal("Removed: " + f.getName());
+		}
+		
+		for(File f:addedFiles) {
+			PMS.minimal("Added: " + f.getAbsolutePath());
 		}
 		
 		TranscodeVirtualFolder vf = null;
@@ -121,11 +135,12 @@ public class RealFile extends DLNAResource {
 		
 		for(DLNAResource f:removedFiles) {
 			children.remove(f);
-			if (vf != null)
+			if (vf != null) {
 				for(int j=vf.children.size()-1;j>=0;j--) {
-					if (vf.children.get(j).getName().equals(f.getName()));
+					if (vf.children.get(j).getName().equals(f.getName()))
 						vf.children.remove(j);
 				}
+			}
 		}
 		for(File f:addedFiles) {
 			manageFile(f);

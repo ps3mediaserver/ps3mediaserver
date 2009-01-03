@@ -36,7 +36,17 @@ public class DVDISOTitle extends DLNAResource {
 		OutputParams params = new OutputParams(PMS.configuration);
 		params.maxBufferSize = 1;
 		params.log = true;
-		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmd, params);
+		final ProcessWrapperImpl pw = new ProcessWrapperImpl(cmd, params);
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {}
+				pw.stopProcess();
+			}
+		};
+		Thread failsafe = new Thread(r);
+		failsafe.start();
 		pw.run();
 		ArrayList<String> lines = pw.getOtherResults();
 		
@@ -124,7 +134,7 @@ public class DVDISOTitle extends DLNAResource {
 	public DVDISOTitle(File f, int title) {
 		this.f = f;
 		this.title = title;
-
+		lastmodified = f.lastModified();
 	}
 
 	@Override
