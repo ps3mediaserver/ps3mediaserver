@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.BindException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +40,7 @@ import java.util.UUID;
 import java.util.logging.LogManager;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.h2.tools.Server;
 
 import com.sun.jna.Platform;
 
@@ -463,9 +465,7 @@ public class PMS {
 	private String folders = ""; //$NON-NLS-1$
 	private boolean filebuffer;
 	
-	public boolean isForceMPlayer() {
-		return false;
-	}
+	
 	public String getHostname() {
 		return configuration.getServerHostname();
 	}
@@ -625,6 +625,12 @@ public class PMS {
 			if (database == null) {
 				database = new DLNAMediaDatabase("medias"); //$NON-NLS-1$
 				database.init(false);
+				try {
+					Server server = Server.createWebServer(null);
+					server.start();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 			return database;
 		}
@@ -849,7 +855,59 @@ public class PMS {
 				PMS.minimal("Unexpected error in WEB.conf: " + e.getMessage()); //$NON-NLS-1$
 			}
 		}
-		if (PMS.get().isUsecache()) {
+	
+		addMediaLibraryFolder();
+	
+		addVideoSettingssFolder();
+		
+		rootFolder.closeChildren(0, false);
+	}
+	
+	public void addVideoSettingssFolder() {
+		if (!PMS.get().isHidevideosettings()) {
+			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.37"), null); //$NON-NLS-1$
+			
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), mencoder_nooutofsync) { //$NON-NLS-1$
+				public boolean enable() {
+					mencoder_nooutofsync = !mencoder_nooutofsync;
+					
+					return mencoder_nooutofsync;
+				}
+			});
+			
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.4"), configuration.isMencoderYadif()) { //$NON-NLS-1$
+				public boolean enable() {
+					configuration.setMencoderYadif(!configuration.isMencoderYadif());
+					
+					return  configuration.isMencoderYadif();
+				}
+			});
+			
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.6"), configuration.getUseSubtitles()) { //$NON-NLS-1$
+				public boolean enable() {
+					boolean oldValue = configuration.getUseSubtitles();
+					boolean newValue = ! oldValue;
+					configuration.setUseSubtitles( newValue );
+					return newValue;
+				}
+			});
+			
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.7"), skiploopfilter) { //$NON-NLS-1$
+				public boolean enable() {
+					skiploopfilter = !skiploopfilter;
+					
+					return skiploopfilter;
+				}
+			});
+			//vf.closeChildren(0, false);
+			rootFolder.addChild(vf);
+		}
+	}
+	
+	private boolean mediaLibraryAdded = false;
+	
+	public boolean addMediaLibraryFolder() {
+		if (PMS.get().isUsecache() && !mediaLibraryAdded) {
 			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.2"), null); //$NON-NLS-1$
 			VirtualFolder vfAudio = new VirtualFolder(Messages.getString("PMS.1"), null); //$NON-NLS-1$
 			MediaLibraryFolder mlf = new MediaLibraryFolder(Messages.getString("PMS.11"), "TYPE = 1 ORDER BY FILENAME ASC", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
@@ -907,48 +965,10 @@ public class PMS {
 			vf.addChild(vfVideo);
 			
 			rootFolder.addChild(vf);
+			mediaLibraryAdded = true;
+			return true;
 		}
-	
-		if (!PMS.get().isHidevideosettings()) {
-			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.37"), null); //$NON-NLS-1$
-			
-			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), mencoder_nooutofsync) { //$NON-NLS-1$
-				public boolean enable() {
-					mencoder_nooutofsync = !mencoder_nooutofsync;
-					
-					return mencoder_nooutofsync;
-				}
-			});
-			
-			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.4"), configuration.isMencoderYadif()) { //$NON-NLS-1$
-				public boolean enable() {
-					configuration.setMencoderYadif(!configuration.isMencoderYadif());
-					
-					return  configuration.isMencoderYadif();
-				}
-			});
-			
-			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.6"), configuration.getUseSubtitles()) { //$NON-NLS-1$
-				public boolean enable() {
-					boolean oldValue = configuration.getUseSubtitles();
-					boolean newValue = ! oldValue;
-					configuration.setUseSubtitles( newValue );
-					return newValue;
-				}
-			});
-			
-			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.7"), skiploopfilter) { //$NON-NLS-1$
-				public boolean enable() {
-					skiploopfilter = !skiploopfilter;
-					
-					return skiploopfilter;
-				}
-			});
-			//vf.closeChildren(0, false);
-			rootFolder.addChild(vf);
-		}
-		
-		rootFolder.closeChildren(0, false);
+		return false;
 	}
 	
 	public boolean installWin32Service() {

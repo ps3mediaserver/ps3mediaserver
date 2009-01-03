@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
+import org.h2.tools.DeleteDbFiles;
+import org.h2.tools.RunScript;
+import org.h2.tools.Script;
 
 import net.pms.PMS;
 import net.pms.newgui.LooksFrame;
@@ -20,12 +23,20 @@ import net.pms.newgui.LooksFrame;
 
 public class DLNAMediaDatabase implements Runnable {
 	
-	private String name;
+	//private String name;
+	private String url;
+	private String dir;
 	public static String NONAME = "###";
 	private Thread scanner;
 	
 	public DLNAMediaDatabase(String name) {
-		this.name = name;
+		//this.name = name;
+		try {
+			dir = "/" + PMS.get().getTempFolder().getAbsolutePath().replace('\\', '/') + "/database" ;
+			url = "jdbc:h2:" + dir + "/" + name;
+			PMS.info("Using database URL: " + url);
+		} catch (IOException e1) {
+		}
 		try {
 			Class.forName("org.h2.Driver");
 		} catch (ClassNotFoundException e) {
@@ -34,12 +45,7 @@ public class DLNAMediaDatabase implements Runnable {
 	}
 	
 	private Connection getConnection() throws SQLException {
-		Connection conn = null;
-		try {
-			conn = DriverManager.getConnection("jdbc:h2:/" + PMS.get().getTempFolder().getAbsolutePath().replace('\\', '/') + "/database/" + name, "sa", "");
-		} catch (IOException e) {
-			PMS.error(null, e);
-		}
+		Connection conn = DriverManager.getConnection(url, "sa", "");
 		return conn;
 	}
 	
@@ -446,5 +452,25 @@ public class DLNAMediaDatabase implements Runnable {
 	public void run() {
 		PMS.get().getRootFolder().scan();
 	}
+	
+	public void compact() {
+		PMS.minimal("Compacting database...");
+		((LooksFrame) PMS.get().getFrame()).setStatusLine("Compacting database...");
+        String file = "database.sql";
+        try {
+        	Script.execute(url, "sa", "", file);
+        	DeleteDbFiles.execute(dir, "medias", true);
+        	RunScript.execute(url, "sa", "", file, null, false);
+        } catch (Exception s) {
+        	PMS.error("Error in compacting database: ", s);
+        } finally {
+        	File testsql = new File(file);
+        	if (testsql.exists()) {
+        		if (!testsql.delete())
+        			testsql.deleteOnExit();
+        	}
+        }
+        ((LooksFrame) PMS.get().getFrame()).setStatusLine(null);
+    }
 
 }

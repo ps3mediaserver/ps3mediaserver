@@ -239,6 +239,17 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						if (resource.refreshChildren()) {
 							resource.closeChildren(resource.childrenNumber(), true);
 							resource.updateId++;
+							/*TranscodeVirtualFolder vf = null;
+							for(DLNAResource r:resource.children) {
+								if (r instanceof TranscodeVirtualFolder) {
+									vf = (TranscodeVirtualFolder) r;
+									break;
+								}
+							}
+							if (vf != null) {
+								vf.closeChildren(vf.childrenNumber(), true);
+								vf.updateId++;
+							}*/
 							systemUpdateId++;
 						}
 					}
@@ -256,7 +267,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					
 					ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(count);
 				 
-					ThreadPoolExecutor tpe = new ThreadPoolExecutor(Math.min(count, 3), count, 20, TimeUnit.SECONDS, queue);
+					int parallel_thread_number = 3;
+					if (resource instanceof DVDISOFile)
+						parallel_thread_number = 1; // my dvd drive is dying wih 3 parallel threads 
+					ThreadPoolExecutor tpe = new ThreadPoolExecutor(Math.min(count, parallel_thread_number), count, 20, TimeUnit.SECONDS, queue);
 					
 					for(int i=start;i<start+count;i++) {
 						if (i < resource.children.size()) {
@@ -394,7 +408,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		if (id != null) {
 			String code = id.toLowerCase();
 			if (code.length() == 2) {
-				code=code.equals("fr")?"fre":code.equals("en")?"eng":code.equals("de")?"ger":code.equals("ja")?"jpn":code.equals("it")?"ita":code.equals("es")?"spa":"nul";
+				code=code.equals("fr")?"fre":code.equals("en")?"eng":code.equals("de")?"ger":code.equals("ja")?"jpn":code.equals("it")?"ita":code.equals("es")?"spa":code.equals("nl")?"dut":code.equals("no")?"nor":code.equals("sv")?"swe":code.equals("da")?"dan":"nul";
 			}
 			sb.append("codes/" + code + ".png");
 			return sb.toString();

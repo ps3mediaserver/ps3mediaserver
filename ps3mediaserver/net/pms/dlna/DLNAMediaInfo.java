@@ -288,6 +288,7 @@ public class DLNAMediaInfo {
 				ArrayList<String> lines = (ArrayList<String>) pw.getResults();
 				int langId = 0;
 				int subId = 0;
+				int nbUndAudioTracks = 0;
 				for(String line:lines) {
 					line = line.trim();
 					if (line.startsWith("Output"))
@@ -330,11 +331,16 @@ public class DLNAMediaInfo {
 							int a = line.indexOf("(");
 							int b = line.indexOf("):", a);
 							DLNAMediaLang lang = new DLNAMediaLang();
+							if (langId == 0 && container.equals("avi"))
+								langId++;
+							lang.id = langId++;
 							if (a > -1 && b > a) {
 								lang.lang = line.substring(a+1, b);
-								lang.id = langId++;
-								audioCodes.add(lang);
+							} else {
+								lang.lang = "und";
+								nbUndAudioTracks++;
 							}
+							audioCodes.add(lang);
 							while (st.hasMoreTokens()) {
 								String token = st.nextToken().trim();
 								if (token.startsWith("Stream")) {
@@ -386,6 +392,11 @@ public class DLNAMediaInfo {
 							}
 						}
 					}
+				}
+				
+				// remove audio code when there's only one "und" track
+				if (nbUndAudioTracks == 1 && audioCodes.size() == 1) {
+					audioCodes.remove(0);
 				}
 			
 				if (type == Format.VIDEO && pw != null) {
