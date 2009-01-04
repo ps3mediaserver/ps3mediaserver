@@ -1,7 +1,6 @@
 package net.pms.dlna;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -30,14 +29,11 @@ public class DLNAMediaDatabase implements Runnable {
 	private Thread scanner;
 	
 	public DLNAMediaDatabase(String name) {
-		//this.name = name;
-		try {
-			dir = "/" + PMS.getConfiguration().getTempFolder().getAbsolutePath().replace('\\', '/') + "/database" ;
-			url = "jdbc:h2:" + dir + "/" + name;
-			PMS.info("Using database URL: " + url);
-			PMS.minimal("Using database located at : " + dir);
-		} catch (IOException e1) {
-		}
+		dir = "database/" + name ;
+		url = "jdbc:h2:" + dir;
+		PMS.info("Using database URL: " + url);
+		PMS.minimal("Using database located at : " + new File(dir).getAbsolutePath());
+		
 		try {
 			Class.forName("org.h2.Driver");
 		} catch (ClassNotFoundException e) {
@@ -453,7 +449,7 @@ public class DLNAMediaDatabase implements Runnable {
 	public void compact() {
 		PMS.minimal("Compacting database...");
 		((LooksFrame) PMS.get().getFrame()).setStatusLine("Compacting database...");
-        String file = "database.sql";
+        String file = "database/backup.sql";
         try {
         	Script.execute(url, "sa", "", file);
         	DeleteDbFiles.execute(dir, "medias", true);
