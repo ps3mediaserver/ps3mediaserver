@@ -304,7 +304,7 @@ public class PmsConfiguration {
 	}
 
 	public String getMencoderNoAssOutline() {
-		return getString(KEY_MENCODER_ASS_OUTLINE, "3");
+		return getString(KEY_MENCODER_NOASS_OUTLINE, "1");
 	}
 
 	public void setMencoderNoAssOutline(String value) {

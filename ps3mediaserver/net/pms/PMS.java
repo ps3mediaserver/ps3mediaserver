@@ -794,12 +794,14 @@ public class PMS {
 	public boolean installWin32Service() {
 		PMS.minimal(Messages.getString("PMS.41")); //$NON-NLS-1$
 		String cmdArray [] = new String[] { "win32/service/wrapper.exe", "-r", "wrapper.conf" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		ProcessWrapperImpl pwuninstall = new ProcessWrapperImpl(cmdArray, new OutputParams(PMS.configuration));
+		OutputParams output = new OutputParams(PMS.configuration);
+		output.noexitcheck = true;
+		ProcessWrapperImpl pwuninstall = new ProcessWrapperImpl(cmdArray, output);
 		pwuninstall.run();
 		cmdArray = new String[] { "win32/service/wrapper.exe", "-i", "wrapper.conf" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		ProcessWrapperImpl pwinstall = new ProcessWrapperImpl(cmdArray, new OutputParams(PMS.configuration));
 		pwinstall.run();
-		return true; // TODO: check the validity of the service installation
+		return pwinstall.isSuccess();
 	}
 	
 	private String [] parseFeedKey(String entry) {

@@ -34,6 +34,11 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 		return super.getName();
 	}
 
+	private boolean success;
+	public boolean isSuccess() {
+		return success;
+	}
+
 	private String cmdLine;
 	private Process process;
 	private OutputConsumer outConsumer;
@@ -100,8 +105,10 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				outConsumer.getBuffer().close();
 			if (!destroyed && !params.noexitcheck) {
 				try {
+					success = true;
 					if (process.exitValue() != 0) {
 						PMS.minimal("Process " + cmdArray[0] + " has a return code of " + process.exitValue() + "! Maybe an error occured... check the log file");
+						success = false;
 					}
 				} catch (IllegalThreadStateException itse) {
 					PMS.error("An error occured", itse);
