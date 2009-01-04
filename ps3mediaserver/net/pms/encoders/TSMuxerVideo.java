@@ -23,7 +23,7 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -90,7 +90,7 @@ public class TSMuxerVideo extends Player {
 			params.log = true;
 			ProcessWrapperImpl p = new ProcessWrapperImpl(cmd, params);
 			p.run();
-			ArrayList<String> results = p.getOtherResults();
+			List<String> results = p.getOtherResults();
 			
 			int id = 0;
 			String type = null;

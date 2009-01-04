@@ -23,17 +23,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.pms.PMS;
 
 public class OutputTextConsumer extends OutputConsumer {
 	
-	private ArrayList<String> lines;
+	private List<String> lines = new ArrayList<String>();
+	private Object linesLock = new Object();
 	private boolean log;
 	
 	public OutputTextConsumer(InputStream inputStream, boolean log) {
 		super(inputStream);
-		lines = new ArrayList<String>();
+		linesLock = new Object();
 		this.log = log;
 	}
 	
@@ -45,14 +47,15 @@ public class OutputTextConsumer extends OutputConsumer {
     	    int authorized = 10;
     	    while ((line = br.readLine()) != null) {
     	    	if (line.length() > 0 && line.startsWith("[") && authorized > 0) {
-    	    		lines.add(line);
+    	    		addLine(line);
     	    		if (log)
     	    			PMS.debug(line);
     	    		authorized--;
     	    	} else if (line.length() > 0  && !line.startsWith("[") && !line.startsWith("100") && !line.startsWith("size") && !line.startsWith("frame") && !line.startsWith("Pos") && !line.startsWith("ERROR:") && !line.startsWith("BUFFER") && !line.startsWith("INITV")) {
-    	    		lines.add(line);
-    	    		if (log)
+    	    		addLine(line);
+    	    		if (log) {
     	    			PMS.debug(line);
+    	    		}
     	    	}
             }
         } catch (IOException ioe) {
@@ -63,12 +66,22 @@ public class OutputTextConsumer extends OutputConsumer {
         }
 	}
 
+	private void addLine(String line) {
+		synchronized (linesLock) {
+			lines.add(line);
+		}
+	}
+
 	public BufferedOutputFile getBuffer() {
 		return null;
 	}
 
-	public ArrayList<String> getResults() {
-		return lines;
+	public List<String> getResults() {
+		List<String> clonedResults = new ArrayList<String>();
+		synchronized (linesLock) {
+			clonedResults.addAll(lines);
+		}
+		return clonedResults;
 	}
 	
 }

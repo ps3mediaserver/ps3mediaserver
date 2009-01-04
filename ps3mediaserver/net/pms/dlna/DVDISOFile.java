@@ -19,7 +19,7 @@
 package net.pms.dlna;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 
 import net.pms.PMS;
 import net.pms.dlna.virtual.VirtualFolder;
@@ -51,7 +51,7 @@ public class DVDISOFile extends VirtualFolder {
 		Thread failsafe = new Thread(r);
 		failsafe.start();
 		pw.run();
-		ArrayList<String> lines = pw.getOtherResults();
+		List<String> lines = pw.getOtherResults();
 		for(String line:lines) {
 			if (line.startsWith("ID_DVD_TITLE_") && line.contains("_LENGTH")) {
 				int rank = Integer.parseInt(line.substring(13, line.indexOf("_LENGT")));

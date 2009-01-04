@@ -20,7 +20,7 @@ package net.pms.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.List;
 
 import net.pms.PMS;
 
@@ -56,7 +56,7 @@ public class OutputBufferConsumer extends OutputConsumer {
 		return outputBuffer;
 	}
 
-	public ArrayList<String> getResults() {
+	public List<String> getResults() {
 		return null;
 	}
 }

@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.pms.PMS;
 import net.pms.io.OutputParams;
@@ -48,7 +49,7 @@ public class DVDISOTitle extends DLNAResource {
 		Thread failsafe = new Thread(r);
 		failsafe.start();
 		pw.run();
-		ArrayList<String> lines = pw.getOtherResults();
+		List<String> lines = pw.getOtherResults();
 		
 		String duration = null;
 		int nbsectors = 0;

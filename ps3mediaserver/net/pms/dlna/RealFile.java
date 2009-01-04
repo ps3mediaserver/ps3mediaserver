@@ -59,7 +59,7 @@ public class RealFile extends DLNAResource {
 	@Override
 	public void discoverChildren() {
 		super.discoverChildren();
-		File files [] = file.listFiles();
+		File files [] = getFileList();
 		Arrays.sort(files);
 		for(File f:files) {
 			if (f.isDirectory())
@@ -88,7 +88,7 @@ public class RealFile extends DLNAResource {
 	
 	@Override
 	public boolean refreshChildren() {
-		File files [] = file.listFiles();
+		File files [] = getFileList();
 		ArrayList<File> addedFiles = new ArrayList<File>();
 		ArrayList<DLNAResource> removedFiles = new ArrayList<DLNAResource>();
 		int i = 0;
@@ -139,6 +139,14 @@ public class RealFile extends DLNAResource {
 			manageFile(f);
 		}
 		return removedFiles.size() != 0 || addedFiles.size() != 0;
+	}
+
+	private File[] getFileList() {
+		File[] out = file.listFiles();
+		if (out == null) {
+			out = new File[0];
+		}
+		return out;
 	}
 
 	

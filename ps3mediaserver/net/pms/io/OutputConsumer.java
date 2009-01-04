@@ -20,7 +20,7 @@ package net.pms.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.List;
 
 
 public abstract class OutputConsumer extends Thread {
@@ -42,6 +42,6 @@ public abstract class OutputConsumer extends Thread {
 	
 	public abstract BufferedOutputFile getBuffer();
 	
-	public abstract ArrayList<String> getResults();
+	public abstract List<String> getResults();
 
 }

@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.pms.PMS;
 import net.pms.encoders.AviDemuxerInputStream;
@@ -143,11 +144,11 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 		return null;
 	}
 	
-	public ArrayList<String> getOtherResults() {
+	public List<String> getOtherResults() {
 		return outConsumer.getResults();
 	}
 	
-	public ArrayList<String> getResults() {
+	public List<String> getResults() {
 		try {
 			stderrConsumer.join(1000);
 		} catch (InterruptedException e) {}
