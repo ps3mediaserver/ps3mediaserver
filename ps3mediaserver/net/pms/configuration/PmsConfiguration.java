@@ -651,7 +651,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean getSkipLoopFilterEnabled() {
-		return getBoolean(KEY_SKIP_LOOP_FILTER_ENABLED, true);
+		return getBoolean(KEY_SKIP_LOOP_FILTER_ENABLED, false);
 	}
 
 	public void setSkipLoopFilterEnabled(boolean value) {
@@ -675,7 +675,7 @@ public class PmsConfiguration {
 	}
 
 	public List<String> getEnginesAsList(WinUtils registry) {
-		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,mplayeraudio,ffmpegaudio,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux"));
+		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,mplayeraudio,ffmpegaudio,tsmuxeraudio,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux"));
 		engines = hackAvs(registry, engines);
 		return engines;
 	}
