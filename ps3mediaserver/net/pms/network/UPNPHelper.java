@@ -40,26 +40,56 @@ public class UPNPHelper {
 	private final static String UPNP_HOST = "239.255.255.250";
 	private final static int UPNP_PORT = 1900;
 	private final static String BYEBYE = "ssdp:byebye";
-	private static Thread listener; 
+	private static Thread listener;
+	private static Thread aliveThread;
+	
+	private static void sendDiscover(String host, int port, String st) throws IOException
+	{
+		String usn = PMS.get().usn();
+		String discovery = 
+			"HTTP/1.1 200  OK" + CRLF +
+			"SERVER: " + PMS.get().getServerName() + CRLF +
+			"ST: " + st + CRLF +
+			"CACHE-CONTROL:  max-age=1800" + CRLF +
+			"EXT: " + CRLF +
+			"USN: " + usn + st + CRLF +
+			"LOCATION: http://" + PMS.get().getServer().getHost() + ":" + PMS.get().getServer().getPort() + "/description/fetch" + CRLF +
+			"DATE:  Wed, 31 Dec 2008 14:18:57 GMT" + CRLF + 
+			"Content-Length: 0" + CRLF + CRLF;		
+		
+		sendReply(host, port, discovery);
+	}
+
+	private static void sendReply(String host, int port, String msg) throws IOException
+	{
+		try
+		{
+			DatagramSocket ssdpUniSock = new DatagramSocket();
+
+			PMS.debug( "Sending this reply: " + StringUtils.replace(msg, CRLF, "<CRLF>"));
+			InetAddress inetAddr = InetAddress.getByName(host);		
+			DatagramPacket dgmPacket = new DatagramPacket(msg.getBytes(), msg.length(), inetAddr, port);
+			ssdpUniSock.send(dgmPacket);
+			ssdpUniSock.close();
+
+		}
+		catch (Exception ex)
+		{
+			PMS.minimal(ex.getMessage());
+		}
+	}
 	
 	public static void sendAlive() throws IOException {
 		
 		PMS.info( "Sending ALIVE...");
 		
 		MulticastSocket ssdpSocket = getNewMulticastSocket();
-		sendMessage(ssdpSocket, "upnp:rootdevice", ALIVE);
+		sendMessage(ssdpSocket,  "upnp:rootdevice", ALIVE);
 		sendMessage(ssdpSocket,  PMS.get().usn(), ALIVE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:device:MediaServer:1", ALIVE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ContentDirectory:1", ALIVE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ConnectionManager:1", ALIVE);
 		sendMessage(ssdpSocket,  "urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1", ALIVE);
-		/*try {
-			Thread.sleep(200);
-		} catch (InterruptedException e) { }
-		sendMessage(ssdpSocket, "upnp:rootdevice", ALIVE);
-		sendMessage(ssdpSocket,  PMS.get().usn(), ALIVE);
-		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:device:MediaServer:1", ALIVE);
-		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ContentDirectory:1", ALIVE);*/
 		
 		ssdpSocket.leaveGroup(getUPNPAddress());
 		ssdpSocket.close();
@@ -99,33 +129,22 @@ public class UPNPHelper {
 		return ssdpSocket;
 	}
 	
-	//private static boolean first = true;
-	
 	public static void sendByeBye() throws IOException {
 		
 		PMS.info( "Sending BYEBYE...");
-		//if (!first) {
 		MulticastSocket ssdpSocket = getNewMulticastSocket();
 		
-		sendMessage(ssdpSocket, "upnp:rootdevice", BYEBYE);
+		sendMessage(ssdpSocket,  "upnp:rootdevice", BYEBYE);
 		sendMessage(ssdpSocket,  PMS.get().usn(), BYEBYE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:device:MediaServer:1", BYEBYE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ContentDirectory:1", BYEBYE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ConnectionManager:1", ALIVE);
 		sendMessage(ssdpSocket,  "urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1", ALIVE);
-		/*try {
-			Thread.sleep(200);
-		} catch (InterruptedException e) { }
-		sendMessage(ssdpSocket, "upnp:rootdevice", BYEBYE);
-		sendMessage(ssdpSocket,  PMS.get().usn(), BYEBYE);
-		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:device:MediaServer:1", BYEBYE);
-		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ContentDirectory:1", BYEBYE);*/
-		
+
 		ssdpSocket.leaveGroup(getUPNPAddress());
 		ssdpSocket.close();
 		ssdpSocket = null;
-		//}
-		//first = false;
+
 	}
 
 	
@@ -145,6 +164,18 @@ public class UPNPHelper {
 	}
 	
 	public static void listen() throws IOException {
+		Runnable rAlive = new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(180000); // every 180s
+					sendAlive();
+				} catch (Exception e) {
+					PMS.minimal("Error while sending periodic alive message: " + e.getMessage());
+				}
+			}
+		};
+		aliveThread = new Thread(rAlive);
+		aliveThread.start();
 		Runnable r = new Runnable() {
 			public void run() {
 			
@@ -172,9 +203,14 @@ public class UPNPHelper {
 				        String s = new String(packet_r.getData());
 						
 						if (s.startsWith("M-SEARCH")) {
-							PMS.minimal( "Receiving search request from " + packet_r.getAddress().getHostAddress() + "! Sending alive message...");
-							sendAlive();
-							//listen();
+							PMS.minimal( "Receiving search request from " + packet_r.getAddress().getHostAddress() + "! Sending DISCOVER message...");
+							String remoteAddr = packet_r.getAddress().getHostAddress();
+							int remotePort = packet_r.getPort();
+
+							sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:device:MediaServer:1");
+							sendDiscover(remoteAddr, remotePort, "upnp:rootdevice");
+							sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:service:ContentDirectory:1");
+
 						}
 					} catch (IOException e) {
 						PMS.error("UPNP network exception", e);
@@ -191,6 +227,7 @@ public class UPNPHelper {
 	
 	public static void shutDownListener() {
 		listener.interrupt();
+		aliveThread.interrupt();
 	}
 	
 	private static String buildMsg(String nt, String message) {
