@@ -56,7 +56,7 @@ public class PipeProcess {
 
 	private static String getPipeName(String pipeName) {
 		try {
-			return PMS.get().getTempFolder() + "/" + pipeName;
+			return PMS.getConfiguration().getTempFolder() + "/" + pipeName;
 		} catch (IOException e) {
 			PMS.error("Pipe may not be in temporary directory", e);
 			return pipeName;
@@ -80,7 +80,7 @@ public class PipeProcess {
 			OutputParams mkfifo_vid_params = new OutputParams(PMS.getConfiguration());
 			mkfifo_vid_params.maxBufferSize = 0.1;
 			mkfifo_vid_params.log = true;
-			String cmdArray [] = new String[] { PMS.get().getMKfifoPath(), PMS.get().isWindows()?"":"--mode=777", linuxPipeName };
+			String cmdArray [] = new String[] { "mkfifo", PMS.get().isWindows()?"":"--mode=777", linuxPipeName };
 			if (Platform.isMac()) {
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length+1);
 				cmdArray[1] = "-m";

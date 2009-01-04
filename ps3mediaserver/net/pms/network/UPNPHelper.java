@@ -69,9 +69,9 @@ public class UPNPHelper {
 	private static MulticastSocket getNewMulticastSocket() throws IOException {
 		MulticastSocket ssdpSocket = new MulticastSocket();
 		ssdpSocket.setReuseAddress(true);
-		if (PMS.get().getHostname() != null && PMS.get().getHostname().length() > 0) {
-			PMS.debug("Searching network interface for " + PMS.get().getHostname());
-			NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.get().getHostname()));
+		if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
+			PMS.debug("Searching network interface for " + PMS.getConfiguration().getServerHostname());
+			NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
 			if (ni != null) {
 				ssdpSocket.setNetworkInterface(ni);
 				// force IPv4 address
@@ -153,9 +153,9 @@ public class UPNPHelper {
 					DatagramPacket packet_r = new DatagramPacket(buf, buf.length);
 					try { 
 						MulticastSocket socket = new MulticastSocket(1900);
-						if (PMS.get().getHostname() != null && PMS.get().getHostname().length() > 0) {
-							PMS.debug("Searching network interface for " + PMS.get().getHostname());
-							NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.get().getHostname()));
+						if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
+							PMS.debug("Searching network interface for " + PMS.getConfiguration().getServerHostname());
+							NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
 							if (ni != null)
 								socket.setNetworkInterface(ni);
 						} else if ( PMS.get().getServer().getNi() != null) {

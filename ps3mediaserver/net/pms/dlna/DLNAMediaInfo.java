@@ -120,7 +120,7 @@ public class DLNAMediaInfo {
 		args[11] = "-f";
 		args[12] = "image2";
 		args[13] = "pipe:";
-		if (!PMS.get().isThumbnails()) {
+		if (!PMS.getConfiguration().getThumbnailsEnabled()) {
 			args[2] = "0";
 			for(int i=5;i<=13;i++)
 				args[i] = "-an";
@@ -149,7 +149,7 @@ public class DLNAMediaInfo {
 
 
 	private String getFfmpegPath() {
-		String value = PMS.get().getFFmpegPath();
+		String value = PMS.getConfiguration().getFfmpegPath();
 		if (value == null) {
 			PMS.minimal("No ffmpeg - unable to thumbnail");
 			throw new RuntimeException("No ffmpeg - unable to thumbnail");

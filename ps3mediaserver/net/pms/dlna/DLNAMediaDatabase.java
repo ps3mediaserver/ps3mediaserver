@@ -32,7 +32,7 @@ public class DLNAMediaDatabase implements Runnable {
 	public DLNAMediaDatabase(String name) {
 		//this.name = name;
 		try {
-			dir = "/" + PMS.get().getTempFolder().getAbsolutePath().replace('\\', '/') + "/database" ;
+			dir = "/" + PMS.getConfiguration().getTempFolder().getAbsolutePath().replace('\\', '/') + "/database" ;
 			url = "jdbc:h2:" + dir + "/" + name;
 			PMS.info("Using database URL: " + url);
 			PMS.minimal("Using database located at : " + dir);

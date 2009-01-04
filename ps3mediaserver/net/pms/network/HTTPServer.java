@@ -80,7 +80,7 @@ public class HTTPServer implements Runnable {
 			if (found)
 				break;
 		}
-		hostName = PMS.get().getHostname();
+		hostName = PMS.getConfiguration().getServerHostname();
 		SocketAddress address = null;
 		if (hostName != null && hostName.length() > 0) {
 			PMS.minimal("Using forced address " + hostName);

@@ -156,7 +156,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						}
 					}
 					if (pl != null) {
-						if (!child.ext.ps3compatible() || (PMS.get().isUsesubs() && child.srtFile)) {
+						if (!child.ext.ps3compatible() || (PMS.getConfiguration().getUseSubtitles() && child.srtFile)) {
 							child.player = pl;
 							PMS.info("Switching " + child.getName() + " to player: " + pl.toString());
 						}
@@ -471,7 +471,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	private String encodeXML(String s) {
 		try {
 			s = URLEncoder.encode(s, "UTF-8");
-			s = URLDecoder.decode(s, PMS.get().getEncoding());
+			s = URLDecoder.decode(s, PMS.getConfiguration().getCharsetEncoding());
 			//s = URLEncoder.encode(s, System.getProperty("file.encoding"));
 		} catch (UnsupportedEncodingException e) {
 			PMS.error(null, e);

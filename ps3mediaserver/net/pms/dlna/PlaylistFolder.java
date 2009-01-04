@@ -65,7 +65,7 @@ public class PlaylistFolder extends DLNAResource {
 					}
 				}
 			}
-			if (PMS.get().isUsecache()) {
+			if (PMS.getConfiguration().getUseCache()) {
 				if (!PMS.get().getDatabase().isDataExists(playlistfile.getAbsolutePath(), playlistfile.lastModified())) {
 					PMS.get().getDatabase().insertData(playlistfile.getAbsolutePath(), playlistfile.lastModified(), Format.PLAYLIST, null);
 				}

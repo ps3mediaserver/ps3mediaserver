@@ -38,7 +38,7 @@ public class RequestHandler implements Runnable {
 	
 	public RequestHandler(Socket socket) throws IOException {
 		this.socket = socket;
-		if (PMS.get().isTurbomode()) {
+		if (PMS.getConfiguration().isTurboModeEnabled()) {
 			try {
 				//socket.setSendBufferSize(SOCKET_BUF_SIZE);
 			} catch(Exception e) {

@@ -84,11 +84,11 @@ public class NetworkTab {
         tncheckBox.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.get().setThumbnails(e.getStateChange() == ItemEvent.SELECTED);
+				PMS.getConfiguration().setThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
         	
         });
-        if (PMS.get().isThumbnails())
+        if (PMS.getConfiguration().getThumbnailsEnabled())
         	tncheckBox.setSelected(true);
         
          smcheckBox = new JCheckBox(Messages.getString("NetworkTab.3")); //$NON-NLS-1$
@@ -96,11 +96,11 @@ public class NetworkTab {
         smcheckBox.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.get().setMinimized(e.getStateChange() == ItemEvent.SELECTED);
+				PMS.getConfiguration().setMinimized((e.getStateChange() == ItemEvent.SELECTED));
 			}
         	
         });
-        if (PMS.get().isMinimized())
+        if (PMS.getConfiguration().isMinimized())
         	smcheckBox.setSelected(true);
         
         maxbuffer = new JTextField("" + configuration.getMaxMemoryBufferSize()); //$NON-NLS-1$
@@ -131,15 +131,15 @@ public class NetworkTab {
         
         nbcores = new JComboBox(new Object [] {"1", "2", "4", "8"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         nbcores.setEditable(false);
-        if (PMS.get().getNbcores() >0 && PMS.get().getNbcores() < 32) {
-        	nbcores.setSelectedItem("" + PMS.get().getNbcores()); //$NON-NLS-1$
+        if (PMS.getConfiguration().getNumberOfCpuCores() >0 && PMS.getConfiguration().getNumberOfCpuCores() < 32) {
+        	nbcores.setSelectedItem("" + PMS.getConfiguration().getNumberOfCpuCores()); //$NON-NLS-1$
         } else
         	nbcores.setSelectedIndex(0);
   
         nbcores.addItemListener(new ItemListener() {
 
  			public void itemStateChanged(ItemEvent e) {
- 				PMS.get().setNbcores(Integer.parseInt(e.getItem().toString().substring(0, 1)));
+ 				PMS.getConfiguration().setNumberOfCpuCores(Integer.parseInt(e.getItem().toString().substring(0, 1)));
  			}
         	
         });
@@ -250,15 +250,15 @@ public class NetworkTab {
  	  
        cacheenable = new JCheckBox(Messages.getString("NetworkTab.17")); //$NON-NLS-1$
        cacheenable.setContentAreaFilled(false);
-       cacheenable.setSelected(PMS.get().isUsecache());
+       cacheenable.setSelected(PMS.getConfiguration().getUseCache());
        cacheenable.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.get().setUsecache(e.getStateChange() == ItemEvent.SELECTED);
-				cachereset.setEnabled(PMS.get().isUsecache());
+				PMS.getConfiguration().setUseCache((e.getStateChange() == ItemEvent.SELECTED));
+				cachereset.setEnabled(PMS.getConfiguration().getUseCache());
 				((LooksFrame) PMS.get().getFrame()).setReloadable(true);
 				if ((LooksFrame) PMS.get().getFrame() != null)
-					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(PMS.get().isUsecache());
+					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(PMS.getConfiguration().getUseCache());
 			}
       	
       });
@@ -280,9 +280,9 @@ public class NetworkTab {
     	  builder.add(cachereset,          cc.xyw(3,  19, 5));
     	  
     	  
-    	  cachereset.setEnabled(PMS.get().isUsecache());
+    	  cachereset.setEnabled(PMS.getConfiguration().getUseCache());
     	  
-        host = new JTextField(PMS.get().getHostname());
+        host = new JTextField(PMS.getConfiguration().getServerHostname());
         host.addKeyListener(new KeyListener() {
 
     		@Override
@@ -320,7 +320,7 @@ public class NetworkTab {
        
        
        builder.addSeparator(Messages.getString("NetworkTab.25"),  cc.xyw(1, 31, 9)); //$NON-NLS-1$
-       encoding = new JTextField(PMS.get().getEncoding());
+       encoding = new JTextField(PMS.getConfiguration().getCharsetEncoding());
        
        encoding.addKeyListener(new KeyListener() {
 
@@ -331,7 +331,7 @@ public class NetworkTab {
    		@Override
    		public void keyReleased(KeyEvent e) {
    			try {
-   				PMS.get().setCharsetencoding(encoding.getText());
+   				PMS.getConfiguration().setCharsetEncoding(encoding.getText());
    			} catch (NumberFormatException nfe) {
    			}
    			
@@ -345,22 +345,22 @@ public class NetworkTab {
        
        tmcheckBox = new JCheckBox(Messages.getString("NetworkTab.28")); //$NON-NLS-1$
        tmcheckBox.setContentAreaFilled(false);
-       tmcheckBox.setSelected(PMS.get().isTurbomode());
+       tmcheckBox.setSelected(PMS.getConfiguration().isTurboModeEnabled());
        tmcheckBox.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.get().setTurbomode(e.getStateChange() == ItemEvent.SELECTED);
+				PMS.getConfiguration().setTurboModeEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
        	
        }); builder.add(tmcheckBox,          cc.xyw(1,  39, 5));
        
        blockBox = new JCheckBox(Messages.getString("NetworkTab.29")); //$NON-NLS-1$
        blockBox.setContentAreaFilled(false);
-       blockBox.setSelected(PMS.get().isTranscode_block_multiple_connections());
+       blockBox.setSelected(PMS.getConfiguration().getTrancodeBlocksMultipleConnections());
        blockBox.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.get().setTranscode_block_multiple_connections(e.getStateChange() == ItemEvent.SELECTED);
+				PMS.getConfiguration().setTranscodeBlocksMultipleConnections((e.getStateChange() == ItemEvent.SELECTED));
 			}
        	
        }); builder.add(blockBox,          cc.xyw(1,  41, 5));

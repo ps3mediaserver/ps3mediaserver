@@ -35,7 +35,8 @@ public class OGG extends MP3 {
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
-		for(String engine:PMS.get().getEnginesAsList()) {
+		PMS r = PMS.get();
+		for(String engine:PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
 			if (engine.equals(MPlayerAudio.ID))
 				a.add(MPlayerAudio.class);
 			else if (engine.equals(FFMpegAudio.ID))

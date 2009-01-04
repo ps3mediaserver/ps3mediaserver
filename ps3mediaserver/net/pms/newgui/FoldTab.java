@@ -58,7 +58,7 @@ public class FoldTab {
 	
 	private void updateModel() {
 		if (df.size() == 1 && df.getElementAt(0).equals(ALL_DRIVES)) {
-			PMS.get().setFolders(""); //$NON-NLS-1$
+			PMS.getConfiguration().setFolders(""); //$NON-NLS-1$
 		} else {
 			StringBuffer sb = new StringBuffer();
 			for(int i=0;i<df.size();i++) {
@@ -66,7 +66,7 @@ public class FoldTab {
 					sb.append(","); //$NON-NLS-1$
 				sb.append(df.getElementAt(i));
 			}
-			PMS.get().setFolders(sb.toString());
+			PMS.getConfiguration().setFolders(sb.toString());
 		}
 		PMS.get().getFrame().setReloadable(true);
 	}
@@ -82,9 +82,9 @@ public class FoldTab {
         CellConstraints cc = new CellConstraints();
         
        df = new DefaultListModel();
-       if (PMS.get().getFolders() != null && PMS.get().getFolders().length() > 0) {
+       if (PMS.getConfiguration().getFolders() != null && PMS.getConfiguration().getFolders().length() > 0) {
     	 try {
-			File f [] =  PMS.get().loadFoldersConf(PMS.get().getFolders());
+			File f [] =  PMS.get().loadFoldersConf(PMS.getConfiguration().getFolders());
 			for(File file:f) {
 				df.addElement(file.getAbsolutePath());
 			}
@@ -103,12 +103,12 @@ public class FoldTab {
         builder.addSeparator(Messages.getString("FoldTab.1"),  cc.xyw(2, 1, 6)); //$NON-NLS-1$
         hidevideosettings = new JCheckBox(Messages.getString("FoldTab.6")); //$NON-NLS-1$
         hidevideosettings.setContentAreaFilled(false);
-        if (PMS.get().isHidevideosettings())
+        if (PMS.getConfiguration().getHideVideoSettings())
         	hidevideosettings.setSelected(true);
         hidevideosettings.addItemListener(new ItemListener() {
 
  			public void itemStateChanged(ItemEvent e) {
- 				PMS.get().setHidevideosettings(e.getStateChange() == ItemEvent.SELECTED);
+ 				PMS.getConfiguration().setHideVideoSettings((e.getStateChange() == ItemEvent.SELECTED));
  				PMS.get().getFrame().setReloadable(true);
  			}
         	
@@ -199,7 +199,7 @@ public class FoldTab {
        but5.setBorder(BorderFactory.createEmptyBorder());
        but5.addActionListener(new ActionListener() {
    		public void actionPerformed(ActionEvent e) {
-   			if (PMS.get().isUsecache()) {
+   			if (PMS.getConfiguration().getUseCache()) {
    				if (!PMS.get().getDatabase().isScanLibraryRunning()) {
 	   				int option = JOptionPane.showConfirmDialog(
 	   	                    (Component) PMS.get().getFrame(),
@@ -229,7 +229,7 @@ public class FoldTab {
    		}   	   
           });
        builder.add(but5,          cc.xy(6,  7));
-       but5.setEnabled(PMS.get().isUsecache());
+       but5.setEnabled(PMS.getConfiguration().getUseCache());
        
        builder.add(pane,          cc.xyw(2,  9, 6));
        

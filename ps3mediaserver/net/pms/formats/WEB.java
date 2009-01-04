@@ -39,14 +39,16 @@ public class WEB extends Format {
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		if (type == AUDIO) {
-			for(String engine:PMS.get().getEnginesAsList()) {
+			PMS r = PMS.get();
+			for(String engine:PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
 				if (engine.equals(MPlayerWebAudio.ID))
 					a.add(MPlayerWebAudio.class);
 				else if (engine.equals(VideoLanAudioStreaming.ID))
 					a.add(VideoLanAudioStreaming.class);
 			}
 		} else {
-			for(String engine:PMS.get().getEnginesAsList()) {
+			PMS r = PMS.get();
+			for(String engine:PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
 				if (engine.equals(MEncoderWebVideo.ID))
 					a.add(MEncoderWebVideo.class);
 				else if (engine.equals(VideoLanVideoStreaming.ID))

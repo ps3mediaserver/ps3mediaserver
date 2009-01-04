@@ -53,7 +53,7 @@ public class OutputParams {
 		fromFrame = -1;
 		toFrame = -1;
 		secondread_minsize = 1000000;
-		minFileSize = PMS.get().getMinstreambuffer();
+		minFileSize = PMS.getConfiguration().getMinStreamBuffer();
 		minBufferSize = configuration.getMinMemoryBufferSize();
 		maxBufferSize = configuration.getMaxMemoryBufferSize();
 		timeseek = 0;

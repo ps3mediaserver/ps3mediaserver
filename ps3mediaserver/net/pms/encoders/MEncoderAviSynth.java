@@ -64,18 +64,18 @@ public class MEncoderAviSynth extends MEncoderVideo {
         
         convertfps = new JCheckBox(Messages.getString("MEncoderAviSynth.3")); //$NON-NLS-1$
         convertfps.setContentAreaFilled(false);
-        if (PMS.get().isAvisynth_convertfps())
+        if (PMS.getConfiguration().getAvisynthConvertFps())
         	convertfps.setSelected(true);
         convertfps.addItemListener(new ItemListener() {
 
  			public void itemStateChanged(ItemEvent e) {
- 				PMS.get().setAvisynth_convertfps(e.getStateChange() == ItemEvent.SELECTED);
+ 				PMS.getConfiguration().setAvisynthConvertFps((e.getStateChange() == ItemEvent.SELECTED));
  			}
         	
         });
         builder.add(convertfps, cc.xy(2, 3));
         
-        String clip = PMS.get().getAvisynth_script();
+        String clip = PMS.getConfiguration().getAvisynthScript();
         if (clip == null)
         	clip = ""; //$NON-NLS-1$
         StringBuffer sb = new StringBuffer();
@@ -105,7 +105,7 @@ public class MEncoderAviSynth extends MEncoderVideo {
        	        	sb.append(st.nextToken());
        	        	i++;
        	        }
-       	        PMS.get().setAvisynth_script(sb.toString());
+       	        PMS.getConfiguration().setAvisynthScript(sb.toString());
        		}
            	   
               });

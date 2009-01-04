@@ -90,7 +90,7 @@ public class FFMpegAudio extends FFMpegVideo {
 
 	@Override
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
-		params.maxBufferSize = PMS.get().getMaxaudiobuffer();
+		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
 		params.waitbeforestart = 2000;
 		return getFFMpegTranscode(fileName, media, params);
 	}

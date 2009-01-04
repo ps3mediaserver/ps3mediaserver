@@ -173,7 +173,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	        setLocation(
 	            (screenSize.width  - paneSize.width)  / 2,
 	            (screenSize.height - paneSize.height) / 2);
-	        if (!PMS.get().isMinimized() && System.getProperty(START_SERVICE) == null)
+	        if (!PMS.getConfiguration().isMinimized() && System.getProperty(START_SERVICE) == null)
 	        setVisible(true);
 		if (SystemTray.isSupported()) {
 			SystemTray tray = SystemTray.getSystemTray();

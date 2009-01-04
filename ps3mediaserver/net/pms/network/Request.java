@@ -351,7 +351,7 @@ public class Request extends HTTPResource {
 			output(output, "Content-Length: " + response.length());
 			output(output, "");
 			if (!method.equals("HEAD"))
-				output.write(response.toString().getBytes(PMS.get().getEncoding()));
+				output.write(response.toString().getBytes(PMS.getConfiguration().getCharsetEncoding()));
 		} else if (inputStream != null) {
 			if (CLoverride > -1) {
 				if (lowRange > 0 && highRange > 0) {

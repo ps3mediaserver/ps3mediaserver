@@ -33,7 +33,6 @@ import java.net.BindException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.UUID;
@@ -110,48 +109,8 @@ public class PMS {
 	// TODO(tcox):  This shouldn't be static
 	private static PmsConfiguration configuration;
 
-	public String getCharsetencoding() {
-		return configuration.getCharsetEncoding();
-	}
- 
-	public void setCharsetencoding(String charsetencoding) {
-		configuration.setCharsetEncoding(charsetencoding);
-	}
-
-	public String getFolders() {
-		return configuration.getFolders();
-	}
-
-	public void setFolders(String folders) {
-		configuration.setFolders(folders);
-	}
-
-	public void setTurbomode(boolean turbomode) {
-		configuration.setTurboModeEnabled(turbomode);
-	}
-
-	public void setAudiochannels(int audiochannels) {
-		configuration.setAudioChannelCount(audiochannels);
-	}
-
-	public void setAudiobitrate(int audiobitrate) {
-		configuration.setAudioBitrate(audiobitrate);
-	}
-
-	public void setThumbnails(boolean thumbnails) {
-		configuration.setThumbnailsEnabled(thumbnails);
-	}
-
 	public IFrame getFrame() {
 		return frame;
-	}
-
-	public int getMaxaudiobuffer() {
-		return configuration.getMaxAudioBuffer();
-	}
-
-	public int getMinstreambuffer() {
-		return configuration.getMinStreamBuffer();
 	}
 
 	public RootFolder getRootFolder() {
@@ -198,48 +157,8 @@ public class PMS {
 		return allPlayers;
 	}
 	
-	public boolean isUsecache() {
-		return configuration.getUseCache();
-	}
-
-	public void setUsecache(boolean usecache) {
-		configuration.setUseCache(usecache);
-	}
-
-	public boolean isTsmuxer_forcefps() {
-		return configuration.isTsmuxerForceFps();
-	}
-
-	public void setTsmuxer_forcefps(boolean tsmuxer_forcefps) {
-		configuration.setTsmuxerForceFps(tsmuxer_forcefps);
-	}
-	
-	public int getMaximumbitrate() {
-		return configuration.getMaximumBitrate();
-	}
-
-	public void setMaximumbitrate(String maximumbitrate) {
-		configuration.setMaximumBitrate(maximumbitrate);
-	}
-
-	public boolean isMencoder_intelligent_sync() {
-		return configuration.isMencoderIntelligentSync();
-	}
-
-	public void setMencoder_intelligent_sync(boolean mencoder_intelligent_sync) {
-		configuration.setMencoderIntelligentSync(mencoder_intelligent_sync);
-	}
-
 	private ProxyServer proxyServer;
 	
-	public String getEncoding() {
-		return getCharsetencoding();
-	}
-
-	public boolean isTurbomode() {
-		return configuration.isTurboModeEnabled();
-	}
-
 	public ProxyServer getProxy() {
 		return proxyServer;
 	}
@@ -251,14 +170,6 @@ public class PMS {
 	public static final int INFO = 1;
 	public static final int MINIMAL = 2;
 	
-	public boolean isTranscode_block_multiple_connections() {
-		return configuration.getTrancodeBlocksMultipleConnections();
-	}
-
-	public void setTranscode_block_multiple_connections(boolean transcode_block_multiple_connections) {
-		configuration.setTranscodeBlocksMultipleConnections(transcode_block_multiple_connections);
-	}
-
 	private PrintWriter pw;
 	
 	public ArrayList<Process> currentProcesses = new ArrayList<Process>();
@@ -268,159 +179,12 @@ public class PMS {
 	
 	IFrame frame;
 	
-	public boolean isHidevideosettings() {
-		return configuration.getHideVideoSettings();
-	}
-
-	public void setHidevideosettings(boolean hidevideosettings) {
-		configuration.setHideVideoSettings(hidevideosettings);
-	}
-
-	public String getAlternativeffmpegPath() {
-		return configuration.getFfmpegAlternativePath();
-	}
-
-	public void setAlternativeffmpegPath(String value) {
-		configuration.setFfmpegAlternativePath(value);
-	}
-	
-	public String getFlacPath() {
-		return configuration.getFlacPath();
-	}
-
-	public String getFFmpegPath() {
-		return configuration.getFfmpegPath();
-	}
-	
-	public String getMEncoderPath() {
-		return configuration.getMencoderPath();
-	}
-	
-	public boolean isSkiploopfilter() {
-		return configuration.getSkipLoopFilterEnabled();
-	}
-
-	public void setSkipLoopFilter(boolean enable) {
-		configuration.setSkipLoopFilterEnabled(enable);
-	}
-	
-	public void setEnginesAsList(ArrayList<String> enginesAsList) {
-		configuration.setEnginesAsList(enginesAsList);
-	}
-
-	public List<String> getEnginesAsList() {
-		return configuration.getEnginesAsList(registry);
-	}
-	
-	public boolean isMinimized() {
-		return configuration.isMinimized();
-	}
-
-	public void setMinimized(boolean minimized) {
-		configuration.setMinimized(minimized);
-	}
-
-	public String getMPlayerPath() {
-		return configuration.getMplayerPath();
-	}
-
-	// it's used on linux and mac osx :)
-	public String getMKfifoPath() {
-		return "mkfifo"; //$NON-NLS-1$
-	}
-	
-	public String getEac3toPath() {
-		return configuration.getEac3toPath();
-	}
-
-	public String getTsmuxerPath() {
-		return configuration.getTsmuxerPath();
-	}
-
-	public int getAudiochannels() {
-		return configuration.getAudioChannelCount();
-	}
-	
-
-	public int getAudiobitrate() {
-		return configuration.getAudioBitrate();
-	}
-
-	
 	public boolean isWindows() {
 		return Platform.isWindows();
 	}
 	
-	public boolean isThumbnails() {
-		return configuration.getThumbnailsEnabled();
-	}
-
-	public void setUsesubs(boolean usesubs) {
-		configuration.setUseSubtitles(usesubs);
-	}
-
-	public boolean isUsesubs() {
-		return configuration.getUseSubtitles();
-	}
-
-	public int getNbcores() {
-		return configuration.getNumberOfCpuCores();
-	}
-
-	public void setNbcores(int nbcores) {
-		configuration.setNumberOfCpuCores(nbcores);
-	}
-
 	private int proxy;
 	
-	public void setFfmpeg(String ffmpeg) {
-		configuration.setFfmpegSettings(ffmpeg);
-	}
-
-	public String getMencoderMainSettings() {
-		return configuration.getMencoderMainSettings();
-	}
-	
-	public void setMencoderMainSettings(String value) {
-		configuration.setMencoderMainSettings(value);
-	}
-
-	public String getHostname() {
-		return configuration.getServerHostname();
-	}
-
-	public boolean isFilebuffer() {
-		return configuration.isFileBuffer();
-	}
-
-	public String getFfmpegSettings() {
-		return configuration.getFfmpegSettings();
-	}
-	
-	public boolean isMencoder_nooutofsync() {
-		return configuration.isMencoderNoOutOfSync();
-	}
-
-	public void setMencoder_nooutofsync(boolean mencoder_nooutofsync) {
-		configuration.setMencoderNoOutOfSync(mencoder_nooutofsync);
-	}
-
-	public void setAvisynth_convertfps(boolean avisynth_convertfps) {
-		configuration.setAvisynthConvertFps(avisynth_convertfps);
-	}
-
-	public boolean isAvisynth_convertfps() {
-		return configuration.getAvisynthConvertFps();
-	}
-	
-	public String getAvisynth_script() {
-		return configuration.getAvisynthScript();
-	}
-
-	public void setAvisynth_script(String value) {
-		configuration.setAvisynthScript(value);
-	}
-
 	private WinUtils registry;
 	
 	public WinUtils getRegistry() {
@@ -467,7 +231,7 @@ public class PMS {
 	private DLNAMediaDatabase database;
 	
 	public synchronized DLNAMediaDatabase getDatabase() {
-		if (PMS.get().isUsecache()) {
+		if (PMS.configuration.getUseCache()) {
 			if (database == null) {
 				database = new DLNAMediaDatabase("medias"); //$NON-NLS-1$
 				database.init(false);
@@ -514,7 +278,7 @@ public class PMS {
 		minimal("Java " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		minimal("OS " + System.getProperty("os.name") + " " + System.getProperty("os.arch")  + " " + System.getProperty("os.version")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 		minimal("Encoding: " + System.getProperty("file.encoding")); //$NON-NLS-1$ //$NON-NLS-2$
-		minimal("Temp folder: " + getTempFolder()); //$NON-NLS-1$
+		minimal("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
 		
 		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 				
@@ -540,7 +304,7 @@ public class PMS {
 		// force use of specific dvr ms muxer when it's installed in the right place
 		File dvrsMsffmpegmuxer = new File("win32/dvrms/ffmpeg_MPGMUX.exe"); //$NON-NLS-1$
 		if (dvrsMsffmpegmuxer.exists())
-			setAlternativeffmpegPath(dvrsMsffmpegmuxer.getAbsolutePath());
+			configuration.setFfmpegAlternativePath(dvrsMsffmpegmuxer.getAbsolutePath());
 		
 		// disable jaudiotagger logging
 		LogManager.getLogManager().readConfiguration(new ByteArrayInputStream("org.jaudiotagger.level=OFF".getBytes())); //$NON-NLS-1$
@@ -686,7 +450,7 @@ public class PMS {
 	}
 	
 	public void addVideoSettingssFolder() {
-		if (!PMS.get().isHidevideosettings()) {
+		if (!PMS.configuration.getHideVideoSettings()) {
 			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.37"), null); //$NON-NLS-1$
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) { //$NON-NLS-1$
@@ -727,7 +491,7 @@ public class PMS {
 	private boolean mediaLibraryAdded = false;
 	
 	public boolean addMediaLibraryFolder() {
-		if (PMS.get().isUsecache() && !mediaLibraryAdded) {
+		if (PMS.configuration.getUseCache() && !mediaLibraryAdded) {
 			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.2"), null); //$NON-NLS-1$
 			VirtualFolder vfAudio = new VirtualFolder(Messages.getString("PMS.1"), null); //$NON-NLS-1$
 			MediaLibraryFolder mlf = new MediaLibraryFolder(Messages.getString("PMS.11"), "TYPE = 1 ORDER BY FILENAME ASC", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1108,12 +872,9 @@ public class PMS {
 		}
 	}
 
-	public File getTempFolder() throws IOException {
-		return configuration.getTempFolder();
-	}
-
 	public static PmsConfiguration getConfiguration() {
 		assertThat(configuration, notNullValue());
 		return configuration;
 	}
+
 }

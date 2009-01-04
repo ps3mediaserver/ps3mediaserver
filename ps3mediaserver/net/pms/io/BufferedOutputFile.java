@@ -131,7 +131,7 @@ public class BufferedOutputFile extends OutputStream  {
 		if (attachedThread != null) {
 			attachedThread.setReadyToStop(false);
 		}
-		if (!PMS.get().isTranscode_block_multiple_connections() || inputStream == null) {
+		if (!PMS.getConfiguration().getTrancodeBlocksMultipleConnections() || inputStream == null) {
 			inputStream = new WaitBufferedInputStream(this);
 			
 		} else {

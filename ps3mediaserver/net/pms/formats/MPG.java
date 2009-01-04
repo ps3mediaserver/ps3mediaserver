@@ -32,10 +32,14 @@ public class MPG extends Format {
 	
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
-		if (PMS.get().getEnginesAsList() == null || PMS.get().getEnginesAsList().size() == 0 || PMS.get().getEnginesAsList().contains("none")) //$NON-NLS-1$
+		PMS r = PMS.get();
+		PMS r1 = PMS.get();
+		PMS r2 = PMS.get();
+		if (PMS.getConfiguration().getEnginesAsList(r.getRegistry()) == null || PMS.getConfiguration().getEnginesAsList(r1.getRegistry()).size() == 0 || PMS.getConfiguration().getEnginesAsList(r2.getRegistry()).contains("none")) //$NON-NLS-1$
 			return null;
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
-		for(String engine:PMS.get().getEnginesAsList()) {
+		PMS r3 = PMS.get();
+		for(String engine:PMS.getConfiguration().getEnginesAsList(r3.getRegistry())) {
 			if (engine.equals(MEncoderVideo.ID))
 				a.add(MEncoderVideo.class);
 			else if (engine.equals(MEncoderAviSynth.ID) && PMS.get().getRegistry().isAvis())

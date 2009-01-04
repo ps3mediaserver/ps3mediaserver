@@ -100,7 +100,7 @@ public class TrTab2 {
 			}
 		}
 		PMS.get().getFrame().setReloadable(true);
-		PMS.get().setEnginesAsList(engines);
+		PMS.getConfiguration().setEnginesAsList(engines);
 	}
 	
 	public JComponent build() {
@@ -276,7 +276,8 @@ public class TrTab2 {
 	public void addEngines() {
 		ArrayList<Player> disPlayers = new ArrayList<Player>();
 		ArrayList<Player> ordPlayers = new ArrayList<Player>();
-		for(String id:PMS.get().getEnginesAsList()) {
+		PMS r = PMS.get();
+		for(String id:PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
 			//boolean matched = false;
 			for(Player p:PMS.get().getAllPlayers()) {
 				if (p.id().equals(id)) {
@@ -354,7 +355,7 @@ public class TrTab2 {
        
         builder.add(forcePCM, cc.xyw(1, 3, 3));
         
-        abitrate = new JTextField("" + PMS.get().getAudiobitrate()); //$NON-NLS-1$
+        abitrate = new JTextField("" + PMS.getConfiguration().getAudioBitrate()); //$NON-NLS-1$
         abitrate.addKeyListener(new KeyListener() {
 
  		@Override
@@ -365,7 +366,7 @@ public class TrTab2 {
  		public void keyReleased(KeyEvent e) {
  			try {
  				int ab = Integer.parseInt(abitrate.getText());
- 				PMS.get().setAudiobitrate(ab);
+ 				PMS.getConfiguration().setAudioBitrate(ab);
  			} catch (NumberFormatException nfe) {
  			}
  		}
@@ -377,7 +378,7 @@ public class TrTab2 {
        
        builder.addLabel(Messages.getString("TrTab2.30"), cc.xy(1, 9)); //$NON-NLS-1$
        
-       maxbitrate = new JTextField("" + PMS.get().getMaximumbitrate()); //$NON-NLS-1$
+       maxbitrate = new JTextField("" + PMS.getConfiguration().getMaximumBitrate()); //$NON-NLS-1$
        maxbitrate.addKeyListener(new KeyListener() {
 
 		@Override
@@ -386,7 +387,7 @@ public class TrTab2 {
 		public void keyTyped(KeyEvent e) {}
 		@Override
 		public void keyReleased(KeyEvent e) {
-			PMS.get().setMaximumbitrate(maxbitrate.getText());
+			PMS.getConfiguration().setMaximumBitrate(maxbitrate.getText());
 		}
 
        });
@@ -394,7 +395,7 @@ public class TrTab2 {
       
        builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 13, 3)); //$NON-NLS-1$
        
-        Object data [] = new Object [] { PMS.get().getMencoderMainSettings(),
+        Object data [] = new Object [] { PMS.getConfiguration().getMencoderMainSettings(),
     		   "keyint=1:vqscale=1:vqmin=2  /* Best Quality */", //$NON-NLS-1$
     		   "keyint=1:vqscale=1:vqmin=1  /* Lossless Quality, Crazy Bitrate */", //$NON-NLS-1$
     		   "keyint=3:vqscale=2:vqmin=3  /* Good quality */", //$NON-NLS-1$
@@ -410,7 +411,7 @@ public class TrTab2 {
 					if (s.indexOf("/*") > -1) { //$NON-NLS-1$
 						s = s.substring(0, s.indexOf("/*")).trim(); //$NON-NLS-1$
 					}
-					PMS.get().setMencoderMainSettings(s);
+					PMS.getConfiguration().setMencoderMainSettings(s);
 				}
 			}
        	
@@ -454,14 +455,14 @@ public class TrTab2 {
         
         channels = new JComboBox(new Object [] {"2 channels Stereo", "6 channels 5.1" /*, "8 channels 7.1" */ }); // 7.1 not supported by Mplayer :\ //$NON-NLS-1$ //$NON-NLS-2$
         channels.setEditable(false);
-        if (PMS.get().getAudiochannels() == 2)
+        if (PMS.getConfiguration().getAudioChannelCount() == 2)
      	   channels.setSelectedIndex(0);
         else
      	   channels.setSelectedIndex(1);
         channels.addItemListener(new ItemListener() {
 
  			public void itemStateChanged(ItemEvent e) {
- 				PMS.get().setAudiochannels(Integer.parseInt(e.getItem().toString().substring(0, 1)));
+ 				PMS.getConfiguration().setAudioChannelCount(Integer.parseInt(e.getItem().toString().substring(0, 1)));
  			}
         	
         });

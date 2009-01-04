@@ -95,7 +95,7 @@ public class FFMpegDVRMSRemux extends Player {
 
 	@Override
 	public String executable() {
-		return PMS.get().getFFmpegPath();
+		return PMS.getConfiguration().getFfmpegPath();
 	}
 
 	@Override
@@ -109,8 +109,8 @@ public class FFMpegDVRMSRemux extends Player {
 		
 		String cmdArray [] = new String [8+args().length];
 		cmdArray[0] = executable();
-		if (PMS.get().getAlternativeffmpegPath() != null && PMS.get().getAlternativeffmpegPath().length() > 0)
-			cmdArray[0] = PMS.get().getAlternativeffmpegPath();
+		if (PMS.getConfiguration().getFfmpegAlternativePath() != null && PMS.getConfiguration().getFfmpegAlternativePath().length() > 0)
+			cmdArray[0] = PMS.getConfiguration().getFfmpegAlternativePath();
 		cmdArray[1] = "-title"; //$NON-NLS-1$
 		cmdArray[2] = "dummy"; //$NON-NLS-1$
 		
@@ -131,7 +131,7 @@ public class FFMpegDVRMSRemux extends Player {
 		for(int i=0;i<args().length;i++)
 			cmdArray[7+i] = args()[i];
 		
-		StringTokenizer st = new StringTokenizer(PMS.get().getFfmpegSettings(), " "); //$NON-NLS-1$
+		StringTokenizer st = new StringTokenizer(PMS.getConfiguration().getFfmpegSettings(), " "); //$NON-NLS-1$
 		if (st.countTokens() > 0) {
 			int i=cmdArray.length-1;
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +st.countTokens());
@@ -166,7 +166,7 @@ public class FFMpegDVRMSRemux extends Player {
         builder.addSeparator(Messages.getString("FFMpegDVRMSRemux.1"),  cc.xyw(1, 1, 5)); //$NON-NLS-1$
         
         builder.addLabel(Messages.getString("FFMpegDVRMSRemux.0"), cc.xy(1, 3)); //$NON-NLS-1$
-        altffpath = new JTextField(PMS.get().getAlternativeffmpegPath());
+        altffpath = new JTextField(PMS.getConfiguration().getFfmpegAlternativePath());
         altffpath.addKeyListener(new KeyListener() {
 
     		@Override
@@ -175,7 +175,7 @@ public class FFMpegDVRMSRemux extends Player {
     		public void keyTyped(KeyEvent e) {}
     		@Override
     		public void keyReleased(KeyEvent e) {
-    			PMS.get().setAlternativeffmpegPath(altffpath.getText());
+    			PMS.getConfiguration().setFfmpegAlternativePath(altffpath.getText());
     		}
         	   
            });

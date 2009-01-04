@@ -213,7 +213,7 @@ public class RealFile extends DLNAResource {
 	public void resolve() {
 		if (file.isFile() && file.exists()) {
 			boolean found = false;
-			if (PMS.get().isUsecache()) {
+			if (PMS.getConfiguration().getUseCache()) {
 				ArrayList<DLNAMediaInfo> medias = PMS.get().getDatabase().getData(file.getAbsolutePath(), file.lastModified());
 				if (medias != null && medias.size() == 1) {
 					media = medias.get(0);
@@ -228,7 +228,7 @@ public class RealFile extends DLNAResource {
 				}
 				found = !media.mediaparsed && !media.parsing;
 				media.parse(file, ext, getType());
-				if (found && PMS.get().isUsecache()) {
+				if (found && PMS.getConfiguration().getUseCache()) {
 					PMS.get().getDatabase().insertData(file.getAbsolutePath(), file.lastModified(), getType(), media);
 				}
 			}

@@ -118,12 +118,12 @@ private JTextField mencoder_ass_scale;
         
          checkBox = new JCheckBox(Messages.getString("MEncoderVideo.0")); //$NON-NLS-1$
         checkBox.setContentAreaFilled(false);
-        if (PMS.get().isSkiploopfilter())
+        if (PMS.getConfiguration().getSkipLoopFilterEnabled())
         	checkBox.setSelected(true);
         checkBox.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.get().setSkipLoopFilter(e.getStateChange() == ItemEvent.SELECTED);
+				PMS.getConfiguration().setSkipLoopFilterEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
         	
         });
@@ -133,12 +133,12 @@ private JTextField mencoder_ass_scale;
        
        noskip = new JCheckBox(Messages.getString("MEncoderVideo.2")); //$NON-NLS-1$
        noskip.setContentAreaFilled(false);
-       if (PMS.get().isMencoder_nooutofsync())
+       if (PMS.getConfiguration().isMencoderNoOutOfSync())
     	   noskip.setSelected(true);
        noskip.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.get().setMencoder_nooutofsync(e.getStateChange() == ItemEvent.SELECTED);
+				PMS.getConfiguration().setMencoderNoOutOfSync((e.getStateChange() == ItemEvent.SELECTED));
 				//intelligentsync.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
 			}
        	
@@ -148,12 +148,12 @@ private JTextField mencoder_ass_scale;
        
        intelligentsync = new JCheckBox(Messages.getString("MEncoderVideo.3")); //$NON-NLS-1$
        intelligentsync.setContentAreaFilled(false);
-       if (PMS.get().isMencoder_intelligent_sync())
+       if (PMS.getConfiguration().isMencoderIntelligentSync())
     	   intelligentsync.setSelected(true);
        intelligentsync.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.get().setMencoder_intelligent_sync(e.getStateChange() == ItemEvent.SELECTED);
+				PMS.getConfiguration().setMencoderIntelligentSync((e.getStateChange() == ItemEvent.SELECTED));
 			}
        	
        });
@@ -602,12 +602,12 @@ private JTextField mencoder_ass_scale;
        
        subs = new JCheckBox(Messages.getString("MEncoderVideo.22")); //$NON-NLS-1$
        subs.setContentAreaFilled(false);
-       if (PMS.get().isUsesubs())
+       if (PMS.getConfiguration().getUseSubtitles())
     	   subs.setSelected(true);
        subs.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.get().setUsesubs(e.getStateChange() == ItemEvent.SELECTED);
+				PMS.getConfiguration().setUseSubtitles((e.getStateChange() == ItemEvent.SELECTED));
 			}
        	
        });
@@ -763,18 +763,18 @@ private JTextField mencoder_ass_scale;
 		String alternativeCodec = "";//"-ac ffac3,ffdca, ";  //$NON-NLS-1$
 		if (dvd)
 			alternativeCodec = ""; //$NON-NLS-1$
-		StringTokenizer st = new StringTokenizer(alternativeCodec + "-channels " + PMS.get().getAudiochannels() + " " + configuration.getMencoderDecode() + add, " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		StringTokenizer st = new StringTokenizer(alternativeCodec + "-channels " + PMS.getConfiguration().getAudioChannelCount() + " " + configuration.getMencoderDecode() + add, " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		overridenMainArgs = new String [st.countTokens()];
 		int i = 0;
 		boolean next = false;
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken().trim();
 			if (next) {
-				int nbcores = PMS.get().getNbcores();
+				int nbcores = PMS.getConfiguration().getNumberOfCpuCores();
 				if (dvd || fileName.toLowerCase().endsWith("dvr-ms")) //$NON-NLS-1$
 					nbcores = 1;
 				token += ":threads=" + nbcores; //$NON-NLS-1$
-				if (PMS.get().isSkiploopfilter() && !avisynth())
+				if (PMS.getConfiguration().getSkipLoopFilterEnabled() && !avisynth())
 					token += ":skiploopfilter=all"; //$NON-NLS-1$
 				next = false;
 			} 
@@ -785,9 +785,9 @@ private JTextField mencoder_ass_scale;
 			overridenMainArgs[i++] = token;
 		}
 		//}
-		if (PMS.get().getMencoderMainSettings() != null) {
-			String encodeSettings = "-lavcopts autoaspect=1:vcodec=mpeg2video:acodec=ac3:abitrate=" + PMS.get().getAudiobitrate() + ":threads=" + PMS.get().getNbcores() + ":" + PMS.get().getMencoderMainSettings(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			String m = "" + PMS.get().getMaximumbitrate(); //$NON-NLS-1$
+		if (PMS.getConfiguration().getMencoderMainSettings() != null) {
+			String encodeSettings = "-lavcopts autoaspect=1:vcodec=mpeg2video:acodec=ac3:abitrate=" + PMS.getConfiguration().getAudioBitrate() + ":threads=" + PMS.getConfiguration().getNumberOfCpuCores() + ":" + PMS.getConfiguration().getMencoderMainSettings(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			String m = "" + PMS.getConfiguration().getMaximumBitrate(); //$NON-NLS-1$
 			int bufs = 0;
 			if (m.contains("(") && m.contains(")")) { //$NON-NLS-1$ //$NON-NLS-2$
 				bufs = Integer.parseInt(m.substring(m.indexOf("(")+1, m.indexOf(")"))); //$NON-NLS-1$ //$NON-NLS-2$
@@ -796,7 +796,7 @@ private JTextField mencoder_ass_scale;
 				m = m.substring(0, m.indexOf("(")).trim(); //$NON-NLS-1$
 			
 			int mb = Integer.parseInt(m);
-			if (mb > 0 && !PMS.get().getMencoderMainSettings().contains("vrc_buf_size") && !PMS.get().getMencoderMainSettings().contains("vrc_maxrate") && !PMS.get().getMencoderMainSettings().contains("vbitrate")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			if (mb > 0 && !PMS.getConfiguration().getMencoderMainSettings().contains("vrc_buf_size") && !PMS.getConfiguration().getMencoderMainSettings().contains("vrc_maxrate") && !PMS.getConfiguration().getMencoderMainSettings().contains("vbitrate")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				mb = 1000*mb;
 				if (mb > 60000)
 					mb = 60000;
@@ -900,7 +900,7 @@ private JTextField mencoder_ass_scale;
 		
 		boolean vobsub = false;
 		String subString = null;
-		if (!avisynth && PMS.get().isUsesubs()) {
+		if (!avisynth && PMS.getConfiguration().getUseSubtitles()) {
 			String woExt = fileName.substring(0, fileName.length()-4);
 			File srtFile = new File(woExt + ".srt"); //$NON-NLS-1$
 			if (srtFile.exists()) {
@@ -1075,23 +1075,23 @@ private JTextField mencoder_ass_scale;
 		}
 		
 		// set noskip and -mc , depending on options and file types
-		if (PMS.get().isMencoder_nooutofsync() || PMS.get().isMencoder_intelligent_sync()) {
+		if (PMS.getConfiguration().isMencoderNoOutOfSync() || PMS.getConfiguration().isMencoderIntelligentSync()) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +3);
 			cmdArray[cmdArray.length-5] = "-mc"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-4] = "-quiet"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
-			if (PMS.get().isMencoder_nooutofsync()) {
+			if (PMS.getConfiguration().isMencoderNoOutOfSync()) {
 				cmdArray[cmdArray.length-4] = "0"; //$NON-NLS-1$
 				cmdArray[cmdArray.length-3] = "-noskip"; //$NON-NLS-1$
 			}
 			
-			if (PMS.get().isMencoder_intelligent_sync()) {
+			if (PMS.getConfiguration().isMencoderIntelligentSync()) {
 				if (media != null && media.codecA != null && media.codecV != null && ((media.codecA.equals("mp3") && media.codecV.equals("mpeg4")) //$NON-NLS-1$ //$NON-NLS-2$
 						|| media.container.equals("rm") || media.container.equals("flv"))) { //$NON-NLS-1$ //$NON-NLS-2$
 					// correction A/V in mplayer for xvid+mp3, flv and rm
 					cmdArray[cmdArray.length-4] = "0.1"; //$NON-NLS-1$
 					cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
-				} else if (!PMS.get().isMencoder_nooutofsync()) {
+				} else if (!PMS.getConfiguration().isMencoderNoOutOfSync()) {
 					cmdArray[cmdArray.length-5] = "-quiet"; //$NON-NLS-1$
 				}
 			}

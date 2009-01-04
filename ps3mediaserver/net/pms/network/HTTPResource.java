@@ -86,7 +86,7 @@ public class HTTPResource {
 			String hostName = convertURLToFileName(host);
 			String fileName = url.getFile();
 			fileName = convertURLToFileName(fileName);
-			File hostDir = new File(PMS.get().getTempFolder(), hostName);
+			File hostDir = new File(PMS.getConfiguration().getTempFolder(), hostName);
 			hostDir.mkdir();
 			f = new File(hostDir, fileName);
 			if (f.exists())

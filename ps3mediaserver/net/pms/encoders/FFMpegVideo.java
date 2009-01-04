@@ -73,8 +73,8 @@ public class FFMpegVideo extends Player {
 	private String overridenArgs [];
 	
 	public FFMpegVideo() {
-		if (PMS.get().getFfmpegSettings() != null) {
-			StringTokenizer st = new StringTokenizer(PMS.get().getFfmpegSettings() + " -ab " + PMS.get().getAudiobitrate() + "k -threads " + PMS.get().getNbcores(), " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		if (PMS.getConfiguration().getFfmpegSettings() != null) {
+			StringTokenizer st = new StringTokenizer(PMS.getConfiguration().getFfmpegSettings() + " -ab " + PMS.getConfiguration().getAudioBitrate() + "k -threads " + PMS.getConfiguration().getNumberOfCpuCores(), " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			overridenArgs = new String [st.countTokens()];
 			int i = 0;
 			while (st.hasMoreTokens()) {
@@ -131,7 +131,7 @@ public class FFMpegVideo extends Player {
 
 	@Override
 	public String executable() {
-		return PMS.get().getFFmpegPath();
+		return PMS.getConfiguration().getFfmpegPath();
 	}
 
 	@Override
@@ -242,8 +242,8 @@ public class FFMpegVideo extends Player {
 			cmdArray[cmdArray.length-2] = "" + (int) Math.round(params.timeseek * fr);
 			params.timeseek = 0;
 		}*/
-		if (PMS.get().isFilebuffer()) {
-			File m = new File(PMS.get().getTempFolder(), "pms-transcode.tmp"); //$NON-NLS-1$
+		if (PMS.getConfiguration().isFileBuffer()) {
+			File m = new File(PMS.getConfiguration().getTempFolder(), "pms-transcode.tmp"); //$NON-NLS-1$
 			if (m.exists() && !m.delete()) {
 				PMS.minimal("Temp file currently used.. Waiting 3 seconds"); //$NON-NLS-1$
 				try {
@@ -307,7 +307,7 @@ public class FFMpegVideo extends Player {
 			mplayer_vid_params.maxBufferSize = 1;
 			
 			String videoArgs [] = new String [1 + overiddenMPlayerArgs.length + mPlayerdefaultVideoArgs.length];
-			videoArgs[0] = PMS.get().getMPlayerPath();
+			videoArgs[0] = PMS.getConfiguration().getMplayerPath();
 			System.arraycopy(overiddenMPlayerArgs, 0, videoArgs, 1, overiddenMPlayerArgs.length);
 			System.arraycopy(mPlayerdefaultVideoArgs, 0, videoArgs, 1 + overiddenMPlayerArgs.length, mPlayerdefaultVideoArgs.length);
 			ProcessWrapperImpl mplayer_vid_process = new ProcessWrapperImpl(videoArgs, mplayer_vid_params);
@@ -371,16 +371,16 @@ public class FFMpegVideo extends Player {
 	
 	public static File getAVSScript(String fileName, int fromFrame, int toFrame) throws IOException {
 		String onlyFileName = fileName.substring(1+fileName.lastIndexOf("\\")); //$NON-NLS-1$
-		File file = new File(PMS.get().getTempFolder(), "pms-avs-" + onlyFileName + ".avs"); //$NON-NLS-1$ //$NON-NLS-2$
+		File file = new File(PMS.getConfiguration().getTempFolder(), "pms-avs-" + onlyFileName + ".avs"); //$NON-NLS-1$ //$NON-NLS-2$
 		PrintWriter pw = new PrintWriter(new FileOutputStream(file));
 		
 		String convertfps = ""; //$NON-NLS-1$
-		if (PMS.get().isAvisynth_convertfps())
+		if (PMS.getConfiguration().getAvisynthConvertFps())
 			convertfps = ", convertfps=true"; //$NON-NLS-1$
 		String movieLine = "clip=DirectShowSource(\"" + fileName + "\"" + convertfps + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String subLine = null;
 		String woExt = fileName.substring(0, fileName.length()-4);
-		if (PMS.get().isUsesubs() && !PMS.getConfiguration().isMencoderDisableSubs()) {
+		if (PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
 			File srtFile = new File(woExt + ".srt"); //$NON-NLS-1$
 			if (srtFile.exists()) {
 				subLine = "clip=TextSub(clip, \"" + srtFile.getAbsolutePath() + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -402,7 +402,7 @@ public class FFMpegVideo extends Player {
 		ArrayList<String> lines = new ArrayList<String>();
 		
 		boolean fullyManaged = false;
-		String script = PMS.get().getAvisynth_script();
+		String script = PMS.getConfiguration().getAvisynthScript();
 		StringTokenizer st = new StringTokenizer(script, PMS.AVS_SEPARATOR);
 		while (st.hasMoreTokens()) {
 			String line = st.nextToken();
@@ -448,7 +448,7 @@ public class FFMpegVideo extends Player {
         
        
        builder.addSeparator(Messages.getString("FFMpegVideo.0"),  cc.xyw(2, 1, 1)); //$NON-NLS-1$
-       ffmpeg = new JTextField(PMS.get().getFfmpegSettings());
+       ffmpeg = new JTextField(PMS.getConfiguration().getFfmpegSettings());
        ffmpeg.addKeyListener(new KeyListener() {
 
    		@Override
@@ -457,7 +457,7 @@ public class FFMpegVideo extends Player {
    		public void keyTyped(KeyEvent e) {}
    		@Override
    		public void keyReleased(KeyEvent e) {
-   			PMS.get().setFfmpeg(ffmpeg.getText());
+   			PMS.getConfiguration().setFfmpegSettings(ffmpeg.getText());
    		}
        	   
           });
