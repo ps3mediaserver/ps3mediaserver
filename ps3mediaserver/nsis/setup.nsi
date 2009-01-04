@@ -7,7 +7,7 @@
 RequestExecutionLevel admin
 
 Name "PS3 Media Server"
-OutFile "dist\pms-win32-${VERSION}.exe"
+OutFile "dist\pms-setup-win32-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\PS3 Media Server"
 
 ;Get install folder from registry for updates

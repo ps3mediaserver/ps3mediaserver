@@ -170,7 +170,7 @@ public class UPNPHelper {
 					Thread.sleep(180000); // every 180s
 					sendAlive();
 				} catch (Exception e) {
-					PMS.minimal("Error while sending periodic alive message: " + e.getMessage());
+					PMS.info("Error while sending periodic alive message: " + e.getMessage());
 				}
 			}
 		};

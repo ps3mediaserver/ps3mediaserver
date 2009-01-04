@@ -42,7 +42,10 @@
 		</jar>
 		
     	<mkdir dir="dist" />
-    	<tar basedir="." destfile="dist/pms-linux-${version}.tgz" compression="bzip2" excludes="debug.log,lib/pms.log,ffmpeg/own*,ffmpeg/help*" includes="LICENCE.txt,README,pms.jar,FAQ,PMS.sh,PMS.conf,WEB.conf,linux/**" />
+    	<tar destfile="dist/pms-linux-${version}.tgz" compression="gzip">
+    		<tarfileset dir="." prefix="pms-linux-${version}" includes="LICENCE.txt,README,pms.jar,FAQ,PMS.sh,PMS.conf,WEB.conf,linux/**"/> 
+    	</tar>
+    		
     	<delete dir="classes" />
     	
     	<condition property="isWindows">
@@ -67,7 +70,7 @@
           target: depends                      
          - - - - - - - - - - - - - - - - - -->
     <target name="depends">
-    	<property name="version" value="1.01" />
+    	<property name="version" value="1.02" />
     	<!--<property name="gcj" value="D:\\DEV\\thisiscool-gcc\\gcc-ecj\\bin\\gcj.exe"/>-->
     	<property name="gcj" value="D:\\DEV\\gcc-122233-win\\bin\\gcj.exe" />
     	<property name="swtjar" value="D:\\DEV\\thisiscool-gcc\\swt\\win32\\3218\\swt.jar" />

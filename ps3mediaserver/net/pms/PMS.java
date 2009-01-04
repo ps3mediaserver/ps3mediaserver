@@ -688,6 +688,7 @@ public class PMS {
 	public void reset() throws IOException {
 		debug("Waiting 1 seconds..."); //$NON-NLS-1$
 		UPNPHelper.sendByeBye();
+		mediaLibraryAdded = false;
 		manageRoot();
 		try {
 			Thread.sleep(1000);

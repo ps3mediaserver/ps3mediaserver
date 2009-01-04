@@ -29,8 +29,8 @@ public class DLNAMediaDatabase implements Runnable {
 	private Thread scanner;
 	
 	public DLNAMediaDatabase(String name) {
-		dir = "database/" + name ;
-		url = "jdbc:h2:" + dir;
+		dir = "database" ;
+		url = "jdbc:h2:" + dir + "/" + name;
 		PMS.info("Using database URL: " + url);
 		PMS.minimal("Using database located at : " + new File(dir).getAbsolutePath());
 		
@@ -50,11 +50,13 @@ public class DLNAMediaDatabase implements Runnable {
 		int count = -1;
 		String version = null;
 		Connection conn = null;
+		ResultSet rs = null;
+		Statement stmt = null;
 		try {
 			conn = getConnection();
 			
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT count(*) FROM FILES");
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery("SELECT count(*) FROM FILES");
 			if (rs.next()) {
 				count = rs.getInt(1) ;
 			}
@@ -66,14 +68,22 @@ public class DLNAMediaDatabase implements Runnable {
 			if (rs.next()) {
 				version = rs.getString(1) ;
 			}
-			rs.close();
-			stmt.close();
 		} catch (SQLException se) {
 			PMS.info("Database not created or corrupted");
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {}
 		}
 		if (force || (count == -1 || version == null || version.equals("0.10"))) { // here we can force a deletion for a specific version
 			PMS.info("Database will be (re)initialized");
 			try {
+				conn = getConnection();
 				executeUpdate(conn, "DROP TABLE FILES");
 				executeUpdate(conn, "DROP TABLE METADATA");
 				executeUpdate(conn, "DROP TABLE REGEXP_RULES");
@@ -127,11 +137,17 @@ public class DLNAMediaDatabase implements Runnable {
 				PMS.info("Database initialized");
 			} catch (SQLException se) {
 				PMS.minimal("Error in table creation: " + se.getMessage());
+			} finally {
+				if (conn != null)
+					try {
+						conn.close();
+					} catch (SQLException e) {}
 			}
 		} else {
 			PMS.info("Database file count: " + count);
 			PMS.info("Database version: " + version);
 		}
+		
 	}
 	
 	private void executeUpdate(Connection conn, String sql) throws SQLException {
@@ -142,33 +158,45 @@ public class DLNAMediaDatabase implements Runnable {
 	
 	public boolean isDataExists(String name, long modified) {
 		boolean found = false;
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
 		try {
-			Connection conn = getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM FILES WHERE FILENAME = ? AND MODIFIED = ?");
-			ps.setString(1, name);
-			ps.setTimestamp(2, new Timestamp(modified));
-			ResultSet rs = ps.executeQuery();
+			conn = getConnection();
+			stmt = conn.prepareStatement("SELECT * FROM FILES WHERE FILENAME = ? AND MODIFIED = ?");
+			stmt.setString(1, name);
+			stmt.setTimestamp(2, new Timestamp(modified));
+			rs = stmt.executeQuery();
 			while (rs.next()) {
 				found = true;
 			}
-			rs.close();
-			ps.close();
-			conn.close();
 		} catch (SQLException se) {
 			PMS.error(null, se);
 			return false;
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {}
 		}
 		return found;
 	}
 	
 	public ArrayList<DLNAMediaInfo> getData(String name, long modified) {
 		ArrayList<DLNAMediaInfo> list = new ArrayList<DLNAMediaInfo>();
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
 		try {
-			Connection conn = getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM FILES WHERE FILENAME = ? AND MODIFIED = ?");
-			ps.setString(1, name);
-			ps.setTimestamp(2, new Timestamp(modified));
-			ResultSet rs = ps.executeQuery();
+			conn = getConnection();
+			stmt = conn.prepareStatement("SELECT * FROM FILES WHERE FILENAME = ? AND MODIFIED = ?");
+			stmt.setString(1, name);
+			stmt.setTimestamp(2, new Timestamp(modified));
+			rs = stmt.executeQuery();
 			while (rs.next()) {
 				DLNAMediaInfo media = new DLNAMediaInfo();
 				media.duration = rs.getString("DURATION");
@@ -222,20 +250,28 @@ public class DLNAMediaDatabase implements Runnable {
 				media.mediaparsed = true;
 				list.add(media);
 			}
-			rs.close();
-			ps.close();
-			conn.close();
 		} catch (SQLException se) {
 			PMS.error(null, se);
 			return null;
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {}
 		}
 		return list;
 	}
 
 	public void insertData(String name, long modified, int type, DLNAMediaInfo media) {
+		Connection conn = null;
+		PreparedStatement ps = null;
 		try {
-			Connection conn = getConnection();
-			PreparedStatement ps = conn.prepareStatement("INSERT INTO FILES VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			conn = getConnection();
+			ps = conn.prepareStatement("INSERT INTO FILES VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			ps.setString(1, name);
 			ps.setTimestamp(2, new Timestamp(modified));
 			ps.setInt(3, type);
@@ -315,13 +351,18 @@ public class DLNAMediaDatabase implements Runnable {
 				ps.setInt(29, 0);
 			}
 			ps.executeUpdate();
-			ps.close();
-			conn.close();
 		} catch (SQLException se) {
 			if (se.getMessage().contains("[23001")) {
 				PMS.info("Duplicate key while inserting this entry: " + name  + " into the database: " + se.getMessage());
 			} else
 				PMS.error(null, se);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {}
 		}
 	}
 	
@@ -333,10 +374,13 @@ public class DLNAMediaDatabase implements Runnable {
 	
 	public ArrayList<String> getStrings(String sql) {
 		ArrayList<String> list = new ArrayList<String>();
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
 		try {
-			Connection conn = getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ResultSet rs = ps.executeQuery();
+			conn = getConnection();
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
 			while (rs.next()) {
 				String str = rs.getString(1);
 				if (StringUtils.isBlank(str)) {
@@ -345,19 +389,26 @@ public class DLNAMediaDatabase implements Runnable {
 				} else if (!list.contains(str))
 					list.add(str);
 			}
-			rs.close();
-			ps.close();
-			conn.close();
 		} catch (SQLException se) {
 			PMS.error(null, se);
 			return null;
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {}
 		}
 		return list;
 	}
 	
 	public void cleanup() {
+		Connection conn = null;
 		try {
-			Connection conn = getConnection();
+			conn = getConnection();
 			PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) FROM FILES");
 			ResultSet rs = ps.executeQuery();
 			int count = 0;
@@ -392,16 +443,24 @@ public class DLNAMediaDatabase implements Runnable {
 			conn.close();
 		} catch (SQLException se) {
 			PMS.error(null, se);
+		} finally {
+			try {
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {}
 		}
 	}
 	
 	
 	public ArrayList<File> getFiles(String sql) {
 		ArrayList<File> list = new ArrayList<File>();
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
 		try {
-			Connection conn = getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT FILENAME, MODIFIED FROM FILES WHERE " + sql);
-			ResultSet rs = ps.executeQuery();
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT FILENAME, MODIFIED FROM FILES WHERE " + sql);
+			rs = ps.executeQuery();
 			while (rs.next()) {
 				String filename = rs.getString("FILENAME");
 				long modified = rs.getTimestamp("MODIFIED").getTime();
@@ -409,12 +468,18 @@ public class DLNAMediaDatabase implements Runnable {
 				if (entry.exists() && entry.lastModified() == modified)
 					list.add(entry);
 			}
-			rs.close();
-			ps.close();
-			conn.close();
 		} catch (SQLException se) {
 			PMS.error(null, se);
 			return null;
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {}
 		}
 		return list;
 	}
