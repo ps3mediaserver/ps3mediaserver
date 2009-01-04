@@ -66,6 +66,12 @@ public class PmsConfiguration {
 	private static final String KEY_FFMPEG_SETTINGS = "ffmpeg";
 	private static final String KEY_MENCODER_NO_OUT_OF_SYNC  = "mencoder_nooutofsync";
 	private static final String KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS = "transcode_block_multiple_connections";
+	private static final String KEY_CHARSET_ENCODING = "charsetencoding";
+	private static final String KEY_MENCODER_INTELLIGENT_SYNC = "mencoder_intelligent_sync";
+	private static final String KEY_FFMPEG_ALTERNATIVE_PATH = "alternativeffmpegpath";
+	private static final String KEY_SKIP_LOOP_FILTER_ENABLED = "skiploopfilter";
+	private static final String KEY_MENCODER_MAIN_SETTINGS = "mencoder_encode";
+	private static final String KEY_LOGGING_LEVEL = "level";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -608,5 +614,49 @@ public class PmsConfiguration {
 
 	public void setTranscodeBlocksMultipleConnections(boolean value) {
 		configuration.setProperty(KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS, value);
+	}
+
+	public String getCharsetEncoding() {
+		return getString(KEY_CHARSET_ENCODING, "850");
+	}
+	
+	public void setCharsetEncoding(String value) {
+		configuration.setProperty(KEY_CHARSET_ENCODING, value);
+	}
+
+	public boolean isMencoderIntelligentSync() {
+		return getBoolean(KEY_MENCODER_INTELLIGENT_SYNC, true);
+	}
+
+	public void setMencoderIntelligentSync(boolean value) {
+		configuration.setProperty(KEY_MENCODER_INTELLIGENT_SYNC, value);
+	}
+
+	public String getFfmpegAlternativePath() {
+		return getString(KEY_FFMPEG_ALTERNATIVE_PATH, null);
+	}
+
+	public void setFfmpegAlternativePath(String value) {
+		configuration.setProperty(KEY_MENCODER_INTELLIGENT_SYNC, value);
+	}
+
+	public boolean getSkipLoopFilterEnabled() {
+		return getBoolean(KEY_SKIP_LOOP_FILTER_ENABLED, true);
+	}
+
+	public void setSkipLoopFilterEnabled(boolean value) {
+		configuration.setProperty(KEY_SKIP_LOOP_FILTER_ENABLED, value);
+	}
+
+	public String getMencoderMainSettings() {
+		return getString(KEY_MENCODER_MAIN_SETTINGS, "keyint=1:vqscale=1:vqmin=2");
+	}
+
+	public void setMencoderMainSettings(String value) {
+		configuration.setProperty(KEY_MENCODER_MAIN_SETTINGS, value);
+	}
+
+	public int getLoggingLevel() {
+		return getInt(KEY_LOGGING_LEVEL, 2);
 	}
 }
