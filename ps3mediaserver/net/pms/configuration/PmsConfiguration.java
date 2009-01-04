@@ -60,6 +60,12 @@ public class PmsConfiguration {
 	private static final String KEY_USE_CACHE = "usecache";
 	private static final String KEY_AVISYNTH_CONVERT_FPS = "avisynth_convertfps";
 	private static final String KEY_AVISYNTH_SCRIPT = "avisynth_script";
+	private static final String KEY_MAX_AUDIO_BUFFER = "maxaudiobuffer";
+	private static final String KEY_MIN_STREAM_BUFFER = "minwebbuffer";
+	private static final String KEY_BUFFER_TYPE = "buffertype";
+	private static final String KEY_FFMPEG_SETTINGS = "ffmpeg";
+	private static final String KEY_MENCODER_NO_OUT_OF_SYNC  = "mencoder_nooutofsync";
+	private static final String KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS = "transcode_block_multiple_connections";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -75,6 +81,8 @@ public class PmsConfiguration {
 		+ "<movie>" 
 		+ "<sub>" 
 		+ "return clip";
+	
+	private static final String BUFFER_TYPE_FILE = "file";
 	
 	private static final int MAX_MAX_MEMORY_BUFFER_SIZE = 630;
 	
@@ -563,5 +571,42 @@ public class PmsConfiguration {
 
 	public void setAvisynthScript(String value) {
 		configuration.setProperty(KEY_AVISYNTH_SCRIPT, value);
+	}
+
+	public int getMaxAudioBuffer() {
+		return getInt(KEY_MAX_AUDIO_BUFFER, 100);
+	}
+	
+	public int getMinStreamBuffer() {
+		return getInt(KEY_MIN_STREAM_BUFFER, 1);
+	}
+
+	public boolean isFileBuffer() {
+		String bufferType = getString(KEY_BUFFER_TYPE, "").trim();
+		return bufferType.equals(BUFFER_TYPE_FILE);
+	}
+
+	public void setFfmpegSettings(String value) {
+		configuration.setProperty(KEY_FFMPEG_SETTINGS, value);
+	}
+	
+	public String getFfmpegSettings() {
+		return getString(KEY_FFMPEG_SETTINGS, "-threads 2 -g 1 -qscale 1 -qmin 2");
+	}
+
+	public boolean isMencoderNoOutOfSync() {
+		return getBoolean(KEY_MENCODER_NO_OUT_OF_SYNC, true );
+	}
+
+	public void setMencoderNoOutOfSync(boolean value) {
+		configuration.setProperty(KEY_MENCODER_NO_OUT_OF_SYNC, value);
+	}
+
+	public boolean getTrancodeBlocksMultipleConnections() {
+		return configuration.getBoolean(KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS, false);
+	}
+
+	public void setTranscodeBlocksMultipleConnections(boolean value) {
+		configuration.setProperty(KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS, value);
 	}
 }

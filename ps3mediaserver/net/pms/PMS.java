@@ -148,11 +148,11 @@ public class PMS {
 	}
 
 	public int getMaxaudiobuffer() {
-		return maxaudiobuffer;
+		return configuration.getMaxAudioBuffer();
 	}
 
 	public int getMinstreambuffer() {
-		return minstreambuffer;
+		return configuration.getMinStreamBuffer();
 	}
 
 	public RootFolder getRootFolder() {
@@ -256,15 +256,12 @@ public class PMS {
 	public static final int INFO = 1;
 	public static final int MINIMAL = 2;
 	
-	private boolean transcode_block_multiple_connections;
-	
 	public boolean isTranscode_block_multiple_connections() {
-		return transcode_block_multiple_connections;
+		return configuration.getTrancodeBlocksMultipleConnections();
 	}
 
-	public void setTranscode_block_multiple_connections(
-			boolean transcode_block_multiple_connections) {
-		this.transcode_block_multiple_connections = transcode_block_multiple_connections;
+	public void setTranscode_block_multiple_connections(boolean transcode_block_multiple_connections) {
+		configuration.setTranscodeBlocksMultipleConnections(transcode_block_multiple_connections);
 	}
 
 	int level = 2;
@@ -430,9 +427,6 @@ public class PMS {
 		return configuration.getUseSubtitles();
 	}
 
-	private int maxaudiobuffer;
-	private int minstreambuffer;
-
 	public int getNbcores() {
 		return configuration.getNumberOfCpuCores();
 	}
@@ -442,9 +436,9 @@ public class PMS {
 	}
 
 	private int proxy;
-	private String ffmpeg = "-threads 2 -g 1 -qscale 1 -qmin 2"; //$NON-NLS-1$
+	
 	public void setFfmpeg(String ffmpeg) {
-		this.ffmpeg = ffmpeg;
+		configuration.setFfmpegSettings(ffmpeg);
 	}
 
 	private String mplayer;
@@ -463,29 +457,25 @@ public class PMS {
 	}
 
 	private String folders = ""; //$NON-NLS-1$
-	private boolean filebuffer;
-	
 	
 	public String getHostname() {
 		return configuration.getServerHostname();
 	}
 
 	public boolean isFilebuffer() {
-		return filebuffer;
+		return configuration.isFileBuffer();
 	}
 
 	public String getFfmpegSettings() {
-		return ffmpeg;
+		return configuration.getFfmpegSettings();
 	}
 	
-	private boolean mencoder_nooutofsync;
-	
 	public boolean isMencoder_nooutofsync() {
-		return mencoder_nooutofsync;
+		return configuration.isMencoderNoOutOfSync();
 	}
 
 	public void setMencoder_nooutofsync(boolean mencoder_nooutofsync) {
-		this.mencoder_nooutofsync = mencoder_nooutofsync;
+		configuration.setMencoderNoOutOfSync(mencoder_nooutofsync);
 	}
 
 	public void setAvisynth_convertfps(boolean avisynth_convertfps) {
@@ -523,22 +513,14 @@ public class PMS {
 				String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
 				String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
 				
-				if (key.equals("minwebbuffer") && value.length() > 0) { //$NON-NLS-1$
-					minstreambuffer = Integer.parseInt(value.trim());
-				} else if (key.equals("maxaudiobuffer") && value.length() > 0) { //$NON-NLS-1$
-					maxaudiobuffer = Integer.parseInt(value.trim());
-				} else if (key.equals("level") && value.length() > 0) { //$NON-NLS-1$
+				if (key.equals("level") && value.length() > 0) { //$NON-NLS-1$
 					level = Integer.parseInt(value.trim());
 				} else if (key.equals("charsetencoding") && value.length() > 0) { //$NON-NLS-1$
 					charsetencoding = value.trim();
-				} else if (key.equals("ffmpeg") && value.length() > 0) { //$NON-NLS-1$
-					ffmpeg = value.trim();
 				} else if (key.equals("mplayer") && value.length() > 0) { //$NON-NLS-1$
 					mplayer = value.trim();
 				} else if (key.equals("skiploopfilter") && value.length() > 0) { //$NON-NLS-1$
 					skiploopfilter = isTrue(value.trim());
-				} else if (key.equals("mencoder_nooutofsync") && value.length() > 0) { //$NON-NLS-1$
-					mencoder_nooutofsync = isTrue(value.trim());
 				} else if (key.equals("mencoder_intelligent_sync") && value.length() > 0) { //$NON-NLS-1$
 					mencoder_intelligent_sync = isTrue(value.trim());
 				} else if (key.equals("mencoder_encode") && value.length() > 0) { //$NON-NLS-1$
@@ -553,14 +535,10 @@ public class PMS {
 							enginesAsList.add(engine);
 						}
 					}
-				} else if (key.equals("transcode_block_multiple_connections") && value.length() > 0) { //$NON-NLS-1$
-					transcode_block_multiple_connections = isTrue(value.trim());
 				} else if (key.equals("tsmuxer_forcefps") && value.length() > 0) { //$NON-NLS-1$
 					tsmuxer_forcefps = isTrue(value.trim());
 				} else if (key.equals("folders") && value.length() > 0) { //$NON-NLS-1$
 					folders = value.trim();
-				} else if (key.equals("buffertype") && value.length() > 0) { //$NON-NLS-1$
-					filebuffer = value.trim().equals("file"); //$NON-NLS-1$
 				} else if (key.equals("alternativeffmpegpath") && value.length() > 0) { //$NON-NLS-1$
 					alternativeffmpegPath = value.trim();
 				} else if (key.equals("encoding") && value.length() > 0) { //$NON-NLS-1$
@@ -662,8 +640,6 @@ public class PMS {
 			e.printStackTrace();
 		}
 		
-		maxaudiobuffer = 100;
-		minstreambuffer = 1;
 		proxy = -1;
 		
 		loadConf();
@@ -868,11 +844,10 @@ public class PMS {
 		if (!PMS.get().isHidevideosettings()) {
 			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.37"), null); //$NON-NLS-1$
 			
-			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), mencoder_nooutofsync) { //$NON-NLS-1$
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) { //$NON-NLS-1$
 				public boolean enable() {
-					mencoder_nooutofsync = !mencoder_nooutofsync;
-					
-					return mencoder_nooutofsync;
+					configuration.setMencoderNoOutOfSync(!configuration.isMencoderNoOutOfSync());
+					return configuration.isMencoderNoOutOfSync();
 				}
 			});
 			
@@ -1320,7 +1295,7 @@ public class PMS {
 		saveFile.println("autoloadsrt=" + configuration.getUseSubtitles()); //$NON-NLS-1$
 		saveFile.println("avisynth_convertfps=" + configuration.getAvisynthConvertFps()); //$NON-NLS-1$
 		saveFile.println("avisynth_script=" + configuration.getAvisynthScript()); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("transcode_block_multiple_connections=" + getTrue(transcode_block_multiple_connections)); //$NON-NLS-1$
+		saveFile.println("transcode_block_multiple_connections=" + configuration.getTrancodeBlocksMultipleConnections()); //$NON-NLS-1$
 		saveFile.println("tsmuxer_forcefps=" + getTrue(tsmuxer_forcefps)); //$NON-NLS-1$
 		saveFile.println("tsmuxer_preremux_pcm=" + configuration.isTsmuxerPreremuxPcm()); //$NON-NLS-1$
 		saveFile.println("tsmuxer_preremux_ac3=" + configuration.isTsmuxerPreremuxAc3()); //$NON-NLS-1$
@@ -1336,7 +1311,7 @@ public class PMS {
 		saveFile.println("mencoder_intelligent_sync=" + getTrue(mencoder_intelligent_sync)); //$NON-NLS-1$
 		saveFile.println("mencoder_decode=" + (configuration.getMencoderDecode()!=null?configuration.getMencoderDecode():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_encode=" + (mencoder_main!=null?mencoder_main:"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_nooutofsync=" + getTrue(mencoder_nooutofsync)); //$NON-NLS-1$
+		saveFile.println("mencoder_nooutofsync=" + configuration.isMencoderNoOutOfSync()); //$NON-NLS-1$
 		saveFile.println("mencoder_audiolangs=" + (configuration.getMencoderAudioLanguages()!=null?configuration.getMencoderAudioLanguages():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_sublangs=" + (configuration.getMencoderSubLanguages()!=null?configuration.getMencoderSubLanguages():"")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveFile.println("mencoder_audiosublangs=" + (configuration.getMencoderAudioSubLanguages()!=null?configuration.getMencoderAudioSubLanguages():"")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1356,7 +1331,7 @@ public class PMS {
 		saveFile.println("mencoder_scaler=" + configuration.isMencoderScaler()); //$NON-NLS-1$
 		saveFile.println("mencoder_scalex=" + configuration.getMencoderScaleX()); //$NON-NLS-1$
 		saveFile.println("mencoder_scaley=" + configuration.getMencoderScaleY()); //$NON-NLS-1$
-		saveFile.println("ffmpeg=" + (ffmpeg!=null?ffmpeg:"")); //$NON-NLS-1$ //$NON-NLS-2$
+		saveFile.println("ffmpeg=" + configuration.getFfmpegSettings()); //$NON-NLS-1$ //$NON-NLS-2$
 		if (alternativeffmpegPath != null)
 			saveFile.println("alternativeffmpegpath=" + alternativeffmpegPath); //$NON-NLS-1$
 		saveFile.flush();
