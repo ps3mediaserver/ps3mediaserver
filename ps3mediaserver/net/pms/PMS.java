@@ -30,6 +30,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.BindException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -103,7 +106,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.01"; //$NON-NLS-1$
+	public static final String VERSION = "1.02"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -767,8 +770,27 @@ public class PMS {
 	
 	public String usn() {
 		if (uuid == null) {
-			UUID u = UUID.randomUUID();
-			uuid = u.toString();
+			boolean uuidBasedOnMAC = false;
+			NetworkInterface ni = null;
+			if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
+				try {
+					ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
+				} catch (Exception e) {}
+			} else if ( PMS.get().getServer().getNi() != null) {
+				ni = PMS.get().getServer().getNi();
+			}
+			if (ni != null) {
+				try {
+					byte[] addr = ni.getHardwareAddress();
+					uuid = UUID.nameUUIDFromBytes(addr).toString();
+					uuidBasedOnMAC = true;
+				} catch (SocketException e) {}
+			}
+			if (!uuidBasedOnMAC) {
+				UUID u = UUID.randomUUID();
+				uuid = u.toString();
+			}
+			PMS.minimal("Using following UUID: " + uuid);
 		}
 		return "uuid:" + uuid + "::"; //$NON-NLS-1$ //$NON-NLS-2$
 		//return "uuid:1234567890TOTO::";

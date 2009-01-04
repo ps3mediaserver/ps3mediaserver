@@ -18,10 +18,12 @@ DVR-MS addon
 
 - Fixes
 
-A/V out of sync issues with some ISOs and medias / codecs support improvment (flv, rmvb, hdmov, mp4, multichannels avi, etc.)
+A/V out of sync issues with some ISOs and medias / codecs support improvement (flv, rmvb, hdmov, mp4, multichannels avi, etc.)
 External subtitles not always loaded
+Upnp advertising issue in search reply to the ps3 (thanks to Daniel Pedersen)
+SkipLoopFilter is now disabled by default
 Regression since 0.98, server would not start on some machines
-Newest builds of ffmpeg/mplayer for win32
+Newest builds of ffmpeg/mplayer/mencoder for win32
 Usual bunch of fixes
 
 v1.01:
