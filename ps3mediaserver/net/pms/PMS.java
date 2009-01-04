@@ -33,6 +33,7 @@ import java.net.BindException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.UUID;
@@ -118,11 +119,11 @@ public class PMS {
 	}
 
 	public String getFolders() {
-		return folders;
+		return configuration.getFolders();
 	}
 
 	public void setFolders(String folders) {
-		this.folders = folders;
+		configuration.setFolders(folders);
 	}
 
 	public void setTurbomode(boolean turbomode) {
@@ -267,41 +268,6 @@ public class PMS {
 	
 	IFrame frame;
 	
-	/*private void initGFX() {
-		
-		//String frameClass = "net.pms.gui.SwingFrame";
-		//String frameClass = "net.pms.gui.SWTFrame";
-		String frameClass = "net.pms.newgui.LooksFrame"; //$NON-NLS-1$
-		if (System.getProperty("frameclass") != null) //$NON-NLS-1$
-			frameClass = System.getProperty("frameclass").toString(); //$NON-NLS-1$
-		try {
-			frame = (IFrame) Class.forName(frameClass).newInstance();
-		} catch (Exception e) {
-			PMS.error(null, e);
-		}
-	
-	}*/
-	/*
-	private String audioengines;
-		
-	public String getAudioengines() {
-		return audioengines;
-	}
-
-	public void setAudioengines(String audioengines) {
-		this.audioengines = audioengines;
-	}
-	
-	public String webvideoengines;
-
-	public String getWebvideoengines() {
-		return webvideoengines;
-	}
-
-	public void setWebvideoengines(String webvideoengines) {
-		this.webvideoengines = webvideoengines;
-	}
-*/
 	public boolean isHidevideosettings() {
 		return configuration.getHideVideoSettings();
 	}
@@ -338,23 +304,12 @@ public class PMS {
 		configuration.setSkipLoopFilterEnabled(enable);
 	}
 	
-	private String engines;
-	public String getEngines() {
-		return engines;
-	}
-
-	public void setEngines(String engines) {
-		this.engines = engines;
-	}
-
-	private ArrayList<String> enginesAsList;
-
 	public void setEnginesAsList(ArrayList<String> enginesAsList) {
-		this.enginesAsList = enginesAsList;
+		configuration.setEnginesAsList(enginesAsList);
 	}
 
-	public ArrayList<String> getEnginesAsList() {
-		return enginesAsList;
+	public List<String> getEnginesAsList() {
+		return configuration.getEnginesAsList(registry);
 	}
 	
 	public boolean isMinimized() {
@@ -430,8 +385,6 @@ public class PMS {
 		configuration.setMencoderMainSettings(value);
 	}
 
-	private String folders = ""; //$NON-NLS-1$
-	
 	public String getHostname() {
 		return configuration.getServerHostname();
 	}
@@ -467,44 +420,7 @@ public class PMS {
 	public void setAvisynth_script(String value) {
 		configuration.setAvisynthScript(value);
 	}
-	
-	private void loadConf() throws Exception {
-		Locale.setDefault(new Locale(configuration.getLanguage()));
-		
-		BufferedReader br = new BufferedReader(new FileReader(new File("PMS.conf"))); //$NON-NLS-1$
-		
-		//ArrayList<KeyValue> remaining = new ArrayList<KeyValue>();
-		String line = null;
-		while ( (line = br.readLine()) != null) {
-			
-			line = line.trim();
-			if (!line.startsWith("#") && !line.startsWith(" ") && line.indexOf("=") > -1) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			
-				String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
-				String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
-				
-				if (key.equals("engines") && value.length() > 0) { //$NON-NLS-1$
-					engines = value.trim();
-					if (!engines.equals("none")) { //$NON-NLS-1$
-						enginesAsList = new ArrayList<String>();
-						StringTokenizer st = new StringTokenizer(engines, ","); //$NON-NLS-1$
-						while (st.hasMoreTokens()) {
-							String engine = st.nextToken();
-							enginesAsList.add(engine);
-						}
-					}
-				} else if (key.equals("folders") && value.length() > 0) { //$NON-NLS-1$
-					folders = value.trim();
-				} 
-				
-			}
-		}
-		
-		br.close();
-		//return remaining;
-		
-	}
-	
+
 	private WinUtils registry;
 	
 	public WinUtils getRegistry() {
@@ -572,20 +488,7 @@ public class PMS {
 	private boolean init () throws Exception {
 		
 		registry = new WinUtils();
-		
-		//windows = System.getProperty("os.name").toUpperCase().startsWith("WIN"); //$NON-NLS-1$ //$NON-NLS-2$
-		/*if (!windows) {
-			forceMPlayer = true;
-		} else {
-			File mplayerFolder = new File("mplayer");
-			if (mplayerFolder.exists() && mplayerFolder.isDirectory()) {
-				File mplayerEXE = new File(mplayerFolder, "mencoder.exe");
-				if (mplayerEXE.exists()) {
-					forceMPlayer = true;
-				}
-			}
-		}*/
-			
+					
 		try {
 			pw = new PrintWriter(new FileWriter(new File("debug.log"))); //$NON-NLS-1$
 		} catch (FileNotFoundException e) {
@@ -593,8 +496,6 @@ public class PMS {
 		}
 		
 		proxy = -1;
-		
-		loadConf();
 		
 		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, PMS.VERSION);
 		
@@ -617,15 +518,7 @@ public class PMS {
 		
 		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 				
-		if (enginesAsList != null) {
-			for(int i=enginesAsList.size()-1;i>=0;i--) {
-				String engine = enginesAsList.get(i);
-				if (engine.startsWith("avs") && !registry.isAvis() && PMS.get().isWindows()) { //$NON-NLS-1$
-					PMS.minimal("AviSynth in not installed ! You cannot use " + engine + " as transcoding engine !"); //$NON-NLS-1$ //$NON-NLS-2$
-					enginesAsList.remove(i);
-				}
-			}
-		}
+		
 		
 		if (!checkProcessExistence("FFmpeg", true, configuration.getFfmpegPath(), "-h")) //$NON-NLS-1$ //$NON-NLS-2$
 			configuration.disableFfmpeg();
@@ -726,7 +619,7 @@ public class PMS {
 	}
 	
 	private void manageRoot() throws IOException {
-		File files [] = loadFoldersConf(folders);
+		File files [] = loadFoldersConf(configuration.getFolders());
 		if (files == null || files.length == 0)
 			files = File.listRoots();
 		if (PMS.get().isWindows()) {
@@ -1219,70 +1112,11 @@ public class PMS {
 	}
 	
 	public void save() {
-		
-		PrintWriter saveFile = null;
 		try {
-			saveFile = new PrintWriter(new FileWriter(new File("PMS.conf"))); //$NON-NLS-1$
-		} catch (IOException e) {
-		PMS.error(null, e);
+			configuration.save();
+		} catch (ConfigurationException e) {
+			error("Could not save configuration", e);
 		}
-		saveFile.println("folders=" + folders); //$NON-NLS-1$
-		saveFile.println("hostname=" + (configuration.getServerHostname()!=null?configuration.getServerHostname():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("port=" + (configuration.getServerPort()!=5001?configuration.getServerPort():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("language=" + configuration.getLanguage()); //$NON-NLS-1$
-		saveFile.println("thumbnails=" + configuration.getThumbnailsEnabled()); //$NON-NLS-1$
-		saveFile.println("thumbnail_seek_pos=" + configuration.getThumbnailSeekPos()); //$NON-NLS-1$
-		saveFile.println("nbcores=" + configuration.getNumberOfCpuCores()); //$NON-NLS-1$
-		saveFile.println("turbomode=" + configuration.isTurboModeEnabled()); //$NON-NLS-1$
-		saveFile.println("minimized=" + configuration.isMinimized()); //$NON-NLS-1$
-		saveFile.println("hidevideosettings=" + configuration.getHideVideoSettings()); //$NON-NLS-1$
-		saveFile.println("usecache=" + configuration.getUseCache()); //$NON-NLS-1$
-		saveFile.println("charsetencoding=" + configuration.getCharsetEncoding()); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("engines=" + engines); //$NON-NLS-1$
-		saveFile.println("autoloadsrt=" + configuration.getUseSubtitles()); //$NON-NLS-1$
-		saveFile.println("avisynth_convertfps=" + configuration.getAvisynthConvertFps()); //$NON-NLS-1$
-		saveFile.println("avisynth_script=" + configuration.getAvisynthScript()); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("transcode_block_multiple_connections=" + configuration.getTrancodeBlocksMultipleConnections()); //$NON-NLS-1$
-		saveFile.println("tsmuxer_forcefps=" + configuration.isTsmuxerForceFps()); //$NON-NLS-1$
-		saveFile.println("tsmuxer_preremux_pcm=" + configuration.isTsmuxerPreremuxPcm()); //$NON-NLS-1$
-		saveFile.println("tsmuxer_preremux_ac3=" + configuration.isTsmuxerPreremuxAc3()); //$NON-NLS-1$
-		saveFile.println("audiochannels=" + configuration.getAudioChannelCount()); //$NON-NLS-1$
-		saveFile.println("audiobitrate=" + configuration.getAudioBitrate()); //$NON-NLS-1$
-		saveFile.println("maximumbitrate=" + configuration.getMaximumBitrate()); //$NON-NLS-1$
-		saveFile.println("skiploopfilter=" + configuration.getSkipLoopFilterEnabled()); //$NON-NLS-1$
-		saveFile.println("enable_archive_browsing=" + configuration.isArchiveBrowsing()); //$NON-NLS-1$
-		saveFile.println("mencoder_fontconfig=" + configuration.isMencoderFontConfig()); //$NON-NLS-1$
-		saveFile.println("mencoder_font=" + (configuration.getMencoderFont()!=null?configuration.getMencoderFont():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_forcefps=" + configuration.isMencoderForceFps()); //$NON-NLS-1$
-		saveFile.println("mencoder_usepcm=" + configuration.isMencoderUsePcm()); //$NON-NLS-1$
-		saveFile.println("mencoder_intelligent_sync=" + configuration.isMencoderIntelligentSync()); //$NON-NLS-1$
-		saveFile.println("mencoder_decode=" + (configuration.getMencoderDecode()!=null?configuration.getMencoderDecode():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_encode=" + configuration.getMencoderMainSettings()); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_nooutofsync=" + configuration.isMencoderNoOutOfSync()); //$NON-NLS-1$
-		saveFile.println("mencoder_audiolangs=" + (configuration.getMencoderAudioLanguages()!=null?configuration.getMencoderAudioLanguages():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_sublangs=" + (configuration.getMencoderSubLanguages()!=null?configuration.getMencoderSubLanguages():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_audiosublangs=" + (configuration.getMencoderAudioSubLanguages()!=null?configuration.getMencoderAudioSubLanguages():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_subfribidi=" + configuration.isMencoderSubFribidi()); //$NON-NLS-1$
-		saveFile.println("mencoder_ass_scale=" + (configuration.getMencoderAssScale()!=null?configuration.getMencoderAssScale():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_ass_margin=" + (configuration.getMencoderAssMargin()!=null?configuration.getMencoderAssMargin():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_ass_outline=" + (configuration.getMencoderAssOutline()!=null?configuration.getMencoderAssOutline():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_ass_shadow=" + (configuration.getMencoderAssShadow()!=null?configuration.getMencoderAssShadow():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_noass_scale=" + (configuration.getMencoderNoAssScale()!=null?configuration.getMencoderNoAssScale():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_noass_subpos=" + (configuration.getMencoderNoAssSubPos()!=null?configuration.getMencoderNoAssSubPos():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_noass_blur=" + (configuration.getMencoderNoAssBlur()!=null?configuration.getMencoderNoAssBlur():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_noass_outline=" + (configuration.getMencoderNoAssOutline()!=null?configuration.getMencoderNoAssOutline():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_subcp=" + (configuration.getMencoderSubCp()!=null?configuration.getMencoderSubCp():"")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveFile.println("mencoder_ass=" + configuration.isMencoderAss()); //$NON-NLS-1$
-		saveFile.println("mencoder_disablesubs=" + configuration.isMencoderDisableSubs()); //$NON-NLS-1$
-		saveFile.println("mencoder_yadif=" + configuration.isMencoderYadif()); //$NON-NLS-1$
-		saveFile.println("mencoder_scaler=" + configuration.isMencoderScaler()); //$NON-NLS-1$
-		saveFile.println("mencoder_scalex=" + configuration.getMencoderScaleX()); //$NON-NLS-1$
-		saveFile.println("mencoder_scaley=" + configuration.getMencoderScaleY()); //$NON-NLS-1$
-		saveFile.println("ffmpeg=" + configuration.getFfmpegSettings()); //$NON-NLS-1$ //$NON-NLS-2$
-		if (configuration.getFfmpegAlternativePath() != null)
-			saveFile.println("configuration.getFfmpegAlternativePath()=" + configuration.getFfmpegAlternativePath()); //$NON-NLS-1$
-		saveFile.flush();
-		saveFile.close();
 	}
 
 	public File getTempFolder() throws IOException {

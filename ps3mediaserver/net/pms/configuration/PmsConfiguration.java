@@ -2,7 +2,13 @@ package net.pms.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+
+import net.pms.PMS;
+import net.pms.io.WinUtils;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -72,6 +78,7 @@ public class PmsConfiguration {
 	private static final String KEY_SKIP_LOOP_FILTER_ENABLED = "skiploopfilter";
 	private static final String KEY_MENCODER_MAIN_SETTINGS = "mencoder_encode";
 	private static final String KEY_LOGGING_LEVEL = "level";
+	private static final String KEY_ENGINES = "engines";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -93,6 +100,8 @@ public class PmsConfiguration {
 	private static final int MAX_MAX_MEMORY_BUFFER_SIZE = 630;
 	
 	private static final String CONFIGURATION_FILENAME = "PMS.conf";
+	private static final char LIST_SEPARATOR = ',';
+	private static final String KEY_FOLDERS = null;
 
 	private final PropertiesConfiguration configuration;
 	private final TempFolder tempFolder;
@@ -101,9 +110,10 @@ public class PmsConfiguration {
 	public PmsConfiguration() throws ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration();
 		configuration.setListDelimiter((char)0);
-		configuration.load(new File(CONFIGURATION_FILENAME));
+		configuration.load(CONFIGURATION_FILENAME);
 		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
+		Locale.setDefault(new Locale(getLanguage()));
 	}
 
 	/**
@@ -659,4 +669,59 @@ public class PmsConfiguration {
 	public int getLoggingLevel() {
 		return getInt(KEY_LOGGING_LEVEL, 2);
 	}
+
+	public void setEnginesAsList(ArrayList<String> enginesAsList) {
+		configuration.setProperty(KEY_ENGINES, listToString(enginesAsList));
+	}
+
+	public List<String> getEnginesAsList(WinUtils registry) {
+		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,mplayeraudio,ffmpegaudio,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux"));
+		engines = hackAvs(registry, engines);
+		return engines;
+	}
+	
+	private static String listToString(List<String> enginesAsList) {
+		return StringUtils.join(enginesAsList, LIST_SEPARATOR);
+	}
+
+	private static List<String> stringToList(String input) {
+		List<String> output = new ArrayList<String>();
+		Collections.addAll(output, StringUtils.split(input, LIST_SEPARATOR));
+		return output;
+	}
+	
+	// TODO: Get this out of here
+	private static boolean avsHackLogged = false;
+	
+	// TODO: Get this out of here
+	private static List<String> hackAvs(WinUtils registry, List<String> input) {
+		List<String> toBeRemoved = new ArrayList<String>();
+		for (String engineId : input) {
+			if (engineId.startsWith("avs")  && !registry.isAvis() && PMS.get().isWindows()) {
+				if (!avsHackLogged) {
+					PMS.minimal("AviSynth in not installed ! You cannot use " + engineId + " as transcoding engine !"); //$NON-NLS-1$ //$NON-NLS-2$
+					avsHackLogged = true;
+				}
+				toBeRemoved.add(engineId);
+			}
+		}
+		List<String> output = new ArrayList<String>();
+		output.addAll(input);
+		output.removeAll(toBeRemoved);
+		return output;
+	}
+
+	public void save() throws ConfigurationException {
+		configuration.setFileName(CONFIGURATION_FILENAME);
+		configuration.save();
+		PMS.minimal("Configuration saved.");
+	}
+
+	public String getFolders() {
+		return getString(KEY_FOLDERS, "");
+	}
+	
+	public void setFolders(String value) {
+		configuration.setProperty(KEY_FOLDERS, value);
+	}		
 }

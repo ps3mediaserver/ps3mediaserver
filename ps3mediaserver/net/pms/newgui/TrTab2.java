@@ -83,7 +83,6 @@ public class TrTab2 {
 	private JComboBox vq ;
 	
 	private void updateEngineModel() {
-		StringBuffer sb = new StringBuffer();
 		ArrayList<String> engines = new ArrayList<String>();
 		Object root = tree.getModel().getRoot();
 		for(int i=0;i<tree.getModel().getChildCount(root);i++) {
@@ -94,9 +93,6 @@ public class TrTab2 {
 					if (secondChild instanceof TreeNodeSettings) {
 						TreeNodeSettings tns = (TreeNodeSettings) secondChild;
 						if (tns.isEnable() && tns.getPlayer() != null) {
-							if (sb.length() > 0)
-								sb.append(","); //$NON-NLS-1$
-							sb.append(tns.getPlayer().id());
 							engines.add(tns.getPlayer().id());
 						}
 					}
@@ -104,7 +100,6 @@ public class TrTab2 {
 			}
 		}
 		PMS.get().getFrame().setReloadable(true);
-		PMS.get().setEngines(sb.toString());
 		PMS.get().setEnginesAsList(engines);
 	}
 	
