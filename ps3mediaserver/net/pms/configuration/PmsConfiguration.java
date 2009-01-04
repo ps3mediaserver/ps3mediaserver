@@ -101,7 +101,7 @@ public class PmsConfiguration {
 	
 	private static final String CONFIGURATION_FILENAME = "PMS.conf";
 	private static final char LIST_SEPARATOR = ',';
-	private static final String KEY_FOLDERS = null;
+	private static final String KEY_FOLDERS = "folders";
 
 	private final PropertiesConfiguration configuration;
 	private final TempFolder tempFolder;
