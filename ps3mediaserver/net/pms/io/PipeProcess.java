@@ -77,7 +77,7 @@ public class PipeProcess {
 	
 	public ProcessWrapper getPipeProcess() {
 		if (!PMS.get().isWindows()) {
-			OutputParams mkfifo_vid_params = new OutputParams(PMS.configuration);
+			OutputParams mkfifo_vid_params = new OutputParams(PMS.getConfiguration());
 			mkfifo_vid_params.maxBufferSize = 0.1;
 			mkfifo_vid_params.log = true;
 			String cmdArray [] = new String[] { PMS.get().getMKfifoPath(), PMS.get().isWindows()?"":"--mode=777", linuxPipeName };

@@ -303,7 +303,7 @@ public class FFMpegVideo extends Player {
 			
 			
 			String mPlayerdefaultVideoArgs [] = new String [] { fileName, seek_param, seek_value, "-vo", "yuv4mpeg:file=" + videoP.getInputPipe(), "-ao", "pcm:waveheader:file="+ audioP.getInputPipe(), "-benchmark", "-noframedrop", "-speed", "100"/*, "-quiet"*/ }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
-			OutputParams mplayer_vid_params = new OutputParams(PMS.configuration);
+			OutputParams mplayer_vid_params = new OutputParams(PMS.getConfiguration());
 			mplayer_vid_params.maxBufferSize = 1;
 			
 			String videoArgs [] = new String [1 + overiddenMPlayerArgs.length + mPlayerdefaultVideoArgs.length];
@@ -380,7 +380,7 @@ public class FFMpegVideo extends Player {
 		String movieLine = "clip=DirectShowSource(\"" + fileName + "\"" + convertfps + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String subLine = null;
 		String woExt = fileName.substring(0, fileName.length()-4);
-		if (PMS.get().isUsesubs() && !PMS.configuration.isMencoderDisableSubs()) {
+		if (PMS.get().isUsesubs() && !PMS.getConfiguration().isMencoderDisableSubs()) {
 			File srtFile = new File(woExt + ".srt"); //$NON-NLS-1$
 			if (srtFile.exists()) {
 				subLine = "clip=TextSub(clip, \"" + srtFile.getAbsolutePath() + "\")"; //$NON-NLS-1$ //$NON-NLS-2$

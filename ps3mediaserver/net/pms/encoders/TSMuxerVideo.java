@@ -155,7 +155,7 @@ public class TSMuxerVideo extends Player {
 				ffmpegLPCMextract [2] = "dummy"; //$NON-NLS-1$
 			}
 				
-			OutputParams ffparams = new OutputParams(PMS.configuration);
+			OutputParams ffparams = new OutputParams(PMS.getConfiguration());
 			ffparams.maxBufferSize = 1;
 			ffVideo = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
 			
@@ -163,7 +163,7 @@ public class TSMuxerVideo extends Player {
 				ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "flacaudio", System.currentTimeMillis() + "audioout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
 				String flacCmd [] = new String [] { configuration.getFlacPath(), "--output-name=" + ffAudioPipe.getInputPipe(), "-d", "-F", fileName }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				
-				ffparams = new OutputParams(PMS.configuration);
+				ffparams = new OutputParams(PMS.getConfiguration());
 				ffparams.maxBufferSize = 1;
 				ffAudio = new ProcessWrapperImpl(flacCmd, ffparams);
 			} else {
@@ -176,7 +176,7 @@ public class TSMuxerVideo extends Player {
 					rate = "96000"; //$NON-NLS-1$
 				String flacCmd [] = new String [] { configuration.getFfmpegPath(), "-ar", rate, "-i", fileName , "-f", "wav", "-acodec", depth, "-y", ffAudioPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				
-				ffparams = new OutputParams(PMS.configuration);
+				ffparams = new OutputParams(PMS.getConfiguration());
 				ffparams.maxBufferSize = 1;
 				ffAudio = new ProcessWrapperImpl(flacCmd, ffparams);
 			}
@@ -193,7 +193,7 @@ public class TSMuxerVideo extends Player {
 				
 				if (params.timeseek > 0)
 					ffmpegLPCMextract [2] = "" + params.timeseek; //$NON-NLS-1$
-				OutputParams ffparams = new OutputParams(PMS.configuration);
+				OutputParams ffparams = new OutputParams(PMS.getConfiguration());
 				ffparams.maxBufferSize = 1;
 				ffVideo = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
 				
@@ -209,7 +209,7 @@ public class TSMuxerVideo extends Player {
 				if (params.timeseek > 0) {
 					ffmpegLPCMextract [2] = "" + params.timeseek; //$NON-NLS-1$
 				}
-				ffparams = new OutputParams(PMS.configuration);
+				ffparams = new OutputParams(PMS.getConfiguration());
 				ffparams.maxBufferSize = 1;
 				ffAudio = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
 			}

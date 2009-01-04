@@ -229,12 +229,12 @@ public class NetworkTab {
        archive.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.configuration.setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
+				PMS.getConfiguration().setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
 				PMS.get().getFrame().setReloadable(true);
 			}
        	
        });
-       if (PMS.configuration.isArchiveBrowsing())
+       if (PMS.getConfiguration().isArchiveBrowsing())
     	   archive.setSelected(true);
        
        

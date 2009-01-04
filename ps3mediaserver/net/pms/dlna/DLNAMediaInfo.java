@@ -102,7 +102,7 @@ public class DLNAMediaInfo {
 		String args [] = new String[14];
 		args[0] = getFfmpegPath();
 		args[1] = "-ss";
-		args[2] = "" + PMS.configuration.getThumbnailSeekPos();
+		args[2] = "" + PMS.getConfiguration().getThumbnailSeekPos();
 		/*if (media.length() > 1000000000)
 			args[2] = "20";
 		else if (media.length() > 100000000)
@@ -125,7 +125,7 @@ public class DLNAMediaInfo {
 			for(int i=5;i<=13;i++)
 				args[i] = "-an";
 		}
-		OutputParams params = new OutputParams(PMS.configuration);
+		OutputParams params = new OutputParams(PMS.getConfiguration());
 		params.maxBufferSize = 1;
 		params.noexitcheck = true; // not serious if anything happens during the thumbnailer
 		final ProcessWrapperImpl pw = new ProcessWrapperImpl(args, params);
@@ -575,11 +575,11 @@ public class DLNAMediaInfo {
 	
 	public int [] getAudioSubLangIds() {
 		int audiosubs [] = null;
-		if (PMS.configuration.getMencoderAudioSubLanguages() != null && PMS.configuration.getMencoderAudioSubLanguages().length() > 0) {
+		if (PMS.getConfiguration().getMencoderAudioSubLanguages() != null && PMS.getConfiguration().getMencoderAudioSubLanguages().length() > 0) {
 			int aid = -1;
 			int sid = -1;
 			try {
-				StringTokenizer st1 = new StringTokenizer(PMS.configuration.getMencoderAudioSubLanguages(), ";");
+				StringTokenizer st1 = new StringTokenizer(PMS.getConfiguration().getMencoderAudioSubLanguages(), ";");
 				while (st1.hasMoreTokens() && aid == -1 && sid == -1) {
 					String pair = st1.nextToken();
 					String audio = pair.substring(0, pair.indexOf(","));
