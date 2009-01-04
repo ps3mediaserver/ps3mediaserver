@@ -27,6 +27,8 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 
+import org.apache.commons.lang.StringUtils;
+
 import net.pms.PMS;
 
 
@@ -129,7 +131,7 @@ public class UPNPHelper {
 	
 	private static void sendMessage(DatagramSocket socket, String nt, String message) throws IOException {
 		String msg = buildMsg(nt, message);
-		PMS.debug( "Sending this SSDP packet: " + PMS.get().replace(msg, CRLF, "<CRLF>"));
+		PMS.debug( "Sending this SSDP packet: " + StringUtils.replace(msg, CRLF, "<CRLF>"));
 		DatagramPacket ssdpPacket = new DatagramPacket(msg.getBytes(), msg.length(), getUPNPAddress(), UPNP_PORT);
 		socket.send(ssdpPacket);
 		try {

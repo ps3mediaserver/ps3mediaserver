@@ -1090,19 +1090,6 @@ public class PMS {
 		return server;
 	}
 
-
-	public String replace(String value, String toReplace, String replaceBy) {
-		if(value != null) {
-			int n = replaceBy.length();
-			int m = toReplace.length();
-			int index = n * -1;
-			while(((index = value.indexOf(toReplace, index +n)) != -1)) {
-				value = value.substring(0, index) + replaceBy + value.substring(index + m, value.length());
-			}
-		}
-		return value;
-	}
-
 	public ArrayList<Format> getExtensions() {
 		return extensions;
 	}
