@@ -647,7 +647,7 @@ public class PmsConfiguration {
 	}
 
 	public void setFfmpegAlternativePath(String value) {
-		configuration.setProperty(KEY_MENCODER_INTELLIGENT_SYNC, value);
+		configuration.setProperty(KEY_FFMPEG_ALTERNATIVE_PATH, value);
 	}
 
 	public boolean getSkipLoopFilterEnabled() {
