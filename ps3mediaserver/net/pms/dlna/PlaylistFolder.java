@@ -17,15 +17,50 @@ public class PlaylistFolder extends DLNAResource {
 		return playlistfile;
 	}
 
-	private boolean valid = false;
+	private boolean valid = true;
 	
 	public PlaylistFolder(File f) {
 		playlistfile = f;
 		lastmodified = playlistfile.lastModified();
-		parse();
 	}
-	
-	private void parse() {
+
+	@Override
+	public InputStream getInputStream() throws IOException {
+		return null;
+	}
+
+	@Override
+	public String getName() {
+		return playlistfile.getName();
+	}
+
+	@Override
+	public String getSystemName() {
+		return playlistfile.getName();
+	}
+
+	@Override
+	public boolean isFolder() {
+		return true;
+	}
+
+	@Override
+	public boolean isValid() {
+		return valid;
+	}
+
+	@Override
+	public long lastModified() {
+		return playlistfile.lastModified();
+	}
+
+	@Override
+	public long length() {
+		return 0;
+	}
+
+	@Override
+	public void resolve() {
 		if (playlistfile.length() < 1000000) {
 			ArrayList<String> entries = new ArrayList<String>();
 			try {
@@ -70,52 +105,10 @@ public class PlaylistFolder extends DLNAResource {
 					PMS.get().getDatabase().insertData(playlistfile.getAbsolutePath(), playlistfile.lastModified(), Format.PLAYLIST, null);
 				}
 			}
-			if (valid) {
-				for(DLNAResource r:children) {
-					r.resolve();
-				}
+			for(DLNAResource r:children) {
+				r.resolve();
 			}
 		}
-	}
-
-	@Override
-	public InputStream getInputStream() throws IOException {
-		return null;
-	}
-
-	@Override
-	public String getName() {
-		return playlistfile.getName();
-	}
-
-	@Override
-	public String getSystemName() {
-		return playlistfile.getName();
-	}
-
-	@Override
-	public boolean isFolder() {
-		return true;
-	}
-
-	@Override
-	public boolean isValid() {
-		return valid;
-	}
-
-	@Override
-	public long lastModified() {
-		return playlistfile.lastModified();
-	}
-
-	@Override
-	public long length() {
-		return 0;
-	}
-
-	@Override
-	public void resolve() {
-		super.resolve();
 	}
 
 }
