@@ -2,6 +2,14 @@
 Changelog:
 ==========
 
+v1.02.1
+
+- Fixes
+
+Major Bug in server start due to a faulty MAC address retrieval 
+PMS do not start after activating the archive browsing option
+Media library small fixes
+
 v1.02
 
 - New features
