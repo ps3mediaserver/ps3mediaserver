@@ -1098,8 +1098,8 @@ private JTextField mencoder_ass_scale;
 		}
 		
 		
-		// force srate when sample rate != 48000 -> cause ac3's mencoder doesn't like weird sample rates
-		if (media != null && !pcm && !ac3 && (media.getSampleRate() != 48000)) {
+		// force srate -> cause ac3's mencoder doesn't like anything other than 48khz
+		if (media != null && !pcm && !ac3 ) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +4);
 			cmdArray[cmdArray.length-6] = "-af"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-5] = "lavcresample=48000"; //$NON-NLS-1$
