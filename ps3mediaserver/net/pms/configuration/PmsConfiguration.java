@@ -114,6 +114,7 @@ public class PmsConfiguration {
 		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
 		Locale.setDefault(new Locale(getLanguage()));
+		System.setProperty("file.encoding", getCharsetEncoding());
 	}
 
 	/**
