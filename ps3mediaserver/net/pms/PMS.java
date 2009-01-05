@@ -32,7 +32,6 @@ import java.io.PrintWriter;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -106,7 +105,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.02"; //$NON-NLS-1$
+	public static final String VERSION = "1.02.1"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -545,9 +544,9 @@ public class PMS {
 			vfVideo.addChild(mlfVideo01);
 			MediaLibraryFolder mlfVideo02 = new MediaLibraryFolder(Messages.getString("PMS.12"), new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 4 ORDER BY MODIFIED DESC", "TYPE = 4 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			vfVideo.addChild(mlfVideo02);
-			MediaLibraryFolder mlfVideo03 = new MediaLibraryFolder(Messages.getString("PMS.36"), "TYPE = 4 AND (WIDTH >= 1200 OR HEIGHT >= 700) ORDER BY FILENAME DESC", MediaLibraryFolder.FILES ); //$NON-NLS-1$ //$NON-NLS-2$
+			MediaLibraryFolder mlfVideo03 = new MediaLibraryFolder(Messages.getString("PMS.36"), "TYPE = 4 AND (WIDTH >= 1200 OR HEIGHT >= 700) ORDER BY FILENAME ASC", MediaLibraryFolder.FILES ); //$NON-NLS-1$ //$NON-NLS-2$
 			vfVideo.addChild(mlfVideo03);
-			MediaLibraryFolder mlfVideo04 = new MediaLibraryFolder(Messages.getString("PMS.39"), "TYPE = 4 AND (WIDTH < 1200 AND HEIGHT < 700) ORDER BY FILENAME DESC", MediaLibraryFolder.FILES ); //$NON-NLS-1$ //$NON-NLS-2$
+			MediaLibraryFolder mlfVideo04 = new MediaLibraryFolder(Messages.getString("PMS.39"), "TYPE = 4 AND (WIDTH < 1200 AND HEIGHT < 700) ORDER BY FILENAME ASC", MediaLibraryFolder.FILES ); //$NON-NLS-1$ //$NON-NLS-2$
 			vfVideo.addChild(mlfVideo04);
 			vf.addChild(vfVideo);
 			
@@ -773,20 +772,27 @@ public class PMS {
 		if (uuid == null) {
 			boolean uuidBasedOnMAC = false;
 			NetworkInterface ni = null;
-			if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
-				try {
-					ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
-				} catch (Exception e) {}
-			} else if ( PMS.get().getServer().getNi() != null) {
-				ni = PMS.get().getServer().getNi();
+			try {
+				if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
+					try {
+						ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
+					} catch (Exception e) {}
+				} else if ( PMS.get().getServer().getNi() != null) {
+					ni = PMS.get().getServer().getNi();
+				}
+				if (ni != null) {
+				
+					byte[] addr = ni.getHardwareAddress(); // return null when java.net.preferIPv4Stack=true
+					if (addr != null) {
+						uuid = UUID.nameUUIDFromBytes(addr).toString();
+						uuidBasedOnMAC = true;
+					} else
+						PMS.minimal("Unable to retrieve MAC address for UUID creation: using a random one...");
+				}
+			} catch (Throwable e) {
+				PMS.minimal("Switching to random UUID cause there's an error in getting UUID from MAC address: " + e.getMessage());
 			}
-			if (ni != null) {
-				try {
-					byte[] addr = ni.getHardwareAddress();
-					uuid = UUID.nameUUIDFromBytes(addr).toString();
-					uuidBasedOnMAC = true;
-				} catch (SocketException e) {}
-			}
+			
 			if (!uuidBasedOnMAC) {
 				UUID u = UUID.randomUUID();
 				uuid = u.toString();
