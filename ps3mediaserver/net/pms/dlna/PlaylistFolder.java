@@ -70,6 +70,11 @@ public class PlaylistFolder extends DLNAResource {
 					PMS.get().getDatabase().insertData(playlistfile.getAbsolutePath(), playlistfile.lastModified(), Format.PLAYLIST, null);
 				}
 			}
+			if (valid) {
+				for(DLNAResource r:children) {
+					r.resolve();
+				}
+			}
 		}
 	}
 
