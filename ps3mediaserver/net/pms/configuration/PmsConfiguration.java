@@ -345,8 +345,8 @@ public class PmsConfiguration {
 		Locale.setDefault(new Locale(getLanguage()));
 	}
 
-	public String getThumbnailSeekPos() {
-		return getString(KEY_THUMBNAIL_SEEK_POS, "1");
+	public int getThumbnailSeekPos() {
+		return getInt(KEY_THUMBNAIL_SEEK_POS, 1);
 	}
 
 	public void setThumbnailSeekPos(int value) {
