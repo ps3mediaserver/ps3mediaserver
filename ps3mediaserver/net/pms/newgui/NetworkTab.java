@@ -230,7 +230,8 @@ public class NetworkTab {
 
 			public void itemStateChanged(ItemEvent e) {
 				PMS.getConfiguration().setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
-				PMS.get().getFrame().setReloadable(true);
+				if (PMS.get().getFrame() != null)
+					PMS.get().getFrame().setReloadable(true);
 			}
        	
        });
