@@ -4,11 +4,16 @@ Changelog:
 
 v1.02.1
 
+- New features
+
+OSX build now uses Java 1.5 instead of 1.6 so it should be able to run on more macs
+
 - Fixes
 
 Major Bug in server start due to a faulty MAC address retrieval 
 PMS do not start after activating the archive browsing option
 Media library small fixes
+Subtitles now work by default on OSX
 
 v1.02
 
