@@ -791,7 +791,7 @@ public class PMS {
 				UUID u = UUID.randomUUID();
 				uuid = u.toString();
 			}
-			PMS.minimal("Using following UUID: " + uuid);
+			PMS.minimal("Using following UUID: " + uuid); //$NON-NLS-1$
 		}
 		return "uuid:" + uuid + "::"; //$NON-NLS-1$ //$NON-NLS-2$
 		//return "uuid:1234567890TOTO::";
@@ -891,7 +891,7 @@ public class PMS {
 		try {
 			configuration.save();
 		} catch (ConfigurationException e) {
-			error("Could not save configuration", e);
+			error("Could not save configuration", e); //$NON-NLS-1$
 		}
 	}
 

@@ -273,7 +273,17 @@ public class NetworkTab {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PMS.get().getDatabase().init(true);
+				int option = JOptionPane.showConfirmDialog(
+   	                    (Component) PMS.get().getFrame(),
+   	                    Messages.getString("NetworkTab.13") +  //$NON-NLS-1$
+   	                    Messages.getString("NetworkTab.19"), //$NON-NLS-1$
+   	                    "Question", //$NON-NLS-1$
+   	                    JOptionPane.YES_NO_OPTION
+   	                    );
+   				if (option == JOptionPane.YES_OPTION) {
+   					PMS.get().getDatabase().init(true);
+   				}
+				
 			}
     		  
     	  });
