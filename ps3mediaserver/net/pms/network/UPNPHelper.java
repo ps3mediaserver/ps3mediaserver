@@ -46,6 +46,8 @@ public class UPNPHelper {
 	private static void sendDiscover(String host, int port, String st) throws IOException
 	{
 		String usn = PMS.get().usn();
+		if (st.equals(usn))
+			usn = "";
 		String discovery = 
 			"HTTP/1.1 200  OK" + CRLF +
 			"SERVER: " + PMS.get().getServerName() + CRLF +
@@ -208,6 +210,7 @@ public class UPNPHelper {
 							int remotePort = packet_r.getPort();
 
 							sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:device:MediaServer:1");
+							sendDiscover(remoteAddr, remotePort, PMS.get().usn());
 							sendDiscover(remoteAddr, remotePort, "upnp:rootdevice");
 							sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:service:ContentDirectory:1");
 
