@@ -96,6 +96,7 @@ import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
 import net.pms.newgui.LooksFrame;
 import net.pms.update.AutoUpdater;
+import net.pms.util.PMSUtil;
 import net.pms.util.ProcessUtil;
 import net.pms.util.SystemErrWrapper;
 
@@ -782,7 +783,7 @@ public class PMS {
 				}
 				if (ni != null) {
 				
-					byte[] addr = ni.getHardwareAddress(); // return null when java.net.preferIPv4Stack=true
+					byte[] addr = PMSUtil.getHardwareAddress(ni); // return null when java.net.preferIPv4Stack=true
 					if (addr != null) {
 						uuid = UUID.nameUUIDFromBytes(addr).toString();
 						uuidBasedOnMAC = true;
