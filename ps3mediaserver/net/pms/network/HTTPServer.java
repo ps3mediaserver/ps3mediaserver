@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 import net.pms.PMS;
+import net.pms.util.PMSUtil;
 
 public class HTTPServer implements Runnable {
 	
@@ -66,7 +67,7 @@ public class HTTPServer implements Runnable {
 		while (enm.hasMoreElements()) {
 			ni = enm.nextElement();
 			PMS.info("Scanning network interface " + ni.getDisplayName());
-			if (!ni.isLoopback() && ni.getDisplayName() != null && !ni.getDisplayName().toLowerCase().contains("vmware")) {
+			if (!PMSUtil.isNetworkInterfaceLoopback(ni) && ni.getDisplayName() != null && !ni.getDisplayName().toLowerCase().contains("vmware")) {
 				Enumeration<InetAddress> addrs = ni.getInetAddresses();
 				while (addrs.hasMoreElements()) {
 					ia = addrs.nextElement();
