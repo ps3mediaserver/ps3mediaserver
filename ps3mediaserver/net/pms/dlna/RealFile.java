@@ -73,9 +73,9 @@ public class RealFile extends DLNAResource {
 	
 	private void manageFile(File f) {
 		if ((f.isFile() || f.isDirectory()) && !f.isHidden()) {
-			if (PMS.getConfiguration().isArchiveBrowsing() && (f.getName().toLowerCase().endsWith(".zip") || f.getName().toLowerCase().endsWith(".cbr") || f.getName().toLowerCase().endsWith(".jar"))) {
+			if (PMS.getConfiguration().isArchiveBrowsing() && (f.getName().toLowerCase().endsWith(".zip") || f.getName().toLowerCase().endsWith(".cbz") || f.getName().toLowerCase().endsWith(".jar"))) {
 				addChild(new ZippedFile(f));
-			} else if (PMS.getConfiguration().isArchiveBrowsing() && f.getName().toLowerCase().endsWith(".rar")) {
+			} else if (PMS.getConfiguration().isArchiveBrowsing() && f.getName().toLowerCase().endsWith(".rar") || f.getName().toLowerCase().endsWith(".cbr")) {
 				addChild(new RarredFile(f));
 			} else if (f.getName().toLowerCase().endsWith(".iso") || (f.isDirectory() && f.getName().toUpperCase().equals("VIDEO_TS"))) {
 				addChild(new DVDISOFile(f));
