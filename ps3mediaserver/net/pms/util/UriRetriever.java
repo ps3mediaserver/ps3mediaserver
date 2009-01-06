@@ -31,7 +31,7 @@ public class UriRetriever {
 			}
 			return method.getResponseBody();
 		} catch (HttpException e) {
-			throw new IOException("Unable to download by HTTP", e);
+			throw new IOException("Unable to download by HTTP" + e.getMessage());
 		} finally {
 			method.releaseConnection();
 		}
@@ -46,9 +46,9 @@ public class UriRetriever {
 			byte[] data = pullData(uri, getMethod, callback, totalBytes);
 			return data;
 		} catch (HttpException e) {
-			throw new IOException("Unable to download via HTTP: " + uri, e);
+			throw new IOException("Unable to download via HTTP: " + uri + ": " + e.getMessage());
 		} catch (IOException e) {
-			throw new IOException("Unable to download via HTTP: " + uri, e);
+			throw new IOException("Unable to download via HTTP: " + uri + ": " + e.getMessage());
 		} finally {
 			if (getMethod != null) {
 				getMethod.releaseConnection();

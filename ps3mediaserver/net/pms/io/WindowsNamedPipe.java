@@ -106,8 +106,7 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 					handle2 = Kernel32.INSTANCE.CreateNamedPipeA(this.name, 3, 0, 255,
 							BUFSIZE, BUFSIZE, 0, null);
 				writable = new PipedOutputStream();
-				readable = new PipedInputStream((PipedOutputStream) writable,
-						BUFSIZE);
+				readable = new PipedInputStream((PipedOutputStream) writable, BUFSIZE);
 				start();
 				if (forcereconnect) {
 					forced = new Thread(new Runnable() {
