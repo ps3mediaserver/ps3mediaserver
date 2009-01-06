@@ -257,7 +257,7 @@ public class NetworkTab {
 			public void itemStateChanged(ItemEvent e) {
 				PMS.getConfiguration().setUseCache((e.getStateChange() == ItemEvent.SELECTED));
 				cachereset.setEnabled(PMS.getConfiguration().getUseCache());
-				((LooksFrame) PMS.get().getFrame()).setReloadable(true);
+				PMS.get().getFrame().setReloadable(true);
 				if ((LooksFrame) PMS.get().getFrame() != null)
 					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(PMS.getConfiguration().getUseCache());
 			}

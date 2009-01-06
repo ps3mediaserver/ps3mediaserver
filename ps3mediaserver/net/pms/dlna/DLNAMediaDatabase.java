@@ -17,7 +17,6 @@ import org.h2.tools.RunScript;
 import org.h2.tools.Script;
 
 import net.pms.PMS;
-import net.pms.newgui.LooksFrame;
 
 
 public class DLNAMediaDatabase implements Runnable {
@@ -417,7 +416,7 @@ public class DLNAMediaDatabase implements Runnable {
 			}
 			rs.close();
 			ps.close();
-			((LooksFrame) PMS.get().getFrame()).setStatusLine("Cleanup database... 0%");
+			PMS.get().getFrame().setStatusLine("Cleanup database... 0%");
 			int i = 0;
 			int oldpercent = 0;
 			if (count > 0) {
@@ -433,7 +432,7 @@ public class DLNAMediaDatabase implements Runnable {
 					i++;
 					int newpercent = i * 100 / count;
 					if (newpercent > oldpercent) {
-						((LooksFrame) PMS.get().getFrame()).setStatusLine("Cleanup database... " + newpercent + "%");
+						PMS.get().getFrame().setStatusLine("Cleanup database... " + newpercent + "%");
 						oldpercent = newpercent;
 					}
 				}
@@ -513,7 +512,7 @@ public class DLNAMediaDatabase implements Runnable {
 	
 	public void compact() {
 		PMS.minimal("Compacting database...");
-		((LooksFrame) PMS.get().getFrame()).setStatusLine("Compacting database...");
+		PMS.get().getFrame().setStatusLine("Compacting database...");
         String file = "database/backup.sql";
         try {
         	Script.execute(url, "sa", "", file);
@@ -528,7 +527,7 @@ public class DLNAMediaDatabase implements Runnable {
         			testsql.deleteOnExit();
         	}
         }
-        ((LooksFrame) PMS.get().getFrame()).setStatusLine(null);
+        PMS.get().getFrame().setStatusLine(null);
     }
 
 }
