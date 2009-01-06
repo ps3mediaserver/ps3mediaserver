@@ -26,5 +26,6 @@ public interface IFrame {
 	public void setStatusCode(int code, String msg, String icon);
 	public void setReloadable(boolean reload);
 	public void addEngines();
+	public void setStatusLine(String line);
 
 }

@@ -21,15 +21,8 @@ package net.pms.newgui;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
-import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -66,6 +59,7 @@ import net.pms.gui.IFrame;
 import net.pms.io.WindowsNamedPipe;
 import net.pms.newgui.update.AutoUpdateDialog;
 import net.pms.update.AutoUpdater;
+import net.pms.util.PMSUtil;
 
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
@@ -175,46 +169,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	            (screenSize.height - paneSize.height) / 2);
 	        if (!PMS.getConfiguration().isMinimized() && System.getProperty(START_SERVICE) == null)
 	        setVisible(true);
-		if (SystemTray.isSupported()) {
-			SystemTray tray = SystemTray.getSystemTray();
-
-			Image image = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/resources/images/Play1Hot_256.png")); //$NON-NLS-1$
-
-			PopupMenu popup = new PopupMenu();
-			MenuItem defaultItem = new MenuItem(Messages.getString("LooksFrame.5")); //$NON-NLS-1$
-			MenuItem traceItem = new MenuItem(Messages.getString("LooksFrame.6")); //$NON-NLS-1$
-
-			defaultItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				quit();
-			}
-			});
-
-			traceItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setVisible(true);
-			}
-			});
-
-			popup.add(traceItem);
-			popup.add(defaultItem);
-
-			final TrayIcon trayIcon = new TrayIcon(image, "Java PS3 Media Server v" + PMS.VERSION, popup); //$NON-NLS-1$
-
-			trayIcon.setImageAutoSize(true);
-			trayIcon.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setVisible(true);
-				setFocusable(true);
-			}
-
-			});
-			try {
-			tray.add(trayIcon);
-			} catch (AWTException e) {
-			e.printStackTrace();
-			}
-			}
+		PMSUtil.addSystemTray(this);
     }
 	
 	protected static ImageIcon readImageIcon(String filename) {

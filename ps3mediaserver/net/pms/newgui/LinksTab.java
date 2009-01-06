@@ -18,12 +18,10 @@
  */
 package net.pms.newgui;
 
-import java.awt.Desktop;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URI;
 
 
 import javax.imageio.ImageIO;
@@ -33,6 +31,7 @@ import javax.swing.JProgressBar;
 
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.util.PMSUtil;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -78,7 +77,7 @@ public class LinksTab {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					try {
-						Desktop.getDesktop().browse(new URI("http://www.smlabs.net/tsmuxer_en.html")); //$NON-NLS-1$
+						PMSUtil.browseURI("http://www.smlabs.net/tsmuxer_en.html"); //$NON-NLS-1$
 					} catch (Exception e1) {}
 				}
 				@Override
@@ -95,7 +94,7 @@ public class LinksTab {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					try {
-						Desktop.getDesktop().browse(new URI("http://ffmpeg.mplayerhq.hu")); //$NON-NLS-1$
+						PMSUtil.browseURI("http://ffmpeg.mplayerhq.hu"); //$NON-NLS-1$
 					} catch (Exception e1) {}
 				}
 				@Override
@@ -112,7 +111,7 @@ public class LinksTab {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					try {
-						Desktop.getDesktop().browse(new URI("http://www.mplayerhq.hu/")); //$NON-NLS-1$
+						PMSUtil.browseURI("http://www.mplayerhq.hu/"); //$NON-NLS-1$
 					} catch (Exception e1) {}
 				}
 				@Override
@@ -129,7 +128,7 @@ public class LinksTab {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					try {
-						Desktop.getDesktop().browse(new URI("http://oss.netfarm.it/mplayer-win32.php")); //$NON-NLS-1$
+						PMSUtil.browseURI("http://oss.netfarm.it/mplayer-win32.php"); //$NON-NLS-1$
 					} catch (Exception e1) {}
 				}
 				@Override

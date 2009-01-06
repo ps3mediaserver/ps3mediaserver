@@ -221,7 +221,7 @@ public class FoldTab {
 	   	                    );
 	   				if (option == JOptionPane.YES_OPTION) {
 	   					PMS.get().getDatabase().stopScanLibrary();
-	   					((LooksFrame) PMS.get().getFrame()).setStatusLine(null);
+	   					PMS.get().getFrame().setStatusLine(null);
 	   					but5.setIcon(LooksFrame.readImageIcon("search-32.png")); //$NON-NLS-1$
 	   				}
    				}

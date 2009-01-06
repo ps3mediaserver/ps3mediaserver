@@ -20,7 +20,6 @@ package net.pms.newgui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.FileInputStream;
@@ -96,7 +95,7 @@ public class AboutTab {
 		jList.setEditable(false);
 		jList.setWrapStyleWord(false);
 		jList.setBackground(Color.WHITE);
-		jList.setFont(new Font("Courier New", Font.PLAIN, 12)); //$NON-NLS-1$
+		//jList.setFont(new Font("Courier New", Font.PLAIN, 12)); //$NON-NLS-1$
 		FileInputStream fIN;
 		try {
 			fIN = new FileInputStream("README"); //$NON-NLS-1$

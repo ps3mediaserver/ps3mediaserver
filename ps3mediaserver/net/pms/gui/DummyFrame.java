@@ -54,4 +54,9 @@ public class DummyFrame implements IFrame {
 		
 	}
 
+	@Override
+	public void setStatusLine(String line) {
+		// TODO Auto-generated method stub
+	}
+
 }
