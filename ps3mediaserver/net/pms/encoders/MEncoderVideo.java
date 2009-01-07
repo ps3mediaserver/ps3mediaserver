@@ -57,6 +57,7 @@ import net.pms.io.ProcessWrapperImpl;
 import net.pms.newgui.FontFileFilter;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.MyComboBoxModel;
+import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
 
 public class MEncoderVideo extends Player {
@@ -901,21 +902,20 @@ private JTextField mencoder_ass_scale;
 		boolean vobsub = false;
 		String subString = null;
 		if (!avisynth && PMS.getConfiguration().getUseSubtitles()) {
-			String woExt = fileName.substring(0, fileName.length()-4);
-			File srtFile = new File(woExt + ".srt"); //$NON-NLS-1$
-			if (srtFile.exists()) {
+			File srtFile = FileUtil.isFileExists(fileName, "srt"); //$NON-NLS-1$
+			if (srtFile != null) {
 				subString=srtFile.getAbsolutePath();
 			}
-			File assFile = new File(woExt + ".ass"); //$NON-NLS-1$
-			if (assFile.exists()) {
+			File assFile = FileUtil.isFileExists(fileName, "ass"); //$NON-NLS-1$
+			if (assFile != null) {
 				subString=assFile.getAbsolutePath();
 			}
-			File subFile = new File(woExt + ".sub"); //$NON-NLS-1$
-			if (subFile.exists()) {
+			File subFile = FileUtil.isFileExists(fileName, "sub"); //$NON-NLS-1$
+			if (subFile != null) {
 				subString=subFile.getAbsolutePath();
 			}
-			File idxFile = new File(woExt + ".idx"); //$NON-NLS-1$
-			if (idxFile.exists()) {
+			File idxFile = FileUtil.isFileExists(fileName, "idx"); //$NON-NLS-1$
+			if (idxFile != null) {
 				vobsub = true;
 			}
 		}
@@ -992,7 +992,7 @@ private JTextField mencoder_ass_scale;
 				maxid = media.maxsubid+1;
 			cmdArray[cmdArray.length-9] = ""+ maxid; //$NON-NLS-1$
 		}
-		if (params.aid == -1 && params.sid == -1) {
+		if (params.aid == -1 && params.sid == -1 && subString == null) {
 			int as [] = media.getAudioSubLangIds();
 			if (media != null && as != null) {
 				cmdArray[cmdArray.length-12] = "-aid"; //$NON-NLS-1$

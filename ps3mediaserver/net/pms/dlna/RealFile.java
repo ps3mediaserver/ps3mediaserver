@@ -30,6 +30,7 @@ import net.pms.PMS;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.formats.Format;
+import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
 
 public class RealFile extends DLNAResource {
@@ -41,16 +42,20 @@ public class RealFile extends DLNAResource {
 	public boolean isValid() {
 		checktype();
 		if (file.exists() && file.getName().length() > 4) {
-			File ifo = new File(file.getParentFile(), file.getName().substring(0, file.getName().length()-4) + ".IFO");
-			if (ifo.exists()) {
-				ifoFileURI = file.getName().substring(0, file.getName().length()-4) + ".IFO";
+			File ifo = FileUtil.isFileExists(file, "IFO");
+			if (ifo != null) {
+				ifoFileURI = ifo.getName();
 				PMS.info("Found IFO file: " + ifoFileURI);
 			}
-			File srt = new File(file.getParentFile(), file.getName().substring(0, file.getName().length()-4) + ".srt");
-			srtFile = srt.exists();
+			File srt = FileUtil.isFileExists(file, "srt");
+			srtFile = srt != null;
 			if (!srtFile) {
-				srt = new File(file.getParentFile(), file.getName().substring(0, file.getName().length()-4) + ".sub");
-				srtFile = srt.exists();
+				srt = FileUtil.isFileExists(file, "sub");
+				srtFile = srt != null;
+				if (!srtFile) {
+					srt = FileUtil.isFileExists(file, "ass");
+					srtFile = srt != null;
+				}
 			}
 		}
 		return file.exists() && (ext != null || file.isDirectory());
