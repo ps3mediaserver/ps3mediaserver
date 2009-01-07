@@ -44,6 +44,7 @@ import net.pms.io.PipeIPCProcess;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
 
 public class FFMpegVideo extends Player {
@@ -377,25 +378,28 @@ public class FFMpegVideo extends Player {
 		String convertfps = ""; //$NON-NLS-1$
 		if (PMS.getConfiguration().getAvisynthConvertFps())
 			convertfps = ", convertfps=true"; //$NON-NLS-1$
+		String srtfileName = fileName;
+		File f = new File(fileName);
+		if (f.exists())
+			fileName = PMS.get().getRegistry().getShortPathNameW(fileName);
 		String movieLine = "clip=DirectShowSource(\"" + fileName + "\"" + convertfps + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String subLine = null;
-		String woExt = fileName.substring(0, fileName.length()-4);
 		if (PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
-			File srtFile = new File(woExt + ".srt"); //$NON-NLS-1$
-			if (srtFile.exists()) {
-				subLine = "clip=TextSub(clip, \"" + srtFile.getAbsolutePath() + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
+			File srtFile = FileUtil.isFileExists(srtfileName, "srt"); //$NON-NLS-1$
+			if (srtFile != null) {
+				subLine = "clip=TextSub(clip, \"" + PMS.get().getRegistry().getShortPathNameW(srtFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			File assFile = new File(woExt + ".ass"); //$NON-NLS-1$
-			if (assFile.exists()) {
-				subLine = "clip=TextSub(clip, \"" + assFile.getAbsolutePath() + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
+			File assFile = FileUtil.isFileExists(srtfileName, "ass"); //$NON-NLS-1$
+			if (assFile != null) {
+				subLine = "clip=TextSub(clip, \"" + PMS.get().getRegistry().getShortPathNameW(assFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			File subFile = new File(woExt + ".sub"); //$NON-NLS-1$
-			File idxFile = new File(woExt + ".idx"); //$NON-NLS-1$
-			if (subFile.exists()) {
+			File subFile = FileUtil.isFileExists(srtfileName, "sub"); //$NON-NLS-1$
+			File idxFile = FileUtil.isFileExists(srtfileName, "idx"); //$NON-NLS-1$
+			if (subFile != null) {
 				String function = "TextSub"; //$NON-NLS-1$
-				if (idxFile.exists())
+				if (idxFile != null)
 					function = "VobSub"; //$NON-NLS-1$
-				subLine = "clip=" +function+ "(clip, \"" + subFile.getAbsolutePath() + "\")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				subLine = "clip=" +function+ "(clip, \"" + PMS.get().getRegistry().getShortPathNameW(subFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 		
