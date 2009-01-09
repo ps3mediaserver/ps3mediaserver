@@ -2,6 +2,17 @@
 Changelog:
 ==========
 
+- New features
+
+Customizable transcode parameters for any given codecs/video (future goal: solve A/V sync issues)
+
+- Fixes
+
+Default character encoding issue
+Audio tracks now sorted by track number (if present) in media library
+Widechars filename errors with subtitles / AviSynth
+Incorrect detection of external subtitles / subtitles not always loaded, again
+
 v1.02.1
 
 - New features
