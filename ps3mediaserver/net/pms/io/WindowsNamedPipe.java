@@ -37,7 +37,7 @@ import com.sun.jna.win32.StdCallLibrary;
 
 public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 
-	private static final int BUFSIZE = 1000000;
+	private static final int BUFSIZE = 500000;
 
 	public interface Kernel32 extends StdCallLibrary {
 		Kernel32 INSTANCE = (Kernel32) Native.loadLibrary("kernel32",
@@ -91,8 +91,9 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 	private boolean b2; 
 	private FileOutputStream debug;
 	public static boolean loop = true;
+	private BufferedOutputFile directBuffer;
 
-	public WindowsNamedPipe(String n, boolean forcereconnect, boolean in) {
+	public WindowsNamedPipe(String n, boolean forcereconnect, boolean in, OutputParams params) {
 		this.name = n;
 		this.name = "\\\\.\\pipe\\" + this.name; 
 		this.in = in;
@@ -105,8 +106,12 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 				if (forcereconnect)
 					handle2 = Kernel32.INSTANCE.CreateNamedPipeA(this.name, 3, 0, 255,
 							BUFSIZE, BUFSIZE, 0, null);
-				writable = new PipedOutputStream();
-				readable = new PipedInputStream((PipedOutputStream) writable, BUFSIZE);
+				if (params != null)
+					directBuffer = new BufferedOutputFile(params);
+				else {
+					writable = new PipedOutputStream();
+					readable = new PipedInputStream((PipedOutputStream) writable, BUFSIZE);
+				}
 				start();
 				if (forcereconnect) {
 					forced = new Thread(new Runnable() {
@@ -158,21 +163,27 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 								buffer, BUFSIZE, ibr, null);
 						int cbBytesRead = ibr.getValue();
 						if (cbBytesRead == -1) {
-							writable.close();
+							if (directBuffer != null)
+								directBuffer.close();
+							if (writable != null)
+								writable.close();
 							if (debug != null)
 								debug.close();
 							break;
 						}
 						count++;
-						writable.write(buffer.getByteArray(0, cbBytesRead));
+						if (directBuffer != null)
+							directBuffer.write(buffer.getByteArray(0, cbBytesRead));
+						if (writable != null)
+							writable.write(buffer.getByteArray(0, cbBytesRead));
 						if (debug != null)
 							debug.write(buffer.getByteArray(0, cbBytesRead));
-						/*writable.write(buffer, 0, cbBytesRead);
-						if (debug != null)
-							debug.write(buffer, 0, cbBytesRead);*/
 									
 						if (!fSuccess || cbBytesRead == 0) {
-							writable.close();
+							if (directBuffer != null)
+								directBuffer.close();
+							if (writable != null)
+								writable.close();
 							if (debug != null)
 								debug.close();
 							break;
@@ -225,6 +236,10 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 
 	public InputStream getReadable() {
 		return readable;
+	}
+	
+	public BufferedOutputFile getDirectBuffer() {
+		return directBuffer;
 	}
 
 	@Override
