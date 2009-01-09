@@ -41,7 +41,7 @@ public class RealFile extends DLNAResource {
 	@Override
 	public boolean isValid() {
 		checktype();
-		if (file.exists() && file.getName().length() > 4) {
+		if (getType() == Format.VIDEO && file.exists() && file.getName().length() > 4) {
 			File ifo = FileUtil.isFileExists(file, "IFO");
 			if (ifo != null) {
 				ifoFileURI = ifo.getName();

@@ -458,7 +458,7 @@ public class DLNAMediaDatabase implements Runnable {
 		PreparedStatement ps = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT DISTINCT FILENAME, MODIFIED FROM FILES WHERE " + sql);
+			ps = conn.prepareStatement("SELECT FILENAME, MODIFIED FROM FILES WHERE " + sql);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				String filename = rs.getString("FILENAME");

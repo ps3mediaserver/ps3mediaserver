@@ -29,12 +29,17 @@ public abstract class Format implements Cloneable {
 	public int getType() {
 		return type;
 	}
+	public static final int ISO = 32;
 	public static final int PLAYLIST = 16;
 	public static final int UNKNOWN = 8;
 	public static final int VIDEO = 4;
 	public static final int AUDIO = 1;
 	public static final int IMAGE = 2;
 	
+	protected String matchedId;
+	public String getMatchedId() {
+		return matchedId;
+	}
 	protected int type = UNKNOWN;
 	protected Format secondaryFormat;
 	public Format getSecondaryFormat() {
@@ -62,8 +67,10 @@ public abstract class Format implements Cloneable {
 			String id = singleid.toLowerCase();
 			filename = filename.toLowerCase();
 			match = filename.endsWith("." + id) || filename.startsWith(id + "://"); //$NON-NLS-1$ //$NON-NLS-2$
-			if (match)
+			if (match) {
+				matchedId = singleid;
 				return true;
+			}
 		}
 		return match;
 	}
