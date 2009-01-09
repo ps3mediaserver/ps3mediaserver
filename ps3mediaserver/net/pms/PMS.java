@@ -238,13 +238,13 @@ public class PMS {
 			if (database == null) {
 				database = new DLNAMediaDatabase("medias"); //$NON-NLS-1$
 				database.init(false);
-//				try {
-//					Server server = Server.createWebServer(null);
-//					server.start();
-//					PMS.minimal("Starting H2 console on port " + server.getPort());
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
+				/*try {
+					Server server = Server.createWebServer(null);
+					server.start();
+					PMS.minimal("Starting H2 console on port " + server.getPort());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}*/
 			}
 			return database;
 		}
@@ -300,9 +300,13 @@ public class PMS {
 			configuration.disableVlc();
 		}
 		
-		/*if (forceMPlayer && PMS.get().isExpert())
-			forceMPlayer = false;
-		*/
+		// check the existence of Vsfilter.dll
+		if (registry.isAvis() && registry.getAvsPluginsDir() != null) {
+			File vsFilterdll = new File(registry.getAvsPluginsDir(), "VSFilter.dll");
+			if (!vsFilterdll.exists()) {
+				PMS.minimal("It seems VSFilter.dll is not installed into the AviSynth plugins dir ! It could be troublesome for playing subtitled video with AviSynth !");
+			}
+		}
 		
 		// force use of specific dvr ms muxer when it's installed in the right place
 		File dvrsMsffmpegmuxer = new File("win32/dvrms/ffmpeg_MPGMUX.exe"); //$NON-NLS-1$
@@ -510,15 +514,15 @@ public class PMS {
 			MediaLibraryFolder mlf6 = new MediaLibraryFolder(Messages.getString("PMS.22"), new String [] { //$NON-NLS-1$
 					"SELECT DISTINCT ARTIST FROM FILES WHERE TYPE = 1 ORDER BY ARTIST ASC", //$NON-NLS-1$
 					"SELECT DISTINCT ALBUM FROM FILES WHERE TYPE = 1 AND ARTIST = '${0}' ORDER BY ALBUM ASC", //$NON-NLS-1$
-					"TYPE = 1 AND ARTIST = '${1}' AND ALBUM = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
+					"TYPE = 1 AND ARTIST = '${1}' AND ALBUM = '${0}' ORDER BY TRACK ASC, FILENAME ASC"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
 			vfAudio.addChild(mlf6);
 			MediaLibraryFolder mlf7 = new MediaLibraryFolder(Messages.getString("PMS.26"), new String [] { //$NON-NLS-1$
 					"SELECT DISTINCT GENRE FROM FILES WHERE TYPE = 1 ORDER BY GENRE ASC", //$NON-NLS-1$
 					"SELECT DISTINCT ARTIST FROM FILES WHERE TYPE = 1 AND GENRE = '${0}' ORDER BY ARTIST ASC", //$NON-NLS-1$
 					"SELECT DISTINCT ALBUM FROM FILES WHERE TYPE = 1 AND GENRE = '${1}' AND ARTIST = '${0}' ORDER BY ALBUM ASC", //$NON-NLS-1$
-					"TYPE = 1 AND GENRE = '${2}' AND ARTIST = '${1}' AND ALBUM = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
+					"TYPE = 1 AND GENRE = '${2}' AND ARTIST = '${1}' AND ALBUM = '${0}' ORDER BY TRACK ASC, FILENAME ASC"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
 			vfAudio.addChild(mlf7);
-			MediaLibraryFolder mlfAudioDate = new MediaLibraryFolder(Messages.getString("PMS.12"), new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 1 ORDER BY MODIFIED DESC", "TYPE = 1 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			MediaLibraryFolder mlfAudioDate = new MediaLibraryFolder(Messages.getString("PMS.12"), new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 1 ORDER BY MODIFIED DESC", "TYPE = 1 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY TRACK ASC, FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			vfAudio.addChild(mlfAudioDate);
 			
 			MediaLibraryFolder mlf8 = new MediaLibraryFolder("By Letter/Artist/Album", new String [] { //$NON-NLS-1$
@@ -549,6 +553,8 @@ public class PMS {
 			vfVideo.addChild(mlfVideo03);
 			MediaLibraryFolder mlfVideo04 = new MediaLibraryFolder(Messages.getString("PMS.39"), "TYPE = 4 AND (WIDTH < 1200 AND HEIGHT < 700) ORDER BY FILENAME ASC", MediaLibraryFolder.FILES ); //$NON-NLS-1$ //$NON-NLS-2$
 			vfVideo.addChild(mlfVideo04);
+			MediaLibraryFolder mlfVideo05 = new MediaLibraryFolder("DVD Images", "TYPE = 32 ORDER BY FILENAME ASC", MediaLibraryFolder.ISOS ); //$NON-NLS-1$ //$NON-NLS-2$
+			vfVideo.addChild(mlfVideo05);
 			vf.addChild(vfVideo);
 			
 			rootFolder.addChild(vf);
@@ -610,19 +616,24 @@ public class PMS {
 	
 	private void registerPlayers() {
 		assertThat(configuration, notNullValue());
-		registerPlayer(new FFMpegVideo());
+		if (Platform.isWindows())
+			registerPlayer(new FFMpegVideo());
 		registerPlayer(new FFMpegAudio());
 		registerPlayer(new MEncoderVideo(configuration));
-		registerPlayer(new MEncoderAviSynth(configuration));
+		if (Platform.isWindows())
+			registerPlayer(new MEncoderAviSynth(configuration));
 		registerPlayer(new MPlayerAudio());
 		registerPlayer(new MEncoderWebVideo(configuration));
 		registerPlayer(new MPlayerWebVideoDump());
 		registerPlayer(new MPlayerWebAudio());
-		registerPlayer(new TSMuxerVideo(configuration));
-		registerPlayer(new TsMuxerAudio(configuration));
+		if (!Platform.isMac()) {
+			registerPlayer(new TSMuxerVideo(configuration));
+			registerPlayer(new TsMuxerAudio(configuration));
+		}
 		registerPlayer(new VideoLanAudioStreaming(configuration));
 		registerPlayer(new VideoLanVideoStreaming(configuration));
-		registerPlayer(new FFMpegDVRMSRemux());
+		if (Platform.isWindows())
+			registerPlayer(new FFMpegDVRMSRemux());
 		//registerPlayer(new RAWPictureDecoding());
 		frame.addEngines();
 	}
@@ -849,9 +860,9 @@ public class PMS {
 		return null;
 	}
 	
-	public Player getPlayer(Class<? extends Player> profileClass, int type) {
+	public Player getPlayer(Class<? extends Player> profileClass, Format ext) {
 		for(Player p:players) {
-			if (p.getClass().equals(profileClass) && p.type() == type)
+			if (p.getClass().equals(profileClass) && p.type() == ext.getType() && !p.excludeFormat(ext))
 				return p;
 		}
 		return null;
@@ -872,6 +883,8 @@ public class PMS {
 		try {
 			Toolkit.getDefaultToolkit();
 		} catch (Throwable t) {
+			System.out.println("Error while loading GUI environment: " + t.getMessage());
+			System.out.println("Switching to console mode");
 			System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		configuration = new PmsConfiguration();
