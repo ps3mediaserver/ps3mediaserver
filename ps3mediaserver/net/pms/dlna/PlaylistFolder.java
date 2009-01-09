@@ -61,7 +61,7 @@ public class PlaylistFolder extends DLNAResource {
 
 	@Override
 	public void resolve() {
-		if (playlistfile.length() < 1000000) {
+		if (playlistfile.length() < 10000000) {
 			ArrayList<String> entries = new ArrayList<String>();
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(playlistfile));
