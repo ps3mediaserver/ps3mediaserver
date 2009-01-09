@@ -381,17 +381,17 @@ public class FFMpegVideo extends Player {
 		String srtfileName = fileName;
 		File f = new File(fileName);
 		if (f.exists())
-			fileName = PMS.get().getRegistry().getShortPathNameW(fileName);
+			fileName = ProcessUtil.getShortFileNameIfWideChars(fileName);
 		String movieLine = "clip=DirectShowSource(\"" + fileName + "\"" + convertfps + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String subLine = null;
 		if (PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
 			File srtFile = FileUtil.isFileExists(srtfileName, "srt"); //$NON-NLS-1$
 			if (srtFile != null) {
-				subLine = "clip=TextSub(clip, \"" + PMS.get().getRegistry().getShortPathNameW(srtFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
+				subLine = "clip=TextSub(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(srtFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			File assFile = FileUtil.isFileExists(srtfileName, "ass"); //$NON-NLS-1$
 			if (assFile != null) {
-				subLine = "clip=TextSub(clip, \"" + PMS.get().getRegistry().getShortPathNameW(assFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
+				subLine = "clip=TextSub(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(assFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			File subFile = FileUtil.isFileExists(srtfileName, "sub"); //$NON-NLS-1$
 			File idxFile = FileUtil.isFileExists(srtfileName, "idx"); //$NON-NLS-1$
@@ -399,7 +399,7 @@ public class FFMpegVideo extends Player {
 				String function = "TextSub"; //$NON-NLS-1$
 				if (idxFile != null)
 					function = "VobSub"; //$NON-NLS-1$
-				subLine = "clip=" +function+ "(clip, \"" + PMS.get().getRegistry().getShortPathNameW(subFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				subLine = "clip=" +function+ "(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(subFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 		
