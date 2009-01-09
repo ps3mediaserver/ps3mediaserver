@@ -60,6 +60,7 @@ public class DVDISOTitle extends DLNAResource {
 		ArrayList<DLNAMediaLang> audio = new ArrayList<DLNAMediaLang>();
 		ArrayList<DLNAMediaLang> subs = new ArrayList<DLNAMediaLang>();
 		int maxsubid = 0;
+		if (lines != null)
 		for(String line:lines) {
 			
 			if (line.startsWith("DVD start=")) {
@@ -114,6 +115,7 @@ public class DVDISOTitle extends DLNAResource {
 			media.aspect = aspect;
 			media.maxsubid = maxsubid;
 			media.dvdtrack = title;
+			media.container = "iso";
 			try {
 				media.width = Integer.parseInt(width);
 				media.height = Integer.parseInt(height);
