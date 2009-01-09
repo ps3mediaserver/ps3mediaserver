@@ -60,6 +60,16 @@ public class WinUtils {
 	private String vlcp;
 	private String vlcv;
 	private boolean avis;
+	private String avsPluginsDir;
+
+	public File getAvsPluginsDir() {
+		if (avsPluginsDir == null)
+			return null;
+		File pluginsDir = new File(avsPluginsDir);
+		if (!pluginsDir.exists())
+			pluginsDir = null;
+		return pluginsDir;
+	}
 
 	public static void main(String args[]) {
 		WinUtils rb = new WinUtils();
@@ -173,6 +183,13 @@ public class WinUtils {
 				int handles[] = (int[]) openKey.invoke(systemRoot, -2147483646,
 						toCstr(key), KEY_READ);
 				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
+					// do nothing
+				} else {
+					key = "SOFTWARE\\Wow6432Node\\VideoLAN\\VLC";
+					handles = (int[]) openKey.invoke(systemRoot, -2147483646,
+							toCstr(key), KEY_READ);
+				}
+				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
 					valb = (byte[]) winRegQueryValue.invoke(systemRoot,
 							handles[0], toCstr(""));
 					vlcp = (valb != null ? new String(valb).trim() : null);
@@ -185,11 +202,19 @@ public class WinUtils {
 				handles = (int[]) openKey.invoke(systemRoot, -2147483646,
 						toCstr(key), KEY_READ);
 				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
+					// do nothing
+				} else {
+					key = "SOFTWARE\\Wow6432Node\\AviSynth";
+					handles = (int[]) openKey.invoke(systemRoot, -2147483646,
+							toCstr(key), KEY_READ);
+				}
+				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
 					avis = true;
+					valb = (byte[]) winRegQueryValue.invoke(systemRoot,
+							handles[0], toCstr("plugindir2_5"));
+					avsPluginsDir = (valb != null ? new String(valb).trim() : null);
 					closeKey.invoke(systemRoot, handles[0]);
 				}
-				//vlcp = null;
-				//vlcv  = null;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
