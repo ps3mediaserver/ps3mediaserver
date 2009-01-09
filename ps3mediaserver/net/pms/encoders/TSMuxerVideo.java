@@ -53,6 +53,12 @@ public class TSMuxerVideo extends Player {
 		this.configuration = configuration;
 	}
 	
+	public boolean excludeFormat(Format extension) {
+		String m = extension.getMatchedId();
+		return m != null && !m.equals("mkv") && !m.equals("ts") && !m.equals("m2ts") && !m.equals("mpg") && !m.equals("evo") && !m.equals("mpeg")
+			&& !m.equals("vob") && !m.equals("m2v") && !m.equals("mts");
+	}
+	
 	@Override
 	public int purpose() {
 		return VIDEO_SIMPLEFILE_PLAYER;
@@ -94,6 +100,7 @@ public class TSMuxerVideo extends Player {
 			
 			int id = 0;
 			String type = null;
+			if (results != null)
 			for(String s:results) {
 				if (s.startsWith("Track ID:")) { //$NON-NLS-1$
 					id = Integer.parseInt(s.substring(9).trim());
@@ -147,7 +154,7 @@ public class TSMuxerVideo extends Player {
 		if (this instanceof TsMuxerAudio) {
 			
 			ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "fakevideo", System.currentTimeMillis() + "videoout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
-			String ffmpegLPCMextract [] = new String [] { configuration.getFfmpegPath(), "-t", "" +params.timeend, "-loop_input", "-i", "lib/fake.jpg", "-f", "h264", "-vcodec", "libx264", "-an", "-y", ffVideoPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+			String ffmpegLPCMextract [] = new String [] { configuration.getFfmpegPath(), "-t", "" +params.timeend, "-loop_input", "-i", "win32/fake.jpg", "-f", "h264", "-vcodec", "libx264", "-an", "-y", ffVideoPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
 			//videoType = "V_MPEG-2";
 			videoType = "V_MPEG4/ISO/AVC"; //$NON-NLS-1$
 			if (params.timeend < 1) {

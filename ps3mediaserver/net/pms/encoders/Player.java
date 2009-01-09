@@ -23,6 +23,7 @@ import java.io.IOException;
 import javax.swing.JComponent;
 
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 
@@ -38,7 +39,9 @@ public abstract class Player {
 		return false;
 	}
 	
-	
+	public boolean excludeFormat(Format extension) {
+		return false;
+	}
 	
 	public abstract int purpose();
 	public abstract JComponent config();

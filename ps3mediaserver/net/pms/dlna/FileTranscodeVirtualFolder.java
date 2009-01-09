@@ -35,7 +35,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 			if (child.ext.getProfiles() != null) {
 				DLNAResource ref = child;
 				for(int i=0;i<child.ext.getProfiles().size();i++) {
-					Player pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.getType());
+					Player pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
 					if (pl !=null && !child.player.equals(pl)) {
 						DLNAResource avisnewChild = (DLNAResource) child.clone();
 						avisnewChild.player = pl;
