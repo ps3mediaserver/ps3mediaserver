@@ -31,7 +31,7 @@ public class MP3 extends Format {
 
 	@Override
 	public String [] getId() {
-		return new String [] { "mp3", "wav", "wma"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		return new String [] { "mp3", "wav"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	@Override

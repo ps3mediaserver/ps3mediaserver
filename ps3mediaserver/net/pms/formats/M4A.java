@@ -27,7 +27,7 @@ public class M4A extends OGG
    {
       return new String[]
       {
-         "m4a", "aac" //$NON-NLS-1$ //$NON-NLS-2$
+         "wma", "m4a", "aac" //$NON-NLS-1$ //$NON-NLS-2$
       };
    }
 
