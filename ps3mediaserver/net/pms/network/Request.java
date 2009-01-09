@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
+
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
@@ -187,7 +189,20 @@ public class Request extends HTTPResource {
 						output(output, getTransferMode());
 						output(output, "contentFeatures.dlna.org: " + files.get(0).getFlags().substring(1));
 					}*/
-					PMS.get().getFrame().setStatusLine("Serving " + files.get(0).getDisplayName());
+					DLNAResource dlna = files.get(0);
+					String name = dlna.getDisplayName();
+					if (dlna.media != null) {
+						if (StringUtils.isNotBlank(dlna.media.container)) {
+							name += " [container: " + dlna.media.container + "]";
+						}
+						if (StringUtils.isNotBlank(dlna.media.codecV)) {
+							name += " [video: " + dlna.media.codecV + "]";
+						}
+						if (StringUtils.isNotBlank(dlna.media.codecA)) {
+							name += " [audio: " + dlna.media.codecA + "]";
+						}
+					}
+					PMS.get().getFrame().setStatusLine("Serving " + name);
 					CLoverride = files.get(0).length();
 					if (lowRange > 0 || highRange > 0) {
 						long totalsize = CLoverride;

@@ -136,7 +136,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						if (child.ext.getProfiles() != null && child.ext.getProfiles().size() > 0) {
 							int i=0;
 							while (pl == null && i < child.ext.getProfiles().size()) {
-								pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.getType());
+								pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
 								i++;
 							}
 							String name = getName();
@@ -202,7 +202,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				newChild.ext = newChild.ext.getSecondaryFormat();
 				newChild.second = true;
 				if (!newChild.ext.ps3compatible() && newChild.ext.getProfiles().size() > 0) {
-					newChild.player = PMS.get().getPlayer(newChild.ext.getProfiles().get(0), newChild.getType());
+					newChild.player = PMS.get().getPlayer(newChild.ext.getProfiles().get(0), newChild.ext);
 				}
 				addChild(newChild);
 			}
