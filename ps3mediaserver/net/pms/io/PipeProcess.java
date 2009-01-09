@@ -37,7 +37,7 @@ public class PipeProcess {
 	private WindowsNamedPipe mk;
 	private boolean forcereconnect;
 	
-	public PipeProcess(String pipeName, String...extras) {
+	public PipeProcess(String pipeName, OutputParams params, String...extras) {
 		forcereconnect = false;
 		boolean in = true;
 		if (extras != null && extras.length > 0 && extras[0].equals("out"))
@@ -49,9 +49,13 @@ public class PipeProcess {
 			}
 		}
 		if (PMS.get().isWindows())
-			mk = new WindowsNamedPipe(pipeName, forcereconnect, in);
+			mk = new WindowsNamedPipe(pipeName, forcereconnect, in, params);
 		else
 			linuxPipeName = getPipeName(pipeName);
+	}
+	
+	public PipeProcess(String pipeName, String...extras) {
+		this(pipeName, null, extras);
 	}
 
 	private static String getPipeName(String pipeName) {
@@ -98,6 +102,13 @@ public class PipeProcess {
 			File f = new File(linuxPipeName);
 			f.deleteOnExit();
 		}
+	}
+	
+	public BufferedOutputFile getDirectBuffer() throws IOException {
+		if (!PMS.get().isWindows()) {
+			return null;
+		}
+		return mk.getDirectBuffer();
 	}
 	
 	public InputStream getInputStream() throws IOException {

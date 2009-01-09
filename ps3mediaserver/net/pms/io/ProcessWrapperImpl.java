@@ -49,6 +49,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	private String [] cmdArray;
 	private boolean nullable;
 	private ArrayList<ProcessWrapper> attachedProcesses;
+	private BufferedOutputFile bo = null;
 	
 	public ProcessWrapperImpl(String cmdArray [], OutputParams params) {
 		super(cmdArray[0]);
@@ -88,22 +89,28 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			} else if (params.input_pipes[0] != null) {
 				PMS.info("Reading pipe: " + params.input_pipes[0].getInputPipe());
 				//Thread.sleep(150);
-				InputStream is = params.input_pipes[0].getInputStream();
-				outConsumer = new OutputBufferConsumer((params.losslessaudio||params.lossyaudio)?new AviDemuxerInputStream(is, params, attachedProcesses):is, params);
-				((BufferedOutputFile) outConsumer.getBuffer()).attachThread(this);
+				bo = params.input_pipes[0].getDirectBuffer();
+				if (bo == null) {
+					InputStream is = params.input_pipes[0].getInputStream();
+					outConsumer = new OutputBufferConsumer((params.losslessaudio||params.lossyaudio)?new AviDemuxerInputStream(is, params, attachedProcesses):is, params);
+					bo = (BufferedOutputFile) outConsumer.getBuffer();
+				}
+				bo.attachThread(this);
 				new OutputTextConsumer(process.getInputStream(), true).start();
 			} else if (params.log) {
 				outConsumer = new OutputTextConsumer(process.getInputStream(), true);
 			} else {
 				outConsumer = new OutputBufferConsumer(process.getInputStream(), params);
-				((BufferedOutputFile) outConsumer.getBuffer()).attachThread(this);
+				bo = (BufferedOutputFile) outConsumer.getBuffer();
+				bo.attachThread(this);
 			}
 			stderrConsumer.start();
-			outConsumer.start();
+			if (outConsumer != null) 
+				outConsumer.start();
 			process.waitFor();
 			
-			if (outConsumer.getBuffer() != null)
-				outConsumer.getBuffer().close();
+			if (bo != null)
+				bo.close();
 			if (!destroyed && !params.noexitcheck) {
 				try {
 					success = true;
@@ -134,7 +141,9 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	}
 	
 	public InputStream getInputStream(long seek) throws IOException {
-		if (outConsumer != null && outConsumer.getBuffer() != null)
+		if (bo != null)
+			return bo.getInputStream(seek);
+		else if (outConsumer != null && outConsumer.getBuffer() != null)
 			return outConsumer.getBuffer().getInputStream(seek);
 		else if (params.outputFile != null) {
 			BlockerFileInputStream fIn = new BlockerFileInputStream(this, params.outputFile, params.minFileSize);
@@ -145,6 +154,8 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	}
 	
 	public List<String> getOtherResults() {
+		if (outConsumer == null)
+			return null;
 		return outConsumer.getResults();
 	}
 	
