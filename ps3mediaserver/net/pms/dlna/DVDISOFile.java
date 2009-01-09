@@ -23,6 +23,7 @@ import java.util.List;
 
 import net.pms.PMS;
 import net.pms.dlna.virtual.VirtualFolder;
+import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.util.ProcessUtil;
@@ -31,7 +32,7 @@ public class DVDISOFile extends VirtualFolder {
 	
 	public static final String PREFIX = "[DVD ISO] ";
 	
-	public void init() {
+	public void resolve() {
 		
 	
 		double titles [] = new double [100];
@@ -52,6 +53,7 @@ public class DVDISOFile extends VirtualFolder {
 		failsafe.start();
 		pw.run();
 		List<String> lines = pw.getOtherResults();
+		if (lines != null)
 		for(String line:lines) {
 			if (line.startsWith("ID_DVD_TITLE_") && line.contains("_LENGTH")) {
 				int rank = Integer.parseInt(line.substring(13, line.indexOf("_LENGT")));
@@ -70,6 +72,14 @@ public class DVDISOFile extends VirtualFolder {
 			}
 		}
 		
+		if (childrenNumber() > 0) {
+			if (PMS.getConfiguration().getUseCache()) {
+				if (!PMS.get().getDatabase().isDataExists(f.getAbsolutePath(), f.lastModified())) {
+					PMS.get().getDatabase().insertData(f.getAbsolutePath(), f.lastModified(), Format.ISO, null);
+				}
+			}
+		}
+		
 	}
 
 	private File f;
@@ -78,7 +88,15 @@ public class DVDISOFile extends VirtualFolder {
 		super(PREFIX + (f.isFile()?f.getName():"VIDEO_TS"), null);
 		this.f = f;
 		lastmodified = f.lastModified();
-		init();
+		//init();
+	}
+
+	@Override
+	public String getDisplayName() {
+		String s = super.getDisplayName();
+		if (f.getName().toUpperCase().equals("VIDEO_TS"))
+			s += " {" + f.getParentFile().getName() + " }";
+		return s;
 	}
 
 }

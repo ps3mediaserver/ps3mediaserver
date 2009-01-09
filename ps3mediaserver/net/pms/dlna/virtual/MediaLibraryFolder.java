@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaDatabase;
 import net.pms.dlna.DLNAResource;
+import net.pms.dlna.DVDISOFile;
 import net.pms.dlna.PlaylistFolder;
 import net.pms.dlna.RealFile;
 
@@ -14,6 +15,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 	public static final int FILES = 0;
 	public static final int TEXTS = 1;
 	public static final int PLAYLISTS = 2;
+	public static final int ISOS = 3;
 	private String sqls [];
 	private int expectedOutputs [];
 	
@@ -45,6 +47,12 @@ public class MediaLibraryFolder extends VirtualFolder {
 					if (list != null)
 						for(File f:list) {
 						addChild(new PlaylistFolder(f));
+					}
+				} else if (expectedOutput == ISOS) {
+					ArrayList<File> list = PMS.get().getDatabase().getFiles(sql);
+					if (list != null)
+						for(File f:list) {
+						addChild(new DVDISOFile(f));
 					}
 				} else if (expectedOutput == TEXTS) {
 					ArrayList<String> list = PMS.get().getDatabase().getStrings(sql);
@@ -100,7 +108,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 			expectedOutput = expectedOutputs[0];
 			if (sql != null) {
 				sql = transformSQL(sql);
-				if (expectedOutput == FILES || expectedOutput == PLAYLISTS) {
+				if (expectedOutput == FILES || expectedOutput == PLAYLISTS || expectedOutput == ISOS) {
 					list = PMS.get().getDatabase().getFiles(sql);
 				} else if (expectedOutput == TEXTS) {
 					strings = PMS.get().getDatabase().getStrings(sql);
@@ -116,11 +124,12 @@ public class MediaLibraryFolder extends VirtualFolder {
 			for(File f:list) {
 				boolean present = false;
 				for(DLNAResource d:children) {
-					if (i == 0 && !(d instanceof TranscodeVirtualFolder))
+					if (i == 0 && (!(d instanceof TranscodeVirtualFolder) || (d instanceof DVDISOFile)))
 						removedFiles.add(d);
 					String name = d.getName();
 					long lm = d.getLastmodified();
-					if (f.getName().equals(name) && f.lastModified() == lm) {
+					boolean video_ts_hack = (d instanceof DVDISOFile) && d.getName().startsWith(DVDISOFile.PREFIX) && d.getName().substring(DVDISOFile.PREFIX.length()).equals(f.getName());
+					if ((f.getName().equals(name) || video_ts_hack) && f.lastModified() == lm) {
 						removedFiles.remove(d);
 						present = true;
 					}
@@ -135,7 +144,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 			for(String f:strings) {
 				boolean present = false;
 				for(DLNAResource d:children) {
-					if (i == 0 && !(d instanceof TranscodeVirtualFolder))
+					if (i == 0 && (!(d instanceof TranscodeVirtualFolder) || (d instanceof DVDISOFile)))
 						removedString.add(d);
 					String name = d.getName();
 					if (f.equals(name)) {
@@ -162,6 +171,8 @@ public class MediaLibraryFolder extends VirtualFolder {
 				addChild(new RealFile(f));
 			} else if (expectedOutput == PLAYLISTS) {
 				addChild(new PlaylistFolder(f));
+			} else if (expectedOutput == ISOS) {
+				addChild(new DVDISOFile(f));
 			}
 		}
 		for(String f:addedString) {
