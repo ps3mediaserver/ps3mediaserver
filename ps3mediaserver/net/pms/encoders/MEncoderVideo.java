@@ -18,6 +18,7 @@
  */
 package net.pms.encoders;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -41,6 +42,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -156,20 +158,10 @@ private JTextField mencoder_ass_scale;
        
        builder.add(noskip,          cc.xy(1,  5));
        
-       intelligentsync = new JCheckBox(Messages.getString("MEncoderVideo.3")); //$NON-NLS-1$
-       intelligentsync.setContentAreaFilled(false);
-       if (PMS.getConfiguration().isMencoderIntelligentSync())
-    	   intelligentsync.setSelected(true);
-       intelligentsync.addItemListener(new ItemListener() {
-
-			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setMencoderIntelligentSync((e.getStateChange() == ItemEvent.SELECTED));
-			}
-       	
-       });
+      
 //       if (!PMS.get().isMencoder_nooutofsync())
 //    	   intelligentsync.setEnabled(false);
-       builder.add(intelligentsync,          cc.xyw(3,  5, 7));
+      // builder.add(intelligentsync,          cc.xyw(3,  5, 7));
        
        JButton button = new JButton("Codecs expert settings");
        button.addActionListener(new ActionListener() {
@@ -178,18 +170,46 @@ private JTextField mencoder_ass_scale;
 		public void actionPerformed(ActionEvent e) {
 			final JTextArea textArea = new JTextArea();
 			textArea.setText(PMS.getConfiguration().getCodecSpecificConfig());
-			textArea.setFont(new Font("Courier", Font.PLAIN, 12));
+			textArea.setFont(new Font("Courier", Font.PLAIN, 11));
 			JScrollPane scrollPane = new JScrollPane(textArea);		
-			scrollPane.setPreferredSize(new java.awt.Dimension(800, 450));
+			scrollPane.setPreferredSize(new java.awt.Dimension(800, 100));
+			
+			final JTextArea textAreaDefault = new JTextArea();
+			textAreaDefault.setText(DEFAULT_CODEC_CONF_SCRIPT);
+			textAreaDefault.setFont(new Font("Courier", Font.PLAIN, 11));
+			textAreaDefault.setEditable(false);
+			textAreaDefault.setBackground(PMS.getConfiguration().isMencoderIntelligentSync()?Color.WHITE:Color.GRAY);
+			JScrollPane scrollPaneDefault = new JScrollPane(textAreaDefault);		
+			scrollPaneDefault.setPreferredSize(new java.awt.Dimension(800, 400));
+			
+			JPanel codecPanel = new JPanel(new BorderLayout());
+			 intelligentsync = new JCheckBox(Messages.getString("MEncoderVideo.3")); //$NON-NLS-1$
+		       intelligentsync.setContentAreaFilled(false);
+		       if (PMS.getConfiguration().isMencoderIntelligentSync())
+		    	   intelligentsync.setSelected(true);
+		       intelligentsync.addItemListener(new ItemListener() {
+
+					public void itemStateChanged(ItemEvent e) {
+						PMS.getConfiguration().setMencoderIntelligentSync((e.getStateChange() == ItemEvent.SELECTED));
+						if (PMS.getConfiguration().isMencoderIntelligentSync()) {
+							textAreaDefault.setBackground(Color.WHITE);
+						} else
+							textAreaDefault.setBackground(Color.GRAY);
+					}
+		       	
+		       });
+			codecPanel.add(intelligentsync, BorderLayout.NORTH);
+			codecPanel.add(scrollPaneDefault, BorderLayout.CENTER);
+			codecPanel.add(scrollPane, BorderLayout.SOUTH);
 			if (JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-					scrollPane, "Edit codecs expert settings", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null) == JOptionPane.OK_OPTION) {
+					codecPanel, "Edit codecs expert settings", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null) == JOptionPane.OK_OPTION) {
 				PMS.getConfiguration().setCodecSpecificConfig(textArea.getText());
 			}
 			
 		}
     	   
        });
-       builder.add(button,          cc.xyw(10,  5, 5));
+       builder.add(button,          cc.xyw(3,  5, 12));
        
        forcefps = new JCheckBox(Messages.getString("MEncoderVideo.4")); //$NON-NLS-1$
        forcefps.setContentAreaFilled(false);
@@ -1127,31 +1147,33 @@ private JTextField mencoder_ass_scale;
 		}*/
 		
 		boolean noMC0NoSkip = false;
-		if (PMS.getConfiguration().isMencoderIntelligentSync() && media != null) {
-			String sArgs [] = getSpecificCodecOptions(media);
-			for(int s=0;s<sArgs.length;s++) {
-				if (sArgs[s].equals("-noass")) {
-					for(int c=0;c<cmdArray.length;c++) {
-						if (cmdArray[c] != null && cmdArray[c].equals("-ass")) //$NON-NLS-1$
-							cmdArray[c] = "-quiet"; //$NON-NLS-1$
+		if (media != null) {
+			String sArgs [] = getSpecificCodecOptions(media, fileName, PMS.getConfiguration().isMencoderIntelligentSync());
+			if (sArgs.length > 0) {
+				for(int s=0;s<sArgs.length;s++) {
+					if (sArgs[s].equals("-noass")) {
+						for(int c=0;c<cmdArray.length;c++) {
+							if (cmdArray[c] != null && cmdArray[c].equals("-ass")) //$NON-NLS-1$
+								cmdArray[c] = "-quiet"; //$NON-NLS-1$
+						}
+					} else if (sArgs[s].equals("-nosync")) {
+						noMC0NoSkip = true;
+					} else if (sArgs[s].equals("-mc")) {
+						noMC0NoSkip = true;
+					} else if (sArgs[s].equals("-mt")) {
+						String mencoderMTPath = PMS.getConfiguration().getMencoderPath();
+						mencoderMTPath = mencoderMTPath.substring(0, mencoderMTPath.length()-4) + "_mt.exe";
+						if (new File(mencoderMTPath).exists())
+							cmdArray[0] = mencoderMTPath;
 					}
-				} else if (sArgs[s].equals("-nosync")) {
-					noMC0NoSkip = true;
-				} else if (sArgs[s].equals("-mc")) {
-					noMC0NoSkip = true;
-				} else if (sArgs[s].equals("-mt")) {
-					String mencoderMTPath = PMS.getConfiguration().getMencoderPath();
-					mencoderMTPath = mencoderMTPath.substring(0, mencoderMTPath.length()-4) + "_mt.exe";
-					if (new File(mencoderMTPath).exists())
-						cmdArray[0] = mencoderMTPath;
 				}
-			}
-			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +sArgs.length);
-			for(int s=0;s<sArgs.length;s++) {
-				if (sArgs[s].equals("-noass") || sArgs[s].equals("-nosync") || sArgs[s].equals("-mt")) {
-					cmdArray[cmdArray.length-sArgs.length-2+s] = "-quiet";
-				} else
-					cmdArray[cmdArray.length-sArgs.length-2+s] = sArgs[s];
+				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +sArgs.length);
+				for(int s=0;s<sArgs.length;s++) {
+					if (sArgs[s].equals("-noass") || sArgs[s].equals("-nosync") || sArgs[s].equals("-mt")) {
+						cmdArray[cmdArray.length-sArgs.length-2+s] = "-quiet";
+					} else
+						cmdArray[cmdArray.length-sArgs.length-2+s] = sArgs[s];
+				}
 			}
 		}
 		
@@ -1232,14 +1254,16 @@ private JTextField mencoder_ass_scale;
 		return Format.VIDEO;
 	}
 
-	private String [] getSpecificCodecOptions(DLNAMediaInfo media) {
+	private String [] getSpecificCodecOptions(DLNAMediaInfo media, String filename, boolean enable) {
 		
 		StringBuffer sb = new StringBuffer();
 		
-		String codecs = PMS.getConfiguration().getCodecSpecificConfig();
+		String codecs = enable?DEFAULT_CODEC_CONF_SCRIPT:"";
+		codecs += PMS.getConfiguration().getCodecSpecificConfig();
 		StringTokenizer stLines = new StringTokenizer(codecs, "\n");
 		try {
 			Interpreter interpreter = new Interpreter();
+			interpreter.set("filename", filename);
 			interpreter.set("container", media.container);
 			interpreter.set("vcodec", media.codecV);
 			interpreter.set("acodec", media.codecA);
@@ -1285,5 +1309,31 @@ private JTextField mencoder_ass_scale;
 		args.toArray(definitiveArgs);
 		return definitiveArgs;
 	}
+	
+	public static final String DEFAULT_CODEC_CONF_SCRIPT = 
+		  "#Here you can put specific parameters for some codec combinations.\n" 
+		+ "#It's mostly for A/V synchronization issues, but it can be used for anything else as well\n" 
+		+ "#Consider it like expert settings as this shouldn't be modified if you don't know exactly what you're doing\n" 
+		+ "#\n" 
+		+ "#Syntax is {java condition} : {mencoder options}  ; You can cumulate several options\n"
+		+ "#Tokens authorized: filename container vcodec acodec samplerate framerate width height\n" 
+		+ "#Careful, any malformed line will be wiped out\n" 
+		+ "#\n" 
+		+ "#Special options:\n" 
+		+ "# -noass:  definitely disable ASS/SSA subtitles as they can mess up A/V sync\n" 
+		+ "# -nosync: definitely disable A/V sync alternative method for this condition (-mc will do the same)\n" 
+		+ "# -mt:     force usage of the multithreaded mencoder build (beta version, could be unstable)\n" 
+		+ "#\n" 
+		+ "#This list will improve with time: tweaks/feedbacks on various codecs/files are always welcome\n"
+		+ "\n" 
+		+ "container.equals(\"iso\") : -nosync\n" 
+		+ "container.equals(\"avi\") && vcodec.equals(\"mpeg4\") && acodec.equals(\"mp3\") : -mc 0.1\n" 
+		+ "container.equals(\"flv\") : -mc 0.1\n" 
+		+ "container.equals(\"mov\") : -mc 0.1 -noass\n" 
+		+ "container.equals(\"rm\")  : -mc 0.1\n"
+		+ "\n" 
+		+ "#You can now put your own conditions/options, for example, \n"
+		+ "#to enable the multithread build of mencoder for any 1080i/p h264 content, add the following:\n"
+		+ "#vcodec.equals(\"h264\") && width >= 1440 : -mt\n";
 
 }
