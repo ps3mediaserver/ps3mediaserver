@@ -53,7 +53,7 @@ public class DVRMS extends Format {
 
 	@Override
 	public String[] getId() {
-		return new String [] { "dvr-ms" }; //$NON-NLS-1$
+		return new String [] { "dvr-ms", "dvr" }; //$NON-NLS-1$
 	}
 
 	@Override

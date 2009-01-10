@@ -18,9 +18,11 @@
  */
 package net.pms.formats;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import net.pms.PMS;
+import net.pms.dlna.DLNAMediaInfo;
 import net.pms.encoders.Player;
 import net.pms.network.HTTPResource;
 
@@ -99,5 +101,9 @@ public abstract class Format implements Cloneable {
 	}
 	public Format duplicate() {
 		return (Format) this.clone();
+	}
+	// method which allow us the fine tuning of parsing with different formats in the future
+	public void parse(DLNAMediaInfo media, File file, int type) {
+		media.parse(file, this, type);
 	}
 }
