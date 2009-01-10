@@ -96,26 +96,7 @@ public class PmsConfiguration {
 		+ "<sub>\n" 
 		+ "return clip";
 	
-	private static final String DEFAULT_CODEC_CONF_SCRIPT = 
-		  "#Here you can put specific parameters for some codec combinations.\n" 
-		+ "#It's mostly for A/V synchronization issues, but it can be used for anything else as well\n" 
-		+ "#Consider it like very expert settings as this shouldn't be modified if you don't know exactly what you're doing\n" 
-		+ "#\n" 
-		+ "#Syntax is {java condition} : {mencoder options}  ; You can cumulate several options\n"
-		+ "#Ttokens authorized: container vcodec acodec samplerate framerate (xx000/1001) width height\n" 
-		+ "#Careful, any malformed line will be wiped out\n" 
-		+ "#\n" 
-		+ "#Special options:\n" 
-		+ "# -noass:  definitely disable ASS/SSA subtitles as they can mess up A/V sync\n" 
-		+ "# -nosync: definitely disable A/V sync alternative method for this condition (-mc usage will do the same)\n" 
-		+ "#\n" 
-		+ "#This list will improve with time: tweaks/feedbacks on various codecs/files are always welcome\n" 
-		+ "\n" 
-		+ "container.equals(\"iso\") : -nosync\n" 
-		+ "container.equals(\"avi\") && vcodec.equals(\"mpeg4\") && acodec.equals(\"mp3\") : -mc 0.1\n" 
-		+ "container.equals(\"flv\") : -mc 0.1\n" 
-		+ "container.equals(\"m4v\") : -mc 0.1 -noass\n" 
-		+ "container.equals(\"rm\")  : -mc 0.1\n" ;
+	
 	
 	private static final String BUFFER_TYPE_FILE = "file";
 	
@@ -132,7 +113,7 @@ public class PmsConfiguration {
 	public PmsConfiguration() throws ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration();
 		configuration.setListDelimiter((char)0);
-		if (new File("PMS.conf").exists())
+		if (new File(CONFIGURATION_FILENAME).exists())
 			configuration.load(CONFIGURATION_FILENAME);
 		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
@@ -614,7 +595,7 @@ public class PmsConfiguration {
 	}
 	
 	public String getCodecSpecificConfig() {
-		return getString(KEY_CODEC_SPEC_SCRIPT, DEFAULT_CODEC_CONF_SCRIPT);
+		return getString(KEY_CODEC_SPEC_SCRIPT, "");
 	}
 
 	public void setCodecSpecificConfig(String value) {
