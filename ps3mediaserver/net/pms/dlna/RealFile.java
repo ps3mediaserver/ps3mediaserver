@@ -232,7 +232,10 @@ public class RealFile extends DLNAResource {
 					media = new DLNAMediaInfo();
 				}
 				found = !media.mediaparsed && !media.parsing;
-				media.parse(file, ext, getType());
+				if (ext != null)
+					ext.parse(media, file, getType());
+				else //don't think that will ever happen
+					media.parse(file, ext, getType());
 				if (found && PMS.getConfiguration().getUseCache()) {
 					PMS.get().getDatabase().insertData(file.getAbsolutePath(), file.lastModified(), getType(), media);
 				}
