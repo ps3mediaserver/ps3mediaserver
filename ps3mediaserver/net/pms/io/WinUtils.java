@@ -25,23 +25,22 @@ import java.util.prefs.Preferences;
 
 import net.pms.PMS;
 
-import com.sun.jna.Memory;
+import com.sun.jna.Library;
 import com.sun.jna.Native;
-import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
 import com.sun.jna.WString;
 import com.sun.jna.ptr.LongByReference;
-import com.sun.jna.win32.StdCallLibrary;
 
 public class WinUtils {
 	
-	public interface Kernel32 extends StdCallLibrary {
+	public interface Kernel32 extends Library {
 		Kernel32 INSTANCE = (Kernel32) Native.loadLibrary("kernel32",
 				Kernel32.class);
 		Kernel32 SYNC_INSTANCE = (Kernel32) Native
 				.synchronizedLibrary(INSTANCE);
 		
-		NativeLong GetShortPathNameW(WString inPath, Memory outPathBuffer, NativeLong outPathBufferSize);
+		int GetShortPathNameW(WString lpszLongPath, char[] lpdzShortPath, int cchBuffer);
+		//NativeLong GetShortPathNameW(WString inPath, Memory outPathBuffer, NativeLong outPathBufferSize);
 		
 		boolean GetVolumeInformationW(
 				char[] lpRootPathName,
@@ -76,7 +75,11 @@ public class WinUtils {
 		System.out.println(rb.getVlcp());
 		System.out.println(rb.getVlcv());
 		System.out.println(rb.isAvis());
-		
+		WinUtils w =	new WinUtils();
+		File dir = new File("D:\\Tests\\wma");
+		File wma = dir.listFiles()[0];
+		for(int i=0;i<1000;i++)
+			w.getShortPathNameW(wma.getAbsolutePath());
 	}
 	
 	public String getShortPathNameW(String longPathName) {
@@ -93,7 +96,9 @@ public class WinUtils {
 		if (unicodeChars && Platform.isWindows()) {
 		try {
 		WString pathname = new WString(longPathName);
-		NativeLong bufferSize = new NativeLong((pathname.length()*2)+2);
+		
+		// ISSUE 90: crash when used too many times
+		/*NativeLong bufferSize = new NativeLong((pathname.length()*2)+2);
 		Memory buffer = new Memory(bufferSize.longValue());
 
 		if (Kernel32.INSTANCE.GetShortPathNameW(pathname, buffer, bufferSize).longValue() == 0) {
@@ -101,7 +106,19 @@ public class WinUtils {
 		return null;
 		}
 		PMS.info("Forcing short path name on " + pathname);
-		return buffer.getString(0, true);
+		String str= buffer.getString(0, true);
+		return str;*/
+		
+		char test [] = new char [2+pathname.length()*2];
+		int r = Kernel32.INSTANCE.GetShortPathNameW(pathname, test, test.length);
+		if (r > 0) {
+			PMS.info("Forcing short path name on " + pathname);
+			return Native.toString(test);
+		} else {
+			PMS.minimal("File does not exists ? " + pathname);
+			return null;
+		}
+		
 		} catch (Exception e) {
 		return longPathName;
 		}
