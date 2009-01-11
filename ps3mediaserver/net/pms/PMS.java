@@ -23,7 +23,6 @@ import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -254,18 +253,7 @@ public class PMS {
 	
 	private boolean init () throws Exception {
 		
-		registry = new WinUtils();
-					
-		try {
-			pw = new PrintWriter(new FileWriter(new File("debug.log"))); //$NON-NLS-1$
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		proxy = -1;
-		
 		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, PMS.VERSION);
-		
 		if (System.getProperty("console") == null) {//$NON-NLS-1$
 			frame = new LooksFrame(autoUpdater, configuration);
 			autoUpdater.pollServer();
@@ -273,6 +261,31 @@ public class PMS {
 			frame = new DummyFrame();
 		
 		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		registry = new WinUtils();
+					
+		File debug = null;
+		try {
+			debug = new File("debug.log"); //$NON-NLS-1$
+			pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
+		} catch (Throwable e) {
+			if (debug.exists()) {
+				PMS.minimal("Error while accessing the debug.log file... forcing deletion..."); //$NON-NLS-1$
+				if (debug.delete()) {
+					PMS.minimal("Delete successful..."); //$NON-NLS-1$
+					pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
+				} else {
+					PMS.minimal("Still no access to debug.log... using another name; Check your user rights !!"); //$NON-NLS-1$
+					debug = new File("debug-" + System.currentTimeMillis() + ".log"); //$NON-NLS-1$ //$NON-NLS-2$
+					pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
+				}
+			}
+			return false;
+		}
+		
+		proxy = -1;
+		
+		
 		
 		minimal("Starting Java PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$
 		minimal("by shagrath / 2008"); //$NON-NLS-1$
@@ -302,9 +315,10 @@ public class PMS {
 		
 		// check the existence of Vsfilter.dll
 		if (registry.isAvis() && registry.getAvsPluginsDir() != null) {
-			File vsFilterdll = new File(registry.getAvsPluginsDir(), "VSFilter.dll");
+			PMS.minimal("AviSynth plugins dir: " + registry.getAvsPluginsDir().getAbsolutePath()); //$NON-NLS-1$
+			File vsFilterdll = new File(registry.getAvsPluginsDir(), "VSFilter.dll"); //$NON-NLS-1$
 			if (!vsFilterdll.exists()) {
-				PMS.minimal("It seems VSFilter.dll is not installed into the AviSynth plugins dir ! It could be troublesome for playing subtitled video with AviSynth !");
+				PMS.minimal("!!! It seems VSFilter.dll is not installed into the AviSynth plugins dir ! It could be troublesome for playing subtitled videos with AviSynth !!!"); //$NON-NLS-1$
 			}
 		}
 		
@@ -799,10 +813,10 @@ public class PMS {
 						uuid = UUID.nameUUIDFromBytes(addr).toString();
 						uuidBasedOnMAC = true;
 					} else
-						PMS.minimal("Unable to retrieve MAC address for UUID creation: using a random one...");
+						PMS.minimal("Unable to retrieve MAC address for UUID creation: using a random one..."); //$NON-NLS-1$
 				}
 			} catch (Throwable e) {
-				PMS.minimal("Switching to random UUID cause there's an error in getting UUID from MAC address: " + e.getMessage());
+				PMS.minimal("Switching to random UUID cause there's an error in getting UUID from MAC address: " + e.getMessage()); //$NON-NLS-1$
 			}
 			
 			if (!uuidBasedOnMAC) {
@@ -883,8 +897,8 @@ public class PMS {
 		try {
 			Toolkit.getDefaultToolkit();
 		} catch (Throwable t) {
-			System.out.println("Error while loading GUI environment: " + t.getMessage());
-			System.out.println("Switching to console mode");
+			System.out.println("Error while loading GUI environment: " + t.getMessage()); //$NON-NLS-1$
+			System.out.println("Switching to console mode"); //$NON-NLS-1$
 			System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		configuration = new PmsConfiguration();
