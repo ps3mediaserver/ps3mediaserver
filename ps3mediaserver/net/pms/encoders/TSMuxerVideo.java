@@ -55,8 +55,8 @@ public class TSMuxerVideo extends Player {
 	
 	public boolean excludeFormat(Format extension) {
 		String m = extension.getMatchedId();
-		return m != null && !m.equals("mkv") && !m.equals("ts") && !m.equals("m2ts") && !m.equals("mpg") && !m.equals("evo") && !m.equals("mpeg")
-			&& !m.equals("vob") && !m.equals("m2v") && !m.equals("mts");
+		return m != null && !m.equals("mkv") && !m.equals("ts") && !m.equals("m2ts") && !m.equals("mpg") && !m.equals("evo") && !m.equals("mpeg") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+			&& !m.equals("vob") && !m.equals("m2v") && !m.equals("mts"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 	
 	@Override

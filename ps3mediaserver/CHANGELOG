@@ -2,16 +2,26 @@
 Changelog:
 ==========
 
-- New features
+- Changes / Features
 
-Customizable transcode parameters for any given codecs/video (future goal: solve A/V sync issues)
+Customize encoding parameters (along with default ones) for any given container/codec/whatever combination (long term goal: solve any A/V sync / playback issues)
+WINDOWS ONLY: Use an experimental build of mencoder with 720p/1080p H264 content: http://code.google.com/soc/2008/ffmpeg/appinfo.html?csaid=9FD2BF705A5D5DBB
+AC3 audio tracks are now remuxed and not reencoded 
 
 - Fixes
 
-Default character encoding issue
-Audio tracks now sorted by track number (if present) in media library
-Widechars filename errors with subtitles / AviSynth
-Incorrect detection of external subtitles / subtitles not always loaded, again
+Default platform charset issue
+Transcode buffer optimization on Windows
+A/V sync automatic managment for ISO and MKV+XVID
+M4V now streamed by default, you have to enter the #Transcoded# folder to force the transcode (like AVI files)
+WMA now transcoded by default
+Audio tracks sorted by track number (if present) in media library
+Better filenames/subtitles management (m2ts/ts issues, comas, widechars, etc.)
+External subtitles not always loaded, again
+DVD images are listed in the media library
+AviSynth / VideoLAN not always detected on Vista 64bits
+Engines exclusion on OSX/Linux
+Fixed console mode on Linux
 
 v1.02.1
 
