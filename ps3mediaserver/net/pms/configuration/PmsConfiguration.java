@@ -531,7 +531,10 @@ public class PmsConfiguration {
 	}
 
 	public int getNumberOfCpuCores() {
-		return getInt(KEY_NUMBER_OF_CPU_CORES, 1);
+		int nbcores = Runtime.getRuntime().availableProcessors();
+		if (nbcores < 1)
+			nbcores = 1;
+		return getInt(KEY_NUMBER_OF_CPU_CORES, nbcores);
 	}
 	
 	public void setNumberOfCpuCores(int value) {
@@ -595,7 +598,7 @@ public class PmsConfiguration {
 	}
 	
 	public String getCodecSpecificConfig() {
-		return getString(KEY_CODEC_SPEC_SCRIPT, "");
+		return getString(KEY_CODEC_SPEC_SCRIPT, "vcodec == h264 && width >= 1280 :: -mt -lavdopts fast");
 	}
 
 	public void setCodecSpecificConfig(String value) {
