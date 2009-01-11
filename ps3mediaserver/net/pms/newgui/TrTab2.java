@@ -399,7 +399,10 @@ public class TrTab2 {
     		   "keyint=1:vqscale=1:vqmin=2  /* Best Quality */", //$NON-NLS-1$
     		   "keyint=1:vqscale=1:vqmin=1  /* Lossless Quality, Crazy Bitrate */", //$NON-NLS-1$
     		   "keyint=3:vqscale=2:vqmin=3  /* Good quality */", //$NON-NLS-1$
-    		   "keyint=5:vqscale=3:vqmin=5  /* Medium quality, Low-end CPU or HD Wifi Transcoding */"}; //$NON-NLS-1$
+        	   "keyint=25:vqmax=5:vqmin=2  /* Good quality for HD Wifi Transcoding */", //$NON-NLS-1$
+    		   "keyint=25:vqmax=7:vqmin=2  /* Medium quality for HD Wifi Transcoding */", //$NON-NLS-1$
+        	   "keyint=25:vqmax=8:vqmin=3  /* Low quality, Low-end CPU or HD Wifi Transcoding */", //$NON-NLS-1$
+        	   "keyint=50:vrc_maxrate=40000:vbitrate=24000000:vrc_buf_size=1835  /* TEST */"}; //$NON-NLS-1$
        MyComboBoxModel cbm = new MyComboBoxModel(data);
        
        vq = new JComboBox(cbm);
