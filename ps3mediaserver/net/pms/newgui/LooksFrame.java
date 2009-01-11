@@ -128,14 +128,32 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 				selectedLaf = new PlasticLookAndFeel();
 			}
         }
-        else
+        else if (System.getProperty("nativelook") == null) //$NON-NLS-1$
         	selectedLaf = new PlasticLookAndFeel();
+		else {
+			try {
+				String systemClassName = UIManager.getSystemLookAndFeelClassName();
+				// workaround for gnome
+				try {
+					String gtkLAF = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel"; //$NON-NLS-1$
+					Class.forName(gtkLAF);
+					if (systemClassName.equals("javax.swing.plaf.metal.MetalLookAndFeel")) //$NON-NLS-1$
+						systemClassName = gtkLAF;
+				} catch (ClassNotFoundException ce) {}
+				
+				PMS.info("Choosing java look and feel: " + systemClassName); //$NON-NLS-1$
+				UIManager.setLookAndFeel(systemClassName);
+			} catch (Exception e1) {
+				selectedLaf = new PlasticLookAndFeel();
+				PMS.error("Error while setting native look and feel: ", e1); //$NON-NLS-1$
+			}
+		}
         
         if (selectedLaf instanceof PlasticLookAndFeel) {
             PlasticLookAndFeel.setPlasticTheme(PlasticLookAndFeel.createMyDefaultTheme());
             PlasticLookAndFeel.setTabStyle(PlasticLookAndFeel.TAB_STYLE_DEFAULT_VALUE);
             PlasticLookAndFeel.setHighContrastFocusColorsEnabled(false);
-        } else if (selectedLaf.getClass() == MetalLookAndFeel.class) {
+        } else if (selectedLaf != null && selectedLaf.getClass() == MetalLookAndFeel.class) {
             MetalLookAndFeel.setCurrentTheme(new DefaultMetalTheme());
         }
 
@@ -145,10 +163,12 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
         JCheckBox checkBox = new JCheckBox();
         checkBox.getUI().uninstallUI(checkBox);
 
-        try {
-            UIManager.setLookAndFeel(selectedLaf);
-        } catch (Exception e) {
-            System.out.println("Can't change L&F: " + e); //$NON-NLS-1$
+        if (selectedLaf != null) {
+	        try {
+	            UIManager.setLookAndFeel(selectedLaf);
+	        } catch (Exception e) {
+	            System.out.println("Can't change L&F: " + e); //$NON-NLS-1$
+	        }
         }
         
         setTitle("Test"); //$NON-NLS-1$

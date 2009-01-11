@@ -253,14 +253,6 @@ public class PMS {
 	
 	private boolean init () throws Exception {
 		
-		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, PMS.VERSION);
-		if (System.getProperty("console") == null) {//$NON-NLS-1$
-			frame = new LooksFrame(autoUpdater, configuration);
-			autoUpdater.pollServer();
-		} else
-			frame = new DummyFrame();
-		
-		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		registry = new WinUtils();
 					
@@ -279,9 +271,20 @@ public class PMS {
 					debug = new File("debug-" + System.currentTimeMillis() + ".log"); //$NON-NLS-1$ //$NON-NLS-2$
 					pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
 				}
+			} else {
+				PMS.minimal("Troubles to access the application folder...  Check your user rights !!"); //$NON-NLS-1$
+				
 			}
-			return false;
 		}
+		
+		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, PMS.VERSION);
+		if (System.getProperty("console") == null) {//$NON-NLS-1$
+			frame = new LooksFrame(autoUpdater, configuration);
+			autoUpdater.pollServer();
+		} else
+			frame = new DummyFrame();
+		
+		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		proxy = -1;
 		
@@ -388,7 +391,8 @@ public class PMS {
 					}
 					PMS.get().getServer().stop();
 					UPNPHelper.shutDownListener();
-					pw.close();
+					if (pw != null)
+						pw.close();
 					Thread.sleep(500);
 				} catch (Exception e) { }
 			}
@@ -760,8 +764,10 @@ public class PMS {
 						frame.append(message.trim() + "\n"); //$NON-NLS-1$
 					}
 				}
-				pw.println(message);
-				pw.flush();
+				if (pw != null) {
+					pw.println(message);
+					pw.flush();
+				}
 			}
 		
 	}
@@ -776,16 +782,18 @@ public class PMS {
 				error = "[" + name + "] " + sdfHour.format(new Date(System.currentTimeMillis())) + " " + error + throwableMsg; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 			if (error != null) {
-				pw.println(error);
+				if (pw != null)
+					pw.println(error);
 				if (frame != null) {
 					frame.append(error.trim() + "\n"); //$NON-NLS-1$
 				}
 			}
-			if (t != null) {
+			if (t != null && pw != null) {
 				t.printStackTrace(pw);
 				t.printStackTrace();
 			}
-			pw.flush();
+			if (pw != null)
+				pw.flush();
 			
 			if (error != null)
 				System.err.println(error);
@@ -892,8 +900,14 @@ public class PMS {
 	}
 	
 	public static void main(String args[]) throws IOException, ConfigurationException {
-		if (args.length > 0 && args[0].equals("console")) //$NON-NLS-1$
-			System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (args.length > 0) {
+			for(int a=0;a<args.length;a++) {
+				if (args[a].equals("console")) //$NON-NLS-1$
+					System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+				else if (args[a].equals("nativelook")) //$NON-NLS-1$
+					System.setProperty("nativelook", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		}
 		try {
 			Toolkit.getDefaultToolkit();
 		} catch (Throwable t) {
