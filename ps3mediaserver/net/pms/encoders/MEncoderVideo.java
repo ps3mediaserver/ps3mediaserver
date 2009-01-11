@@ -789,7 +789,7 @@ private JTextField mencoder_ass_scale;
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params)
 			throws IOException {
 		
-		if (media != null && media.codecA.equals("ac3")) //$NON-NLS-1$
+		if (media != null && media.codecA != null && media.codecA.equals("ac3")) //$NON-NLS-1$
 			oaccopy = true;
 		
 		dvd = false;
@@ -1286,13 +1286,13 @@ private JTextField mencoder_ass_scale;
 				for(String type:types) {
 					int r = rank++;
 					interpreter.set("" + type, r); //$NON-NLS-1$
-					if (media.container.equals(type)) {
+					if (media.container != null && media.container.equals(type)) {
 						interpreter.set("container", r); //$NON-NLS-1$
 						if (type.equals("matroska")) //$NON-NLS-1$
 							interpreter.set("mkv", r); //$NON-NLS-1$
-					} else if (media.codecV.equals(type)) {
+					} else if (media.codecV != null && media.codecV.equals(type)) {
 						interpreter.set("vcodec", r); //$NON-NLS-1$
-					} else if (media.codecA.equals(type)) {
+					} else if (media.codecA != null && media.codecA.equals(type)) {
 						interpreter.set("acodec", r); //$NON-NLS-1$
 					}
 				}
