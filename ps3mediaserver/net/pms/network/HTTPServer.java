@@ -64,10 +64,15 @@ public class HTTPServer implements Runnable {
 		Enumeration<NetworkInterface> enm = NetworkInterface.getNetworkInterfaces();
 		InetAddress ia = null;
 		boolean found = false;
+		String fixedNetworkInterfaceName = PMS.getConfiguration().getNetworkInterface();
+		NetworkInterface fixedNI = NetworkInterface.getByName(fixedNetworkInterfaceName);
 		while (enm.hasMoreElements()) {
 			ni = enm.nextElement();
+			if (fixedNI != null)
+				ni = fixedNI;
 			PMS.info("Scanning network interface " + ni.getDisplayName());
-			if (!PMSUtil.isNetworkInterfaceLoopback(ni) && ni.getDisplayName() != null && !ni.getDisplayName().toLowerCase().contains("vmware")) {
+			if (!PMSUtil.isNetworkInterfaceLoopback(ni) && ni.getDisplayName() != null) {
+				
 				Enumeration<InetAddress> addrs = ni.getInetAddresses();
 				while (addrs.hasMoreElements()) {
 					ia = addrs.nextElement();
@@ -77,8 +82,9 @@ public class HTTPServer implements Runnable {
 						break;
 					}
 				}
+				
 			}
-			if (found)
+			if (found || fixedNI != null)
 				break;
 		}
 		hostName = PMS.getConfiguration().getServerHostname();

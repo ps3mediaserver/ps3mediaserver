@@ -80,6 +80,9 @@ public class PmsConfiguration {
 	private static final String KEY_LOGGING_LEVEL = "level";
 	private static final String KEY_ENGINES = "engines";
 	private static final String KEY_CODEC_SPEC_SCRIPT = "codec_spec_script";
+	private static final String KEY_NETWORK_INTERFACE = "network_interface";
+	private static final String KEY_HIDE_EXTENSIONS = "hide_extensions";
+	private static final String KEY_HIDE_ENGINENAMES = "hide_enginenames";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -739,5 +742,29 @@ public class PmsConfiguration {
 	
 	public void setFolders(String value) {
 		configuration.setProperty(KEY_FOLDERS, value);
-	}		
+	}	
+	
+	public String getNetworkInterface() {
+		return getString(KEY_NETWORK_INTERFACE, "");
+	}
+	
+	public void setNetworkInterface(String value) {
+		configuration.setProperty(KEY_NETWORK_INTERFACE, value);
+	}	
+	
+	public boolean isHideEngineNames() {
+		return getBoolean(KEY_HIDE_ENGINENAMES, false );
+	}
+
+	public void setHideEngineNames(boolean value) {
+		configuration.setProperty(KEY_HIDE_ENGINENAMES, value);
+	}
+	
+	public boolean isHideExtensions() {
+		return getBoolean(KEY_HIDE_EXTENSIONS, false );
+	}
+
+	public void setHideExtensions(boolean value) {
+		configuration.setProperty(KEY_HIDE_EXTENSIONS, value);
+	}
 }
