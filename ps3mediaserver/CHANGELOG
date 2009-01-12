@@ -5,16 +5,19 @@ Changelog:
 - Changes / Features
 
 Customize encoding parameters (along with default ones) for any given container/codec/whatever combination (long term goal: solve any A/V sync / playback issues)
-WINDOWS ONLY: Use an experimental build of mencoder with 720p/1080p H264 content: http://code.google.com/soc/2008/ffmpeg/appinfo.html?csaid=9FD2BF705A5D5DBB
+Ability to choose a default networking interface
+Settings reorganization
 AC3 audio tracks are now remuxed and not reencoded 
+M4V now streamed by default, you have to enter the #Transcoded# folder to force the transcode (like AVI files)
+WMA now transcoded by default
+Italian localization
+WINDOWS ONLY: Use (only with 720p/1080p H264 content) an experimental mencoder build for multicores : http://code.google.com/soc/2008/ffmpeg/appinfo.html?csaid=9FD2BF705A5D5DBB
 
 - Fixes
 
 Default platform charset issue
 Transcode buffer optimization on Windows
-Program crash when too many widechars filenames were used
-M4V now streamed by default, you have to enter the #Transcoded# folder to force the transcode (like AVI files)
-WMA now transcoded by default
+Application crash when too many widechars filenames were used
 Audio tracks sorted by track number (if present) in media library
 Better filenames/subtitles management (m2ts/ts/dvr-ms issues, comas, widechars, etc.)
 External subtitles not always loaded, again

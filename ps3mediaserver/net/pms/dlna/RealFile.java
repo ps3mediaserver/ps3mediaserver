@@ -76,6 +76,8 @@ public class RealFile extends DLNAResource {
 		}
 	}
 	
+	private File potentialCover;
+	
 	private void manageFile(File f) {
 		if ((f.isFile() || f.isDirectory()) && !f.isHidden()) {
 			if (PMS.getConfiguration().isArchiveBrowsing() && (f.getName().toLowerCase().endsWith(".zip") || f.getName().toLowerCase().endsWith(".cbz") || f.getName().toLowerCase().endsWith(".jar"))) {
@@ -86,8 +88,20 @@ public class RealFile extends DLNAResource {
 				addChild(new DVDISOFile(f));
 			} else if (f.getName().toLowerCase().endsWith(".m3u") || f.getName().toLowerCase().endsWith(".m3u8") || f.getName().toLowerCase().endsWith(".pls")) {
 				addChild(new PlaylistFolder(f));
-			} else
-				addChild(new RealFile(f));
+			} else {
+				RealFile file = new RealFile(f);
+				addChild(file);
+				if (file.getType() == Format.IMAGE) {
+					String fileName = f.getName().toLowerCase();
+					if (potentialCover == null)
+						potentialCover = f;
+					else {
+						if (fileName.equals("folder.jpg") || fileName.contains("AlbumArt"))
+							potentialCover = f;
+					}
+					
+				}
+			}
 		}
 	}
 	
@@ -191,8 +205,9 @@ public class RealFile extends DLNAResource {
 			else
 				name = file.getAbsolutePath().substring(0, 1);
 		}
-		else
+		else {
 			name = file.getName();
+		}
 
 		return name;
 	}
@@ -251,12 +266,20 @@ public class RealFile extends DLNAResource {
 
 	@Override
 	public InputStream getThumbnailInputStream() throws IOException {
-		File folderThumb = new File(file.getParentFile(), file.getName() + ".cover.jpg");
-		if (folderThumb.exists())
-			return new FileInputStream(folderThumb);
-		folderThumb = new File(file.getParentFile(), file.getName() + ".cover.png");
-		if (folderThumb.exists())
-			return new FileInputStream(folderThumb);
+		File cachedThumbnail = null;
+		if (getParent() != null && getParent() instanceof RealFile) {
+			cachedThumbnail = ((RealFile) getParent()).potentialCover;
+			if (cachedThumbnail == null) {
+				cachedThumbnail = new File(file.getParentFile(), file.getName() + ".cover.jpg");
+				if (!cachedThumbnail.exists())
+					cachedThumbnail = new File(file.getParentFile(), file.getName() + ".cover.png");
+				if (!cachedThumbnail.exists())
+					cachedThumbnail = null;
+			}
+		}
+		boolean hasAlreadyEmbeddedCoverArt = getType() == Format.AUDIO && media != null && media.thumb != null;
+		if (cachedThumbnail != null && !hasAlreadyEmbeddedCoverArt)
+			return new FileInputStream(cachedThumbnail);
 		else if (media != null && media.thumb != null)
 			return media.getThumbnailInputStream();
 		else return super.getThumbnailInputStream();
@@ -272,6 +295,8 @@ public class RealFile extends DLNAResource {
 		if (media != null && media.thumb != null)
 			return super.getThumbnailURL();
 		else if (getType() == Format.AUDIO) {
+			if (getParent() != null && getParent() instanceof RealFile && ((RealFile) getParent()).potentialCover != null)
+				return super.getThumbnailURL();
 			return null;
 		}
 		return super.getThumbnailURL();
