@@ -485,7 +485,7 @@ public class DLNAMediaInfo {
 			mimeType = new HTTPResource().getDefaultMimeType(type);
 		}
 		
-		if (codecA != null && (codecA.contains("pcm") || codecA.equals("dts") || codecA.equals("dca") || codecA.contains("flac")))
+		if (codecA != null && getSampleRate() > 44000 && (codecA.contains("pcm") || codecA.equals("dts") || codecA.equals("dca") || codecA.contains("flac")))
 				losslessaudio = true;
 		
 		if (bitsperSample == 24)
