@@ -39,6 +39,7 @@ import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.network.HTTPResource;
+import net.pms.util.FileUtil;
 
 public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	
@@ -370,14 +371,20 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	}
 	
 	public String getDisplayName() {
-		String name = null;
+		String name = getName();
+		if (this instanceof RealFile) {
+			if (PMS.getConfiguration().isHideExtensions())
+				name = FileUtil.getFileNameWithoutExtension(name);
+		}
 		if (player != null) {
 			if (noName)
 				name = " [" + player.name() + "]";
-			else
-				name = getName() + " [" + player.name() + "]";
+			else {
+				if (!PMS.getConfiguration().isHideEngineNames()) {
+					name += " [" + player.name() + "]";
+				}
+			}
 		} else {
-			name = getName();
 			if (nametruncate > 0)
 				name = name.substring(0, nametruncate).trim();
 		}

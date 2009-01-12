@@ -8,6 +8,13 @@ public class FileUtil {
 		return isFileExists(new File(f), ext);
 	}
 
+	public static String getFileNameWithoutExtension(String f) {
+		int point = f.lastIndexOf(".");
+		if (point == -1) {
+			point = f.length();
+		}
+		return f.substring(0, point);
+	}
 	
 	public static File isFileExists(File f, String ext) {
 		int point = f.getName().lastIndexOf(".");
