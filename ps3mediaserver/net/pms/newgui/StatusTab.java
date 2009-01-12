@@ -18,6 +18,7 @@
  */
 package net.pms.newgui;
 
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -63,8 +64,11 @@ public class StatusTab {
 	        builder.setOpaque(true);
 	        CellConstraints cc = new CellConstraints();
 
-	        builder.addSeparator(Messages.getString("StatusTab.2"),  cc.xy(2, 1)); //$NON-NLS-1$
-		         jl = new JLabel(Messages.getString("StatusTab.3")); //$NON-NLS-1$
+	        JComponent cmp =  builder.addSeparator(Messages.getString("StatusTab.2"),  cc.xy(2, 1)); //$NON-NLS-1$
+	        cmp = (JComponent) cmp.getComponent(0);
+	        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+	        
+	        jl = new JLabel(Messages.getString("StatusTab.3")); //$NON-NLS-1$
 		        
 	        builder.add(jl, cc.xy(2, 3));
 	         imagePanel = buildImagePanel();

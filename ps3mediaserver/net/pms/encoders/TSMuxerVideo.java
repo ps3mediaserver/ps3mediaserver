@@ -18,6 +18,7 @@
  */
 package net.pms.encoders;
 
+import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -372,7 +373,9 @@ public class TSMuxerVideo extends Player {
         CellConstraints cc = new CellConstraints();
         
         
-        builder.addSeparator(Messages.getString("TSMuxerVideo.3"),  cc.xyw(2, 1, 1)); //$NON-NLS-1$
+        JComponent cmp = builder.addSeparator(Messages.getString("TSMuxerVideo.3"),  cc.xyw(2, 1, 1)); //$NON-NLS-1$
+        cmp = (JComponent) cmp.getComponent(0);
+        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
         tsmuxerforcefps = new JCheckBox(Messages.getString("TSMuxerVideo.2")); //$NON-NLS-1$
         tsmuxerforcefps.setContentAreaFilled(false);

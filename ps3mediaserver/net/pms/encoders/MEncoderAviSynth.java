@@ -19,6 +19,7 @@
 package net.pms.encoders;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -60,7 +61,9 @@ public class MEncoderAviSynth extends MEncoderVideo {
         CellConstraints cc = new CellConstraints();
         
         
-        builder.addSeparator(Messages.getString("MEncoderAviSynth.2"),  cc.xyw(2, 1, 1)); //$NON-NLS-1$
+        JComponent cmp = builder.addSeparator(Messages.getString("MEncoderAviSynth.2"),  cc.xyw(2, 1, 1)); //$NON-NLS-1$
+        cmp = (JComponent) cmp.getComponent(0);
+        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
         convertfps = new JCheckBox(Messages.getString("MEncoderAviSynth.3")); //$NON-NLS-1$
         convertfps.setContentAreaFilled(false);

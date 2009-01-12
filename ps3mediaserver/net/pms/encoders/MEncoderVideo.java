@@ -142,7 +142,9 @@ private JTextField mencoder_ass_scale;
         	
         });
         
-        builder.addSeparator(Messages.getString("MEncoderVideo.1"),  cc.xyw(1, 1, 15)); //$NON-NLS-1$
+        JComponent cmp = builder.addSeparator(Messages.getString("MEncoderVideo.1"),  cc.xyw(1, 1, 15)); //$NON-NLS-1$
+        cmp = (JComponent) cmp.getComponent(0);
+        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
        builder.add(checkBox,          cc.xyw(1,  3, 15));
        
        noskip = new JCheckBox(Messages.getString("MEncoderVideo.2")); //$NON-NLS-1$
@@ -303,7 +305,10 @@ private JTextField mencoder_ass_scale;
     	   scaleY.setEnabled(false);
        }
   
-       builder.addSeparator(Messages.getString("MEncoderVideo.5"), cc.xyw(1, 19, 15)); //$NON-NLS-1$
+       cmp = builder.addSeparator(Messages.getString("MEncoderVideo.5"), cc.xyw(1, 19, 15)); //$NON-NLS-1$
+       cmp = (JComponent) cmp.getComponent(0);
+       cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+       
        builder.addLabel(Messages.getString("MEncoderVideo.6"), cc.xy(1, 21)); //$NON-NLS-1$
        decode = new JTextField(configuration.getMencoderDecode());
        decode.addKeyListener(new KeyListener() {
@@ -338,8 +343,9 @@ private JTextField mencoder_ass_scale;
           });
        builder.add(langs, cc.xyw(3, 23, 8));
        
-       builder.addSeparator(Messages.getString("MEncoderVideo.8"),  cc.xyw(1, 25, 15)); //$NON-NLS-1$
-       
+       cmp = builder.addSeparator(Messages.getString("MEncoderVideo.8"),  cc.xyw(1, 25, 15)); //$NON-NLS-1$
+       cmp = (JComponent) cmp.getComponent(0);
+       cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
      
        
@@ -954,7 +960,7 @@ private JTextField mencoder_ass_scale;
 		
 		boolean avisynth = avisynth()/* || params.avisynth*/;
 		
-		PipeProcess pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), params); //$NON-NLS-1$
+		PipeProcess pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || ac3)?null:params); //$NON-NLS-1$
 		params.input_pipes [0] = pipe;
 		
 		boolean vobsub = false;
