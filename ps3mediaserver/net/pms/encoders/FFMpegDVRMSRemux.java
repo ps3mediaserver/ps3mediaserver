@@ -18,6 +18,7 @@
  */
 package net.pms.encoders;
 
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
@@ -163,7 +164,9 @@ public class FFMpegDVRMSRemux extends Player {
         CellConstraints cc = new CellConstraints();
         
         
-        builder.addSeparator(Messages.getString("FFMpegDVRMSRemux.1"),  cc.xyw(1, 1, 5)); //$NON-NLS-1$
+        JComponent cmp = builder.addSeparator(Messages.getString("FFMpegDVRMSRemux.1"),  cc.xyw(1, 1, 5)); //$NON-NLS-1$
+        cmp = (JComponent) cmp.getComponent(0);
+        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
         builder.addLabel(Messages.getString("FFMpegDVRMSRemux.0"), cc.xy(1, 3)); //$NON-NLS-1$
         altffpath = new JTextField(PMS.getConfiguration().getFfmpegAlternativePath());

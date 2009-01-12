@@ -18,6 +18,7 @@
  */
 package net.pms.encoders;
 
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -451,7 +452,10 @@ public class FFMpegVideo extends Player {
         
         
        
-       builder.addSeparator(Messages.getString("FFMpegVideo.0"),  cc.xyw(2, 1, 1)); //$NON-NLS-1$
+        JComponent cmp = builder.addSeparator(Messages.getString("FFMpegVideo.0"),  cc.xyw(2, 1, 1)); //$NON-NLS-1$
+       cmp = (JComponent) cmp.getComponent(0);
+       cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+       
        ffmpeg = new JTextField(PMS.getConfiguration().getFfmpegSettings());
        ffmpeg.addKeyListener(new KeyListener() {
 

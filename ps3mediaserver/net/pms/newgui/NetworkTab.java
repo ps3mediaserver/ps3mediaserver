@@ -19,12 +19,17 @@
 package net.pms.newgui;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Locale;
 
 import javax.swing.JButton;
@@ -49,19 +54,14 @@ import com.sun.jna.Platform;
 
 public class NetworkTab {
 	
-	private JTextField maxbuffer;
-	private JTextField seekpos;
-	private JCheckBox  tncheckBox;
-	private JCheckBox  cacheenable;
 	private JCheckBox  smcheckBox;
 	private JCheckBox  tmcheckBox;
 	private JCheckBox  blockBox;
-	private JCheckBox  archive;
 	private JTextField host;
 	private JTextField port; 
 	private JTextField encoding ;
-	private JComboBox nbcores ;
 	private JComboBox langs ;
+	private JComboBox networkinterfacesCBX;
 	
 	private final PmsConfiguration configuration;
 	
@@ -72,25 +72,13 @@ public class NetworkTab {
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
                 "left:pref, 2dlu, p, 2dlu , p, 2dlu, p, 2dlu, pref:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p,  15dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 15dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu "); //$NON-NLS-1$
+                "p, 0dlu, p, 0dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 15dlu, p, 3dlu,p, 3dlu, p,  3dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu "); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.DLU4_BORDER);
         builder.setOpaque(true);
 
         CellConstraints cc = new CellConstraints();
-        
-         tncheckBox = new JCheckBox(Messages.getString("NetworkTab.2")); //$NON-NLS-1$
-        tncheckBox.setContentAreaFilled(false);
-        tncheckBox.addItemListener(new ItemListener() {
-
-			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
-			}
-        	
-        });
-        if (PMS.getConfiguration().getThumbnailsEnabled())
-        	tncheckBox.setSelected(true);
-        
+       
          smcheckBox = new JCheckBox(Messages.getString("NetworkTab.3")); //$NON-NLS-1$
         smcheckBox.setContentAreaFilled(false);
         smcheckBox.addItemListener(new ItemListener() {
@@ -103,70 +91,14 @@ public class NetworkTab {
         if (PMS.getConfiguration().isMinimized())
         	smcheckBox.setSelected(true);
         
-        maxbuffer = new JTextField("" + configuration.getMaxMemoryBufferSize()); //$NON-NLS-1$
-        maxbuffer.addKeyListener(new KeyListener() {
-
-    		@Override
-    		public void keyPressed(KeyEvent e) {}
-    		@Override
-    		public void keyTyped(KeyEvent e) {}
-    		@Override
-    		public void keyReleased(KeyEvent e) {
-    			try {
-    				int ab = Integer.parseInt(maxbuffer.getText());
-    				configuration.setMaxMemoryBufferSize(ab);
-    			} catch (NumberFormatException nfe) {
-    			}
-    			
-    		}
-        	   
-           });
-        
-        builder.addSeparator(Messages.getString("NetworkTab.5"),  cc.xyw(1, 1, 9)); //$NON-NLS-1$
-        
-        builder.addLabel(Messages.getString("NetworkTab.6"),  cc.xy(1,  3)); //$NON-NLS-1$
-        builder.add(maxbuffer,          cc.xyw(3,  3, 7)); 
-        
-        builder.addLabel(Messages.getString("NetworkTab.7") + Runtime.getRuntime().availableProcessors() + Messages.getString("NetworkTab.8"),  cc.xy(1,  5)); //$NON-NLS-1$ //$NON-NLS-2$
-        
-        nbcores = new JComboBox(new Object [] {"1", "2", "4", "8"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-        nbcores.setEditable(false);
-        if (PMS.getConfiguration().getNumberOfCpuCores() >0 && PMS.getConfiguration().getNumberOfCpuCores() < 32) {
-        	nbcores.setSelectedItem("" + PMS.getConfiguration().getNumberOfCpuCores()); //$NON-NLS-1$
-        } else
-        	nbcores.setSelectedIndex(0);
-  
-        nbcores.addItemListener(new ItemListener() {
-
- 			public void itemStateChanged(ItemEvent e) {
- 				PMS.getConfiguration().setNumberOfCpuCores(Integer.parseInt(e.getItem().toString().substring(0, 1)));
- 			}
-        	
-        });
-        builder.add(nbcores,          cc.xyw(3,  5, 7)); 
-        
+        JComponent cmp = builder.addSeparator("General",  cc.xyw(1, 1, 9)); //$NON-NLS-1$
+        cmp = (JComponent) cmp.getComponent(0);
+        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
        
-       seekpos = new JTextField("" + configuration.getThumbnailSeekPos()); //$NON-NLS-1$
-       seekpos.addKeyListener(new KeyListener() {
-
-   		@Override
-   		public void keyPressed(KeyEvent e) {}
-   		@Override
-   		public void keyTyped(KeyEvent e) {}
-   		@Override
-   		public void keyReleased(KeyEvent e) {
-   			try {
-   				int ab = Integer.parseInt(seekpos.getText());
-   				configuration.setThumbnailSeekPos(ab);
-   			} catch (NumberFormatException nfe) {
-   			}
-   			
-   		}
-       	   
-          });
+     
        
        builder.addLabel(Messages.getString("NetworkTab.0"),  cc.xy(1,  7)); //$NON-NLS-1$
-       final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "en", "fr" }, new Object[] { Messages.getString("NetworkTab.9"), Messages.getString("NetworkTab.10") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+       final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "en", "fr", "it" }, new Object[] { Messages.getString("NetworkTab.9"), Messages.getString("NetworkTab.10"), "Italian" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
        langs = new JComboBox(kcbm);
       langs.setEditable(false);
       //langs.setSelectedIndex(0);
@@ -192,7 +124,7 @@ public class NetworkTab {
      });
        builder.add(langs, cc.xyw(3, 7,7));
        
-       builder.add(smcheckBox,          cc.xy(3,  9));
+       builder.add(smcheckBox,          cc.xyw(1,  9, 9));
        
        JButton service = new JButton(Messages.getString("NetworkTab.4")); //$NON-NLS-1$
        service.addActionListener(new ActionListener() {
@@ -217,81 +149,12 @@ public class NetworkTab {
 			}
  		  
  	  });
- 	  builder.add(service,          cc.xy(3,  11));
+ 	  builder.add(service,          cc.xy(1,  11));
       if (System.getProperty(LooksFrame.START_SERVICE) != null || !Platform.isWindows())
     	  service.setEnabled(false);
  	
        
-       builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 13, 9)); //$NON-NLS-1$
-       
-       archive = new JCheckBox(Messages.getString("NetworkTab.1")); //$NON-NLS-1$
-       archive.setContentAreaFilled(false);
-       archive.addItemListener(new ItemListener() {
-
-			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
-				if (PMS.get().getFrame() != null)
-					PMS.get().getFrame().setReloadable(true);
-			}
-       	
-       });
-       if (PMS.getConfiguration().isArchiveBrowsing())
-    	   archive.setSelected(true);
-       
-       
-       
-       builder.add(tncheckBox,          cc.xyw(1,  15, 2));
-       
-       builder.add(archive,          cc.xy(3,  15));
-       
-       builder.addLabel(Messages.getString("NetworkTab.16"),  cc.xy(1,  17)); //$NON-NLS-1$
-       builder.add(seekpos,          cc.xyw(3,  17, 5));
-      
-       final JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
- 	  
-       cacheenable = new JCheckBox(Messages.getString("NetworkTab.17")); //$NON-NLS-1$
-       cacheenable.setContentAreaFilled(false);
-       cacheenable.setSelected(PMS.getConfiguration().getUseCache());
-       cacheenable.addItemListener(new ItemListener() {
-
-			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setUseCache((e.getStateChange() == ItemEvent.SELECTED));
-				cachereset.setEnabled(PMS.getConfiguration().getUseCache());
-				PMS.get().getFrame().setReloadable(true);
-				if ((LooksFrame) PMS.get().getFrame() != null)
-					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(PMS.getConfiguration().getUseCache());
-			}
-      	
-      });
      
-      
-       //cacheenable.setEnabled(false);
-       
-    	  builder.add(cacheenable,          cc.xyw(1,  19, 2));
-    	  
-    	  
-    	  cachereset.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int option = JOptionPane.showConfirmDialog(
-   	                    (Component) PMS.get().getFrame(),
-   	                    Messages.getString("NetworkTab.13") +  //$NON-NLS-1$
-   	                    Messages.getString("NetworkTab.19"), //$NON-NLS-1$
-   	                    "Question", //$NON-NLS-1$
-   	                    JOptionPane.YES_NO_OPTION
-   	                    );
-   				if (option == JOptionPane.YES_OPTION) {
-   					PMS.get().getDatabase().init(true);
-   				}
-				
-			}
-    		  
-    	  });
-    	  builder.add(cachereset,          cc.xyw(3,  19, 5));
-    	  
-    	  
-    	  cachereset.setEnabled(PMS.getConfiguration().getUseCache());
     	  
         host = new JTextField(PMS.getConfiguration().getServerHostname());
         host.addKeyListener(new KeyListener() {
@@ -323,14 +186,53 @@ public class NetworkTab {
        		}
         });
         
-        builder.addSeparator(Messages.getString("NetworkTab.22"),  cc.xyw(1, 21,9)); //$NON-NLS-1$
-        builder.addLabel(Messages.getString("NetworkTab.23"),  cc.xy(1,  23)); //$NON-NLS-1$
-        builder.add(host,          cc.xyw(3,  23, 7)); 
+        cmp = builder.addSeparator(Messages.getString("NetworkTab.22"),  cc.xyw(1, 21,9)); //$NON-NLS-1$
+        cmp = (JComponent) cmp.getComponent(0);
+        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+        
+        ArrayList<String> names = new ArrayList<String>();
+        names.add(""); //$NON-NLS-1$
+        ArrayList<String> interfaces = new ArrayList<String>();
+        interfaces.add(""); //$NON-NLS-1$
+        Enumeration<NetworkInterface> enm;
+		try {
+			enm = NetworkInterface.getNetworkInterfaces();
+			while (enm.hasMoreElements()) {
+				NetworkInterface ni = enm.nextElement();
+				names.add(ni.getName());
+				interfaces.add(ni.getDisplayName().trim());
+			}
+		} catch (SocketException e1) {
+			PMS.error(null, e1);
+		}
+		
+			
+        final KeyedComboBoxModel networkInterfaces = new KeyedComboBoxModel(names.toArray(), interfaces.toArray() );
+        networkinterfacesCBX = new JComboBox(networkInterfaces);
+        networkInterfaces.setSelectedKey(configuration.getNetworkInterface());
+        networkinterfacesCBX.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					configuration.setNetworkInterface((String) networkInterfaces.getSelectedKey());
+					
+				}
+			}
+     	
+     });
+        
+        builder.addLabel(Messages.getString("NetworkTab.20"),  cc.xy(1,  23)); //$NON-NLS-1$
+        builder.add(networkinterfacesCBX,          cc.xyw(3,  23, 7)); 
+        builder.addLabel(Messages.getString("NetworkTab.23"),  cc.xy(1,  25)); //$NON-NLS-1$
+        builder.add(host,          cc.xyw(3,  25, 7)); 
         builder.addLabel(Messages.getString("NetworkTab.24"),  cc.xy(1, 27)); //$NON-NLS-1$
         builder.add(port,          cc.xyw(3,  27, 7)); 
        
        
-       builder.addSeparator(Messages.getString("NetworkTab.25"),  cc.xyw(1, 31, 9)); //$NON-NLS-1$
+       cmp = builder.addSeparator(Messages.getString("NetworkTab.25"),  cc.xyw(1, 31, 9)); //$NON-NLS-1$
+       cmp = (JComponent) cmp.getComponent(0);
+       cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+       
        encoding = new JTextField(PMS.getConfiguration().getCharsetEncoding());
        
        encoding.addKeyListener(new KeyListener() {
@@ -350,9 +252,11 @@ public class NetworkTab {
        	   
           });
        builder.addLabel(Messages.getString("NetworkTab.26"),  cc.xy(1,  33)); //$NON-NLS-1$
-       builder.add(encoding,          cc.xyw(3,  33, 2)); 
+       builder.add(encoding,          cc.xyw(3,  33, 7)); 
        
-       builder.addSeparator(Messages.getString("NetworkTab.27"),  cc.xyw(1, 37, 9)); //$NON-NLS-1$
+       cmp = builder.addSeparator(Messages.getString("NetworkTab.27"),  cc.xyw(1, 37, 9)); //$NON-NLS-1$
+       cmp = (JComponent) cmp.getComponent(0);
+       cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
        
        tmcheckBox = new JCheckBox(Messages.getString("NetworkTab.28")); //$NON-NLS-1$
        tmcheckBox.setContentAreaFilled(false);
