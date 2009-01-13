@@ -6,6 +6,7 @@ Changelog:
 
 Customize encoding parameters (along with default ones) for any given container/codec/whatever combination (long term goal: solve any A/V sync / playback issues)
 Ability to choose a default networking interface
+OSX 10.4 Tiger support (Intel only)
 Settings reorganization
 AC3 audio tracks are now remuxed and not reencoded 
 M4V now streamed by default, you have to enter the #Transcoded# folder to force the transcode (like AVI files)
