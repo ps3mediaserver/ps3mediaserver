@@ -318,11 +318,15 @@ public class PMS {
 		
 		// check the existence of Vsfilter.dll
 		if (registry.isAvis() && registry.getAvsPluginsDir() != null) {
-			PMS.minimal("AviSynth plugins dir: " + registry.getAvsPluginsDir().getAbsolutePath()); //$NON-NLS-1$
+			PMS.minimal("Found AviSynth plugins dir: " + registry.getAvsPluginsDir().getAbsolutePath()); //$NON-NLS-1$
 			File vsFilterdll = new File(registry.getAvsPluginsDir(), "VSFilter.dll"); //$NON-NLS-1$
 			if (!vsFilterdll.exists()) {
 				PMS.minimal("!!! It seems VSFilter.dll is not installed into the AviSynth plugins dir ! It could be troublesome for playing subtitled videos with AviSynth !!!"); //$NON-NLS-1$
 			}
+		}
+		
+		if (registry.getVlcv() != null && registry.getVlcp() != null) {
+			PMS.minimal("Found VideoLAN version " + registry.getVlcv() + " at: " + registry.getVlcp());
 		}
 		
 		// force use of specific dvr ms muxer when it's installed in the right place
