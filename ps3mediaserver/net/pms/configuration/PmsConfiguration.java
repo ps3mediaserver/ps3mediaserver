@@ -83,6 +83,8 @@ public class PmsConfiguration {
 	private static final String KEY_NETWORK_INTERFACE = "network_interface";
 	private static final String KEY_HIDE_EXTENSIONS = "hide_extensions";
 	private static final String KEY_HIDE_ENGINENAMES = "hide_enginenames";
+	private static final String KEY_SHARES = "shares";
+	private static final String KEY_NOTRANSCODE = "notranscode";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -601,7 +603,7 @@ public class PmsConfiguration {
 	}
 	
 	public String getCodecSpecificConfig() {
-		return getString(KEY_CODEC_SPEC_SCRIPT, "vcodec == h264 && width >= 1280 :: -mt -lavdopts fast");
+		return getString(KEY_CODEC_SPEC_SCRIPT, "");
 	}
 
 	public void setCodecSpecificConfig(String value) {
@@ -766,5 +768,21 @@ public class PmsConfiguration {
 
 	public void setHideExtensions(boolean value) {
 		configuration.setProperty(KEY_HIDE_EXTENSIONS, value);
+	}
+	
+	public String getShares() {
+		return getString(KEY_SHARES, "");
+	}
+
+	public void setShares(String value) {
+		configuration.setProperty(KEY_SHARES, value);
+	}
+	
+	public String getNoTranscode() {
+		return getString(KEY_NOTRANSCODE, "");
+	}
+
+	public void setNoTranscode(String value) {
+		configuration.setProperty(KEY_NOTRANSCODE, value);
 	}
 }

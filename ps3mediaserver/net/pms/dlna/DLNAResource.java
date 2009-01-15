@@ -127,7 +127,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			children.add(child);
 			child.parent = this;
 			
-			if (child.ext != null && child.ext.transcodable() && child.media == null) {
+			boolean skipTranscode = false;
+			if (child.ext != null)
+				skipTranscode = child.ext.skip(PMS.getConfiguration().getNoTranscode());
+			
+			if (!skipTranscode && child.ext != null && child.ext.transcodable() && child.media == null) {
 			
 				child.media = new DLNAMediaInfo();
 				
@@ -476,12 +480,21 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	}
 	
 	private String encodeXML(String s) {
+		String ss = null;
 		try {
-			s = URLEncoder.encode(s, "UTF-8");
-			s = URLDecoder.decode(s, PMS.getConfiguration().getCharsetEncoding());
-			//s = URLEncoder.encode(s, System.getProperty("file.encoding"));
+			URLEncoder.encode(s, "UTF-8");
+			ss = URLDecoder.decode(s, PMS.getConfiguration().getCharsetEncoding());
+			s = ss;
 		} catch (UnsupportedEncodingException e) {
 			PMS.error(null, e);
+			if (ss != null) {
+				try {
+					ss = URLDecoder.decode(s, System.getProperty("file.encoding"));
+					s = ss;
+				} catch (UnsupportedEncodingException e1) {
+					PMS.error(null, e1);
+				}
+			}
 		}
 		
 		s = s.replace("&", "&amp;"); 

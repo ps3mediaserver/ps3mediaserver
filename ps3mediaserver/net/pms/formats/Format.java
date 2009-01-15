@@ -113,7 +113,8 @@ public abstract class Format implements Cloneable {
 			return false;
 		StringTokenizer st = new StringTokenizer(extensions, ",");
 		while (st.hasMoreTokens()) {
-			if (matchedId != null && matchedId.toLowerCase().equals(st.nextToken().toLowerCase())) {
+			String id = st.nextToken().toLowerCase();
+			if (matchedId != null && matchedId.toLowerCase().equals(id)) {
 				return true;
 			}
 		}
