@@ -20,6 +20,7 @@ package net.pms.formats;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
@@ -105,5 +106,17 @@ public abstract class Format implements Cloneable {
 	// method which allow us the fine tuning of parsing with different formats in the future
 	public void parse(DLNAMediaInfo media, File file, int type) {
 		media.parse(file, this, type);
+	}
+	
+	public boolean skip(String extensions) {
+		if (extensions == null || extensions.length() == 0)
+			return false;
+		StringTokenizer st = new StringTokenizer(extensions, ",");
+		while (st.hasMoreTokens()) {
+			if (matchedId != null && matchedId.toLowerCase().equals(st.nextToken().toLowerCase())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

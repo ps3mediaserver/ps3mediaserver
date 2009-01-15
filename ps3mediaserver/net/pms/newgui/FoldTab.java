@@ -29,7 +29,6 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -355,7 +354,7 @@ public class FoldTab {
        
       but5 = new JButton(LooksFrame.readImageIcon("search-32.png")); //$NON-NLS-1$
        but5.setToolTipText(Messages.getString("FoldTab.2")); //$NON-NLS-1$
-       but5.setBorder(BorderFactory.createEmptyBorder());
+       //but5.setBorder(BorderFactory.createEmptyBorder());
        but5.addActionListener(new ActionListener() {
    		public void actionPerformed(ActionEvent e) {
    			if (PMS.getConfiguration().getUseCache()) {

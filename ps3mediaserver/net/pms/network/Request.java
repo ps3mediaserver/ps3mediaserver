@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -364,8 +365,16 @@ public class Request extends HTTPResource {
 		if (response.length() > 0) {
 			output(output, "Content-Length: " + response.length());
 			output(output, "");
-			if (!method.equals("HEAD"))
-				output.write(response.toString().getBytes(PMS.getConfiguration().getCharsetEncoding()));
+			if (!method.equals("HEAD")) {
+				byte responseData [] = null;
+				try {
+					responseData = response.toString().getBytes(PMS.getConfiguration().getCharsetEncoding());
+				} catch (UnsupportedEncodingException e) {
+					PMS.error(null, e);
+					responseData = response.toString().getBytes();
+				}
+				output.write(responseData);
+			}
 		} else if (inputStream != null) {
 			if (CLoverride > -1) {
 				if (lowRange > 0 && highRange > 0) {

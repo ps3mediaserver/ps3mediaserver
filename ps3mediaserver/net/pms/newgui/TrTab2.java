@@ -73,6 +73,7 @@ public class TrTab2 {
 
 
 
+	private JTextField notranscode;
 	private JTextField maxbuffer;
 	private JComboBox nbcores ;
 	private DefaultMutableTreeNode parent [];
@@ -146,7 +147,7 @@ public class TrTab2 {
        
        JButton but = new JButton(LooksFrame.readImageIcon("kdevelop_down-32.png")); //$NON-NLS-1$
        but.setToolTipText(Messages.getString("TrTab2.6")); //$NON-NLS-1$
-       but.setBorder(BorderFactory.createEmptyBorder());
+      // but.setBorder(BorderFactory.createEmptyBorder());
        but.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			TreePath path = tree.getSelectionModel().getSelectionPath();
@@ -175,7 +176,7 @@ public class TrTab2 {
        builder.add(but,          cc.xy(2,  3));
        JButton but2 = new JButton(LooksFrame.readImageIcon("up-32.png")); //$NON-NLS-1$
        but2.setToolTipText(Messages.getString("TrTab2.6")); //$NON-NLS-1$
-       but2.setBorder(BorderFactory.createEmptyBorder());
+      // but2.setBorder(BorderFactory.createEmptyBorder());
        but2.addActionListener(new ActionListener() {
    		public void actionPerformed(ActionEvent e) {
    			TreePath path = tree.getSelectionModel().getSelectionPath();
@@ -201,7 +202,7 @@ public class TrTab2 {
        builder.add(but2,          cc.xy(3,  3));
        JButton but3 = new JButton(LooksFrame.readImageIcon("connect_no-32.png")); //$NON-NLS-1$
        but3.setToolTipText(Messages.getString("TrTab2.0")); //$NON-NLS-1$
-       but3.setBorder(BorderFactory.createEmptyBorder());
+       //but3.setBorder(BorderFactory.createEmptyBorder());
        but3.addActionListener(new ActionListener() {
 
 		public void actionPerformed(ActionEvent e) {
@@ -336,7 +337,7 @@ public class TrTab2 {
 	public JComponent buildMEncoder() {
 		FormLayout layout = new FormLayout(
 				"left:pref, 2dlu, pref:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p , 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 20dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p , 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -454,7 +455,7 @@ public class TrTab2 {
 	public JComponent buildCommon() {
 		FormLayout layout = new FormLayout(
 				"left:pref, 2dlu, pref:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, 0:grow"); //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -647,6 +648,24 @@ public class TrTab2 {
        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
        
        builder.add(disableSubs,          cc.xy(1,  33));
+       
+       builder.addLabel("Skip automatic transcode for following extensions (coma separated): ", cc.xy(1,35)); //$NON-NLS-1$
+       
+       notranscode = new JTextField(configuration.getNoTranscode());
+       notranscode.addKeyListener(new KeyListener() {
+
+   		@Override
+   		public void keyPressed(KeyEvent e) {}
+   		@Override
+   		public void keyTyped(KeyEvent e) {}
+   		@Override
+   		public void keyReleased(KeyEvent e) {
+   			configuration.setNoTranscode(notranscode.getText());
+   			PMS.get().getFrame().setReloadable(true);
+   		}
+       	   
+          });
+       builder.add(notranscode, cc.xy(3, 35));
        
        
         return builder.getPanel();
