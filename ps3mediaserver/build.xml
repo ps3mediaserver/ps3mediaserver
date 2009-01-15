@@ -28,7 +28,7 @@
          ================================= -->
     <target name="PMS" depends="depends, clean" description="description">
 		<mkdir dir="classes" />
-		<javac srcdir="." excludes="osx/**" destdir="classes" target="1.5" classpathref="lib.path.ref" debug="on" debuglevel="lines,vars,source" />
+		<javac srcdir="." excludes="osx/**" destdir="classes" target="1.5" classpathref="lib.path.ref" debug="on" debuglevel="lines,vars,source" encoding="iso-8859-1"/>
 
 	    <jar basedir="classes" destfile="${pms.jar}" compress="off" duplicate="preserve">	
 			<manifest>
@@ -70,7 +70,7 @@
           target: depends                      
          - - - - - - - - - - - - - - - - - -->
     <target name="depends">
-    	<property name="version" value="1.02.1" />
+    	<property name="version" value="1.03" />
     	<!--<property name="gcj" value="D:\\DEV\\thisiscool-gcc\\gcc-ecj\\bin\\gcj.exe"/>-->
     	<property name="gcj" value="D:\\DEV\\gcc-122233-win\\bin\\gcj.exe" />
     	<property name="swtjar" value="D:\\DEV\\thisiscool-gcc\\swt\\win32\\3218\\swt.jar" />
