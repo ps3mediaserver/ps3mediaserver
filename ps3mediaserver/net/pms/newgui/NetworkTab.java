@@ -41,6 +41,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang.StringUtils;
+
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
@@ -108,6 +110,8 @@ public class NetworkTab {
       } else {
     	  defaultLang = Locale.getDefault().getLanguage();
       }
+      if (defaultLang == null)
+    	  defaultLang = "";
      kcbm.setSelectedKey(defaultLang);
      if (langs.getSelectedIndex() == -1)
     	 langs.setSelectedIndex(0);
@@ -169,6 +173,7 @@ public class NetworkTab {
        			
        		}
         });
+        host.setEnabled( StringUtils.isBlank(configuration.getNetworkInterface())) ;
         port = new JTextField(configuration.getServerPort()!=5001?"" + configuration.getServerPort():""); //$NON-NLS-1$ //$NON-NLS-2$
         port.addKeyListener(new KeyListener() {
 
@@ -215,7 +220,7 @@ public class NetworkTab {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					configuration.setNetworkInterface((String) networkInterfaces.getSelectedKey());
-					
+					host.setEnabled( StringUtils.isBlank(configuration.getNetworkInterface())) ;
 				}
 			}
      	

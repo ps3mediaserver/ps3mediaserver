@@ -80,7 +80,7 @@ public class RequestHandler implements Runnable {
 						request = new Request(temp, s.nextToken().substring(1));
 						if (s.hasMoreTokens() && s.nextToken().equals("HTTP/1.0"))
 							request.setHttp10(true);
-					} else if (request != null && temp.equals("SOAPACTION:")) {
+					} else if (request != null && temp.toUpperCase().equals("SOAPACTION:")) {
 						request.setSoapaction(s.nextToken());
 					} else if (headerLine.toUpperCase().contains("CONTENT-LENGTH:")) {
 						receivedContentLength = Integer.parseInt(headerLine.substring(headerLine.toUpperCase().indexOf("CONTENT-LENGTH: ")+16));
