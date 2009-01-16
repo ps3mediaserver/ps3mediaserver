@@ -19,6 +19,7 @@
 
 package net.pms;
 
+import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -281,8 +282,11 @@ public class PMS {
 		if (System.getProperty("console") == null) {//$NON-NLS-1$
 			frame = new LooksFrame(autoUpdater, configuration);
 			autoUpdater.pollServer();
-		} else
+		} else {
+			System.out.println("GUI environment no available"); //$NON-NLS-1$
+			System.out.println("Switching to console mode"); //$NON-NLS-1$
 			frame = new DummyFrame();
+		}
 		
 		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		
@@ -326,7 +330,7 @@ public class PMS {
 		}
 		
 		if (registry.getVlcv() != null && registry.getVlcp() != null) {
-			PMS.minimal("Found VideoLAN version " + registry.getVlcv() + " at: " + registry.getVlcp());
+			PMS.minimal("Found VideoLAN version " + registry.getVlcv() + " at: " + registry.getVlcp()); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		// force use of specific dvr ms muxer when it's installed in the right place
@@ -910,13 +914,15 @@ public class PMS {
 					System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 				else if (args[a].equals("nativelook")) //$NON-NLS-1$
 					System.setProperty("nativelook", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+				else if (args[a].equals("scrollbars")) //$NON-NLS-1$
+					System.setProperty("scrollbars", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		try {
 			Toolkit.getDefaultToolkit();
+			if (GraphicsEnvironment.isHeadless())
+				System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (Throwable t) {
-			System.out.println("Error while loading GUI environment: " + t.getMessage()); //$NON-NLS-1$
-			System.out.println("Switching to console mode"); //$NON-NLS-1$
 			System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		configuration = new PmsConfiguration();
