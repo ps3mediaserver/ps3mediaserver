@@ -50,11 +50,6 @@ public class PlaylistFolder extends DLNAResource {
 	}
 
 	@Override
-	public long lastModified() {
-		return playlistfile.lastModified();
-	}
-
-	@Override
 	public long length() {
 		return 0;
 	}

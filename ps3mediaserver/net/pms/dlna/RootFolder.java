@@ -59,11 +59,6 @@ public class RootFolder extends DLNAResource {
 	}
 
 	@Override
-	public long lastModified() {
-		return 0;
-	}
-
-	@Override
 	public long length() {
 		return 0;
 	}
