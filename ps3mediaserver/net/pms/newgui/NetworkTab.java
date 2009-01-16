@@ -41,8 +41,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.lang.StringUtils;
-
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
@@ -111,7 +109,7 @@ public class NetworkTab {
     	  defaultLang = Locale.getDefault().getLanguage();
       }
       if (defaultLang == null)
-    	  defaultLang = "";
+    	  defaultLang = ""; //$NON-NLS-1$
      kcbm.setSelectedKey(defaultLang);
      if (langs.getSelectedIndex() == -1)
     	 langs.setSelectedIndex(0);
@@ -173,7 +171,7 @@ public class NetworkTab {
        			
        		}
         });
-        host.setEnabled( StringUtils.isBlank(configuration.getNetworkInterface())) ;
+       // host.setEnabled( StringUtils.isBlank(configuration.getNetworkInterface())) ;
         port = new JTextField(configuration.getServerPort()!=5001?"" + configuration.getServerPort():""); //$NON-NLS-1$ //$NON-NLS-2$
         port.addKeyListener(new KeyListener() {
 
@@ -202,10 +200,18 @@ public class NetworkTab {
         Enumeration<NetworkInterface> enm;
 		try {
 			enm = NetworkInterface.getNetworkInterfaces();
-			while (enm.hasMoreElements()) {
-				NetworkInterface ni = enm.nextElement();
-				names.add(ni.getName());
-				interfaces.add(ni.getDisplayName().trim());
+			while (enm.hasMoreElements()) 
+			{
+			  NetworkInterface ni = enm.nextElement();
+			  // check for interface has at least one ip address.
+			  if ( ni.getInetAddresses().hasMoreElements() )
+			  {
+			    names.add(ni.getName());
+			    String displayName = ni.getDisplayName();
+			    if ( displayName == null )
+			      displayName = ni.getName();
+			    interfaces.add(displayName.trim());
+			  }
 			}
 		} catch (SocketException e1) {
 			PMS.error(null, e1);
@@ -220,7 +226,7 @@ public class NetworkTab {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					configuration.setNetworkInterface((String) networkInterfaces.getSelectedKey());
-					host.setEnabled( StringUtils.isBlank(configuration.getNetworkInterface())) ;
+					//host.setEnabled( StringUtils.isBlank(configuration.getNetworkInterface())) ;
 				}
 			}
      	
