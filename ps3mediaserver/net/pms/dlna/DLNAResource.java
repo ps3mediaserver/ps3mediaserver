@@ -71,7 +71,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public abstract long length();
 	public abstract InputStream getInputStream() throws IOException;
 	public abstract boolean isFolder();
-	public abstract long lastModified();
+	
 	protected boolean discovered = false;
 	private ProcessWrapper externalProcess;
 	protected String ifoFileURI;
@@ -482,14 +482,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	private String encodeXML(String s) {
 		String ss = null;
 		try {
-			URLEncoder.encode(s, "UTF-8");
-			ss = URLDecoder.decode(s, PMS.getConfiguration().getCharsetEncoding());
+			ss = URLEncoder.encode(s, "UTF-8");
+			ss = URLDecoder.decode(ss, PMS.getConfiguration().getCharsetEncoding());
 			s = ss;
 		} catch (UnsupportedEncodingException e) {
 			PMS.error(null, e);
 			if (ss != null) {
 				try {
-					ss = URLDecoder.decode(s, System.getProperty("file.encoding"));
+					ss = URLDecoder.decode(ss, System.getProperty("file.encoding"));
 					s = ss;
 				} catch (UnsupportedEncodingException e1) {
 					PMS.error(null, e1);

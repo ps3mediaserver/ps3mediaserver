@@ -169,11 +169,6 @@ public class DVDISOTitle extends DLNAResource {
 	}
 
 	@Override
-	public long lastModified() {
-		return 0;
-	}
-
-	@Override
 	public long length() {
 		return DLNAMediaInfo.TRANS_SIZE;
 	}
