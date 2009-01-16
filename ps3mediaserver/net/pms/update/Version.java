@@ -31,6 +31,8 @@ class Version {
 		for (int i = 0; i < Math.min(elements.length, other.elements.length); i++) {
 			if (elements[i] > other.elements[i]) {
 				return true;
+			} else if (elements[i] < other.elements[i]) {
+				return false;
 			}
 		}
 		return elements.length > other.elements.length;
@@ -43,6 +45,8 @@ class Version {
 		assert(new Version("1.2.3").isGreaterThan(new Version("1.2.2")));
 		assert(!new Version("1.2.2").isGreaterThan(new Version("1.2.3")));
 		assert(!new Version("1.2.2").isGreaterThan(new Version("1.2.2")));
+		assert(new Version("1.03").isGreaterThan(new Version("1.02.1")));
+		assert(!new Version("1.02.1").isGreaterThan(new Version("1.03")));
 	}
 	
 	@Override
