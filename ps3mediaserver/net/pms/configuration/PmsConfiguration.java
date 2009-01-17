@@ -85,6 +85,9 @@ public class PmsConfiguration {
 	private static final String KEY_HIDE_ENGINENAMES = "hide_enginenames";
 	private static final String KEY_SHARES = "shares";
 	private static final String KEY_NOTRANSCODE = "notranscode";
+	private static final String KEY_MENCODER_MT = "mencoder_mt";
+	private static final String KEY_MENCODER_REMUX_AC3 = "mencoder_remux_ac3";
+	private static final String KEY_MENCODER_REMUX_MPEG2 = "mencoder_remux_mpeg2";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -784,5 +787,29 @@ public class PmsConfiguration {
 
 	public void setNoTranscode(String value) {
 		configuration.setProperty(KEY_NOTRANSCODE, value);
+	}
+	
+	public void setMencoderMT(boolean value) {
+		configuration.setProperty(KEY_MENCODER_MT, value);
+	}
+
+	public boolean getMencoderMT() {
+		return getBoolean(KEY_MENCODER_MT, false);
+	}
+	
+	public void setMencoderRemuxAC3(boolean value) {
+		configuration.setProperty(KEY_MENCODER_REMUX_AC3, value);
+	}
+
+	public boolean isMencoderRemuxAC3() {
+		return getBoolean(KEY_MENCODER_REMUX_AC3, false);
+	}
+	
+	public void setMencoderRemuxMPEG2(boolean value) {
+		configuration.setProperty(KEY_MENCODER_REMUX_MPEG2, value);
+	}
+
+	public boolean isMencoderRemuxMPEG2() {
+		return getBoolean(KEY_MENCODER_REMUX_MPEG2, false);
 	}
 }
