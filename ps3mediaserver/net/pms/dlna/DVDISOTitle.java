@@ -116,6 +116,7 @@ public class DVDISOTitle extends DLNAResource {
 			media.maxsubid = maxsubid;
 			media.dvdtrack = title;
 			media.container = "iso";
+			media.codecV = "mpeg2video";
 			try {
 				media.width = Integer.parseInt(width);
 				media.height = Integer.parseInt(height);

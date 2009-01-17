@@ -527,7 +527,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		endTag(sb);
 		
 		if (media != null && StringUtils.isNotBlank(media.songname))
-			addXMLTagAndAttribute(sb, "dc:title", encodeXML(media.songname + (player!=null?(" [" + player.name() + "]"):"")));
+			addXMLTagAndAttribute(sb, "dc:title", encodeXML(media.songname + (player!=null&&!PMS.getConfiguration().isHideEngineNames()?(" [" + player.name() + "]"):"")));
 		else
 			addXMLTagAndAttribute(sb, "dc:title", encodeXML(getDisplayName()));
 			

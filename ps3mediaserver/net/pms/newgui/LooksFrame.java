@@ -40,6 +40,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.LookAndFeel;
@@ -97,7 +98,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	 
 	 private JLabel status;
 
-	protected static final Dimension PREFERRED_SIZE = new Dimension(1000, 700);
+	protected static final Dimension PREFERRED_SIZE = new Dimension(1000, 720);
 
 
 	/**
@@ -177,7 +178,11 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
         
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
-        setContentPane(buildContent());
+        JComponent jp = buildContent();
+        if (System.getProperty("scrollbars") != null) //$NON-NLS-1$
+        	setContentPane(new JScrollPane(jp));
+        else
+        	setContentPane(jp);
         this.setTitle("Java PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setMinimumSize(PREFERRED_SIZE);

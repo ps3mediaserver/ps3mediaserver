@@ -150,7 +150,7 @@ private JTextField mencoder_ass_scale;
         cmp = (JComponent) cmp.getComponent(0);
         cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
-        mencodermt = new JCheckBox("Enhanced multicore support for H264 HD content"); //$NON-NLS-1$
+        mencodermt = new JCheckBox(Messages.getString("MEncoderVideo.35")); //$NON-NLS-1$
         mencodermt.setFont(mencodermt.getFont().deriveFont(Font.BOLD));
         mencodermt.setContentAreaFilled(false);
         if (PMS.getConfiguration().getMencoderMT())
@@ -245,7 +245,7 @@ private JTextField mencoder_ass_scale;
 		}
     	   
        });
-       builder.add(button,          cc.xyw(3,  9, 7));
+       builder.add(button,          cc.xyw(1,  11, 2));
        
        forcefps = new JCheckBox(Messages.getString("MEncoderVideo.4")); //$NON-NLS-1$
        forcefps.setContentAreaFilled(false);
@@ -344,7 +344,7 @@ private JTextField mencoder_ass_scale;
        	
        });
        
-       builder.add(ac3remux, cc.xyw(1, 9,2));
+       builder.add(ac3remux, cc.xyw(1, 9,15));
   
        cmp = builder.addSeparator(Messages.getString("MEncoderVideo.5"), cc.xyw(1, 19, 15)); //$NON-NLS-1$
        cmp = (JComponent) cmp.getComponent(0);
