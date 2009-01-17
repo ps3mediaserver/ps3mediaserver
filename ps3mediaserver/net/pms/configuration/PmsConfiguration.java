@@ -245,6 +245,8 @@ public class PmsConfiguration {
 
 	public String getLanguage() {
 		String def = Locale.getDefault().getLanguage();
+		if (def == null)
+			def = "";
 		String value = getString(KEY_LANGUAGE, def);
 		return StringUtils.isNotBlank(value) ? value.trim() : def;
 	}

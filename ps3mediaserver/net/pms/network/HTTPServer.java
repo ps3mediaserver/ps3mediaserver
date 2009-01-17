@@ -31,6 +31,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
+import org.apache.commons.lang.StringUtils;
+
 import net.pms.PMS;
 import net.pms.util.PMSUtil;
 
@@ -70,15 +72,18 @@ public class HTTPServer implements Runnable {
 			ni = enm.nextElement();
 			if (fixedNI != null)
 				ni = fixedNI;
-			PMS.info("Scanning network interface " + ni.getDisplayName());
-			if (!PMSUtil.isNetworkInterfaceLoopback(ni) && ni.getDisplayName() != null) {
+			PMS.minimal("Scanning network interface " + ni.getName() + " / " + ni.getDisplayName());
+			if (!PMSUtil.isNetworkInterfaceLoopback(ni) && ni.getName() != null) {
 				
 				Enumeration<InetAddress> addrs = ni.getInetAddresses();
 				while (addrs.hasMoreElements()) {
 					ia = addrs.nextElement();
 					if (!(ia instanceof Inet6Address) && !ia.isLoopbackAddress()) {
-						found = true;
 						iafinal = ia;
+						found = true;
+						if (StringUtils.isNotEmpty(PMS.getConfiguration().getServerHostname())) {
+							found = iafinal.equals(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
+						}
 						break;
 					}
 				}
@@ -91,7 +96,11 @@ public class HTTPServer implements Runnable {
 		SocketAddress address = null;
 		if (hostName != null && hostName.length() > 0) {
 			PMS.minimal("Using forced address " + hostName);
-			address = new InetSocketAddress(hostName, port);
+			InetAddress tempIA = InetAddress.getByName(hostName);
+			if (tempIA != null && fixedNI != null && fixedNI.equals(NetworkInterface.getByInetAddress(tempIA))) {
+				address = new InetSocketAddress(tempIA, port);
+			} else
+				address = new InetSocketAddress(hostName, port);
 		} else if (iafinal != null) {
 			PMS.minimal("Using address " + iafinal + " found on network interface: " + ni.toString().trim().replace('\n', ' '));
 			address = new InetSocketAddress(iafinal, port);

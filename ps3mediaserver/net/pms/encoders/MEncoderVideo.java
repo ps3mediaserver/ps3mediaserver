@@ -1300,6 +1300,22 @@ private JTextField mencoder_ass_scale;
 								s++;
 							}
 						}
+					} else if (sArgs[s].equals("-vf")) { //$NON-NLS-1$
+						for(int c=0;c<cmdArray.length;c++) {
+							if (cmdArray[c] != null && cmdArray[c].equals("-vf")) {//$NON-NLS-1$
+								cmdArray[c+1] += "," + sArgs[s+1]; //$NON-NLS-1$
+								sArgs[s+1] = "-vf"; //$NON-NLS-1$
+								s++;
+							}
+						}
+					} else if (sArgs[s].equals("-af")) { //$NON-NLS-1$
+						for(int c=0;c<cmdArray.length;c++) {
+							if (cmdArray[c] != null && cmdArray[c].equals("-af")) {//$NON-NLS-1$
+								cmdArray[c+1] += "," + sArgs[s+1]; //$NON-NLS-1$
+								sArgs[s+1] = "-af"; //$NON-NLS-1$
+								s++;
+							}
+						}
 					} else if (sArgs[s].equals("-nosync")) { //$NON-NLS-1$
 						noMC0NoSkip = true;
 					} else if (sArgs[s].equals("-mc")) { //$NON-NLS-1$
@@ -1310,7 +1326,7 @@ private JTextField mencoder_ass_scale;
 				}
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +sArgs.length);
 				for(int s=0;s<sArgs.length;s++) {
-					if (sArgs[s].equals("-noass") || sArgs[s].equals("-mpegopts") || sArgs[s].equals("-quality") || sArgs[s].equals("-nosync") || sArgs[s].equals("-mt")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					if (sArgs[s].equals("-noass") || sArgs[s].equals("-mpegopts") || sArgs[s].equals("-vf") || sArgs[s].equals("-af") || sArgs[s].equals("-quality") || sArgs[s].equals("-nosync") || sArgs[s].equals("-mt")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 						cmdArray[cmdArray.length-sArgs.length-2+s] = "-quiet"; //$NON-NLS-1$
 					} else
 						cmdArray[cmdArray.length-sArgs.length-2+s] = sArgs[s];
