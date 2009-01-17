@@ -2,10 +2,12 @@
 Changelog:
 ==========
 
+v1.03
+
 - Changes / Features
 
-Customize encoding parameters (along with default ones) for any given container/codec/whatever combination (long term goal: solve any A/V sync / playback issues)
-Ability to choose a default networking interface
+Customize encoding parameters (along with default ones) for any given container/codec/property combination (purpose: A/V sync, playback issues, and tweaking for advanced users)
+Ability to select networking interface
 OSX 10.4 Tiger support (Intel only)
 Settings reorganization
 AC3 audio tracks are now remuxed and not reencoded 
@@ -18,7 +20,7 @@ WINDOWS ONLY: Use (only with 720p/1080p H264 content) an experimental mencoder b
 
 Default platform charset issue
 Transcode buffer optimization on Windows
-Application crash when too many widechars filenames were used
+Application crash on Windows when too many widechars filenames were parsed
 Audio tracks sorted by track number (if present) in media library
 Better filenames/subtitles management (m2ts/ts/dvr-ms issues, comas, widechars, etc.)
 External subtitles not always loaded, again
