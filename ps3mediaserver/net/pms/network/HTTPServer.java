@@ -97,7 +97,7 @@ public class HTTPServer implements Runnable {
 		if (hostName != null && hostName.length() > 0) {
 			PMS.minimal("Using forced address " + hostName);
 			InetAddress tempIA = InetAddress.getByName(hostName);
-			if (tempIA != null && fixedNI != null && fixedNI.equals(NetworkInterface.getByInetAddress(tempIA))) {
+			if (tempIA != null && ni != null && ni.equals(NetworkInterface.getByInetAddress(tempIA))) {
 				address = new InetSocketAddress(tempIA, port);
 			} else
 				address = new InetSocketAddress(hostName, port);
