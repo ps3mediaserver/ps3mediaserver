@@ -168,7 +168,7 @@ public class NetworkTab {
     		@Override
     		public void keyReleased(KeyEvent e) {
        			configuration.setHostname(host.getText());
-       			
+       			PMS.get().getFrame().setReloadable(true);
        		}
         });
        // host.setEnabled( StringUtils.isBlank(configuration.getNetworkInterface())) ;
@@ -184,6 +184,7 @@ public class NetworkTab {
        			try {
     				int ab = Integer.parseInt(port.getText());
     				configuration.setServerPort(ab);
+    				PMS.get().getFrame().setReloadable(true);
     			} catch (NumberFormatException nfe) {}
        			
        		}
@@ -227,6 +228,7 @@ public class NetworkTab {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					configuration.setNetworkInterface((String) networkInterfaces.getSelectedKey());
 					//host.setEnabled( StringUtils.isBlank(configuration.getNetworkInterface())) ;
+					PMS.get().getFrame().setReloadable(true);
 				}
 			}
      	
