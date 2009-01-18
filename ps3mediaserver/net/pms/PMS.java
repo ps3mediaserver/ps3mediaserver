@@ -262,19 +262,13 @@ public class PMS {
 			debug = new File("debug.log"); //$NON-NLS-1$
 			pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
 		} catch (Throwable e) {
-			if (debug.exists()) {
-				PMS.minimal("Error while accessing the debug.log file... forcing deletion..."); //$NON-NLS-1$
-				if (debug.delete()) {
-					PMS.minimal("Delete successful..."); //$NON-NLS-1$
-					pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
-				} else {
-					PMS.minimal("Still no access to debug.log... using another name; Check your user rights !!"); //$NON-NLS-1$
-					debug = new File("debug-" + System.currentTimeMillis() + ".log"); //$NON-NLS-1$ //$NON-NLS-2$
-					pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
-				}
-			} else {
-				PMS.minimal("Troubles to access the application folder...  Check your user rights !!"); //$NON-NLS-1$
-				
+			PMS.minimal("Error in accessing debug.log...");
+			pw = null;
+		} finally {
+			if (pw == null) {
+				PMS.minimal("Using temp folder for debug.log...");
+				debug = new File(configuration.getTempFolder(), "debug.log"); //$NON-NLS-1$
+				pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
 			}
 		}
 		

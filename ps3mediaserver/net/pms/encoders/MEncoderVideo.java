@@ -237,9 +237,27 @@ private JTextField mencoder_ass_scale;
 			codecPanel.add(intelligentsync, BorderLayout.NORTH);
 			codecPanel.add(scrollPaneDefault, BorderLayout.CENTER);
 			codecPanel.add(customPanel, BorderLayout.SOUTH);
-			if (JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+			while (JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
 					codecPanel, Messages.getString("MEncoderVideo.34"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null) == JOptionPane.OK_OPTION) { //$NON-NLS-1$
-				PMS.getConfiguration().setCodecSpecificConfig(textArea.getText());
+				String newCodecparam = textArea.getText();
+				DLNAMediaInfo fakemedia = new DLNAMediaInfo();
+				fakemedia.codecA = "ac3";
+				fakemedia.codecV = "mpeg4";
+				fakemedia.container = "matroska";
+				fakemedia.duration = "00:45:00";
+				fakemedia.nrAudioChannels = 2;
+				fakemedia.width = 1280;
+				fakemedia.height = 720;
+				fakemedia.sampleFrequency = "48000";
+				fakemedia.frameRate = "23.976";
+				String result [] = getSpecificCodecOptions(newCodecparam, fakemedia, "dummy.mpg", "dummy.srt", false, true);
+				if (result.length > 0 && result[0].startsWith("@@")) {
+					JOptionPane.showMessageDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), "Malformatted line");
+					
+				} else {
+					PMS.getConfiguration().setCodecSpecificConfig(newCodecparam);
+					break;
+				}
 			}
 			
 		}
@@ -1235,8 +1253,10 @@ private JTextField mencoder_ass_scale;
 		
 		boolean noMC0NoSkip = false;
 		if (media != null) {
-			String sArgs [] = getSpecificCodecOptions(media, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync());
+			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
 			if (sArgs !=null && sArgs.length > 0) {
+				boolean vfConsumed = false;
+				boolean afConsumed = false;
 				for(int s=0;s<sArgs.length;s++) {
 					if (sArgs[s].equals("-noass")) { //$NON-NLS-1$
 						for(int c=0;c<cmdArray.length;c++) {
@@ -1306,6 +1326,7 @@ private JTextField mencoder_ass_scale;
 								cmdArray[c+1] += "," + sArgs[s+1]; //$NON-NLS-1$
 								sArgs[s+1] = "-vf"; //$NON-NLS-1$
 								s++;
+								vfConsumed = true;
 							}
 						}
 					} else if (sArgs[s].equals("-af")) { //$NON-NLS-1$
@@ -1314,6 +1335,7 @@ private JTextField mencoder_ass_scale;
 								cmdArray[c+1] += "," + sArgs[s+1]; //$NON-NLS-1$
 								sArgs[s+1] = "-af"; //$NON-NLS-1$
 								s++;
+								afConsumed = true;
 							}
 						}
 					} else if (sArgs[s].equals("-nosync")) { //$NON-NLS-1$
@@ -1326,7 +1348,7 @@ private JTextField mencoder_ass_scale;
 				}
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +sArgs.length);
 				for(int s=0;s<sArgs.length;s++) {
-					if (sArgs[s].equals("-noass") || sArgs[s].equals("-mpegopts") || sArgs[s].equals("-vf") || sArgs[s].equals("-af") || sArgs[s].equals("-quality") || sArgs[s].equals("-nosync") || sArgs[s].equals("-mt")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					if (sArgs[s].equals("-noass") || sArgs[s].equals("-mpegopts") || (sArgs[s].equals("-vf") & vfConsumed) || (sArgs[s].equals("-af") && afConsumed) || sArgs[s].equals("-quality") || sArgs[s].equals("-nosync") || sArgs[s].equals("-mt")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 						cmdArray[cmdArray.length-sArgs.length-2+s] = "-quiet"; //$NON-NLS-1$
 					} else
 						cmdArray[cmdArray.length-sArgs.length-2+s] = sArgs[s];
@@ -1424,15 +1446,16 @@ private JTextField mencoder_ass_scale;
 		return Format.VIDEO;
 	}
 
-	private String [] getSpecificCodecOptions(DLNAMediaInfo media, String filename, String srtFileName, boolean enable) {
+	private String [] getSpecificCodecOptions(String codecParam, DLNAMediaInfo media, String filename, String srtFileName, boolean enable, boolean verifyOnly) {
 		
 		StringBuffer sb = new StringBuffer();
 		
 		String codecs = enable?DEFAULT_CODEC_CONF_SCRIPT:""; //$NON-NLS-1$
-		codecs += "\n" + PMS.getConfiguration().getCodecSpecificConfig(); //$NON-NLS-1$
+		codecs += "\n" + codecParam; //$NON-NLS-1$
 		StringTokenizer stLines = new StringTokenizer(codecs, "\n"); //$NON-NLS-1$
 		try {
 			Interpreter interpreter = new Interpreter();
+			interpreter.setStrictJava(true);
 			ArrayList<String> types = CodecUtil.getPossibleCodecs();
 			int rank = 1;
 			if (types != null) {
@@ -1489,7 +1512,12 @@ private JTextField mencoder_ass_scale;
 							}
 						} catch (Throwable e) {
 							PMS.info("Error while executing: " + key + " : " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+							if (verifyOnly) {
+								return new String [] { "@@" + e.getMessage() };
+							}
 						}
+					} else if (verifyOnly) {
+						return new String [] { "@@error" };
 					}
 				}
 			}
