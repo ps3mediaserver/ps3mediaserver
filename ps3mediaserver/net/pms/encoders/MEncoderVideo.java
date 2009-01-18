@@ -1241,10 +1241,11 @@ private JTextField mencoder_ass_scale;
 		}*/
 		
 		if (configuration.getMencoderMT()) {
-			setCmdToMencoderMT(configuration, cmdArray, media);
-			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
-			cmdArray[cmdArray.length-4] = "-lavdopts"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-3] = "fast"; //$NON-NLS-1$
+			if (setCmdToMencoderMT(configuration, cmdArray, media)) {
+				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
+				cmdArray[cmdArray.length-4] = "-lavdopts"; //$NON-NLS-1$
+				cmdArray[cmdArray.length-3] = "fast"; //$NON-NLS-1$
+			}
 		}
 		
 		boolean noMC0NoSkip = false;
@@ -1414,7 +1415,7 @@ private JTextField mencoder_ass_scale;
 		return pw;
 	}
 	
-	private void setCmdToMencoderMT(PmsConfiguration configuration, String cmdArray [], DLNAMediaInfo media) {
+	private boolean setCmdToMencoderMT(PmsConfiguration configuration, String cmdArray [], DLNAMediaInfo media) {
 		boolean set = configuration.getNumberOfCpuCores() > 1;
 		if (media != null && (media.width < 1280 || media.codecV == null || !media.codecV.equals("h264"))) //$NON-NLS-1$
 				set = false;
@@ -1423,8 +1424,10 @@ private JTextField mencoder_ass_scale;
 			mencoderMTPath = mencoderMTPath.substring(0, mencoderMTPath.length()-4) + "_mt.exe"; //$NON-NLS-1$
 			if (new File(mencoderMTPath).exists()) {
 				cmdArray[0] = mencoderMTPath;
+				return true;
 			}
 		}
+		return false;
 	}
 
 	@Override
