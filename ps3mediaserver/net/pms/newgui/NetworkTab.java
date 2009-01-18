@@ -281,6 +281,7 @@ public class NetworkTab {
 			}
        	
        }); builder.add(tmcheckBox,          cc.xyw(1,  39, 5));
+       tmcheckBox.setEnabled(false);
        
        blockBox = new JCheckBox(Messages.getString("NetworkTab.29")); //$NON-NLS-1$
        blockBox.setContentAreaFilled(false);

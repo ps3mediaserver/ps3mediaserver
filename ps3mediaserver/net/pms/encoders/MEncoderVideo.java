@@ -241,18 +241,19 @@ private JTextField mencoder_ass_scale;
 					codecPanel, Messages.getString("MEncoderVideo.34"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null) == JOptionPane.OK_OPTION) { //$NON-NLS-1$
 				String newCodecparam = textArea.getText();
 				DLNAMediaInfo fakemedia = new DLNAMediaInfo();
-				fakemedia.codecA = "ac3";
-				fakemedia.codecV = "mpeg4";
-				fakemedia.container = "matroska";
-				fakemedia.duration = "00:45:00";
+				fakemedia.codecA = "ac3"; //$NON-NLS-1$
+				fakemedia.codecV = "mpeg4"; //$NON-NLS-1$
+				fakemedia.container = "matroska"; //$NON-NLS-1$
+				fakemedia.duration = "00:45:00"; //$NON-NLS-1$
 				fakemedia.nrAudioChannels = 2;
 				fakemedia.width = 1280;
 				fakemedia.height = 720;
-				fakemedia.sampleFrequency = "48000";
-				fakemedia.frameRate = "23.976";
-				String result [] = getSpecificCodecOptions(newCodecparam, fakemedia, "dummy.mpg", "dummy.srt", false, true);
-				if (result.length > 0 && result[0].startsWith("@@")) {
-					JOptionPane.showMessageDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), "Malformatted line");
+				fakemedia.sampleFrequency = "48000"; //$NON-NLS-1$
+				fakemedia.frameRate = "23.976"; //$NON-NLS-1$
+				String result [] = getSpecificCodecOptions(newCodecparam, fakemedia, "dummy.mpg", "dummy.srt", false, true); //$NON-NLS-1$ //$NON-NLS-2$
+				if (result.length > 0 && result[0].startsWith("@@")) { //$NON-NLS-1$
+					String errorMessage = result[0].substring(2);
+					JOptionPane.showMessageDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), errorMessage);
 					
 				} else {
 					PMS.getConfiguration().setCodecSpecificConfig(newCodecparam);
@@ -1059,11 +1060,6 @@ private JTextField mencoder_ass_scale;
 			}
 		}
 		
-		if (this instanceof MEncoderWebVideo) {
-			overridenMainArgs = new String [] { };
-			defaultSubArgs = new String [] { };
-			
-		}
 		
 		String cmdArray [] = new String [18+args().length];
 		cmdArray[0] = executable();
@@ -1160,7 +1156,7 @@ private JTextField mencoder_ass_scale;
 		cmdArray[cmdArray.length-8] = "-quiet"; //$NON-NLS-1$
 		cmdArray[cmdArray.length-7] = "-quiet"; //$NON-NLS-1$
 		
-		if (configuration.isMencoderForceFps() && !(this instanceof MEncoderWebVideo)) {
+		if (configuration.isMencoderForceFps()) {
 			cmdArray[cmdArray.length-8] = "-fps"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-7] = "24000/1001"; //$NON-NLS-1$
 		}
@@ -1172,7 +1168,7 @@ private JTextField mencoder_ass_scale;
 		}
 		if (frameRate != null) {
 			cmdArray[cmdArray.length-5] = frameRate;
-			if (configuration.isMencoderForceFps() && !(this instanceof MEncoderWebVideo))
+			if (configuration.isMencoderForceFps())
 				cmdArray[cmdArray.length-7] = cmdArray[cmdArray.length-5];
 		}
 		/*if (media != null && media.dvdtrack > 0) {
@@ -1348,7 +1344,7 @@ private JTextField mencoder_ass_scale;
 				}
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +sArgs.length);
 				for(int s=0;s<sArgs.length;s++) {
-					if (sArgs[s].equals("-noass") || sArgs[s].equals("-mpegopts") || (sArgs[s].equals("-vf") & vfConsumed) || (sArgs[s].equals("-af") && afConsumed) || sArgs[s].equals("-quality") || sArgs[s].equals("-nosync") || sArgs[s].equals("-mt")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					if (sArgs[s].equals("-noass") || sArgs[s].equals("-mpegopts") || (sArgs[s].equals("-vf") & vfConsumed) || (sArgs[s].equals("-af") && afConsumed) || sArgs[s].equals("-quality") || sArgs[s].equals("-nosync") || sArgs[s].equals("-mt")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 						cmdArray[cmdArray.length-sArgs.length-2+s] = "-quiet"; //$NON-NLS-1$
 					} else
 						cmdArray[cmdArray.length-sArgs.length-2+s] = sArgs[s];
@@ -1513,11 +1509,11 @@ private JTextField mencoder_ass_scale;
 						} catch (Throwable e) {
 							PMS.info("Error while executing: " + key + " : " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 							if (verifyOnly) {
-								return new String [] { "@@" + e.getMessage() };
+								return new String [] { "@@Error while parsing: " + e.getMessage() }; //$NON-NLS-1$
 							}
 						}
 					} else if (verifyOnly) {
-						return new String [] { "@@error" };
+						return new String [] { "@@Malformatted line: " + line }; //$NON-NLS-1$
 					}
 				}
 			}

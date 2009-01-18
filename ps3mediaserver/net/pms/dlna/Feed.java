@@ -128,7 +128,7 @@ public class Feed extends DLNAResource implements IXMLBuilder {
 			String s4) throws Exception {
 		if (catchItemThumb && s.equals("url")) {
 			tempItemThumbURL = s3;
-		} else if (catchItemMediaContent && s.equals("url")) {
+		} else if (catchItemMediaContent && s.equals("url") && !tempItemLink.contains("youtube")) {
 			tempItemLink = s3;
 		} else if (catchItemLink && s.equals("href")) {
 			/*if (s3.indexOf("feed") > -1) {
@@ -206,6 +206,7 @@ public class Feed extends DLNAResource implements IXMLBuilder {
 			catchItemTitle = true;
 		} else if (catchItem && s.equals("link")) {
 			catchItemLink = true;
+			tempItemLink = null;
 		} else if (catchItem && s.equals("thumbnail") && s1 != null && s1.equals("media")) {
 			catchItemThumb = true;
 		} else if ((catchItem && s.equals("content") && s1 != null && s1.equals("media")) || (catchItem && s.equals("enclosure"))) {

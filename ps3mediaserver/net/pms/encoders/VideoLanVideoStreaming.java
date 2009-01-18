@@ -19,6 +19,7 @@
 package net.pms.encoders;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.swing.JComponent;
 
@@ -109,6 +110,15 @@ public class VideoLanVideoStreaming extends Player {
 			cmdArray[3] = fileName;
 			cmdArray[4] = "--sout"; //$NON-NLS-1$
 			cmdArray[5] = trans;
+		}
+		
+		if (fileName.equals("screen://")) { //$NON-NLS-1$
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +5);
+			cmdArray[6] = "--screen-fps"; //$NON-NLS-1$
+			cmdArray[7] = "5"; //$NON-NLS-1$
+			cmdArray[8] = "--dshow-fps"; //$NON-NLS-1$
+			cmdArray[9] = "29.950001"; //$NON-NLS-1$
+			cmdArray[10] = "--nooverlay"; //$NON-NLS-1$
 		}
 				
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
