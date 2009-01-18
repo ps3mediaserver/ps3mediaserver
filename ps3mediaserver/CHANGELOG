@@ -15,6 +15,7 @@ M4V now streamed by default, you have to enter the #Transcoded# folder to force 
 WMA now transcoded by default
 Italian localization
 WINDOWS ONLY: Use (only with 720p/1080p H264 content) an experimental mencoder build for multicores : http://code.google.com/soc/2008/ffmpeg/appinfo.html?csaid=9FD2BF705A5D5DBB
+New OSX icon (thanks to Jakob Karlsson)
 
 - Fixes
 
