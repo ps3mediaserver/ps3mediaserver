@@ -161,7 +161,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						}
 					}
 					if (pl != null) {
-						if (!child.ext.ps3compatible() || (PMS.getConfiguration().getUseSubtitles() && child.srtFile)) {
+						boolean forceTranscode = false;
+						if (child.ext != null)
+							forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode());
+						
+						if (forceTranscode || !child.ext.ps3compatible() || (PMS.getConfiguration().getUseSubtitles() && child.srtFile)) {
 							child.player = pl;
 							PMS.info("Switching " + child.getName() + " to player: " + pl.toString());
 						}
