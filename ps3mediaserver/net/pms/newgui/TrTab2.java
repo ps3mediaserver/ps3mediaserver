@@ -224,7 +224,7 @@ public class TrTab2 {
        tabbedPane.add(commonDec.id(), commonDec.getConfigPanel());
        TreeNodeSettings commonEnc = new TreeNodeSettings(Messages.getString("TrTab2.13"), null, buildMEncoder()); //$NON-NLS-1$
        tabbedPane.add(commonEnc.id(), commonEnc.getConfigPanel());*/
-       TreeNodeSettings commonEnc = new TreeNodeSettings("Common transcode settings", null, buildCommon()); //$NON-NLS-1$
+       TreeNodeSettings commonEnc = new TreeNodeSettings(Messages.getString("TrTab2.5"), null, buildCommon()); //$NON-NLS-1$
        tabbedPane.add(commonEnc.id(), commonEnc.getConfigPanel());
      //  root.add(commonDec);
        root.add(commonEnc);

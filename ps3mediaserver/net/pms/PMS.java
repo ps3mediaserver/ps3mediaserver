@@ -719,6 +719,8 @@ public class PMS {
 	public void reset() throws IOException {
 		debug("Waiting 1 seconds..."); //$NON-NLS-1$
 		UPNPHelper.sendByeBye();
+		server.stop();
+		server = null;
 		mediaLibraryAdded = false;
 		manageRoot();
 		try {
@@ -726,6 +728,8 @@ public class PMS {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		server = new HTTPServer(configuration.getServerPort());
+		server.start();
 		frame.setReloadable(false);
 		UPNPHelper.sendAlive();
 	}
