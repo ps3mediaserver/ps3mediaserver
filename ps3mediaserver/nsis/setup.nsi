@@ -32,6 +32,7 @@ ShowUninstDetails show
 
 Section "Program Files"
   SetOutPath "$INSTDIR"
+  SetOverwrite on
   File /r /x ".svn" "win32"
   File "PMS.exe"
   File "pms.jar"
