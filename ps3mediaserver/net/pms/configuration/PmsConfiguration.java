@@ -85,6 +85,7 @@ public class PmsConfiguration {
 	private static final String KEY_HIDE_ENGINENAMES = "hide_enginenames";
 	private static final String KEY_SHARES = "shares";
 	private static final String KEY_NOTRANSCODE = "notranscode";
+	private static final String KEY_FORCETRANSCODE = "forcetranscode";
 	private static final String KEY_MENCODER_MT = "mencoder_mt";
 	private static final String KEY_MENCODER_REMUX_AC3 = "mencoder_remux_ac3";
 	private static final String KEY_MENCODER_REMUX_MPEG2 = "mencoder_remux_mpeg2";
@@ -789,6 +790,14 @@ public class PmsConfiguration {
 
 	public void setNoTranscode(String value) {
 		configuration.setProperty(KEY_NOTRANSCODE, value);
+	}
+	
+	public String getForceTranscode() {
+		return getString(KEY_FORCETRANSCODE, "");
+	}
+
+	public void setForceTranscode(String value) {
+		configuration.setProperty(KEY_FORCETRANSCODE, value);
 	}
 	
 	public void setMencoderMT(boolean value) {
