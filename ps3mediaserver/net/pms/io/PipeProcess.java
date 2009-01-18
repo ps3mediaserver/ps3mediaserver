@@ -114,7 +114,7 @@ public class PipeProcess {
 	public InputStream getInputStream() throws IOException {
 		if (!PMS.get().isWindows()) {
 			PMS.debug("Opening file " + linuxPipeName + " for reading...");
-			RandomAccessFile raf = new RandomAccessFile ( linuxPipeName, "rw" ) ;
+			RandomAccessFile raf = new RandomAccessFile ( linuxPipeName, "r" ) ;
 			return new FileInputStream(raf.getFD());
 		}
 		return mk.getReadable();

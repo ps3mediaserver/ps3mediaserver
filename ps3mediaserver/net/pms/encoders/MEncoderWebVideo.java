@@ -24,10 +24,13 @@ import javax.swing.JComponent;
 
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.formats.Format;
 import net.pms.io.OutputParams;
+import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
+import net.pms.io.ProcessWrapperImpl;
 
-public class MEncoderWebVideo extends MEncoderVideo {
+public class MEncoderWebVideo extends Player {
 
 	@Override
 	public JComponent config() {
@@ -56,13 +59,14 @@ public class MEncoderWebVideo extends MEncoderVideo {
 		return "video/mpeg"; //$NON-NLS-1$
 	}
 
-	@Override
 	protected String[] getDefaultArgs() {
-		return new String [] { "-prefer-ipv4", "-quiet", "-oac", "lavc", "-of", "lavf", "-lavfopts", "format=dvd", "-ovc", "lavc", "-lavcopts", "vcodec=mpeg2video:vbitrate=4096:threads=2:acodec=mp2:abitrate=128" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
+		return new String [] { "-prefer-ipv4", "-quiet", "-oac", "lavc", "-of", "lavf", "-lavfopts", "format=dvd", "-ovc", "lavc", "-lavcopts", "vcodec=mpeg2video:vbitrate=4096:threads=2:acodec=mp2:abitrate=128", "-ofps", "24000/1001" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$
 	}
-
+	
+	private final PmsConfiguration configuration;
+	
 	public MEncoderWebVideo(PmsConfiguration configuration) {
-		super(configuration);
+		this.configuration = configuration;
 	}
 
 	@Override
@@ -70,7 +74,35 @@ public class MEncoderWebVideo extends MEncoderVideo {
 			OutputParams params) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
-		return super.launchTranscode(fileName, media, params);
+		//return super.launchTranscode(fileName, media, params);
+		
+		PipeProcess pipe = new PipeProcess("mencoder" + System.currentTimeMillis()); //$NON-NLS-1$
+		params.input_pipes [0] = pipe;
+		
+		String cmdArray [] = new String [args().length + 4];
+		cmdArray[0] = executable();
+		cmdArray[1] = fileName;
+		for(int i=0;i<args().length;i++) {
+			cmdArray[i+2] = args()[i];
+		}
+		cmdArray[cmdArray.length-2] = "-o"; //$NON-NLS-1$
+		cmdArray[cmdArray.length-1] = pipe.getInputPipe();
+		
+		ProcessWrapper mkfifo_process = pipe.getPipeProcess();
+		
+		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
+		pw.attachProcess(mkfifo_process);
+		mkfifo_process.runInNewThread();
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) { }
+		pipe.deleteLater();
+		
+		pw.runInNewThread();
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) { }
+		return pw;
 	}
 
 	@Override
@@ -81,6 +113,21 @@ public class MEncoderWebVideo extends MEncoderVideo {
 	@Override
 	public String name() {
 		return "MEncoder Web"; //$NON-NLS-1$
+	}
+
+	@Override
+	public String[] args() {
+		return getDefaultArgs();
+	}
+
+	@Override
+	public String executable() {
+		return configuration.getMencoderPath();
+	}
+
+	@Override
+	public int type() {
+		return Format.VIDEO;
 	}
 
 }

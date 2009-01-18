@@ -618,8 +618,8 @@ public class PMS {
 	}
 	
 	private void registerExtensions() {
-		extensions.add(new MKV());
 		extensions.add(new WEB());
+		extensions.add(new MKV());
 		extensions.add(new M4A());
 		extensions.add(new MP3());
 		extensions.add(new ISO());
