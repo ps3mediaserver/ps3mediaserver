@@ -41,6 +41,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang.StringUtils;
+
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
@@ -59,7 +61,6 @@ public class NetworkTab {
 	private JCheckBox  blockBox;
 	private JTextField host;
 	private JTextField port; 
-	private JTextField encoding ;
 	private JComboBox langs ;
 	private JComboBox networkinterfacesCBX;
 	
@@ -109,7 +110,7 @@ public class NetworkTab {
     	  defaultLang = Locale.getDefault().getLanguage();
       }
       if (defaultLang == null)
-    	  defaultLang = ""; //$NON-NLS-1$
+    	  defaultLang = "en"; //$NON-NLS-1$
      kcbm.setSelectedKey(defaultLang);
      if (langs.getSelectedIndex() == -1)
     	 langs.setSelectedIndex(0);
@@ -182,7 +183,10 @@ public class NetworkTab {
     		@Override
     		public void keyReleased(KeyEvent e) {
        			try {
-    				int ab = Integer.parseInt(port.getText());
+       				String p = port.getText();
+       				if (StringUtils.isEmpty(p))
+       					p = "5001";
+    				int ab = Integer.parseInt(p);
     				configuration.setServerPort(ab);
     				PMS.get().getFrame().setReloadable(true);
     			} catch (NumberFormatException nfe) {}
@@ -241,11 +245,11 @@ public class NetworkTab {
         builder.addLabel(Messages.getString("NetworkTab.24"),  cc.xy(1, 27)); //$NON-NLS-1$
         builder.add(port,          cc.xyw(3,  27, 7)); 
        
-       
+        /*
        cmp = builder.addSeparator(Messages.getString("NetworkTab.25"),  cc.xyw(1, 31, 9)); //$NON-NLS-1$
        cmp = (JComponent) cmp.getComponent(0);
        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-       
+     
        encoding = new JTextField(PMS.getConfiguration().getCharsetEncoding());
        
        encoding.addKeyListener(new KeyListener() {
@@ -266,7 +270,7 @@ public class NetworkTab {
           });
        builder.addLabel(Messages.getString("NetworkTab.26"),  cc.xy(1,  33)); //$NON-NLS-1$
        builder.add(encoding,          cc.xyw(3,  33, 7)); 
-       
+       */
        cmp = builder.addSeparator(Messages.getString("NetworkTab.27"),  cc.xyw(1, 37, 9)); //$NON-NLS-1$
        cmp = (JComponent) cmp.getComponent(0);
        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
