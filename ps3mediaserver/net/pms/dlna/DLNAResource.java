@@ -21,7 +21,6 @@ package net.pms.dlna;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -484,22 +483,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	}
 	
 	private String encodeXML(String s) {
-		String ss = null;
-		try {
-			ss = URLEncoder.encode(s, "UTF-8");
-			ss = URLDecoder.decode(ss, PMS.getConfiguration().getCharsetEncoding());
-			s = ss;
-		} catch (UnsupportedEncodingException e) {
-			PMS.error(null, e);
-			if (ss != null) {
-				try {
-					ss = URLDecoder.decode(ss, System.getProperty("file.encoding"));
-					s = ss;
-				} catch (UnsupportedEncodingException e1) {
-					PMS.error(null, e1);
-				}
-			}
-		}
 		
 		s = s.replace("&", "&amp;"); 
 		s = s.replace("<", "&lt;"); 
@@ -507,6 +490,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		s = s.replace("\"", "&quot;"); 
 		s = s.replace("'", "&apos;"); 
 		s = s.replace("&", "&amp;");
+		
 		return s;
 	}
 	
