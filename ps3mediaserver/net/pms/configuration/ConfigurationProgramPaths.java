@@ -12,6 +12,7 @@ class ConfigurationProgramPaths implements ProgramPaths {
 	private static final String KEY_MPLAYER_PATH = "mplayer_path";
 	private static final String KEY_TSMUXER_PATH = "tsmuxer_path";
 	private static final String KEY_FLAC_PATH = "flac_path";
+	private static final String KEY_MENCODERMT_PATH = "mencodermt_path";
 	
 	private final Configuration configuration;
 	private final ProgramPaths defaults;
@@ -59,6 +60,11 @@ class ConfigurationProgramPaths implements ProgramPaths {
 	private String stringFromConfigFile(String key, String def) {
 		String value = configuration.getString(key);
 		return StringUtils.isNotBlank(value) ? value : def;
+	}
+
+	@Override
+	public String getMencoderMTPath() {
+		return stringFromConfigFile(KEY_MENCODERMT_PATH, defaults.getMencoderMTPath());
 	}
 
 }

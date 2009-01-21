@@ -37,4 +37,9 @@ class WindowsDefaultPaths implements ProgramPaths {
 		return "videolan/vlc.exe";
 	}
 
+	@Override
+	public String getMencoderMTPath() {
+		return "win32/mencoder_mt.exe";
+	}
+
 }

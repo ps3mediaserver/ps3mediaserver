@@ -4,6 +4,7 @@ class ProgramPathDisabler implements ProgramPaths {
 	
 	private boolean disableVlc = false;
 	private boolean disableMencoder = false;
+	private boolean disableMencoderMT = false;
 	private boolean disableFfmpeg = false;
 	private boolean disableMplayer = false;
 	
@@ -62,5 +63,10 @@ class ProgramPathDisabler implements ProgramPaths {
 		
 	public void disableMplayer() {
 		disableMplayer = true;
+	}
+
+	@Override
+	public String getMencoderMTPath() {
+		return disableMencoderMT ? null : ifEnabled.getMencoderMTPath();
 	}
 }

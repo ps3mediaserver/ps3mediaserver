@@ -37,4 +37,9 @@ class LinuxDefaultPaths implements ProgramPaths {
 		return "vlc";
 	}
 
+	@Override
+	public String getMencoderMTPath() {
+		return "mencoder_mt";
+	}
+
 }
