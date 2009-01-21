@@ -46,7 +46,7 @@ public class OutputParams {
 	public boolean no_videoencode;
 	public String forceFps;
 	public String forceType;
-	
+	public int mediaRenderer;
 	
 	public OutputParams(PmsConfiguration configuration) {
 		waitbeforestart = 6000;

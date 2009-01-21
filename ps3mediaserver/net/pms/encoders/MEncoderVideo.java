@@ -68,6 +68,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.network.HTTPResource;
 import net.pms.newgui.FontFileFilter;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.MyComboBoxModel;
@@ -805,6 +806,7 @@ private JTextField mencoder_ass_scale;
 	protected boolean ovccopy;
 	protected boolean dvd;
 	protected boolean oaccopy;
+	protected boolean avi;
 
 	protected String overridenMainArgs [];
 	protected String defaultSubArgs [];
@@ -819,10 +821,9 @@ private JTextField mencoder_ass_scale;
 //
 //	-af channels=6:6:0:0:1:2:2:3:3:5:4:1:5:4
 	
-	// 24p -> 25p :tele_src=24000/1001:tele_dest=25  + nosync
 	
-	protected String [] getDefaultArgs() { // 6:0:0:1:4:2:5:3:2:4:1:5:3
-		return new String [] { "-quiet",/* pcm?"-quiet":"-af", pcm?"channels=6:6:0:0:1:2:2:3:3:5:4:1:5:5":"-quiet", */ /* pcm?"-format":"-quiet", pcm?"s24le":"", */ "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", (pcm||ac3)?"avi":"mpeg", /*"-lavfopts", "format=mpegts", */"-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", ovccopy?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$
+	protected String [] getDefaultArgs() {
+		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", (pcm||ac3||avi)?"avi":"mpeg", "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", ovccopy?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$
 	}
 
 	@Override
@@ -886,6 +887,14 @@ private JTextField mencoder_ass_scale;
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params)
 			throws IOException {
 		
+		String vcodec = "mpeg2video";
+		/*
+		avi = false;
+		if (params.mediaRenderer ==HTTPResource.XBOX) {
+			avi = true;
+			vcodec = "mpeg4:vbitrate=20000000"; // http://wiki.megaframe.org/wiki/Ubuntu_XBOX_360#MEncoder
+		}
+		*/
 		oaccopy = false;
 		if (configuration.isMencoderRemuxAC3()) {
 			if (media != null && media.codecA != null && media.codecA.equals("ac3") && media.audioCodes != null && media.audioCodes.size() <= 1 && !avisynth()) //$NON-NLS-1$
@@ -951,7 +960,7 @@ private JTextField mencoder_ass_scale;
 		}
 		//}
 		if (PMS.getConfiguration().getMencoderMainSettings() != null) {
-			String encodeSettings = "-lavcopts autoaspect=1:vcodec=mpeg2video:acodec=ac3:abitrate=" + PMS.getConfiguration().getAudioBitrate() + ":threads=" + PMS.getConfiguration().getNumberOfCpuCores() + ":" + PMS.getConfiguration().getMencoderMainSettings(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + ":acodec=ac3:abitrate=" + PMS.getConfiguration().getAudioBitrate() + ":threads=" + PMS.getConfiguration().getNumberOfCpuCores() + ":" + PMS.getConfiguration().getMencoderMainSettings(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, PMS.getConfiguration().getMencoderMainSettings());
 			st = new StringTokenizer(encodeSettings, " "); //$NON-NLS-1$
 			int oldc = overridenMainArgs.length;
@@ -1216,30 +1225,15 @@ private JTextField mencoder_ass_scale;
 				scalerString = "," + scalerString; //$NON-NLS-1$
 			cmdArray[cmdArray.length-3] = (deinterlace?"yadif":"") + (scaler?scalerString:""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		}
-		
-		// set noskip and -mc , depending on options and file types
-		/*if (PMS.getConfiguration().isMencoderNoOutOfSync() || PMS.getConfiguration().isMencoderIntelligentSync()) {
-			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +3);
-			cmdArray[cmdArray.length-5] = "-mc"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-4] = "-quiet"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
-			if (PMS.getConfiguration().isMencoderNoOutOfSync()) {
-				cmdArray[cmdArray.length-4] = "0"; //$NON-NLS-1$
-				cmdArray[cmdArray.length-3] = "-noskip"; //$NON-NLS-1$
-			}
-			
-			if (PMS.getConfiguration().isMencoderIntelligentSync()) {
-				if (media != null && media.codecA != null && media.codecV != null && ((media.codecA.equals("mp3") && media.codecV.equals("mpeg4")) //$NON-NLS-1$ //$NON-NLS-2$
-						|| media.container.equals("rm") || media.container.equals("flv"))) { //$NON-NLS-1$ //$NON-NLS-2$
-					// correction A/V in mplayer for xvid+mp3, flv and rm
-					cmdArray[cmdArray.length-4] = "0.1"; //$NON-NLS-1$
-					cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
-				} else if (!PMS.getConfiguration().isMencoderNoOutOfSync()) {
-					cmdArray[cmdArray.length-5] = "-quiet"; //$NON-NLS-1$
-				}
-			}
-		}*/
-		
+		/*
+		if (params.mediaRenderer == HTTPResource.XBOX) {
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +4);
+			cmdArray[cmdArray.length-6] = "-forceidx"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-5] = "-noodml"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-4] = "-ffourcc"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-3] = "DX50"; //$NON-NLS-1$
+		}
+		*/
 		if (configuration.getMencoderMT()) {
 			if (setCmdToMencoderMT(configuration, cmdArray, media)) {
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
@@ -1303,7 +1297,7 @@ private JTextField mencoder_ass_scale;
 					} else if (sArgs[s].equals("-quality")) { //$NON-NLS-1$
 						for(int c=0;c<cmdArray.length;c++) {
 							if (cmdArray[c] != null && cmdArray[c].equals("-lavcopts")) {//$NON-NLS-1$
-								cmdArray[c+1] = "autoaspect=1:vcodec=mpeg2video:acodec=ac3:abitrate=" + PMS.getConfiguration().getAudioBitrate() + ":threads=" + PMS.getConfiguration().getNumberOfCpuCores() + ":" + sArgs[s+1]; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+								cmdArray[c+1] = "autoaspect=1:vcodec=" + vcodec + ":acodec=ac3:abitrate=" + PMS.getConfiguration().getAudioBitrate() + ":threads=" + PMS.getConfiguration().getNumberOfCpuCores() + ":" + sArgs[s+1]; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 								addMaximumBitrateConstraints(cmdArray[c+1], media, cmdArray[c+1]);
 								sArgs[s+1] = "-quality"; //$NON-NLS-1$
 								s++;
@@ -1420,8 +1414,7 @@ private JTextField mencoder_ass_scale;
 		if (media != null && (media.width < 1280 || media.codecV == null || !media.codecV.equals("h264"))) //$NON-NLS-1$
 				set = false;
 		if (set) {
-			String mencoderMTPath = PMS.getConfiguration().getMencoderPath();
-			mencoderMTPath = mencoderMTPath.substring(0, mencoderMTPath.length()-4) + "_mt.exe"; //$NON-NLS-1$
+			String mencoderMTPath = PMS.getConfiguration().getMencoderMTPath();
 			if (new File(mencoderMTPath).exists()) {
 				cmdArray[0] = mencoderMTPath;
 				return true;
