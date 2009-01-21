@@ -44,7 +44,6 @@ public class HTTPResource {
 	public static final String MPEG_TYPEMIME = "video/mpeg";
 	public static final String MP4_TYPEMIME = "video/mp4";
 	public static final String AVI_TYPEMIME = "video/avi";
-	public static final String PS3_AVI_TYPEMIME = "video/x-divx";
 	public static final String WMV_TYPEMIME = "video/x-ms-wmv";
 	public static final String ASF_TYPEMIME = "video/x-ms-asf";
 	
@@ -53,6 +52,10 @@ public class HTTPResource {
 	public static final String TIFF_TYPEMIME = "image/tiff";
 	public static final String GIF_TYPEMIME = "image/gif";
 	public static final String BMP_TYPEMIME = "image/bmp";
+	
+	public static final int PS3 = 0;
+	public static final int XBOX = 1;
+	
 	
 	public HTTPResource() {
 		
@@ -126,6 +129,17 @@ public class HTTPResource {
 		url = url.replace('<', 'µ');
 		url = url.replace('>', 'µ');
 		return url;
+	}
+	
+	public String getRendererMimeType(String mimetype, int mediarenderer) {
+		if (mimetype.equals(AVI_TYPEMIME)) {
+			if (mediarenderer == PS3) {
+				return "video/x-divx";
+			} else if (mediarenderer == XBOX) {
+				return "video/x-msvideo";
+			}
+		}
+		return mimetype;
 	}
 
 }

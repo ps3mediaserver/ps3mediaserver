@@ -29,7 +29,7 @@ import net.pms.formats.Format;
 public class WebVideoStream extends WebStream {
 
 	@Override
-	public InputStream getInputStream(long low, long high, double timeseek) throws IOException {
+	public InputStream getInputStream(long low, long high, double timeseek, int mediaRenderer) throws IOException {
 		if (URL.toLowerCase().indexOf("youtube") > -1 && URL.toLowerCase().indexOf("?") > -1) {
 			try {
 				InputStream is = downloadAndSend(URL, false);
@@ -60,7 +60,7 @@ public class WebVideoStream extends WebStream {
 				PMS.error(null, e);
 			}
 		}
-		return super.getInputStream(low, high, timeseek);
+		return super.getInputStream(low, high, timeseek, mediaRenderer);
 	}
 	
 

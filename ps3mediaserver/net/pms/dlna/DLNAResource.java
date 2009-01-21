@@ -499,7 +499,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public String getFlags() {
 		return flags;
 	}
-	public String toString() {
+	public String toString(int mediaRenderer) {
 		StringBuffer sb = new StringBuffer();
 		if (isFolder())
 			openTag(sb, "container");
@@ -547,7 +547,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
 			
 			//flags += ";DLNA.ORG_PN=MPEG_TS_PAL";
-			addAttribute(sb, "protocolInfo", "http-get:*:" + mimeType() + flags);
+			addAttribute(sb, "protocolInfo", "http-get:*:" + getRendererMimeType(mimeType(), mediaRenderer) + flags);
 			
 			if (ifoFileURI != null) {
 				 // not working with ps3 it seems
@@ -655,7 +655,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		return sb.toString();
 	}
 	
-	public InputStream getInputStream(long low, long high, double timeseek) throws IOException {
+	public InputStream getInputStream(long low, long high, double timeseek, int mediarenderer) throws IOException {
 		
 		PMS.debug( "Asked stream chunk [" + low + "-" + high + "] timeseek: " + timeseek + " of " + getName() + " and player " + player);
 		
@@ -670,6 +670,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			OutputParams params = new OutputParams(PMS.getConfiguration());
 			params.aid = aid;
 			params.sid = sid;
+			params.mediaRenderer = mediarenderer;
 			
 			if (externalProcess == null || externalProcess.isDestroyed()) {
 				PMS.minimal("Starting transcode of " + getName());

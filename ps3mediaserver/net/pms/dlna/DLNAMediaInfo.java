@@ -464,7 +464,7 @@ public class DLNAMediaInfo {
 	
 	public void finalize(int type) {
 		if (container != null && container.equals("avi")) {
-			mimeType = HTTPResource.PS3_AVI_TYPEMIME;
+			mimeType = HTTPResource.AVI_TYPEMIME;
 		} else if (container != null && container.equals("asf")) {
 			if (codecV != null && codecV.startsWith("wm")) {
 				mimeType = HTTPResource.WMV_TYPEMIME;

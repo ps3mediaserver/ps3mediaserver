@@ -67,10 +67,11 @@ public class RequestHandler implements Runnable {
 			String headerLine = br.readLine();
 			while (headerLine != null && headerLine.length() > 0) {
 				PMS.debug( "Received on socket: " + headerLine);
-				if (headerLine != null && headerLine.indexOf("PLAYSTATION") >-1)
-					PMS.get().setPs3found(true);
-				else if (headerLine != null && headerLine.indexOf("Xbox") >-1) {
-					PMS.get().setXboxfound(true);
+				if (headerLine != null && headerLine.indexOf("PLAYSTATION") >-1) {
+					PMS.get().setRendererfound(Request.PS3);
+					request.setMediaRenderer(Request.PS3);
+				} else if (headerLine != null && headerLine.indexOf("Xbox") >-1) {
+					PMS.get().setRendererfound(Request.XBOX);
 					request.setMediaRenderer(Request.XBOX);
 				}
 				try {
@@ -84,8 +85,8 @@ public class RequestHandler implements Runnable {
 						request.setSoapaction(s.nextToken());
 					} else if (headerLine.toUpperCase().contains("CONTENT-LENGTH:")) {
 						receivedContentLength = Integer.parseInt(headerLine.substring(headerLine.toUpperCase().indexOf("CONTENT-LENGTH: ")+16));
-					} else if (headerLine.indexOf("Range: bytes=") > -1) {
-						String nums = headerLine.substring(headerLine.indexOf("Range: bytes=")+13).trim();
+					} else if (headerLine.toUpperCase().indexOf("RANGE: BYTES=") > -1) {
+						String nums = headerLine.substring(headerLine.toUpperCase().indexOf("RANGE: BYTES=")+13).trim();
 						StringTokenizer st = new StringTokenizer(nums, "-");
 						if (!nums.startsWith("-"))
 							request.setLowRange(Long.parseLong(st.nextToken()));
@@ -95,13 +96,13 @@ public class RequestHandler implements Runnable {
 							request.setHighRange(DLNAMediaInfo.TRANS_SIZE);
 					} else if (headerLine.indexOf("transferMode.dlna.org:") > -1) {
 						request.setTransferMode(headerLine);
-					} else if (headerLine.indexOf("TimeSeekRange.dlna.org: npt=") > -1) { // firmware 2.50+
-						String timeseek = headerLine.substring(headerLine.indexOf("TimeSeekRange.dlna.org: npt=")+28);
+					} else if (headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG: NPT=") > -1) { // firmware 2.50+
+						String timeseek = headerLine.substring(headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG: NPT=")+28);
 						if (timeseek.endsWith("-"))
 							timeseek = timeseek.substring(0, timeseek.length()-1);
 						request.setTimeseek(Double.parseDouble(timeseek));
-					} else if (headerLine.indexOf("TimeSeekRange.dlna.org : npt=") > -1) { // firmware 2.40
-						String timeseek = headerLine.substring(headerLine.indexOf("TimeSeekRange.dlna.org : npt=")+29);
+					} else if (headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG : NPT==") > -1) { // firmware 2.40
+						String timeseek = headerLine.substring(headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG : NPT==")+29);
 						if (timeseek.endsWith("-"))
 							timeseek = timeseek.substring(0, timeseek.length()-1);
 						request.setTimeseek(Double.parseDouble(timeseek));

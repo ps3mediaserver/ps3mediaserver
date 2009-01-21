@@ -49,8 +49,6 @@ public class Request extends HTTPResource {
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
 	
-	public static final int PS3 = 0;
-	public static final int XBOX = 1;
 	
 	private String method;
 	private String argument;
@@ -183,12 +181,8 @@ public class Request extends HTTPResource {
 					output(output, "Connection: keep-alive");
 					inputStream = files.get(0).getThumbnailInputStream();
 				} else {
-					inputStream = files.get(0).getInputStream(lowRange, highRange, timeseek);
-					output(output, "Content-Type: " + files.get(0).mimeType());
-					/*if (getTransferMode() != null) {
-						output(output, getTransferMode());
-						output(output, "contentFeatures.dlna.org: " + files.get(0).getFlags().substring(1));
-					}*/
+					inputStream = files.get(0).getInputStream(lowRange, highRange, timeseek, mediaRenderer);
+					output(output, "Content-Type: " + getRendererMimeType(files.get(0).mimeType(), mediaRenderer));
 					DLNAResource dlna = files.get(0);
 					String name = dlna.getDisplayName();
 					if (dlna.media != null) {
@@ -214,12 +208,9 @@ public class Request extends HTTPResource {
 							highRange = totalsize -1;
 						}
 						output(output, "CONTENT-RANGE: bytes " + lowRange + "-" + highRange + "/" +totalsize);
-					} /*else if (lowRange == 0 && highRange == DLNAMediaInfo.TRANS_SIZE) {
-						output(output, "CONTENT-RANGE: bytes 0-" + (CLoverride-1) + "/" + CLoverride);
-					}*/
+					}
 					if (files.get(0).getPlayer() == null)
 						output(output, "Accept-Ranges: bytes");
-					//output(output, "Expires: 0");
 					output(output, "Connection: keep-alive");
 				}
 			}
@@ -324,7 +315,7 @@ public class Request extends HTTPResource {
 					for(DLNAResource uf:files) {
 						if (mediaRenderer == XBOX && containerID != null)
 							uf.setFakeParentId(containerID);
-						response.append(uf.toString());
+						response.append(uf.toString(mediaRenderer));
 					}
 				}
 				response.append(HTTPXMLHelper.DIDL_FOOTER);
