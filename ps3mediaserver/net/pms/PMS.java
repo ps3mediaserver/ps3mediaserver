@@ -91,6 +91,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.OutputTextConsumer;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.io.WinUtils;
+import net.pms.network.HTTPResource;
 import net.pms.network.HTTPServer;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
@@ -128,24 +129,12 @@ public class PMS {
 		sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US); //$NON-NLS-1$
 	}
 	
-	private boolean xboxfound;
-	
-	public boolean isXboxfound() {
-		return xboxfound;
-	}
+	private ArrayList<Integer> foundRenderers = new ArrayList<Integer>();
 
-	public void setXboxfound(boolean xboxfound) {
-		this.xboxfound = xboxfound;
-	}
-
-	private boolean ps3found;
-	public boolean isPs3found() {
-		return ps3found;
-	}
-
-	public void setPs3found(boolean ps3found) {
-		this.ps3found = ps3found;
-		if (ps3found) {
+	public void setRendererfound(int mediarenderer) {
+		if (!foundRenderers.contains(mediarenderer))
+			foundRenderers.add(mediarenderer);
+		if (mediarenderer == HTTPResource.PS3) {
 			frame.setStatusCode(0, Messages.getString("PMS.5"), "PS3_2.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
@@ -362,7 +351,7 @@ public class PMS {
 				try {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {}
-				if (!ps3found) {
+				if (!foundRenderers.contains(HTTPResource.PS3)) {
 					frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
