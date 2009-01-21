@@ -89,6 +89,7 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_MT = "mencoder_mt";
 	private static final String KEY_MENCODER_REMUX_AC3 = "mencoder_remux_ac3";
 	private static final String KEY_MENCODER_REMUX_MPEG2 = "mencoder_remux_mpeg2";
+	private static final String KEY_OVERSCAN = "mencoder_overscan";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -160,6 +161,10 @@ public class PmsConfiguration {
 
 	public String getMencoderPath() {
 		return programPaths.getMencoderPath();
+	}
+	
+	public String getMencoderMTPath() {
+		return programPaths.getMencoderMTPath();
 	}
 
 	public void disableMEncoder() {
@@ -247,7 +252,7 @@ public class PmsConfiguration {
 	public String getLanguage() {
 		String def = Locale.getDefault().getLanguage();
 		if (def == null)
-			def = "";
+			def = "en";
 		String value = getString(KEY_LANGUAGE, def);
 		return StringUtils.isNotBlank(value) ? value.trim() : def;
 	}
@@ -823,4 +828,13 @@ public class PmsConfiguration {
 	public boolean isMencoderRemuxMPEG2() {
 		return getBoolean(KEY_MENCODER_REMUX_MPEG2, false);
 	}
+	
+	public int getMEncoderOverscan() {
+		return getInt(KEY_OVERSCAN, 0);
+	}
+	
+	public void setMEncoderOverscan(int value) {
+		configuration.setProperty(KEY_OVERSCAN, value);
+	}
+	
 }

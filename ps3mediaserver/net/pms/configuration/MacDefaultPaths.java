@@ -37,4 +37,9 @@ class MacDefaultPaths implements ProgramPaths {
 		return "osx/vlc";
 	}
 
+	@Override
+	public String getMencoderMTPath() {
+		return "osx/mencoder_mt";
+	}
+
 }

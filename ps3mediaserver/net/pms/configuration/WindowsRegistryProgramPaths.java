@@ -57,4 +57,9 @@ class WindowsRegistryProgramPaths implements ProgramPaths {
 		return defaults.getVlcPath();
 	}
 
+	@Override
+	public String getMencoderMTPath() {
+		return defaults.getMencoderMTPath();
+	}
+
 }
