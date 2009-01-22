@@ -99,7 +99,7 @@ public class NetworkTab {
      
        
        builder.addLabel(Messages.getString("NetworkTab.0"),  cc.xy(1,  7)); //$NON-NLS-1$
-       final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "en", "fr", "es", "it" }, new Object[] { Messages.getString("NetworkTab.9"), Messages.getString("NetworkTab.10"), "Spanish", "Italian" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+       final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "en", "fr", "de", "es", "it", "se", "ru" }, new Object[] { Messages.getString("NetworkTab.9"), Messages.getString("NetworkTab.10"), "German", "Spanish", "Italian", "Swedish", "Russian" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
        langs = new JComboBox(kcbm);
       langs.setEditable(false);
       //langs.setSelectedIndex(0);
