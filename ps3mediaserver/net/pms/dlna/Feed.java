@@ -128,7 +128,7 @@ public class Feed extends DLNAResource implements IXMLBuilder {
 			String s4) throws Exception {
 		if (catchItemThumb && s.equals("url")) {
 			tempItemThumbURL = s3;
-		} else if (catchItemMediaContent && s.equals("url") && !tempItemLink.contains("youtube")) {
+		} else if (catchItemMediaContent && s.equals("url") && (tempItemLink == null || !tempItemLink.contains("youtube"))) {
 			tempItemLink = s3;
 		} else if (catchItemLink && s.equals("href")) {
 			/*if (s3.indexOf("feed") > -1) {
