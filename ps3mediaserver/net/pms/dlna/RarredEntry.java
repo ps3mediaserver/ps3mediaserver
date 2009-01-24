@@ -66,6 +66,8 @@ public class RarredEntry extends DLNAResource implements UnusedProcess {
 				} catch (IOException e) {}
 			}
 		}
+		if (data == null)
+			return null;
 		ByteArrayInputStream bytes = new ByteArrayInputStream(data);
 		return new UnusedInputStream(bytes, this, 10000) {
 			@Override
