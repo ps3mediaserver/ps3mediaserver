@@ -565,10 +565,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					addAttribute(sb, "resolution", media.getResolution());
 				if (media.nrAudioChannels > 0)
 					addAttribute(sb, "nrAudioChannels", media.nrAudioChannels);
-				if (player == null)
-					addAttribute(sb, "bitrate", media.bitrate);
-				else
-					addAttribute(sb, "bitrate", "1000000");
+				addAttribute(sb, "bitrate", media.getRealVideoBitrate());
 				if (media.sampleFrequency != null)
 					addAttribute(sb, "sampleFrequency", media.sampleFrequency);
 			} else if (ext != null && ext.isImage()) {
