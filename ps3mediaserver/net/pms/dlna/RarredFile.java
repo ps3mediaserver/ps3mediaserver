@@ -80,7 +80,11 @@ public class RarredFile extends DLNAResource {
 
 	@Override
 	public boolean isValid() {
-		return f.exists();
+		boolean t = false;
+		try {
+			t = f.exists() && !rarFile.isEncrypted();
+		} catch (Throwable th) {}
+		return t;
 	}
 
 }
