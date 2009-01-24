@@ -14,10 +14,10 @@ import net.pms.io.ProcessWrapper;
 
 public class RAWThumbnailer extends Player {
 	
-	public static String ID = "rawthumbs";
+	public static String ID = "rawthumbs"; //$NON-NLS-1$
 
 	protected String [] getDefaultArgs() {
-		return new String [] { "-e" , "-c"}; //$NON-NLS-1$
+		return new String [] { "-e" , "-c"}; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	@Override

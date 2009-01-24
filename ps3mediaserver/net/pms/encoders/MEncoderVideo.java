@@ -886,7 +886,7 @@ private JTextField mencoder_ass_scale;
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params)
 			throws IOException {
 		
-		String vcodec = "mpeg2video";
+		String vcodec = "mpeg2video"; //$NON-NLS-1$
 		/*
 		avi = false;
 		if (params.mediaRenderer ==HTTPResource.XBOX) {
@@ -959,7 +959,7 @@ private JTextField mencoder_ass_scale;
 		}
 		//}
 		if (PMS.getConfiguration().getMencoderMainSettings() != null) {
-			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + ":acodec=ac3:abitrate=" + PMS.getConfiguration().getAudioBitrate() + ":threads=" + PMS.getConfiguration().getNumberOfCpuCores() + ":" + PMS.getConfiguration().getMencoderMainSettings(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + ":acodec=ac3:abitrate=" + PMS.getConfiguration().getAudioBitrate() + ":threads=" + PMS.getConfiguration().getNumberOfCpuCores() + ":" + PMS.getConfiguration().getMencoderMainSettings(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, PMS.getConfiguration().getMencoderMainSettings());
 			st = new StringTokenizer(encodeSettings, " "); //$NON-NLS-1$
 			int oldc = overridenMainArgs.length;
@@ -1296,7 +1296,7 @@ private JTextField mencoder_ass_scale;
 					} else if (sArgs[s].equals("-quality")) { //$NON-NLS-1$
 						for(int c=0;c<cmdArray.length;c++) {
 							if (cmdArray[c] != null && cmdArray[c].equals("-lavcopts")) {//$NON-NLS-1$
-								cmdArray[c+1] = "autoaspect=1:vcodec=" + vcodec + ":acodec=ac3:abitrate=" + PMS.getConfiguration().getAudioBitrate() + ":threads=" + PMS.getConfiguration().getNumberOfCpuCores() + ":" + sArgs[s+1]; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+								cmdArray[c+1] = "autoaspect=1:vcodec=" + vcodec + ":acodec=ac3:abitrate=" + PMS.getConfiguration().getAudioBitrate() + ":threads=" + PMS.getConfiguration().getNumberOfCpuCores() + ":" + sArgs[s+1]; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 								addMaximumBitrateConstraints(cmdArray[c+1], media, cmdArray[c+1]);
 								sArgs[s+1] = "-quality"; //$NON-NLS-1$
 								s++;
