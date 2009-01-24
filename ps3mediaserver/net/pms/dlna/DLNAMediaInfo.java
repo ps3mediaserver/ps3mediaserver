@@ -340,7 +340,7 @@ public class DLNAMediaInfo {
 									nrAudioChannels = 1;
 								} else if (token.equals("stereo")) {
 									nrAudioChannels = 2;
-								} else if (token.equals("5:1")) {
+								} else if (token.equals("5:1") || token.equals("5.1")) {
 									nrAudioChannels = 6;
 								} else if (token.equals("4 channels")) {
 									nrAudioChannels = 4;
@@ -562,6 +562,16 @@ public class DLNAMediaInfo {
 		if (width > 0 && height > 0)
 			return width + "x" + height;
 		return null;
+	}
+	
+	public int getRealVideoBitrate() {
+		if (bitrate > 0)
+			return (int) (bitrate / 8);
+		int realBitrate = 10000000;
+		try {
+			realBitrate = (int) (size / getDurationInSeconds());
+		} catch (Throwable t) {}
+		return realBitrate;
 	}
 	
 	public boolean isHDVideo() {

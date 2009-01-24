@@ -109,6 +109,10 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				outConsumer.start();
 			process.waitFor();
 			
+			try {
+				if (outConsumer != null) 
+					outConsumer.join(1000);
+			} catch (InterruptedException e) {}
 			if (bo != null)
 				bo.close();
 			if (!destroyed && !params.noexitcheck) {
