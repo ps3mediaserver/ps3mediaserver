@@ -296,9 +296,15 @@ public class FoldTab {
        //but.setBorder(BorderFactory.createEmptyBorder());
        but.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
+				JFileChooser chooser = null;
+				try {
+					 chooser = new JFileChooser();
+				} catch (Exception ee) {
+					 chooser = new JFileChooser(new RestrictedFileSystemView());
+				}
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int returnVal = chooser.showDialog((Component) e.getSource(), Messages.getString("FoldTab.9")); //$NON-NLS-1$
+				//int returnVal = chooser.showDialog((Component) e.getSource(), Messages.getString("FoldTab.9")); //$NON-NLS-1$
+				int returnVal = chooser.showOpenDialog((Component) e.getSource());
 			    if(returnVal == JFileChooser.APPROVE_OPTION) {
 			    	((DefaultListModel) FList.getModel()).add(FList.getModel().getSize(),chooser.getSelectedFile().getAbsolutePath());
 			    	if (FList.getModel().getElementAt(0).equals(ALL_DRIVES))
