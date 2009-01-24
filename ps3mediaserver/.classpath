@@ -18,7 +18,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/hamcrest-all-1.2RC2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/jaudiotagger.jar"/>
+	<classpathentry kind="lib" path="lib/jaudiotagger.jar" sourcepath="lib/jaudiotaggersrc.jar"/>
 	<classpathentry kind="lib" path="lib/h2-1.1.105.jar"/>
 	<classpathentry kind="lib" path="lib/sanselan-0.95-incubator.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
