@@ -32,7 +32,7 @@ public class WEB extends Format {
 
 	@Override
 	public boolean ps3compatible() {
-		return false;
+		return type == IMAGE;
 	}
 	
 	@Override

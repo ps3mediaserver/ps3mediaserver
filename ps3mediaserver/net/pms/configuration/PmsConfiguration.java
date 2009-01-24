@@ -166,6 +166,10 @@ public class PmsConfiguration {
 	public String getMencoderMTPath() {
 		return programPaths.getMencoderMTPath();
 	}
+	
+	public String getDCRawPath() {
+		return programPaths.getDCRaw();
+	}
 
 	public void disableMEncoder() {
 		programPaths.disableMencoder();
@@ -707,7 +711,7 @@ public class PmsConfiguration {
 	}
 
 	public List<String> getEnginesAsList(WinUtils registry) {
-		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,mplayeraudio,ffmpegaudio,tsmuxeraudio,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux"));
+		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,mplayeraudio,ffmpegaudio,tsmuxeraudio,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux,rawthumbs"));
 		engines = hackAvs(registry, engines);
 		return engines;
 	}

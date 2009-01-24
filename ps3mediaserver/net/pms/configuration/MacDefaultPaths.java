@@ -42,4 +42,9 @@ class MacDefaultPaths implements ProgramPaths {
 		return "osx/mencoder_mt";
 	}
 
+	@Override
+	public String getDCRaw() {
+		return "osx/dcrawU";
+	}
+
 }

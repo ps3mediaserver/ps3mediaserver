@@ -34,6 +34,7 @@ public abstract class Player {
 	public static final int VIDEO_WEBSTREAM_PLAYER = 2;
 	public static final int AUDIO_WEBSTREAM_PLAYER = 3;
 	public static final int MISC_PLAYER = 4;
+	public static final String NATIVE = "NATIVE";
 
 	public boolean avisynth() {
 		return false;

@@ -7,10 +7,12 @@ v1.04
 - Changes / Features
 
 Spanish localization (thanks to Jose from www.playstationhoy.com), Dutch localization (thanks to VinceNL), German localization (thanks to Jeuki), Russian localization (thanks to Peter Klassen) and Swedish localization (thanks to Dusan Ilic)
+RAW images thumbnail support (CR2/CRW/PEF/NEF/ORF/SRF/MRW/DNG/ARW/RAF)
 
 - Fixes
 
-Fixed regression with PicasaWeb images feed 
+Fixed regression with PicasaWeb images feed
+Transcode buffer wasn't fully released after end of video
 
 v1.03
 
