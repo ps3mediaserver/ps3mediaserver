@@ -14,6 +14,8 @@ RAW images thumbnail support (CR2/CRW/PEF/NEF/ORF/SRF/MRW/DNG/ARW/RAF)
 
 Fixed regression with PicasaWeb images feed
 Transcode buffer wasn't fully released after end of video
+Fixed bug with shared folders selection on Windows
+Updated ffmpeg/mplayer/mencoder builds... slight speedup for singlecore on H264 with mencoder
 
 v1.03
 
@@ -28,7 +30,7 @@ WMA now transcoded by default
 Italian localization
 WINDOWS ONLY: Use (only with 720p/1080p H264 content) an experimental mencoder build for multicores : http://code.google.com/soc/2008/ffmpeg/appinfo.html?csaid=9FD2BF705A5D5DBB
 New OSX icon (thanks to Jakob Karlsson)
-Added a "Skip/Force transcode extensions" option added if default settings don't suit
+Added a "Skip/Force transcode extensions" option added if default settings don't suit you
 Possibility to only remux AC3 audio tracks and not reencoded them
 
 - Fixes
