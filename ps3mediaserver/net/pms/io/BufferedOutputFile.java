@@ -99,7 +99,7 @@ public class BufferedOutputFile extends OutputStream  {
 			System.exit(1);
 		}
 		timer = new Timer();
-		if (params.maxBufferSize > 15) {
+		if (params.maxBufferSize > 15 && !params.hidebuffer) {
 		timer.schedule(new TimerTask() {
 
 			public void run() {
@@ -476,6 +476,8 @@ public class BufferedOutputFile extends OutputStream  {
 		PMS.info("Destroying buffer");
 		timer.cancel();
 		buffer = null;
+		System.gc();
+		System.gc();
 		System.gc();
 		if (maxMemorySize != 1048576) {
 			PMS.get().getFrame().setValue(0, "Empty");
