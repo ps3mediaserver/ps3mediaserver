@@ -156,6 +156,9 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	public List<String> getOtherResults() {
 		if (outConsumer == null)
 			return null;
+			try {
+				outConsumer.join(1000);
+			} catch (InterruptedException e) {}
 		return outConsumer.getResults();
 	}
 	

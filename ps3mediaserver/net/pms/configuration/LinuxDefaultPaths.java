@@ -42,4 +42,9 @@ class LinuxDefaultPaths implements ProgramPaths {
 		return "mencoder_mt";
 	}
 
+	@Override
+	public String getDCRaw() {
+		return "dcraw";
+	}
+
 }

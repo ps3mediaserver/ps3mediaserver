@@ -132,7 +132,7 @@ public class HTTPResource {
 	}
 	
 	public String getRendererMimeType(String mimetype, int mediarenderer) {
-		if (mimetype.equals(AVI_TYPEMIME)) {
+		if (mimetype != null && mimetype.equals(AVI_TYPEMIME)) {
 			if (mediarenderer == PS3) {
 				return "video/x-divx";
 			} else if (mediarenderer == XBOX) {

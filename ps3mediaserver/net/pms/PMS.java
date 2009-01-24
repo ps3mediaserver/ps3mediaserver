@@ -24,9 +24,10 @@ import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.BindException;
@@ -67,6 +68,7 @@ import net.pms.encoders.MPlayerAudio;
 import net.pms.encoders.MPlayerWebAudio;
 import net.pms.encoders.MPlayerWebVideoDump;
 import net.pms.encoders.Player;
+import net.pms.encoders.RAWThumbnailer;
 import net.pms.encoders.TSMuxerVideo;
 import net.pms.encoders.TsMuxerAudio;
 import net.pms.encoders.VideoLanAudioStreaming;
@@ -83,6 +85,7 @@ import net.pms.formats.MP3;
 import net.pms.formats.MPG;
 import net.pms.formats.OGG;
 import net.pms.formats.PNG;
+import net.pms.formats.RAW;
 import net.pms.formats.TIF;
 import net.pms.formats.WEB;
 import net.pms.gui.DummyFrame;
@@ -107,7 +110,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.03"; //$NON-NLS-1$
+	public static final String VERSION = "1.04"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -185,10 +188,9 @@ public class PMS {
 
 	private boolean checkProcessExistence(String name, boolean error, String...params) throws Exception {
 		PMS.info("launching: " + params[0]); //$NON-NLS-1$
-		/*ProcessBuilder pb = new ProcessBuilder(params);
-		Process process = pb.start();*/
+		
 		try {
-			Process process = Runtime.getRuntime().exec(params);
+			final Process process = Runtime.getRuntime().exec(params);
 		
 			OutputTextConsumer stderrConsumer = new OutputTextConsumer(process.getErrorStream(), false);
 			stderrConsumer.start();
@@ -196,7 +198,19 @@ public class PMS {
 			OutputTextConsumer outConsumer = new OutputTextConsumer(process.getInputStream(), false);
 			outConsumer.start();
 			
-			process.waitFor();
+			Runnable r = new Runnable() {
+				public void run() {
+					try {
+						process.waitFor();
+					} catch (InterruptedException e) {
+					}
+				}
+			};
+			Thread checkThread = new Thread(r);
+			checkThread.start();
+			checkThread.join(2000);
+			checkThread.interrupt();
+			checkThread = null;
 			
 			if (params[0].equals("vlc") && stderrConsumer.getResults().get(0).startsWith("VLC")) //$NON-NLS-1$ //$NON-NLS-2$
 				return true;
@@ -412,7 +426,7 @@ public class PMS {
 		File webConf = new File("WEB.conf"); //$NON-NLS-1$
 		if (webConf.exists()) {
 			try {
-				BufferedReader br = new BufferedReader(new FileReader(webConf));
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(webConf)));
 				String line = null;
 				while ((line=br.readLine()) != null) {
 					line = line.trim();
@@ -453,6 +467,7 @@ public class PMS {
 						}
 					}
 				}
+				br.close();
 			} catch (Exception e) {
 				PMS.minimal("Unexpected error in WEB.conf: " + e.getMessage()); //$NON-NLS-1$
 			}
@@ -620,7 +635,7 @@ public class PMS {
 		extensions.add(new TIF());
 		extensions.add(new FLAC());
 		extensions.add(new DVRMS());
-		//extensions.add(new RAW());
+		extensions.add(new RAW());
 	}
 	
 	private void registerPlayers() {
@@ -643,37 +658,41 @@ public class PMS {
 		registerPlayer(new VideoLanVideoStreaming(configuration));
 		if (Platform.isWindows())
 			registerPlayer(new FFMpegDVRMSRemux());
-		//registerPlayer(new RAWPictureDecoding());
+		registerPlayer(new RAWThumbnailer());
 		frame.addEngines();
 	}
 	
 	private void registerPlayer(Player p) {
 		allPlayers.add(p);
 		boolean ok = false;
-		if (isWindows()) {
-			if (p.executable() == null) {
-				minimal("Executable of transcoder profile " + p + " not found!"); //$NON-NLS-1$ //$NON-NLS-2$
-				return;
-			}
-			File executable = new File(p.executable());
-			File executable2 = new File(p.executable() + ".exe"); //$NON-NLS-1$
-			
-			if (executable.exists() || executable2.exists())
-				ok = true;
-			else {
-				minimal("Executable of transcoder profile " + p + " not found!"); //$NON-NLS-1$ //$NON-NLS-2$
-				return;
-			}
-			if (p.avisynth()) {
-				ok = false;
-				if (registry.isAvis()) {
-					ok = true;
-				} else {
-					minimal("AVISynth not found! Transcoder profile " + p + " will not be used!"); //$NON-NLS-1$ //$NON-NLS-2$
-				}
-			}
-		} else if (!p.avisynth()) {
+		if (Player.NATIVE.equals(p.executable()))
 			ok = true;
+		else {
+			if (isWindows()) {
+				if (p.executable() == null) {
+					minimal("Executable of transcoder profile " + p + " not found!"); //$NON-NLS-1$ //$NON-NLS-2$
+					return;
+				}
+				File executable = new File(p.executable());
+				File executable2 = new File(p.executable() + ".exe"); //$NON-NLS-1$
+				
+				if (executable.exists() || executable2.exists())
+					ok = true;
+				else {
+					minimal("Executable of transcoder profile " + p + " not found!"); //$NON-NLS-1$ //$NON-NLS-2$
+					return;
+				}
+				if (p.avisynth()) {
+					ok = false;
+					if (registry.isAvis()) {
+						ok = true;
+					} else {
+						minimal("AVISynth not found! Transcoder profile " + p + " will not be used!"); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+				}
+			} else if (!p.avisynth()) {
+				ok = true;
+			}
 		}
 		if (ok) {
 			minimal("Registering transcoding engine " + p /*+ (p.avisynth()?(" with " + (forceMPlayer?"MPlayer":"AviSynth")):"")*/); //$NON-NLS-1$

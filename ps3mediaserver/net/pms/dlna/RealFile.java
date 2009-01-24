@@ -185,7 +185,7 @@ public class RealFile extends DLNAResource {
 	}
 
 	public long length() {
-		if (player != null)
+		if (player != null && player.type() != Format.IMAGE)
 			return DLNAMediaInfo.TRANS_SIZE;
 		else if (media != null && media.mediaparsed)
 			return media.size;

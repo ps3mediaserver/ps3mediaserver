@@ -42,4 +42,9 @@ class WindowsDefaultPaths implements ProgramPaths {
 		return "win32/mencoder_mt.exe";
 	}
 
+	@Override
+	public String getDCRaw() {
+		return "win32/dcrawMS.exe";
+	}
+
 }

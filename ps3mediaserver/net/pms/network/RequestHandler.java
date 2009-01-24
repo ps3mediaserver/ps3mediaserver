@@ -38,18 +38,6 @@ public class RequestHandler implements Runnable {
 	
 	public RequestHandler(Socket socket) throws IOException {
 		this.socket = socket;
-		if (PMS.getConfiguration().isTurboModeEnabled()) {
-			try {
-				//socket.setSendBufferSize(SOCKET_BUF_SIZE);
-			} catch(Exception e) {
-				PMS.error(null, e);
-			}
-			try {
-				socket.setTcpNoDelay(true);
-			} catch(Exception e) {
-				PMS.error(null, e);
-			}
-		}
 		
 		this.output = socket.getOutputStream();
 		this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));

@@ -13,6 +13,7 @@ class ConfigurationProgramPaths implements ProgramPaths {
 	private static final String KEY_TSMUXER_PATH = "tsmuxer_path";
 	private static final String KEY_FLAC_PATH = "flac_path";
 	private static final String KEY_MENCODERMT_PATH = "mencodermt_path";
+	private static final String KEY_DCRAW = "dcraw_path";
 	
 	private final Configuration configuration;
 	private final ProgramPaths defaults;
@@ -65,6 +66,11 @@ class ConfigurationProgramPaths implements ProgramPaths {
 	@Override
 	public String getMencoderMTPath() {
 		return stringFromConfigFile(KEY_MENCODERMT_PATH, defaults.getMencoderMTPath());
+	}
+
+	@Override
+	public String getDCRaw() {
+		return stringFromConfigFile(KEY_DCRAW, defaults.getDCRaw());
 	}
 
 }

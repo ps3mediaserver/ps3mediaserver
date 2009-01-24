@@ -199,7 +199,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 							vf.addChild(fileFolder);
 						}
 						//}
-					} else if (!child.ext.ps3compatible() && !child.ext.isImage()) {
+					} else if (!child.ext.ps3compatible()/* && !child.ext.isImage()*/) {
 						children.remove(child);
 					}
 				//}
@@ -673,7 +673,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			params.mediaRenderer = mediarenderer;
 			
 			if (externalProcess == null || externalProcess.isDestroyed()) {
-				PMS.minimal("Starting transcode of " + getName());
+				PMS.minimal("Starting transcode/remux of " + getName());
 				externalProcess = player.launchTranscode(getSystemName(), media, params);
 				try {
 					Thread.sleep(params.waitbeforestart);
@@ -695,9 +695,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					}
 				}
 			}
-			
-			InputStream fis = externalProcess.getInputStream(low);
-			return fis;
+			if (externalProcess == null)
+				return null;
+			return externalProcess.getInputStream(low);
 			
 		}
 		

@@ -62,4 +62,9 @@ class WindowsRegistryProgramPaths implements ProgramPaths {
 		return defaults.getMencoderMTPath();
 	}
 
+	@Override
+	public String getDCRaw() {
+		return defaults.getDCRaw();
+	}
+
 }
