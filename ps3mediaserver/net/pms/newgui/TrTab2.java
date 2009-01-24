@@ -335,123 +335,6 @@ public class TrTab2 {
         
 	}
 	
-	public JComponent buildMEncoder() {
-		FormLayout layout = new FormLayout(
-				"left:pref, 2dlu, pref:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p , 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
-         PanelBuilder builder = new PanelBuilder(layout);
-        builder.setBorder(Borders.EMPTY_BORDER);
-        builder.setOpaque(false);
-
-        CellConstraints cc = new CellConstraints();
-        
-        builder.addSeparator(Messages.getString("TrTab2.2"),  cc.xyw(1, 1, 3)); //$NON-NLS-1$
-        
-        forcePCM = new JCheckBox(Messages.getString("TrTab2.27")); //$NON-NLS-1$
-        forcePCM.setContentAreaFilled(false);
-       /* if (!PMS.get().isWindows())
-        	forcePCM.setEnabled(false);
-        else {*/
-	        if (configuration.isMencoderUsePcm())
-	        	forcePCM.setSelected(true);
-	        forcePCM.addItemListener(new ItemListener() {
-	
-				public void itemStateChanged(ItemEvent e) {
-					configuration.setMencoderUsePcm(e.getStateChange() == ItemEvent.SELECTED);
-				}
-	        	
-	        });
-       // }
-       
-        builder.add(forcePCM, cc.xyw(1, 3, 3));
-        
-        abitrate = new JTextField("" + PMS.getConfiguration().getAudioBitrate()); //$NON-NLS-1$
-        abitrate.addKeyListener(new KeyListener() {
-
- 		@Override
- 		public void keyPressed(KeyEvent e) {}
- 		@Override
- 		public void keyTyped(KeyEvent e) {}
- 		@Override
- 		public void keyReleased(KeyEvent e) {
- 			try {
- 				int ab = Integer.parseInt(abitrate.getText());
- 				PMS.getConfiguration().setAudioBitrate(ab);
- 			} catch (NumberFormatException nfe) {
- 			}
- 		}
-
-        });
-        
-       builder.addLabel(Messages.getString("TrTab2.29"), cc.xy(1, 5)); //$NON-NLS-1$
-       builder.add(abitrate, cc.xy(3, 5));
-       
-       builder.addLabel(Messages.getString("TrTab2.30"), cc.xy(1, 9)); //$NON-NLS-1$
-       
-       maxbitrate = new JTextField("" + PMS.getConfiguration().getMaximumBitrate()); //$NON-NLS-1$
-       maxbitrate.addKeyListener(new KeyListener() {
-
-		@Override
-		public void keyPressed(KeyEvent e) {}
-		@Override
-		public void keyTyped(KeyEvent e) {}
-		@Override
-		public void keyReleased(KeyEvent e) {
-			PMS.getConfiguration().setMaximumBitrate(maxbitrate.getText());
-		}
-
-       });
-       builder.add(maxbitrate, cc.xy(3, 9));
-      
-       builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 13, 3)); //$NON-NLS-1$
-       
-        Object data [] = new Object [] { PMS.getConfiguration().getMencoderMainSettings(),
-    		   "keyint=1:vqscale=1:vqmin=2  /* Best Quality */", //$NON-NLS-1$
-    		   "keyint=1:vqscale=1:vqmin=1  /* Lossless Quality, Crazy Bitrate */", //$NON-NLS-1$
-    		   "keyint=3:vqscale=2:vqmin=3  /* Good quality */", //$NON-NLS-1$
-        	   "keyint=25:vqmax=5:vqmin=2  /* Good quality for HD Wifi Transcoding */", //$NON-NLS-1$
-    		   "keyint=25:vqmax=7:vqmin=2  /* Medium quality for HD Wifi Transcoding */", //$NON-NLS-1$
-        	   "keyint=25:vqmax=8:vqmin=3  /* Low quality, Low-end CPU or HD Wifi Transcoding */", //$NON-NLS-1$
-        	   "keyint=50:vrc_maxrate=40000:vbitrate=24000000:vrc_buf_size=1835  /* TEST */"}; //$NON-NLS-1$
-       MyComboBoxModel cbm = new MyComboBoxModel(data);
-       
-       vq = new JComboBox(cbm);
-       vq.addItemListener(new ItemListener() {
-
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					String s = (String) e.getItem();
-					if (s.indexOf("/*") > -1) { //$NON-NLS-1$
-						s = s.substring(0, s.indexOf("/*")).trim(); //$NON-NLS-1$
-					}
-					PMS.getConfiguration().setMencoderMainSettings(s);
-				}
-			}
-       	
-       });
-       vq.setEditable(true);
-       builder.add(vq,          cc.xyw(1,  15, 3));
-       
-      String help1 = Messages.getString("TrTab2.39"); //$NON-NLS-1$
-      help1 += Messages.getString("TrTab2.40"); //$NON-NLS-1$
-      help1 += Messages.getString("TrTab2.41"); //$NON-NLS-1$
-      help1 += Messages.getString("TrTab2.42"); //$NON-NLS-1$
-     help1 += Messages.getString("TrTab2.43"); //$NON-NLS-1$
-   help1 += 	Messages.getString("TrTab2.44"); //$NON-NLS-1$
-   
-      
-       JTextArea decodeTips = new JTextArea(help1);
-       decodeTips.setEditable(false);
-       decodeTips.setBorder(BorderFactory.createEtchedBorder());
-       decodeTips.setBackground(new Color(255, 255, 192));
-       builder.add(decodeTips, cc.xyw(1, 17, 3));
-       
-       
-        return builder.getPanel();
-	}
-	
-
-
 
 	public JComponent buildCommon() {
 		FormLayout layout = new FormLayout(
@@ -621,6 +504,18 @@ public class TrTab2 {
 					}
 					PMS.getConfiguration().setMencoderMainSettings(s);
 				}
+			}
+       	
+       });
+       vq.getEditor().getEditorComponent().addKeyListener(new KeyListener() {
+
+    	   @Override
+	   		public void keyPressed(KeyEvent e) {}
+	   		@Override
+	   		public void keyTyped(KeyEvent e) {}
+	   		@Override
+	   		public void keyReleased(KeyEvent e) {
+	   			vq.getItemListeners()[0].itemStateChanged(new ItemEvent(vq, 0, vq.getEditor().getItem(), ItemEvent.SELECTED));
 			}
        	
        });
