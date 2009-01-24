@@ -90,6 +90,7 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_REMUX_AC3 = "mencoder_remux_ac3";
 	private static final String KEY_MENCODER_REMUX_MPEG2 = "mencoder_remux_mpeg2";
 	private static final String KEY_OVERSCAN = "mencoder_overscan";
+	private static final String KEY_DISABLE_FAKESIZE = "disable_fakesize";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -831,6 +832,14 @@ public class PmsConfiguration {
 
 	public boolean isMencoderRemuxMPEG2() {
 		return getBoolean(KEY_MENCODER_REMUX_MPEG2, false);
+	}
+	
+	public void setDisableFakeSize(boolean value) {
+		configuration.setProperty(KEY_DISABLE_FAKESIZE, value);
+	}
+
+	public boolean isDisableFakeSize() {
+		return getBoolean(KEY_DISABLE_FAKESIZE, false);
 	}
 	
 	public int getMEncoderOverscan() {

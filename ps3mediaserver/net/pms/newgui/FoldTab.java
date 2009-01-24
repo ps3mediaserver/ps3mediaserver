@@ -59,6 +59,7 @@ public class FoldTab {
 	private JButton but5;
 	private JTextField seekpos;
 	private JCheckBox  tncheckBox;
+	private JCheckBox  disablefakesize;
 	private JCheckBox  cacheenable;
 	private JCheckBox  archive;
 	
@@ -90,7 +91,7 @@ public class FoldTab {
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
                 "left:pref, 25dlu, pref, 100dlu, pref,  0:grow", //$NON-NLS-1$
-                "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 15dlu, fill:default:grow"); //$NON-NLS-1$
+                "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu,  p, 3dlu, p, 15dlu, fill:default:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.DLU4_BORDER);
         builder.setOpaque(true);
@@ -190,6 +191,20 @@ public class FoldTab {
         builder.add(seekpos,          cc.xyw(4,  5, 1));
         builder.add(archive,          cc.xy(1,  7));
         
+        disablefakesize = new JCheckBox(Messages.getString("FoldTab.11"));  //$NON-NLS-1$
+        disablefakesize.setContentAreaFilled(false);
+        if (PMS.getConfiguration().isDisableFakeSize())
+        	disablefakesize.setSelected(true);
+        disablefakesize.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				PMS.getConfiguration().setDisableFakeSize((e.getStateChange() == ItemEvent.SELECTED));
+ 				PMS.get().getFrame().setReloadable(true);
+ 			}
+        	
+        });
+        builder.add(disablefakesize,          cc.xyw(1,  9, 5));
+        
         final JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
   	  
         cacheenable = new JCheckBox(Messages.getString("NetworkTab.17")); //$NON-NLS-1$
@@ -210,7 +225,7 @@ public class FoldTab {
        
         //cacheenable.setEnabled(false);
         
-     	  builder.add(cacheenable,          cc.xy(1,  9));
+     	  builder.add(cacheenable,          cc.xy(1,  11));
      	  
      	  
      	  cachereset.addActionListener(new ActionListener() {
@@ -231,12 +246,12 @@ public class FoldTab {
  			}
      		  
      	  });
-     	  builder.add(cachereset,          cc.xyw(4,  9, 1));
+     	  builder.add(cachereset,          cc.xyw(4,  11, 1));
      	  
      	  
      	  cachereset.setEnabled(PMS.getConfiguration().getUseCache());
         
-        builder.add(hidevideosettings,          cc.xyw(1,  11, 6));
+        builder.add(hidevideosettings,          cc.xyw(1,  13, 6));
         
         hideextensions = new JCheckBox(Messages.getString("FoldTab.5")); //$NON-NLS-1$
         hideextensions.setContentAreaFilled(false);
@@ -250,7 +265,7 @@ public class FoldTab {
  			}
         	
         });
-        builder.add(hideextensions,          cc.xyw(1,  13, 6));
+        builder.add(hideextensions,          cc.xyw(1,  15, 6));
         
         hideengines = new JCheckBox(Messages.getString("FoldTab.8")); //$NON-NLS-1$
         hideengines.setContentAreaFilled(false);
@@ -264,7 +279,7 @@ public class FoldTab {
  			}
         	
         });
-        builder.add(hideengines,          cc.xyw(1,  15, 6));
+        builder.add(hideengines,          cc.xyw(1,  17, 6));
         
         FormLayout layoutFolders = new FormLayout(
                 "left:pref, left:pref, pref, pref, pref, 0:grow", //$NON-NLS-1$
@@ -391,7 +406,7 @@ public class FoldTab {
        
        builderFolder.add(pane,          cc.xyw(1,  5,6));
        
-       builder.add(builderFolder.getPanel(), cc.xyw(1, 17, 6));
+       builder.add(builderFolder.getPanel(), cc.xyw(1, 19, 6));
        
         return builder.getPanel();
 	}

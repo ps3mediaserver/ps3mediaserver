@@ -557,7 +557,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			if (ext != null && ext.isVideo() && media != null && media.mediaparsed) {
 				if (player == null && media != null)
 					addAttribute(sb, "size", media.size);
-				else
+				else if (!PMS.getConfiguration().isDisableFakeSize())
 					addAttribute(sb, "size", DLNAMediaInfo.TRANS_SIZE);
 				if (media.duration != null)
 					addAttribute(sb, "duration", media.duration);

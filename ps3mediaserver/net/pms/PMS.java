@@ -265,11 +265,11 @@ public class PMS {
 			debug = new File("debug.log"); //$NON-NLS-1$
 			pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
 		} catch (Throwable e) {
-			PMS.minimal("Error in accessing debug.log...");
+			PMS.minimal("Error in accessing debug.log..."); //$NON-NLS-1$
 			pw = null;
 		} finally {
 			if (pw == null) {
-				PMS.minimal("Using temp folder for debug.log...");
+				PMS.minimal("Using temp folder for debug.log..."); //$NON-NLS-1$
 				debug = new File(configuration.getTempFolder(), "debug.log"); //$NON-NLS-1$
 				pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
 			}
