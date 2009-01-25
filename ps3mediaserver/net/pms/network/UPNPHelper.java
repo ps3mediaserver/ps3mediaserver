@@ -168,11 +168,13 @@ public class UPNPHelper {
 	public static void listen() throws IOException {
 		Runnable rAlive = new Runnable() {
 			public void run() {
-				try {
-					Thread.sleep(180000); // every 180s
-					sendAlive();
-				} catch (Exception e) {
-					PMS.info("Error while sending periodic alive message: " + e.getMessage());
+				while (true) {
+					try {
+						Thread.sleep(180000); // every 180s
+						sendAlive();
+					} catch (Exception e) {
+						PMS.info("Error while sending periodic alive message: " + e.getMessage());
+					}
 				}
 			}
 		};
