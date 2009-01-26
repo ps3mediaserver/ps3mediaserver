@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 
 import net.pms.PMS;
+import net.pms.dlna.virtual.CopyVirtualFolder;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.Player;
@@ -43,7 +44,7 @@ import net.pms.util.FileUtil;
 public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
-	protected static String TRANSCODE_FOLDER = "#--TRANSCODED--#";
+	protected static String TRANSCODE_FOLDER = "#--TRANSCODE--#";
 	
 	public DLNAResource getParent() {
 		return parent;
@@ -70,7 +71,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public abstract long length();
 	public abstract InputStream getInputStream() throws IOException;
 	public abstract boolean isFolder();
-	
+	protected boolean copy;
 	protected boolean discovered = false;
 	private ProcessWrapper externalProcess;
 	protected String ifoFileURI;
@@ -122,6 +123,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		if (child.isValid()) {
 			PMS.info("Adding " + child.getName() + " / class: " + child.getClass().getName());
 			VirtualFolder vf = null;
+			VirtualFolder vfCopy = null;
 			
 			children.add(child);
 			child.parent = this;
@@ -197,7 +199,40 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 							
 							
 							vf.addChild(fileFolder);
+							
+							if (PMS.getConfiguration().isDisableFakeSize()) {
+								//search for copy folder
+								for(DLNAResource r:children) {
+									if (r instanceof CopyVirtualFolder) {
+										vfCopy = (CopyVirtualFolder) r;
+										break;
+									}
+								}
+								if (vfCopy == null) {
+									vfCopy = new CopyVirtualFolder(null);
+									children.add(vfCopy);
+									vfCopy.parent = this;
+								}
+								
+								VirtualFolder copyFileFolder = new FileTranscodeVirtualFolder(child.getName(), null, true);
+								
+								
+								newChild = (DLNAResource) child.clone();
+								newChild.player = pl;
+								newChild.copy = true;
+								newChild.media = child.media;
+								//newChild.original = child;
+								copyFileFolder.children.add(newChild);
+								newChild.parent = copyFileFolder;
+								PMS.info("Duplicate copied " + child.getName() + " with player: " + pl.toString());
+								
+								
+								
+								vfCopy.addChild(copyFileFolder);
+							}
 						}
+						
+						
 						//}
 					} else if (!child.ext.ps3compatible()/* && !child.ext.isImage()*/) {
 						children.remove(child);
@@ -537,17 +572,24 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			// DLNA.ORG_OP : 1er 10 = exemple: TimeSeekRange.dlna.org :npt=187.000-
 			//                   01 = Range par octets
 			//                   00 = pas de range, meme pas de pause possible
-			flags = ":DLNA.ORG_OP=01";
+			flags = "DLNA.ORG_OP=01";
 			if (player != null) {
 				if (player.isTimeSeekable())
-					flags = ":DLNA.ORG_OP=10";
+					flags = "DLNA.ORG_OP=10";
 				/*else
 					flags = ":DLNA.ORG_OP=00";*/ // 00 not working with ps3
 			}
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
 			
-			//flags += ";DLNA.ORG_PN=MPEG_TS_PAL";
-			addAttribute(sb, "protocolInfo", "http-get:*:" + getRendererMimeType(mimeType(), mediaRenderer) + flags);
+			String mime = getRendererMimeType(mimeType(), mediaRenderer);
+			String dlnaspec = "";
+			if (mediaRenderer == PS3) {
+				if (mime.equals("video/x-divx"))
+					dlnaspec = ":DLNA.ORG_PN=MPEG4_P2_TS_SP_MPEG1_L3";
+				else if (mime.equals("video/x-ms-wmv"))
+					dlnaspec = ":DLNA.ORG_PN=WMVHIGH_PRO";
+			}
+			addAttribute(sb, "protocolInfo", "http-get:*:" + mime + dlnaspec + (dlnaspec.length()>0?";":":") + flags);
 			
 			if (ifoFileURI != null) {
 				 // not working with ps3 it seems
@@ -557,7 +599,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			if (ext != null && ext.isVideo() && media != null && media.mediaparsed) {
 				if (player == null && media != null)
 					addAttribute(sb, "size", media.size);
-				else if (!PMS.getConfiguration().isDisableFakeSize())
+				//else if (!PMS.getConfiguration().isDisableFakeSize())
+				else if (!copy)
 					addAttribute(sb, "size", DLNAMediaInfo.TRANS_SIZE);
 				if (media.duration != null)
 					addAttribute(sb, "duration", media.duration);
