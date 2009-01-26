@@ -55,6 +55,10 @@ public class RealFile extends DLNAResource {
 				if (!srtFile) {
 					srt = FileUtil.isFileExists(file, "ass");
 					srtFile = srt != null;
+					if (!srtFile) {
+						srt = FileUtil.isFileExists(file, "smi");
+						srtFile = srt != null;
+					}
 				}
 			}
 		}
@@ -91,17 +95,12 @@ public class RealFile extends DLNAResource {
 			} else {
 				RealFile file = new RealFile(f);
 				addChild(file);
-				if (file.getType() == Format.IMAGE) {
-					String fileName = f.getName().toLowerCase();
-					/*if (potentialCover == null)
-						potentialCover = f;
-					else {*/
-						if (fileName.equals("folder.jpg") || fileName.contains("albumart"))
-							potentialCover = f;
-					//}
-					
-				}
 			}
+		}
+		if (f.isFile()) {
+			String fileName = f.getName().toLowerCase();
+			if (fileName.equals("folder.jpg") || (fileName.contains("albumart") && fileName.endsWith(".jpg")))
+				potentialCover = f;
 		}
 	}
 	

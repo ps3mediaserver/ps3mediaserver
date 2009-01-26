@@ -26,12 +26,18 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 
 	private boolean resolved;
 	
+	public FileTranscodeVirtualFolder(String name, String thumbnailIcon, boolean copy) {
+		super(name, thumbnailIcon);
+		this.copy = copy;
+	}
+	
 	@Override
 	public void resolve() {
 		super.resolve();
 		if (!resolved && children.size() == 1) { //OK
 			DLNAResource child = children.get(0);
 			child.resolve();
+			child.copy = copy;
 			if (child.ext.getProfiles() != null) {
 				DLNAResource ref = child;
 				for(int i=0;i<child.ext.getProfiles().size();i++) {
@@ -39,6 +45,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					if (pl !=null && !child.player.equals(pl)) {
 						DLNAResource avisnewChild = (DLNAResource) child.clone();
 						avisnewChild.player = pl;
+						avisnewChild.copy = copy;
 						avisnewChild.noName = true;
 						avisnewChild.id = avisnewChild.parent.id + "$" + children.size();
 						avisnewChild.media = child.media;
@@ -54,6 +61,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 						newChild.player = ref.player;
 						newChild.id = newChild.parent.id + "$" + children.size();
 						newChild.media = ref.media;
+						newChild.copy = ref.copy;
 						newChild.noName = true;
 						children.add(newChild);
 						newChild.parent = this;
