@@ -7,15 +7,15 @@ v1.04
 - Changes / Features
 
 New option to enable video copy on ps3
-Spanish localization (thanks to Jose from www.playstationhoy.com), Dutch localization (thanks to VinceNL), German localization (thanks to Jeuki), Russian localization (thanks to Peter Klassen) and Swedish localization (thanks to Dusan Ilic)
 RAW images thumbnail support (CR2/CRW/PEF/NEF/ORF/SRF/MRW/DNG/ARW/RAF)
+New translations: Spanish (thanks to Jose from www.playstationhoy.com), Dutch (thanks to Vincent Meylof), German (thanks to Jeuki), Russian (thanks to Peter Klassen), Polish (thanks to Maciej Bocian), Greek (thanks to Alexander Polichroniadis), Portuguese (thanks to Hugo Sousa) and Swedish (thanks to Dusan Ilic)
 
 - Fixes
 
 Fixed regression with PicasaWeb images feed
 Transcode buffer wasn't fully released after end of video
 Fixed bug with shared folders selection on Windows
-Updated ffmpeg/mplayer/mencoder builds... slight speedup for singlecore on H264 with mencoder
+Updated ffmpeg/mplayer/mencoder builds on Windows (slight speedup for singlecore on H264 with mencoder)
 
 v1.03
 
