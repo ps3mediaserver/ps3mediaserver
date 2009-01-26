@@ -273,7 +273,7 @@ public class AviDemuxerInputStream extends InputStream {
 		
 		PMS.debug("Found " + streamNumber + " stream(s)"); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		boolean init = true;
+		boolean init = false;
 		while (true) {
 			
 			String command = null;
