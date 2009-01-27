@@ -1,8 +1,6 @@
 package net.pms.formats;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +45,7 @@ public class RAW extends JPG {
 			OutputParams params = new OutputParams(PMS.getConfiguration());
 			params.waitbeforestart = 1;
 			params.minBufferSize = 1;
-			params.maxBufferSize = 20;
+			params.maxBufferSize = 5;
 			params.hidebuffer = true;
 			
 			
@@ -74,31 +72,9 @@ public class RAW extends JPG {
 			
 			if (media.width > 0) {
 				
-				
-				params.log = false;
-				
-				cmdArray = new String [4];
-				cmdArray[0] = PMS.getConfiguration().getDCRawPath();
-				cmdArray[1] = "-e";
-				cmdArray[2] = "-c";
-				cmdArray[3] = file.getAbsolutePath();
-				pw = new ProcessWrapperImpl(cmdArray, params);
-				pw.run();
-			
-			
-				InputStream is = pw.getInputStream(0);
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				int n = -1;
-				byte buffer [] = new byte [4096];
-				while ((n=is.read(buffer)) > -1) {
-					baos.write(buffer, 0, n);
-				}
-				is.close();
-				media.thumb = baos.toByteArray();
-				media.size = media.thumb.length;
-				baos.close();
-				
-				
+				media.thumb = RAWThumbnailer.getThumbnail(params, file.getAbsolutePath());
+				if (media.thumb != null)
+					media.size = media.thumb.length;
 			}
 			
 			media.finalize(type);

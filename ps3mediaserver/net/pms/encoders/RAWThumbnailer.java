@@ -1,7 +1,10 @@
 package net.pms.encoders;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 
 import javax.swing.JComponent;
 
@@ -11,6 +14,7 @@ import net.pms.formats.Format;
 import net.pms.io.InternalJavaProcessImpl;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
+import net.pms.io.ProcessWrapperImpl;
 
 public class RAWThumbnailer extends Player {
 	
@@ -47,13 +51,24 @@ public class RAWThumbnailer extends Player {
 		
 		params.waitbeforestart = 1;
 		params.minBufferSize = 1;
-		params.maxBufferSize = 20;
+		params.maxBufferSize = 5;
 		params.hidebuffer = true;
 		
-		if (media.thumb == null)
+		if (media == null || media.thumb == null)
 			return null;
 		
-		ProcessWrapper pw = new InternalJavaProcessImpl(new ByteArrayInputStream(media.thumb));
+		if (media.thumb.length == 0) {
+			try {
+				media.thumb = getThumbnail(params, fileName);
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		
+		byte copy [] = Arrays.copyOf(media.thumb, media.thumb.length);
+		media.thumb = new byte [0];
+		
+		ProcessWrapper pw = new InternalJavaProcessImpl(new ByteArrayInputStream(copy));
 		return pw;
 	}
 
@@ -75,6 +90,31 @@ public class RAWThumbnailer extends Player {
 	@Override
 	public int type() {
 		return Format.IMAGE;
+	}
+	
+	public static byte [] getThumbnail(OutputParams params, String fileName) throws Exception {
+		params.log = false;
+		
+		String cmdArray [] = new String [4];
+		cmdArray[0] = PMS.getConfiguration().getDCRawPath();
+		cmdArray[1] = "-e"; //$NON-NLS-1$
+		cmdArray[2] = "-c"; //$NON-NLS-1$
+		cmdArray[3] = fileName;
+		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
+		pw.run();
+	
+	
+		InputStream is = pw.getInputStream(0);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int n = -1;
+		byte buffer [] = new byte [4096];
+		while ((n=is.read(buffer)) > -1) {
+			baos.write(buffer, 0, n);
+		}
+		is.close();
+		byte b [] = baos.toByteArray();
+		baos.close();
+		return b;
 	}
 
 }
