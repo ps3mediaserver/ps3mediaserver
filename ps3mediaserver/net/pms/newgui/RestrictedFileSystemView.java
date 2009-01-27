@@ -12,6 +12,7 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileView;
 
+
 /**
  * Fallback implementation of a FileSystemView.
  * <p>
@@ -40,7 +41,7 @@ import javax.swing.filechooser.FileView;
  * 
  */
 public class RestrictedFileSystemView extends FileSystemView {
-    private static final String newFolderString = UIManager.getString("FileChooser.other.newFolder");
+    private static final String newFolderString = UIManager.getString("FileChooser.other.newFolder"); //$NON-NLS-1$
 
     private File _defaultDirectory;
 
@@ -125,7 +126,7 @@ public class RestrictedFileSystemView extends FileSystemView {
      */
     public Icon getSystemIcon(File f) {
         if (f != null) {
-            return UIManager.getIcon(f.isDirectory() ? "FileView.directoryIcon" : "FileView.fileIcon");
+            return UIManager.getIcon(f.isDirectory() ? "FileView.directoryIcon" : "FileView.fileIcon"); //$NON-NLS-1$ //$NON-NLS-2$
         } else {
             return null;
         }
@@ -235,7 +236,7 @@ public class RestrictedFileSystemView extends FileSystemView {
     // implementation.
 
     public File getHomeDirectory() {
-        return createFileObject(System.getProperty("user.home"));
+        return createFileObject(System.getProperty("user.home")); //$NON-NLS-1$
     }
 
     /**
@@ -246,7 +247,7 @@ public class RestrictedFileSystemView extends FileSystemView {
     public File getDefaultDirectory() {
         if (_defaultDirectory == null) {
             try {
-                File tempFile = File.createTempFile("filesystemview", "restricted");
+                File tempFile = File.createTempFile("filesystemview", "restricted"); //$NON-NLS-1$ //$NON-NLS-2$
                 tempFile.deleteOnExit();
                 _defaultDirectory = tempFile.getParentFile();
             } catch (IOException e) {
@@ -350,7 +351,7 @@ public class RestrictedFileSystemView extends FileSystemView {
 		private static final long serialVersionUID = -807847319198119832L;
 
 		public FileSystemRoot(File f) {
-            super(f, "");
+            super(f, ""); //$NON-NLS-1$
         }
 
         public FileSystemRoot(String s) {
@@ -368,7 +369,7 @@ public class RestrictedFileSystemView extends FileSystemView {
 
     public File createNewFolder(File containingDir) throws IOException {
         if (containingDir == null) {
-            throw new IOException("Containing directory is null:");
+            throw new IOException("Containing directory is null:"); //$NON-NLS-1$
         }
         File newFolder = null;
         newFolder = createFileObject(containingDir, newFolderString);
@@ -380,7 +381,7 @@ public class RestrictedFileSystemView extends FileSystemView {
         }
 
         if (newFolder.exists()) {
-            throw new IOException("Directory already exists:" + newFolder.getAbsolutePath());
+            throw new IOException("Directory already exists:" + newFolder.getAbsolutePath()); //$NON-NLS-1$
         } else {
             newFolder.mkdirs();
         }

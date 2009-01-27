@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -171,6 +172,49 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	        } catch (Exception e) {
 	            System.out.println("Can't change L&F: " + e); //$NON-NLS-1$
 	        }
+        }
+        
+        // http://propedit.sourceforge.jp/propertieseditor.jnlp
+        
+        Font sf = null;
+    
+        // Set an unicode font for testing exotics languages (japanese)
+        //sf = new Font("Serif", Font.PLAIN, 12);
+        
+        if (sf != null) {
+        	UIManager.put("Button.font",sf);  //$NON-NLS-1$
+        	UIManager.put("ToggleButton.font",sf);  //$NON-NLS-1$
+        	UIManager.put("RadioButton.font",sf);  //$NON-NLS-1$
+        	UIManager.put("CheckBox.font",sf);  //$NON-NLS-1$
+        	UIManager.put("ColorChooser.font",sf);  //$NON-NLS-1$
+        	UIManager.put("ToggleButton.font",sf);  //$NON-NLS-1$
+        	UIManager.put("ComboBox.font",sf);  //$NON-NLS-1$
+        	UIManager.put("ComboBoxItem.font",sf);  //$NON-NLS-1$
+        	UIManager.put("InternalFrame.titleFont",sf);  //$NON-NLS-1$
+        	UIManager.put("Label.font",sf);  //$NON-NLS-1$
+        	UIManager.put("List.font",sf);  //$NON-NLS-1$
+        	UIManager.put("MenuBar.font",sf);  //$NON-NLS-1$
+        	UIManager.put("Menu.font",sf);  //$NON-NLS-1$
+        	UIManager.put("MenuItem.font",sf);  //$NON-NLS-1$
+        	UIManager.put("RadioButtonMenuItem.font",sf);  //$NON-NLS-1$
+        	UIManager.put("CheckBoxMenuItem.font",sf);  //$NON-NLS-1$
+        	UIManager.put("PopupMenu.font",sf);  //$NON-NLS-1$
+        	UIManager.put("OptionPane.font",sf);  //$NON-NLS-1$
+        	UIManager.put("Panel.font",sf);  //$NON-NLS-1$
+        	UIManager.put("ProgressBar.font",sf);  //$NON-NLS-1$
+        	UIManager.put("ScrollPane.font",sf);  //$NON-NLS-1$
+        	UIManager.put("Viewport",sf);  //$NON-NLS-1$
+        	UIManager.put("TabbedPane.font",sf);  //$NON-NLS-1$
+        	UIManager.put("TableHeader.font",sf);  //$NON-NLS-1$
+        	UIManager.put("TextField.font",sf);  //$NON-NLS-1$
+        	UIManager.put("PasswordFiled.font",sf);  //$NON-NLS-1$
+        	UIManager.put("TextArea.font",sf);  //$NON-NLS-1$
+        	UIManager.put("TextPane.font",sf);  //$NON-NLS-1$
+        	UIManager.put("EditorPane.font",sf);  //$NON-NLS-1$
+        	UIManager.put("TitledBorder.font",sf);  //$NON-NLS-1$
+        	UIManager.put("ToolBar.font",sf);  //$NON-NLS-1$
+        	UIManager.put("ToolTip.font",sf);  //$NON-NLS-1$
+        	UIManager.put("Tree.font",sf);  //$NON-NLS-1$
         }
         
         setTitle("Test"); //$NON-NLS-1$
