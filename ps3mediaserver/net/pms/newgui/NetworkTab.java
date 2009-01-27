@@ -99,7 +99,7 @@ public class NetworkTab {
      
        
        builder.addLabel(Messages.getString("NetworkTab.0"),  cc.xy(1,  7)); //$NON-NLS-1$
-       final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "nl", "en", "fr", "de", "gr", "is", "it", "ja", "pl", "pt", "es", "se", "ru" }, new Object[] { "Dutch", "English", "French", "German", "Greek", "Icelandic", "Italian", "Japanese", "Polish", "Portuguese", "Spanish", "Swedish", "Russian" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$
+       final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "nl", "en", "fr", "de", "gr", "is", "it", "ja", "no", "pl", "pt", "es", "se", "ru" }, new Object[] { "Dutch", "English", "French", "German", "Greek", "Icelandic", "Italian", "Japanese", "Norwegian", "Polish", "Portuguese", "Spanish", "Swedish", "Russian" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$ //$NON-NLS-27$
        langs = new JComboBox(kcbm);
       langs.setEditable(false);
       //langs.setSelectedIndex(0);
