@@ -101,6 +101,11 @@ public class DLNAMediaInfo {
 	public ProcessWrapperImpl getFFMpegThumbnail(File media) {
 		String args [] = new String[14];
 		args[0] = getFfmpegPath();
+		if (media.getAbsolutePath().toLowerCase().endsWith("dvr-ms")) {
+			if (PMS.getConfiguration().getFfmpegAlternativePath() != null) {
+				args[0] = PMS.getConfiguration().getFfmpegAlternativePath();
+			}
+		}
 		args[1] = "-ss";
 		args[2] = "" + PMS.getConfiguration().getThumbnailSeekPos();
 		/*if (media.length() > 1000000000)
@@ -491,8 +496,8 @@ public class DLNAMediaInfo {
 			mimeType = new HTTPResource().getDefaultMimeType(type);
 		}
 		
-		if (codecA != null && getSampleRate() > 44000 && (codecA.contains("pcm") || codecA.equals("dts") || codecA.equals("dca") || codecA.contains("flac")))
-				losslessaudio = true;
+		if (getSampleRate() > 44000 && isLossless(codecA))
+			losslessaudio = true;
 		
 		if (bitsperSample == 24)
 			secondaryFormatValid = true;
@@ -507,9 +512,12 @@ public class DLNAMediaInfo {
 		PMS.debug("Media info: mimeType: " + mimeType + " / " + toString());
 	}
 	
+	public boolean isLossless(String codecA) {
+		return codecA != null && (codecA.contains("pcm") || codecA.equals("dts") || codecA.equals("dca") || codecA.contains("flac"));
+	}
 	
 	public String toString() {
-		return "container: " + container + " / bitrate: " + bitrate + " / size: " + size + " / codecV: " + codecV + " / duration: " + duration + " / width: " + width + " / height: " + height + " / frameRate: " + frameRate + " / codecA: " + codecA + " / sampleFrequency: " + sampleFrequency + " / nrAudioChannels: " + nrAudioChannels;
+		return "container: " + container + " / bitrate: " + bitrate + " / size: " + size + " / codecV: " + codecV + " / duration: " + duration + " / width: " + width + " / height: " + height + " / frameRate: " + frameRate + " / codecA: " + codecA + " / sampleFrequency: " + sampleFrequency + " / nrAudioChannels: " + nrAudioChannels + " / thumb size : " + (thumb!=null?thumb.length:0);
 	}
 
 	public InputStream getThumbnailInputStream() {
