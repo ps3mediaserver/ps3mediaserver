@@ -249,19 +249,7 @@ public class AviDemuxerInputStream extends InputStream {
 					aud.setNbaudio(nbaudio);
 					long filelength = 100;
 					if (!params.lossyaudio && params.losslessaudio) {
-						aOut.write(new String("RIFF").getBytes()); //$NON-NLS-1$
-						aOut.write(getLe32(filelength-8));
-						aOut.write(new String("WAVEfmt ").getBytes()); //$NON-NLS-1$
-						aOut.write(getLe32(16));
-						aOut.write(getLe16(1)); //tag codec
-						aOut.write(getLe16(nbaudio));
-						
-						aOut.write(getLe32(aud.getRate()));
-						aOut.write(getLe32(aud.getRate()*aud.getSampleSize()));
-						aOut.write(getLe16(aud.getSampleSize()));
-						aOut.write(getLe16(bitspersample));
-						aOut.write(new String("data").getBytes()); //$NON-NLS-1$
-						aOut.write(getLe32(filelength-44));
+						writePCMHeader(aOut, filelength, nbaudio, aud.getRate(), aud.getSampleSize(), bitspersample);
 					}
 				}
 			}
@@ -470,6 +458,45 @@ public class AviDemuxerInputStream extends InputStream {
 			return -1;
 	}
 
-	
+	public static void writePCMHeader(OutputStream aOut, long filelength, int nbaudio, int rate, int samplesize, int bitspersample) throws IOException {
+		/*aOut.write(new String("RIFF").getBytes()); //$NON-NLS-1$
+		aOut.write(getLe32(filelength-8));
+		aOut.write(new String("WAVEfmt ").getBytes()); //$NON-NLS-1$
+		aOut.write(getLe32(16));
+		aOut.write(getLe16(1)); //tag codec
+		aOut.write(getLe16(nbaudio));
+		
+		aOut.write(getLe32(rate));
+		aOut.write(getLe32(rate*samplesize));
+		aOut.write(getLe16(samplesize));
+		aOut.write(getLe16(bitspersample));
+		aOut.write(new String("data").getBytes()); //$NON-NLS-1$
+		aOut.write(getLe32(filelength-44));
+		*/
+		aOut.write(new String("RIFF").getBytes()); //$NON-NLS-1$
+		aOut.write(getLe32(filelength-8));
+		aOut.write(new String("WAVEfmt ").getBytes()); //$NON-NLS-1$
+		aOut.write(getLe32(40));
+		aOut.write(getLe16(65534)); //tag codec
+		aOut.write(getLe16(nbaudio));
+		
+		aOut.write(getLe32(rate));
+		aOut.write(getLe32(rate*samplesize));
+		aOut.write(getLe16(samplesize));
+		aOut.write(getLe16(bitspersample));
+		
+		aOut.write(getLe16(22));
+		aOut.write(getLe16(bitspersample));
+		aOut.write(getLe32(0));
+		aOut.write(getLe32(1));
+		aOut.write(getLe32(1048576));
+		aOut.write(getLe32(2852126848L));
+		aOut.write(getLe32(1905997824L));
+		aOut.write(new String("fact").getBytes()); //$NON-NLS-1$
+		aOut.write(getLe32(4));
+		aOut.write(getLe32(filelength-72));
+		aOut.write(new String("data").getBytes()); //$NON-NLS-1$
+		aOut.write(getLe32(filelength-72));
+	}
 
 }

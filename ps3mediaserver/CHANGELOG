@@ -13,13 +13,15 @@ New extensions supported: SHN/M2V/M2P
 
 - Fixes
 
+Fixed flaw in networking code who caused TCP congestions: wireless was maybe impacted
 Fixed regression with PicasaWeb images feed
+Changes in subtitles loading / Fonts support (Default/ASS/Embedded Fonts) 
 Transcode buffer wasn't fully released after end of video
 Fixed bug with shared folders selection on Windows
 Fixed periodic alive messages sent to ps3
 Better dvr-ms media info retrieval
-Updated ffmpeg/mplayer/mencoder builds on Windows (slight speedup for singlecore on H264 with mencoder)
-Buffer issue with transcoded audio files lasting more than 10 minutes
+Updated ffmpeg/mplayer/mencoder builds on Windows (slight H264 speedup for singlecore)
+Buffer issues with transcoded audio files lasting more than 10 minutes
 
 v1.03
 

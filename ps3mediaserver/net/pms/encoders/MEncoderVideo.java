@@ -49,6 +49,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang.StringUtils;
+
 import bsh.EvalError;
 import bsh.Interpreter;
 
@@ -910,7 +912,15 @@ private JTextField mencoder_ass_scale;
 		if (media != null && media.dvdtrack > 0)
 			dvd = true;
 		
-		if ((media.losslessaudio && configuration.isMencoderUsePcm()) || (configuration.isTsmuxerPreremuxPcm() && params.losslessaudio)) {
+		
+		if (configuration.isMencoderUsePcm() && params.aid > -1 && media != null && media.audioCodes != null && media.audioCodes.size() > 0) {
+			for(DLNAMediaLang lang:media.audioCodes) {
+				if (lang.id == params.aid && lang.format != null && media.isLossless(lang.format)) //$NON-NLS-1$
+					pcm = true;
+			}
+		}
+		
+		if (pcm || fileName.contains("choppy") || (media.losslessaudio && configuration.isMencoderUsePcm()) || (configuration.isTsmuxerPreremuxPcm() && params.losslessaudio)) { //$NON-NLS-1$
 			pcm = true;
 			ac3 = false;
 			params.losslessaudio = true;
@@ -984,11 +994,15 @@ private JTextField mencoder_ass_scale;
 			sb.append("-alang " +configuration.getMencoderAudioLanguages() + " "); //$NON-NLS-1$ //$NON-NLS-2$
 		if (!configuration.isMencoderDisableSubs() && !avisynth()) {
 			if (configuration.getMencoderFont() != null && configuration.getMencoderFont().length() > 0) {
-				sb.append("-font " + configuration.getMencoderFont() + " "); //$NON-NLS-1$ //$NON-NLS-2$
+				sb.append("-subfont " + configuration.getMencoderFont() + " "); //$NON-NLS-1$ //$NON-NLS-2$
+			} else {
+				String font = CodecUtil.getDefaultFontPath();
+				if (StringUtils.isNotBlank(font))
+					sb.append("-subfont " + font + " "); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			if (configuration.isMencoderAss()) {
 				sb.append("-ass-color ffffff00 -ass-border-color 00000000 -ass-font-scale " + configuration.getMencoderAssScale()); //$NON-NLS-1$
-				sb.append(" -ass-force-style FontName=Arial,Outline=" + configuration.getMencoderAssOutline() + ",Shadow=" + configuration.getMencoderAssShadow() + ",MarginV=" + configuration.getMencoderAssMargin() + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				sb.append(" -ass-force-style " + (configuration.isMencoderFontConfig()?"FontName=Arial,":"") + "Outline=" + configuration.getMencoderAssOutline() + ",Shadow=" + configuration.getMencoderAssShadow() + ",MarginV=" + configuration.getMencoderAssMargin() + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 			} else {
 				sb.append("-subfont-text-scale " + configuration.getMencoderNoAssScale()); //$NON-NLS-1$
 				sb.append(" -subfont-outline " + configuration.getMencoderNoAssOutline()); //$NON-NLS-1$
@@ -1024,10 +1038,11 @@ private JTextField mencoder_ass_scale;
 		if (!configuration.isMencoderDisableSubs() && configuration.getMencoderSubLanguages() != null && configuration.getMencoderSubLanguages().length() >  0) {
 			sb.append("-slang " +configuration.getMencoderSubLanguages() + " "); //$NON-NLS-1$ //$NON-NLS-2$
 		} else {
-			int maxid = 1000;
+			/*int maxid = 1000;
 			if (media != null && media.maxsubid > 0)
-				maxid = media.maxsubid+1;
-			sb.append("-sid " + maxid + " "); //$NON-NLS-1$ //$NON-NLS-2$
+				maxid = media.maxsubid+1;*/
+			//sb.append("-sid " + maxid + " "); //$NON-NLS-1$ //$NON-NLS-2$
+			sb.append("-subdelay 20000");
 		}
 		
 		String subs = sb.toString().trim();
@@ -1061,6 +1076,10 @@ private JTextField mencoder_ass_scale;
 			File subFile = FileUtil.isFileExists(fileName, "sub"); //$NON-NLS-1$
 			if (subFile != null) {
 				subString=subFile.getAbsolutePath();
+			}
+			File smiFile = FileUtil.isFileExists(fileName, "smi"); //$NON-NLS-1$
+			if (smiFile != null) {
+				subString=smiFile.getAbsolutePath();
 			}
 			File idxFile = FileUtil.isFileExists(fileName, "idx"); //$NON-NLS-1$
 			if (idxFile != null) {
@@ -1118,10 +1137,12 @@ private JTextField mencoder_ass_scale;
 				if (params.sid > -1) {
 					cmdArray[cmdArray.length-9] = "" + params.sid; //$NON-NLS-1$
 				} else {
-					int maxid = 1000;
+					/*int maxid = 1000;
 					if (media != null)
-						maxid = media.maxsubid+1;
-					cmdArray[cmdArray.length-9] = maxid + ""; //$NON-NLS-1$
+						maxid = media.maxsubid+1;*/
+					//cmdArray[cmdArray.length-9] = maxid + ""; //$NON-NLS-1$
+					cmdArray[cmdArray.length-9] = "20000";
+					cmdArray[cmdArray.length-10] = "-subdelay";
 				}
 			} else if (subString == null) {
 				nosubfound = true;
@@ -1146,11 +1167,13 @@ private JTextField mencoder_ass_scale;
 				}
 			}
 		} else {
-			cmdArray[cmdArray.length-10] = "-sid"; //$NON-NLS-1$
-			int maxid = 100;
+			//cmdArray[cmdArray.length-10] = "-sid"; //$NON-NLS-1$
+			//int maxid = 100;
 			/*if (media != null)
 				maxid = media.maxsubid+1;*/
-			cmdArray[cmdArray.length-9] = ""+ maxid; //$NON-NLS-1$
+			//cmdArray[cmdArray.length-9] = ""+ maxid; //$NON-NLS-1$
+			cmdArray[cmdArray.length-9] = "20000";
+			cmdArray[cmdArray.length-10] = "-subdelay";
 		}
 		
 		// disable ass if there are no subs (not safe ?)
@@ -1346,7 +1369,7 @@ private JTextField mencoder_ass_scale;
 			}
 		}
 		
-		if (PMS.getConfiguration().isMencoderNoOutOfSync() && !noMC0NoSkip) {
+		if ((pcm || ac3) || (PMS.getConfiguration().isMencoderNoOutOfSync() && !noMC0NoSkip)) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +3);
 			cmdArray[cmdArray.length-5] = "-mc"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-4] = "0"; //$NON-NLS-1$
