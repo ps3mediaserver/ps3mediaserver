@@ -13,7 +13,6 @@ New extensions supported: SHN/M2V/M2P
 
 - Fixes
 
-Fixed flaw in networking code who caused TCP congestions: wireless was maybe impacted
 Fixed regression with PicasaWeb images feed
 Changes in subtitles loading / Fonts support (Default/ASS/Embedded Fonts) 
 Transcode buffer wasn't fully released after end of video
