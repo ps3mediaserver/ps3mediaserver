@@ -410,12 +410,13 @@ public class Request extends HTTPResource {
 	
 
 	private int sendBytes(InputStream fis) throws IOException {
-		byte[] buffer = new byte[64*1024];
+		byte[] buffer = new byte[8192];
 		int bytes = 0;
 		int sendBytes = 0;
 		try {
 			while ((bytes = fis.read(buffer)) != -1) {
 				output.write(buffer, 0, bytes);
+				output.flush();
 				sendBytes += bytes;
 			}
 		} catch (IOException e) {
