@@ -402,13 +402,19 @@ public class BufferedOutputFile extends OutputStream  {
 		
 		int mb = (int) (readCount % maxMemorySize);
 		int endOF = buffer.length;
+		int cut = 0;
+		if (eof) {
+			if ((writeCount - readCount) < buf.length) {
+				cut = (int) (buf.length - (writeCount - readCount));
+			}
+		}
 		/*if (eof)
 			endOF =(int) (writeCount % maxMemorySize);*/
 		if (mb>=endOF - buf.length) {
-			System.arraycopy(buffer, mb, buf, 0, endOF-mb);
+			System.arraycopy(buffer, mb, buf, 0, endOF-mb-cut);
 			return endOF-mb;
 		} else {
-			System.arraycopy(buffer, mb, buf, 0, buf.length);
+			System.arraycopy(buffer, mb, buf, 0, buf.length-cut);
 			return buf.length;
 		}
 		
