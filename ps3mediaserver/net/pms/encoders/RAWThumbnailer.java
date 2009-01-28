@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 import javax.swing.JComponent;
 
@@ -65,7 +64,8 @@ public class RAWThumbnailer extends Player {
 			}
 		}
 		
-		byte copy [] = Arrays.copyOf(media.thumb, media.thumb.length);
+		byte copy [] = new byte [media.thumb.length];
+		System.arraycopy(media.thumb, 0, copy, 0, media.thumb.length);
 		media.thumb = new byte [0];
 		
 		ProcessWrapper pw = new InternalJavaProcessImpl(new ByteArrayInputStream(copy));

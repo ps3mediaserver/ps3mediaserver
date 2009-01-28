@@ -408,15 +408,14 @@ public class Request extends HTTPResource {
 	}
 	*/
 	
-
+	//VISTA tip ?: netsh interface tcp set global autotuninglevel=disabled
 	private int sendBytes(InputStream fis) throws IOException {
-		byte[] buffer = new byte[8192];
+		byte[] buffer = new byte[32*1024];
 		int bytes = 0;
 		int sendBytes = 0;
 		try {
 			while ((bytes = fis.read(buffer)) != -1) {
 				output.write(buffer, 0, bytes);
-				output.flush();
 				sendBytes += bytes;
 			}
 		} catch (IOException e) {
