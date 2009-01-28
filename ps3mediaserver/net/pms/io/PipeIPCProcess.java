@@ -29,7 +29,16 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 	
 	private PipeProcess mkin;
 	private PipeProcess mkout;
+	private byte header[];
 	
+	public byte[] getHeader() {
+		return header;
+	}
+
+	public void setHeader(byte[] header) {
+		this.header = header;
+	}
+
 	public PipeIPCProcess(String pipeName, String pipeNameOut, boolean forcereconnect1, boolean forcereconnect2) {
 		mkin = new PipeProcess(pipeName, forcereconnect1?"reconnect":"dummy");
 		mkout = new PipeProcess(pipeNameOut, "out", forcereconnect2?"reconnect":"dummy");
@@ -40,12 +49,22 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 		int n = -1;
 		InputStream in = null;
 		OutputStream out = null;
+		OutputStream debug = null;
+		/*try {
+			debug = new FileOutputStream(System.currentTimeMillis() + "debug");
+		} catch (FileNotFoundException e1) {}*/
 		try {
 			in = mkin.getInputStream();
 			out = mkout.getOutputStream();
 			
+			if (header != null)
+				out.write(header);
+			if (debug != null && header != null)
+				debug.write(header);
 			while ((n=in.read(b)) > -1) {
 				out.write(b, 0, n);
+				if (debug != null)
+					debug.write(b, 0, n);
 			}
 		} catch (IOException e) {
 			PMS.info("Error :" + e.getMessage());
@@ -53,6 +72,8 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 			try {
 				in.close();
 				out.close();
+				if (debug != null)
+					debug.close();
 			} catch (IOException e) {
 				PMS.info("Error :" + e.getMessage());
 			}
