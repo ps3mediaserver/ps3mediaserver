@@ -16,6 +16,8 @@ import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
 
+import com.sun.jna.Platform;
+
 public class PmsConfiguration {
 
 	private static final String KEY_TEMP_FOLDER_PATH = "temp";
@@ -124,8 +126,13 @@ public class PmsConfiguration {
 	public PmsConfiguration() throws ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration();
 		configuration.setListDelimiter((char)0);
-		if (new File(CONFIGURATION_FILENAME).exists())
-			configuration.load(CONFIGURATION_FILENAME);
+		String strAppData = System.getenv("APPDATA");
+		if (Platform.isWindows() && strAppData != null && new File(strAppData + PMSDIR + CONFIGURATION_FILENAME).exists()) {
+			configuration.load(strAppData + PMSDIR + CONFIGURATION_FILENAME);
+		} else {
+			if (new File(CONFIGURATION_FILENAME).exists())
+				configuration.load(CONFIGURATION_FILENAME);
+		}
 		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
 		Locale.setDefault(new Locale(getLanguage()));
@@ -747,10 +754,27 @@ public class PmsConfiguration {
 		output.removeAll(toBeRemoved);
 		return output;
 	}
+	
+	private static final String PMSDIR = "\\PMS\\";
 
 	public void save() throws ConfigurationException {
 		configuration.setFileName(CONFIGURATION_FILENAME);
-		configuration.save();
+		try {
+			configuration.save();
+			throw new ConfigurationException();
+		} catch (ConfigurationException ce) {
+			PMS.minimal("Troubles to save PMS.conf in application folder... not admin access ?");
+			String strAppData = System.getenv("APPDATA");
+			if (Platform.isWindows() && strAppData != null) {
+				PMS.minimal("Switching save folder to: " + strAppData + PMSDIR);
+				File pmsDir = new File(strAppData+PMSDIR);
+				if (!pmsDir.exists())
+					pmsDir.mkdir();
+				configuration.setFileName(strAppData+PMSDIR+CONFIGURATION_FILENAME);
+				configuration.save();
+			} else
+				throw ce;
+		}
 		PMS.minimal("Configuration saved.");
 	}
 
