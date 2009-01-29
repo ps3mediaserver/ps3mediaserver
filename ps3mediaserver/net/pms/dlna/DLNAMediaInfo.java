@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
@@ -88,7 +89,7 @@ public class DLNAMediaInfo {
 	public int exposure;
 	public int orientation;
 	public int iso;
-	
+	public byte h264_annexB [];
 	// no stored
 	public boolean mediaparsed;
 	public String types [] = null;
@@ -97,6 +98,7 @@ public class DLNAMediaInfo {
 	public int maxsubid;
 	public boolean secondaryFormatValid;
 	public boolean parsing = false;
+	private boolean ffmpeg_failure;
 	
 	public ProcessWrapperImpl getFFMpegThumbnail(File media) {
 		String args [] = new String[14];
@@ -139,7 +141,8 @@ public class DLNAMediaInfo {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					Thread.sleep(10000);
+					Thread.sleep(5000);
+					ffmpeg_failure = true;
 				} catch (InterruptedException e) {}
 				pw.stopProcess();
 				parsing = false;
@@ -276,111 +279,153 @@ public class DLNAMediaInfo {
 			}
 			if (ffmpeg_parsing) {
 				pw = getFFMpegThumbnail(f);
-				boolean matchs = false;
-				ArrayList<String> lines = (ArrayList<String>) pw.getResults();
-				int langId = 0;
-				int subId = 0;
 				int nbUndAudioTracks = 0;
-				for(String line:lines) {
-					line = line.trim();
-					if (line.startsWith("Output"))
-						matchs = false;
-					else if (line.startsWith("Input")) {
-						if (line.indexOf(ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath())) > -1) {
-							matchs = true;
-							container = line.substring(10, line.indexOf(",", 11)).trim();
-						} else
+				if (ffmpeg_failure) {
+					// switchin to mplayer cause ffmpeg has hung ? -> for some m2ts
+					// TODO: improve that
+					String cmdArray [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-identify", "-vo", "null", "-ao", "null", "-frames", "1", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()) };
+					OutputParams params = new OutputParams(PMS.getConfiguration());
+					params.maxBufferSize = 1;
+					params.log = true;
+					params.noexitcheck = true; // not serious if anything happens during the thumbnailer
+					final ProcessWrapperImpl pw2 = new ProcessWrapperImpl(cmdArray, params);
+					// FAILSAFE
+					parsing = true;
+					Runnable r = new Runnable() {
+						public void run() {
+							try {
+								Thread.sleep(5000);
+							} catch (InterruptedException e) {}
+							pw2.stopProcess();
+							parsing = false;
+						}
+					};
+					Thread failsafe = new Thread(r);
+					failsafe.start();
+					pw2.run();
+					List<String> results = pw2.getOtherResults();
+					for(String s:results) {
+						if (s.startsWith("FPS seems to be: "))
+							frameRate = s.substring(17);
+						if (s.startsWith("TS file format detected."))
+							container = "mpegts";
+						if (s.startsWith("VIDEO")) {
+							codecV = s.substring(6, s.indexOf("(")).trim().toLowerCase();
+							if (codecV.equals("mpeg2"))
+								codecV = "mpeg2video";
+							if (s.contains("AUDIO ") && !s.contains("NO AUDIO")) {
+								int audio = s.indexOf("AUDIO ")+5;
+								codecA = s.substring(audio, s.indexOf("(", audio)).trim().toLowerCase();
+								
+							}
+						}
+					}
+				} else {
+					boolean matchs = false;
+					ArrayList<String> lines = (ArrayList<String>) pw.getResults();
+					int langId = 0;
+					int subId = 0;
+					for(String line:lines) {
+						line = line.trim();
+						if (line.startsWith("Output"))
 							matchs = false;
-					} else if (matchs) {
-						if (line.indexOf("Duration") > -1) {
-							StringTokenizer st = new StringTokenizer(line, ",");
-							while (st.hasMoreTokens()) {
-								String token = st.nextToken().trim();
-								if (token.startsWith("Duration: ") && (codecA == null || !codecA.equals("flac"))) {
-									duration = token.substring(10);
-									int l = duration.substring(duration.indexOf(".")+1).length();
-									if (l < 4) {
-										duration = duration + "00".substring(0, 3-l); 
+						else if (line.startsWith("Input")) {
+							if (line.indexOf(ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath())) > -1) {
+								matchs = true;
+								container = line.substring(10, line.indexOf(",", 11)).trim();
+							} else
+								matchs = false;
+						} else if (matchs) {
+							if (line.indexOf("Duration") > -1) {
+								StringTokenizer st = new StringTokenizer(line, ",");
+								while (st.hasMoreTokens()) {
+									String token = st.nextToken().trim();
+									if (token.startsWith("Duration: ") && (codecA == null || !codecA.equals("flac"))) {
+										duration = token.substring(10);
+										int l = duration.substring(duration.indexOf(".")+1).length();
+										if (l < 4) {
+											duration = duration + "00".substring(0, 3-l); 
+										}
+										if (duration.indexOf("N/A") > -1)
+											duration = null;
+									} else if (token.startsWith("bitrate: ")) {
+										String bitr = token.substring(9);
+										int spacepos = bitr.indexOf(" ");
+										if (spacepos > -1) {
+											String value = bitr.substring(0, spacepos);
+											String unit = bitr.substring(spacepos+1);
+											bitrate = Integer.parseInt(value);
+											if (unit.equals("kb/s"))
+												bitrate = 1024 * bitrate;
+											if (unit.equals("mb/s"))
+												bitrate = 1048576 * bitrate;
+										}
 									}
-									if (duration.indexOf("N/A") > -1)
-										duration = null;
-								} else if (token.startsWith("bitrate: ")) {
-									String bitr = token.substring(9);
-									int spacepos = bitr.indexOf(" ");
-									if (spacepos > -1) {
-										String value = bitr.substring(0, spacepos);
-										String unit = bitr.substring(spacepos+1);
-										bitrate = Integer.parseInt(value);
-										if (unit.equals("kb/s"))
-											bitrate = 1024 * bitrate;
-										if (unit.equals("mb/s"))
-											bitrate = 1048576 * bitrate;
-									}
 								}
-							}
-						} else if (line.indexOf("Audio:") > -1) {
-							StringTokenizer st = new StringTokenizer(line, ",");
-							int a = line.indexOf("(");
-							int b = line.indexOf("):", a);
-							DLNAMediaLang lang = new DLNAMediaLang();
-							if (langId == 0 && container.equals("avi"))
-								langId++;
-							lang.id = langId++;
-							if (a > -1 && b > a) {
-								lang.lang = line.substring(a+1, b);
-							} else {
-								lang.lang = "und";
-								nbUndAudioTracks++;
-							}
-							audioCodes.add(lang);
-							while (st.hasMoreTokens()) {
-								String token = st.nextToken().trim();
-								if (token.startsWith("Stream")) {
-									codecA = token.substring(token.indexOf("Audio: ")+7);
-									lang.format = codecA;
-									
-								} else if (token.endsWith("Hz")) {
-									sampleFrequency = token.substring(0, token.indexOf("Hz")).trim();
-								} else if (token.equals("mono")) {
-									nrAudioChannels = 1;
-								} else if (token.equals("stereo")) {
-									nrAudioChannels = 2;
-								} else if (token.equals("5:1") || token.equals("5.1")) {
-									nrAudioChannels = 6;
-								} else if (token.equals("4 channels")) {
-									nrAudioChannels = 4;
-								} else if (token.equals("s32")) {
-									bitsperSample = 32;
-								} else if (token.equals("s24")) {
-									bitsperSample = 24;
-								}
-							}
-						} else if (line.indexOf("Video:") > -1) {
-							StringTokenizer st = new StringTokenizer(line, ",");
-							while (st.hasMoreTokens()) {
-								String token = st.nextToken().trim();
-								if (token.startsWith("Stream")) {
-									codecV = token.substring(token.indexOf("Video: ")+7);
-								} else if (token.indexOf(".") > -1 && token.indexOf("tb") > -1) {
-									frameRate = token.substring(0, token.indexOf("tb")).trim();
-								} else if (token.indexOf("x") > -1) {
-									String resolution = token.trim();
-									if (resolution.indexOf(" [") > -1)
-										resolution = resolution.substring(0, resolution.indexOf(" ["));
-									try {
-										width = Integer.parseInt(resolution.substring(0, resolution.indexOf("x")));
-										height = Integer.parseInt(resolution.substring(resolution.indexOf("x")+1));
-									} catch (NumberFormatException nfe) {}
-								}
-							}
-						} else if (line.indexOf("Subtitle:") > -1 && !line.contains("tx3g")) {
-							int a = line.indexOf("(");
-							int b = line.indexOf("):", a);
-							if (a > -1 && b > a) {
+							} else if (line.indexOf("Audio:") > -1) {
+								StringTokenizer st = new StringTokenizer(line, ",");
+								int a = line.indexOf("(");
+								int b = line.indexOf("):", a);
 								DLNAMediaLang lang = new DLNAMediaLang();
-								lang.lang = line.substring(a+1, b);
-								lang.id = subId++;
-								subtitlesCodes.add(lang);
+								if (langId == 0 && container.equals("avi"))
+									langId++;
+								lang.id = langId++;
+								if (a > -1 && b > a) {
+									lang.lang = line.substring(a+1, b);
+								} else {
+									lang.lang = "und";
+									nbUndAudioTracks++;
+								}
+								audioCodes.add(lang);
+								while (st.hasMoreTokens()) {
+									String token = st.nextToken().trim();
+									if (token.startsWith("Stream")) {
+										codecA = token.substring(token.indexOf("Audio: ")+7);
+										lang.format = codecA;
+										
+									} else if (token.endsWith("Hz")) {
+										sampleFrequency = token.substring(0, token.indexOf("Hz")).trim();
+									} else if (token.equals("mono")) {
+										nrAudioChannels = 1;
+									} else if (token.equals("stereo")) {
+										nrAudioChannels = 2;
+									} else if (token.equals("5:1") || token.equals("5.1")) {
+										nrAudioChannels = 6;
+									} else if (token.equals("4 channels")) {
+										nrAudioChannels = 4;
+									} else if (token.equals("s32")) {
+										bitsperSample = 32;
+									} else if (token.equals("s24")) {
+										bitsperSample = 24;
+									}
+								}
+							} else if (line.indexOf("Video:") > -1) {
+								StringTokenizer st = new StringTokenizer(line, ",");
+								while (st.hasMoreTokens()) {
+									String token = st.nextToken().trim();
+									if (token.startsWith("Stream")) {
+										codecV = token.substring(token.indexOf("Video: ")+7);
+									} else if (token.indexOf(".") > -1 && token.indexOf("tb") > -1) {
+										frameRate = token.substring(0, token.indexOf("tb")).trim();
+									} else if (token.indexOf("x") > -1) {
+										String resolution = token.trim();
+										if (resolution.indexOf(" [") > -1)
+											resolution = resolution.substring(0, resolution.indexOf(" ["));
+										try {
+											width = Integer.parseInt(resolution.substring(0, resolution.indexOf("x")));
+											height = Integer.parseInt(resolution.substring(resolution.indexOf("x")+1));
+										} catch (NumberFormatException nfe) {}
+									}
+								}
+							} else if (line.indexOf("Subtitle:") > -1 && !line.contains("tx3g")) {
+								int a = line.indexOf("(");
+								int b = line.indexOf("):", a);
+								if (a > -1 && b > a) {
+									DLNAMediaLang lang = new DLNAMediaLang();
+									lang.lang = line.substring(a+1, b);
+									lang.id = subId++;
+									subtitlesCodes.add(lang);
+								}
 							}
 						}
 					}
