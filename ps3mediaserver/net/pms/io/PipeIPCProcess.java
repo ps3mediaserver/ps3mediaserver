@@ -58,7 +58,7 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 		OutputStream debug = null;
 		/*try {
 			debug = new FileOutputStream(System.currentTimeMillis() + "debug");
-		} catch (FileNotFoundException e1) {}*/
+		} catch (Exception e1) {}*/
 		try {
 			in = mkin.getInputStream();
 			out = mkout.getOutputStream();
@@ -69,7 +69,7 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 			
 			if (header != null && !h264_annexb)
 				out.write(header);
-			if (debug != null && header != null)
+			if (debug != null && header != null && !h264_annexb)
 				debug.write(header);
 			while ((n=in.read(b)) > -1) {
 				out.write(b, 0, n);

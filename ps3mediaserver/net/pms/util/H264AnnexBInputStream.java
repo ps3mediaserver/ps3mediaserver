@@ -41,14 +41,16 @@ public class H264AnnexBInputStream extends InputStream {
 		boolean insertHeader = false;
 		
 		if (nextTarget == -1) {
-			h = new byte[4];
-			if (source.read(h, 0, 4) == -1)
+			h = getArray(4);
+			if (h == null)
 				return -1;
 			nextTarget = 65536*256*(h[0]&0xff) + 65536*(h[1]&0xff) + 256*(h[2]&0xff) + (h[3]&0xff);
-			h = new byte[3];
-			if (source.read(h, 0, 3) == -1)
+			h = getArray(3);
+			if (h == null)
 				return -1;
-			insertHeader = (h[0] == 101 && h[1] == -120 && (h[2] == -128 || h[2] == -127));
+			insertHeader = (h[0] == 101 && h[1] == -120/* && (h[2] == -128 || h[2] == -127)*/);
+			/*if (insertHeader)
+				PMS.minimal("Must insert a header / nextTarget: " + nextTarget);*/
 			if (!insertHeader) {
 				System.arraycopy(new  byte [] { 0, 0, 0, 1 }, 0, b, off, 4);
 				off += 4;
@@ -76,12 +78,14 @@ public class H264AnnexBInputStream extends InputStream {
 				System.arraycopy(defHeader, 0, b, off, (len - off));
 				off = len;
 			}
+			//PMS.minimal("header inserted / nextTarget: " + nextTarget);
 			firstHeader = false;
 		}
 		
 		if (h != null) {
 			System.arraycopy(h, 0, b, off, 3);
 			off += 3;
+			//PMS.minimal("frame start inserted");
 		}
 		
 		if (nextTarget < (len - off)) {
@@ -90,6 +94,7 @@ public class H264AnnexBInputStream extends InputStream {
 			if (h == null)
 				return -1;
 			System.arraycopy(h, 0, b, off, nextTarget);
+			//PMS.minimal("Frame copied: " + nextTarget);
 			off += nextTarget;
 			
 			nextTarget = -1;
@@ -100,6 +105,7 @@ public class H264AnnexBInputStream extends InputStream {
 			if (h == null)
 				return -1;
 			System.arraycopy(h, 0, b, off, (len - off));
+			//PMS.minimal("Frame copied: " + (len - off));
 			nextTarget = nextTarget - (len - off);
 			off = len;
 			
@@ -109,6 +115,10 @@ public class H264AnnexBInputStream extends InputStream {
 	}
 
 	private byte[] getArray(int length) throws IOException {
+		if (length < 0) {
+			PMS.debug("Negative array ?");
+			return null;
+		}
 		byte bb [] = new  byte [length];
 		int n=source.read(bb);
 		while (n < length) {
@@ -131,6 +141,7 @@ public class H264AnnexBInputStream extends InputStream {
 	public static byte [] getAnnexBFrameHeader(String f) {
 		String cmdArray [] = new String [14];
 		cmdArray[0] = PMS.getConfiguration().getFfmpegPath();
+		//cmdArray[0] = "win32/ffmpeg.exe";
 		cmdArray[1] = "-vframes";
 		cmdArray[2] = "1";
 		cmdArray[3] = "-i";
@@ -144,8 +155,8 @@ public class H264AnnexBInputStream extends InputStream {
 		cmdArray[11] = "-an";
 		cmdArray[12] = "-y";
 		cmdArray[13] = "pipe:";
-		
-		/*try {
+		/*
+		try {
 			PMS.configuration = new PmsConfiguration();
 			PMS.get();
 		} catch (ConfigurationException e1) {
@@ -154,8 +165,8 @@ public class H264AnnexBInputStream extends InputStream {
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}*/
-		
+		}
+	*/
 		OutputParams params = new OutputParams(PMS.getConfiguration());
 		params.maxBufferSize = 1;
 		
@@ -178,7 +189,7 @@ public class H264AnnexBInputStream extends InputStream {
 
 			int kf = 0;
 			for(int i=2;i<data.length;i++) {
-				if (data[i-2] == 101 && data[i-1] == -120 && (data[i] == -128 || data[i] == -127)) {
+				if (data[i-2] == 101 && data[i-1] == -120/* && (data[i] == -128 || data[i] == -127)*/) {
 					kf = i - 2;
 					break;
 				}
@@ -208,7 +219,7 @@ public class H264AnnexBInputStream extends InputStream {
 		FileInputStream fis = new FileInputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\win32\\raw.h264");
 		H264AnnexBInputStream h = new H264AnnexBInputStream(fis, header);
 		FileOutputStream out = new FileOutputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\win32\\raw_new.h264");
-		byte b [] = new byte [8192];
+		byte b [] = new byte [512*1024];
 		int n = -1;
 		while ((n=h.read(b)) > -1) {
 			out.write(b, 0, n);
