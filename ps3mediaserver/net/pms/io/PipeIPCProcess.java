@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import com.sun.jna.Platform;
+
 import net.pms.PMS;
 import net.pms.util.H264AnnexBInputStream;
 
@@ -133,6 +135,13 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 
 	@Override
 	public void runInNewThread() {
+		if (!Platform.isWindows()) {
+			mkin.getPipeProcess().runInNewThread();
+			mkout.getPipeProcess().runInNewThread();
+			try {
+				Thread.sleep(150);
+			} catch (InterruptedException e) {}
+		}
 		start();
 	}
 
