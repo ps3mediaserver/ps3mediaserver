@@ -24,13 +24,19 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import net.pms.PMS;
+import net.pms.util.H264AnnexBInputStream;
 
 public class PipeIPCProcess extends Thread implements ProcessWrapper {
 	
 	private PipeProcess mkin;
 	private PipeProcess mkout;
 	private byte header[];
+	private boolean h264_annexb;
 	
+	public void setH264_annexb(boolean h264_annexb) {
+		this.h264_annexb = h264_annexb;
+	}
+
 	public byte[] getHeader() {
 		return header;
 	}
@@ -45,7 +51,7 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 	}
 	
 	public void run() {
-		byte b [] = new byte [4096];
+		byte b [] = new byte [512*1024];
 		int n = -1;
 		InputStream in = null;
 		OutputStream out = null;
@@ -57,7 +63,11 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 			in = mkin.getInputStream();
 			out = mkout.getOutputStream();
 			
-			if (header != null)
+			if (h264_annexb) {
+				in = new H264AnnexBInputStream(in, header);
+			}
+			
+			if (header != null && !h264_annexb)
 				out.write(header);
 			if (debug != null && header != null)
 				debug.write(header);
