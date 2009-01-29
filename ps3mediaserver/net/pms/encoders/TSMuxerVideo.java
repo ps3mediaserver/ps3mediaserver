@@ -59,7 +59,7 @@ public class TSMuxerVideo extends Player {
 	
 	public boolean excludeFormat(Format extension) {
 		String m = extension.getMatchedId();
-		return m != null && !m.equals("mkv") && !m.equals("ts") && !m.equals("m2ts") && !m.equals("mpg") && !m.equals("evo") && !m.equals("mpeg") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		return m != null && !m.equals("mkv") && !m.equals("ts") && !m.equals("m2ts") && !m.equals("m2t") && !m.equals("mpg") && !m.equals("evo") && !m.equals("mpeg") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 			&& !m.equals("vob") && !m.equals("m2v") && !m.equals("mts"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 	
@@ -201,8 +201,15 @@ public class TSMuxerVideo extends Player {
 			if ((configuration.isTsmuxerPreremuxPcm() && media.losslessaudio) || configuration.isTsmuxerPreremuxAc3()) {
 				ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegvideo", System.currentTimeMillis() + "videoout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
 				String outputType = "h264"; //$NON-NLS-1$
-				if (videoType.indexOf("MPEG-2") > -1) //$NON-NLS-1$
+				if (videoType != null && videoType.indexOf("MPEG-2") > -1) //$NON-NLS-1$
 					outputType = "mpeg2video"; //$NON-NLS-1$
+				if (media != null && media.codecV.equals("mpeg2video")) {
+					outputType = "mpeg2video"; //$NON-NLS-1$
+					videoType = "V_MPEG-2";
+				} else if (media != null && media.codecV.equals("h264")) {
+					outputType = "h264"; //$NON-NLS-1$
+					videoType = "V_MPEG4/ISO/AVC"; //$NON-NLS-1$
+				}
 				String ffmpegLPCMextract [] = new String [] { configuration.getFfmpegPath(), "-ss", "0", "-i", fileName, "-f", outputType, "-vbsf", "h264_mp4toannexb", "-vcodec", "copy", "-an", "-y", ffVideoPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 				ffmpegLPCMextract = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-ovc", "copy", "-nosound", "-of", "rawvideo", "-o", ffVideoPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 				
