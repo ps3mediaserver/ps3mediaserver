@@ -14,6 +14,7 @@ tsMuxer engine can now mux or reencode in AC3/PCM all audio tracks in real time
 
 - Fixes
 
+tsMuxer's AC3/LPCM encode/muxing + Mencoder's LPCM remuxing now working on Linux
 Fixed regression with PicasaWeb images feed
 Changes in subtitles loading / Fonts support (Default/ASS/Embedded Fonts)
 Fixed channels order with tsMuxer engine's DTS->AC3 option
