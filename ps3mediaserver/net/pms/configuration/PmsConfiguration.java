@@ -761,7 +761,6 @@ public class PmsConfiguration {
 		configuration.setFileName(CONFIGURATION_FILENAME);
 		try {
 			configuration.save();
-			throw new ConfigurationException();
 		} catch (ConfigurationException ce) {
 			PMS.minimal("Troubles to save PMS.conf in application folder... not admin access ?");
 			String strAppData = System.getenv("APPDATA");
