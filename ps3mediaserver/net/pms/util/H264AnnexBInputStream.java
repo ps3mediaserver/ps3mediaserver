@@ -121,6 +121,8 @@ public class H264AnnexBInputStream extends InputStream {
 		}
 		byte bb [] = new  byte [length];
 		int n=source.read(bb);
+		if (n == -1)
+			return null;
 		while (n < length) {
 			int u = source.read(bb, n, length-n);
 			if (u == -1) {

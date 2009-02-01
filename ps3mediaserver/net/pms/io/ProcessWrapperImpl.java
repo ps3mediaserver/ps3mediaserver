@@ -115,10 +115,14 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			} catch (InterruptedException e) {}
 			if (bo != null)
 				bo.close();
+		} catch (Exception e) {
+			PMS.error("Fatal error in process starting: ", e);
+			stopProcess();
+		} finally {
 			if (!destroyed && !params.noexitcheck) {
 				try {
 					success = true;
-					if (process.exitValue() != 0) {
+					if (process != null && process.exitValue() != 0) {
 						PMS.minimal("Process " + cmdArray[0] + " has a return code of " + process.exitValue() + "! Maybe an error occured... check the log file");
 						success = false;
 					}
@@ -133,10 +137,6 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				}
 			}
 			PMS.get().currentProcesses.remove(process);
-		} catch (IOException e) {
-			PMS.error(null, e);
-		} catch (InterruptedException e) {
-			PMS.error(null, e);
 		}
 	}
 	
