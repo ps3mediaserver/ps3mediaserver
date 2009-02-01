@@ -173,7 +173,7 @@ public class BufferedOutputFile extends OutputStream  {
 			}
 		 int mb = (int) (writeCount % maxMemorySize);
 		 if (buffer != null) {
-			 if (mb>=buffer.length - len) {
+			 if (mb>=buffer.length - (len - off)) {
 				 if (buffer.length == TEMP_SIZE) {
 						PMS.debug("freeMemory: " + Runtime.getRuntime().freeMemory());
 						PMS.debug("totalMemory: " + Runtime.getRuntime().totalMemory());
@@ -199,19 +199,18 @@ public class BufferedOutputFile extends OutputStream  {
 						}
 						PMS.debug("Done extending");
 					}
-				for (int i = 0 ; i < len ; i++) {
+				 int s = (len - off);
+				for (int i = 0 ; i < s; i++) {
 				   buffer[modulo(mb+i)] = b[off+i];
 				}
 			 } else {
 				 
-				 System.arraycopy(b, off, buffer,mb  , len);
+				 System.arraycopy(b, off, buffer,mb  , (len - off));
 				 
 	
 			 }
 			 
-	
-			 writeCount += len;
-			 
+			 writeCount += len - off;
 			 if (timeseek > 0) {
 				 int packetLength = 6; // minimum to get packet size
 				 while (packetpos+packetLength < writeCount) {
@@ -220,6 +219,14 @@ public class BufferedOutputFile extends OutputStream  {
 					 if (buffer[modulo(packetposMB)] == 71)  {// TS
 						 packetLength = 188;
 						 streamPos = 4;
+	
+						 // adaptation field
+						 if ((buffer[modulo(packetposMB+3)] & 0x20) == 0x20)
+							 streamPos += 1 + ((buffer[modulo(packetposMB+4)]+256)%256);
+						 
+						 if (streamPos == 188)
+							 streamPos = -1;
+						
 					 } else if (buffer[modulo(packetposMB+3)] == -70) { // BA
 						 packetLength = 14;
 						 streamPos = -1;
@@ -228,9 +235,9 @@ public class BufferedOutputFile extends OutputStream  {
 					 }
 					 if (streamPos != -1) {
 						 mb = packetposMB + streamPos + 18;
-						 if (!shiftVideo(mb, true /*mb>=buffer.length - len || mb < 20)*/)) {
+						 if (!shiftVideo(mb, true )) {
 							 mb = mb-5;
-							 shiftAudio(mb, true /*mb>=buffer.length - len || mb < 15*/);
+							 shiftAudio(mb, true);
 						 }
 					 }
 					 packetpos+= packetLength;
