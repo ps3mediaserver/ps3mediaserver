@@ -23,6 +23,7 @@ Fixed bug with shared folders selection on Windows
 Fixed periodic alive messages sent to ps3
 Better dvr-ms media info retrieval
 Updated ffmpeg/mplayer/mencoder builds on Windows (slight H264 speedup for singlecore)
+Add the experimental mencoder build for multicore on OSX
 Buffer issues with transcoded audio files lasting more than 10 minutes
 
 v1.03
