@@ -58,11 +58,15 @@ public class CodecUtil {
 			if (font == null)
 				font = getFont("C:\\WINNT\\Fonts", "Arial.ttf");
 			if (font == null)
+				font = getFont("D:\\Windows\\Fonts", "Arial.ttf");
+			if (font == null)
 				font = getFont(".\\win32\\mplayer\\", "subfont.ttf");
 			return font;
 		} else if (Platform.isLinux()) {
 			// get Linux default font
-			String font = getFont("/usr/share/fonts/truetype/ttf-bitstream-veras/", "Vera.ttf");
+			String font = getFont("/usr/share/fonts/truetype/msttcorefonts/", "arial.ttf");
+			if (font == null)
+				font = getFont("/usr/share/fonts/truetype/ttf-bitstream-veras/", "Vera.ttf");
 			if (font == null)
 				font = getFont("/usr/share/fonts/truetype/ttf-dejavu/", "DejaVuSans.ttf");
 			return font;
