@@ -92,7 +92,7 @@ public class NetworkTab {
         if (PMS.getConfiguration().isMinimized())
         	smcheckBox.setSelected(true);
         
-        JComponent cmp = builder.addSeparator("General",  cc.xyw(1, 1, 9)); //$NON-NLS-1$
+        JComponent cmp = builder.addSeparator(Messages.getString("NetworkTab.5"),  cc.xyw(1, 1, 9));
         cmp = (JComponent) cmp.getComponent(0);
         cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
        

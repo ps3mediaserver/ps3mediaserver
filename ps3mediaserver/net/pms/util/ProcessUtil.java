@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import com.sun.jna.Platform;
 
 import net.pms.PMS;
+import net.pms.io.Gob;
 
 public class ProcessUtil {
 
@@ -18,8 +19,17 @@ public class ProcessUtil {
 					f.setAccessible(true);
 					int pid = f.getInt(p);
 					PMS.debug("Killing the Unix process: " + pid);
-					Runtime.getRuntime().exec("kill -9 " + pid);
+					Process process = Runtime.getRuntime().exec("kill -9 " + pid);
+					new Gob(process.getErrorStream()).start();
+					new Gob(process.getInputStream()).start();
+					int exit = process.waitFor();
+					if (exit != 0) {
+						//PMS.debug("\"kill -9 " + pid + "\" not successful... process was obviously already terminated");
+					} else {
+						PMS.debug("\"kill -9 " + pid + "\" successful !");
+					}
 				} catch (Throwable e) {
+					PMS.info("\"unexpected error: " + e.getMessage());
 				}
 			}
 		}
