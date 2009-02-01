@@ -55,6 +55,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.sun.jna.Platform;
 
 public class TrTab2 {
 	
@@ -440,9 +441,9 @@ public class TrTab2 {
        
        forcePCM = new JCheckBox(Messages.getString("TrTab2.27")); //$NON-NLS-1$
        forcePCM.setContentAreaFilled(false);
-      /* if (!PMS.get().isWindows())
+       if (Platform.isMac())
        	forcePCM.setEnabled(false);
-       else {*/
+       else {
 	        if (configuration.isMencoderUsePcm())
 	        	forcePCM.setSelected(true);
 	        forcePCM.addItemListener(new ItemListener() {
@@ -452,7 +453,7 @@ public class TrTab2 {
 				}
 	        	
 	        });
-      // }
+      }
       
        builder.add(forcePCM, cc.xyw(1, 17, 3));
        

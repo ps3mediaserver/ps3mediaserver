@@ -171,7 +171,7 @@ private JTextField mencoder_ass_scale;
 			}
         	
         });
-        mencodermt.setEnabled(Platform.isWindows());
+        mencodermt.setEnabled(Platform.isWindows() || Platform.isMac());
         
         builder.add(mencodermt,          cc.xy(1,  3));
        builder.add(checkBox,          cc.xyw(3,  3, 12));
@@ -863,6 +863,8 @@ private JTextField mencoder_ass_scale;
 		}
 		if (m.contains("(")) //$NON-NLS-1$
 			m = m.substring(0, m.indexOf("(")).trim(); //$NON-NLS-1$
+		if (StringUtils.isBlank(m))
+			m = "0"; //$NON-NLS-1$
 		
 		int mb = Integer.parseInt(m);
 		if (mb > 0 && !quality.contains("vrc_buf_size") && !quality.contains("vrc_maxrate") && !quality.contains("vbitrate")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -912,15 +914,15 @@ private JTextField mencoder_ass_scale;
 		if (media != null && media.dvdtrack > 0)
 			dvd = true;
 		
-		
+		boolean lossless = false; // really need to revamp the media audio code
 		if (configuration.isMencoderUsePcm() && params.aid > -1 && media != null && media.audioCodes != null && media.audioCodes.size() > 0) {
 			for(DLNAMediaLang lang:media.audioCodes) {
 				if (lang.id == params.aid && lang.format != null && media.isLossless(lang.format)) //$NON-NLS-1$
-					pcm = true;
+					lossless = true;
 			}
 		}
 		
-		if (pcm || fileName.contains("choppy") || (media.losslessaudio && configuration.isMencoderUsePcm()) || (configuration.isTsmuxerPreremuxPcm() && params.losslessaudio)) { //$NON-NLS-1$
+		if (lossless || (media.losslessaudio && configuration.isMencoderUsePcm()) || (configuration.isTsmuxerPreremuxPcm() && params.losslessaudio)) { //$NON-NLS-1$
 			pcm = true;
 			ac3 = false;
 			params.losslessaudio = true;
@@ -1042,7 +1044,7 @@ private JTextField mencoder_ass_scale;
 			if (media != null && media.maxsubid > 0)
 				maxid = media.maxsubid+1;*/
 			//sb.append("-sid " + maxid + " "); //$NON-NLS-1$ //$NON-NLS-2$
-			sb.append("-subdelay 20000");
+			sb.append("-subdelay 20000"); //$NON-NLS-1$
 		}
 		
 		String subs = sb.toString().trim();
@@ -1141,8 +1143,8 @@ private JTextField mencoder_ass_scale;
 					if (media != null)
 						maxid = media.maxsubid+1;*/
 					//cmdArray[cmdArray.length-9] = maxid + ""; //$NON-NLS-1$
-					cmdArray[cmdArray.length-9] = "20000";
-					cmdArray[cmdArray.length-10] = "-subdelay";
+					cmdArray[cmdArray.length-9] = "20000"; //$NON-NLS-1$
+					cmdArray[cmdArray.length-10] = "-subdelay"; //$NON-NLS-1$
 				}
 			} else if (subString == null) {
 				nosubfound = true;
@@ -1172,8 +1174,8 @@ private JTextField mencoder_ass_scale;
 			/*if (media != null)
 				maxid = media.maxsubid+1;*/
 			//cmdArray[cmdArray.length-9] = ""+ maxid; //$NON-NLS-1$
-			cmdArray[cmdArray.length-9] = "20000";
-			cmdArray[cmdArray.length-10] = "-subdelay";
+			cmdArray[cmdArray.length-9] = "20000"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-10] = "-subdelay"; //$NON-NLS-1$
 		}
 		
 		// disable ass if there are no subs (not safe ?)
