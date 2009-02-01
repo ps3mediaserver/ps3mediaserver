@@ -8,9 +8,10 @@ v1.04
 
 New option to enable video copy on ps3
 RAW images thumbnail support: CR2/CRW/PEF/NEF/ORF/SRF/MRW/DNG/ARW/RAF
-New translations: Spanish (thanks to Jose from www.playstationhoy.com), Dutch (thanks to Vincent Meylof), German (thanks to Jeuki), Russian (thanks to Peter Klassen), Polish (thanks to Maciej Bocian), Greek (thanks to Alexander Polichroniadis), Portuguese (thanks to Hugo Sousa), Norwegian (thanks to Ball80 and Topguy) and Swedish (thanks to Dusan Ilic)
+New translations: Spanish (thanks to Jose from www.playstationhoy.com), Dutch (thanks to Vincent Meylof), German (thanks to Jeuki), Russian (thanks to Peter Klassen), Polish (thanks to Maciej Bocian), Greek (thanks to Alexander Polichroniadis), Portuguese (thanks to Hugo Sousa), Finnish (thanks to Ove Sentlig), Norwegian (thanks to Ball80 and Topguy) and Swedish (thanks to Dusan Ilic)
 New extensions supported: SHN/M2V/M2P
 tsMuxer engine can now mux or reencode in AC3/PCM all audio tracks in real time
+Add the experimental mencoder build for multicore on OSX
 
 - Fixes
 
@@ -22,8 +23,7 @@ Transcode buffer wasn't fully released after end of video
 Fixed bug with shared folders selection on Windows
 Fixed periodic alive messages sent to ps3
 Better dvr-ms media info retrieval
-Updated ffmpeg/mplayer/mencoder builds on Windows (slight H264 speedup for singlecore)
-Add the experimental mencoder build for multicore on OSX
+Updated ffmpeg/mplayer/mencoder builds on Windows and OSX (slight H264 speedup for singlecore)
 Buffer issues with transcoded audio files lasting more than 10 minutes
 
 v1.03
