@@ -922,11 +922,13 @@ public class PMS {
 					System.setProperty("nativelook", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 				else if (args[a].equals("scrollbars")) //$NON-NLS-1$
 					System.setProperty("scrollbars", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+				else if (args[a].equals("noconsole")) //$NON-NLS-1$
+					System.setProperty("noconsole", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		try {
 			Toolkit.getDefaultToolkit();
-			if (GraphicsEnvironment.isHeadless())
+			if (GraphicsEnvironment.isHeadless() && System.getProperty("noconsole") == null) //$NON-NLS-1$
 				System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (Throwable t) {
 			System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
