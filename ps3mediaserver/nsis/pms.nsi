@@ -80,8 +80,19 @@ Function GetJRE
     Call CheckJREVersion
     IfErrors CheckRegistry JreFound
  
-  ; 3) Check for registry
+  ; 3) Check for registry for 64 bits first
   CheckRegistry:
+    ClearErrors
+    ReadRegStr $R1 HKLM "SOFTWARE\Wow6432Node\JavaSoft\Java Runtime Environment" "CurrentVersion"
+    ReadRegStr $R0 HKLM "SOFTWARE\Wow6432Node\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
+    StrCpy $R0 "$R0\bin\${JAVAEXE}"
+    IfErrors CheckRegistry32     
+    IfFileExists $R0 0 CheckRegistry32
+    Call CheckJREVersion
+    IfErrors CheckRegistry32 JreFound
+    
+  ; 4) Check for default registry on 32 bits
+  CheckRegistry32:
     ClearErrors
     ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
     ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
