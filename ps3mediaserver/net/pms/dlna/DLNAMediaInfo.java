@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.IImageMetadata;
@@ -104,7 +105,7 @@ public class DLNAMediaInfo {
 		String args [] = new String[14];
 		args[0] = getFfmpegPath();
 		if (media.getAbsolutePath().toLowerCase().endsWith("dvr-ms")) {
-			if (PMS.getConfiguration().getFfmpegAlternativePath() != null) {
+			if (StringUtils.isNotBlank(PMS.getConfiguration().getFfmpegAlternativePath())) {
 				args[0] = PMS.getConfiguration().getFfmpegAlternativePath();
 			}
 		}
@@ -316,7 +317,19 @@ public class DLNAMediaInfo {
 							if (s.contains("AUDIO ") && !s.contains("NO AUDIO")) {
 								int audio = s.indexOf("AUDIO ")+5;
 								codecA = s.substring(audio, s.indexOf("(", audio)).trim().toLowerCase();
-								
+								sampleFrequency = "48000";
+							}
+						}
+						if (s.startsWith("ID_LENGTH")) {
+							
+						}
+						if (s.contains("VDec: vo config request - ")) {
+							try {
+								String wh = s.substring(26, s.indexOf("(")).trim();
+								width = Integer.parseInt(wh.substring(0, wh.indexOf("x")).trim());
+								height = Integer.parseInt(wh.substring(wh.indexOf("x")+1).trim());
+							} catch (Throwable t) {
+								PMS.debug("Error in parsing image infos: " + s + " - " + t.getMessage());
 							}
 						}
 					}
@@ -543,6 +556,10 @@ public class DLNAMediaInfo {
 		
 		if (getSampleRate() > 44000 && isLossless(codecA))
 			losslessaudio = true;
+		/*for(DLNAMediaLang lang:audioCodes) {
+			if (isLossless(lang.format))
+				losslessaudio = true;
+		}*/
 		
 		if (bitsperSample == 24)
 			secondaryFormatValid = true;

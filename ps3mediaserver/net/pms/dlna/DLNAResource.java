@@ -632,7 +632,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						// calcul taille wav
 						if (media.sampleFrequency != null) {
 							int ns = Integer.parseInt(media.sampleFrequency);
-							int finalsize=(int) media.getDurationInSeconds() *ns* 2*media.nrAudioChannels;
+							if (ns > 44100) // mplayer currently transcodes to 44.1kHz and stereo
+								ns = 44100;
+							int na = media.nrAudioChannels;
+							if (na > 2)
+								na = 2;
+							int finalsize=(int) media.getDurationInSeconds() *ns* 2*na;
 							PMS.info("Calculated size: " + finalsize);
 							addAttribute(sb, "size", finalsize);
 						}
