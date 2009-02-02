@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 
 import net.pms.PMS;
-import net.pms.dlna.virtual.CopyVirtualFolder;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.Player;
@@ -123,7 +122,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		if (child.isValid()) {
 			PMS.info("Adding " + child.getName() + " / class: " + child.getClass().getName());
 			VirtualFolder vf = null;
-			VirtualFolder vfCopy = null;
+			//VirtualFolder vfCopy = null;
 			
 			children.add(child);
 			child.parent = this;
@@ -200,7 +199,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 							
 							vf.addChild(fileFolder);
 							
-							if (PMS.getConfiguration().isDisableFakeSize()) {
+							/*if (PMS.getConfiguration().isDisableFakeSize()) {
 								//search for copy folder
 								for(DLNAResource r:children) {
 									if (r instanceof CopyVirtualFolder) {
@@ -229,7 +228,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 								
 								
 								vfCopy.addChild(copyFileFolder);
-							}
+							}*/
 						}
 						
 						
@@ -252,7 +251,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		}
 	}
 	
-	public void closeChildren(int index, boolean refresh) {
+	public synchronized void closeChildren(int index, boolean refresh) {
 		if (id == null || id.equals("0")) {
 			if (parent != null) {
 				id = parent.id + "$" + index;
@@ -415,7 +414,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public String getDisplayName() {
 		String name = getName();
 		if (this instanceof RealFile) {
-			if (PMS.getConfiguration().isHideExtensions())
+			if (PMS.getConfiguration().isHideExtensions() && !isFolder())
 				name = FileUtil.getFileNameWithoutExtension(name);
 		}
 		if (player != null) {
@@ -599,8 +598,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			if (ext != null && ext.isVideo() && media != null && media.mediaparsed) {
 				if (player == null && media != null)
 					addAttribute(sb, "size", media.size);
-				//else if (!PMS.getConfiguration().isDisableFakeSize())
-				else if (!copy)
+				else if (!PMS.getConfiguration().isDisableFakeSize())
+				//else if (!copy)
 					addAttribute(sb, "size", DLNAMediaInfo.TRANS_SIZE);
 				if (media.duration != null)
 					addAttribute(sb, "duration", media.duration);
@@ -706,6 +705,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				fis.skip(low);
 			return fis;
 		} else {
+			
+			if (timeseek == -1) {
+				if (PMS.getConfiguration().isDisableFakeSize())
+					return null;
+				else
+					timeseek = 0;
+			}
 			
 			OutputParams params = new OutputParams(PMS.getConfiguration());
 			params.aid = aid;

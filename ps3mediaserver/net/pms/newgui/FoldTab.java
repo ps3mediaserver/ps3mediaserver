@@ -203,7 +203,7 @@ public class FoldTab {
  			}
         	
         });
-        builder.add(disablefakesize,          cc.xyw(1,  9, 5));
+        builder.add(disablefakesize,          cc.xyw(1,  9, 6));
         
         final JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
   	  
