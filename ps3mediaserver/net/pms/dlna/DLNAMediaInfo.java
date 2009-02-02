@@ -516,11 +516,11 @@ public class DLNAMediaInfo {
 		if (container != null && container.equals("avi")) {
 			mimeType = HTTPResource.AVI_TYPEMIME;
 		} else if (container != null && container.equals("asf")) {
-			if (codecV != null && codecV.startsWith("wm")) {
+			//if (codecV != null && codecV.startsWith("wm")) {
 				mimeType = HTTPResource.WMV_TYPEMIME;
-			} else {
+			/*} else {
 				mimeType = HTTPResource.ASF_TYPEMIME;
-			}
+			}*/
 		} else if (codecV != null && codecV.equals("mjpeg")) {
 			mimeType = HTTPResource.JPEG_TYPEMIME;
 		} else if (codecV != null && codecV.equals("png")) {
