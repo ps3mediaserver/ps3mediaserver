@@ -93,7 +93,7 @@ public class Request extends HTTPResource {
 		this.transferMode = transferMode;
 	}
 
-	private double timeseek;
+	private double timeseek = -1;
 	
 	public double getTimeseek() {
 		return timeseek;

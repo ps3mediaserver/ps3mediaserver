@@ -119,8 +119,7 @@ Linear PCM Muxing
 =================
 
 The version 0.98 introduces a preliminary feature: Linear PCM remuxing with tsMuxer
-(only working on Windows right now, struggled a few minutes without luck with pipes
-and tsMuxer on linux). LPCM muxing is disabled by default, but you can safely enable it.
+LPCM muxing is disabled by default, but you can safely enable it.
 If there are some troubles with channels order, you can try the following switch
 in the "Decoding settings" configuration line:
 
@@ -138,7 +137,6 @@ maybe this order is not correct as well. Feedback are welcome, of course :)
 Known issues:
 =============
 
-- No cover art is displayed for audio files.
 - Seek to specific time is OK, but fast forward/fast rewind is not very reactive, especially with Avisynth transcoding (depends of the machine)
 
 

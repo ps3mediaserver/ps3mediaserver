@@ -1,10 +1,12 @@
 package net.pms.util;
 
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import com.sun.jna.Platform;
@@ -52,9 +54,13 @@ public class CodecUtil {
 	}
 	
 	public static String getDefaultFontPath() {
+		String font = getFontPathHack("Arial");
+		if (font != null)
+			return font;
+		// in case of hack not working
 		if (Platform.isWindows()) {
 			// get Windows Arial
-			String font = getFont("C:\\Windows\\Fonts", "Arial.ttf");
+			font = getFont("C:\\Windows\\Fonts", "Arial.ttf");
 			if (font == null)
 				font = getFont("C:\\WINNT\\Fonts", "Arial.ttf");
 			if (font == null)
@@ -64,7 +70,7 @@ public class CodecUtil {
 			return font;
 		} else if (Platform.isLinux()) {
 			// get Linux default font
-			String font = getFont("/usr/share/fonts/truetype/msttcorefonts/", "arial.ttf");
+			font = getFont("/usr/share/fonts/truetype/msttcorefonts/", "Arial.ttf");
 			if (font == null)
 				font = getFont("/usr/share/fonts/truetype/ttf-bitstream-veras/", "Vera.ttf");
 			if (font == null)
@@ -72,7 +78,7 @@ public class CodecUtil {
 			return font;
 		} else if (Platform.isMac()) {
 			// get default osx font
-			String font = getFont("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/fonts/", "LucidaSansRegular.ttf");
+			font = getFont("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/fonts/", "LucidaSansRegular.ttf");
 			return font;
 		}
 		return null;
@@ -84,5 +90,42 @@ public class CodecUtil {
 			return f.getAbsolutePath();
 		return null;
 	}
+	
+	private static String getFontPathHack(String fontName) {
+		// Ugly hack to retrieve default font path if run on Sun JRE
+		Font f = new Font(fontName, Font.PLAIN, 12);
+		f.getFamily();
+		f.getAttributes();
+		Object font2Dhandle = getValue(f, "font2DHandle");
+		if (font2Dhandle != null) {
+			Object font2D = getValue(font2Dhandle, "font2D");
+			if (font2D != null) {
+				Object platName = getValue(font2D, "platName");
+				if (platName != null)
+					return platName.toString();
+			}
+		}
+		return null;
+	}
+
+	private static Object getValue(Object obj, String field) {
+		try {
+			Field f = null;
+			try {
+				f = obj.getClass().getDeclaredField(field);
+			} catch (NoSuchFieldException nsfe) {
+				try {
+					if (obj.getClass().getSuperclass() != null)
+						f = obj.getClass().getSuperclass().getDeclaredField(field);
+				} catch (NoSuchFieldException nsfe2) {
+					if (obj.getClass().getSuperclass().getSuperclass() != null)
+						f = obj.getClass().getSuperclass().getSuperclass().getDeclaredField(field);
+				}
+			}
+			f.setAccessible(true);
+			return f.get(obj);
+		} catch (Exception e) {}
+			return null;
+		}
 
 }
