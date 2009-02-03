@@ -310,18 +310,24 @@ public class DLNAMediaInfo {
 							frameRate = s.substring(17);
 						if (s.startsWith("TS file format detected."))
 							container = "mpegts";
-						if (s.startsWith("VIDEO")) {
-							codecV = s.substring(6, s.indexOf("(")).trim().toLowerCase();
+						if (s.startsWith("VIDEO") && s.contains("(pid")) {
+							codecV = s.substring(6, s.indexOf("(pid")).trim().toLowerCase();
 							if (codecV.equals("mpeg2"))
 								codecV = "mpeg2video";
-							if (s.contains("AUDIO ") && !s.contains("NO AUDIO")) {
+							if (s.contains("AUDIO ") && s.contains("(pid") && !s.contains("NO AUDIO")) {
 								int audio = s.indexOf("AUDIO ")+5;
-								codecA = s.substring(audio, s.indexOf("(", audio)).trim().toLowerCase();
+								codecA = s.substring(audio, s.indexOf("(pid", audio)).trim().toLowerCase();
 								sampleFrequency = "48000";
 							}
 						}
-						if (s.startsWith("ID_LENGTH")) {
-							
+						if (s.startsWith("ID_LENGTH=")) {
+							try {
+								String len = s.substring(10);
+								double lenD = Double.parseDouble(len);
+								setDurationString(lenD);
+							} catch (Throwable t) {
+								PMS.debug("Error in parsing duration infos: " + s + " - " + t.getMessage());
+							}
 						}
 						if (s.contains("VDec: vo config request - ")) {
 							try {

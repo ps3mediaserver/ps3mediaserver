@@ -102,6 +102,7 @@ private JTextField mencoder_ass_scale;
 	private JCheckBox  scaler ;
 	private JTextField scaleX;
 	private JTextField scaleY;
+	private JCheckBox  asscolor ;
 	private JCheckBox  fc ;
 	private JCheckBox  ass ;
 	private JCheckBox  checkBox ;
@@ -722,8 +723,21 @@ private JTextField mencoder_ass_scale;
       	
       });
       
-      builder.add(fc,          cc.xyw(3,  35, 12));
+      builder.add(fc,          cc.xyw(3,  35, 5));
       fc.setSelected(configuration.isMencoderFontConfig());
+      
+      asscolor = new JCheckBox(Messages.getString("MEncoderVideo.36")); //$NON-NLS-1$
+      asscolor.setContentAreaFilled(false);
+      asscolor.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setMencoderAssDefaultStyle(e.getStateChange() == ItemEvent.SELECTED);
+			}
+      	
+      });
+      
+      builder.add(asscolor,          cc.xyw(8,  35, 7));
+      asscolor.setSelected(configuration.isMencoderAssDefaultStyle());
        
        subs = new JCheckBox(Messages.getString("MEncoderVideo.22")); //$NON-NLS-1$
        subs.setContentAreaFilled(false);
@@ -755,7 +769,7 @@ private JTextField mencoder_ass_scale;
 				defaultsubs.setEnabled(!configuration.isMencoderDisableSubs());
 				subcp.setEnabled(!configuration.isMencoderDisableSubs());
 				ass.setEnabled(!configuration.isMencoderDisableSubs());
-				
+				asscolor.setEnabled(!configuration.isMencoderDisableSubs());
 				fribidi.setEnabled(!configuration.isMencoderDisableSubs());
 				fc.setEnabled(!configuration.isMencoderDisableSubs());
 				mencoder_ass_scale.setEnabled(!configuration.isMencoderDisableSubs());
@@ -955,11 +969,11 @@ private JTextField mencoder_ass_scale;
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken().trim();
 			if (next) {
-				int nbcores = PMS.getConfiguration().getNumberOfCpuCores();
+				int nbcores = configuration.getNumberOfCpuCores();
 				if (dvd || fileName.toLowerCase().endsWith("dvr-ms")) //$NON-NLS-1$
 					nbcores = 1;
 				token += ":threads=" + nbcores; //$NON-NLS-1$
-				if (PMS.getConfiguration().getSkipLoopFilterEnabled() && !avisynth())
+				if (configuration.getSkipLoopFilterEnabled() && !avisynth())
 					token += ":skiploopfilter=all"; //$NON-NLS-1$
 				next = false;
 			} 
@@ -970,9 +984,12 @@ private JTextField mencoder_ass_scale;
 			overridenMainArgs[i++] = token;
 		}
 		//}
-		if (PMS.getConfiguration().getMencoderMainSettings() != null) {
-			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + ":acodec=ac3:abitrate=" + CodecUtil.getAC3Bitrate(configuration, media) + ":threads=" + configuration.getNumberOfCpuCores() + ":" + PMS.getConfiguration().getMencoderMainSettings(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, PMS.getConfiguration().getMencoderMainSettings());
+		if (configuration.getMencoderMainSettings() != null) {
+			String mainConfig = configuration.getMencoderMainSettings();
+			if (mainConfig.contains("/*")) // in case of //$NON-NLS-1$
+				mainConfig = mainConfig.substring(mainConfig.indexOf("/*")); //$NON-NLS-1$
+			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + ":acodec=ac3:abitrate=" + CodecUtil.getAC3Bitrate(configuration, media) + ":threads=" + configuration.getNumberOfCpuCores() + ":" + mainConfig; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, mainConfig);
 			st = new StringTokenizer(encodeSettings, " "); //$NON-NLS-1$
 			int oldc = overridenMainArgs.length;
 			overridenMainArgs = Arrays.copyOf(overridenMainArgs, overridenMainArgs.length + st.countTokens());
@@ -982,6 +999,36 @@ private JTextField mencoder_ass_scale;
 			}
 		}
 
+		boolean avisynth = avisynth()/* || params.avisynth*/;
+		
+		
+		boolean vobsub = false;
+		boolean asssub = false;
+		String subString = null;
+		if (!avisynth && configuration.getUseSubtitles()) {
+			File srtFile = FileUtil.isFileExists(fileName, "srt"); //$NON-NLS-1$
+			if (srtFile != null) {
+				subString=srtFile.getAbsolutePath();
+			}
+			File assFile = FileUtil.isFileExists(fileName, "ass"); //$NON-NLS-1$
+			if (assFile != null) {
+				subString=assFile.getAbsolutePath();
+				asssub = true;
+			}
+			File subFile = FileUtil.isFileExists(fileName, "sub"); //$NON-NLS-1$
+			if (subFile != null) {
+				subString=subFile.getAbsolutePath();
+			}
+			File smiFile = FileUtil.isFileExists(fileName, "smi"); //$NON-NLS-1$
+			if (smiFile != null) {
+				subString=smiFile.getAbsolutePath();
+			}
+			File idxFile = FileUtil.isFileExists(fileName, "idx"); //$NON-NLS-1$
+			if (idxFile != null) {
+				vobsub = true;
+			}
+		}
+		
 		
 		StringBuffer sb = new StringBuffer();
 		if (!configuration.isMencoderDisableSubs() && configuration.isMencoderAss() && !dvd && !avisynth())
@@ -1003,8 +1050,10 @@ private JTextField mencoder_ass_scale;
 					sb.append("-subfont " + font + " "); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			if (configuration.isMencoderAss()) {
-				sb.append("-ass-color ffffff00 -ass-border-color 00000000 -ass-font-scale " + configuration.getMencoderAssScale()); //$NON-NLS-1$
-				sb.append(" -ass-force-style " + (configuration.isMencoderFontConfig()?"FontName=Arial,":"") + "Outline=" + configuration.getMencoderAssOutline() + ",Shadow=" + configuration.getMencoderAssShadow() + ",MarginV=" + configuration.getMencoderAssMargin() + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+				if (!configuration.isMencoderAssDefaultStyle() || (subString != null && !asssub)) {
+					sb.append("-ass-color ffffff00 -ass-border-color 00000000 -ass-font-scale " + configuration.getMencoderAssScale()); //$NON-NLS-1$
+					sb.append(" -ass-force-style FontName=Arial,Outline=" + configuration.getMencoderAssOutline() + ",Shadow=" + configuration.getMencoderAssShadow() + ",MarginV=" + configuration.getMencoderAssMargin() + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+				}
 			} else {
 				sb.append("-subfont-text-scale " + configuration.getMencoderNoAssScale()); //$NON-NLS-1$
 				sb.append(" -subfont-outline " + configuration.getMencoderNoAssOutline()); //$NON-NLS-1$
@@ -1059,35 +1108,6 @@ private JTextField mencoder_ass_scale;
 			}
 		}
 		
-		boolean avisynth = avisynth()/* || params.avisynth*/;
-		
-		PipeProcess pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || ac3)?null:params); //$NON-NLS-1$
-		params.input_pipes [0] = pipe;
-		
-		boolean vobsub = false;
-		String subString = null;
-		if (!avisynth && PMS.getConfiguration().getUseSubtitles()) {
-			File srtFile = FileUtil.isFileExists(fileName, "srt"); //$NON-NLS-1$
-			if (srtFile != null) {
-				subString=srtFile.getAbsolutePath();
-			}
-			File assFile = FileUtil.isFileExists(fileName, "ass"); //$NON-NLS-1$
-			if (assFile != null) {
-				subString=assFile.getAbsolutePath();
-			}
-			File subFile = FileUtil.isFileExists(fileName, "sub"); //$NON-NLS-1$
-			if (subFile != null) {
-				subString=subFile.getAbsolutePath();
-			}
-			File smiFile = FileUtil.isFileExists(fileName, "smi"); //$NON-NLS-1$
-			if (smiFile != null) {
-				subString=smiFile.getAbsolutePath();
-			}
-			File idxFile = FileUtil.isFileExists(fileName, "idx"); //$NON-NLS-1$
-			if (idxFile != null) {
-				vobsub = true;
-			}
-		}
 		
 		
 		String cmdArray [] = new String [18+args().length];
@@ -1388,21 +1408,37 @@ private JTextField mencoder_ass_scale;
 			cmdArray[cmdArray.length-3] = "48000"; //$NON-NLS-1$
 		}
 	
+		PipeProcess pipe = null;
 		
 		cmdArray[cmdArray.length-2] = "-o"; //$NON-NLS-1$
-		cmdArray[cmdArray.length-1] = pipe.getInputPipe();
 		
 		
+		boolean directpipe = false;
+		if (directpipe) {
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +3);
+			cmdArray[cmdArray.length-3] = "-really-quiet"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-2] = "-msglevel"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-1] = "all=-1"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-4] = "-"; //$NON-NLS-1$
+			params.input_pipes = new PipeProcess [2];
+		} else {
+			pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || ac3)?null:params); //$NON-NLS-1$
+			params.input_pipes [0] = pipe;
+			cmdArray[cmdArray.length-1] = pipe.getInputPipe();
+		}
 		
-		ProcessWrapper mkfifo_process = pipe.getPipeProcess();
+		
 		
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
-		pw.attachProcess(mkfifo_process);
-		mkfifo_process.runInNewThread();
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) { }
-		pipe.deleteLater();
+		if (!directpipe) {
+			ProcessWrapper mkfifo_process = pipe.getPipeProcess();
+			pw.attachProcess(mkfifo_process);
+			mkfifo_process.runInNewThread();
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) { }
+			pipe.deleteLater();
+		}
 		
 		if (pcm || ac3) {
 			PipeProcess videoPipe = new PipeProcess("videoPipe" + System.currentTimeMillis(), "out", "reconnect"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
