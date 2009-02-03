@@ -483,6 +483,8 @@ public class PMS {
 	public void addVideoSettingssFolder() {
 		if (!PMS.configuration.getHideVideoSettings()) {
 			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.37"), null); //$NON-NLS-1$
+			VirtualFolder vfSub = new VirtualFolder(Messages.getString("PMS.8"), null); //$NON-NLS-1$
+			vf.addChild(vfSub);
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) { //$NON-NLS-1$
 				public boolean enable() {
@@ -499,11 +501,29 @@ public class PMS {
 				}
 			});
 			
-			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.6"), configuration.getUseSubtitles()) { //$NON-NLS-1$
+			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.10"), configuration.isMencoderDisableSubs()) { //$NON-NLS-1$
+				public boolean enable() {
+					boolean oldValue = configuration.isMencoderDisableSubs();
+					boolean newValue = ! oldValue;
+					configuration.setMencoderDisableSubs( newValue );
+					return newValue;
+				}
+			});
+			
+			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.6"), configuration.getUseSubtitles()) { //$NON-NLS-1$
 				public boolean enable() {
 					boolean oldValue = configuration.getUseSubtitles();
 					boolean newValue = ! oldValue;
 					configuration.setUseSubtitles( newValue );
+					return newValue;
+				}
+			});
+			
+			vfSub.addChild(new VirtualVideoAction(Messages.getString("MEncoderVideo.36"), configuration.isMencoderAssDefaultStyle()) { //$NON-NLS-1$
+				public boolean enable() {
+					boolean oldValue = configuration.isMencoderAssDefaultStyle();
+					boolean newValue = ! oldValue;
+					configuration.setMencoderAssDefaultStyle( newValue );
 					return newValue;
 				}
 			});
