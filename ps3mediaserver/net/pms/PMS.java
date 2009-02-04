@@ -426,7 +426,7 @@ public class PMS {
 		File webConf = new File("WEB.conf"); //$NON-NLS-1$
 		if (webConf.exists()) {
 			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(webConf)));
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(webConf), "UTF-8"));
 				String line = null;
 				while ((line=br.readLine()) != null) {
 					line = line.trim();
