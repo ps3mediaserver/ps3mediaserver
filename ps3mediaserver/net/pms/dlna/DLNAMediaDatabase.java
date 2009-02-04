@@ -16,6 +16,8 @@ import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.RunScript;
 import org.h2.tools.Script;
 
+import com.sun.jna.Platform;
+
 import net.pms.PMS;
 
 
@@ -29,9 +31,17 @@ public class DLNAMediaDatabase implements Runnable {
 	
 	public DLNAMediaDatabase(String name) {
 		dir = "database" ;
-		url = "jdbc:h2:" + dir + "/" + name;
+		File fileDir = new File(dir);
+		boolean defaultLocation = fileDir.mkdir() || fileDir.exists();
+		String strAppData = System.getenv("APPDATA");
+		if (Platform.isWindows() && !defaultLocation && strAppData != null) {
+			url = "jdbc:h2:" + strAppData + "\\PMS\\" + dir + "/" + name;
+			fileDir = new File(strAppData + "\\PMS\\" + dir);
+		} else {
+			url = "jdbc:h2:" + dir + "/" + name;
+		}
 		PMS.info("Using database URL: " + url);
-		PMS.minimal("Using database located at : " + new File(dir).getAbsolutePath());
+		PMS.minimal("Using database located at : " + fileDir.getAbsolutePath());
 		
 		try {
 			Class.forName("org.h2.Driver");

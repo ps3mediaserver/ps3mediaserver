@@ -576,7 +576,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				if (player.isTimeSeekable())
 					flags = "DLNA.ORG_OP=10";
 				/*else
-					flags = ":DLNA.ORG_OP=00";*/ // 00 not working with ps3
+					flags = "DLNA.ORG_OP=00";*/ // 00 not working with ps3
 			}
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
 			
@@ -584,8 +584,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			String dlnaspec = "";
 			if (mediaRenderer == PS3) {
 				if (mime.equals("video/x-divx"))
-					dlnaspec = ":DLNA.ORG_PN=MPEG4_P2_TS_SP_MPEG1_L3";
-				else if (mime.equals("video/x-ms-wmv"))
+					dlnaspec = ":DLNA.ORG_PN=AVI";
+				else if (mime.equals("video/x-ms-wmv") && media != null && media.height > 700)
 					dlnaspec = ":DLNA.ORG_PN=WMVHIGH_PRO";
 			}
 			addAttribute(sb, "protocolInfo", "http-get:*:" + mime + dlnaspec + (dlnaspec.length()>0?";":":") + flags);

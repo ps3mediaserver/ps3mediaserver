@@ -36,13 +36,13 @@ Section "Program Files"
   File /r /x ".svn" "win32"
   File "PMS.exe"
   File "pms.jar"
-  ;File "PMS.conf"
-  File "WEB.conf"
   File "CHANGELOG"
   File "README"
   File "FAQ"
   File "LICENSE.txt"
- 
+  SetOverwrite off
+  File "WEB.conf"
+  
   ;Store install folder
   WriteRegStr HKCU $REG_KEY_SOFTWARE "" $INSTDIR
  
@@ -74,7 +74,6 @@ Section "Uninstall"
   Delete /REBOOTOK "$INSTDIR\PMS.exe"
   Delete /REBOOTOK "$INSTDIR\pms.jar"
   Delete /REBOOTOK "$INSTDIR\CHANGELOG"
-  ;Delete /REBOOTOK "$INSTDIR\PMS.conf"
   Delete /REBOOTOK "$INSTDIR\WEB.conf"
   Delete /REBOOTOK "$INSTDIR\README"
   Delete /REBOOTOK "$INSTDIR\FAQ"
