@@ -27,6 +27,13 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 
+import java.util.Random;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import org.apache.commons.lang.StringUtils;
 
 import net.pms.PMS;
@@ -42,23 +49,25 @@ public class UPNPHelper {
 	private final static String BYEBYE = "ssdp:byebye";
 	private static Thread listener;
 	private static Thread aliveThread;
+	private static SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
 	
 	private static void sendDiscover(String host, int port, String st) throws IOException
 	{
-		String usn = PMS.get().usn();
+		String usn = PMS.get().usn() + "::";
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+
 		if (st.equals(usn))
 			usn = "";
 		String discovery = 
-			"HTTP/1.1 200  OK" + CRLF +
+			"HTTP/1.1 200 OK" + CRLF +
+			"CACHE-CONTROL: max-age=120" + CRLF +
+			"DATE: " + sdf.format(new Date(System.currentTimeMillis())) + " GMT" + CRLF + 
+			"LOCATION: http://" + PMS.get().getServer().getHost() + ":" + PMS.get().getServer().getPort() + "/description/fetch" + CRLF +
 			"SERVER: " + PMS.get().getServerName() + CRLF +
 			"ST: " + st + CRLF +
-			"CACHE-CONTROL:  max-age=1800" + CRLF +
 			"EXT: " + CRLF +
 			"USN: " + usn + st + CRLF +
-			"LOCATION: http://" + PMS.get().getServer().getHost() + ":" + PMS.get().getServer().getPort() + "/description/fetch" + CRLF +
-			"DATE:  Wed, 31 Dec 2008 14:18:57 GMT" + CRLF + 
 			"Content-Length: 0" + CRLF + CRLF;		
-		
 		sendReply(host, port, discovery);
 	}
 
@@ -68,8 +77,8 @@ public class UPNPHelper {
 		{
 			DatagramSocket ssdpUniSock = new DatagramSocket();
 
-			PMS.debug( "Sending this reply: " + StringUtils.replace(msg, CRLF, "<CRLF>"));
-			InetAddress inetAddr = InetAddress.getByName(host);		
+			PMS.debug( "Sending this reply [" + host + ":" + port + "]: " + StringUtils.replace(msg, CRLF, "<CRLF>"));
+			InetAddress inetAddr = InetAddress.getByName(host);
 			DatagramPacket dgmPacket = new DatagramPacket(msg.getBytes(), msg.length(), inetAddr, port);
 			ssdpUniSock.send(dgmPacket);
 			ssdpUniSock.close();
@@ -83,17 +92,17 @@ public class UPNPHelper {
 	
 	public static void sendAlive() throws IOException {
 		
-		PMS.info( "Sending ALIVE...");
+		PMS.minimal( "Sending ALIVE...");
 		
 		MulticastSocket ssdpSocket = getNewMulticastSocket();
 		sendMessage(ssdpSocket,  "upnp:rootdevice", ALIVE);
 		sendMessage(ssdpSocket,  PMS.get().usn(), ALIVE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:device:MediaServer:1", ALIVE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ContentDirectory:1", ALIVE);
-		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ConnectionManager:1", ALIVE);
+		//sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ConnectionManager:1", ALIVE);
 		//sendMessage(ssdpSocket,  "urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1", ALIVE);
 		
-		ssdpSocket.leaveGroup(getUPNPAddress());
+		//ssdpSocket.leaveGroup(getUPNPAddress());
 		ssdpSocket.close();
 		ssdpSocket = null;
 	}
@@ -133,15 +142,15 @@ public class UPNPHelper {
 	
 	public static void sendByeBye() throws IOException {
 		
-		PMS.info( "Sending BYEBYE...");
+		PMS.minimal( "Sending BYEBYE...");
 		MulticastSocket ssdpSocket = getNewMulticastSocket();
 		
 		sendMessage(ssdpSocket,  "upnp:rootdevice", BYEBYE);
-		sendMessage(ssdpSocket,  PMS.get().usn(), BYEBYE);
+		//sendMessage(ssdpSocket,  PMS.get().usn(), BYEBYE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:device:MediaServer:1", BYEBYE);
 		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ContentDirectory:1", BYEBYE);
-		sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ConnectionManager:1", ALIVE);
-		//sendMessage(ssdpSocket,  "urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1", ALIVE);
+		//sendMessage(ssdpSocket,  "urn:schemas-upnp-org:service:ConnectionManager:1", BYEBYE);
+		//sendMessage(ssdpSocket,  "urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1", BYEBYE);
 
 		ssdpSocket.leaveGroup(getUPNPAddress());
 		ssdpSocket.close();
@@ -152,15 +161,16 @@ public class UPNPHelper {
 	
 	private static void sendMessage(DatagramSocket socket, String nt, String message) throws IOException {
 		String msg = buildMsg(nt, message);
-		PMS.debug( "Sending this SSDP packet: " + StringUtils.replace(msg, CRLF, "<CRLF>"));
+		Random rand = new Random();
+		PMS.debug( "Sending this SSDP packet: " + CRLF + msg);// StringUtils.replace(msg, CRLF, "<CRLF>"));
 		DatagramPacket ssdpPacket = new DatagramPacket(msg.getBytes(), msg.length(), getUPNPAddress(), UPNP_PORT);
 		socket.send(ssdpPacket);
 		try {
-			Thread.sleep(30);
+			Thread.sleep(rand.nextInt(1800/2));
 		} catch (InterruptedException e) { }
 		socket.send(ssdpPacket);
 		try {
-			Thread.sleep(30);
+			Thread.sleep(rand.nextInt(1800/2));
 		} catch (InterruptedException e) { }
 		
 	}
@@ -180,12 +190,11 @@ public class UPNPHelper {
 		};
 		aliveThread = new Thread(rAlive);
 		aliveThread.start();
+				
 		Runnable r = new Runnable() {
 			public void run() {
 			
 				while (true) {
-					byte[] buf = new byte[1024];
-					DatagramPacket packet_r = new DatagramPacket(buf, buf.length);
 					try { 
 						MulticastSocket socket = new MulticastSocket(1900);
 						if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
@@ -199,24 +208,46 @@ public class UPNPHelper {
 						}
 						socket.setTimeToLive(4);
 						socket.setReuseAddress(true);
-				        socket.joinGroup(getUPNPAddress());
-				        socket.receive(packet_r);
-				        socket.leaveGroup(getUPNPAddress());
-				        socket.close();
-						
-				        String s = new String(packet_r.getData());
+						socket.joinGroup(getUPNPAddress());
+						while(true)
+						{
+							byte[] buf = new byte[1024];					
+							DatagramPacket packet_r = new DatagramPacket(buf, buf.length);
+							socket.receive(packet_r);
+
+						String s = new String(packet_r.getData());
+						/* Does it come from me ? */
+						//String lines[] = s.split(CRLF);
 						
 						if (s.startsWith("M-SEARCH")) {
-							PMS.minimal( "Receiving search request from " + packet_r.getAddress().getHostAddress() + "! Sending DISCOVER message...");
 							String remoteAddr = packet_r.getAddress().getHostAddress();
 							int remotePort = packet_r.getPort();
-
-							sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:device:MediaServer:1");
-							sendDiscover(remoteAddr, remotePort, PMS.get().usn());
-							sendDiscover(remoteAddr, remotePort, "upnp:rootdevice");
-							sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:service:ContentDirectory:1");
-							sendAlive();
-
+						
+							PMS.debug("Receiving a M-SEARCH from [" + remoteAddr + ":" + remotePort + "]");
+							PMS.debug("Data: " + s);
+							
+							/*PMS.minimal( "Receiving search request from " + packet_r.getAddress().getHostAddress() + "! Sending DISCOVER message...");*/
+							if (StringUtils.indexOf(s, "urn:schemas-upnp-org:service:ContentDirectory:1") > 0)
+								sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:service:ContentDirectory:1");
+		
+							if (StringUtils.indexOf(s, "upnp:rootdevice") > 0)
+								sendDiscover(remoteAddr, remotePort, "upnp:rootdevice");
+		
+							if (StringUtils.indexOf(s, "urn:schemas-upnp-org:device:MediaServer:1") > 0)
+								sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:device:MediaServer:1");
+		
+							if (StringUtils.indexOf(s, PMS.get().usn()) > 0)
+								sendDiscover(remoteAddr, remotePort, PMS.get().usn());
+						
+						}
+						else if (s.startsWith("NOTIFY")) {
+							String remoteAddr = packet_r.getAddress().getHostAddress();
+							int remotePort = packet_r.getPort();
+							
+							PMS.debug("Receiving a NOTIFY from [" + remoteAddr + ":" + remotePort + "]");
+							PMS.debug("Data: " + s);
+						}
+						
 						}
 					} catch (IOException e) {
 						PMS.error("UPNP network exception", e);
@@ -238,7 +269,32 @@ public class UPNPHelper {
 	
 	private static String buildMsg(String nt, String message) {
 		StringBuffer sb = new StringBuffer();
-		sb.append("NOTIFY * HTTP/1.1");
+		
+		sb.append("NOTIFY * HTTP/1.1" + CRLF);
+		sb.append("HOST: " + UPNP_HOST + ":" + UPNP_PORT + CRLF);
+		sb.append("NT: " + nt + CRLF);
+		sb.append("NTS: " + message + CRLF);
+		
+		if (message.equals(ALIVE)) {
+			sb.append("LOCATION: http://" + PMS.get().getServer().getHost() + ":" + PMS.get().getServer().getPort() + "/description/fetch" + CRLF);
+		}
+		sb.append("USN: " + PMS.get().usn());
+		if (!nt.equals(PMS.get().usn()))
+			sb.append("::" + nt);
+		sb.append(CRLF);
+		
+		if (message.equals(ALIVE)) {
+			sb.append("CACHE-CONTROL: max-age=1800" + CRLF);
+		}
+		
+		if (message.equals(ALIVE)) {
+			sb.append("SERVER: " + PMS.get().getServerName() + CRLF);
+		}
+		
+		sb.append(CRLF);
+		return sb.toString();
+		
+/*		sb.append("NOTIFY * HTTP/1.1");
 		sb.append(CRLF);
 		sb.append("HOST: ");
 		sb.append(UPNP_HOST);
@@ -272,7 +328,7 @@ public class UPNPHelper {
 			sb.append(nt);
 		sb.append(CRLF);
 		sb.append(CRLF);
-		return sb.toString();
+		return sb.toString();*/
 	}
 	
 	private static InetAddress getUPNPAddress() throws IOException {

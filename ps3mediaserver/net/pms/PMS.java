@@ -867,19 +867,19 @@ public class PMS {
 			}
 			PMS.minimal("Using following UUID: " + uuid); //$NON-NLS-1$
 		}
-		return "uuid:" + uuid + "::"; //$NON-NLS-1$ //$NON-NLS-2$
+		return "uuid:" + uuid ; //$NON-NLS-1$ //$NON-NLS-2$
 		//return "uuid:1234567890TOTO::";
 	}
 	
 	public String getServerName() {
 		if (serverName == null) {
 			StringBuffer sb = new StringBuffer();
-			sb.append(System.getProperty("os.name")); //$NON-NLS-1$
+			sb.append(System.getProperty("os.name").replace(" ", "_")); //$NON-NLS-1$
 			sb.append("-"); //$NON-NLS-1$
-			sb.append(System.getProperty("os.arch")); //$NON-NLS-1$
+			sb.append(System.getProperty("os.arch").replace(" ", "_")); //$NON-NLS-1$
 			sb.append("-"); //$NON-NLS-1$
-			sb.append(System.getProperty("os.version")); //$NON-NLS-1$
-			sb.append(" UPnP/1.0, PMS"); //$NON-NLS-1$
+			sb.append(System.getProperty("os.version").replace(" ", "_")); //$NON-NLS-1$
+			sb.append(", UPnP/1.0, PMS/" + VERSION); //$NON-NLS-1$
 			serverName = sb.toString();
 		}
 		return serverName;
