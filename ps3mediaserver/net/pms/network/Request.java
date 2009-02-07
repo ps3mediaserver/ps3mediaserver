@@ -234,17 +234,26 @@ public class Request extends HTTPResource {
 				byte b [] = new byte [inputStream.available()];
 				inputStream.read(b);
 				String s = new String(b);
-				s = s.replace("uuid:1234567890TOTO", PMS.get().usn().substring(0, PMS.get().usn().length()-2));
+				s = s.replace("uuid:1234567890TOTO", PMS.get().usn());//.substring(0, PMS.get().usn().length()-2));
 				if (mediaRenderer == XBOX) {
-					PMS.debug("Doing DLNA changes for Xbox360");
-					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "] : 1");
-					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect BLAH</modelName>");
-					s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
+					PMS.minimal("Doing DLNA changes for Xbox360");
+					s = s.replace("Java PS3 Media Server", "XBox Media Server [" + InetAddress.getLocalHost().getHostName() + "] : Windows Media Connect");
+					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect</modelName>");
+/*					s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
 							"<serviceType>urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1</serviceType>" + CRLF +
 							"<serviceId>urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar</serviceId>" + CRLF +
 							"<SCPDURL>_urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar_scpd.xml</SCPDURL>" + CRLF +
 							"<controlURL>_urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar_control</controlURL>" + CRLF +
 							"<eventSubURL>_urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar_event</eventSubURL>" + CRLF + "</service>" + CRLF);
+*/							
+              s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
+							       "<serviceType>urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1</serviceType>" + CRLF +
+                            "<serviceId>urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar</serviceId>" + CRLF +
+                            "<SCPDURL>/upnp/mrr/scpd</SCPDURL>" + CRLF +
+                            "<controlURL>/upnp/mrr/control</controlURL>" + CRLF +
+                            "</service>" + CRLF);
+						
+							
 				} else
 					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "]");
 				inputStream = new ByteArrayInputStream(s.getBytes());
