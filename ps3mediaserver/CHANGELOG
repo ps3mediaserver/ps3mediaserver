@@ -12,6 +12,7 @@ New translations: Spanish (thanks to Jose from www.playstationhoy.com), Dutch (t
 New extensions supported: SHN/M2V/M2P
 tsMuxer engine can now mux or reencode in AC3/PCM all audio tracks in real time
 Add the experimental mencoder build for multicore on OSX
+DVR-MS windows remuxer now included by default
 
 - Fixes
 
