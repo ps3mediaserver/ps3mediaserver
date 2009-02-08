@@ -18,31 +18,31 @@
  */
 package net.pms.dlna;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.nio.CharBuffer;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-import net.n3.nanoxml.IXMLBuilder;
-import net.n3.nanoxml.IXMLParser;
-import net.n3.nanoxml.IXMLReader;
-import net.n3.nanoxml.StdXMLReader;
-import net.n3.nanoxml.XMLParserFactory;
+import org.apache.commons.lang.StringUtils;
+import org.jdom.Content;
+import org.jdom.Element;
+
 import net.pms.PMS;
 
-public class Feed extends DLNAResource implements IXMLBuilder {
-	
-	private boolean catchGeneralTitle;
-	private boolean catchItem;
-	private boolean catchItemTitle;
-	private boolean catchItemLink;
-	private boolean catchItemMediaContent;
-	private boolean catchItemThumb;
+import com.sun.syndication.feed.synd.SyndCategory;
+import com.sun.syndication.feed.synd.SyndEnclosure;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
+
+public class Feed extends DLNAResource {
 	
 	@Override
 	public void resolve() {
 		super.resolve();
+		/*String content = null;
 		try {
 			InputStream is = downloadAndSend(url, false);
 			byte buf [] = new byte [4096];
@@ -53,27 +53,32 @@ public class Feed extends DLNAResource implements IXMLBuilder {
 			}
 			is.close();
 			b.close();
-			String content = new String(b.toByteArray(), "UTF-8");
-			parse(content);
+			content = new String(b.toByteArray(), "UTF-8");
 		} catch (IOException e) {
 			PMS.error(null, e);
 		}
-		
+		if (content != null) {
+			parse(content);
+		} else {
+			//error
+			
+		}*/
+		try {
+			parse();
+		} catch (Exception e) {
+			PMS.error("Eror in parsing stream: " + url, e);
+		}
 	}
 	
-	/*protected String [] extractText(String pattern) {
-		
-	}*/
-
+	
 	protected String name;
 	protected String url;
-	protected String title;
-	
 	protected String tempItemTitle;
 	protected String tempItemLink;
 	protected String tempFeedLink;
+	protected String tempCategory;
 	protected String tempItemThumbURL;
-	//private DLNAMediaInfo dlna;
+	
 	
 	public Feed(String name, String url, int type) {
 		super(type);
@@ -81,17 +86,58 @@ public class Feed extends DLNAResource implements IXMLBuilder {
 		this.name = name;
 	}
 	
-	public void parse(String content) {
-		try {
-			IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
-			IXMLReader reader = StdXMLReader.stringReader(content);
-			parser.setReader(reader);
-			parser.setBuilder(this);
-			parser.parse();
-		} catch (Exception e) {
-			PMS.error("Error in parsing " + url, e);
+	@SuppressWarnings("unchecked")
+	public void parse() throws Exception {
+		SyndFeedInput input = new SyndFeedInput();
+		SyndFeed feed = input.build(new XmlReader(new URL(url)));
+		name = feed.getTitle();
+		if (feed.getCategories() != null && feed.getCategories().size() > 0) {
+			SyndCategory category = (SyndCategory) feed.getCategories().get(0);
+			tempCategory = category.getName();
 		}
+		List<SyndEntry> entries = feed.getEntries();
+		for(SyndEntry entry:entries) {
+			tempItemTitle = entry.getTitle();
+			tempItemLink = entry.getLink();
+			tempFeedLink = entry.getUri();
+			tempItemThumbURL = null;
+			
+			ArrayList<Element> elements = (ArrayList<Element>) entry.getForeignMarkup();
+			for(Element elt:elements) {
+				if ("group".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())) {
+					List<Content> subElts = elt.getContent();
+					for(Content subelt:subElts) {
+						if (subelt instanceof Element)
+							parseElement( (Element)subelt, false);
+					}
+				}
+				parseElement(elt, true);
+			}
+			List<SyndEnclosure> enclosures = entry.getEnclosures();
+			for(SyndEnclosure enc:enclosures) {
+				if (StringUtils.isNotBlank(enc.getUrl()))
+					tempItemLink = enc.getUrl();
+			}
+			manageItem();
+		}
+		lastmodified = System.currentTimeMillis();
+	}
 	
+	@SuppressWarnings("unchecked")
+	private void parseElement(Element elt, boolean parseLink) {
+		if ("content".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())) {
+			if (parseLink)
+				tempItemLink = elt.getAttribute("url").getValue();
+			List<Content> subElts = elt.getContent();
+			for(Content subelt:subElts) {
+				if (subelt instanceof Element)
+					parseElement( (Element)subelt, false);
+			}
+		}
+		if ("thumbnail".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())) {
+			if (tempItemThumbURL == null)
+				tempItemThumbURL = elt.getAttribute("url").getValue();
+		}
 	}
 
 	public InputStream getInputStream() throws IOException {
@@ -123,94 +169,23 @@ public class Feed extends DLNAResource implements IXMLBuilder {
 	public boolean isValid() {
 		return true;
 	}
-
-	public void addAttribute(String s, String s1, String s2, String s3,
-			String s4) throws Exception {
-		if (catchItemThumb && s.equals("url")) {
-			tempItemThumbURL = s3;
-		} else if (catchItemMediaContent && s.equals("url") && (tempItemLink == null || !tempItemLink.contains("youtube"))) {
-			tempItemLink = s3;
-			catchItemMediaContent = false;
-		} else if (catchItemLink && s.equals("href")) {
-			tempItemLink = s3;
-		}
-	}
-	
-	private String getString(Reader r) throws IOException {
-		CharBuffer cb = CharBuffer.allocate(1000);
-		r.read(cb);
-		return new String(cb.array()).trim();
-	}
-
-	public void addPCData(Reader reader, String s, int i) throws Exception {
-		if (catchGeneralTitle) {
-			title = getString(reader);
-			name = title;
-		} else if (catchItem && catchItemLink) {
-			if (tempItemLink == null)
-				tempItemLink = getString(reader);
-			catchItemLink = false;
-		} else if (catchItem && catchItemTitle) {
-			tempItemTitle = getString(reader);
-			catchItemTitle = false;
-		}
-	}
-
-	public void elementAttributesProcessed(String s, String s1, String s2)
-			throws Exception {
-		
-	}
-
-	public void endElement(String s, String s1, String s2) throws Exception {
-		if (s.equals("title"))
-			catchGeneralTitle = false;
-		else if (catchItem && (s.equals("item") || s.equals("entry"))) {
-			catchItem = false;
-			manageItem();
-		} else if (catchItem && s.equals("title")) {
-			catchItemTitle = false;
-		} else if (catchItem && s.equals("link")) {
-			catchItemLink = false;
-		} else if (catchItem && s.equals("thumbnail") && s1 != null && s1.equals("media")) {
-			catchItemThumb = false;
-		} else if ((catchItem && s.equals("content") && s1 != null && s1.equals("media")) || (catchItem && s.equals("enclosure"))) {
-			catchItemMediaContent = false;
-		}
-	}
-
-	public Object getResult() throws Exception {
-		return null;
-	}
-
-	public void newProcessingInstruction(String s, Reader reader)
-			throws Exception {
-		
-	}
-
-	public void startBuilding(String s, int i) throws Exception {
-		
-	}
-
-	public void startElement(String s, String s1, String s2, String s3, int i)
-			throws Exception {
-		if (title == null && s.equals("title"))
-			catchGeneralTitle = true;
-		else if (!catchItem && (s.equals("item") || s.equals("entry"))) {
-			catchItem = true;
-		} else if (catchItem && s.equals("title")) {
-			catchItemTitle = true;
-		} else if (catchItem && s.equals("link")) {
-			catchItemLink = true;
-			tempItemLink = null;
-		} else if (catchItem && s.equals("thumbnail") && s1 != null && s1.equals("media")) {
-			catchItemThumb = true;
-		} else if ((catchItem && s.equals("content") && s1 != null && s1.equals("media")) || (catchItem && s.equals("enclosure"))) {
-			catchItemMediaContent = true;
-		}
-	}
 	
 	protected void manageItem() {
 		FeedItem fi = new FeedItem(tempItemTitle, tempItemLink, tempItemThumbURL, null, specificType);
 		addChild(fi);
+	}
+
+	@Override
+	public boolean refreshChildren() {
+		if (System.currentTimeMillis() - lastmodified > 3600000) {
+			try {
+				parse();
+			} catch (Exception e) {
+				PMS.error("Eror in parsing stream: " + url, e);
+			}
+			return true;
+		}
+		return false;
+		
 	}
 }

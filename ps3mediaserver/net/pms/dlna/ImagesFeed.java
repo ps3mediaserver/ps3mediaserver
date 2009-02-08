@@ -24,16 +24,11 @@ public class ImagesFeed extends Feed {
 
 	@Override
 	protected void manageItem() {
-		if (tempFeedLink != null && url.toLowerCase().indexOf("picasaweb.google") > -1) {
-			addChild(new ImagesFeed(tempFeedLink + "&alt=rss"));
+		// Picasa Web Albums Support
+		if (tempFeedLink != null && tempCategory != null && tempCategory.endsWith("user") && url.toLowerCase().indexOf("picasaweb.google") > -1) {
+			addChild(new ImagesFeed(tempFeedLink.replace("data/entry/base", "data/feed/base")));
 		} else
 			super.manageItem();
-	}
-
-	@Override
-	public void parse(String content) {
-		super.parse(content);
-		
 	}
 
 	public ImagesFeed(String url) {
