@@ -153,6 +153,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 											nametruncate = name.lastIndexOf(end);
 											pl = p;
 											break;
+										} else if (getParent() != null && getParent().getName().endsWith(end)) {
+											getParent().nametruncate = getParent().getName().lastIndexOf(end);
+											pl = p;
+											break;
 										}
 									}
 								}
@@ -573,7 +577,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			//                   00 = pas de range, meme pas de pause possible
 			flags = "DLNA.ORG_OP=01";
 			if (player != null) {
-				if (player.isTimeSeekable())
+				if (player.isTimeSeekable() && mediaRenderer == PS3)
 					flags = "DLNA.ORG_OP=10";
 				/*else
 					flags = "DLNA.ORG_OP=00";*/ // 00 not working with ps3
@@ -598,7 +602,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			if (ext != null && ext.isVideo() && media != null && media.mediaparsed) {
 				if (player == null && media != null)
 					addAttribute(sb, "size", media.size);
-				else if (!PMS.getConfiguration().isDisableFakeSize())
+				else if (!PMS.getConfiguration().isDisableFakeSize() && mediaRenderer != XBOX)
 				//else if (!copy)
 					addAttribute(sb, "size", DLNAMediaInfo.TRANS_SIZE);
 				if (media.duration != null)
@@ -656,7 +660,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		}
 		
 		String thumbURL = getThumbnailURL();
-		if (ext == null || (ext != null && thumbURL != null)) {
+		if (!isFolder() && (ext == null || (ext != null && thumbURL != null))) {
 			openTag(sb, "upnp:albumArtURI");
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
 			if (getThumbnailContentType().equals(PNG_TYPEMIME))
@@ -682,7 +686,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			} else if (ext != null && ext.isVideo()) {
 				uclass = "object.item.videoItem";
 			} else if (ext != null && ext.isImage()) {
-				uclass = "object.item.imageItem";
+				uclass = "object.item.imageItem.photo";
 			} else if (ext != null && ext.isAudio()) {
 				uclass = "object.item.audioItem";
 			} else

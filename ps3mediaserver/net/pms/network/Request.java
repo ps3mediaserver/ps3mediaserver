@@ -209,7 +209,7 @@ public class Request extends HTTPResource {
 						}
 						output(output, "CONTENT-RANGE: bytes " + lowRange + "-" + highRange + "/" +totalsize);
 					}
-					if (files.get(0).getPlayer() == null)
+					if (files.get(0).getPlayer() == null || mediaRenderer == XBOX)
 						output(output, "Accept-Ranges: bytes");
 					output(output, "Connection: keep-alive");
 				}
@@ -290,7 +290,7 @@ public class Request extends HTTPResource {
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
-			} else if (soapaction.indexOf("ContentDirectory:1#Browse") > -1) {
+			} else if (soapaction.contains("ContentDirectory:1#Browse") || soapaction.contains("ContentDirectory:1#Search")) {
 				objectID = getEnclosingValue(content, "<ObjectID>", "</ObjectID>");
 				String containerID = null;
 				if ((objectID == null || objectID.length() == 0) && mediaRenderer == XBOX) {

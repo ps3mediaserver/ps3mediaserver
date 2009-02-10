@@ -55,12 +55,14 @@ public class RequestHandler implements Runnable {
 			String headerLine = br.readLine();
 			while (headerLine != null && headerLine.length() > 0) {
 				PMS.debug( "Received on socket: " + headerLine);
-				if (headerLine != null && headerLine.indexOf("PLAYSTATION") >-1) {
-					PMS.get().setRendererfound(Request.PS3);
-					request.setMediaRenderer(Request.PS3);
-				} else if (headerLine != null && headerLine.indexOf("Xbox") >-1) {
-					PMS.get().setRendererfound(Request.XBOX);
-					request.setMediaRenderer(Request.XBOX);
+				if (headerLine != null && headerLine.toUpperCase().startsWith("USER-AGENT:")) {
+					if (headerLine.toUpperCase().contains("PLAYSTATION")) {
+						PMS.get().setRendererfound(Request.PS3);
+						request.setMediaRenderer(Request.PS3);
+					} else if (headerLine.toUpperCase().contains("XBOX") || headerLine.toUpperCase().contains("XENON")) {
+						PMS.get().setRendererfound(Request.XBOX);
+						request.setMediaRenderer(Request.XBOX);
+					}
 				}
 				try {
 					StringTokenizer s = new StringTokenizer(headerLine);

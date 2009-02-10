@@ -18,9 +18,9 @@
  */
 package net.pms.dlna;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,27 +42,6 @@ public class Feed extends DLNAResource {
 	@Override
 	public void resolve() {
 		super.resolve();
-		/*String content = null;
-		try {
-			InputStream is = downloadAndSend(url, false);
-			byte buf [] = new byte [4096];
-			int n = -1;
-			ByteArrayOutputStream b = new ByteArrayOutputStream();
-			while ((n=is.read(buf)) > 0) {
-				b.write(buf, 0, n);
-			}
-			is.close();
-			b.close();
-			content = new String(b.toByteArray(), "UTF-8");
-		} catch (IOException e) {
-			PMS.error(null, e);
-		}
-		if (content != null) {
-			parse(content);
-		} else {
-			//error
-			
-		}*/
 		try {
 			parse();
 		} catch (Exception e) {
@@ -89,36 +68,41 @@ public class Feed extends DLNAResource {
 	@SuppressWarnings("unchecked")
 	public void parse() throws Exception {
 		SyndFeedInput input = new SyndFeedInput();
-		SyndFeed feed = input.build(new XmlReader(new URL(url)));
-		name = feed.getTitle();
-		if (feed.getCategories() != null && feed.getCategories().size() > 0) {
-			SyndCategory category = (SyndCategory) feed.getCategories().get(0);
-			tempCategory = category.getName();
-		}
-		List<SyndEntry> entries = feed.getEntries();
-		for(SyndEntry entry:entries) {
-			tempItemTitle = entry.getTitle();
-			tempItemLink = entry.getLink();
-			tempFeedLink = entry.getUri();
-			tempItemThumbURL = null;
-			
-			ArrayList<Element> elements = (ArrayList<Element>) entry.getForeignMarkup();
-			for(Element elt:elements) {
-				if ("group".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())) {
-					List<Content> subElts = elt.getContent();
-					for(Content subelt:subElts) {
-						if (subelt instanceof Element)
-							parseElement( (Element)subelt, false);
+		byte b [] = downloadAndSendBinary(url);
+		if (b != null) {
+			String content = new String(b, "UTF-8");
+			content = stripNonValidXMLCharacters(content);
+			SyndFeed feed = input.build(new XmlReader(new ByteArrayInputStream(b)));
+			name = feed.getTitle();
+			if (feed.getCategories() != null && feed.getCategories().size() > 0) {
+				SyndCategory category = (SyndCategory) feed.getCategories().get(0);
+				tempCategory = category.getName();
+			}
+			List<SyndEntry> entries = feed.getEntries();
+			for(SyndEntry entry:entries) {
+				tempItemTitle = entry.getTitle();
+				tempItemLink = entry.getLink();
+				tempFeedLink = entry.getUri();
+				tempItemThumbURL = null;
+				
+				ArrayList<Element> elements = (ArrayList<Element>) entry.getForeignMarkup();
+				for(Element elt:elements) {
+					if ("group".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())) {
+						List<Content> subElts = elt.getContent();
+						for(Content subelt:subElts) {
+							if (subelt instanceof Element)
+								parseElement( (Element)subelt, false);
+						}
 					}
+					parseElement(elt, true);
 				}
-				parseElement(elt, true);
+				List<SyndEnclosure> enclosures = entry.getEnclosures();
+				for(SyndEnclosure enc:enclosures) {
+					if (StringUtils.isNotBlank(enc.getUrl()))
+						tempItemLink = enc.getUrl();
+				}
+				manageItem();
 			}
-			List<SyndEnclosure> enclosures = entry.getEnclosures();
-			for(SyndEnclosure enc:enclosures) {
-				if (StringUtils.isNotBlank(enc.getUrl()))
-					tempItemLink = enc.getUrl();
-			}
-			manageItem();
 		}
 		lastmodified = System.currentTimeMillis();
 	}
@@ -188,4 +172,33 @@ public class Feed extends DLNAResource {
 		return false;
 		
 	}
+	
+	/**
+     * This method ensures that the output String has only
+     * valid XML unicode characters as specified by the
+     * XML 1.0 standard. For reference, please see
+     * <a href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-Char">the
+     * standard</a>. This method will return an empty
+     * String if the input is null or empty.
+     *
+     * @param in The String whose non-valid characters we want to remove.
+     * @return The in String, stripped of non-valid characters.
+     */
+    private String stripNonValidXMLCharacters(String in) {
+        StringBuffer out = new StringBuffer(); // Used to hold the output.
+        char current; // Used to reference the current character.
+
+        if (in == null || ("".equals(in))) return ""; // vacancy test.
+        for (int i = 0; i < in.length(); i++) {
+            current = in.charAt(i); // NOTE: No IndexOutOfBoundsException caught here; it should not happen.
+            if ((current == 0x9) ||
+                (current == 0xA) ||
+                (current == 0xD) ||
+                ((current >= 0x20) && (current <= 0xD7FF)) ||
+                ((current >= 0xE000) && (current <= 0xFFFD)) ||
+                ((current >= 0x10000) && (current <= 0x10FFFF)))
+                out.append(current);
+        }
+        return out.toString();
+    }    
 }
