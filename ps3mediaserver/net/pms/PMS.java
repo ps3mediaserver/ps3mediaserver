@@ -91,7 +91,6 @@ import net.pms.formats.WEB;
 import net.pms.gui.DummyFrame;
 import net.pms.gui.IFrame;
 import net.pms.io.OutputParams;
-import net.pms.io.OutputTextConsumer;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.io.WinUtils;
 import net.pms.network.HTTPResource;
@@ -110,7 +109,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.04"; //$NON-NLS-1$
+	public static final String VERSION = "1.05"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -139,6 +138,8 @@ public class PMS {
 			foundRenderers.add(mediarenderer);
 		if (mediarenderer == HTTPResource.PS3) {
 			frame.setStatusCode(0, Messages.getString("PMS.5"), "PS3_2.png"); //$NON-NLS-1$ //$NON-NLS-2$
+		} else if (mediarenderer == HTTPResource.XBOX && !foundRenderers.contains(HTTPResource.PS3)) {
+			frame.setStatusCode(0, "Xbox found", "xbox360.png");
 		}
 	}
 	
@@ -186,7 +187,7 @@ public class PMS {
 		return registry;
 	}
 
-	private boolean checkProcessExistence(String name, boolean error, String...params) throws Exception {
+	/*private boolean checkProcessExistence(String name, boolean error, String...params) throws Exception {
 		PMS.info("launching: " + params[0]); //$NON-NLS-1$
 		
 		try {
@@ -229,7 +230,7 @@ public class PMS {
 				PMS.error("Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ...", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return false;
 		}
-	}
+	}*/
 	
 	@SuppressWarnings("unused")
 	private PrintStream stderr = System.err;  
@@ -303,7 +304,7 @@ public class PMS {
 		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 				
 		
-		
+		/*
 		if (!checkProcessExistence("FFmpeg", true, configuration.getFfmpegPath(), "-h")) //$NON-NLS-1$ //$NON-NLS-2$
 			configuration.disableFfmpeg();
 		//if (forceMPlayer) {
@@ -315,7 +316,7 @@ public class PMS {
 		//}
 		if (!checkProcessExistence("VLC", false, configuration.getVlcPath(), "-I", "dummy", isWindows()?"--dummy-quiet":"-Z", "vlc://quit")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 			configuration.disableVlc();
-		}
+		}*/
 		
 		// check the existence of Vsfilter.dll
 		if (registry.isAvis() && registry.getAvsPluginsDir() != null) {
@@ -366,7 +367,10 @@ public class PMS {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {}
 				if (!foundRenderers.contains(HTTPResource.PS3)) {
-					frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
+					if (foundRenderers.contains(HTTPResource.XBOX))
+						frame.setStatusCode(0, "Xbox found", "xbox360.png");
+					else
+						frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}.start();

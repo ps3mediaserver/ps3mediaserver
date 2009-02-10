@@ -225,6 +225,8 @@ public class DLNAMediaInfo {
 						String y = t.getFirstYear();
 						if (t.getArtworkList().size() > 0) {
 							thumb = t.getArtworkList().get(0).getBinaryData();
+						} else {
+							//thumb = CoverUtil.get().getThumbnailFromArtistAlbum(CoverUtil.AUDIO_AMAZON, artist, album);
 						}
 						try {
 							if (y.length() > 4)
@@ -272,6 +274,10 @@ public class DLNAMediaInfo {
 							if (tf != null)
 								iso = tf.getIntValue();
 						}
+					} else if (formatName.startsWith("PNG")) {
+						codecV = "png";
+					} else if (formatName.startsWith("GIF")) {
+						codecV = "gif";
 					}
 				} catch (Throwable e) {
 					ffmpeg_parsing = true;

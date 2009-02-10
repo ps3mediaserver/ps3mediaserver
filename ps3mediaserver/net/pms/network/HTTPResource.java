@@ -46,6 +46,7 @@ public class HTTPResource {
 	public static final String AVI_TYPEMIME = "video/avi";
 	public static final String WMV_TYPEMIME = "video/x-ms-wmv";
 	public static final String ASF_TYPEMIME = "video/x-ms-asf";
+	public static final String VIDEO_TRANSCODE = "video/transcode";
 	
 	public static final String PNG_TYPEMIME = "image/png";
 	public static final String JPEG_TYPEMIME = "image/jpeg";
@@ -98,6 +99,17 @@ public class HTTPResource {
 			if (f.exists())
 				return new FileInputStream(f);
 		}
+		byte content [] = downloadAndSendBinary(u, saveOnDisk, f);
+		return new ByteArrayInputStream(content);
+	}
+	
+	protected byte [] downloadAndSendBinary(String u) throws IOException {
+		return downloadAndSendBinary(u, false, null);
+	}
+	
+	protected byte [] downloadAndSendBinary(String u, boolean saveOnDisk, File f) throws IOException {
+		URL url = new URL(u);
+		PMS.info("Retrieving " + url.toString());
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		URLConnection conn = url.openConnection();
 		InputStream in = conn.getInputStream();
@@ -116,7 +128,7 @@ public class HTTPResource {
 		in.close();
 		if (fOUT != null)
 			fOUT.close();
-		return new ByteArrayInputStream(bytes.toByteArray());
+		return bytes.toByteArray();
 	}
 	
 	protected String convertURLToFileName(String url) {
@@ -136,8 +148,14 @@ public class HTTPResource {
 			if (mediarenderer == PS3) {
 				return "video/x-divx";
 			} else if (mediarenderer == XBOX) {
-				return "video/x-msvideo";
+				return AVI_TYPEMIME;
 			}
+		}
+		if (mimetype != null && mimetype.equals(VIDEO_TRANSCODE)) {
+			if (mediarenderer == XBOX) {
+				return WMV_TYPEMIME;
+			} else
+				return MPEG_TYPEMIME;
 		}
 		return mimetype;
 	}
