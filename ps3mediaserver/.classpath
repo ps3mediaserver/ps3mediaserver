@@ -3,7 +3,6 @@
 	<classpathentry excluding="eclipse-classes/" including="net/|resources/" kind="src" path=""/>
 	<classpathentry kind="lib" path="lib/commons-logging-api-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/java-unrar-0.2.jar"/>
-	<classpathentry kind="lib" path="lib/nanoxml-2.2.3.jar"/>
 	<classpathentry kind="lib" path="lib/forms-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/looks-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/jna.jar"/>
@@ -23,5 +22,7 @@
 	<classpathentry kind="lib" path="lib/sanselan-0.95-incubator.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/bsh-core-2.0b4.jar"/>
+	<classpathentry kind="lib" path="lib/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/rome-1.0RC2.jar"/>
 	<classpathentry kind="output" path="eclipse-classes"/>
 </classpath>

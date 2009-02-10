@@ -84,101 +84,107 @@ public class WinUtils {
 	
 	public String getShortPathNameW(String longPathName) {
 
-		boolean unicodeChars = false;
-		try {
-		byte b1 [] = longPathName.getBytes("UTF-8");
-		byte b2 [] = longPathName.getBytes("cp1252");
-		unicodeChars = b1.length != b2.length;
-		} catch (Exception e) {
-		return longPathName;
+		if (Platform.isWindows()) {
+			boolean unicodeChars = false;
+			try {
+				byte b1 [] = longPathName.getBytes("UTF-8");
+				byte b2 [] = longPathName.getBytes("cp1252");
+			unicodeChars = b1.length != b2.length;
+			} catch (Exception e) {
+				return longPathName;
+			}
+	
+			if (unicodeChars && Platform.isWindows()) {
+				try {
+					WString pathname = new WString(longPathName);
+				
+					// ISSUE 90: crash when used too many times
+					/*NativeLong bufferSize = new NativeLong((pathname.length()*2)+2);
+					Memory buffer = new Memory(bufferSize.longValue());
+			
+					if (Kernel32.INSTANCE.GetShortPathNameW(pathname, buffer, bufferSize).longValue() == 0) {
+					PMS.minimal("File does not exists ? " + pathname);
+					return null;
+					}
+					PMS.info("Forcing short path name on " + pathname);
+					String str= buffer.getString(0, true);
+					return str;*/
+					
+					char test [] = new char [2+pathname.length()*2];
+					int r = Kernel32.INSTANCE.GetShortPathNameW(pathname, test, test.length);
+					if (r > 0) {
+						PMS.info("Forcing short path name on " + pathname);
+						return Native.toString(test);
+					} else {
+						PMS.minimal("File does not exists ? " + pathname);
+						return null;
+					}
+				
+				} catch (Exception e) {
+					return longPathName;
+				}
+			}
+			return longPathName;
 		}
-
-		if (unicodeChars && Platform.isWindows()) {
-		try {
-		WString pathname = new WString(longPathName);
-		
-		// ISSUE 90: crash when used too many times
-		/*NativeLong bufferSize = new NativeLong((pathname.length()*2)+2);
-		Memory buffer = new Memory(bufferSize.longValue());
-
-		if (Kernel32.INSTANCE.GetShortPathNameW(pathname, buffer, bufferSize).longValue() == 0) {
-		PMS.minimal("File does not exists ? " + pathname);
 		return null;
-		}
-		PMS.info("Forcing short path name on " + pathname);
-		String str= buffer.getString(0, true);
-		return str;*/
-		
-		char test [] = new char [2+pathname.length()*2];
-		int r = Kernel32.INSTANCE.GetShortPathNameW(pathname, test, test.length);
-		if (r > 0) {
-			PMS.info("Forcing short path name on " + pathname);
-			return Native.toString(test);
-		} else {
-			PMS.minimal("File does not exists ? " + pathname);
-			return null;
-		}
-		
-		} catch (Exception e) {
-		return longPathName;
-		}
-		}
-		return longPathName;
-		}
+	}
 	
 	public String getDiskLabel(File f) {
-		String driveName;
-		try {
-		driveName = f.getCanonicalPath().substring(0, 2) + "\\";
+		if (Platform.isWindows()) {
+			String driveName;
+			try {
+				driveName = f.getCanonicalPath().substring(0, 2) + "\\";
+				
+				char[] lpRootPathName_chars = new char[4];
+				for (int i=0; i<3; i++) {
+					lpRootPathName_chars[i] = driveName.charAt(i);
+				}
+				lpRootPathName_chars[3] = '\0';
+				int nVolumeNameSize = 256;
+				CharBuffer lpVolumeNameBuffer_char = CharBuffer.allocate(nVolumeNameSize);
+				LongByReference lpVolumeSerialNumber = new LongByReference();
+				LongByReference lpMaximumComponentLength = new LongByReference();
+				LongByReference lpFileSystemFlags = new LongByReference();
+				int nFileSystemNameSize = 256;
+				CharBuffer lpFileSystemNameBuffer_char = CharBuffer.allocate(nFileSystemNameSize);
 		
-
-		char[] lpRootPathName_chars = new char[4];
-		for (int i=0; i<3; i++) {
-		lpRootPathName_chars[i] = driveName.charAt(i);
-		}
-		lpRootPathName_chars[3] = '\0';
-		int nVolumeNameSize = 256;
-		CharBuffer lpVolumeNameBuffer_char = CharBuffer.allocate(nVolumeNameSize);
-		LongByReference lpVolumeSerialNumber = new LongByReference();
-		LongByReference lpMaximumComponentLength = new LongByReference();
-		LongByReference lpFileSystemFlags = new LongByReference();
-		int nFileSystemNameSize = 256;
-		CharBuffer lpFileSystemNameBuffer_char = CharBuffer.allocate(nFileSystemNameSize);
-
-		boolean result2 = Kernel32.INSTANCE.GetVolumeInformationW(
-		lpRootPathName_chars,
-		lpVolumeNameBuffer_char,
-		nVolumeNameSize,
-		lpVolumeSerialNumber,
-		lpMaximumComponentLength,
-		lpFileSystemFlags,
-		lpFileSystemNameBuffer_char,
-		nFileSystemNameSize);
-		if (!result2) {
-		return null;
-		}
-		String diskLabel = charString2String(lpVolumeNameBuffer_char);
-		return diskLabel;
-		} catch(Exception e) {
-			return null;
+				boolean result2 = Kernel32.INSTANCE.GetVolumeInformationW(
+					lpRootPathName_chars,
+					lpVolumeNameBuffer_char,
+					nVolumeNameSize,
+					lpVolumeSerialNumber,
+					lpMaximumComponentLength,
+					lpFileSystemFlags,
+					lpFileSystemNameBuffer_char,
+					nFileSystemNameSize);
+				if (!result2) {
+					return null;
+				}
+				String diskLabel = charString2String(lpVolumeNameBuffer_char);
+				return diskLabel;
+			} catch(Exception e) {
+				return null;
 			}
-
+		}
+		return null;
 	}
 	
 	private String charString2String(CharBuffer buf) {
 		char[] chars = buf.array();
 		int i;
 		for (i=0; i<chars.length; i++) {
-		if (chars[i]=='\0') break;
+			if (chars[i]=='\0') break;
 		}
 		return new String(chars,0,i);
-		}
-
-	public WinUtils() {
-		start();
 	}
 
-	public void start() {
+	public WinUtils() {
+		if (Platform.isWindows()) {
+			start();
+		}
+	}
+
+	private void start() {
 		final Preferences userRoot = Preferences.userRoot();
 		final Preferences systemRoot = Preferences.systemRoot();
 		final Class<? extends Preferences> clz = userRoot.getClass();
