@@ -236,8 +236,8 @@ public class Request extends HTTPResource {
 				String s = new String(b);
 				s = s.replace("uuid:1234567890TOTO", PMS.get().usn());//.substring(0, PMS.get().usn().length()-2));
 				if (mediaRenderer == XBOX) {
-					PMS.minimal("Doing DLNA changes for Xbox360");
-					s = s.replace("Java PS3 Media Server", "XBox Media Server [" + InetAddress.getLocalHost().getHostName() + "] : Windows Media Connect");
+					PMS.info("DLNA changes for Xbox360");
+					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "] : Windows Media Connect");
 					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect</modelName>");
 /*					s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
 							"<serviceType>urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1</serviceType>" + CRLF +
@@ -258,7 +258,7 @@ public class Request extends HTTPResource {
 					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "]");
 				inputStream = new ByteArrayInputStream(s.getBytes());
 			}
-		} else if (method.equals("POST") && argument.contains("MS_MediaReceiverRegistrar_control")) {
+		} else if (method.equals("POST") && (argument.contains("MS_MediaReceiverRegistrar_control") || argument.contains("mrr/control"))) {
 			output(output, CONTENT_TYPE_UTF8);
 			response.append(HTTPXMLHelper.XML_HEADER);
 			response.append(CRLF);
@@ -291,6 +291,7 @@ public class Request extends HTTPResource {
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
 			} else if (soapaction.contains("ContentDirectory:1#Browse") || soapaction.contains("ContentDirectory:1#Search")) {
+				//PMS.debug(content);
 				objectID = getEnclosingValue(content, "<ObjectID>", "</ObjectID>");
 				String containerID = null;
 				if ((objectID == null || objectID.length() == 0) && mediaRenderer == XBOX) {
@@ -314,12 +315,34 @@ public class Request extends HTTPResource {
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_HEADER);
 				response.append(CRLF);
-				response.append(HTTPXMLHelper.BROWSERESPONSE_HEADER);
+				if (soapaction.contains("ContentDirectory:1#Search"))
+					response.append(HTTPXMLHelper.SEARCHRESPONSE_HEADER);
+				else
+					response.append(HTTPXMLHelper.BROWSERESPONSE_HEADER);
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.RESULT_HEADER);
 				
 				response.append(HTTPXMLHelper.DIDL_HEADER);
+				
+				if (soapaction.contains("ContentDirectory:1#Search"))
+					browseFlag = "BrowseDirectChildren";
+				
+				//XBOX virtual containers ... doh
+				if (mediaRenderer == XBOX && PMS.getConfiguration().getUseCache() && PMS.get().getLibrary() != null && containerID != null) {
+					if (containerID.equals("7") && PMS.get().getLibrary().getAlbumFolder() != null)
+						objectID = PMS.get().getLibrary().getAlbumFolder().getId();
+					else if (containerID.equals("6") && PMS.get().getLibrary().getArtistFolder() != null)
+						objectID = PMS.get().getLibrary().getArtistFolder().getId();
+					else if (containerID.equals("5") && PMS.get().getLibrary().getGenreFolder() != null)
+						objectID = PMS.get().getLibrary().getGenreFolder().getId();
+					else if (containerID.equals("F") && PMS.get().getLibrary().getPlaylistFolder() != null)
+						objectID = PMS.get().getLibrary().getPlaylistFolder().getId();
+					else if (containerID.equals("4") && PMS.get().getLibrary().getAllFolder() != null)
+						objectID = PMS.get().getLibrary().getAllFolder().getId();
+				}
+				
 				ArrayList<DLNAResource> files = PMS.get().getRootFolder().getDLNAResources(objectID, browseFlag!=null&&browseFlag.equals("BrowseDirectChildren"), startingIndex, requestCount);
+				
 				if (files != null) {
 					for(DLNAResource uf:files) {
 						if (mediaRenderer == XBOX && containerID != null)
@@ -348,7 +371,10 @@ public class Request extends HTTPResource {
 					response.append("1");
 				response.append("</UpdateID>");
 				response.append(CRLF);
-				response.append(HTTPXMLHelper.BROWSERESPONSE_FOOTER);
+				if (soapaction.contains("ContentDirectory:1#Search"))
+					response.append(HTTPXMLHelper.SEARCHRESPONSE_FOOTER);
+				else
+					response.append(HTTPXMLHelper.BROWSERESPONSE_FOOTER);
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
@@ -367,6 +393,7 @@ public class Request extends HTTPResource {
 			output(output, "");
 			if (!method.equals("HEAD")) {
 				output.write(responseData);
+				//PMS.debug(response.toString());
 			}
 		} else if (inputStream != null) {
 			if (CLoverride > -1) {

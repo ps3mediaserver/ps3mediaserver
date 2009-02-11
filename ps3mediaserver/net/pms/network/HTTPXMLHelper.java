@@ -28,6 +28,8 @@ public class HTTPXMLHelper {
 	public static final String GETSYSTEMUPDATEID_FOOTER = "</u:GetSystemUpdateIDResponse>";
 	public static final String BROWSERESPONSE_HEADER = "<u:BrowseResponse xmlns:u=\"urn:schemas-upnp-org:service:ContentDirectory:1\">";
 	public static final String BROWSERESPONSE_FOOTER = "</u:BrowseResponse>";
+	public static final String SEARCHRESPONSE_HEADER = "<u:SearchResponse xmlns:u=\"urn:schemas-upnp-org:service:ContentDirectory:1\">";
+	public static final String SEARCHRESPONSE_FOOTER = "</u:SearchResponse>";
 	public static final String RESULT_HEADER = "<Result>";
 	public static final String RESULT_FOOTER = "</Result>";
 	

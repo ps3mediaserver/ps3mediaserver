@@ -839,7 +839,7 @@ private JTextField mencoder_ass_scale;
 	
 	
 	protected String [] getDefaultArgs() {
-		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", wmv?"lavf":((pcm||ac3)?"avi":"mpeg"), "-lavfopts", "format=wmv", "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", ovccopy?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$
+		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", wmv?"lavf":((pcm||ac3)?"avi":"mpeg"), "-lavfopts", "format=asf", "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", ovccopy?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$
 	}
 
 	@Override
@@ -1420,7 +1420,7 @@ private JTextField mencoder_ass_scale;
 			cmdArray[cmdArray.length-4] = "-"; //$NON-NLS-1$
 			params.input_pipes = new PipeProcess [2];
 		} else {
-			pipe = new PipeProcess("mencoder" + System.currentTimeMillis() + (wmv?".wmv":""), (pcm || ac3)?null:params); //$NON-NLS-1$
+			pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || ac3)?null:params); //$NON-NLS-1$
 			params.input_pipes [0] = pipe;
 			cmdArray[cmdArray.length-1] = pipe.getInputPipe();
 		}
