@@ -50,7 +50,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	}
 	protected int specificType;
 	protected String id;
+	public String getId() {
+		return id;
+	}
 	protected ArrayList<DLNAResource> children;
+	public ArrayList<DLNAResource> getChildren() {
+		return children;
+	}
 	protected DLNAResource parent;
 	protected Format ext;
 	public DLNAMediaInfo media;
@@ -683,12 +689,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		} else {
 			if (isFolder()) {
 				uclass = "object.container.storageFolder";
+				if (mediaRenderer == XBOX && fakeParentId != null && fakeParentId.equals("7"))
+					uclass = "object.container.album.musicAlbum";
 			} else if (ext != null && ext.isVideo()) {
 				uclass = "object.item.videoItem";
 			} else if (ext != null && ext.isImage()) {
 				uclass = "object.item.imageItem.photo";
 			} else if (ext != null && ext.isAudio()) {
-				uclass = "object.item.audioItem";
+				uclass = "object.item.audioItem.musicTrack";
 			} else
 				uclass = "object.item.videoItem";
 		}
