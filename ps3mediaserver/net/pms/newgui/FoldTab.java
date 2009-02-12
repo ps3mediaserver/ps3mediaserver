@@ -286,11 +286,11 @@ public class FoldTab {
         });
         builder.add(hideengines,          cc.xyw(4,  11, 3));
         
-        final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "0", "1" }, new Object[] { "Default", "By Date" });
+        final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "0", "1" }, new Object[] { Messages.getString("FoldTab.15"), Messages.getString("FoldTab.16") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         sortmethod = new JComboBox(kcbm);
         sortmethod.setEditable(false);
        
-      kcbm.setSelectedKey("" + configuration.getSortMethod());
+      kcbm.setSelectedKey("" + configuration.getSortMethod()); //$NON-NLS-1$
       
       sortmethod.addItemListener(new ItemListener() {
 
@@ -307,14 +307,14 @@ public class FoldTab {
       	
       });
       
-      builder.addLabel("Sort files method: ", cc.xyw(1,17,3));
+      builder.addLabel(Messages.getString("FoldTab.18"), cc.xyw(1,17,3)); //$NON-NLS-1$
         builder.add(sortmethod, cc.xyw(4, 17,4));
         
-        final KeyedComboBoxModel thumbKCBM = new KeyedComboBoxModel(new Object[] { "0", "1", "2" }, new Object[] { "Embedded", "Download from amazon.com", "Download from discogs.com" });
+        final KeyedComboBoxModel thumbKCBM = new KeyedComboBoxModel(new Object[] { "0", "1", "2" }, new Object[] { Messages.getString("FoldTab.22"), Messages.getString("FoldTab.23"), Messages.getString("FoldTab.24") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         audiothumbnail = new JComboBox(thumbKCBM);
         audiothumbnail.setEditable(false);
        
-        thumbKCBM.setSelectedKey("" + configuration.getSortMethod());
+        thumbKCBM.setSelectedKey("" + configuration.getAudioThumbnailMethod()); //$NON-NLS-1$
       
       audiothumbnail.addItemListener(new ItemListener() {
 
@@ -322,7 +322,7 @@ public class FoldTab {
  				if (e.getStateChange() == ItemEvent.SELECTED) {
  					
  					try {
- 						configuration.setAudioThumbnailMethod(Integer.parseInt((String) kcbm.getSelectedKey()));
+ 						configuration.setAudioThumbnailMethod(Integer.parseInt((String) thumbKCBM.getSelectedKey()));
  						PMS.get().getFrame().setReloadable(true);
  					} catch (NumberFormatException nfe) {}
  					
@@ -330,10 +330,10 @@ public class FoldTab {
  			}
       	
       });
-      builder.addLabel("Audio thumbnails display: ", cc.xyw(1,19,3));
+      builder.addLabel(Messages.getString("FoldTab.26"), cc.xyw(1,19,3)); //$NON-NLS-1$
         builder.add(audiothumbnail, cc.xyw(4, 19,4));
         
-        builder.addLabel("Alternate videos cover art folder", cc.xyw(1, 21, 3));
+        builder.addLabel(Messages.getString("FoldTab.27"), cc.xyw(1, 21, 3)); //$NON-NLS-1$
         defaultThumbFolder = new JTextField(configuration.getAlternateThumbFolder());
         defaultThumbFolder.addKeyListener(new KeyListener() {
 
@@ -361,7 +361,7 @@ public class FoldTab {
 					 chooser = new JFileChooser(new RestrictedFileSystemView());
 				}
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int returnVal = chooser.showDialog((Component) e.getSource(), "Choose a folder");
+				int returnVal = chooser.showDialog((Component) e.getSource(), Messages.getString("FoldTab.28")); //$NON-NLS-1$
  			    if(returnVal == JFileChooser.APPROVE_OPTION) {
  			    	defaultThumbFolder.setText(chooser.getSelectedFile().getAbsolutePath());
  			    	PMS.get().getFrame().setReloadable(true);
