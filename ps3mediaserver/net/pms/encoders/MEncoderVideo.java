@@ -839,7 +839,7 @@ private JTextField mencoder_ass_scale;
 	
 	
 	protected String [] getDefaultArgs() {
-		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", wmv?"lavf":((pcm||ac3)?"avi":"mpeg"), "-lavfopts", "format=asf", "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", ovccopy?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$
+		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", wmv?"lavf":((pcm||ac3)?"avi":"mpeg"), "-lavfopts", "format=asf", "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", ovccopy?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$
 	}
 
 	@Override
@@ -914,7 +914,7 @@ private JTextField mencoder_ass_scale;
 		wmv = false;
 		if (params.mediaRenderer ==HTTPResource.XBOX) {
 			wmv = true;
-			vcodec = "wmv2"; // http://wiki.megaframe.org/wiki/Ubuntu_XBOX_360#MEncoder not usable in streaming
+			vcodec = "wmv2"; // http://wiki.megaframe.org/wiki/Ubuntu_XBOX_360#MEncoder not usable in streaming //$NON-NLS-1$
 		}
 		
 		oaccopy = false;
@@ -993,7 +993,7 @@ private JTextField mencoder_ass_scale;
 			String mainConfig = configuration.getMencoderMainSettings();
 			if (mainConfig.contains("/*")) // in case of //$NON-NLS-1$
 				mainConfig = mainConfig.substring(mainConfig.indexOf("/*")); //$NON-NLS-1$
-			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + (wmv?":acodec=wmav2:abitrate=256":(":acodec=ac3:abitrate=" + CodecUtil.getAC3Bitrate(configuration, media))) + ":threads=" + (wmv?1:configuration.getNumberOfCpuCores()) + ":" + mainConfig; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + (wmv?":acodec=wmav2:abitrate=256":(":acodec=ac3:abitrate=" + CodecUtil.getAC3Bitrate(configuration, media))) + ":threads=" + (wmv?1:configuration.getNumberOfCpuCores()) + ":" + mainConfig; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, mainConfig, params.mediaRenderer);
 			st = new StringTokenizer(encodeSettings, " "); //$NON-NLS-1$
 			int oldc = overridenMainArgs.length;
