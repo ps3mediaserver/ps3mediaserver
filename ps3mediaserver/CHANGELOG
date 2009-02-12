@@ -6,10 +6,16 @@ v1.05
 
 - Changes / Features
 
+XBox 360 unofficial support (Pictures/Music/Videos + WMV8/WMA2 transcoding)
+Automatic album art download from amazon or discogs
 New translations: Traditional Chinese (thanks to KK Tong)
 Updated translations: Greek, Portuguese
+New option for browsing directory by date
+Alternate cover art folder and <video>.jpg additional support (along existing <video>.<ext>.cover.jpg)
 
 - Fixes
+
+Reworked RSS parsing (youtube playlists)
 
 v1.04
 

@@ -16,6 +16,20 @@ public class FileUtil {
 		return f.substring(0, point);
 	}
 	
+	public static File getFileNameWitNewExtension(File parent, File f, String ext) {
+		File ff = isFileExists(new File(parent, getFileNameWithoutExtension(f.getName())), ext);
+		if (ff !=null && ff.exists())
+			return ff;
+		return null;
+	}
+	
+	public static File getFileNameWitAddedExtension(File parent, File f, String ext) {
+		File ff = new File(parent, f.getName() + ext);
+		if (ff.exists())
+			return ff;
+		return null;
+	}
+	
 	public static File isFileExists(File f, String ext) {
 		int point = f.getName().lastIndexOf(".");
 		if (point == -1) {

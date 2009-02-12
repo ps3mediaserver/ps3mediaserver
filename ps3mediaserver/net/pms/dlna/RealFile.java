@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+
+import org.apache.commons.lang.StringUtils;
 
 import net.pms.PMS;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
@@ -69,7 +72,15 @@ public class RealFile extends DLNAResource {
 	public void discoverChildren() {
 		super.discoverChildren();
 		File files [] = getFileList();
-		Arrays.sort(files);
+		if (PMS.getConfiguration().getSortMethod() > 0) {
+			Arrays.sort( files, new Comparator<File>()
+			{
+				public int compare(File o1, File o2) {
+					return new Long(o2.lastModified()).compareTo(new Long(o1.lastModified()));
+				}
+			}); 
+		} else
+			Arrays.sort(files);
 		for(File f:files) {
 			if (f.isDirectory())
 				manageFile(f);
@@ -269,11 +280,19 @@ public class RealFile extends DLNAResource {
 		if (getParent() != null && getParent() instanceof RealFile) {
 			cachedThumbnail = ((RealFile) getParent()).potentialCover;
 			if (cachedThumbnail == null) {
-				cachedThumbnail = new File(file.getParentFile(), file.getName() + ".cover.jpg");
-				if (!cachedThumbnail.exists())
-					cachedThumbnail = new File(file.getParentFile(), file.getName() + ".cover.png");
-				if (!cachedThumbnail.exists())
-					cachedThumbnail = null;
+				File thumbFolder = null;
+				if (StringUtils.isNotBlank(PMS.getConfiguration().getAlternateThumbFolder())) {
+					thumbFolder = new File(PMS.getConfiguration().getAlternateThumbFolder());
+					if (!thumbFolder.exists() || !thumbFolder.isDirectory())
+						thumbFolder = null;
+				}
+				cachedThumbnail = FileUtil.getFileNameWitNewExtension(thumbFolder, file, "jpg");
+				if (cachedThumbnail == null)
+					cachedThumbnail = FileUtil.getFileNameWitNewExtension(thumbFolder, file, "png");
+				if (cachedThumbnail == null)
+					cachedThumbnail = FileUtil.getFileNameWitAddedExtension(thumbFolder, file, ".cover.jpg");
+				if (cachedThumbnail == null)
+					cachedThumbnail = FileUtil.getFileNameWitAddedExtension(thumbFolder, file, ".cover.png");
 			}
 		}
 		boolean hasAlreadyEmbeddedCoverArt = getType() == Format.AUDIO && media != null && media.thumb != null;
