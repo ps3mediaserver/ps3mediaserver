@@ -691,6 +691,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				uclass = "object.container.storageFolder";
 				if (mediaRenderer == XBOX && fakeParentId != null && fakeParentId.equals("7"))
 					uclass = "object.container.album.musicAlbum";
+				else if (mediaRenderer == XBOX && fakeParentId != null && fakeParentId.equals("6"))
+					uclass = "object.container.person.musicArtist";
+				else if (mediaRenderer == XBOX && fakeParentId != null && fakeParentId.equals("5"))
+					uclass = "object.container.genre.musicGenre";
+				else if (mediaRenderer == XBOX && fakeParentId != null && fakeParentId.equals("F"))
+					uclass = "object.container.playlistContainer";
 			} else if (ext != null && ext.isVideo()) {
 				uclass = "object.item.videoItem";
 			} else if (ext != null && ext.isImage()) {

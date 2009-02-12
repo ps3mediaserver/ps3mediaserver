@@ -52,6 +52,7 @@ import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
+import net.pms.util.CoverUtil;
 import net.pms.util.ProcessUtil;
 
 
@@ -226,7 +227,8 @@ public class DLNAMediaInfo {
 						if (t.getArtworkList().size() > 0) {
 							thumb = t.getArtworkList().get(0).getBinaryData();
 						} else {
-							//thumb = CoverUtil.get().getThumbnailFromArtistAlbum(CoverUtil.AUDIO_AMAZON, artist, album);
+							if (PMS.getConfiguration().getAudioThumbnailMethod() > 0)
+								thumb = CoverUtil.get().getThumbnailFromArtistAlbum(PMS.getConfiguration().getAudioThumbnailMethod()==1?CoverUtil.AUDIO_AMAZON:CoverUtil.AUDIO_DISCOGS, artist, album);
 						}
 						try {
 							if (y.length() > 4)

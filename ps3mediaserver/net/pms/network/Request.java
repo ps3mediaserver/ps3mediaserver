@@ -328,6 +328,7 @@ public class Request extends HTTPResource {
 					browseFlag = "BrowseDirectChildren";
 				
 				//XBOX virtual containers ... doh
+				String searchCriteria = null;
 				if (mediaRenderer == XBOX && PMS.getConfiguration().getUseCache() && PMS.get().getLibrary() != null && containerID != null) {
 					if (containerID.equals("7") && PMS.get().getLibrary().getAlbumFolder() != null)
 						objectID = PMS.get().getLibrary().getAlbumFolder().getId();
@@ -339,9 +340,25 @@ public class Request extends HTTPResource {
 						objectID = PMS.get().getLibrary().getPlaylistFolder().getId();
 					else if (containerID.equals("4") && PMS.get().getLibrary().getAllFolder() != null)
 						objectID = PMS.get().getLibrary().getAllFolder().getId();
+					else if (containerID.equals("1")) {
+						String artist = getEnclosingValue(content, "upnp:artist = &quot;", "&quot;)");
+						if (artist != null) {
+							objectID = PMS.get().getLibrary().getArtistFolder().getId();
+							searchCriteria = artist;
+						}
+					}
 				}
 				
 				ArrayList<DLNAResource> files = PMS.get().getRootFolder().getDLNAResources(objectID, browseFlag!=null&&browseFlag.equals("BrowseDirectChildren"), startingIndex, requestCount);
+				if (searchCriteria != null && files != null) {
+					for(int i=files.size()-1;i>=0;i--) {
+						if (!files.get(i).getName().equals(searchCriteria))
+							files.remove(i);
+					}
+					if (files.size() > 0) {
+						files = files.get(0).getChildren();
+					}
+				}
 				
 				if (files != null) {
 					for(DLNAResource uf:files) {

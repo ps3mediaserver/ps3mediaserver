@@ -32,6 +32,7 @@ import java.io.IOException;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
@@ -42,6 +43,7 @@ import javax.swing.JTextField;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.util.KeyedComboBoxModel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
@@ -62,6 +64,9 @@ public class FoldTab {
 	private JCheckBox  disablefakesize;
 	private JCheckBox  cacheenable;
 	private JCheckBox  archive;
+	private JComboBox sortmethod;
+	private JComboBox audiothumbnail;
+	private JTextField defaultThumbFolder;
 	
 	public DefaultListModel getDf() {
 		return df;
@@ -90,8 +95,8 @@ public class FoldTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 25dlu, pref, 100dlu, pref,  0:grow", //$NON-NLS-1$
-                "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu,  p, 3dlu, p, 15dlu, fill:default:grow"); //$NON-NLS-1$
+                "left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref,  0:grow", //$NON-NLS-1$
+                "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, fill:default:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.DLU4_BORDER);
         builder.setOpaque(true);
@@ -118,7 +123,7 @@ public class FoldTab {
         JScrollPane pane = new JScrollPane(FList);
         
        // builder.addSeparator(Messages.getString("FoldTab.1"),  cc.xyw(2, 1, 6)); //$NON-NLS-1$
-        JComponent cmp = builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 1, 6)); //$NON-NLS-1$
+        JComponent cmp = builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 1, 8)); //$NON-NLS-1$
         cmp = (JComponent) cmp.getComponent(0);
         cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
@@ -184,12 +189,12 @@ public class FoldTab {
         
         
         
-        builder.add(tncheckBox,          cc.xy(1,  3));
+        builder.add(tncheckBox,          cc.xyw(1,  3, 3));
         
         
-        builder.addLabel(Messages.getString("NetworkTab.16"),  cc.xyw(1,  5, 3)); //$NON-NLS-1$
-        builder.add(seekpos,          cc.xyw(4,  5, 1));
-        builder.add(archive,          cc.xy(1,  7));
+        builder.addLabel(Messages.getString("NetworkTab.16"),  cc.xyw(4,  3, 3)); //$NON-NLS-1$
+        builder.add(seekpos,          cc.xyw(6,  3, 2));
+        builder.add(archive,          cc.xyw(1,  9, 3));
         
         disablefakesize = new JCheckBox(Messages.getString("FoldTab.11"));  //$NON-NLS-1$
         disablefakesize.setContentAreaFilled(false);
@@ -203,7 +208,7 @@ public class FoldTab {
  			}
         	
         });
-        builder.add(disablefakesize,          cc.xyw(1,  9, 6));
+        builder.add(disablefakesize,          cc.xyw(1,  7, 7));
         
         final JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
   	  
@@ -225,7 +230,7 @@ public class FoldTab {
        
         //cacheenable.setEnabled(false);
         
-     	  builder.add(cacheenable,          cc.xy(1,  11));
+     	  builder.add(cacheenable,          cc.xy(1,  13));
      	  
      	  
      	  cachereset.addActionListener(new ActionListener() {
@@ -246,12 +251,12 @@ public class FoldTab {
  			}
      		  
      	  });
-     	  builder.add(cachereset,          cc.xyw(4,  11, 1));
+     	  builder.add(cachereset,          cc.xyw(4,  13, 4));
      	  
      	  
      	  cachereset.setEnabled(PMS.getConfiguration().getUseCache());
         
-        builder.add(hidevideosettings,          cc.xyw(1,  13, 6));
+        builder.add(hidevideosettings,          cc.xyw(4,  9, 3));
         
         hideextensions = new JCheckBox(Messages.getString("FoldTab.5")); //$NON-NLS-1$
         hideextensions.setContentAreaFilled(false);
@@ -265,7 +270,7 @@ public class FoldTab {
  			}
         	
         });
-        builder.add(hideextensions,          cc.xyw(1,  15, 6));
+        builder.add(hideextensions,          cc.xyw(1,  11, 3));
         
         hideengines = new JCheckBox(Messages.getString("FoldTab.8")); //$NON-NLS-1$
         hideengines.setContentAreaFilled(false);
@@ -279,7 +284,94 @@ public class FoldTab {
  			}
         	
         });
-        builder.add(hideengines,          cc.xyw(1,  17, 6));
+        builder.add(hideengines,          cc.xyw(4,  11, 3));
+        
+        final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "0", "1" }, new Object[] { "Default", "By Date" });
+        sortmethod = new JComboBox(kcbm);
+        sortmethod.setEditable(false);
+       
+      kcbm.setSelectedKey("" + configuration.getSortMethod());
+      
+      sortmethod.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				if (e.getStateChange() == ItemEvent.SELECTED) {
+ 					
+ 					try {
+ 						configuration.setSortMethod(Integer.parseInt((String) kcbm.getSelectedKey()));
+ 						PMS.get().getFrame().setReloadable(true);
+ 					} catch (NumberFormatException nfe) {}
+ 					
+ 				}
+ 			}
+      	
+      });
+      
+      builder.addLabel("Sort files method: ", cc.xyw(1,17,3));
+        builder.add(sortmethod, cc.xyw(4, 17,4));
+        
+        final KeyedComboBoxModel thumbKCBM = new KeyedComboBoxModel(new Object[] { "0", "1", "2" }, new Object[] { "Embedded", "Download from amazon.com", "Download from discogs.com" });
+        audiothumbnail = new JComboBox(thumbKCBM);
+        audiothumbnail.setEditable(false);
+       
+        thumbKCBM.setSelectedKey("" + configuration.getSortMethod());
+      
+      audiothumbnail.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				if (e.getStateChange() == ItemEvent.SELECTED) {
+ 					
+ 					try {
+ 						configuration.setAudioThumbnailMethod(Integer.parseInt((String) kcbm.getSelectedKey()));
+ 						PMS.get().getFrame().setReloadable(true);
+ 					} catch (NumberFormatException nfe) {}
+ 					
+ 				}
+ 			}
+      	
+      });
+      builder.addLabel("Audio thumbnails display: ", cc.xyw(1,19,3));
+        builder.add(audiothumbnail, cc.xyw(4, 19,4));
+        
+        builder.addLabel("Alternate videos cover art folder", cc.xyw(1, 21, 3));
+        defaultThumbFolder = new JTextField(configuration.getAlternateThumbFolder());
+        defaultThumbFolder.addKeyListener(new KeyListener() {
+
+    		@Override
+    		public void keyPressed(KeyEvent e) {}
+    		@Override
+    		public void keyTyped(KeyEvent e) {}
+    		@Override
+    		public void keyReleased(KeyEvent e) {
+    			configuration.setAlternateThumbFolder(defaultThumbFolder.getText());
+    		}
+        	   
+           });
+        builder.add(defaultThumbFolder, cc.xyw(4, 21, 3));
+        
+        JButton select = new JButton("..."); //$NON-NLS-1$
+        select.addActionListener(new ActionListener() {
+
+ 			@Override
+ 			public void actionPerformed(ActionEvent e) {
+ 				JFileChooser chooser = null;
+				try {
+					 chooser = new JFileChooser();
+				} catch (Exception ee) {
+					 chooser = new JFileChooser(new RestrictedFileSystemView());
+				}
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int returnVal = chooser.showDialog((Component) e.getSource(), "Choose a folder");
+ 			    if(returnVal == JFileChooser.APPROVE_OPTION) {
+ 			    	defaultThumbFolder.setText(chooser.getSelectedFile().getAbsolutePath());
+ 			    	PMS.get().getFrame().setReloadable(true);
+ 			    	configuration.setAlternateThumbFolder(chooser.getSelectedFile().getAbsolutePath());
+ 			    }
+ 			}
+  		  
+  	  });
+  	  builder.add(select,          cc.xyw(7,  21, 1));
+        
         
         FormLayout layoutFolders = new FormLayout(
                 "left:pref, left:pref, pref, pref, pref, 0:grow", //$NON-NLS-1$
@@ -412,7 +504,7 @@ public class FoldTab {
        
        builderFolder.add(pane,          cc.xyw(1,  5,6));
        
-       builder.add(builderFolder.getPanel(), cc.xyw(1, 19, 6));
+       builder.add(builderFolder.getPanel(), cc.xyw(1, 23, 8));
        
         return builder.getPanel();
 	}

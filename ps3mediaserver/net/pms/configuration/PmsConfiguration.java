@@ -94,6 +94,9 @@ public class PmsConfiguration {
 	private static final String KEY_OVERSCAN = "mencoder_overscan";
 	private static final String KEY_DISABLE_FAKESIZE = "disable_fakesize";
 	private static final String KEY_MENCODER_ASS_DEFAULTSTYLE = "mencoder_ass_defaultstyle";
+	private static final String KEY_SORT_METHOD = "key_sort_method";
+	private static final String KEY_AUDIO_THUMBNAILS_METHOD = "audio_thumbnails_method";
+	private static final String KEY_ALTERNATE_THUMB_FOLDER = "alternate_thumb_folder";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -882,4 +885,27 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_OVERSCAN, value);
 	}
 	
+	public int getSortMethod() {
+		return getInt(KEY_SORT_METHOD, 0);
+	}
+	
+	public void setSortMethod(int value) {
+		configuration.setProperty(KEY_SORT_METHOD, value);
+	}
+	
+	public int getAudioThumbnailMethod() {
+		return getInt(KEY_AUDIO_THUMBNAILS_METHOD, 0);
+	}
+	
+	public void setAudioThumbnailMethod(int value) {
+		configuration.setProperty(KEY_AUDIO_THUMBNAILS_METHOD, value);
+	}
+	
+	public String getAlternateThumbFolder() {
+		return getString(KEY_ALTERNATE_THUMB_FOLDER, "");
+	}
+
+	public void setAlternateThumbFolder(String value) {
+		configuration.setProperty(KEY_ALTERNATE_THUMB_FOLDER, value);
+	}
 }
