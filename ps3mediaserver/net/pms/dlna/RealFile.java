@@ -247,7 +247,7 @@ public class RealFile extends DLNAResource {
 				ArrayList<DLNAMediaInfo> medias = PMS.get().getDatabase().getData(file.getAbsolutePath(), file.lastModified());
 				if (medias != null && medias.size() == 1) {
 					media = medias.get(0);
-					media.finalize(getType());
+					media.finalize(getType(), file);
 					found = true;
 				}
 			}
@@ -286,6 +286,8 @@ public class RealFile extends DLNAResource {
 					if (!thumbFolder.exists() || !thumbFolder.isDirectory())
 						thumbFolder = null;
 				}
+				if (thumbFolder == null)
+					thumbFolder = file.getParentFile();
 				cachedThumbnail = FileUtil.getFileNameWitNewExtension(thumbFolder, file, "jpg");
 				if (cachedThumbnail == null)
 					cachedThumbnail = FileUtil.getFileNameWitNewExtension(thumbFolder, file, "png");

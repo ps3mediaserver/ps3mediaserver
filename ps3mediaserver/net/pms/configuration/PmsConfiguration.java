@@ -22,7 +22,7 @@ public class PmsConfiguration {
 
 	private static final String KEY_TEMP_FOLDER_PATH = "temp";
 	private static final String KEY_TSMUXER_FORCEFPS = "tsmuxer_forcefps";
-	private static final String KEY_TSMUXER_PREREMUX_PCM = "tsmuxer_preremux_pcm";
+	//private static final String KEY_TSMUXER_PREREMUX_PCM = "tsmuxer_preremux_pcm";
 	private static final String KEY_AUDIO_BITRATE = "audiobitrate";
 	private static final String KEY_TSMUXER_PREREMIX_AC3 = "tsmuxer_preremix_ac3";
 	private static final String KEY_SERVER_PORT = "port";
@@ -97,6 +97,8 @@ public class PmsConfiguration {
 	private static final String KEY_SORT_METHOD = "key_sort_method";
 	private static final String KEY_AUDIO_THUMBNAILS_METHOD = "audio_thumbnails_method";
 	private static final String KEY_ALTERNATE_THUMB_FOLDER = "alternate_thumb_folder";
+	private static final String KEY_EMBED_DTS_IN_PCM = "embed_dts_in_pcm";
+	private static final String KEY_MENCODER_MUX_COMPATIBLE = "mencoder_mux_compatible";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -216,12 +218,13 @@ public class PmsConfiguration {
 	}
 
 	public boolean isTsmuxerPreremuxAc3() {
-		return configuration.getBoolean(KEY_TSMUXER_PREREMIX_AC3, false);
+		//return configuration.getBoolean(KEY_TSMUXER_PREREMIX_AC3, false);
+		return true;
 	}
 
-	public boolean isTsmuxerPreremuxPcm() {
+	/*public boolean isTsmuxerPreremuxPcm() {
 		return configuration.getBoolean(KEY_TSMUXER_PREREMUX_PCM, false);
-	}
+	}*/
 
 	public int getAudioBitrate() {
 		return getInt(KEY_AUDIO_BITRATE, 384);
@@ -231,9 +234,9 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_TSMUXER_PREREMIX_AC3, value);
 	}
 
-	public void setTsmuxerPreremuxPcm(boolean value) {
+	/*public void setTsmuxerPreremuxPcm(boolean value) {
 		configuration.setProperty(KEY_TSMUXER_PREREMUX_PCM, value);
-	}
+	}*/
 
 	public void setTsmuxerForceFps(boolean value) {
 		configuration.setProperty(KEY_TSMUXER_FORCEFPS, value);
@@ -907,5 +910,21 @@ public class PmsConfiguration {
 
 	public void setAlternateThumbFolder(String value) {
 		configuration.setProperty(KEY_ALTERNATE_THUMB_FOLDER, value);
+	}
+	
+	public void setDTSEmbedInPCM(boolean value) {
+		configuration.setProperty(KEY_EMBED_DTS_IN_PCM, value);
+	}
+
+	public boolean isDTSEmbedInPCM() {
+		return getBoolean(KEY_EMBED_DTS_IN_PCM, false);
+	}
+	
+	public void setMencoderMuxWhenCompatible(boolean value) {
+		configuration.setProperty(KEY_MENCODER_MUX_COMPATIBLE, value);
+	}
+
+	public boolean isMencoderMuxWhenCompatible() {
+		return getBoolean(KEY_MENCODER_MUX_COMPATIBLE, true);
 	}
 }

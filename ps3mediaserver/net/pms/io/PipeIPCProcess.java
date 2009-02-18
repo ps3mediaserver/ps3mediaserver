@@ -26,25 +26,22 @@ import java.util.ArrayList;
 import com.sun.jna.Platform;
 
 import net.pms.PMS;
+import net.pms.util.DTSAudioOutputStream;
 import net.pms.util.H264AnnexBInputStream;
+import net.pms.util.PCMAudioOutputStream;
 
 public class PipeIPCProcess extends Thread implements ProcessWrapper {
 	
 	private PipeProcess mkin;
 	private PipeProcess mkout;
-	private byte header[];
-	private boolean h264_annexb;
-	
-	public void setH264_annexb(boolean h264_annexb) {
-		this.h264_annexb = h264_annexb;
+	private StreamModifier modifier;
+
+	public StreamModifier getModifier() {
+		return modifier;
 	}
 
-	public byte[] getHeader() {
-		return header;
-	}
-
-	public void setHeader(byte[] header) {
-		this.header = header;
+	public void setModifier(StreamModifier modifier) {
+		this.modifier = modifier;
 	}
 
 	public PipeIPCProcess(String pipeName, String pipeNameOut, boolean forcereconnect1, boolean forcereconnect2) {
@@ -65,14 +62,18 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 			in = mkin.getInputStream();
 			out = mkout.getOutputStream();
 			
-			if (h264_annexb) {
-				in = new H264AnnexBInputStream(in, header);
+			if (modifier != null && modifier.isH264_annexb()) {
+				in = new H264AnnexBInputStream(in, modifier.getHeader());
+			} else if (modifier != null && modifier.isDtsembed()) {
+				out = new DTSAudioOutputStream(new PCMAudioOutputStream(out, modifier.getNbchannels(), modifier.getSampleFrequency(), modifier.getBitspersample()));
+			} else if (modifier != null && modifier.isPcm()) {
+				out = new PCMAudioOutputStream(out, modifier.getNbchannels(), modifier.getSampleFrequency(), modifier.getBitspersample());
 			}
 			
-			if (header != null && !h264_annexb)
-				out.write(header);
-			if (debug != null && header != null && !h264_annexb)
-				debug.write(header);
+			if (modifier != null && modifier.getHeader() != null && !modifier.isH264_annexb())
+				out.write(modifier.getHeader());
+			if (debug != null && modifier != null && modifier.getHeader() != null && !modifier.isH264_annexb())
+				debug.write(modifier.getHeader());
 			while ((n=in.read(b)) > -1) {
 				out.write(b, 0, n);
 				if (debug != null)

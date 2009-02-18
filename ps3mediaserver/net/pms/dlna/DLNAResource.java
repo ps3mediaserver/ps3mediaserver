@@ -755,13 +755,19 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					PMS.info("Requesting Time Seeking: " + timeseek + " seconds");
 					params.timeseek = timeseek;
 					params.minBufferSize = 1;
-					externalProcess.stopProcess();
-					externalProcess = player.launchTranscode(getSystemName(), media, params);
+					Runnable r = new Runnable() {
+						public void run() {
+							externalProcess.stopProcess();
+						}
+					};
+					new Thread(r).start();
+					ProcessWrapper newExternalProcess = player.launchTranscode(getSystemName(), media, params);
 					try {
 						Thread.sleep(800);
 					} catch (InterruptedException e) {
 						PMS.error(null, e);
 					}
+					externalProcess = newExternalProcess;
 				}
 			}
 			if (externalProcess == null)

@@ -52,6 +52,7 @@ import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
+import net.pms.util.AVCHeader;
 import net.pms.util.CoverUtil;
 import net.pms.util.ProcessUtil;
 
@@ -101,6 +102,8 @@ public class DLNAMediaInfo {
 	public boolean secondaryFormatValid;
 	public boolean parsing = false;
 	private boolean ffmpeg_failure;
+	private boolean ffmpeg_annexb_failure;
+	private boolean muxable;
 	
 	public ProcessWrapperImpl getFFMpegThumbnail(File media) {
 		String args [] = new String[14];
@@ -444,15 +447,16 @@ public class DLNAMediaInfo {
 										} catch (NumberFormatException nfe) {}
 									}
 								}
-							} else if (line.indexOf("Subtitle:") > -1 && !line.contains("tx3g")) {
+							} else if (line.indexOf("Subtitle:") > -1 && !line.contains("tx3g") && !line.contains("dvdsub")) {
+								DLNAMediaLang lang = new DLNAMediaLang();
 								int a = line.indexOf("(");
 								int b = line.indexOf("):", a);
 								if (a > -1 && b > a) {
-									DLNAMediaLang lang = new DLNAMediaLang();
 									lang.lang = line.substring(a+1, b);
-									lang.id = subId++;
-									subtitlesCodes.add(lang);
-								}
+								} else
+									lang.lang = "und";
+								lang.id = subId++;
+								subtitlesCodes.add(lang);
 							}
 						}
 					}
@@ -502,7 +506,7 @@ public class DLNAMediaInfo {
 				}
 				
 			}
-			finalize(type);
+			finalize(type, f);
 			mediaparsed = true;
 			
 		}
@@ -539,7 +543,7 @@ public class DLNAMediaInfo {
 		
 	}
 	
-	public void finalize(int type) {
+	public void finalize(int type, File f) {
 		if (container != null && container.equals("avi")) {
 			mimeType = HTTPResource.AVI_TYPEMIME;
 		} else if (container != null && container.equals("asf")) {
@@ -562,11 +566,15 @@ public class DLNAMediaInfo {
 			mimeType = HTTPResource.AUDIO_MP3_TYPEMIME;
 		} else if (codecV == null && codecA != null && codecA.contains("aac")) {
 			mimeType = HTTPResource.AUDIO_MP4_TYPEMIME;
+		} else if (codecV == null && codecA != null && (codecA.contains("asf") || codecA.startsWith("wm"))) {
+			mimeType = HTTPResource.AUDIO_WMA_TYPEMIME;
 		} else if (codecV == null && codecA != null && (codecA.startsWith("pcm") || codecA.contains("wav"))) {
 			mimeType = HTTPResource.AUDIO_WAV_TYPEMIME;
 		} else {
 			mimeType = new HTTPResource().getDefaultMimeType(type);
 		}
+		
+		
 		
 		if (getSampleRate() > 44000 && isLossless(codecA))
 			losslessaudio = true;
@@ -588,8 +596,52 @@ public class DLNAMediaInfo {
 		PMS.debug("Media info: mimeType: " + mimeType + " / " + toString());
 	}
 	
+	private boolean h264_parsed;
+	
+	public boolean isVideoPS3Compatible(String filename) {
+		if (!h264_parsed) {
+			if (codecV != null && (codecV.equals("h264") || codecV.equals("mpeg2video"))) { // what about VC1 ?
+				muxable = true;
+				if (codecV.equals("h264") && container != null && (container.equals("matroska") || container.equals("mov"))) {
+					byte headers [][] = getAnnexBFrameHeader(filename);
+					if (headers != null) {
+						h264_annexB = headers[1];
+						if (h264_annexB != null) {
+							int skip = 5;
+							if (h264_annexB[2] == 1) skip = 4;
+							byte header [] = new byte [h264_annexB.length-skip];
+							System.arraycopy(h264_annexB, skip, header, 0, header.length);
+							AVCHeader avcHeader = new AVCHeader(header);
+							avcHeader.parse();
+							PMS.debug("H264 file: " + filename + ": Profile: " + avcHeader.getProfile() + " / level: " + avcHeader.getLevel() + " / ref frames: " + avcHeader.getRef_frames());
+							muxable = true;
+							if (width > 1900) { // 1080p
+								if (avcHeader.getLevel() >= 50 && avcHeader.getRef_frames() > 4)
+									muxable = false;
+							} else if (width > 1200) { // 720p
+								if (avcHeader.getLevel() >= 50 && avcHeader.getRef_frames() > 9)
+									muxable = false;
+							}
+							if (!muxable) {
+								PMS.info("H264 file: " + filename + " is not ps3 compatible !");
+							}
+						} else
+							muxable = false;
+					} else
+						muxable = false;
+				}
+			}
+			h264_parsed = true;
+		}
+		return muxable;
+	}
+	
+	public boolean isMuxable(String filename, String codecA) {
+		return codecA != null && (codecA.equals("dts") || codecA.equals("dca"));
+	}
+	
 	public boolean isLossless(String codecA) {
-		return codecA != null && (codecA.contains("pcm") || codecA.equals("dts") || codecA.equals("dca") || codecA.contains("flac"));
+		return codecA != null && (codecA.contains("pcm") || codecA.equals("dts") || codecA.equals("dca") || codecA.contains("flac")) && !codecA.contains("pcm_u8") && !codecA.contains("pcm_s8");
 	}
 	
 	public String toString() {
@@ -709,6 +761,96 @@ public class DLNAMediaInfo {
 			}
 		}
 		return audiosubs;
+	}
+	
+	public byte [][] getAnnexBFrameHeader(String f) {
+		
+		String cmdArray [] = new String [14];
+		cmdArray[0] = PMS.getConfiguration().getFfmpegPath();
+		//cmdArray[0] = "win32/ffmpeg.exe";
+		cmdArray[1] = "-vframes";
+		cmdArray[2] = "1";
+		cmdArray[3] = "-i";
+		cmdArray[4] = f;
+		cmdArray[5] = "-vcodec";
+		cmdArray[6] = "copy";
+		cmdArray[7] = "-f";
+		cmdArray[8] = "h264";
+		cmdArray[9] = "-vbsf";
+		cmdArray[10] = "h264_mp4toannexb";
+		cmdArray[11] = "-an";
+		cmdArray[12] = "-y";
+		cmdArray[13] = "pipe:";
+		
+		byte returnData [][] = new byte [2][]; 
+	
+		OutputParams params = new OutputParams(PMS.getConfiguration());
+		params.maxBufferSize = 1;
+		
+		final ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
+		
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(3000);
+					ffmpeg_annexb_failure = true;
+				} catch (InterruptedException e) {}
+				pw.stopProcess();
+			}
+		};
+		Thread failsafe = new Thread(r);
+		failsafe.start();
+		pw.run();
+		if (ffmpeg_annexb_failure)
+			return null;
+		
+		InputStream is = null;
+		ByteArrayOutputStream baot = new ByteArrayOutputStream();
+		try {
+			is = pw.getInputStream(0);
+			byte b [] = new byte [4096];
+			int n= -1;
+			while ((n = is.read(b)) > 0) {
+				baot.write(b, 0, n);
+			}
+			byte data [] = baot.toByteArray();
+			baot.close();
+			
+			returnData[0] = data; 
+				
+			is.close();
+
+			int kf = 0;
+			for(int i=3;i<data.length;i++) {
+				//if (data[i-2] == 101 && data[i-1] == -120/* && (data[i] == -128 || data[i] == -127)*/) {
+				if (data[i-3] == 1 && (data[i-2] & 37) == 37 && (data[i-1] & -120) == -120) {
+					kf = i - 2;
+					break;
+				}
+			}
+			
+			int st = 0;
+			boolean found = false;
+			if (kf > 0) {
+				for(int i=kf;i>=5;i--) {
+					//if (data[i-5] == 0 && data[i-4] == 0 && data[i-3] == 0 && data[i-2] == 1 && data[i-1] == 103/* && data[i] == 100*/) {
+					if (data[i-5] == 0 && data[i-4] == 0 && data[i-3] == 0 && (data[i-2] & 1) == 1 && (data[i-1] & 39) == 39) {
+						st = i-5;
+						found = true;
+						break;
+					}
+				}
+			}
+				
+			if (found) {
+				byte header [] = new byte [kf - st];
+				System.arraycopy(data, st, header, 0, kf-st);
+				returnData[1] = header;
+			}
+		} catch (IOException e) {
+			
+		}
+		return returnData;
 	}
 	
 }

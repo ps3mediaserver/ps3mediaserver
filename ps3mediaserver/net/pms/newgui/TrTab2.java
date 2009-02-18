@@ -85,6 +85,7 @@ public class TrTab2 {
 	private JTextField maxbitrate;
 	private JTree tree;
 	private JCheckBox  forcePCM ;
+	private JCheckBox  forceDTSinPCM ;
 	private JComboBox channels;
 	private JComboBox vq ;
 	
@@ -340,7 +341,7 @@ public class TrTab2 {
 	public JComponent buildCommon() {
 		FormLayout layout = new FormLayout(
 				"left:pref, 2dlu, pref:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -438,33 +439,57 @@ public class TrTab2 {
         
        builder.addLabel(Messages.getString("TrTab2.29"), cc.xy(1, 15)); //$NON-NLS-1$
        builder.add(abitrate, cc.xy(3, 15));
-       
-       forcePCM = new JCheckBox(Messages.getString("TrTab2.27")); //$NON-NLS-1$
-       forcePCM.setContentAreaFilled(false);
+
+       forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28"));
+       forceDTSinPCM.setContentAreaFilled(false);
+       //forceDTSinPCM.setEnabled(false);
        if (Platform.isMac())
-       	forcePCM.setEnabled(false);
+    	   forceDTSinPCM.setEnabled(false);
        else {
-	        if (configuration.isMencoderUsePcm())
-	        	forcePCM.setSelected(true);
-	        forcePCM.addItemListener(new ItemListener() {
+	        if (configuration.isDTSEmbedInPCM())
+	        	forceDTSinPCM.setSelected(true);
+	        forceDTSinPCM.addItemListener(new ItemListener() {
 	
 				public void itemStateChanged(ItemEvent e) {
-					configuration.setMencoderUsePcm(e.getStateChange() == ItemEvent.SELECTED);
+					configuration.setDTSEmbedInPCM(e.getStateChange() == ItemEvent.SELECTED);
 				}
 	        	
 	        });
       }
       
-       builder.add(forcePCM, cc.xyw(1, 17, 3));
+       builder.add(forceDTSinPCM, cc.xyw(1, 17, 3));
+       
+      
+       forcePCM = new JCheckBox(Messages.getString("TrTab2.27")); //$NON-NLS-1$
+       forcePCM.setContentAreaFilled(false);
+       if (Platform.isMac())
+       	forcePCM.setEnabled(false);
+       else {
+	        if (configuration.isMencoderUsePcm()) {
+	        	forcePCM.setSelected(true);
+	        	//forceDTSinPCM.setEnabled(true);
+	        }
+	        forcePCM.addItemListener(new ItemListener() {
+	
+				public void itemStateChanged(ItemEvent e) {
+					configuration.setMencoderUsePcm(e.getStateChange() == ItemEvent.SELECTED);
+					//forceDTSinPCM.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
+				}
+	        	
+	        });
+      }
+      
+       builder.add(forcePCM, cc.xyw(1, 19, 3));
+       
        
       
        
-      cmp = builder.addSeparator(Messages.getString("TrTab2.4"),  cc.xyw(1, 19, 3)); //$NON-NLS-1$
+      cmp = builder.addSeparator(Messages.getString("TrTab2.4"),  cc.xyw(1, 23, 3)); //$NON-NLS-1$
        cmp = (JComponent) cmp.getComponent(0);
        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
        
        
-       builder.addLabel(Messages.getString("TrTab2.30"), cc.xy(1, 21)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("TrTab2.30"), cc.xy(1, 25)); //$NON-NLS-1$
        
        
        maxbitrate = new JTextField("" + PMS.getConfiguration().getMaximumBitrate()); //$NON-NLS-1$
@@ -480,9 +505,9 @@ public class TrTab2 {
 		}
 
        });
-       builder.add(maxbitrate, cc.xy(3, 21));
+       builder.add(maxbitrate, cc.xy(3, 25));
       
-       builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 23, 3)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 27, 3)); //$NON-NLS-1$
        
         Object data [] = new Object [] { PMS.getConfiguration().getMencoderMainSettings(),
     		   "keyint=1:vqscale=1:vqmin=2  /* Best Quality */", //$NON-NLS-1$
@@ -521,7 +546,7 @@ public class TrTab2 {
        	
        });
        vq.setEditable(true);
-       builder.add(vq,          cc.xyw(1,  25, 3));
+       builder.add(vq,          cc.xyw(1,  29, 3));
        
       String help1 = Messages.getString("TrTab2.39"); //$NON-NLS-1$
       help1 += Messages.getString("TrTab2.40"); //$NON-NLS-1$
@@ -535,18 +560,18 @@ public class TrTab2 {
        decodeTips.setEditable(false);
        decodeTips.setBorder(BorderFactory.createEtchedBorder());
        decodeTips.setBackground(new Color(255, 255, 192));
-       builder.add(decodeTips, cc.xyw(1, 27, 3));
+       builder.add(decodeTips, cc.xyw(1, 31, 3));
        
        disableSubs = new JCheckBox(Messages.getString("TrTab2.51")); //$NON-NLS-1$
        disableSubs.setContentAreaFilled(false);
      
-       cmp = builder.addSeparator(Messages.getString("TrTab2.7"),  cc.xyw(1, 31, 3)); //$NON-NLS-1$
+       cmp = builder.addSeparator(Messages.getString("TrTab2.7"),  cc.xyw(1, 35, 3)); //$NON-NLS-1$
        cmp = (JComponent) cmp.getComponent(0);
        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
        
-       builder.add(disableSubs,          cc.xy(1,  33));
+       builder.add(disableSubs,          cc.xy(1,  37));
        
-       builder.addLabel(Messages.getString("TrTab2.8"), cc.xy(1,35)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("TrTab2.8"), cc.xy(1,39)); //$NON-NLS-1$
        
        notranscode = new JTextField(configuration.getNoTranscode());
        notranscode.addKeyListener(new KeyListener() {
@@ -562,9 +587,9 @@ public class TrTab2 {
    		}
        	   
           });
-       builder.add(notranscode, cc.xy(3, 35));
+       builder.add(notranscode, cc.xy(3, 39));
        
-       builder.addLabel(Messages.getString("TrTab2.9"), cc.xy(1,37)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("TrTab2.9"), cc.xy(1,41)); //$NON-NLS-1$
        
        forcetranscode = new JTextField(configuration.getForceTranscode());
        forcetranscode.addKeyListener(new KeyListener() {
@@ -580,7 +605,7 @@ public class TrTab2 {
    		}
        	   
           });
-       builder.add(forcetranscode, cc.xy(3, 37));
+       builder.add(forcetranscode, cc.xy(3, 41));
        
         return builder.getPanel();
 	}

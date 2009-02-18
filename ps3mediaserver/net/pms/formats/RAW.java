@@ -77,7 +77,7 @@ public class RAW extends JPG {
 					media.size = media.thumb.length;
 			}
 			
-			media.finalize(type);
+			media.finalize(type, file);
 			media.mediaparsed = true;
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -109,7 +109,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.05"; //$NON-NLS-1$
+	public static final String VERSION = "1.09"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -494,6 +494,14 @@ public class PMS {
 				public boolean enable() {
 					configuration.setMencoderNoOutOfSync(!configuration.isMencoderNoOutOfSync());
 					return configuration.isMencoderNoOutOfSync();
+				}
+			});
+			
+			vf.addChild(new VirtualVideoAction("Default H264 Remux with Mencoder", configuration.isMencoderMuxWhenCompatible()) { 
+				public boolean enable() {
+					configuration.setMencoderMuxWhenCompatible(!configuration.isMencoderMuxWhenCompatible());
+					
+					return  configuration.isMencoderMuxWhenCompatible();
 				}
 			});
 			

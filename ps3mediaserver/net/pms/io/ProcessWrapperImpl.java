@@ -90,9 +90,9 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				PMS.info("Reading pipe: " + params.input_pipes[0].getInputPipe());
 				//Thread.sleep(150);
 				bo = params.input_pipes[0].getDirectBuffer();
-				if (bo == null || params.losslessaudio || params.lossyaudio) {
+				if (bo == null || params.losslessaudio || params.lossyaudio||params.no_videoencode) {
 					InputStream is = params.input_pipes[0].getInputStream();
-					outConsumer = new OutputBufferConsumer((params.losslessaudio||params.lossyaudio)?new AviDemuxerInputStream(is, params, attachedProcesses):is, params);
+					outConsumer = new OutputBufferConsumer((params.losslessaudio||params.lossyaudio||params.no_videoencode)?new AviDemuxerInputStream(is, params, attachedProcesses):is, params);
 					bo = (BufferedOutputFile) outConsumer.getBuffer();
 				}
 				bo.attachThread(this);

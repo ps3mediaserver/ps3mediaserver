@@ -103,9 +103,10 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 			if (PMS.get().isWindows()) {
 				handle1 = Kernel32.INSTANCE.CreateNamedPipeA(this.name, 3, 0, 255,
 						BUFSIZE, BUFSIZE, 0, null);
-				if (forcereconnect)
+				if (forcereconnect) {
 					handle2 = Kernel32.INSTANCE.CreateNamedPipeA(this.name, 3, 0, 255,
 							BUFSIZE, BUFSIZE, 0, null);
+				}
 				if (params != null)
 					directBuffer = new BufferedOutputFile(params);
 				else {
@@ -135,15 +136,14 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 		boolean b1 = Kernel32.INSTANCE.ConnectNamedPipe(handle1, null);
 
 		if (forcereconnect) {
-			/*b1 = Kernel32.INSTANCE.ConnectNamedPipe(handle2, null);*/
 			while (forced.isAlive()) {
 				try {
 					Thread.sleep(200);
 				} catch (InterruptedException e) {}
 			}
 			PMS.info("Forced reconnection of " + name + " with result : " + b2);
-			Kernel32.INSTANCE.DisconnectNamedPipe(handle1);
-			Kernel32.INSTANCE.CloseHandle(handle1);
+			//Kernel32.INSTANCE.DisconnectNamedPipe(handle1);
+			//Kernel32.INSTANCE.CloseHandle(handle1);
 			handle1 = handle2;
 			
 		}
@@ -199,16 +199,27 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 					while (loop) {
 						int cbBytesRead = readable.read(b);
 						if (cbBytesRead == -1) {
+							buffer.write(0, b, 0, BUFSIZE);
+							Kernel32.INSTANCE.WriteFile(handle1,
+									buffer, BUFSIZE, ibw, null);
+							
 							readable.close();
+							if (debug != null)
+								debug.close();
 							break;
 						}
 						buffer.write(0, b, 0, cbBytesRead);
 						boolean fSuccess = Kernel32.INSTANCE.WriteFile(handle1,
 								buffer, cbBytesRead, ibw, null);
 						int cbWritten = ibw.getValue();
+						//PMS.minimal(name + "fSuccess" + fSuccess + " cbWritten: " + cbWritten);
+						if (debug != null)
+							debug.write(buffer.getByteArray(0, cbBytesRead));
 						count++;
 						if (!fSuccess || cbWritten == 0) {
 							readable.close();
+							if (debug != null)
+								debug.close();
 							break;
 						}
 
@@ -219,10 +230,15 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 			PMS.info("Error: " + e.getMessage());
 		}
 
-		PMS.info("Disconnected pipe");
-		Kernel32.INSTANCE.FlushFileBuffers(handle1);
-		// Kernel32.INSTANCE.DisconnectNamedPipe(handle1);
-		Kernel32.INSTANCE.CloseHandle(handle1);
+		if (!in) {
+			
+			PMS.info("Disconnected pipe: " + name);
+			Kernel32.INSTANCE.FlushFileBuffers(handle1);
+			Kernel32.INSTANCE.DisconnectNamedPipe(handle1);
+			//Kernel32.INSTANCE.CloseHandle(handle1);
+			
+		} else
+			Kernel32.INSTANCE.CloseHandle(handle1);
 
 	}
 

@@ -48,6 +48,7 @@ public class OutputParams {
 	public String forceType;
 	public int mediaRenderer;
 	public boolean hidebuffer;
+	public byte header [];
 	
 	public OutputParams(PmsConfiguration configuration) {
 		waitbeforestart = 6000;

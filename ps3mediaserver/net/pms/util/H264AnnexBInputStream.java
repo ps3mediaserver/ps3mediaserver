@@ -1,14 +1,12 @@
 package net.pms.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import net.pms.PMS;
-import net.pms.io.OutputParams;
-import net.pms.io.ProcessWrapperImpl;
+import net.pms.dlna.DLNAMediaInfo;
 
 public class H264AnnexBInputStream extends InputStream {
 
@@ -48,7 +46,8 @@ public class H264AnnexBInputStream extends InputStream {
 			h = getArray(3);
 			if (h == null)
 				return -1;
-			insertHeader = (h[0] == 101 && h[1] == -120/* && (h[2] == -128 || h[2] == -127)*/);
+			//insertHeader = (h[0] == 101 && h[1] == -120/* && (h[2] == -128 || h[2] == -127)*/);
+			insertHeader = ((h[0] & 37) == 37 && (h[1] & -120) == -120);
 			/*if (insertHeader)
 				PMS.minimal("Must insert a header / nextTarget: " + nextTarget);*/
 			if (!insertHeader) {
@@ -140,86 +139,23 @@ public class H264AnnexBInputStream extends InputStream {
 			source.close();
 	}
 	
-	public static byte [] getAnnexBFrameHeader(String f) {
-		String cmdArray [] = new String [14];
-		cmdArray[0] = PMS.getConfiguration().getFfmpegPath();
-		//cmdArray[0] = "win32/ffmpeg.exe";
-		cmdArray[1] = "-vframes";
-		cmdArray[2] = "1";
-		cmdArray[3] = "-i";
-		cmdArray[4] = f;
-		cmdArray[5] = "-vcodec";
-		cmdArray[6] = "copy";
-		cmdArray[7] = "-f";
-		cmdArray[8] = "h264";
-		cmdArray[9] = "-vbsf";
-		cmdArray[10] = "h264_mp4toannexb";
-		cmdArray[11] = "-an";
-		cmdArray[12] = "-y";
-		cmdArray[13] = "pipe:";
-		/*
-		try {
-			PMS.configuration = new PmsConfiguration();
-			PMS.get();
-		} catch (ConfigurationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	*/
-		OutputParams params = new OutputParams(PMS.getConfiguration());
-		params.maxBufferSize = 1;
-		
-		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
-		pw.run();
-		
-		InputStream is = null;
-		ByteArrayOutputStream baot = new ByteArrayOutputStream();
-		try {
-			is = pw.getInputStream(0);
-			byte b [] = new byte [4096];
-			int n= -1;
-			while ((n = is.read(b)) > 0) {
-				baot.write(b, 0, n);
-			}
-			byte data [] = baot.toByteArray();
-			baot.close();
-			
-			is.close();
-
-			int kf = 0;
-			for(int i=2;i<data.length;i++) {
-				if (data[i-2] == 101 && data[i-1] == -120/* && (data[i] == -128 || data[i] == -127)*/) {
-					kf = i - 2;
-					break;
-				}
-			}
-			int st = 0;
-			if (kf > 0) {
-				for(int i=kf;i>=5;i--) {
-					if (data[i-5] == 0 && data[i-4] == 0 && data[i-3] == 0 && data[i-2] == 1 && data[i-1] == 103 && data[i] == 100) {
-						st = i-5;
-						break;
-					}
-				}
-			}
-			if (st >= 0) {
-				byte header [] = new byte [kf - st];
-				System.arraycopy(data, st, header, 0, kf-st);
-				return header;
-			}
-		} catch (IOException e) {
-			
-		}
-		return null;
-	}
+	
 	
 	public static void main(String args[]) throws Exception {
-		byte header [] = getAnnexBFrameHeader(null);
-		FileInputStream fis = new FileInputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\win32\\raw.h264");
-		H264AnnexBInputStream h = new H264AnnexBInputStream(fis, header);
+//		try {
+//			PMS.configuration = new PmsConfiguration();
+//			PMS.get();
+//		} catch (ConfigurationException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+	
+		byte header [][] = new DLNAMediaInfo().getAnnexBFrameHeader("D:\\Tests\\mov\\harry.hdmov");
+		FileInputStream fis = new FileInputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\win32\\harry");
+		H264AnnexBInputStream h = new H264AnnexBInputStream(fis, header[1]);
 		FileOutputStream out = new FileOutputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\win32\\raw_new.h264");
 		byte b [] = new byte [512*1024];
 		int n = -1;
