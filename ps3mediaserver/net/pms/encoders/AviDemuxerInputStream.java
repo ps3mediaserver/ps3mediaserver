@@ -23,6 +23,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -33,6 +35,9 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperLiteImpl;
+import net.pms.util.DTSAudioOutputStream;
+import net.pms.util.H264AnnexBInputStream;
+import net.pms.util.PCMAudioOutputStream;
 import net.pms.util.ProcessUtil;
 
 
@@ -69,16 +74,35 @@ public class AviDemuxerInputStream extends InputStream {
 		this.params = params;
 		
 		aOut = params.output_pipes[1].getOutputStream();
-		vOut = params.output_pipes[0].getOutputStream();
-		//aOut = new FileOutputStream("t.pcm");
+		if (params.no_videoencode && params.forceType != null && params.forceType.equals("V_MPEG4/ISO/AVC") && params.header != null) {
+			PipedOutputStream pout = new PipedOutputStream();
+			final InputStream pin = new H264AnnexBInputStream(new PipedInputStream(pout, 512*1024), params.header);
+			final OutputStream out = params.output_pipes[0].getOutputStream();
+				Runnable r = new Runnable() {
+				
+					public void run() {
+						try {
+							byte b [] = new byte [512*1024];
+							int n = -1;
+							while ((n=pin.read(b)) > -1) {
+								out.write(b, 0, n);
+							}
+						} catch (Exception e) {
+							PMS.error(null, e);
+						}
+						
+					}
+				};
+			vOut = pout;
+			new Thread(r).start();
+		} else
+			vOut = params.output_pipes[0].getOutputStream();
 		
-		//vOut = new ByteArrayOutputStream(10000000);
-		//aOut = new ByteArrayOutputStream(10000000);
 		Runnable r = new Runnable() {
 			
 			public void run() {
 				try {
-					Thread.sleep(1000);
+					//Thread.sleep(1000);
 				
 					// TODO(tcox): Is this used an more?
 					TSMuxerVideo ts = new TSMuxerVideo(PMS.getConfiguration());
@@ -104,9 +128,7 @@ public class AviDemuxerInputStream extends InputStream {
 					ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 					attachedProcesses.add(pipe_process);
 					pipe_process.runInNewThread();
-					try {
-						Thread.sleep(150);
-					} catch (InterruptedException e) { }
+					//Thread.sleep(150);
 					tsPipe.deleteLater();
 					
 					String cmd [] = new String [] { ts.executable(), f.getAbsolutePath(), tsPipe.getInputPipe() };
@@ -117,7 +139,7 @@ public class AviDemuxerInputStream extends InputStream {
 					//process = pb.start();
 					new Gob(process.getErrorStream()).start();
 					new Gob(process.getInputStream()).start();
-					Thread.sleep(150);
+					//Thread.sleep(150);
 					realIS = tsPipe.getInputStream();
 					process.waitFor();
 					PMS.debug("tsMuxer Muxing finished"); //$NON-NLS-1$
@@ -133,6 +155,7 @@ public class AviDemuxerInputStream extends InputStream {
 					//Thread.sleep(500);
 					parseHeader();
 				} catch (Exception e) {
+					//e.printStackTrace();
 					PMS.info("Parsing error: " + e.getMessage()); //$NON-NLS-1$
 				}
 			}
@@ -248,6 +271,11 @@ public class AviDemuxerInputStream extends InputStream {
 					int nbaudio = str2ushort(information, 2);
 					aud.setNbaudio(nbaudio);
 					long filelength = 100;
+					if (PMS.getConfiguration().isDTSEmbedInPCM() && params.losslessaudio)
+						aOut = new DTSAudioOutputStream(new PCMAudioOutputStream(aOut, 2, 48000, 16));
+					else if (params.losslessaudio)
+						aOut = new PCMAudioOutputStream(aOut, nbaudio, 48000, bitspersample);
+					
 					if (!params.lossyaudio && params.losslessaudio) {
 						writePCMHeader(aOut, filelength, nbaudio, aud.getRate(), aud.getSampleSize(), bitspersample);
 					}
@@ -288,7 +316,8 @@ public class AviDemuxerInputStream extends InputStream {
 		            getBytes(stream, "RIFF".equals( command )?4:size ); //$NON-NLS-1$
 		        	 command = getString(stream, 4).toUpperCase();
 		            size = readBytes(stream, 4);
-		        	
+		            if (  ("LIST".equals( command ) || "RIFF".equals( command ) || "JUNK".equals( command )) && (size % 2 == 1))
+			        	readByte(stream);
 		        }
 		        
 
@@ -473,7 +502,7 @@ public class AviDemuxerInputStream extends InputStream {
 		aOut.write(new String("data").getBytes()); //$NON-NLS-1$
 		aOut.write(getLe32(filelength-44));
 		*/
-		aOut.write(new String("RIFF").getBytes()); //$NON-NLS-1$
+		/*aOut.write(new String("RIFF").getBytes()); //$NON-NLS-1$
 		aOut.write(getLe32(filelength-8));
 		aOut.write(new String("WAVEfmt ").getBytes()); //$NON-NLS-1$
 		aOut.write(getLe32(40));
@@ -496,7 +525,7 @@ public class AviDemuxerInputStream extends InputStream {
 		aOut.write(getLe32(4));
 		aOut.write(getLe32(filelength-72));
 		aOut.write(new String("data").getBytes()); //$NON-NLS-1$
-		aOut.write(getLe32(filelength-72));
+		aOut.write(getLe32(filelength-72));*/
 	}
 
 }

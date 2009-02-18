@@ -9,11 +9,11 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import com.sun.jna.Platform;
-
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+
+import com.sun.jna.Platform;
 
 public class CodecUtil {
 	
@@ -55,8 +55,9 @@ public class CodecUtil {
 	
 	public static String getDefaultFontPath() {
 		String font = getFontPathHack("Arial");
-		if (font != null)
-			return font;
+		if (!Platform.isWindows() && font != null) {
+			//
+		}
 		// in case of hack not working
 		if (Platform.isWindows()) {
 			// get Windows Arial

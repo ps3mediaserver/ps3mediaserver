@@ -40,6 +40,7 @@ public class HTTPResource {
 	public static final String AUDIO_MP3_TYPEMIME = "audio/mpeg";
 	public static final String AUDIO_MP4_TYPEMIME = "audio/mp4";
 	public static final String AUDIO_WAV_TYPEMIME = "audio/wav";
+	public static final String AUDIO_WMA_TYPEMIME = "audio/x-ms-wma";
 	
 	public static final String MPEG_TYPEMIME = "video/mpeg";
 	public static final String MP4_TYPEMIME = "video/mp4";
@@ -54,8 +55,8 @@ public class HTTPResource {
 	public static final String GIF_TYPEMIME = "image/gif";
 	public static final String BMP_TYPEMIME = "image/bmp";
 	
-	public static final int PS3 = 0;
-	public static final int XBOX = 1;
+	public static final int PS3 = 1;
+	public static final int XBOX = 2;
 	
 	
 	public HTTPResource() {

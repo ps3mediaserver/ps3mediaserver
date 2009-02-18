@@ -2,11 +2,19 @@
 Changelog:
 ==========
 
-v1.05
+v1.09
 
-- Changes / Features
+- Changes / Features : Windows/Linux
 
-Xbox 360 unofficial support (Pictures/Music/Videos + WMV8/WMA2 transcoding)
+Streaming support for DTS / DTS-HD core only (DVD ISOs not supported yet)
+New Option: unification of Mencoder/tsMuxer engines, including:
+. Dynamic choice between H264 muxing or transcoding, based on AVC Level / ref frames support by ps3
+. Remux on the fly of any H264 content from MOV, MP4, and AVI containers (ex: Apple trailers)
+. Can be disabled via the #Video Settings# virtual menu if anything goes wrong
+
+- Changes / Features : All Platforms
+
+XBox 360 unofficial support (Pictures/Music/Videos : WMV8/WMA2 transcoding)
 Automatic album art download from amazon or discogs
 New option for browsing directory by date
 Alternate cover art folder and <video>.jpg additional support (along existing <video>.<ext>.cover.jpg)
@@ -16,6 +24,8 @@ Updated translations: Finnish, Greek, Icelandic, Portuguese, Swedish
 - Fixes
 
 Reworked RSS parsing (youtube playlists)
+Wrong font detection on some systems: subtitles weren't loaded
+Modified UPNP discovery [work in progress]
 
 v1.04
 

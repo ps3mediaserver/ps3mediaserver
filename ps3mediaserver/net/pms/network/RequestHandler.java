@@ -64,6 +64,12 @@ public class RequestHandler implements Runnable {
 						request.setMediaRenderer(Request.XBOX);
 					}
 				}
+				if (headerLine != null && headerLine.toUpperCase().startsWith("X-AV-CLIENT-INFO")) {
+					if (headerLine.toUpperCase().contains("PLAYSTATION")) {
+						PMS.get().setRendererfound(Request.PS3);
+						request.setMediaRenderer(Request.PS3);
+					}
+				}
 				try {
 					StringTokenizer s = new StringTokenizer(headerLine);
 					String temp = s.nextToken();
