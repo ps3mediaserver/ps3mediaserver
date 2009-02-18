@@ -995,7 +995,7 @@ private JTextField mencoder_ass_scale;
 		
 		boolean lossless = false; // really need to revamp the media audio code
 		dts = media != null && media.codecA != null && media.isMuxable(fileName, media.codecA) ;
-		if ((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && params.aid > -1 && media != null && media.audioCodes != null && media.audioCodes.size() > 0) {
+		if ((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && params.aid > -1 && media != null && media.audioCodes != null && media.audioCodes.size() > 0 && params.mediaRenderer ==HTTPResource.PS3) {
 			dts = false;
 			for(DLNAMediaLang lang:media.audioCodes) {
 				if (lang.id == params.aid && lang.format != null && media.isLossless(lang.format)) {
@@ -1006,7 +1006,7 @@ private JTextField mencoder_ass_scale;
 			}
 		}
 		
-		if (lossless || (media.losslessaudio && configuration.isMencoderUsePcm())/* || (media.losslessaudio && configuration.isDTSEmbedInPCM())*/) {
+		if ((lossless || (media.losslessaudio && configuration.isMencoderUsePcm())) && params.mediaRenderer ==HTTPResource.PS3) {
 			pcm = true;
 			dts = dts && configuration.isDTSEmbedInPCM();
 			if (dts)
