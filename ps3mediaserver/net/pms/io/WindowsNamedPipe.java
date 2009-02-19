@@ -199,10 +199,10 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 					while (loop) {
 						int cbBytesRead = readable.read(b);
 						if (cbBytesRead == -1) {
-							buffer.write(0, b, 0, BUFSIZE);
+							/*buffer.write(0, b, 0, BUFSIZE);
 							Kernel32.INSTANCE.WriteFile(handle1,
 									buffer, BUFSIZE, ibw, null);
-							
+							*/
 							readable.close();
 							if (debug != null)
 								debug.close();
