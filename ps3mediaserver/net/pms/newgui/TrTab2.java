@@ -20,6 +20,7 @@ package net.pms.newgui;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,11 +35,14 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -440,7 +444,7 @@ public class TrTab2 {
        builder.addLabel(Messages.getString("TrTab2.29"), cc.xy(1, 15)); //$NON-NLS-1$
        builder.add(abitrate, cc.xy(3, 15));
 
-       forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28"));
+       forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28")); //$NON-NLS-1$
        forceDTSinPCM.setContentAreaFilled(false);
        //forceDTSinPCM.setEnabled(false);
        if (Platform.isMac())
@@ -452,6 +456,12 @@ public class TrTab2 {
 	
 				public void itemStateChanged(ItemEvent e) {
 					configuration.setDTSEmbedInPCM(e.getStateChange() == ItemEvent.SELECTED);
+					if (configuration.isDTSEmbedInPCM())
+						JOptionPane.showMessageDialog(
+								(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+			                    Messages.getString("TrTab2.10"), //$NON-NLS-1$
+			                    "Information", //$NON-NLS-1$
+			                    JOptionPane.INFORMATION_MESSAGE);
 				}
 	        	
 	        });

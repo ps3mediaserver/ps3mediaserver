@@ -75,7 +75,7 @@ public class DTSAudioOutputStream extends FlowParserOutputStream {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		FileInputStream fis = new FileInputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\tmp\\24bits.dts");
+		FileInputStream fis = new FileInputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\tmp\\24bits2.dts");
 		//FileInputStream fis = new FileInputStream("H:\\Tests\\m2ts\\dtshd.dts");
 		FileOutputStream out = new FileOutputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\tmp\\final.pcm");
 		DTSAudioOutputStream h = new DTSAudioOutputStream(new PCMAudioOutputStream(out, 2, 48000, 16));

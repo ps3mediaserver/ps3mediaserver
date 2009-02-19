@@ -11,22 +11,31 @@ I'm currently transcoding in real-time and no quality loss, 1080p mkv files.
 The drawback is the high bitrate your network must support: with the default settings,
 specific scenes with a lot of details (e.g.: zoom on a newspaper article) can have
 bitrates near 100mb/s, so gigabit is maybe useful.
-However, you can limit the bitrate (with maybe a loss of quality, of course)
+However, you can limit the bitrate, for wireless 720p playback for example. Check The FAQ !
 
 
 Current features
 ================
 
-- Ready to launch and play. No folder configuration and pre-parsing or this kind of annoying thing. 
-- All your folders are directly browsed by the PS3. There’s an automatic refresh also.
-- Real-time video transcoding via Avisynth/FFmpeg in MPEG2 + experimental seeking.
-- DTS -> LPCM real time muxing. Lossless transcoding !
-- OGG/FLAC/MPC Audio transcoding
-- Thumbnail generation for Videos
-- All formats PS3 natively supports: MP3/WMA, JPG/PNG/GIF/TIFF, and all kind of videos (AVI, MP4, TS, M2TS, MPEG) the ps3 is willing to play
-- ZIP/RAR files as browsable folders
-- Support for pictures based feeds, such as Flickr and Picasaweb
-- Internet TV / Web Radio support with MPlayer/VLC
+Ready to launch and play. No codec packs to install. No folder configuration and pre-parsing or this kind of annoying thing. All your folders are directly browsed by the PS3, there's an automatic refresh also.
+Real-time video transcoding via MEncoder, tsMuxer or Avisynth
+DVD ISOs images / VIDEO_TS Folder transcoder
+OGG/FLAC/MPC/APE audio transcoding
+Thumbnail generation for Videos
+You can choose with a virtual folder system your audio/subtitle language on the PS3!
+All formats PS3 natively supports: MP3/WMA, JPG/PNG/GIF/TIFF, and all kind of videos (AVI, MP4, TS, M2TS, MPEG) the ps3 is willing to play
+Display camera RAWs thumbnails (Canon / Nikon, etc.)
+ZIP/RAR files as browsable folders for pictures/audio files
+Support for pictures based feeds, such as Flickr and Picasaweb
+Internet TV / Web Radio support with VLC, MEncoder or MPlayer
+Podcasts audio/ Video feeds support
+
+Windows/Linux Only:
+
+Lossless 5.1 PCM transcoding with DTS movies
+Remux video and remux/reencode all audio tracks to AC3/PCM in real time with tsMuxer
+FLAC 96kHz/24bits/5.1 support
+
 
 
 Requirements
@@ -51,6 +60,9 @@ Transcoding on Windows: HOWTO
 
 A) Using the server "as is": Nothing else to install, it will use Mencoder for the transcoding part.
 
+It's the recommended way, cause you do not have to mess with your system / codec pack / etc.
+You will also be able to mux on the fly without reencoding
+
 B) Using Avisynth/FFDshow. Paired with CoreAVC, it's quite efficient with multi cores.
 1- If not already done, get and install a codec pack with ffdshow (VSfilter must be included for subtitles).
    My favorite is CCCP Codec Pack [http://www.cccp-project.net/download.php?type=cccp]
@@ -70,24 +82,33 @@ Transcoding on Linux: HOWTO
 You just need to have mplayer, mencoder and ffmpeg binaries on your path (the more recent, the better).
 
 
+Transcoding on OSX: HOWTO
+=========================
+
+Like Windows, you just use the server "as is": Nothing else to install, it will use Mencoder for the transcoding part.
+
+
 Usage
 =====
 
 Navigation/Transcode
 --------------------
 
-By default, wmv, avi, mpeg files are streamable, except in case of srt/sub file present with the same file name.
+By default, wmv, avi, mpg/ts/m2ts files are streamable, except in case of srt/sub file present with the same file name.
 All videos can be transcoded, as each streamable video appears once into its folder, and once into
-a special folder "#Transcoded#" present in each sub folder,
-with different options (audio/subtitles/other transcoding tools maybe) so you can choose what's working best on ps3.
-For the audio part, only ogg, flac, mpc audio files and such can be transcoded: I suppose (?) all mp3s, wma and wav files
-can be played 'as is' by the ps3
+a special folder "#Transcoded#" present in each sub folder, with different options (audio/subtitles/other transcoding tools maybe)
+so you can choose what's working best on ps3. For the audio part, only ogg, flac, mpc audio files and such can be transcoded:
+You can however force or skip transcode for specific file extensions (check the transcode settings panel)
+
 
 Custom cover art
 ----------------
 
-Just drop an image in the same folder as your movie file (jpeg or png) called <mymovie>.cover.jpg (or .png). For example,
-for a movie called 'tokyo.mkv', the cover file will be named 'tokyo.mkv.cover.png'
+Just drop an image in the same folder as your movie file (jpeg or png) called <mymovie>.jpg (or .png) /
+also supported:  <mymovie>.cover.jpg (or .png). For example, for a movie called 'tokyo.mkv',
+the cover file can be named 'tokyo.png' or 'tokyo.mkv.cover.png'
+
+In order to apply the same image to all videos, just drop a folder.jpg file in this directory.
 
 
 Transcoding engine prioritization by folder
@@ -115,24 +136,6 @@ VideoLan video streaming = [vclvideo]
 Mplayer stream dump = [mplayervideodump]
 
 
-Linear PCM Muxing
-=================
-
-The version 0.98 introduces a preliminary feature: Linear PCM remuxing with tsMuxer
-LPCM muxing is disabled by default, but you can safely enable it.
-If there are some troubles with channels order, you can try the following switch
-in the "Decoding settings" configuration line:
-
- -af channels=6:6:0:0:1:1:2:4:3:5:4:2:5:3 (NEW 1.01: it's ac3 decoding order, so not this one)
- 
-this should be the right order, but in case of, you can also try this one: 
- 
- -af channels=6:6:0:0:1:2:2:3:3:5:4:1:5:4
- NEW 1.01: -af channels=6:6:0:4:1:0:2:1:3:2:4:3:5:5
- NEW 1.01: -ac ffdca -af channels=6:6:0:4:1:0:2:1:3:2:4:3:5:5 
- 
-maybe this order is not correct as well. Feedback are welcome, of course :)
-
 
 Known issues:
 =============
@@ -147,9 +150,8 @@ Thanks
 - sarraken, bleuecinephile, bd.azerty, fabounnet for the support and feedbacks
 
 
-Contact
-=======
-
-shagrath : ps3mediaserver@gmail.com
+Links
+=====
 
 http://ps3mediaserver.blogspot.com/
+http://ps3mediaserver.org

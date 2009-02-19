@@ -74,7 +74,7 @@ public class AviDemuxerInputStream extends InputStream {
 		this.params = params;
 		
 		aOut = params.output_pipes[1].getOutputStream();
-		if (params.no_videoencode && params.forceType != null && params.forceType.equals("V_MPEG4/ISO/AVC") && params.header != null) {
+		if (params.no_videoencode && params.forceType != null && params.forceType.equals("V_MPEG4/ISO/AVC") && params.header != null) { //$NON-NLS-1$
 			// NOT USED RIGHT NOW
 			PipedOutputStream pout = new PipedOutputStream();
 			final InputStream pin = new H264AnnexBInputStream(new PipedInputStream(pout), params.header);
@@ -317,7 +317,7 @@ public class AviDemuxerInputStream extends InputStream {
 		            getBytes(stream, "RIFF".equals( command )?4:size ); //$NON-NLS-1$
 		        	 command = getString(stream, 4).toUpperCase();
 		            size = readBytes(stream, 4);
-		            if (  ("LIST".equals( command ) || "RIFF".equals( command ) || "JUNK".equals( command )) && (size % 2 == 1))
+		            if (  ("LIST".equals( command ) || "RIFF".equals( command ) || "JUNK".equals( command )) && (size % 2 == 1)) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			        	readByte(stream);
 		        }
 		        

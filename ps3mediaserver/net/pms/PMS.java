@@ -497,7 +497,7 @@ public class PMS {
 				}
 			});
 			
-			vf.addChild(new VirtualVideoAction("Default H264 Remux with Mencoder", configuration.isMencoderMuxWhenCompatible()) { 
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.14"), configuration.isMencoderMuxWhenCompatible()) {  //$NON-NLS-1$
 				public boolean enable() {
 					configuration.setMencoderMuxWhenCompatible(!configuration.isMencoderMuxWhenCompatible());
 					
