@@ -370,7 +370,7 @@ private JTextField mencoder_ass_scale;
        
        builder.add(ac3remux, cc.xyw(1, 9,2));
        
-       videoremux = new JCheckBox("<html>Mux compatible H264 video + audio tracks when no external subs [TS/M2T/MOV/MP4/AVI/MKV]</html>");
+       videoremux = new JCheckBox("<html>" + Messages.getString("MEncoderVideo.38") + "</html>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
        videoremux.setContentAreaFilled(false);
        videoremux.setFont(videoremux.getFont().deriveFont(Font.BOLD));
        if (Platform.isMac())
@@ -858,7 +858,7 @@ private JTextField mencoder_ass_scale;
 	
 	
 	protected String [] getDefaultArgs() {
-		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", wmv?"lavf":((pcm||dts||mux)?"avi":"mpeg"), "-lavfopts", "format=asf", "-noodml", "-noidx", "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", (mux||ovccopy)?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$
+		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", wmv?"lavf":((pcm||dts||mux)?"avi":"mpeg"), "-lavfopts", "format=asf", "-noodml", "-noidx", "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", (mux||ovccopy)?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$
 	}
 
 	@Override
@@ -960,10 +960,10 @@ private JTextField mencoder_ass_scale;
 		if (subString == null && params.sid == -1 && media != null && media.isVideoPS3Compatible(fileName) && configuration.isMencoderMuxWhenCompatible() && !Platform.isMac() && params.mediaRenderer ==HTTPResource.PS3) {
 			TSMuxerVideo tv = new TSMuxerVideo(configuration);
 			params.forceFps = media.getValidFps(false);
-			if (media.codecV.equals("h264")) {
-				params.forceType = "V_MPEG4/ISO/AVC";
-			} else if (media.codecV.equals("mpeg2video")) {
-				params.forceType = "V_MPEG-2";
+			if (media.codecV.equals("h264")) { //$NON-NLS-1$
+				params.forceType = "V_MPEG4/ISO/AVC"; //$NON-NLS-1$
+			} else if (media.codecV.equals("mpeg2video")) { //$NON-NLS-1$
+				params.forceType = "V_MPEG-2"; //$NON-NLS-1$
 			}
 			return tv.launchTranscode(fileName, media, params);
 		}
