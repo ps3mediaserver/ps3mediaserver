@@ -858,7 +858,7 @@ private JTextField mencoder_ass_scale;
 	
 	
 	protected String [] getDefaultArgs() {
-		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", wmv?"lavf":((pcm||dts||mux)?"avi":"mpeg"), "-lavfopts", "format=asf", "-noodml", "-noidx", "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", (mux||ovccopy)?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$
+		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", wmv?"lavf":((pcm||dts||mux)?"avi":"mpeg"), "-lavfopts", "format=asf",/* "-noodml",*/ "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", (mux||ovccopy)?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$
 	}
 
 	@Override
@@ -1006,7 +1006,7 @@ private JTextField mencoder_ass_scale;
 			}
 		}
 		
-		if ((lossless || (media.losslessaudio && configuration.isMencoderUsePcm())) && params.mediaRenderer ==HTTPResource.PS3) {
+		if ((lossless || (media.losslessaudio && configuration.isMencoderUsePcm()) || (media.losslessaudio && configuration.isDTSEmbedInPCM())) && params.mediaRenderer ==HTTPResource.PS3) {
 			pcm = true;
 			dts = dts && configuration.isDTSEmbedInPCM();
 			if (dts)

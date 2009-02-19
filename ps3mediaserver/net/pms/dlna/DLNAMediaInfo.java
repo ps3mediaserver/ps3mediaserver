@@ -615,11 +615,14 @@ public class DLNAMediaInfo {
 							avcHeader.parse();
 							PMS.debug("H264 file: " + filename + ": Profile: " + avcHeader.getProfile() + " / level: " + avcHeader.getLevel() + " / ref frames: " + avcHeader.getRef_frames());
 							muxable = true;
-							if (width > 1900) { // 1080p
+							if (width > 1400) { // 1080p
 								if (avcHeader.getLevel() >= 50 && avcHeader.getRef_frames() > 4)
 									muxable = false;
 							} else if (width > 1200) { // 720p
 								if (avcHeader.getLevel() >= 50 && avcHeader.getRef_frames() > 9)
+									muxable = false;
+							} else if (width > 700) { // 480p
+								if (avcHeader.getLevel() >= 50 && avcHeader.getRef_frames() > 16)
 									muxable = false;
 							}
 							if (!muxable) {
