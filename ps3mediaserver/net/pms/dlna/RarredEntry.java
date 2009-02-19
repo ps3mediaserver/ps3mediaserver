@@ -20,6 +20,7 @@ package net.pms.dlna;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -41,23 +42,36 @@ public class RarredEntry extends DLNAResource implements UnusedProcess {
 	}
 
 	private String name;
-	private Archive pere;
-	private FileHeader header;
+	private File pere;
+	private String fileheadername;
+	private long length;
 	private boolean nullable;
 	private byte data [];
 	
-	public RarredEntry(String name, Archive pere, FileHeader fh) {
-		this.header = fh;
+	public RarredEntry(String name, File pere, String fileheadername, long length) {
+		this.fileheadername = fileheadername;
 		this.name = name;
 		this.pere = pere;
+		this.length = length;
 	}
 
 	public synchronized InputStream getInputStream() throws IOException {
 		if (data == null) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			try {
-				pere.extractFile(header, baos);
-				data = baos.toByteArray();
+				Archive rarFile = new Archive(pere);
+				FileHeader header = null;
+				for(FileHeader fh:rarFile.getFileHeaders()) {
+					if (fh.getFileNameString().equals(fileheadername)) {
+						header = fh;
+						break;
+					}
+				}
+				if (header != null) {
+					rarFile.extractFile(header, baos);
+					data = baos.toByteArray();
+				}
+				rarFile.close();
 			} catch (RarException e) {
 				PMS.error("Error in unpacking of " + name, e);
 			} finally {
@@ -83,7 +97,7 @@ public class RarredEntry extends DLNAResource implements UnusedProcess {
 	}
 
 	public long length() {
-		return header.getFullUnpackSize();
+		return length;
 	}
 
 	public boolean isFolder() {

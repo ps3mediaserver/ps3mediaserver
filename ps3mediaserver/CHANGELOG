@@ -25,6 +25,7 @@ Updated translations: Finnish, Greek, Icelandic, Portuguese, Swedish
 
 Reworked RSS parsing (youtube playlists)
 Wrong font detection on some systems: subtitles weren't loaded
+Fixed tsMuxer crash at the end of file
 Modified UPNP discovery [work in progress]
 
 v1.04

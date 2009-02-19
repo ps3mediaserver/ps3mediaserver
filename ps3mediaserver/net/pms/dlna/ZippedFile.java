@@ -32,7 +32,6 @@ import java.util.zip.ZipInputStream;
 import net.pms.PMS;
 import net.pms.formats.Format;
 
-
 public class ZippedFile extends DLNAResource {
 	
 	private File z;
@@ -47,9 +46,9 @@ public class ZippedFile extends DLNAResource {
 			while (enm.hasMoreElements()) {
 				ZipEntry ze = enm.nextElement();
 				if (ze.getSize() > -1 && ze.getSize() < MAX_ARCHIVE_ENTRY_SIZE)
-					addChild(new ZippedEntry(zip, ze));
+					addChild(new ZippedEntry(z, ze.getName(), ze.getSize()));
 			}
-			//zip.close();
+			zip.close();
 		} catch (ZipException e) {
 			PMS.error(null, e);
 		} catch (IOException e) {

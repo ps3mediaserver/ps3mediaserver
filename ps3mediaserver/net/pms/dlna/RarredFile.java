@@ -43,10 +43,10 @@ public class RarredFile extends DLNAResource {
 			rarFile = new Archive(f);
 			List<FileHeader> headers = rarFile.getFileHeaders();
 			for(FileHeader fh:headers) {
-				if (fh.getFullUnpackSize() < MAX_ARCHIVE_ENTRY_SIZE)
-					addChild(new RarredEntry(fh.getFileNameString(), rarFile, fh));
+				if (fh.getFullUnpackSize() < MAX_ARCHIVE_ENTRY_SIZE && fh.getFullPackSize() < MAX_ARCHIVE_ENTRY_SIZE)
+					addChild(new RarredEntry(fh.getFileNameString(), f, fh.getFileNameString(), fh.getFullUnpackSize()));
 			}
-			//rarFile.close();
+			rarFile.close();
 		} catch (RarException e) {
 			PMS.error(null, e);
 		} catch (IOException e) {

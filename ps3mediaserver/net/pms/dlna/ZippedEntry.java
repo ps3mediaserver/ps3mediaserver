@@ -18,15 +18,21 @@
  */
 package net.pms.dlna;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import net.pms.PMS;
 import net.pms.formats.Format;
+import net.pms.io.UnusedInputStream;
+import net.pms.io.UnusedProcess;
 
 
-public class ZippedEntry extends DLNAResource {
+public class ZippedEntry extends DLNAResource implements UnusedProcess{
 	
 	@Override
 	protected String getThumbnailURL() {
@@ -35,32 +41,52 @@ public class ZippedEntry extends DLNAResource {
 		return super.getThumbnailURL();
 	}
 
-	private ZipFile z;
-	private ZipEntry ze;
+	private File z;
+	private String zeName;
+	private long length;
+	private ZipFile zipFile;
+	private boolean nullable;
+	private byte data [];
 	
-	public ZippedEntry(ZipFile z, ZipEntry ze) {
-		this.ze = ze;
+	public ZippedEntry(File z, String zeName, long length) {
+		this.zeName = zeName;
 		this.z = z;
+		this.length = length;
 	}
 
 	public InputStream getInputStream() {
 		try {
-			return z.getInputStream(ze);
+			zipFile = new ZipFile(z);
+			ZipEntry ze = zipFile.getEntry(zeName);
+			InputStream in = zipFile.getInputStream(ze);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			int n = -1;
+			data = new byte [65536];
+			while ((n=in.read(data)) > -1) {
+				baos.write(data, 0, n);
+			}
+			in.close();
+			baos.close();
+			data = baos.toByteArray();
+			zipFile.close();
+			return new UnusedInputStream(new ByteArrayInputStream(data), this, 5000) {
+				@Override
+				public void unusedStreamSignal() {
+					PMS.info("ZipEntry Data not asked since 5 seconds... Nullify buffer");
+					data = null;
+				}
+			};
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public String getName() {
-		return ze.getName();
+		return zeName;
 	}
 
 	public long length() {
-		return ze.getSize();
-	}
-
-	public DLNAResource[] listFiles() {
-		return new DLNAResource [0];
+		return length;
 	}
 
 	public boolean isFolder() {
@@ -73,12 +99,25 @@ public class ZippedEntry extends DLNAResource {
 
 	@Override
 	public String getSystemName() {
-		return ze.getName();
+		return zeName;
 	}
 
 	@Override
 	public boolean isValid() {
 		checktype();
 		return ext != null;
+	}
+
+	public boolean isReadyToStop() {
+		return nullable;
+	}
+
+	public void setReadyToStop(boolean nullable) {
+		this.nullable = nullable;
+	}
+
+	@Override
+	public void stopProcess() {
+		//
 	}
 }
