@@ -205,7 +205,7 @@ public class TSMuxerVideo extends Player {
 			
 			params.waitbeforestart = 4000;
 		
-			if ((configuration.isMencoderUsePcm() && media.losslessaudio) || configuration.isTsmuxerPreremuxAc3()) {
+			if (((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && media.losslessaudio) || configuration.isTsmuxerPreremuxAc3()) {
 				ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegvideo", System.currentTimeMillis() + "videoout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
 				String outputType = "h264"; //$NON-NLS-1$
 				if (videoType != null && videoType.indexOf("MPEG-2") > -1) //$NON-NLS-1$
@@ -376,14 +376,14 @@ public class TSMuxerVideo extends Player {
 			}
 			if (ffAudioPipe != null && ffAudioPipe.length == 1 && media.codecA != null) {
 				String type = "A_AC3"; //$NON-NLS-1$
-				if ((configuration.isMencoderUsePcm() && media.losslessaudio) || this instanceof TsMuxerAudio)
+				if (((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && media.losslessaudio) || this instanceof TsMuxerAudio)
 					type = "A_LPCM"; //$NON-NLS-1$
 				pw.println(type + ", \"" + ffAudioPipe[0].getOutputPipe() + "\", track=2"); //$NON-NLS-1$ //$NON-NLS-2$
 			} else if (ffAudioPipe != null && media.codecA != null) {
 				for(int i=0;i<media.audioCodes.size();i++) {
 					DLNAMediaLang lang = media.audioCodes.get(i);
 					boolean lossless = false;
-					if (media.isLossless(lang.format) && configuration.isMencoderUsePcm()) {
+					if (media.isLossless(lang.format) && (configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM())) {
 						lossless = true;
 					}
 					String type = "A_AC3"; //$NON-NLS-1$

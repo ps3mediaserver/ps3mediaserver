@@ -86,8 +86,8 @@ public abstract class FlowParserOutputStream extends OutputStream {
 					streamableByteNumber = 0;
 					afterChunkSend();
 					if (remains == 0) {
-						buffer.position(internalMark);
-						buffer.compact();
+						//buffer.position(internalMark);
+						//buffer.compact();
 						buffer.position(0);
 						internalMark = 0;
 					}

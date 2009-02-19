@@ -6,7 +6,7 @@ v1.09
 
 - Changes / Features : Windows/Linux
 
-Streaming support for DTS / DTS-HD core only (DVD ISOs not supported yet)
+Streaming support for DTS / DTS-HD core (DVD ISOs not supported yet)
 New Option: unification of Mencoder/tsMuxer engines, including:
 . Dynamic choice between H264 muxing or transcoding, based on AVC Level / ref frames support by ps3
 . Remux on the fly any H264 content from MOV, MP4, and AVI containers (ex: Apple HD Trailers)
