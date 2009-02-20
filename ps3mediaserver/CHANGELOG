@@ -8,7 +8,7 @@ v1.09
 
 Streaming support for DTS / DTS-HD core (DVD ISOs not supported yet)
 New Option: unification of Mencoder/tsMuxer engines, including:
-. Dynamic choice between H264 muxing or transcoding, based on AVC Level / ref frames support by ps3
+. Automatic choice between H264 muxing or transcoding, based on AVC Level / ref frames support by ps3
 . Remux on the fly any H264 content from MOV, MP4, and AVI containers (ex: Apple HD Trailers)
 . Can be disabled via the #Video Settings# virtual menu if anything goes wrong
 
