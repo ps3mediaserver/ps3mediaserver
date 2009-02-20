@@ -30,6 +30,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
@@ -56,9 +57,11 @@ import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaLang;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
+import net.pms.io.PipeIPCProcess;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.io.StreamModifier;
 import net.pms.network.HTTPResource;
 import net.pms.newgui.FontFileFilter;
 import net.pms.newgui.LooksFrame;
@@ -845,20 +848,9 @@ private JTextField mencoder_ass_scale;
 
 	protected String overridenMainArgs [];
 	protected String defaultSubArgs [];
-	
-//	> -af channels=6:6:0:4:1:0:2:1:3:2:4:3:5:5
-//	[...]
-//
-//	I've just noticed that I've posted the wrong remapping for DTS. The above 
-//	is actually the one for AAC.
-//
-//	The right remapping for DTS is the following one:
-//
-//	-af channels=6:6:0:0:1:2:2:3:3:5:4:1:5:4
-	
-	
+		
 	protected String [] getDefaultArgs() {
-		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", wmv?"lavf":((pcm||dts||mux)?"avi":"mpeg"), "-lavfopts", "format=asf",/* "-noodml",*/ "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", (mux||ovccopy)?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$
+		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", wmv?"lavf":((pcm||dts||mux)?"rawvideo":"mpeg"), "-lavfopts", "format=asf", "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", (mux||ovccopy)?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$
 	}
 
 	@Override
@@ -1443,36 +1435,10 @@ private JTextField mencoder_ass_scale;
 		
 		cmdArray[cmdArray.length-2] = "-o"; //$NON-NLS-1$
 		
-		
-		boolean directpipe = Platform.isMac();
-		if (directpipe) {
-			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +3);
-			cmdArray[cmdArray.length-3] = "-really-quiet"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-2] = "-msglevel"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-1] = "all=-1"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-4] = "-"; //$NON-NLS-1$
-			params.input_pipes = new PipeProcess [2];
-		} else {
-			pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dts || mux)?null:params); //$NON-NLS-1$
-			params.input_pipes [0] = pipe;
-			cmdArray[cmdArray.length-1] = pipe.getInputPipe();
-		}
-		
-		
-		
-		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
-		if (!directpipe) {
-			ProcessWrapper mkfifo_process = pipe.getPipeProcess();
-			pw.attachProcess(mkfifo_process);
-			mkfifo_process.runInNewThread();
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) { }
-			pipe.deleteLater();
-		}
+		ProcessWrapperImpl pw = null;
 		
 		if (pcm || dts || mux) {
-			PipeProcess videoPipe = new PipeProcess("videoPipe" + System.currentTimeMillis(), "out", "reconnect"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			/*PipeProcess videoPipe = new PipeProcess("videoPipe" + System.currentTimeMillis(), "out", "reconnect"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			PipeProcess audioPipe = new PipeProcess("audioPipe" + System.currentTimeMillis(), "out", "reconnect"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			
 			ProcessWrapper videoPipeProcess = videoPipe.getPipeProcess();
@@ -1491,81 +1457,129 @@ private JTextField mencoder_ass_scale;
 			} catch (InterruptedException e) { }
 			videoPipe.deleteLater();
 			audioPipe.deleteLater();
-			/*
+			*/
 			
-			if (pcm && configuration.isDTSEmbedInPCM()) {
-				for(int c=0;c<cmdArray.length;c++)
-					if (cmdArray[c].equals("-oac")) {
-						cmdArray[c] = "-nosound";
-						cmdArray[c+1] = "-quiet";
-					}
-			}
+			pipe = new PipeProcess(System.currentTimeMillis() + "tsmuxerout.ts"); //$NON-NLS-1$
+			
+			TSMuxerVideo ts = new TSMuxerVideo(configuration);
+			File f = new File(configuration.getTempFolder(), "pms-tsmuxer.meta"); //$NON-NLS-1$
+			String cmd [] = new String [] { ts.executable(), f.getAbsolutePath(), pipe.getInputPipe() };
+			pw = new ProcessWrapperImpl(cmd, params);
 			
 			
-			PipeIPCProcess videoPipe = new PipeIPCProcess(pipe.getOutputPipe(), "out", false, true);
-			ProcessWrapper videoPipeProcess = videoPipe.getPipeProcess();
-			pw.attachProcess(videoPipeProcess);
-			videoPipeProcess.runInNewThread();
+			PipeIPCProcess ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegvideo", System.currentTimeMillis() + "videoout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
+			
+			cmdArray[cmdArray.length-1] = ffVideoPipe.getInputPipe();
+			
+			OutputParams ffparams = new OutputParams(configuration);
+			ffparams.maxBufferSize = 1;
+			ProcessWrapperImpl ffVideo = new ProcessWrapperImpl(cmdArray, ffparams);
+			
+			ProcessWrapper ff_video_pipe_process = ffVideoPipe.getPipeProcess();
+			pw.attachProcess(ff_video_pipe_process);
+			ff_video_pipe_process.runInNewThread();
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) { }
-			videoPipe.deleteLater();
+			ffVideoPipe.deleteLater();
 			
+			pw.attachProcess(ffVideo);
+			ffVideo.runInNewThread();
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) { }
 			
-			PipeIPCProcess audioPipe = new PipeIPCProcess("audioPipe" + System.currentTimeMillis(), "out", false, true);
-			String audioextract [] = new String [] { configuration.getMencoderPath(), "-ss", "" + params.timeseek, fileName, "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + configuration.getAudioChannelCount(), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", "-oac", configuration.isDTSEmbedInPCM()?"copy":"pcm", "-o", audioPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$
+			PipeIPCProcess ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
 			StreamModifier sm = new StreamModifier();
-			sm.setPcm(true);
-			sm.setDtsembed(configuration.isDTSEmbedInPCM() && media != null && (media.codecA.equals("dts") || media.codecA.equals("dca")));
+			sm.setPcm(pcm);
+			sm.setDtsembed(dts);
 			sm.setNbchannels(sm.isDtsembed()?2:configuration.getAudioChannelCount());
 			sm.setSampleFrequency(media.getSampleRate());
 			sm.setBitspersample(16);
-			audioPipe.setModifier(sm);
+			String ffmpegLPCMextract [] = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + configuration.getAudioChannelCount(), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", "-oac", sm.isDtsembed()?"copy":"pcm", "-o", ffAudioPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$
+			ffAudioPipe.setModifier(sm);
 			
-			File f = new File(configuration.getTempFolder(), "pms-tsmuxer.meta"); //$NON-NLS-1$
-			params.log = false;
-			PrintWriter pwriter = new PrintWriter(f);
-			pwriter.print("MUXOPT --no-pcr-on-video-pid --no-asyncio --new-audio-pes --vbr --vbv-len=500"); //$NON-NLS-1$
-			pwriter.println(" --vbv-len=500"); //$NON-NLS-1$
-			String videoparams = "level=4.1, insertSEI, contSPS, track=1"; //$NON-NLS-1$
-			String fps = media.getValidFps(false);
-			String videoType = "V_MPEG4/ISO/AVC"; //$NON-NLS-1$
-			videoType = "V_MPEG-2"; //$NON-NLS-1$
-			pwriter.println(videoType + ", \"" + videoPipe.getOutputPipe() + "\", "  + (fps!=null?("fps=" +fps + ", "):"") + videoparams); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-			pwriter.println("A_LPCM, \"" + audioPipe.getOutputPipe() + "\", track=2"); //$NON-NLS-1$ //$NON-NLS-2$
-			pwriter.close();
+			if (fileName.toLowerCase().endsWith(".evo")) { //$NON-NLS-1$
+				ffmpegLPCMextract[4] = "-psprobe"; //$NON-NLS-1$
+				ffmpegLPCMextract[5] = "1000000"; //$NON-NLS-1$
+			}
 			
-			PipeProcess tsPipe = new PipeProcess(System.currentTimeMillis() + "tsmuxerout.ts"); //$NON-NLS-1$
-			ProcessWrapper pipe_process = tsPipe.getPipeProcess();
+			if (params.timeseek > 0) {
+				ffmpegLPCMextract [2] = "" + params.timeseek; //$NON-NLS-1$
+			}
+			OutputParams ffaudioparams = new OutputParams(configuration);
+			ffaudioparams.maxBufferSize = 1;
+			ProcessWrapperImpl ffAudio = new ProcessWrapperImpl(ffmpegLPCMextract, ffaudioparams);
+			
+			
+			
+			PrintWriter pwMux = new PrintWriter(f);
+			pwMux.println("MUXOPT --no-pcr-on-video-pid --no-asyncio --new-audio-pes --vbr --vbv-len=500"); //$NON-NLS-1$
+			String videoType = "V_MPEG-2"; //$NON-NLS-1$
+			if (params.no_videoencode && params.forceType != null) {
+				videoType = params.forceType;
+			}
+			String fps = ""; //$NON-NLS-1$
+			if (params.forceFps != null) {
+				fps = "fps=" + params.forceFps + ", "; //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			String audioType = "A_LPCM"; //$NON-NLS-1$
+			if (params.lossyaudio)
+				audioType = "A_AC3"; //$NON-NLS-1$
+			pwMux.println(videoType + ", \"" + ffVideoPipe.getOutputPipe() + "\", " +  fps + "level=4.1, insertSEI, contSPS, track=1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			pwMux.println(audioType + ", \"" + ffAudioPipe.getOutputPipe() + "\", track=2"); //$NON-NLS-1$ //$NON-NLS-2$
+			pwMux.close();
+			
+			
+			ProcessWrapper pipe_process = pipe.getPipeProcess();
 			pw.attachProcess(pipe_process);
 			pipe_process.runInNewThread();
-			tsPipe.deleteLater();
-			
-			params.input_pipes [0] = tsPipe;
-			
-			
-			TSMuxerVideo ts = new TSMuxerVideo(PMS.getConfiguration());
-			String cmd [] = new String [] { ts.executable(), fileName, tsPipe.getInputPipe() };
-			ProcessBuilder pb = new ProcessBuilder(cmd);
-			Process process = pb.start();
-			ProcessWrapper pwi = new ProcessWrapperLiteImpl(process);
-			pw.attachProcess(pwi);
-			
-			OutputParams ffparams = new OutputParams(PMS.getConfiguration());
-			ffparams.maxBufferSize = 1;
-			ProcessWrapperImpl ffAudio = new ProcessWrapperImpl(audioextract, ffparams);
-			
-			ProcessWrapper audioPipeProcess = audioPipe.getPipeProcess();
-			pw.attachProcess(audioPipeProcess);
-			audioPipeProcess.runInNewThread();
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) { }
-			audioPipe.deleteLater();
+			pipe.deleteLater();
+			params.input_pipes[0] = pipe;
+			
+			ProcessWrapper ff_pipe_process = ffAudioPipe.getPipeProcess();
+			pw.attachProcess(ff_pipe_process);
+			ff_pipe_process.runInNewThread();
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) { }
+			ffAudioPipe.deleteLater();
 			pw.attachProcess(ffAudio);
 			ffAudio.runInNewThread();
 			
-			pwi.runInNewThread();*/
+			
+		} else {
+			
+			boolean directpipe = Platform.isMac();
+			if (directpipe) {
+				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +3);
+				cmdArray[cmdArray.length-3] = "-really-quiet"; //$NON-NLS-1$
+				cmdArray[cmdArray.length-2] = "-msglevel"; //$NON-NLS-1$
+				cmdArray[cmdArray.length-1] = "all=-1"; //$NON-NLS-1$
+				cmdArray[cmdArray.length-4] = "-"; //$NON-NLS-1$
+				params.input_pipes = new PipeProcess [2];
+			} else {
+				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dts || mux)?null:params); //$NON-NLS-1$
+				params.input_pipes [0] = pipe;
+				cmdArray[cmdArray.length-1] = pipe.getInputPipe();
+			}
+			
+			
+			
+			pw = new ProcessWrapperImpl(cmdArray, params);
+			if (!directpipe) {
+				ProcessWrapper mkfifo_process = pipe.getPipeProcess();
+				pw.attachProcess(mkfifo_process);
+				mkfifo_process.runInNewThread();
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) { }
+				pipe.deleteLater();
+			}
+			
 		}
 		
 		pw.runInNewThread();

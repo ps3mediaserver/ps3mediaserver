@@ -267,7 +267,7 @@ public class AviDemuxerInputStream extends InputStream {
 					System.arraycopy(hdrl, i + 8, information, 0,information.length);// formerly i+4
 					Track aud = track[1 + numberOfAudioChannels - 1];
 					aud.setBih(information);
-					int bitspersample = str2ulong(information, 14);
+					int bitspersample = str2ushort(information, 14);
 					aud.setBitspersample(bitspersample);
 					int nbaudio = str2ushort(information, 2);
 					aud.setNbaudio(nbaudio);

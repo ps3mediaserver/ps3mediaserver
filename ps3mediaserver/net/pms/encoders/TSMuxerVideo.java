@@ -249,10 +249,6 @@ public class TSMuxerVideo extends Player {
 					ffAudioPipe = new PipeIPCProcess [numAudioTracks];
 					ffAudioPipe[0] = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
 					if ((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && media.losslessaudio) {
-						//ffmpegLPCMextract = new String [] { configuration.getFfmpegPath(), "-ss", "0", "-i", fileName, "-f", "wav", "-acodec", "pcm_s16le", "-ac", "6", "-vn", "-y", ffAudioPipe[0].getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
-						//ByteArrayOutputStream aOut = new ByteArrayOutputStream();
-						//AviDemuxerInputStream.writePCMHeader(aOut, 100, 6, 48000, 2, 16);
-						//ffAudioPipe[0].setHeader(aOut.toByteArray());
 						StreamModifier sm = new StreamModifier();
 						sm.setPcm(true);
 						sm.setDtsembed(configuration.isDTSEmbedInPCM() && media != null && (media.codecA.equals("dts") || media.codecA.equals("dca"))); //$NON-NLS-1$ //$NON-NLS-2$

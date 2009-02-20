@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.pms.PMS;
-import net.pms.encoders.AviDemuxerInputStream;
 import net.pms.util.ProcessUtil;
 
 public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
@@ -92,7 +91,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				bo = params.input_pipes[0].getDirectBuffer();
 				if (bo == null || params.losslessaudio || params.lossyaudio||params.no_videoencode) {
 					InputStream is = params.input_pipes[0].getInputStream();
-					outConsumer = new OutputBufferConsumer((params.losslessaudio||params.lossyaudio||params.no_videoencode)?new AviDemuxerInputStream(is, params, attachedProcesses):is, params);
+					outConsumer = new OutputBufferConsumer(/*(params.losslessaudio||params.lossyaudio||params.no_videoencode)?new AviDemuxerInputStream(is, params, attachedProcesses):*/is, params);
 					bo = (BufferedOutputFile) outConsumer.getBuffer();
 				}
 				bo.attachThread(this);
