@@ -18,21 +18,18 @@
  */
 package net.pms.dlna;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import net.pms.PMS;
 import net.pms.formats.Format;
-import net.pms.io.UnusedInputStream;
-import net.pms.io.UnusedProcess;
+import net.pms.util.FileUtil;
 import de.innosystec.unrar.Archive;
-import de.innosystec.unrar.exception.RarException;
 import de.innosystec.unrar.rarfile.FileHeader;
 
-public class RarredEntry extends DLNAResource implements UnusedProcess {
+public class RarredEntry extends DLNAResource implements IPushOutput {
 	
 	@Override
 	protected String getThumbnailURL() {
@@ -45,8 +42,8 @@ public class RarredEntry extends DLNAResource implements UnusedProcess {
 	private File pere;
 	private String fileheadername;
 	private long length;
-	private boolean nullable;
-	private byte data [];
+	//private boolean nullable;
+	//private byte data [];
 	
 	public RarredEntry(String name, File pere, String fileheadername, long length) {
 		this.fileheadername = fileheadername;
@@ -55,8 +52,8 @@ public class RarredEntry extends DLNAResource implements UnusedProcess {
 		this.length = length;
 	}
 
-	public synchronized InputStream getInputStream() throws IOException {
-		if (data == null) {
+	public InputStream getInputStream() throws IOException {
+		/*if (data == null) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			try {
 				Archive rarFile = new Archive(pere);
@@ -89,7 +86,8 @@ public class RarredEntry extends DLNAResource implements UnusedProcess {
 				PMS.info("RarEntry Data not asked since 10 seconds... Nullify buffer");
 				data = null;
 			}
-		};
+		};*/
+		return null;
 	}
 
 	public String getName() {
@@ -97,6 +95,8 @@ public class RarredEntry extends DLNAResource implements UnusedProcess {
 	}
 
 	public long length() {
+		if (player != null && player.type() != Format.IMAGE)
+			return DLNAMediaInfo.TRANS_SIZE;
 		return length;
 	}
 
@@ -110,24 +110,76 @@ public class RarredEntry extends DLNAResource implements UnusedProcess {
 
 	@Override
 	public String getSystemName() {
-		return name;
+		return FileUtil.getFileNameWithoutExtension(pere.getAbsolutePath()) + "." + FileUtil.getExtension(name);
 	}
 
 	@Override
 	public boolean isValid() {
 		checktype();
+		srtFile = FileUtil.doesSubtitlesExists(pere);
 		return ext != null;
 	}
-
-	public boolean isReadyToStop() {
-		return nullable;
+	
+	@Override
+	public boolean isUnderlyingSeekSupported() {
+		return length() < MAX_ARCHIVE_SIZE_SEEK;
 	}
 
-	public void setReadyToStop(boolean nullable) {
-		this.nullable = nullable;
+	@Override
+	public void push(final OutputStream out) throws IOException {
+		Runnable r = new Runnable() {
+			public void run() {
+				Archive rarFile = null;
+				try {
+					rarFile = new Archive(pere);
+					FileHeader header = null;
+					for(FileHeader fh:rarFile.getFileHeaders()) {
+						if (fh.getFileNameString().equals(fileheadername)) {
+							header = fh;
+							break;
+						}
+					}
+					if (header != null) {
+						PMS.debug("Starting the extraction of " + header.getFileNameString());
+						rarFile.extractFile(header, out);
+					}
+				} catch (Exception e) {
+					PMS.info("Unpack error, maybe it's normal, as backend can be terminated: " + e.getMessage());
+				} finally {
+					try {
+						rarFile.close();
+						out.close();
+					} catch (IOException e) {}
+				}
+			}
+		};
+		new Thread(r).start();
+	}
+	
+	@Override
+	public void resolve() {
+		if (ext == null || !ext.isVideo())
+			return;
+		boolean found = false;
+		if (!found) {
+			if (media == null) {
+				media = new DLNAMediaInfo();
+			}
+			found = !media.mediaparsed && !media.parsing;
+			if (ext != null) {
+				InputFile input = new InputFile();
+				input.push = this;
+				input.size = length();
+				ext.parse(media, input, getType());
+			}
+		}
+		super.resolve();
 	}
 
-	public void stopProcess() {
-		// nothing to do here
+	@Override
+	public InputStream getThumbnailInputStream() throws IOException {
+		if (media != null && media.thumb != null)
+			return media.getThumbnailInputStream();
+		else return super.getThumbnailInputStream();
 	}
 }

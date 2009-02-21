@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import net.pms.PMS;
+
 public class DTSAudioOutputStream extends FlowParserOutputStream {
 
 	private static int bits [] = new int [] { 16, 16, 20, 20, 0, 24, 24 };
@@ -53,16 +55,12 @@ public class DTSAudioOutputStream extends FlowParserOutputStream {
 					pout.init();
 				}
 				padding = pcm_wrapped_frame_size - framesize;
-				
-				if (bitspersample < 7) {
-					bitspersample = bits[bitspersample];
-					if (bitspersample == 20) // if 20 bits, no padding
-						padding = 0;
-				}
-	
+				if (bitspersample < 7)
+					PMS.debug("DTS bits per sample: " + bits[bitspersample]);
+				PMS.debug("DTS framesize: " + framesize);
 			}
 		} else {
-			// E-AC3 / DTS 768 kbps / FULL DTS-HD MA / TRUE HD ???
+			// E-AC3 / FULL DTS-HD MA / TRUE HD ???
 		}
 	}
 
@@ -75,8 +73,8 @@ public class DTSAudioOutputStream extends FlowParserOutputStream {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		FileInputStream fis = new FileInputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\tmp\\24bits2.dts");
-		//FileInputStream fis = new FileInputStream("H:\\Tests\\m2ts\\dtshd.dts");
+		//FileInputStream fis = new FileInputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\tmp\\24bits2.dts");
+		FileInputStream fis = new FileInputStream("H:\\Tests\\dts channel id.track_2.dts");
 		FileOutputStream out = new FileOutputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\tmp\\final.pcm");
 		DTSAudioOutputStream h = new DTSAudioOutputStream(new PCMAudioOutputStream(out, 2, 48000, 16));
 		long t1 = System.currentTimeMillis();

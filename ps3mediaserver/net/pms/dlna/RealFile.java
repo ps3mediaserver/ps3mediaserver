@@ -45,25 +45,7 @@ public class RealFile extends DLNAResource {
 	public boolean isValid() {
 		checktype();
 		if (getType() == Format.VIDEO && file.exists() && file.getName().length() > 4) {
-			File ifo = FileUtil.isFileExists(file, "IFO");
-			if (ifo != null) {
-				ifoFileURI = ifo.getName();
-				PMS.info("Found IFO file: " + ifoFileURI);
-			}
-			File srt = FileUtil.isFileExists(file, "srt");
-			srtFile = srt != null;
-			if (!srtFile) {
-				srt = FileUtil.isFileExists(file, "sub");
-				srtFile = srt != null;
-				if (!srtFile) {
-					srt = FileUtil.isFileExists(file, "ass");
-					srtFile = srt != null;
-					if (!srtFile) {
-						srt = FileUtil.isFileExists(file, "smi");
-						srtFile = srt != null;
-					}
-				}
-			}
+			srtFile = FileUtil.doesSubtitlesExists(file);
 		}
 		return file.exists() && (ext != null || file.isDirectory());
 	}
@@ -247,7 +229,7 @@ public class RealFile extends DLNAResource {
 				ArrayList<DLNAMediaInfo> medias = PMS.get().getDatabase().getData(file.getAbsolutePath(), file.lastModified());
 				if (medias != null && medias.size() == 1) {
 					media = medias.get(0);
-					media.finalize(getType(), file);
+					media.finalize(getType());
 					found = true;
 				}
 			}
@@ -257,10 +239,12 @@ public class RealFile extends DLNAResource {
 					media = new DLNAMediaInfo();
 				}
 				found = !media.mediaparsed && !media.parsing;
-				if (ext != null)
-					ext.parse(media, file, getType());
+				InputFile input = new InputFile();
+				input.file = file;
+				if (ext != null) 
+					ext.parse(media, input, getType());
 				else //don't think that will ever happen
-					media.parse(file, ext, getType());
+					media.parse(input, ext, getType());
 				if (found && PMS.getConfiguration().getUseCache()) {
 					PMS.get().getDatabase().insertData(file.getAbsolutePath(), file.lastModified(), getType(), media);
 				}

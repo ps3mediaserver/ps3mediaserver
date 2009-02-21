@@ -18,21 +18,19 @@
  */
 package net.pms.dlna;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import net.pms.PMS;
 import net.pms.formats.Format;
-import net.pms.io.UnusedInputStream;
-import net.pms.io.UnusedProcess;
+import net.pms.util.FileUtil;
 
 
-public class ZippedEntry extends DLNAResource implements UnusedProcess{
+public class ZippedEntry extends DLNAResource implements IPushOutput{
 	
 	@Override
 	protected String getThumbnailURL() {
@@ -45,8 +43,8 @@ public class ZippedEntry extends DLNAResource implements UnusedProcess{
 	private String zeName;
 	private long length;
 	private ZipFile zipFile;
-	private boolean nullable;
-	private byte data [];
+	//private boolean nullable;
+	//private byte data [];
 	
 	public ZippedEntry(File z, String zeName, long length) {
 		this.zeName = zeName;
@@ -55,7 +53,7 @@ public class ZippedEntry extends DLNAResource implements UnusedProcess{
 	}
 
 	public InputStream getInputStream() {
-		try {
+		/*try {
 			zipFile = new ZipFile(z);
 			ZipEntry ze = zipFile.getEntry(zeName);
 			InputStream in = zipFile.getInputStream(ze);
@@ -78,7 +76,8 @@ public class ZippedEntry extends DLNAResource implements UnusedProcess{
 			};
 		} catch (IOException e) {
 			throw new RuntimeException(e);
-		}
+		}*/
+		return null;
 	}
 
 	public String getName() {
@@ -86,6 +85,8 @@ public class ZippedEntry extends DLNAResource implements UnusedProcess{
 	}
 
 	public long length() {
+		if (player != null && player.type() != Format.IMAGE)
+			return DLNAMediaInfo.TRANS_SIZE;
 		return length;
 	}
 
@@ -99,25 +100,73 @@ public class ZippedEntry extends DLNAResource implements UnusedProcess{
 
 	@Override
 	public String getSystemName() {
-		return zeName;
+		return FileUtil.getFileNameWithoutExtension(z.getAbsolutePath()) + "." + FileUtil.getExtension(zeName);
 	}
 
 	@Override
 	public boolean isValid() {
 		checktype();
+		srtFile = FileUtil.doesSubtitlesExists(z);
 		return ext != null;
 	}
-
-	public boolean isReadyToStop() {
-		return nullable;
+	
+	@Override
+	public boolean isUnderlyingSeekSupported() {
+		return length() < MAX_ARCHIVE_SIZE_SEEK;
 	}
-
-	public void setReadyToStop(boolean nullable) {
-		this.nullable = nullable;
+	
+	@Override
+	public void push(final OutputStream out) throws IOException {
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					zipFile = new ZipFile(z);
+					ZipEntry ze = zipFile.getEntry(zeName);
+					InputStream in = zipFile.getInputStream(ze);
+					int n = -1;
+					byte data [] = new byte [65536];
+					while ((n=in.read(data)) > -1) {
+						out.write(data, 0, n);
+					}
+					in.close();
+				} catch (Exception e) {
+					PMS.info("Unpack error, maybe it's normal, as backend can be terminated: " + e.getMessage());
+				} finally {
+					try {
+						zipFile.close();
+						out.close();
+					} catch (IOException e) {}
+				}
+			}
+		};
+		new Thread(r).start();
+	}
+	
+	@Override
+	public void resolve() {
+		if (ext == null || !ext.isVideo())
+			return;
+		boolean found = false;
+		if (!found) {
+			if (media == null) {
+				media = new DLNAMediaInfo();
+			}
+			found = !media.mediaparsed && !media.parsing;
+			if (ext != null) {
+				InputFile input = new InputFile();
+				input.push = this;
+				input.size = length();
+				ext.parse(media, input, getType());
+			}
+		}
+		super.resolve();
 	}
 
 	@Override
-	public void stopProcess() {
-		//
+	public InputStream getThumbnailInputStream() throws IOException {
+		if (media != null && media.thumb != null)
+			return media.getThumbnailInputStream();
+		else return super.getThumbnailInputStream();
 	}
+
 }

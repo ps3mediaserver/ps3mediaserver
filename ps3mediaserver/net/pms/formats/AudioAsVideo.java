@@ -20,6 +20,8 @@
 import java.util.ArrayList;
 
 import net.pms.PMS;
+import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.InputFile;
 import net.pms.encoders.Player;
 import net.pms.encoders.TsMuxerAudio;
 
@@ -34,6 +36,14 @@ public class AudioAsVideo extends MKV {
 				a.add(TsMuxerAudio.class);
 		}
 		return a;
+	}
+
+	@Override
+	public void parse(DLNAMediaInfo media, InputFile file, int type) {
+		try {
+			Thread.sleep(100); // wait for the original audio media to be parsed
+		} catch (InterruptedException e) {}
+		super.parse(media, file, type);
 	}
 
 }

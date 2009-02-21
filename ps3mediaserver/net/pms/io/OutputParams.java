@@ -22,6 +22,7 @@ import java.io.File;
 
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.dlna.IPushOutput;
 
 public class OutputParams {
 	
@@ -49,6 +50,7 @@ public class OutputParams {
 	public int mediaRenderer;
 	public boolean hidebuffer;
 	public byte header [];
+	public IPushOutput stdin;
 	
 	public OutputParams(PmsConfiguration configuration) {
 		waitbeforestart = 6000;

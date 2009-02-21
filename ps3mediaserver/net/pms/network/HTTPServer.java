@@ -31,13 +31,14 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-import org.apache.commons.lang.StringUtils;
-
 import net.pms.PMS;
 import net.pms.util.PMSUtil;
 
+import org.apache.commons.lang.StringUtils;
+
 public class HTTPServer implements Runnable {
 	
+	private boolean newHTTP = false;
 	private ArrayList<String> ips;
 	private int port;
 	private String hostName;
@@ -109,21 +110,42 @@ public class HTTPServer implements Runnable {
 			address = new InetSocketAddress(port);
 		}
 		PMS.minimal("Created socket: " + address);
-		serverSocketChannel = ServerSocketChannel.open();
 		
-		serverSocket = serverSocketChannel.socket();
-		serverSocket.setReuseAddress(true);
-		serverSocket.bind(address);
-		
-		if (hostName == null && iafinal !=null)
-			hostName = iafinal.getHostAddress();
-		else if (hostName == null)
-			hostName = InetAddress.getLocalHost().getHostAddress();
-		
-		
-		runnable = new Thread(this);
-		runnable.setDaemon(false);
-		runnable.start();
+		if (!newHTTP) {
+			serverSocketChannel = ServerSocketChannel.open();
+			
+			serverSocket = serverSocketChannel.socket();
+			serverSocket.setReuseAddress(true);
+			serverSocket.bind(address);
+			
+			if (hostName == null && iafinal !=null)
+				hostName = iafinal.getHostAddress();
+			else if (hostName == null)
+				hostName = InetAddress.getLocalHost().getHostAddress();
+			
+			
+			runnable = new Thread(this);
+			runnable.setDaemon(false);
+			runnable.start();
+			
+		} else {
+			/*ChannelFactory factory = new NioServerSocketChannelFactory(
+				Executors.newCachedThreadPool(),
+				Executors.newCachedThreadPool());
+			ServerBootstrap bootstrap = new ServerBootstrap(factory);
+			HttpServerPipelineFactory pipeline = new HttpServerPipelineFactory(new HttpRequestHandler());
+			bootstrap.setPipelineFactory(pipeline);
+			bootstrap.setOption("child.tcpNoDelay", true);
+			bootstrap.setOption("child.keepAlive", true);
+			
+			bootstrap.bind(address);
+			
+			if (hostName == null && iafinal !=null)
+				hostName = iafinal.getHostAddress();
+			else if (hostName == null)
+				hostName = InetAddress.getLocalHost().getHostAddress();
+			*/
+		}
 		
 		return true;
 	}

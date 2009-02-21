@@ -77,6 +77,7 @@ public class BufferedOutputFile extends OutputStream  {
 	private byte buffer [];
 	
 	private WaitBufferedInputStream inputStream;
+	private WaitBufferedInputStream oldInputStream;
 	private ProcessWrapper attachedThread;
 	private int secondread_minsize;
 	private Timer timer;
@@ -136,6 +137,8 @@ public class BufferedOutputFile extends OutputStream  {
 			attachedThread.setReadyToStop(false);
 		}
 		if (!PMS.getConfiguration().getTrancodeBlocksMultipleConnections() || inputStream == null) {
+			if (inputStream != null)
+				oldInputStream = inputStream;
 			inputStream = new WaitBufferedInputStream(this);
 			
 		} else {
@@ -463,6 +466,8 @@ public class BufferedOutputFile extends OutputStream  {
 	
 	private void detachInputStream() {
 		inputStream = null;
+		if (oldInputStream != null)
+			inputStream = oldInputStream;  // in case the old one is still alive
 		PMS.get().getFrame().setReadValue(0, "");
 		if (attachedThread != null) {
 			attachedThread.setReadyToStop(true);

@@ -24,21 +24,16 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaLang;
+import net.pms.dlna.InputFile;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeIPCProcess;
@@ -47,6 +42,11 @@ import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.io.StreamModifier;
 import net.pms.util.CodecUtil;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class TSMuxerVideo extends Player {
 
@@ -92,7 +92,7 @@ public class TSMuxerVideo extends Player {
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params)
 			throws IOException {
 		
-		String fps = null;
+		/*String fps = null;
 		String videoType = null;
 		if (params.forceType == null || params.forceFps == null) {
 		
@@ -132,7 +132,7 @@ public class TSMuxerVideo extends Player {
 		} else {
 			videoType = params.forceType;
 			fps = params.forceFps;
-		}
+		}*/
 		
 	/*	if (PMS.get().isTsmuxer_preremux_pcm() && media.losslessaudio) {
 			MEncoderVideo mev = new MEncoderVideo();
@@ -159,6 +159,11 @@ public class TSMuxerVideo extends Player {
 		PipeIPCProcess ffAudioPipe [] = null;
 		ProcessWrapperImpl ffAudio [] = null;
 		
+		String fps = media.getValidFps(false);
+		String videoType = "V_MPEG4/ISO/AVC"; //$NON-NLS-1$
+		if (media != null && media.codecV.equals("mpeg2video")) { //$NON-NLS-1$
+			videoType = "V_MPEG-2"; //$NON-NLS-1$
+		}
 		
 		if (this instanceof TsMuxerAudio) {
 			
@@ -207,7 +212,7 @@ public class TSMuxerVideo extends Player {
 		
 			if (((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && media.losslessaudio) || configuration.isTsmuxerPreremuxAc3()) {
 				ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegvideo", System.currentTimeMillis() + "videoout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
-				String outputType = "h264"; //$NON-NLS-1$
+				/*String outputType = "h264"; //$NON-NLS-1$
 				if (videoType != null && videoType.indexOf("MPEG-2") > -1) //$NON-NLS-1$
 					outputType = "mpeg2video"; //$NON-NLS-1$
 				if (media != null && media.codecV.equals("mpeg2video")) { //$NON-NLS-1$
@@ -216,16 +221,22 @@ public class TSMuxerVideo extends Player {
 				} else if (media != null && media.codecV.equals("h264")) { //$NON-NLS-1$
 					outputType = "h264"; //$NON-NLS-1$
 					videoType = "V_MPEG4/ISO/AVC"; //$NON-NLS-1$
-				}
-				String ffmpegLPCMextract [] = new String [] { configuration.getFfmpegPath(), "-ss", "0", "-i", fileName, "-f", outputType, "-vbsf", "h264_mp4toannexb", "-vcodec", "copy", "-an", "-y", ffVideoPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
-				ffmpegLPCMextract = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-ovc", "copy", "-nosound", "-of", "rawvideo", "-o", ffVideoPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
+				}*/
+				String ffmpegLPCMextract [] = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-ovc", "copy", "-nosound", "-of", "rawvideo", "-o", ffVideoPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
 				
 				if (fileName.toLowerCase().endsWith(".evo")) { //$NON-NLS-1$
 					ffmpegLPCMextract[4] = "-psprobe"; //$NON-NLS-1$
 					ffmpegLPCMextract[5] = "1000000"; //$NON-NLS-1$
 				}
 				
-				if (media != null && media.isVideoPS3Compatible(fileName)) { //$NON-NLS-1$ //$NON-NLS-2$
+				if (params.stdin != null)
+					ffmpegLPCMextract[3] = "-";
+				
+				InputFile newInput = new InputFile();
+				newInput.filename = fileName;
+				newInput.push = params.stdin;
+				
+				if (media != null && media.isVideoPS3Compatible(newInput)) { //$NON-NLS-1$ //$NON-NLS-2$
 					if (media.h264_annexB != null && media.h264_annexB.length > 0) {
 						StreamModifier sm = new StreamModifier();
 						sm.setHeader(media.h264_annexB);
@@ -239,6 +250,7 @@ public class TSMuxerVideo extends Player {
 					//ffmpegLPCMextract [4] = "" + params.timeseek; //$NON-NLS-1$
 				OutputParams ffparams = new OutputParams(PMS.getConfiguration());
 				ffparams.maxBufferSize = 1;
+				ffparams.stdin = params.stdin;
 				ffVideo = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
 				
 				int numAudioTracks = 1;
@@ -266,11 +278,15 @@ public class TSMuxerVideo extends Player {
 						ffmpegLPCMextract[5] = "1000000"; //$NON-NLS-1$
 					}
 					
+					if (params.stdin != null)
+						ffmpegLPCMextract[3] = "-";
+					
 					if (params.timeseek > 0) {
 						ffmpegLPCMextract [2] = "" + params.timeseek; //$NON-NLS-1$
 					}
 					ffparams = new OutputParams(PMS.getConfiguration());
 					ffparams.maxBufferSize = 1;
+					ffparams.stdin = params.stdin;
 					ffAudio = new ProcessWrapperImpl[numAudioTracks];
 					ffAudio[0] = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
 				} else {
@@ -302,11 +318,15 @@ public class TSMuxerVideo extends Player {
 							ffmpegLPCMextract[5] = "1000000"; //$NON-NLS-1$
 						}
 						
+						if (params.stdin != null)
+							ffmpegLPCMextract[3] = "-";
+						
 						if (params.timeseek > 0) {
 							ffmpegLPCMextract [2] = "" + params.timeseek; //$NON-NLS-1$
 						}
 						ffparams = new OutputParams(PMS.getConfiguration());
 						ffparams.maxBufferSize = 1;
+						ffparams.stdin = params.stdin;
 						ffAudio[i] = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
 					}
 				}
@@ -399,7 +419,7 @@ public class TSMuxerVideo extends Player {
 		ProcessWrapperImpl p = new ProcessWrapperImpl(cmd, params);
 		params.maxBufferSize = 100;
 		params.input_pipes[0] = tsPipe;
-		
+		params.stdin = null;
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 		p.attachProcess(pipe_process);
 		pipe_process.runInNewThread();
@@ -440,7 +460,7 @@ public class TSMuxerVideo extends Player {
 		}
 		
 		try {
-			Thread.sleep(50);
+			Thread.sleep(100);
 		} catch (InterruptedException e) { }
 		
 		p.runInNewThread();

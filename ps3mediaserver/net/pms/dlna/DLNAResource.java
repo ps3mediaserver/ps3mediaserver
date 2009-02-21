@@ -20,6 +20,8 @@ package net.pms.dlna;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ import net.pms.util.FileUtil;
 public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
+	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
 	protected static String TRANSCODE_FOLDER = "#--TRANSCODE--#";
 	
 	public DLNAResource getParent() {
@@ -79,7 +82,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	protected boolean copy;
 	protected boolean discovered = false;
 	private ProcessWrapper externalProcess;
-	protected String ifoFileURI;
 	protected boolean srtFile;
 	public int updateId = 1;
 	public static int systemUpdateId = 1;
@@ -582,11 +584,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			//                   01 = Range par octets
 			//                   00 = pas de range, meme pas de pause possible
 			flags = "DLNA.ORG_OP=01";
-			if (player != null) {
-				if (player.isTimeSeekable() && mediaRenderer == PS3)
+			if (this instanceof IPushOutput && !((IPushOutput)this).isUnderlyingSeekSupported())
+				flags = "DLNA.ORG_OP=00";
+			else if (player != null) {
+				if (player.isTimeSeekable() && mediaRenderer == PS3) {
 					flags = "DLNA.ORG_OP=10";
-				/*else
-					flags = "DLNA.ORG_OP=00";*/ // 00 not working with ps3
+					if (this instanceof IPushOutput)
+						flags = "DLNA.ORG_OP=00";
+				}
 			}
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
 			
@@ -600,10 +605,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			}
 			addAttribute(sb, "protocolInfo", "http-get:*:" + mime + dlnaspec + (dlnaspec.length()>0?";":":") + flags);
 			
-			if (ifoFileURI != null) {
-				 // not working with ps3 it seems
-				addAttribute(sb, "dlna:ifoFileURI", getURL("ifo0000") + ".ifo");
-			}
 			
 			if (ext != null && ext.isVideo() && media != null && media.mediaparsed) {
 				if (player == null && media != null)
@@ -723,6 +724,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		
 		if (player == null) {
 			
+			if (this instanceof IPushOutput) {
+				
+				PipedOutputStream out = new PipedOutputStream();
+				PipedInputStream fis = new PipedInputStream(out);
+				((IPushOutput) this).push(out);
+				if (low > 0 && fis != null)
+					fis.skip(low);
+				return fis;
+			}
+			
 			InputStream fis = getInputStream();
 			if (low > 0 && fis != null)
 				fis.skip(low);
@@ -730,7 +741,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		} else {
 			
 			if (timeseek == -1) {
-				if (PMS.getConfiguration().isDisableFakeSize())
+				if (PMS.getConfiguration().isDisableFakeSize() && !(this instanceof IPushOutput))
 					return null;
 				else
 					timeseek = 0;
@@ -740,6 +751,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			params.aid = aid;
 			params.sid = sid;
 			params.mediaRenderer = mediarenderer;
+			
+			if (this instanceof IPushOutput)
+				params.stdin = (IPushOutput) this;
 			
 			if (externalProcess == null || externalProcess.isDestroyed()) {
 				PMS.minimal("Starting transcode/remux of " + getName());
@@ -763,7 +777,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					new Thread(r).start();
 					ProcessWrapper newExternalProcess = player.launchTranscode(getSystemName(), media, params);
 					try {
-						Thread.sleep(800);
+						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						PMS.error(null, e);
 					}

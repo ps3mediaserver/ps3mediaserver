@@ -103,6 +103,9 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				bo = (BufferedOutputFile) outConsumer.getBuffer();
 				bo.attachThread(this);
 			}
+			if (params.stdin != null) {
+				params.stdin.push(process.getOutputStream());
+			}
 			stderrConsumer.start();
 			if (outConsumer != null) 
 				outConsumer.start();

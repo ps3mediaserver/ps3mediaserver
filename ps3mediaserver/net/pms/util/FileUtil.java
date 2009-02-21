@@ -2,10 +2,19 @@ package net.pms.util;
 
 import java.io.File;
 
+
 public class FileUtil {
 	
 	public static File isFileExists(String f, String ext) {
 		return isFileExists(new File(f), ext);
+	}
+	
+	public static String getExtension(String f) {
+		int point = f.lastIndexOf(".");
+		if (point == -1) {
+			return null;
+		}
+		return f.substring(point+1);
 	}
 
 	public static String getFileNameWithoutExtension(String f) {
@@ -44,6 +53,24 @@ public class FileUtil {
 			return upperCasedFilename;
 		
 		return null;
+	}
+	
+	public static boolean doesSubtitlesExists(File file) {
+		File srt = FileUtil.isFileExists(file, "srt");
+		boolean srtFile = srt != null;
+		if (!srtFile) {
+			srt = FileUtil.isFileExists(file, "sub");
+			srtFile = srt != null;
+			if (!srtFile) {
+				srt = FileUtil.isFileExists(file, "ass");
+				srtFile = srt != null;
+				if (!srtFile) {
+					srt = FileUtil.isFileExists(file, "smi");
+					srtFile = srt != null;
+				}
+			}
+		}
+		return srtFile;
 	}
 
 }
