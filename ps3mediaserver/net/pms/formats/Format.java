@@ -18,12 +18,12 @@
  */
 package net.pms.formats;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.InputFile;
 import net.pms.encoders.Player;
 import net.pms.network.HTTPResource;
 
@@ -104,7 +104,7 @@ public abstract class Format implements Cloneable {
 		return (Format) this.clone();
 	}
 	// method which allow us the fine tuning of parsing with different formats in the future
-	public void parse(DLNAMediaInfo media, File file, int type) {
+	public void parse(DLNAMediaInfo media, InputFile file, int type) {
 		media.parse(file, this, type);
 	}
 	

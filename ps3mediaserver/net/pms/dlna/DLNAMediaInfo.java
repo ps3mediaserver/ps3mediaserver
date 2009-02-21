@@ -24,7 +24,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -32,6 +31,15 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
+
+import net.pms.PMS;
+import net.pms.formats.Format;
+import net.pms.io.OutputParams;
+import net.pms.io.ProcessWrapperImpl;
+import net.pms.network.HTTPResource;
+import net.pms.util.AVCHeader;
+import net.pms.util.CoverUtil;
+import net.pms.util.ProcessUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.sanselan.ImageInfo;
@@ -44,17 +52,6 @@ import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.Tag;
-
-
-
-import net.pms.PMS;
-import net.pms.formats.Format;
-import net.pms.io.OutputParams;
-import net.pms.io.ProcessWrapperImpl;
-import net.pms.network.HTTPResource;
-import net.pms.util.AVCHeader;
-import net.pms.util.CoverUtil;
-import net.pms.util.ProcessUtil;
 
 
 
@@ -105,10 +102,10 @@ public class DLNAMediaInfo {
 	private boolean ffmpeg_annexb_failure;
 	private boolean muxable;
 	
-	public ProcessWrapperImpl getFFMpegThumbnail(File media) {
+	private ProcessWrapperImpl getFFMpegThumbnail(InputFile media) {
 		String args [] = new String[14];
 		args[0] = getFfmpegPath();
-		if (media.getAbsolutePath().toLowerCase().endsWith("dvr-ms")) {
+		if (media.file != null && media.file.getAbsolutePath().toLowerCase().endsWith("dvr-ms")) {
 			if (StringUtils.isNotBlank(PMS.getConfiguration().getFfmpegAlternativePath())) {
 				args[0] = PMS.getConfiguration().getFfmpegAlternativePath();
 			}
@@ -122,7 +119,10 @@ public class DLNAMediaInfo {
 		else if (media.length() > 10000000)
 			args[2] = "1";*/
 		args[3] = "-i";
-		args[4] = ProcessUtil.getShortFileNameIfWideChars(media.getAbsolutePath());
+		if (media.file != null)
+			args[4] = ProcessUtil.getShortFileNameIfWideChars(media.file.getAbsolutePath());
+		else
+			args[4] = "-";
 		args[5] = "-an";
 		args[6] = "-an";
 		args[7] = "-s";
@@ -139,6 +139,7 @@ public class DLNAMediaInfo {
 		}
 		OutputParams params = new OutputParams(PMS.getConfiguration());
 		params.maxBufferSize = 1;
+		params.stdin = media.push;
 		params.noexitcheck = true; // not serious if anything happens during the thumbnailer
 		final ProcessWrapperImpl pw = new ProcessWrapperImpl(args, params);
 		// FAILSAFE
@@ -171,8 +172,7 @@ public class DLNAMediaInfo {
 		}
 	}
 
-	
-	public void parse(File f, Format ext, int type) {
+	public void parse(InputFile f, Format ext, int type) {
 		int i=0;
 		while (parsing) {
 			if (i == 5) {
@@ -188,115 +188,127 @@ public class DLNAMediaInfo {
 			return;
 		
 		
-		if (f != null && f.isFile()) {
-			size = f.length();
+		if (f != null) {
+			
+			if (f.file != null)
+				size = f.file.length();
+			else
+				size = f.size;
 			ProcessWrapperImpl pw = null;
 			boolean ffmpeg_parsing = true;
-			if (type == Format.AUDIO || f.getName().toLowerCase().endsWith("flac")) {
+			if (type == Format.AUDIO) {
 				ffmpeg_parsing = false;
-				try {
-					AudioFile af = AudioFileIO.read(f);
-					AudioHeader ah = af.getAudioHeader();
-					if (ah != null) {
-						int length = ah.getTrackLength();
-						int rate = ah.getSampleRateAsNumber();
-						if (ah.getEncodingType().toLowerCase().contains("flac 24")) {
-							bitsperSample=24;
-							/*if (rate == 32000) {
-								rate = 3* rate;
-								length = length /3;
-							}*/
-							
-						}
-						sampleFrequency = "" + rate;
-						setDurationString(length);
-						bitrate = (int) ah.getBitRateAsNumber();
-						nrAudioChannels = 2;
-						if (ah.getChannels() != null && ah.getChannels().toLowerCase().contains("mono")) {
-							nrAudioChannels = 1;
-						} else if (ah.getChannels() != null && ah.getChannels().toLowerCase().contains("stereo")) {
+				if (f.file != null) {
+					try {
+						AudioFile af = AudioFileIO.read(f.file);
+						AudioHeader ah = af.getAudioHeader();
+						if (ah != null) {
+							int length = ah.getTrackLength();
+							int rate = ah.getSampleRateAsNumber();
+							if (ah.getEncodingType().toLowerCase().contains("flac 24")) {
+								bitsperSample=24;
+								/*if (rate == 32000) {
+									rate = 3* rate;
+									length = length /3;
+								}*/
+								
+							}
+							sampleFrequency = "" + rate;
+							setDurationString(length);
+							bitrate = (int) ah.getBitRateAsNumber();
 							nrAudioChannels = 2;
-						} else if (ah.getChannels() != null) {
-							nrAudioChannels = Integer.parseInt(ah.getChannels());
+							if (ah.getChannels() != null && ah.getChannels().toLowerCase().contains("mono")) {
+								nrAudioChannels = 1;
+							} else if (ah.getChannels() != null && ah.getChannels().toLowerCase().contains("stereo")) {
+								nrAudioChannels = 2;
+							} else if (ah.getChannels() != null) {
+								nrAudioChannels = Integer.parseInt(ah.getChannels());
+							}
+							codecA = ah.getEncodingType().toLowerCase();
 						}
-						codecA = ah.getEncodingType().toLowerCase();
+						Tag t = af.getTag();
+						if (t != null) {
+							album = t.getFirstAlbum();
+							artist = t.getFirstArtist();
+							songname = t.getFirstTitle();
+							String y = t.getFirstYear();
+							if (t.getArtworkList().size() > 0) {
+								thumb = t.getArtworkList().get(0).getBinaryData();
+							} else {
+								if (PMS.getConfiguration().getAudioThumbnailMethod() > 0)
+									thumb = CoverUtil.get().getThumbnailFromArtistAlbum(PMS.getConfiguration().getAudioThumbnailMethod()==1?CoverUtil.AUDIO_AMAZON:CoverUtil.AUDIO_DISCOGS, artist, album);
+							}
+							try {
+								if (y.length() > 4)
+									y = y.substring(0, 4);
+								year = Integer.parseInt(((y != null && y.length() > 0)?y:"0"));
+								y = t.getFirstTrack();
+								track = Integer.parseInt(((y != null && y.length() > 0)?y:"1"));
+								genre = t.getFirstGenre();
+							} catch (Throwable e) {
+								PMS.info("error in parsing unimportant metadata: " + e.getMessage());
+							}
+						}
+					} catch (Throwable e) {
+						PMS.info("Error in parsing audio file: " + e.getMessage() + " - " + (e.getCause()!=null?e.getCause().getMessage():"") + " / Switching to ffmpeg");
+						ffmpeg_parsing = true;
 					}
-					Tag t = af.getTag();
-					if (t != null) {
-						album = t.getFirstAlbum();
-						artist = t.getFirstArtist();
-						songname = t.getFirstTitle();
-						String y = t.getFirstYear();
-						if (t.getArtworkList().size() > 0) {
-							thumb = t.getArtworkList().get(0).getBinaryData();
-						} else {
-							if (PMS.getConfiguration().getAudioThumbnailMethod() > 0)
-								thumb = CoverUtil.get().getThumbnailFromArtistAlbum(PMS.getConfiguration().getAudioThumbnailMethod()==1?CoverUtil.AUDIO_AMAZON:CoverUtil.AUDIO_DISCOGS, artist, album);
-						}
-						try {
-							if (y.length() > 4)
-								y = y.substring(0, 4);
-							year = Integer.parseInt(((y != null && y.length() > 0)?y:"0"));
-							y = t.getFirstTrack();
-							track = Integer.parseInt(((y != null && y.length() > 0)?y:"1"));
-							genre = t.getFirstGenre();
-						} catch (Throwable e) {
-							PMS.info("error in parsing unimportant metadata: " + e.getMessage());
-						}
-					}
-				} catch (Throwable e) {
-					PMS.info("Error in parsing audio file: " + e.getMessage() + " - " + (e.getCause()!=null?e.getCause().getMessage():"") + " / Switching to ffmpeg");
-					ffmpeg_parsing = true;
+					if (songname == null || songname.length() == 0)
+						songname = f.file.getName();
 				}
-				if (songname == null || songname.length() == 0)
-					songname = f.getName();
 			}
 			if (type == Format.IMAGE) {
-				try {
-					ffmpeg_parsing = false;
-					ImageInfo info = Sanselan.getImageInfo(f);
-					width = info.getWidth();
-					height = info.getHeight();
-					bitsperSample = info.getBitsPerPixel();
-					String formatName = info.getFormatName();
-					if (formatName.startsWith("JPEG")) {
-						IImageMetadata meta = Sanselan.getMetadata(f);
-						if (meta != null && meta instanceof JpegImageMetadata) {
-							JpegImageMetadata jpegmeta = (JpegImageMetadata) meta;
-							TiffField tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_MODEL);
-							if (tf != null)
-								model = tf.getStringValue().trim();
-	
-							tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_EXPOSURE_TIME);
-							if (tf != null)
-								exposure = (int) (1000*tf.getDoubleValue());
-	
-							tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_ORIENTATION);
-							if (tf != null)
-								orientation = tf.getIntValue();
-	
-							tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_ISO);
-							if (tf != null)
-								iso = tf.getIntValue();
+				if (f.file != null) {
+					try {
+						ffmpeg_parsing = false;
+						ImageInfo info = Sanselan.getImageInfo(f.file);
+						width = info.getWidth();
+						height = info.getHeight();
+						bitsperSample = info.getBitsPerPixel();
+						String formatName = info.getFormatName();
+						if (formatName.startsWith("JPEG")) {
+							IImageMetadata meta = Sanselan.getMetadata(f.file);
+							if (meta != null && meta instanceof JpegImageMetadata) {
+								JpegImageMetadata jpegmeta = (JpegImageMetadata) meta;
+								TiffField tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_MODEL);
+								if (tf != null)
+									model = tf.getStringValue().trim();
+		
+								tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_EXPOSURE_TIME);
+								if (tf != null)
+									exposure = (int) (1000*tf.getDoubleValue());
+		
+								tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_ORIENTATION);
+								if (tf != null)
+									orientation = tf.getIntValue();
+		
+								tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_ISO);
+								if (tf != null)
+									iso = tf.getIntValue();
+							}
+						} else if (formatName.startsWith("PNG")) {
+							codecV = "png";
+						} else if (formatName.startsWith("GIF")) {
+							codecV = "gif";
 						}
-					} else if (formatName.startsWith("PNG")) {
-						codecV = "png";
-					} else if (formatName.startsWith("GIF")) {
-						codecV = "gif";
+					} catch (Throwable e) {
+						ffmpeg_parsing = true;
+						PMS.minimal("Error during the parsing of image with Sanselan... switching to Ffmpeg: " + e.getMessage());
 					}
-				} catch (Throwable e) {
-					ffmpeg_parsing = true;
-					PMS.minimal("Error during the parsing of image with Sanselan... switching to Ffmpeg: " + e.getMessage());
 				}
 			}
 			if (ffmpeg_parsing) {
 				pw = getFFMpegThumbnail(f);
 				int nbUndAudioTracks = 0;
+				String input = "-";
+				if (f.file != null)
+					input = ProcessUtil.getShortFileNameIfWideChars(f.file.getAbsolutePath()) ;
 				if (ffmpeg_failure) {
 					// switchin to mplayer cause ffmpeg has hung ? -> for some m2ts
 					// TODO: improve that
-					String cmdArray [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-identify", "-vo", "null", "-ao", "null", "-frames", "1", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()) };
+					String cmdArray [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-identify", "-vo", "null", "-ao", "null", "-frames", "1", input};
 					OutputParams params = new OutputParams(PMS.getConfiguration());
+					params.stdin = f.push;
 					params.maxBufferSize = 1;
 					params.log = true;
 					params.noexitcheck = true; // not serious if anything happens during the thumbnailer
@@ -351,6 +363,8 @@ public class DLNAMediaInfo {
 						}
 					}
 				} else {
+					if (input.equals("-"))
+						input = "pipe:";
 					boolean matchs = false;
 					ArrayList<String> lines = (ArrayList<String>) pw.getResults();
 					int langId = 0;
@@ -360,7 +374,7 @@ public class DLNAMediaInfo {
 						if (line.startsWith("Output"))
 							matchs = false;
 						else if (line.startsWith("Input")) {
-							if (line.indexOf(ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath())) > -1) {
+							if (line.indexOf(input) > -1) {
 								matchs = true;
 								container = line.substring(10, line.indexOf(",", 11)).trim();
 							} else
@@ -501,12 +515,12 @@ public class DLNAMediaInfo {
 						}
 						
 					} catch (IOException e) {
-						PMS.info("Error while decoding thumbnail of " + f.getAbsolutePath() + " : " + e.getMessage());
+						PMS.info("Error while decoding thumbnail : " + e.getMessage());
 					}
 				}
 				
 			}
-			finalize(type, f);
+			finalize(type);
 			mediaparsed = true;
 			
 		}
@@ -543,7 +557,7 @@ public class DLNAMediaInfo {
 		
 	}
 	
-	public void finalize(int type, File f) {
+	public void finalize(int type) {
 		if (container != null && container.equals("avi")) {
 			mimeType = HTTPResource.AVI_TYPEMIME;
 		} else if (container != null && container.equals("asf")) {
@@ -598,12 +612,12 @@ public class DLNAMediaInfo {
 	
 	private boolean h264_parsed;
 	
-	public boolean isVideoPS3Compatible(String filename) {
+	public boolean isVideoPS3Compatible(InputFile f) {
 		if (!h264_parsed) {
 			if (codecV != null && (codecV.equals("h264") || codecV.equals("mpeg2video"))) { // what about VC1 ?
 				muxable = true;
 				if (codecV.equals("h264") && container != null && (container.equals("matroska") || container.equals("mov"))) {
-					byte headers [][] = getAnnexBFrameHeader(filename);
+					byte headers [][] = getAnnexBFrameHeader(f);
 					if (headers != null) {
 						h264_annexB = headers[1];
 						if (h264_annexB != null) {
@@ -613,7 +627,7 @@ public class DLNAMediaInfo {
 							System.arraycopy(h264_annexB, skip, header, 0, header.length);
 							AVCHeader avcHeader = new AVCHeader(header);
 							avcHeader.parse();
-							PMS.debug("H264 file: " + filename + ": Profile: " + avcHeader.getProfile() + " / level: " + avcHeader.getLevel() + " / ref frames: " + avcHeader.getRef_frames());
+							PMS.debug("H264 file: " + f.filename + ": Profile: " + avcHeader.getProfile() + " / level: " + avcHeader.getLevel() + " / ref frames: " + avcHeader.getRef_frames());
 							muxable = true;
 							if (width > 1400) { // 1080p
 								if (avcHeader.getLevel() >= 50 && avcHeader.getRef_frames() > 4)
@@ -626,7 +640,7 @@ public class DLNAMediaInfo {
 									muxable = false;
 							}
 							if (!muxable) {
-								PMS.info("H264 file: " + filename + " is not ps3 compatible !");
+								PMS.info("H264 file: " + f.filename + " is not ps3 compatible !");
 							}
 						} else
 							muxable = false;
@@ -766,7 +780,7 @@ public class DLNAMediaInfo {
 		return audiosubs;
 	}
 	
-	public byte [][] getAnnexBFrameHeader(String f) {
+	public byte [][] getAnnexBFrameHeader(InputFile f) {
 		
 		String cmdArray [] = new String [14];
 		cmdArray[0] = PMS.getConfiguration().getFfmpegPath();
@@ -774,7 +788,10 @@ public class DLNAMediaInfo {
 		cmdArray[1] = "-vframes";
 		cmdArray[2] = "1";
 		cmdArray[3] = "-i";
-		cmdArray[4] = f;
+		if (f.push == null && f.filename != null)
+			cmdArray[4] = f.filename;
+		else
+			cmdArray[4] = "-";
 		cmdArray[5] = "-vcodec";
 		cmdArray[6] = "copy";
 		cmdArray[7] = "-f";
@@ -789,6 +806,7 @@ public class DLNAMediaInfo {
 	
 		OutputParams params = new OutputParams(PMS.getConfiguration());
 		params.maxBufferSize = 1;
+		params.stdin = f.push;
 		
 		final ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		

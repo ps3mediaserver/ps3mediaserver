@@ -97,8 +97,8 @@ public class RequestHandler implements Runnable {
 						if (timeseek.endsWith("-"))
 							timeseek = timeseek.substring(0, timeseek.length()-1);
 						request.setTimeseek(Double.parseDouble(timeseek));
-					} else if (headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG : NPT==") > -1) { // firmware 2.40
-						String timeseek = headerLine.substring(headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG : NPT==")+29);
+					} else if (headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG : NPT=") > -1) { // firmware 2.40
+						String timeseek = headerLine.substring(headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG : NPT=")+29);
 						if (timeseek.endsWith("-"))
 							timeseek = timeseek.substring(0, timeseek.length()-1);
 						request.setTimeseek(Double.parseDouble(timeseek));

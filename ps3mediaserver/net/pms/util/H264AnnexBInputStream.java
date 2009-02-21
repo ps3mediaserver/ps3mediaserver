@@ -7,6 +7,7 @@ import java.io.InputStream;
 
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.InputFile;
 
 public class H264AnnexBInputStream extends InputStream {
 
@@ -153,7 +154,9 @@ public class H264AnnexBInputStream extends InputStream {
 //			e1.printStackTrace();
 //		}
 	
-		byte header [][] = new DLNAMediaInfo().getAnnexBFrameHeader("D:\\Tests\\mov\\harry.hdmov");
+		InputFile newInput = new InputFile();
+		newInput.filename = "D:\\Tests\\mov\\harry.hdmov";
+		byte header [][] = new DLNAMediaInfo().getAnnexBFrameHeader(newInput);
 		FileInputStream fis = new FileInputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\win32\\harry");
 		H264AnnexBInputStream h = new H264AnnexBInputStream(fis, header[1]);
 		FileOutputStream out = new FileOutputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\win32\\raw_new.h264");

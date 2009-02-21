@@ -15,6 +15,7 @@ New Option: unification of Mencoder/tsMuxer engines, including:
 - Changes / Features : All Platforms
 
 XBox 360 unofficial support (Pictures/Music/Videos : WMV8/WMA2 transcoding)
+Mencoder archive handling (no seeking support)
 Automatic album art download from amazon or discogs
 New option for browsing directory by date
 Alternate cover art folder and <video>.jpg additional support (along existing <video>.<ext>.cover.jpg)

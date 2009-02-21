@@ -1,11 +1,11 @@
 package net.pms.formats;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.InputFile;
 import net.pms.encoders.Player;
 import net.pms.encoders.RAWThumbnailer;
 import net.pms.io.OutputParams;
@@ -38,7 +38,7 @@ public class RAW extends JPG {
 	}
 
 	@Override
-	public void parse(DLNAMediaInfo media, File file, int type) {
+	public void parse(DLNAMediaInfo media, InputFile file, int type) {
 		
 		try {
 			
@@ -53,7 +53,8 @@ public class RAW extends JPG {
 			cmdArray[0] = PMS.getConfiguration().getDCRawPath();
 			cmdArray[1] = "-i";
 			cmdArray[2] = "-v";
-			cmdArray[3] = file.getAbsolutePath();
+			if (file.file != null)
+				cmdArray[3] = file.file.getAbsolutePath();
 			
 			params.log = true;
 			ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
@@ -72,12 +73,12 @@ public class RAW extends JPG {
 			
 			if (media.width > 0) {
 				
-				media.thumb = RAWThumbnailer.getThumbnail(params, file.getAbsolutePath());
+				media.thumb = RAWThumbnailer.getThumbnail(params, file.file.getAbsolutePath());
 				if (media.thumb != null)
 					media.size = media.thumb.length;
 			}
 			
-			media.finalize(type, file);
+			media.finalize(type);
 			media.mediaparsed = true;
 		} catch (Exception e) {
 			e.printStackTrace();

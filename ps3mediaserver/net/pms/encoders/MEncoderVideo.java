@@ -55,6 +55,7 @@ import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaLang;
+import net.pms.dlna.InputFile;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeIPCProcess;
@@ -949,7 +950,11 @@ private JTextField mencoder_ass_scale;
 			}
 		}
 		
-		if (subString == null && params.sid == -1 && media != null && media.isVideoPS3Compatible(fileName) && configuration.isMencoderMuxWhenCompatible() && !Platform.isMac() && params.mediaRenderer ==HTTPResource.PS3) {
+		InputFile newInput = new InputFile();
+		newInput.filename = fileName;
+		newInput.push = params.stdin;
+		
+		if (subString == null && params.sid == -1 && media != null && media.isVideoPS3Compatible(newInput) && configuration.isMencoderMuxWhenCompatible() && !Platform.isMac() && params.mediaRenderer ==HTTPResource.PS3) {
 			TSMuxerVideo tv = new TSMuxerVideo(configuration);
 			params.forceFps = media.getValidFps(false);
 			if (media.codecV.equals("h264")) { //$NON-NLS-1$
@@ -1155,8 +1160,11 @@ private JTextField mencoder_ass_scale;
 		if (avisynth && !fileName.toLowerCase().endsWith(".iso")) { //$NON-NLS-1$
 			File avsFile = FFMpegVideo.getAVSScript(fileName, params.fromFrame, params.toFrame);
 			cmdArray[4] = ProcessUtil.getShortFileNameIfWideChars(avsFile.getAbsolutePath());
-		} else
+		} else {
 			cmdArray[4] = fileName;
+			if (params.stdin != null)
+				cmdArray[4] = "-";
+		}
 		cmdArray[5] = "-quiet"; //$NON-NLS-1$
 		if (media != null&& media.dvdtrack > 0) {
 			cmdArray[5] = "dvd://" + media.dvdtrack; //$NON-NLS-1$
@@ -1473,21 +1481,16 @@ private JTextField mencoder_ass_scale;
 			
 			OutputParams ffparams = new OutputParams(configuration);
 			ffparams.maxBufferSize = 1;
+			ffparams.stdin = params.stdin;
 			ProcessWrapperImpl ffVideo = new ProcessWrapperImpl(cmdArray, ffparams);
 			
 			ProcessWrapper ff_video_pipe_process = ffVideoPipe.getPipeProcess();
 			pw.attachProcess(ff_video_pipe_process);
 			ff_video_pipe_process.runInNewThread();
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) { }
 			ffVideoPipe.deleteLater();
 			
 			pw.attachProcess(ffVideo);
 			ffVideo.runInNewThread();
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) { }
 			
 			PipeIPCProcess ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
 			StreamModifier sm = new StreamModifier();
@@ -1499,6 +1502,9 @@ private JTextField mencoder_ass_scale;
 			String ffmpegLPCMextract [] = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + configuration.getAudioChannelCount(), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", "-oac", sm.isDtsembed()?"copy":"pcm", "-o", ffAudioPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$
 			ffAudioPipe.setModifier(sm);
 			
+			if (params.stdin != null)
+				ffmpegLPCMextract[3] = "-";
+			
 			if (fileName.toLowerCase().endsWith(".evo")) { //$NON-NLS-1$
 				ffmpegLPCMextract[4] = "-psprobe"; //$NON-NLS-1$
 				ffmpegLPCMextract[5] = "1000000"; //$NON-NLS-1$
@@ -1509,9 +1515,10 @@ private JTextField mencoder_ass_scale;
 			}
 			OutputParams ffaudioparams = new OutputParams(configuration);
 			ffaudioparams.maxBufferSize = 1;
+			ffaudioparams.stdin = params.stdin;
 			ProcessWrapperImpl ffAudio = new ProcessWrapperImpl(ffmpegLPCMextract, ffaudioparams);
 			
-			
+			params.stdin = null;
 			
 			PrintWriter pwMux = new PrintWriter(f);
 			pwMux.println("MUXOPT --no-pcr-on-video-pid --no-asyncio --new-audio-pes --vbr --vbv-len=500"); //$NON-NLS-1$
@@ -1584,7 +1591,7 @@ private JTextField mencoder_ass_scale;
 		
 		pw.runInNewThread();
 		try {
-			Thread.sleep(50);
+			Thread.sleep(100);
 		} catch (InterruptedException e) { }
 		return pw;
 	}

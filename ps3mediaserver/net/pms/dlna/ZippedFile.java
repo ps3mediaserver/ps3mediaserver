@@ -45,7 +45,7 @@ public class ZippedFile extends DLNAResource {
 			Enumeration<? extends ZipEntry> enm = zip.entries();
 			while (enm.hasMoreElements()) {
 				ZipEntry ze = enm.nextElement();
-				if (ze.getSize() > -1 && ze.getSize() < MAX_ARCHIVE_ENTRY_SIZE)
+				//if (ze.getSize() > -1 && ze.getSize() < MAX_ARCHIVE_ENTRY_SIZE)
 					addChild(new ZippedEntry(z, ze.getName(), ze.getSize()));
 			}
 			zip.close();
