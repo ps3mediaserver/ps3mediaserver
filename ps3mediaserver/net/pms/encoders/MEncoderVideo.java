@@ -990,14 +990,14 @@ private JTextField mencoder_ass_scale;
 		}
 		
 		oaccopy = false;
-		if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !avisynth()) {
+		if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !avisynth() && params.mediaRenderer ==HTTPResource.PS3) {
 			oaccopy = true;
 		}
 		
-		dts = configuration.isDTSEmbedInPCM() && !dvd && params.aid != null && params.aid.isDTS() && !avisynth();
-		pcm = configuration.isMencoderUsePcm() && !dvd && (params.aid != null && (params.aid.isDTS() || params.aid.isLossless()));
+		dts = configuration.isDTSEmbedInPCM() && !dvd && params.aid != null && params.aid.isDTS() && !avisynth() && params.mediaRenderer ==HTTPResource.PS3;
+		pcm = configuration.isMencoderUsePcm() && !dvd && (params.aid != null && (params.aid.isDTS() || params.aid.isLossless())) && params.mediaRenderer ==HTTPResource.PS3;
 		
-		if ((dts || pcm) && params.mediaRenderer ==HTTPResource.PS3) {
+		if (dts || pcm) {
 			if (dts)
 				oaccopy = true;
 			params.losslessaudio = true;
@@ -1215,7 +1215,7 @@ private JTextField mencoder_ass_scale;
 				cmdArray[cmdArray.length-7] = cmdArray[cmdArray.length-5];
 		}
 		
-		if (subString != null && !configuration.isMencoderDisableSubs()) {
+		if (subString != null && !configuration.isMencoderDisableSubs() && !avisynth()) {
 			if (params.sid.type == DLNAMediaSubtitle.VOBSUB) {
 				// vobsub not supported in MEncoder :\
 				//cmdArray[cmdArray.length-4] = "-vobsub";

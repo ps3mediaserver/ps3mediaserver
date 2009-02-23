@@ -742,7 +742,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		} else {
 			
 			if (timeseek == -1) {
-				if (PMS.getConfiguration().isDisableFakeSize() && !(this instanceof IPushOutput) && ext != null && ext.isVideo())
+				if (mediarenderer == HTTPResource.PS3 && PMS.getConfiguration().isDisableFakeSize() && !(this instanceof IPushOutput) && ext != null && ext.isVideo())
 					return null;
 				else
 					timeseek = 0;
