@@ -179,7 +179,8 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
         Font sf = null;
     
         // Set an unicode font for testing exotics languages (japanese)
-        //sf = new Font("Serif", Font.PLAIN, 12);
+        if (PMS.getConfiguration().getLanguage() != null && (PMS.getConfiguration().getLanguage().equals("ja") || PMS.getConfiguration().getLanguage().startsWith("zh"))) //$NON-NLS-1$ //$NON-NLS-2$
+        		sf = new Font("Serif", Font.PLAIN, 12); //$NON-NLS-1$
         
         if (sf != null) {
         	UIManager.put("Button.font",sf);  //$NON-NLS-1$

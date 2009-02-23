@@ -63,7 +63,8 @@ public abstract class FlowParserOutputStream extends OutputStream {
 					if (streamableByteNumber == 0) {
 						throw new IOException("Packet size cannot be Null !");
 					}
-					beforeChunkSend();
+					if (!discard)
+						beforeChunkSend();
 				} else {
 					// let's wait for more data
 					buffer.position(internalMark);
@@ -84,7 +85,8 @@ public abstract class FlowParserOutputStream extends OutputStream {
 					internalMark += streamableByteNumber;
 					remains = remains - streamableByteNumber;
 					streamableByteNumber = 0;
-					afterChunkSend();
+					if (!discard)
+						afterChunkSend();
 					if (remains == 0) {
 						//buffer.position(internalMark);
 						//buffer.compact();

@@ -60,7 +60,20 @@ public class DTSAudioOutputStream extends FlowParserOutputStream {
 				PMS.debug("DTS framesize: " + framesize);
 			}
 		} else {
-			// E-AC3 / FULL DTS-HD MA / TRUE HD ???
+			// DTS wrongly extracted... searching for start of the frame
+			for(int i=3;i<2020;i++) {
+				if (data.length > i && data[i-3] == 127 && data[i-2] == -2 && data[i-1] == -128 && data[i] == 1) {
+					// skip DTS first frame as it's incomplete
+					discard = true;
+					streamableByteNumber = i-3;
+					break;
+				} else if (data[i-3] == 100 && data[i-2] == 88 && data[i-1] == 32 && data[i] == 37) {
+					// skip DTS-HD first frame
+					discard = true;
+					streamableByteNumber = i-3;
+					break;
+				}
+			}
 		}
 	}
 
@@ -73,8 +86,9 @@ public class DTSAudioOutputStream extends FlowParserOutputStream {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		//FileInputStream fis = new FileInputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\tmp\\24bits2.dts");
-		FileInputStream fis = new FileInputStream("H:\\Tests\\dts channel id.track_2.dts");
+		//FileInputStream fis = new FileInputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\tmp\\24bits.dts");
+		//FileInputStream fis = new FileInputStream("H:\\Tests\\dts channel id.track_2.dts");
+		FileInputStream fis = new FileInputStream("H:\\Tests\\m2ts\\dtshd.dts");
 		FileOutputStream out = new FileOutputStream("D:\\eclipse3.4\\workspace\\ps3mediaserver\\tmp\\final.pcm");
 		DTSAudioOutputStream h = new DTSAudioOutputStream(new PCMAudioOutputStream(out, 2, 48000, 16));
 		long t1 = System.currentTimeMillis();

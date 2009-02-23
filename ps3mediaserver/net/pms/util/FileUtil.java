@@ -2,6 +2,10 @@ package net.pms.util;
 
 import java.io.File;
 
+import net.pms.PMS;
+import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAMediaSubtitle;
+
 
 public class FileUtil {
 	
@@ -55,10 +59,77 @@ public class FileUtil {
 		return null;
 	}
 	
-	public static boolean doesSubtitlesExists(File file) {
-		File srt = FileUtil.isFileExists(file, "srt");
-		boolean srtFile = srt != null;
-		if (!srtFile) {
+	public static boolean doesSubtitlesExists(File file, DLNAMediaInfo media) {
+		boolean found = browseFolderForSubtitles(file.getParentFile(), file, media);
+		if (PMS.getConfiguration().getAlternateSubsFolder() != null) {
+			File subFolder = new File(PMS.getConfiguration().getAlternateSubsFolder());
+			if (subFolder.exists()) {
+				found = found || browseFolderForSubtitles(subFolder, file, media);
+			}
+		}
+		return found;
+	}
+	
+	private static boolean browseFolderForSubtitles(File subFolder, File file, DLNAMediaInfo media) {
+		boolean found = false;
+		File allSubs [] = subFolder.listFiles();
+		for(File f:allSubs) {
+			if (f.isFile()) {
+				for(int i=0;i<DLNAMediaSubtitle.subExtensions.length;i++) {
+					String ext = DLNAMediaSubtitle.subExtensions[i];
+					if ((f.getName().startsWith(getFileNameWithoutExtension(file.getName()))
+							&& f.getName().endsWith("." + ext)) || (f.getName().startsWith(getFileNameWithoutExtension(file.getName()))
+							&& f.getName().endsWith("." + ext.toUpperCase()))) {
+						String code = f.getName().substring(getFileNameWithoutExtension(file.getName()).length(), f.getName().length()-ext.length()-1);
+						if (code.startsWith("."))
+							code = code.substring(1);
+						if (Iso639.getCodeList().contains(code) || code.length() == 0) {
+							if (media != null) {
+								boolean exists = false;
+								for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
+									if (f.equals(sub.file))
+										exists = true;
+									else if (i == 4 && sub.type == DLNAMediaSubtitle.MICRODVD) { // VOBSUB
+										sub.type = DLNAMediaSubtitle.VOBSUB;
+										exists = true;
+									} else if (i == 1 && sub.type == DLNAMediaSubtitle.VOBSUB) { // VOBSUB
+										sub.file = f;
+										exists = true;
+									}
+								}
+								if (!exists) {
+									DLNAMediaSubtitle sub = new DLNAMediaSubtitle();
+									sub.id = 100 + media.subtitlesCodes.size(); // fake id, not used
+									sub.file = f;
+									if (code.length() == 0) {
+										sub.lang = "und";
+										sub.type = i+1;
+									} else {
+										sub.lang = code;
+										sub.type = i+1;
+									}
+									found = true;
+									media.subtitlesCodes.add(sub);
+								}
+							} else
+								return true;
+						}
+					}
+				}
+			}
+		}
+		return found;
+	}
+	/*
+	private static int doesSubtitlesExists(File parent, File file, String code) {
+		if (parent != null) {
+			file = new File(parent, file.getName());
+		}
+		File srt = FileUtil.isFileExists(file, code + "srt");
+		if (srt.exists()) {
+			return DLNAMediaSubtitle.SUBRIP;
+			break;
+		}
 			srt = FileUtil.isFileExists(file, "sub");
 			srtFile = srt != null;
 			if (!srtFile) {
@@ -70,7 +141,6 @@ public class FileUtil {
 				}
 			}
 		}
-		return srtFile;
 	}
-
+*/
 }

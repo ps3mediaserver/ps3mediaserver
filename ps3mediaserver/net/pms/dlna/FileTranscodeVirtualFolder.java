@@ -40,6 +40,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 			child.copy = copy;
 			if (child.ext.getProfiles() != null) {
 				DLNAResource ref = child;
+				Player tsMuxer = null;
 				for(int i=0;i<child.ext.getProfiles().size();i++) {
 					Player pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
 					if (pl !=null && !child.player.equals(pl)) {
@@ -53,10 +54,24 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 						avisnewChild.parent = this;
 						if (avisnewChild.player.id().equals("mencoder"))
 							ref = avisnewChild;
+						if (avisnewChild.player.id().equals("tsmuxer"))
+							tsMuxer = pl;
 					}
 				}
 				for(int i=0;i<child.media.audioCodes.size();i++) {
-					for(int j=-1;j<child.media.subtitlesCodes.size();j++) {
+					DLNAResource newChildNoSub = (DLNAResource) ref.clone();
+					newChildNoSub.player = ref.player;
+					newChildNoSub.id = newChildNoSub.parent.id + "$" + children.size();
+					newChildNoSub.media = ref.media;
+					newChildNoSub.copy = ref.copy;
+					newChildNoSub.noName = true;
+					children.add(newChildNoSub);
+					newChildNoSub.parent = this;
+					newChildNoSub.media_audio = ref.media.audioCodes.get(i);
+					newChildNoSub.media_subtitle = new DLNAMediaSubtitle();
+					newChildNoSub.media_subtitle.id = -1;
+					
+					for(int j=0;j<child.media.subtitlesCodes.size();j++) {
 						DLNAResource newChild = (DLNAResource) ref.clone();
 						newChild.player = ref.player;
 						newChild.id = newChild.parent.id + "$" + children.size();
@@ -65,14 +80,25 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 						newChild.noName = true;
 						children.add(newChild);
 						newChild.parent = this;
-						newChild.aid = ref.media.audioCodes.get(i).id;
-						newChild.alang = ref.media.audioCodes.get(i).lang;
-						newChild.aformat = ref.media.audioCodes.get(i).format;
-						if (j >= 0) {
-							newChild.sid = ref.media.subtitlesCodes.get(j).id;
-							newChild.slang = ref.media.subtitlesCodes.get(j).lang;
-						}
-						PMS.info("Duplicate " + ref.getName() + " with player: " + ref.player.toString() + " and aid: " + newChild.aid + " and sid: " + newChild.sid);
+						newChild.media_audio = ref.media.audioCodes.get(i);
+						//if (j >= 0) {
+							newChild.media_subtitle = ref.media.subtitlesCodes.get(j);
+						//}
+						PMS.info("Duplicate " + ref.getName() + " with player: " + ref.player.toString() + " and aid: " + newChild.media_audio.id + " and sid: " + newChild.media_subtitle);
+					}
+				}
+				
+				if (tsMuxer != null) {
+					for(int i=0;i<child.media.audioCodes.size();i++) {
+						DLNAResource newChildNoSub = (DLNAResource) ref.clone();
+						newChildNoSub.player = tsMuxer;
+						newChildNoSub.id = newChildNoSub.parent.id + "$" + children.size();
+						newChildNoSub.media = ref.media;
+						newChildNoSub.copy = ref.copy;
+						newChildNoSub.noName = true;
+						children.add(newChildNoSub);
+						newChildNoSub.parent = this;
+						newChildNoSub.media_audio = ref.media.audioCodes.get(i);
 					}
 				}
 			}

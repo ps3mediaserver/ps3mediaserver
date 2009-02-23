@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
-import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAMediaAudio;
 
 import com.sun.jna.Platform;
 
@@ -41,7 +41,7 @@ public class CodecUtil {
 		return codecs;
 	}
 	
-	public static int getAC3Bitrate(PmsConfiguration configuration, DLNAMediaInfo media) {
+	public static int getAC3Bitrate(PmsConfiguration configuration, DLNAMediaAudio media) {
 		int defaultBitrate = configuration.getAudioBitrate();
 		if (media != null && defaultBitrate >= 384) {
 			if (media.nrAudioChannels == 2) {

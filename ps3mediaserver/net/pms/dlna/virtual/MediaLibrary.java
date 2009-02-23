@@ -25,35 +25,35 @@ public class MediaLibrary extends VirtualFolder {
 	
 	private void init() {
 		VirtualFolder vfAudio = new VirtualFolder(Messages.getString("PMS.1"), null); //$NON-NLS-1$
-		allFolder = new MediaLibraryFolder(Messages.getString("PMS.11"), "TYPE = 1 ORDER BY FILENAME ASC", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
+		allFolder = new MediaLibraryFolder(Messages.getString("PMS.11"), "select FILENAME, MODIFIED from FILES F, AUDIOTRACKS A where F.ID = A.FILEID AND F.TYPE = 1 ORDER BY F.FILENAME ASC", MediaLibraryFolder.FILES); //$NON-NLS-1$ //$NON-NLS-2$
 		vfAudio.addChild(allFolder);
-		playlistFolder = new MediaLibraryFolder(Messages.getString("PMS.9"), "TYPE = 16 ORDER BY FILENAME ASC", MediaLibraryFolder.PLAYLISTS); //$NON-NLS-1$ //$NON-NLS-2$
+		playlistFolder = new MediaLibraryFolder(Messages.getString("PMS.9"), "select FILENAME, MODIFIED from FILES F WHERE F.TYPE = 16 ORDER BY F.FILENAME ASC", MediaLibraryFolder.PLAYLISTS); //$NON-NLS-1$ //$NON-NLS-2$
 		vfAudio.addChild(playlistFolder);
-		artistFolder = new MediaLibraryFolder(Messages.getString("PMS.13"), new String [] {"SELECT DISTINCT ARTIST FROM FILES WHERE TYPE = 1 ORDER BY ARTIST ASC", "TYPE = 1 AND ARTIST = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		artistFolder = new MediaLibraryFolder(Messages.getString("PMS.13"), new String [] {"SELECT DISTINCT A.ARTIST FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 ORDER BY A.ARTIST ASC", "select FILENAME, MODIFIED  from FILES F, AUDIOTRACKS A where F.ID = A.FILEID AND F.TYPE = 1 AND A.ARTIST = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		vfAudio.addChild(artistFolder);
-		albumFolder = new MediaLibraryFolder(Messages.getString("PMS.16"), new String [] {"SELECT DISTINCT ALBUM FROM FILES WHERE TYPE = 1 ORDER BY ALBUM ASC", "TYPE = 1 AND ALBUM = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		albumFolder = new MediaLibraryFolder(Messages.getString("PMS.16"), new String [] {"SELECT DISTINCT A.ALBUM FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 ORDER BY A.ALBUM ASC", "select FILENAME, MODIFIED from FILES F, AUDIOTRACKS A where F.ID = A.FILEID AND F.TYPE = 1 AND A.ALBUM = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		vfAudio.addChild(albumFolder);
-		genreFolder = new MediaLibraryFolder(Messages.getString("PMS.19"), new String [] {"SELECT DISTINCT GENRE FROM FILES WHERE TYPE = 1 ORDER BY GENRE ASC", "TYPE = 1 AND GENRE = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		genreFolder = new MediaLibraryFolder(Messages.getString("PMS.19"), new String [] {"SELECT DISTINCT A.GENRE FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 ORDER BY A.GENRE ASC", "select FILENAME, MODIFIED from FILES F, AUDIOTRACKS A where F.ID = A.FILEID AND F.TYPE = 1 AND A.GENRE = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		vfAudio.addChild(genreFolder);
 		MediaLibraryFolder mlf6 = new MediaLibraryFolder(Messages.getString("PMS.22"), new String [] { //$NON-NLS-1$
-				"SELECT DISTINCT ARTIST FROM FILES WHERE TYPE = 1 ORDER BY ARTIST ASC", //$NON-NLS-1$
-				"SELECT DISTINCT ALBUM FROM FILES WHERE TYPE = 1 AND ARTIST = '${0}' ORDER BY ALBUM ASC", //$NON-NLS-1$
-				"TYPE = 1 AND ARTIST = '${1}' AND ALBUM = '${0}' ORDER BY TRACK ASC, FILENAME ASC"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
+				"SELECT DISTINCT A.ARTIST FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 ORDER BY A.ARTIST ASC", //$NON-NLS-1$
+				"SELECT DISTINCT A.ALBUM FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 AND A.ARTIST = '${0}' ORDER BY A.ALBUM ASC", //$NON-NLS-1$
+				"select FILENAME, MODIFIED from FILES F, AUDIOTRACKS A where F.ID = A.FILEID AND F.TYPE = 1 AND A.ARTIST = '${1}' AND A.ALBUM = '${0}' ORDER BY A.TRACK ASC, F.FILENAME ASC"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
 		vfAudio.addChild(mlf6);
 		MediaLibraryFolder mlf7 = new MediaLibraryFolder(Messages.getString("PMS.26"), new String [] { //$NON-NLS-1$
-				"SELECT DISTINCT GENRE FROM FILES WHERE TYPE = 1 ORDER BY GENRE ASC", //$NON-NLS-1$
-				"SELECT DISTINCT ARTIST FROM FILES WHERE TYPE = 1 AND GENRE = '${0}' ORDER BY ARTIST ASC", //$NON-NLS-1$
-				"SELECT DISTINCT ALBUM FROM FILES WHERE TYPE = 1 AND GENRE = '${1}' AND ARTIST = '${0}' ORDER BY ALBUM ASC", //$NON-NLS-1$
-				"TYPE = 1 AND GENRE = '${2}' AND ARTIST = '${1}' AND ALBUM = '${0}' ORDER BY TRACK ASC, FILENAME ASC"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
+				"SELECT DISTINCT A.GENRE FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 ORDER BY A.GENRE ASC", //$NON-NLS-1$
+				"SELECT DISTINCT A.ARTIST FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 AND A.GENRE = '${0}' ORDER BY A.ARTIST ASC", //$NON-NLS-1$
+				"SELECT DISTINCT A.ALBUM FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 AND A.GENRE = '${1}' AND A.ARTIST = '${0}' ORDER BY A.ALBUM ASC", //$NON-NLS-1$
+				"select FILENAME, MODIFIED from FILES F, AUDIOTRACKS A where F.ID = A.FILEID AND F.TYPE = 1 AND A.GENRE = '${2}' AND A.ARTIST = '${1}' AND A.ALBUM = '${0}' ORDER BY A.TRACK ASC, F.FILENAME ASC"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
 		vfAudio.addChild(mlf7);
-		MediaLibraryFolder mlfAudioDate = new MediaLibraryFolder(Messages.getString("PMS.12"), new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES WHERE TYPE = 1 ORDER BY MODIFIED DESC", "TYPE = 1 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY TRACK ASC, FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		MediaLibraryFolder mlfAudioDate = new MediaLibraryFolder(Messages.getString("PMS.12"), new String[] { "SELECT FORMATDATETIME(MODIFIED, 'd MMM yyyy') FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 ORDER BY F.MODIFIED DESC", "select FILENAME, MODIFIED from FILES F, AUDIOTRACKS A where F.ID = A.FILEID AND F.TYPE = 1 AND FORMATDATETIME(MODIFIED, 'd MMM yyyy') = '${0}' ORDER BY A.TRACK ASC, F.FILENAME ASC" }, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		vfAudio.addChild(mlfAudioDate);
 		
 		MediaLibraryFolder mlf8 = new MediaLibraryFolder("By Letter/Artist/Album", new String [] { //$NON-NLS-1$
 			"SELECT ID FROM REGEXP_RULES ORDER BY ORDR ASC", //$NON-NLS-1$
-			"SELECT DISTINCT ARTIST FROM FILES WHERE TYPE = 1 AND ARTIST REGEXP (SELECT RULE FROM REGEXP_RULES WHERE ID = '${0}') ORDER BY ARTIST ASC", //$NON-NLS-1$
-			"SELECT DISTINCT ALBUM FROM FILES WHERE TYPE = 1 AND ARTIST = '${0}' ORDER BY ALBUM ASC", //$NON-NLS-1$
-			"TYPE = 1 AND ARTIST = '${1}' AND ALBUM = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
+			"SELECT DISTINCT A.ARTIST FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 AND A.ARTIST REGEXP (SELECT RULE FROM REGEXP_RULES WHERE ID = '${0}') ORDER BY A.ARTIST ASC", //$NON-NLS-1$
+			"SELECT DISTINCT A.ALBUM FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 AND A.ARTIST = '${0}' ORDER BY A.ALBUM ASC", //$NON-NLS-1$
+			"SELECT FILENAME, MODIFIED FROM FILES F, AUDIOTRACKS A WHERE F.ID = A.FILEID AND F.TYPE = 1 AND A.ARTIST = '${1}' AND A.ALBUM = '${0}'"}, new int [] { MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.TEXTS, MediaLibraryFolder.FILES}); //$NON-NLS-1$
 		vfAudio.addChild(mlf8);
 		addChild(vfAudio);
 		

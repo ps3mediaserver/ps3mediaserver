@@ -22,6 +22,8 @@ import java.io.File;
 
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.dlna.DLNAMediaAudio;
+import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.IPushOutput;
 
 public class OutputParams {
@@ -37,8 +39,8 @@ public class OutputParams {
 	public int waitbeforestart;
 	public PipeProcess input_pipes [] = new PipeProcess [2];
 	public PipeProcess output_pipes [] = new PipeProcess [2];
-	public int aid = -1;
-	public int sid = -1;
+	public DLNAMediaAudio aid;
+	public DLNAMediaSubtitle sid;
 	public int secondread_minsize;
 	public boolean noexitcheck;
 	public boolean log;

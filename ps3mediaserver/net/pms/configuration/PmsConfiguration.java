@@ -99,6 +99,8 @@ public class PmsConfiguration {
 	private static final String KEY_ALTERNATE_THUMB_FOLDER = "alternate_thumb_folder";
 	private static final String KEY_EMBED_DTS_IN_PCM = "embed_dts_in_pcm";
 	private static final String KEY_MENCODER_MUX_COMPATIBLE = "mencoder_mux_compatible";
+	private static final String KEY_ALTERNATE_SUBS_FOLDER = "alternate_subs_folder";
+	private static final String KEY_MUX_ALLAUDIOTRACKS = "tsmuxer_mux_all_audiotracks";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -848,11 +850,11 @@ public class PmsConfiguration {
 		return getBoolean(KEY_MENCODER_MT, false);
 	}
 	
-	public void setMencoderRemuxAC3(boolean value) {
+	public void setRemuxAC3(boolean value) {
 		configuration.setProperty(KEY_MENCODER_REMUX_AC3, value);
 	}
 
-	public boolean isMencoderRemuxAC3() {
+	public boolean isRemuxAC3() {
 		return getBoolean(KEY_MENCODER_REMUX_AC3, false);
 	}
 	
@@ -912,6 +914,14 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_ALTERNATE_THUMB_FOLDER, value);
 	}
 	
+	public String getAlternateSubsFolder() {
+		return getString(KEY_ALTERNATE_SUBS_FOLDER, "");
+	}
+
+	public void setAlternateSubsFolder(String value) {
+		configuration.setProperty(KEY_ALTERNATE_SUBS_FOLDER, value);
+	}
+	
 	public void setDTSEmbedInPCM(boolean value) {
 		configuration.setProperty(KEY_EMBED_DTS_IN_PCM, value);
 	}
@@ -926,5 +936,13 @@ public class PmsConfiguration {
 
 	public boolean isMencoderMuxWhenCompatible() {
 		return getBoolean(KEY_MENCODER_MUX_COMPATIBLE, true);
+	}
+	
+	public void setMuxAllAudioTracks(boolean value) {
+		configuration.setProperty(KEY_MUX_ALLAUDIOTRACKS, value);
+	}
+
+	public boolean isMuxAllAudioTracks() {
+		return getBoolean(KEY_MUX_ALLAUDIOTRACKS, false);
 	}
 }

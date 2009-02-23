@@ -192,9 +192,9 @@ public class Request extends HTTPResource {
 						if (StringUtils.isNotBlank(dlna.media.codecV)) {
 							name += " [video: " + dlna.media.codecV + "]";
 						}
-						if (StringUtils.isNotBlank(dlna.media.codecA)) {
-							name += " [audio: " + dlna.media.codecA + "]";
-						}
+//						if (StringUtils.isNotBlank(dlna.media.codecA)) {
+//							name += " [audio: " + dlna.media.codecA + "]";
+//						}
 					}
 					PMS.get().getFrame().setStatusLine("Serving " + name);
 					CLoverride = files.get(0).length();
