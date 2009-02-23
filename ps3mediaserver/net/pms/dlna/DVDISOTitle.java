@@ -57,9 +57,8 @@ public class DVDISOTitle extends DLNAResource {
 		String aspect = null;
 		String width = null;
 		String height = null;
-		ArrayList<DLNAMediaLang> audio = new ArrayList<DLNAMediaLang>();
-		ArrayList<DLNAMediaLang> subs = new ArrayList<DLNAMediaLang>();
-		int maxsubid = 0;
+		ArrayList<DLNAMediaAudio> audio = new ArrayList<DLNAMediaAudio>();
+		ArrayList<DLNAMediaSubtitle> subs = new ArrayList<DLNAMediaSubtitle>();
 		if (lines != null)
 		for(String line:lines) {
 			
@@ -67,19 +66,26 @@ public class DVDISOTitle extends DLNAResource {
 				nbsectors = Integer.parseInt(line.substring(line.lastIndexOf("=")+1).trim());
 			}
 			if (line.startsWith("audio stream:")) {
-				DLNAMediaLang lang = new DLNAMediaLang();
+				DLNAMediaAudio lang = new DLNAMediaAudio();
 				lang.id = Integer.parseInt(line.substring(line.indexOf("aid: ")+5, line.lastIndexOf(".")).trim());
 				lang.lang = line.substring(line.indexOf("language: ")+10, line.lastIndexOf(" aid")).trim();
-				lang.format = line.substring(line.indexOf("format: ")+8, line.lastIndexOf(" langu")).trim();
-				
+				int end = line.lastIndexOf(" langu");
+				if (line.lastIndexOf("(") < end && line.lastIndexOf("(") > line.indexOf("format: "))
+					end = line.lastIndexOf("(");
+				lang.codecA = line.substring(line.indexOf("format: ")+8, end).trim();
+				if (line.contains("(stereo)"))
+					lang.nrAudioChannels = 2;
+				else
+					lang.nrAudioChannels = 6;
 				audio.add(lang);
 			}
 			if (line.startsWith("subtitle")) {
-				DLNAMediaLang lang = new DLNAMediaLang();
+				DLNAMediaSubtitle lang = new DLNAMediaSubtitle();
 				lang.id = Integer.parseInt(line.substring(line.indexOf("): ")+3, line.lastIndexOf("language")).trim());
-				if (lang.id > maxsubid)
-					maxsubid = lang.id;
 				lang.lang = line.substring(line.indexOf("language: ")+10).trim();
+				if (lang.lang.equals("unknown"))
+					lang.lang = "und";
+				lang.type = DLNAMediaSubtitle.EMBEDDED;
 				subs.add(lang);
 			}
 			if (line.startsWith("ID_VIDEO_WIDTH=")) {
@@ -113,7 +119,6 @@ public class DVDISOTitle extends DLNAResource {
 				 media.setDurationString(d);
 			media.frameRate = fps;
 			media.aspect = aspect;
-			media.maxsubid = maxsubid;
 			media.dvdtrack = title;
 			media.container = "iso";
 			media.codecV = "mpeg2video";

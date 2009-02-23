@@ -31,22 +31,22 @@ import java.util.StringTokenizer;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeIPCProcess;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
-import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class FFMpegVideo extends Player {
 	
@@ -143,12 +143,7 @@ public class FFMpegVideo extends Player {
 
 	protected ProcessWrapperImpl getFFMpegTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
 		
-		/*String videoPipe = "mplayer_vid" + System.currentTimeMillis();
-		String audioPipe = "mplayer_aud" + System.currentTimeMillis();
-		
-		String pipeprefix = "\\\\.\\pipe\\";
-		if (!PMS.get().isWindows())
-			pipeprefix = PMS.get().getTempFolder() + "/";*/
+		setAudioAndSubs(fileName, media, params, PMS.getConfiguration());
 		
 		PipeIPCProcess videoP = null;
 		PipeIPCProcess audioP = null;
@@ -179,7 +174,7 @@ public class FFMpegVideo extends Player {
 				//cmdArray[6] = pipeprefix + videoPipe + (PMS.get().isWindows()?".2":"");
 				cmdArray[6] = videoP.getOutputPipe();
 			} else if (avisynth()) {
-				File avsFile = getAVSScript(fileName, params.fromFrame, params.toFrame);
+				File avsFile = getAVSScript(fileName, params.sid, params.fromFrame, params.toFrame);
 				cmdArray[6] = ProcessUtil.getShortFileNameIfWideChars(avsFile.getAbsolutePath());
 			}
 		}
@@ -367,11 +362,11 @@ public class FFMpegVideo extends Player {
 		return pw;
 	}
 	
-	public static File getAVSScript(String fileName) throws IOException {
-		return getAVSScript(fileName, -1, -1);
+	public static File getAVSScript(String fileName, DLNAMediaSubtitle subTrack) throws IOException {
+		return getAVSScript(fileName, subTrack, -1, -1);
 	}
 	
-	public static File getAVSScript(String fileName, int fromFrame, int toFrame) throws IOException {
+	public static File getAVSScript(String fileName, DLNAMediaSubtitle subTrack, int fromFrame, int toFrame) throws IOException {
 		String onlyFileName = fileName.substring(1+fileName.lastIndexOf("\\")); //$NON-NLS-1$
 		File file = new File(PMS.getConfiguration().getTempFolder(), "pms-avs-" + onlyFileName + ".avs"); //$NON-NLS-1$ //$NON-NLS-2$
 		PrintWriter pw = new PrintWriter(new FileOutputStream(file));
@@ -379,28 +374,17 @@ public class FFMpegVideo extends Player {
 		String convertfps = ""; //$NON-NLS-1$
 		if (PMS.getConfiguration().getAvisynthConvertFps())
 			convertfps = ", convertfps=true"; //$NON-NLS-1$
-		String srtfileName = fileName;
 		File f = new File(fileName);
 		if (f.exists())
 			fileName = ProcessUtil.getShortFileNameIfWideChars(fileName);
 		String movieLine = "clip=DirectShowSource(\"" + fileName + "\"" + convertfps + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String subLine = null;
-		if (PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
-			File srtFile = FileUtil.isFileExists(srtfileName, "srt"); //$NON-NLS-1$
-			if (srtFile != null) {
-				subLine = "clip=TextSub(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(srtFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
-			}
-			File assFile = FileUtil.isFileExists(srtfileName, "ass"); //$NON-NLS-1$
-			if (assFile != null) {
-				subLine = "clip=TextSub(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(assFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
-			}
-			File subFile = FileUtil.isFileExists(srtfileName, "sub"); //$NON-NLS-1$
-			File idxFile = FileUtil.isFileExists(srtfileName, "idx"); //$NON-NLS-1$
-			if (subFile != null) {
+		if (subTrack != null && PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
+			if (subTrack.file != null) {
 				String function = "TextSub"; //$NON-NLS-1$
-				if (idxFile != null)
+				if (subTrack.type == DLNAMediaSubtitle.VOBSUB)
 					function = "VobSub"; //$NON-NLS-1$
-				subLine = "clip=" +function+ "(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(subFile.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				subLine = "clip=" +function+ "(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(subTrack.file.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 		

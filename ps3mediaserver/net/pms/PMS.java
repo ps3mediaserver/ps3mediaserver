@@ -109,7 +109,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.09.1"; //$NON-NLS-1$
+	public static final String VERSION = "1.10"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -544,6 +544,15 @@ public class PMS {
 				public boolean enable() {
 					configuration.setSkipLoopFilterEnabled( !configuration.getSkipLoopFilterEnabled() );
 					return configuration.getSkipLoopFilterEnabled();
+				}
+			});
+			
+			vf.addChild(new VirtualVideoAction(Messages.getString("LooksFrame.12"), true) { //$NON-NLS-1$
+				public boolean enable() {
+					try {
+						PMS.get().reset();
+					} catch (IOException e) {}
+					return true;
 				}
 			});
 			//vf.closeChildren(0, false);

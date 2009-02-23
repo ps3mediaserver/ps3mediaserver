@@ -39,6 +39,7 @@ import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
 import net.pms.util.AVCHeader;
 import net.pms.util.CoverUtil;
+import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -67,35 +68,23 @@ public class DLNAMediaInfo {
 	public int width;
 	public int height;
 	public long size;
-	public int nrAudioChannels;
-	public String sampleFrequency;
 	public String codecV;
-	public String codecA;
 	public String frameRate;
 	public String aspect;
 	public byte thumb [];
 	public String mimeType;
-	public int bitsperSample = 16;
-	public String album;
-	public String artist;
-	public String songname;
-	public String genre;
-	public String container;
-	public int year;
-	public int track;
-	public ArrayList<DLNAMediaLang> audioCodes = new ArrayList<DLNAMediaLang>();
-	public ArrayList<DLNAMediaLang> subtitlesCodes = new ArrayList<DLNAMediaLang>();
+	public int bitsPerPixel;
+	public ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
+	public ArrayList<DLNAMediaSubtitle> subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
 	public String model;
 	public int exposure;
 	public int orientation;
 	public int iso;
+	public String container;
 	public byte h264_annexB [];
 	// no stored
 	public boolean mediaparsed;
-	public String types [] = null;
-	public boolean losslessaudio;
 	public int dvdtrack;
-	public int maxsubid;
 	public boolean secondaryFormatValid;
 	public boolean parsing = false;
 	private boolean ffmpeg_failure;
@@ -147,7 +136,7 @@ public class DLNAMediaInfo {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(7000);
 					ffmpeg_failure = true;
 				} catch (InterruptedException e) {}
 				pw.stopProcess();
@@ -198,6 +187,7 @@ public class DLNAMediaInfo {
 			boolean ffmpeg_parsing = true;
 			if (type == Format.AUDIO) {
 				ffmpeg_parsing = false;
+				DLNAMediaAudio audio = new DLNAMediaAudio();
 				if (f.file != null) {
 					try {
 						AudioFile af = AudioFileIO.read(f.file);
@@ -206,45 +196,45 @@ public class DLNAMediaInfo {
 							int length = ah.getTrackLength();
 							int rate = ah.getSampleRateAsNumber();
 							if (ah.getEncodingType().toLowerCase().contains("flac 24")) {
-								bitsperSample=24;
+								audio.bitsperSample=24;
 								/*if (rate == 32000) {
 									rate = 3* rate;
 									length = length /3;
 								}*/
 								
 							}
-							sampleFrequency = "" + rate;
+							audio.sampleFrequency = "" + rate;
 							setDurationString(length);
 							bitrate = (int) ah.getBitRateAsNumber();
-							nrAudioChannels = 2;
+							audio.nrAudioChannels = 2;
 							if (ah.getChannels() != null && ah.getChannels().toLowerCase().contains("mono")) {
-								nrAudioChannels = 1;
+								audio.nrAudioChannels = 1;
 							} else if (ah.getChannels() != null && ah.getChannels().toLowerCase().contains("stereo")) {
-								nrAudioChannels = 2;
+								audio.nrAudioChannels = 2;
 							} else if (ah.getChannels() != null) {
-								nrAudioChannels = Integer.parseInt(ah.getChannels());
+								audio.nrAudioChannels = Integer.parseInt(ah.getChannels());
 							}
-							codecA = ah.getEncodingType().toLowerCase();
+							audio.codecA = ah.getEncodingType().toLowerCase();
 						}
 						Tag t = af.getTag();
 						if (t != null) {
-							album = t.getFirstAlbum();
-							artist = t.getFirstArtist();
-							songname = t.getFirstTitle();
+							audio.album = t.getFirstAlbum();
+							audio.artist = t.getFirstArtist();
+							audio.songname = t.getFirstTitle();
 							String y = t.getFirstYear();
 							if (t.getArtworkList().size() > 0) {
 								thumb = t.getArtworkList().get(0).getBinaryData();
 							} else {
 								if (PMS.getConfiguration().getAudioThumbnailMethod() > 0)
-									thumb = CoverUtil.get().getThumbnailFromArtistAlbum(PMS.getConfiguration().getAudioThumbnailMethod()==1?CoverUtil.AUDIO_AMAZON:CoverUtil.AUDIO_DISCOGS, artist, album);
+									thumb = CoverUtil.get().getThumbnailFromArtistAlbum(PMS.getConfiguration().getAudioThumbnailMethod()==1?CoverUtil.AUDIO_AMAZON:CoverUtil.AUDIO_DISCOGS, audio.artist, audio.album);
 							}
 							try {
 								if (y.length() > 4)
 									y = y.substring(0, 4);
-								year = Integer.parseInt(((y != null && y.length() > 0)?y:"0"));
+								audio.year = Integer.parseInt(((y != null && y.length() > 0)?y:"0"));
 								y = t.getFirstTrack();
-								track = Integer.parseInt(((y != null && y.length() > 0)?y:"1"));
-								genre = t.getFirstGenre();
+								audio.track = Integer.parseInt(((y != null && y.length() > 0)?y:"1"));
+								audio.genre = t.getFirstGenre();
 							} catch (Throwable e) {
 								PMS.info("error in parsing unimportant metadata: " + e.getMessage());
 							}
@@ -253,8 +243,10 @@ public class DLNAMediaInfo {
 						PMS.info("Error in parsing audio file: " + e.getMessage() + " - " + (e.getCause()!=null?e.getCause().getMessage():"") + " / Switching to ffmpeg");
 						ffmpeg_parsing = true;
 					}
-					if (songname == null || songname.length() == 0)
-						songname = f.file.getName();
+					if (audio.songname == null || audio.songname.length() == 0)
+						audio.songname = f.file.getName();
+					if (!ffmpeg_parsing)
+						audioCodes.add(audio);
 				}
 			}
 			if (type == Format.IMAGE) {
@@ -264,7 +256,7 @@ public class DLNAMediaInfo {
 						ImageInfo info = Sanselan.getImageInfo(f.file);
 						width = info.getWidth();
 						height = info.getHeight();
-						bitsperSample = info.getBitsPerPixel();
+						bitsPerPixel = info.getBitsPerPixel();
 						String formatName = info.getFormatName();
 						if (formatName.startsWith("JPEG")) {
 							IImageMetadata meta = Sanselan.getMetadata(f.file);
@@ -299,7 +291,7 @@ public class DLNAMediaInfo {
 			}
 			if (ffmpeg_parsing) {
 				pw = getFFMpegThumbnail(f);
-				int nbUndAudioTracks = 0;
+				//int nbUndAudioTracks = 0;
 				String input = "-";
 				if (f.file != null)
 					input = ProcessUtil.getShortFileNameIfWideChars(f.file.getAbsolutePath()) ;
@@ -328,6 +320,8 @@ public class DLNAMediaInfo {
 					failsafe.start();
 					pw2.run();
 					List<String> results = pw2.getOtherResults();
+					DLNAMediaAudio audio = new DLNAMediaAudio();
+					audioCodes.add(audio);
 					for(String s:results) {
 						if (s.startsWith("FPS seems to be: "))
 							frameRate = s.substring(17);
@@ -338,9 +332,9 @@ public class DLNAMediaInfo {
 							if (codecV.equals("mpeg2"))
 								codecV = "mpeg2video";
 							if (s.contains("AUDIO ") && s.contains("(pid") && !s.contains("NO AUDIO")) {
-								int audio = s.indexOf("AUDIO ")+5;
-								codecA = s.substring(audio, s.indexOf("(pid", audio)).trim().toLowerCase();
-								sampleFrequency = "48000";
+								int audioString = s.indexOf("AUDIO ")+5;
+								audio.codecA = s.substring(audioString, s.indexOf("(pid", audioString)).trim().toLowerCase();
+								audio.sampleFrequency = "48000";
 							}
 						}
 						if (s.startsWith("ID_LENGTH=")) {
@@ -384,7 +378,7 @@ public class DLNAMediaInfo {
 								StringTokenizer st = new StringTokenizer(line, ",");
 								while (st.hasMoreTokens()) {
 									String token = st.nextToken().trim();
-									if (token.startsWith("Duration: ") && (codecA == null || !codecA.equals("flac"))) {
+									if (token.startsWith("Duration: ")) {
 										duration = token.substring(10);
 										int l = duration.substring(duration.indexOf(".")+1).length();
 										if (l < 4) {
@@ -410,37 +404,36 @@ public class DLNAMediaInfo {
 								StringTokenizer st = new StringTokenizer(line, ",");
 								int a = line.indexOf("(");
 								int b = line.indexOf("):", a);
-								DLNAMediaLang lang = new DLNAMediaLang();
-								if (langId == 0 && container.equals("avi"))
+								DLNAMediaAudio audio = new DLNAMediaAudio();
+								if (langId == 0 && (container.equals("avi") || container.equals("ogm") || container.equals("mov") || container.equals("flv")))
 									langId++;
-								lang.id = langId++;
+								audio.id = langId++;
 								if (a > -1 && b > a) {
-									lang.lang = line.substring(a+1, b);
+									audio.lang = line.substring(a+1, b);
 								} else {
-									lang.lang = "und";
-									nbUndAudioTracks++;
+									audio.lang = "und";
+									//nbUndAudioTracks++;
 								}
-								audioCodes.add(lang);
+								audioCodes.add(audio);
 								while (st.hasMoreTokens()) {
 									String token = st.nextToken().trim();
 									if (token.startsWith("Stream")) {
-										codecA = token.substring(token.indexOf("Audio: ")+7);
-										lang.format = codecA;
+										audio.codecA = token.substring(token.indexOf("Audio: ")+7);
 										
 									} else if (token.endsWith("Hz")) {
-										sampleFrequency = token.substring(0, token.indexOf("Hz")).trim();
+										audio.sampleFrequency = token.substring(0, token.indexOf("Hz")).trim();
 									} else if (token.equals("mono")) {
-										nrAudioChannels = 1;
+										audio.nrAudioChannels = 1;
 									} else if (token.equals("stereo")) {
-										nrAudioChannels = 2;
+										audio.nrAudioChannels = 2;
 									} else if (token.equals("5:1") || token.equals("5.1")) {
-										nrAudioChannels = 6;
+										audio.nrAudioChannels = 6;
 									} else if (token.equals("4 channels")) {
-										nrAudioChannels = 4;
+										audio.nrAudioChannels = 4;
 									} else if (token.equals("s32")) {
-										bitsperSample = 32;
+										audio.bitsperSample = 32;
 									} else if (token.equals("s24")) {
-										bitsperSample = 24;
+										audio.bitsperSample = 24;
 									}
 								}
 							} else if (line.indexOf("Video:") > -1) {
@@ -462,7 +455,8 @@ public class DLNAMediaInfo {
 									}
 								}
 							} else if (line.indexOf("Subtitle:") > -1 && !line.contains("tx3g") && !line.contains("dvdsub")) {
-								DLNAMediaLang lang = new DLNAMediaLang();
+								DLNAMediaSubtitle lang = new DLNAMediaSubtitle();
+								lang.type = DLNAMediaSubtitle.EMBEDDED;
 								int a = line.indexOf("(");
 								int b = line.indexOf("):", a);
 								if (a > -1 && b > a) {
@@ -474,12 +468,14 @@ public class DLNAMediaInfo {
 							}
 						}
 					}
+					
+					
 				}
 				
 				// remove audio code when there's only one "und" track
-				if (nbUndAudioTracks == 1 && audioCodes.size() == 1) {
+				/*if (nbUndAudioTracks == 1 && audioCodes.size() == 1) {
 					audioCodes.remove(0);
-				}
+				}*/
 			
 				if (type == Format.VIDEO && pw != null) {
 					InputStream is;
@@ -505,9 +501,9 @@ public class DLNAMediaInfo {
 									else if (width == 1280)
 										g.drawString("720p", 0, low+=18);
 								}
-								if (nrAudioChannels > 0) {
-									g.drawString(nrAudioChannels + " channels " + (codecA!=null?codecA:""), 0, low+=18);
-								}
+//								if (nrAudioChannels > 0) {
+//									g.drawString(nrAudioChannels + " channels " + (codecA!=null?codecA:""), 0, low+=18);
+//								}
 								ByteArrayOutputStream out = new ByteArrayOutputStream();
 								ImageIO.write(image, "jpeg", out);
 								thumb = out.toByteArray();
@@ -520,7 +516,7 @@ public class DLNAMediaInfo {
 				}
 				
 			}
-			finalize(type);
+			finalize(type, f);
 			mediaparsed = true;
 			
 		}
@@ -557,7 +553,10 @@ public class DLNAMediaInfo {
 		
 	}
 	
-	public void finalize(int type) {
+	public void finalize(int type, InputFile f) {
+		String codecA = null;
+		if (getFirstAudioTrack() !=null)
+			codecA = getFirstAudioTrack().codecA;
 		if (container != null && container.equals("avi")) {
 			mimeType = HTTPResource.AVI_TYPEMIME;
 		} else if (container != null && container.equals("asf")) {
@@ -588,26 +587,15 @@ public class DLNAMediaInfo {
 			mimeType = new HTTPResource().getDefaultMimeType(type);
 		}
 		
-		
-		
-		if (getSampleRate() > 44000 && isLossless(codecA))
-			losslessaudio = true;
-		/*for(DLNAMediaLang lang:audioCodes) {
-			if (isLossless(lang.format))
-				losslessaudio = true;
-		}*/
-		
-		if (bitsperSample == 24)
+		if (getFirstAudioTrack() !=null && getFirstAudioTrack().bitsperSample == 24)
 			secondaryFormatValid = true;
 		
-		if (subtitlesCodes != null && subtitlesCodes.size() > 0) {
-			for(DLNAMediaLang lang:subtitlesCodes) {
-				if (lang.id > maxsubid)
-					maxsubid = lang.id;
-			}
-		}
+		// Check for external subs here
+		if (f.file != null)
+			FileUtil.doesSubtitlesExists(f.file, this);
 		
-		PMS.debug("Media info: mimeType: " + mimeType + " / " + toString());
+		
+		PMS.debug("Media info of : " + f.file + " / mimeType: " + mimeType + " / " + toString());
 	}
 	
 	private boolean h264_parsed;
@@ -662,7 +650,14 @@ public class DLNAMediaInfo {
 	}
 	
 	public String toString() {
-		return "container: " + container + " / bitrate: " + bitrate + " / size: " + size + " / codecV: " + codecV + " / duration: " + duration + " / width: " + width + " / height: " + height + " / frameRate: " + frameRate + " / codecA: " + codecA + " / sampleFrequency: " + sampleFrequency + " / nrAudioChannels: " + nrAudioChannels + " / thumb size : " + (thumb!=null?thumb.length:0);
+		String s = "container: " + container + " / bitrate: " + bitrate + " / size: " + size + " / codecV: " + codecV + " / duration: " + duration + " / width: " + width + " / height: " + height + " / frameRate: " + frameRate + " / thumb size : " + (thumb!=null?thumb.length:0);
+		for(DLNAMediaAudio audio:audioCodes) {
+			s += "\n\taudio: id=" + audio.id + " / lang: " + audio.lang + " / codec: " + audio.codecA + " / sf:" + audio.sampleFrequency;
+		}
+		for(DLNAMediaSubtitle sub:subtitlesCodes) {
+			s += "\n\tsub: id=" + sub.id + " / lang: " + sub.lang + " / type: " + sub.type;
+		}
+		return s;
 	}
 
 	public InputStream getThumbnailInputStream() {
@@ -699,6 +694,12 @@ public class DLNAMediaInfo {
 		return validFrameRate;
 	}
 	
+	public DLNAMediaAudio getFirstAudioTrack() {
+		if (audioCodes.size() > 0)
+			return audioCodes.get(0);
+		return null;
+	}
+	
 	public String getValidAspect(boolean ratios) {
 		String a = null;
 		if (aspect != null) {
@@ -731,17 +732,7 @@ public class DLNAMediaInfo {
 		return (width > 1200 || height > 700);
 	}
 	
-	public int getSampleRate() {
-		int sr = 0;
-		if (sampleFrequency != null && sampleFrequency.length() > 0) {
-			try {
-				sr = Integer.parseInt(sampleFrequency);
-			} catch (NumberFormatException e) {}
-			
-		}
-		return sr;
-	}
-	
+	/*
 	public int [] getAudioSubLangIds() {
 		int audiosubs [] = null;
 		if (PMS.getConfiguration().getMencoderAudioSubLanguages() != null && PMS.getConfiguration().getMencoderAudioSubLanguages().length() > 0) {
@@ -753,9 +744,9 @@ public class DLNAMediaInfo {
 					String pair = st1.nextToken();
 					String audio = pair.substring(0, pair.indexOf(","));
 					String sub = pair.substring(pair.indexOf(",")+1);
-					for(DLNAMediaLang lang:audioCodes) {
+					for(DLNAMediaAudio lang:audioCodes) {
 						if (lang.lang.equals(audio)) {
-							for(DLNAMediaLang sublang:subtitlesCodes) {
+							for(DLNAMediaSubtitle sublang:subtitlesCodes) {
 								if (sublang.lang.equals(sub)) {
 									aid = lang.id;
 									sid = sublang.id;
@@ -779,7 +770,7 @@ public class DLNAMediaInfo {
 		}
 		return audiosubs;
 	}
-	
+	*/
 	public byte [][] getAnnexBFrameHeader(InputFile f) {
 		
 		String cmdArray [] = new String [14];

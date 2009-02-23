@@ -41,6 +41,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.network.HTTPResource;
 import net.pms.util.FileUtil;
+import net.pms.util.Iso639;
 
 public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	
@@ -63,6 +64,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	protected DLNAResource parent;
 	protected Format ext;
 	public DLNAMediaInfo media;
+	public DLNAMediaAudio media_audio;
+	public DLNAMediaSubtitle media_subtitle;
 	protected boolean notranscodefolder;
 	protected long lastmodified;
 	public long getLastmodified() {
@@ -88,11 +91,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public boolean noName;
 	private int nametruncate;
 	private boolean second;
-	protected int aid = -1;
-	protected String alang;
-	protected int sid = -1;
-	protected String slang;
-	protected String aformat;
 	protected String fakeParentId;
 	
 	public String getFakeParentId() {
@@ -442,14 +440,15 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				name = name.substring(0, nametruncate).trim();
 		}
 		
-		if (srtFile && (alang == null && slang == null))
-			name += " { subtitles found }"; 
+		if (srtFile && (media_audio == null && media_subtitle == null))
+			if (player == null || player.isExternalSubtitlesSupported())
+				name += " {External Subtitles}"; 
 		
-		if (alang != null)
-			name = (player!=null?player.name():"") + " {audio: " + (aformat!=null?(aformat+" "):"") + alang + "}";
+		if (media_audio != null)
+			name = (player!=null?player.name():"") + " {Audio: " + media_audio.getAudioCodec() + "/" + media_audio.getLang() + "}";
 		
-		if (slang != null)
-			name += " {subs: " + slang + "}";
+		if (media_subtitle != null && media_subtitle.id != -1)
+			name += " {Sub: " + media_subtitle.getSubType() + "/" +  media_subtitle.getLang() + "}";
 		
 		if (avisynth)
 			name = (player!=null?player.name():"") + " + AviSynth";
@@ -465,14 +464,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		StringBuffer sb = new StringBuffer();
 		sb.append(PMS.get().getServer().getURL());
 		sb.append("/images/");
-		String id = alang;
-		if (slang != null)
-			id = slang;
+		String id = null;
+		if (media_audio != null)
+			id = media_audio.lang;
+		if (media_subtitle != null && media_subtitle.id != -1)
+			id = media_subtitle.lang;
 		if (id != null) {
-			String code = id.toLowerCase();
-			if (code.length() == 2) {
-				code=code.equals("fr")?"fre":code.equals("en")?"eng":code.equals("de")?"ger":code.equals("ja")?"jpn":code.equals("it")?"ita":code.equals("es")?"spa":code.equals("nl")?"dut":code.equals("no")?"nor":code.equals("sv")?"swe":code.equals("da")?"dan":"nul";
-			}
+			String code = Iso639.getISO639_2Code(id.toLowerCase());
 			sb.append("codes/" + code + ".png");
 			return sb.toString();
 		}
@@ -560,22 +558,22 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		addAttribute(sb, "restricted", "true");
 		endTag(sb);
 		
-		if (media != null && StringUtils.isNotBlank(media.songname))
-			addXMLTagAndAttribute(sb, "dc:title", encodeXML(media.songname + (player!=null&&!PMS.getConfiguration().isHideEngineNames()?(" [" + player.name() + "]"):"")));
+		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().songname))
+			addXMLTagAndAttribute(sb, "dc:title", encodeXML(media.getFirstAudioTrack().songname + (player!=null&&!PMS.getConfiguration().isHideEngineNames()?(" [" + player.name() + "]"):"")));
 		else
 			addXMLTagAndAttribute(sb, "dc:title", encodeXML(getDisplayName()));
 			
-		if (media != null && StringUtils.isNotBlank(media.album)) {
-			addXMLTagAndAttribute(sb, "upnp:album", encodeXML(media.album));
+		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().album)) {
+			addXMLTagAndAttribute(sb, "upnp:album", encodeXML(media.getFirstAudioTrack().album));
 		}
-		if (media != null && StringUtils.isNotBlank(media.artist)) {
-			addXMLTagAndAttribute(sb, "upnp:artist", encodeXML(media.artist));
+		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().artist)) {
+			addXMLTagAndAttribute(sb, "upnp:artist", encodeXML(media.getFirstAudioTrack().artist));
 		}
-		if (media != null && StringUtils.isNotBlank(media.genre)) {
-			addXMLTagAndAttribute(sb, "upnp:genre", encodeXML(media.genre));
+		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().genre)) {
+			addXMLTagAndAttribute(sb, "upnp:genre", encodeXML(media.getFirstAudioTrack().genre));
 		}
-		if (media != null && media.track > 0) {
-			addXMLTagAndAttribute(sb, "upnp:originalTrackNumber", "" + media.track);
+		if (media != null && media.getFirstAudioTrack() != null && media.getFirstAudioTrack().track > 0) {
+			addXMLTagAndAttribute(sb, "upnp:originalTrackNumber", "" + media.getFirstAudioTrack().track);
 		}
 		
 		if (!isFolder()) {
@@ -616,11 +614,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					addAttribute(sb, "duration", media.duration);
 				if (media.getResolution() != null)
 					addAttribute(sb, "resolution", media.getResolution());
-				if (media.nrAudioChannels > 0)
-					addAttribute(sb, "nrAudioChannels", media.nrAudioChannels);
 				addAttribute(sb, "bitrate", media.getRealVideoBitrate());
-				if (media.sampleFrequency != null)
-					addAttribute(sb, "sampleFrequency", media.sampleFrequency);
+				if (media.getFirstAudioTrack() != null) {
+					if (media.getFirstAudioTrack().nrAudioChannels > 0)
+						addAttribute(sb, "nrAudioChannels", media.getFirstAudioTrack().nrAudioChannels);
+					if (media.getFirstAudioTrack().sampleFrequency != null)
+						addAttribute(sb, "sampleFrequency", media.getFirstAudioTrack().sampleFrequency);
+				}
 			} else if (ext != null && ext.isImage()) {
 				if (media != null && media.mediaparsed) {
 					addAttribute(sb, "size", media.size);
@@ -633,19 +633,20 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					addAttribute(sb, "bitrate", media.bitrate);
 					if (media.duration != null)
 						addAttribute(sb, "duration", media.duration);
-					if (media.sampleFrequency != null)
-						addAttribute(sb, "sampleFrequency", media.sampleFrequency);
-					addAttribute(sb, "nrAudioChannels", media.nrAudioChannels);
+					if (media.getFirstAudioTrack() != null && media.getFirstAudioTrack().sampleFrequency != null)
+						addAttribute(sb, "sampleFrequency", media.getFirstAudioTrack().sampleFrequency);
+					if (media.getFirstAudioTrack() != null)
+						addAttribute(sb, "nrAudioChannels", media.getFirstAudioTrack().nrAudioChannels);
 					
 					if (player == null)
 						addAttribute(sb, "size", media.size);
 					else {
 						// calcul taille wav
-						if (media.sampleFrequency != null) {
-							int ns = Integer.parseInt(media.sampleFrequency);
+						if (media.getFirstAudioTrack() != null && media.getFirstAudioTrack().sampleFrequency != null) {
+							int ns = Integer.parseInt(media.getFirstAudioTrack().sampleFrequency);
 							if (ns > 44100) // mplayer currently transcodes to 44.1kHz and stereo
 								ns = 44100;
-							int na = media.nrAudioChannels;
+							int na = media.getFirstAudioTrack().nrAudioChannels;
 							if (na > 2)
 								na = 2;
 							int finalsize=(int) media.getDurationInSeconds() *ns* 2*na;
@@ -748,8 +749,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			}
 			
 			OutputParams params = new OutputParams(PMS.getConfiguration());
-			params.aid = aid;
-			params.sid = sid;
+			params.aid = media_audio;
+			params.sid = media_subtitle;
 			params.mediaRenderer = mediarenderer;
 			
 			if (this instanceof IPushOutput)

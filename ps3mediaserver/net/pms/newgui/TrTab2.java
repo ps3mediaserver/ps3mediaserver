@@ -92,6 +92,7 @@ public class TrTab2 {
 	private JCheckBox  forceDTSinPCM ;
 	private JComboBox channels;
 	private JComboBox vq ;
+	private JCheckBox  ac3remux ;
 	
 	private void updateEngineModel() {
 		ArrayList<String> engines = new ArrayList<String>();
@@ -345,7 +346,7 @@ public class TrTab2 {
 	public JComponent buildCommon() {
 		FormLayout layout = new FormLayout(
 				"left:pref, 2dlu, pref:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p,3dlu,  p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -491,7 +492,19 @@ public class TrTab2 {
       
        builder.add(forcePCM, cc.xyw(1, 19, 3));
        
+       ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32")); //$NON-NLS-1$
+       ac3remux.setContentAreaFilled(false);
+       if (PMS.getConfiguration().isRemuxAC3())
+    	   ac3remux.setSelected(true);
+       ac3remux.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				PMS.getConfiguration().setRemuxAC3((e.getStateChange() == ItemEvent.SELECTED));
+			}
+       	
+       });
        
+       builder.add(ac3remux, cc.xyw(1, 21,3));
       
        
       cmp = builder.addSeparator(Messages.getString("TrTab2.4"),  cc.xyw(1, 23, 3)); //$NON-NLS-1$

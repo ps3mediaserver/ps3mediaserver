@@ -18,10 +18,21 @@
  */
 package net.pms.dlna;
 
+import net.pms.util.Iso639;
+
 public class DLNAMediaLang {
 	
 	public int id;
-	public String lang = "";
-	public String format = "";
-
+	public String lang;
+	
+	public String getLang() {
+		if (lang != null)
+			return Iso639.getLanguage(lang);
+		return "-";
+	}
+	
+	public boolean matchCode(String code) {
+		return Iso639.isCodesMatching(lang, code);
+	}
+	
 }

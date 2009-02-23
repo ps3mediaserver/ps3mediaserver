@@ -116,7 +116,7 @@ public class RarredEntry extends DLNAResource implements IPushOutput {
 	@Override
 	public boolean isValid() {
 		checktype();
-		srtFile = FileUtil.doesSubtitlesExists(pere);
+		srtFile = FileUtil.doesSubtitlesExists(pere, null);
 		return ext != null;
 	}
 	

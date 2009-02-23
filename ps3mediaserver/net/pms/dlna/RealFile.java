@@ -45,7 +45,7 @@ public class RealFile extends DLNAResource {
 	public boolean isValid() {
 		checktype();
 		if (getType() == Format.VIDEO && file.exists() && file.getName().length() > 4) {
-			srtFile = FileUtil.doesSubtitlesExists(file);
+			srtFile = FileUtil.doesSubtitlesExists(file, null);
 		}
 		return file.exists() && (ext != null || file.isDirectory());
 	}
@@ -81,7 +81,7 @@ public class RealFile extends DLNAResource {
 				addChild(new ZippedFile(f));
 			} else if (PMS.getConfiguration().isArchiveBrowsing() && (f.getName().toLowerCase().endsWith(".rar") || f.getName().toLowerCase().endsWith(".cbr"))) {
 				addChild(new RarredFile(f));
-			} else if (f.getName().toLowerCase().endsWith(".iso") || (f.isDirectory() && f.getName().toUpperCase().equals("VIDEO_TS"))) {
+			} else if ((f.getName().toLowerCase().endsWith(".iso") || f.getName().toLowerCase().endsWith(".img")) || (f.isDirectory() && f.getName().toUpperCase().equals("VIDEO_TS"))) {
 				addChild(new DVDISOFile(f));
 			} else if (f.getName().toLowerCase().endsWith(".m3u") || f.getName().toLowerCase().endsWith(".m3u8") || f.getName().toLowerCase().endsWith(".pls")) {
 				addChild(new PlaylistFolder(f));
@@ -92,7 +92,7 @@ public class RealFile extends DLNAResource {
 		}
 		if (f.isFile()) {
 			String fileName = f.getName().toLowerCase();
-			if (fileName.equals("folder.jpg") || (fileName.contains("albumart") && fileName.endsWith(".jpg")))
+			if (fileName.equalsIgnoreCase("folder.jpg") || fileName.equalsIgnoreCase("folder.png") || (fileName.contains("albumart") && fileName.endsWith(".jpg")))
 				potentialCover = f;
 		}
 	}
@@ -225,11 +225,13 @@ public class RealFile extends DLNAResource {
 	public void resolve() {
 		if (file.isFile() && file.exists()) {
 			boolean found = false;
+			InputFile input = new InputFile();
+			input.file = file;
 			if (PMS.getConfiguration().getUseCache()) {
 				ArrayList<DLNAMediaInfo> medias = PMS.get().getDatabase().getData(file.getAbsolutePath(), file.lastModified());
 				if (medias != null && medias.size() == 1) {
 					media = medias.get(0);
-					media.finalize(getType());
+					media.finalize(getType(), input);
 					found = true;
 				}
 			}
@@ -239,8 +241,6 @@ public class RealFile extends DLNAResource {
 					media = new DLNAMediaInfo();
 				}
 				found = !media.mediaparsed && !media.parsing;
-				InputFile input = new InputFile();
-				input.file = file;
 				if (ext != null) 
 					ext.parse(media, input, getType());
 				else //don't think that will ever happen

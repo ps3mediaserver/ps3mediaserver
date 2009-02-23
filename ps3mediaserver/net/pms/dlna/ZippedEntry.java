@@ -106,7 +106,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput{
 	@Override
 	public boolean isValid() {
 		checktype();
-		srtFile = FileUtil.doesSubtitlesExists(z);
+		srtFile = FileUtil.doesSubtitlesExists(z, null);
 		return ext != null;
 	}
 	
