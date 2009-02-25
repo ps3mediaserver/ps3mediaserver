@@ -12,6 +12,7 @@ public class DLNAMediaAudio extends DLNAMediaLang{
 	public String genre;
 	public int year;
 	public int track;
+	public int delay;
 	
 	public DLNAMediaAudio() {
 		bitsperSample = 16;

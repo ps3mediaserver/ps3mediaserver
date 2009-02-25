@@ -101,6 +101,7 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_MUX_COMPATIBLE = "mencoder_mux_compatible";
 	private static final String KEY_ALTERNATE_SUBS_FOLDER = "alternate_subs_folder";
 	private static final String KEY_MUX_ALLAUDIOTRACKS = "tsmuxer_mux_all_audiotracks";
+	private static final String KEY_USE_MPLAYER_FOR_THUMBS = "use_mplayer_for_video_thumbs";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -944,5 +945,13 @@ public class PmsConfiguration {
 
 	public boolean isMuxAllAudioTracks() {
 		return getBoolean(KEY_MUX_ALLAUDIOTRACKS, false);
+	}
+	
+	public void setUseMplayerForVideoThumbs(boolean value) {
+		configuration.setProperty(KEY_USE_MPLAYER_FOR_THUMBS, value);
+	}
+
+	public boolean isUseMplayerForVideoThumbs() {
+		return getBoolean(KEY_USE_MPLAYER_FOR_THUMBS, false);
 	}
 }

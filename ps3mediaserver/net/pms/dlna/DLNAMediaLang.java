@@ -18,6 +18,8 @@
  */
 package net.pms.dlna;
 
+import org.apache.commons.lang.StringUtils;
+
 import net.pms.util.Iso639;
 
 public class DLNAMediaLang {
@@ -26,9 +28,9 @@ public class DLNAMediaLang {
 	public String lang;
 	
 	public String getLang() {
-		if (lang != null)
+		if (StringUtils.isNotBlank(lang))
 			return Iso639.getLanguage(lang);
-		return "-";
+		return Iso639.getLanguage("und");
 	}
 	
 	public boolean matchCode(String code) {

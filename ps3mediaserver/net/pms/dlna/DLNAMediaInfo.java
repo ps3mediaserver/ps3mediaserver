@@ -24,6 +24,8 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import net.pms.network.HTTPResource;
 import net.pms.util.AVCHeader;
 import net.pms.util.CoverUtil;
 import net.pms.util.FileUtil;
+import net.pms.util.MpegUtil;
 import net.pms.util.ProcessUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -88,6 +91,7 @@ public class DLNAMediaInfo {
 	public boolean secondaryFormatValid;
 	public boolean parsing = false;
 	private boolean ffmpeg_failure;
+	//private boolean mplayer_thumb_failure;
 	private boolean ffmpeg_annexb_failure;
 	private boolean muxable;
 	
@@ -121,7 +125,7 @@ public class DLNAMediaInfo {
 		args[11] = "-f";
 		args[12] = "image2";
 		args[13] = "pipe:";
-		if (!PMS.getConfiguration().getThumbnailsEnabled()) {
+		if (!PMS.getConfiguration().getThumbnailsEnabled() || PMS.getConfiguration().isUseMplayerForVideoThumbs()) {
 			args[2] = "0";
 			for(int i=5;i<=13;i++)
 				args[i] = "-an";
@@ -150,6 +154,53 @@ public class DLNAMediaInfo {
 		return pw;
 	}
 
+	private ProcessWrapperImpl getMplayerThumbnail(InputFile media) throws IOException {
+		String args [] = new String[14];
+		args[0] = PMS.getConfiguration().getMplayerPath();
+		args[1] = "-ss";
+		args[2] = "" + PMS.getConfiguration().getThumbnailSeekPos();
+		args[3] = "-quiet";
+		if (media.file != null)
+			args[4] = ProcessUtil.getShortFileNameIfWideChars(media.file.getAbsolutePath());
+		else
+			args[4] = "-";
+		args[5] = "-msglevel";
+		args[6] = "all=4";
+		args[7] = "-vf";
+		args[8] = "scale=320:180";
+		args[9] = "-frames";
+		args[10] = "1";
+		args[11] = "-vo";
+		String frameName = "" + media.hashCode();
+		if (media.file != null)
+			frameName = ProcessUtil.getShortFileNameIfWideChars(media.file.getName());
+		frameName = "mplayer_thumbs:subdirs=" + frameName;
+		//frameName = frameName.replace('\\', '/');
+		args[12] = "jpeg:outdir=" + frameName;
+		args[13] = "-nosound";
+		OutputParams params = new OutputParams(PMS.getConfiguration());
+		params.maxBufferSize = 1;
+		params.stdin = media.push;
+		params.noexitcheck = true; // not serious if anything happens during the thumbnailer
+		final ProcessWrapperImpl pw = new ProcessWrapperImpl(args, params);
+		// FAILSAFE
+		parsing = true;
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(2000);
+					//mplayer_thumb_failure = true;
+				} catch (InterruptedException e) {}
+				pw.stopProcess();
+				parsing = false;
+			}
+		};
+		Thread failsafe = new Thread(r);
+		failsafe.start();
+		pw.run();
+		parsing = false;
+		return pw;
+	}
 
 	private String getFfmpegPath() {
 		String value = PMS.getConfiguration().getFfmpegPath();
@@ -295,68 +346,8 @@ public class DLNAMediaInfo {
 				String input = "-";
 				if (f.file != null)
 					input = ProcessUtil.getShortFileNameIfWideChars(f.file.getAbsolutePath()) ;
-				if (ffmpeg_failure) {
-					// switchin to mplayer cause ffmpeg has hung ? -> for some m2ts
-					// TODO: improve that
-					String cmdArray [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-identify", "-vo", "null", "-ao", "null", "-frames", "1", input};
-					OutputParams params = new OutputParams(PMS.getConfiguration());
-					params.stdin = f.push;
-					params.maxBufferSize = 1;
-					params.log = true;
-					params.noexitcheck = true; // not serious if anything happens during the thumbnailer
-					final ProcessWrapperImpl pw2 = new ProcessWrapperImpl(cmdArray, params);
-					// FAILSAFE
-					parsing = true;
-					Runnable r = new Runnable() {
-						public void run() {
-							try {
-								Thread.sleep(5000);
-							} catch (InterruptedException e) {}
-							pw2.stopProcess();
-							parsing = false;
-						}
-					};
-					Thread failsafe = new Thread(r);
-					failsafe.start();
-					pw2.run();
-					List<String> results = pw2.getOtherResults();
-					DLNAMediaAudio audio = new DLNAMediaAudio();
-					audioCodes.add(audio);
-					for(String s:results) {
-						if (s.startsWith("FPS seems to be: "))
-							frameRate = s.substring(17);
-						if (s.startsWith("TS file format detected."))
-							container = "mpegts";
-						if (s.startsWith("VIDEO") && s.contains("(pid")) {
-							codecV = s.substring(6, s.indexOf("(pid")).trim().toLowerCase();
-							if (codecV.equals("mpeg2"))
-								codecV = "mpeg2video";
-							if (s.contains("AUDIO ") && s.contains("(pid") && !s.contains("NO AUDIO")) {
-								int audioString = s.indexOf("AUDIO ")+5;
-								audio.codecA = s.substring(audioString, s.indexOf("(pid", audioString)).trim().toLowerCase();
-								audio.sampleFrequency = "48000";
-							}
-						}
-						if (s.startsWith("ID_LENGTH=")) {
-							try {
-								String len = s.substring(10);
-								double lenD = Double.parseDouble(len);
-								setDurationString(lenD);
-							} catch (Throwable t) {
-								PMS.debug("Error in parsing duration infos: " + s + " - " + t.getMessage());
-							}
-						}
-						if (s.contains("VDec: vo config request - ")) {
-							try {
-								String wh = s.substring(26, s.indexOf("(")).trim();
-								width = Integer.parseInt(wh.substring(0, wh.indexOf("x")).trim());
-								height = Integer.parseInt(wh.substring(wh.indexOf("x")+1).trim());
-							} catch (Throwable t) {
-								PMS.debug("Error in parsing image infos: " + s + " - " + t.getMessage());
-							}
-						}
-					}
-				} else {
+				if (!ffmpeg_failure) {
+					
 					if (input.equals("-"))
 						input = "pipe:";
 					boolean matchs = false;
@@ -414,6 +405,18 @@ public class DLNAMediaInfo {
 									audio.lang = "und";
 									//nbUndAudioTracks++;
 								}
+								// get ts ids
+								a = line.indexOf("[0x");
+								b = line.indexOf("]", a);
+								if (a > -1 && b > a+3) {
+									String idString = line.substring(a+3, b);
+									try {
+										audio.id = Integer.parseInt(idString, 16);
+									} catch (NumberFormatException nfe) {
+										PMS.info("Error in parsing Stream ID: " + idString);
+									}
+								}
+								//
 								audioCodes.add(audio);
 								while (st.hasMoreTokens()) {
 									String token = st.nextToken().trim();
@@ -471,13 +474,204 @@ public class DLNAMediaInfo {
 					
 					
 				}
+				if (ffmpeg_failure || (container != null && container.equals("mpegts"))){
+					// switchin to mplayer cause ffmpeg has hung ? -> for some m2ts
+					// always useful to reparse mpegts / ffmpeg not reliable
+					// TODO: improve that
+					String cmdArray [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-msglevel", "identify=4", "-vo", "null", "-ao", "null", "-frames", "0", input};
+					OutputParams params = new OutputParams(PMS.getConfiguration());
+					params.stdin = f.push;
+					params.maxBufferSize = 1;
+					params.log = true;
+					params.noexitcheck = true; // not serious if anything happens during the thumbnailer
+					final ProcessWrapperImpl pw2 = new ProcessWrapperImpl(cmdArray, params);
+					// FAILSAFE
+					parsing = true;
+					Runnable r = new Runnable() {
+						public void run() {
+							try {
+								Thread.sleep(5000);
+							} catch (InterruptedException e) {}
+							pw2.stopProcess();
+							parsing = false;
+						}
+					};
+					Thread failsafe = new Thread(r);
+					failsafe.start();
+					pw2.run();
+					List<String> results = pw2.getOtherResults();
+					DLNAMediaAudio currentAudioTrack = null;
+					for(String s:results) {
+						if (s.startsWith("FPS seems to be: "))
+							frameRate = s.substring(17);
+						if (s.startsWith("TS file format detected."))
+							container = "mpegts";
+						/*if (s.startsWith("VIDEO") && s.contains("(pid")) {
+							codecV = s.substring(6, s.indexOf("(pid")).trim().toLowerCase();
+							if (codecV.equals("mpeg2"))
+								codecV = "mpeg2video";
+							if (s.contains("AUDIO ") && s.contains("(pid") && !s.contains("NO AUDIO")) {
+								int audioString = s.indexOf("AUDIO ")+5;
+								audio.codecA = s.substring(audioString, s.indexOf("(pid", audioString)).trim().toLowerCase();
+								audio.sampleFrequency = "48000";
+							}
+						}*/
+						
+						if (codecV == null && s.startsWith("ID_VIDEO_CODEC=")) {
+							String cv = s.substring(15).trim();
+							if (cv.toLowerCase().contains("h264"))
+								codecV = "h264";
+							else if (cv.toLowerCase().contains("mpegpes"))
+								codecV = "mpeg2video";
+							else if (cv.toLowerCase().contains("vc1"))
+								codecV = "vc1";
+						}
+						
+						if (s.startsWith("ID_AUDIO_CODEC=")) {
+							if (currentAudioTrack != null) {
+								currentAudioTrack.codecA = s.substring(15).trim();
+							}
+						}
+						
+						if (s.startsWith("ID_AUDIO_RATE=")) {
+							if (currentAudioTrack != null) {
+								currentAudioTrack.sampleFrequency = s.substring(14).trim();
+							}
+						}
+						
+						if (s.startsWith("ID_AUDIO_NCH=")) {
+							if (currentAudioTrack != null) {
+								try {
+									currentAudioTrack.nrAudioChannels = Integer.parseInt(s.substring(13).trim());
+								} catch( NumberFormatException nfe) {}
+							}
+						}
+						
+						if (s.startsWith("ID_AUDIO_ID=")) {
+							try {
+								int id = Integer.parseInt(s.substring(12).trim());
+								for(DLNAMediaAudio audio:audioCodes) {
+									if (audio.id == id) {
+										currentAudioTrack = audio;
+										break;
+									}
+								}
+								if (currentAudioTrack == null) {
+									currentAudioTrack = new DLNAMediaAudio();
+									currentAudioTrack.id = id;
+									audioCodes.add(currentAudioTrack);
+								}
+							} catch (NumberFormatException ne) {}
+						}
+						
+						if (getDurationInSeconds() == 0 && s.startsWith("ID_LENGTH=")) {
+							try {
+								String len = s.substring(10);
+								double lenD = Double.parseDouble(len);
+								setDurationString(lenD);
+							} catch (Throwable t) {
+								PMS.debug("Error in parsing duration infos: " + s + " - " + t.getMessage());
+							}
+						}
+						if (width == 0 && s.contains("VDec: vo config request - ")) {
+							try {
+								String wh = s.substring(26, s.indexOf("(")).trim();
+								width = Integer.parseInt(wh.substring(0, wh.indexOf("x")).trim());
+								height = Integer.parseInt(wh.substring(wh.indexOf("x")+1).trim());
+							} catch (Throwable t) {
+								PMS.debug("Error in parsing image infos: " + s + " - " + t.getMessage());
+							}
+						}
+					}
+				}
+				// let's try tsmuxer for the end
+				if (f.file != null && (ffmpeg_failure  || (container != null && container.equals("mpegts")))) {
+					String tsMuxer = PMS.getConfiguration().getTsmuxerPath();
+					if (tsMuxer != null) {
+						String cmd [] = new String [] {tsMuxer , ProcessUtil.getShortFileNameIfWideChars(f.file.getAbsolutePath()) };
+						OutputParams params = new OutputParams(PMS.getConfiguration());
+						params.log = true;
+						ProcessWrapperImpl p = new ProcessWrapperImpl(cmd, params);
+						p.run();
+						List<String> results = p.getOtherResults();
+						int currentId = 0;
+						DLNAMediaAudio currentAudioTrack = null;
+						for(String s:results) {
+							if (s.startsWith("Track ID:")) {
+								currentId = Integer.parseInt(s.substring(9).trim());
+							} else if (s.startsWith("Stream type:") && currentId > 0) {
+								String streamType = s.substring(12).trim();
+								if (streamType.equals("AC3") || streamType.equals("DTS-HD") || streamType.equals("DTS") || streamType.equals("TRUE-HD") || streamType.equals("LPCM") ) {
+									for(DLNAMediaAudio audio:audioCodes) {
+										if (audio.id == currentId) {
+											currentAudioTrack = audio;
+											break;
+										}
+									}
+									if (currentAudioTrack == null) {
+										currentAudioTrack = new DLNAMediaAudio();
+										currentAudioTrack.id = currentId;
+										audioCodes.add(currentAudioTrack);
+									}
+									if (streamType.equals("DTS-HD"))
+										streamType = "DTS";
+									currentAudioTrack.codecA = streamType;
+								}
+							} else if (s.startsWith("Stream delay:") && currentId > 0) {
+								if (currentAudioTrack != null) {
+									currentAudioTrack.delay = Integer.parseInt(s.substring(13).trim());
+								}
+							}  else if (s.startsWith("Stream lang:") && currentId > 0) {
+								if (currentAudioTrack != null) {
+									currentAudioTrack.lang = s.substring(12).trim();
+								}
+							}
+						}
+					}
+				}
+				
+				if (container != null && f.file != null && container.equals("mpegts") && isH264() && getDurationInSeconds() == 0) {
+					// let's do the parsing for getting the duration...
+					try {
+						int length = MpegUtil.getDurationFromMpeg(f.file);
+						if (length > 0)
+							setDurationString(length);
+					} catch (IOException e) {
+						PMS.debug("Error in retrieving length: " + e.getMessage());
+					}
+				}
+				
+				if (PMS.getConfiguration().isUseMplayerForVideoThumbs() && type == Format.VIDEO) {
+					try {
+						getMplayerThumbnail(f);
+						String frameName = "" + f.hashCode();
+						if (f.file != null)
+							frameName = ProcessUtil.getShortFileNameIfWideChars(f.file.getName());
+						File jpg = new File("mplayer_thumbs/" + frameName + "00000001/00000001.jpg");
+						if (jpg.exists()) {
+							InputStream is = new FileInputStream(jpg);
+							int sz = is.available();
+							if (sz > 0) {
+								thumb = new byte [sz];
+								is.read(thumb);
+							}
+							is.close();
+							if (!jpg.delete())
+								jpg.deleteOnExit();
+							if (!jpg.getParentFile().delete())
+								jpg.getParentFile().delete();
+						}
+					} catch (IOException e) {
+						
+					}
+				}
 				
 				// remove audio code when there's only one "und" track
 				/*if (nbUndAudioTracks == 1 && audioCodes.size() == 1) {
 					audioCodes.remove(0);
 				}*/
 			
-				if (type == Format.VIDEO && pw != null) {
+				if (type == Format.VIDEO && pw != null && thumb == null) {
 					InputStream is;
 					try {
 						is = pw.getInputStream(0);
@@ -525,6 +719,10 @@ public class DLNAMediaInfo {
 		
 	}
 	
+	public boolean isH264() {
+		return codecV != null && codecV.contains("264");
+	}
+	
 	public int getFrameNumbers() {
 		double fr = Double.parseDouble(frameRate);
 		return (int) (getDurationInSeconds()*fr);
@@ -538,16 +736,16 @@ public class DLNAMediaInfo {
 	}
 	
 	public double getDurationInSeconds() {
-		if (duration != null) {
-		StringTokenizer st = new StringTokenizer(duration, ":");
-		try {
-			int h = Integer.parseInt(st.nextToken());
-			int m = Integer.parseInt(st.nextToken());
-			double s = Double.parseDouble(st.nextToken());
-			return h*3600+m*60+s;
-		} catch(NumberFormatException nfe) {
-			
-		}
+		if (StringUtils.isNotBlank(duration)) {
+			StringTokenizer st = new StringTokenizer(duration, ":");
+			try {
+				int h = Integer.parseInt(st.nextToken());
+				int m = Integer.parseInt(st.nextToken());
+				double s = Double.parseDouble(st.nextToken());
+				return h*3600+m*60+s;
+			} catch(NumberFormatException nfe) {
+				
+			}
 		}
 		return 0;
 		
