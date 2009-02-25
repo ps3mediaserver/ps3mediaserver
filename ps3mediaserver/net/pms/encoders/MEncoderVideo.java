@@ -967,7 +967,7 @@ private JTextField mencoder_ass_scale;
 			dvd = true;
 		
 		
-		if (params.sid == null && !dvd && media != null && media.isVideoPS3Compatible(newInput) && configuration.isMencoderMuxWhenCompatible() && !Platform.isMac() && params.mediaRenderer ==HTTPResource.PS3) {
+		if (params.sid == null && !dvd && !avisynth() && media != null && media.isVideoPS3Compatible(newInput) && configuration.isMencoderMuxWhenCompatible() && !Platform.isMac() && params.mediaRenderer ==HTTPResource.PS3) {
 			TSMuxerVideo tv = new TSMuxerVideo(configuration);
 			params.forceFps = media.getValidFps(false);
 			if (media.codecV.equals("h264")) { //$NON-NLS-1$
@@ -1426,7 +1426,8 @@ private JTextField mencoder_ass_scale;
 			sm.setNbchannels(sm.isDtsembed()?2:configuration.getAudioChannelCount());
 			sm.setSampleFrequency(48000);
 			sm.setBitspersample(16);
-			String ffmpegLPCMextract [] = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + configuration.getAudioChannelCount(), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", "-oac", sm.isDtsembed()?"copy":"pcm", "-o", ffAudioPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$
+			// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
+			String ffmpegLPCMextract [] = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", "-oac", sm.isDtsembed()?"copy":"pcm", "-o", ffAudioPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$
 			ffAudioPipe.setModifier(sm);
 			
 			if (params.stdin != null)
