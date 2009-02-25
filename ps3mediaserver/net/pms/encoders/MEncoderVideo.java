@@ -1393,6 +1393,15 @@ private JTextField mencoder_ass_scale;
 		ProcessWrapperImpl pw = null;
 		
 		if (pcm || dts || mux) {
+			
+			// remove the -oac switch, otherwise too many video packets errors appears again
+			for(int s=0;s<cmdArray.length;s++) {
+				if (cmdArray[s].equals("-oac")) { //$NON-NLS-1$
+					cmdArray[s] = "-nosound";
+					cmdArray[s+1] = "-nosound";
+					break;
+				}
+			}
 
 			pipe = new PipeProcess(System.currentTimeMillis() + "tsmuxerout.ts"); //$NON-NLS-1$
 			
@@ -1418,6 +1427,8 @@ private JTextField mencoder_ass_scale;
 			
 			pw.attachProcess(ffVideo);
 			ffVideo.runInNewThread();
+			
+			
 			
 			PipeIPCProcess ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
 			StreamModifier sm = new StreamModifier();

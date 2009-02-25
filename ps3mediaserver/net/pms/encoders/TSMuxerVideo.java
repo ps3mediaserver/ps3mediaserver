@@ -379,6 +379,7 @@ public class TSMuxerVideo extends Player {
 				}
 				
 			}*/
+		
 			if (ffVideoPipe != null) {
 				String videoparams = "level=4.1, insertSEI, contSPS, track=1"; //$NON-NLS-1$
 				if (this instanceof TsMuxerAudio)
@@ -386,13 +387,17 @@ public class TSMuxerVideo extends Player {
 				pw.println(videoType + ", \"" + ffVideoPipe.getOutputPipe() + "\", "  + (fps!=null?("fps=" +fps + ", "):"") + videoparams); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			}
 			if (ffAudioPipe != null && ffAudioPipe.length == 1) {
+				String timeshift = "";
 				String type = "A_AC3"; //$NON-NLS-1$
 				if (((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && (params.aid.isDTS() || params.aid.isLossless()) || this instanceof TsMuxerAudio))
 					type = "A_LPCM"; //$NON-NLS-1$
-				pw.println(type + ", \"" + ffAudioPipe[0].getOutputPipe() + "\", track=2"); //$NON-NLS-1$ //$NON-NLS-2$
+				if (params.aid != null && params.aid.delay != 0)
+					timeshift = "timeshift=" + params.aid.delay + "ms, ";
+				pw.println(type + ", \"" + ffAudioPipe[0].getOutputPipe() + "\", " + timeshift + "track=2"); //$NON-NLS-1$ //$NON-NLS-2$
 			} else if (ffAudioPipe != null) {
 				for(int i=0;i<media.audioCodes.size();i++) {
 					DLNAMediaAudio lang = media.audioCodes.get(i);
+					String timeshift = "";
 					boolean lossless = false;
 					if ((lang.isDTS() || lang.isLossless()) && (configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM())) {
 						lossless = true;
@@ -400,7 +405,9 @@ public class TSMuxerVideo extends Player {
 					String type = "A_AC3"; //$NON-NLS-1$
 					if (lossless)
 						type = "A_LPCM"; //$NON-NLS-1$
-					pw.println(type + ", \"" + ffAudioPipe[i].getOutputPipe() + "\", track=" + (2+i)); //$NON-NLS-1$ //$NON-NLS-2$
+					if (lang.delay != 0)
+						timeshift = "timeshift=" + lang.delay + "ms, ";
+					pw.println(type + ", \"" + ffAudioPipe[i].getOutputPipe() + "\", " + timeshift + "track=" + (2+i)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 			pw.close();

@@ -469,6 +469,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			id = media_audio.lang;
 		if (media_subtitle != null && media_subtitle.id != -1)
 			id = media_subtitle.lang;
+		if ((media_subtitle != null || media_audio != null) && StringUtils.isBlank(id))
+			id = "und";
 		if (id != null) {
 			String code = Iso639.getISO639_2Code(id.toLowerCase());
 			sb.append("codes/" + code + ".png");

@@ -160,6 +160,7 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append(", GENRE             VARCHAR2(64)"); //$NON-NLS-1$
 				sb.append(", YEAR              INT"); //$NON-NLS-1$
 				sb.append(", TRACK             INT"); //$NON-NLS-1$
+				sb.append(", DELAY             INT"); //$NON-NLS-1$
 				sb.append(", constraint PKAUDIO primary key (FILEID, ID))"); //$NON-NLS-1$
 				executeUpdate(conn, sb.toString());
 				sb = new StringBuffer();
@@ -283,6 +284,7 @@ public class DLNAMediaDatabase implements Runnable {
 					audio.genre = subrs.getString("GENRE"); //$NON-NLS-1$
 					audio.year = subrs.getInt("YEAR"); //$NON-NLS-1$
 					audio.track = subrs.getInt("TRACK"); //$NON-NLS-1$
+					audio.delay = subrs.getInt("DELAY"); //$NON-NLS-1$
 					media.audioCodes.add(audio);
 				}
 				subrs.close();
@@ -370,7 +372,7 @@ public class DLNAMediaDatabase implements Runnable {
 			}
 			rs.close();
 			if (media != null && id > -1) {
-				PreparedStatement insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); //$NON-NLS-1$
+				PreparedStatement insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); //$NON-NLS-1$
 				for(DLNAMediaAudio audio:media.audioCodes) {
 					insert.clearParameters();
 					insert.setInt(1, id);
@@ -386,6 +388,7 @@ public class DLNAMediaDatabase implements Runnable {
 					insert.setString(11, StringUtils.trimToEmpty(audio.genre));
 					insert.setInt(12, audio.year);
 					insert.setInt(13, audio.track);
+					insert.setInt(14, audio.delay);
 					insert.executeUpdate();
 				}
 				
