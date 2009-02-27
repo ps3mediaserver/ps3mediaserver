@@ -144,7 +144,7 @@ public class CodecUtil {
 		}
 
 	public static String getMixerOutput(boolean pcmonly, int nbchannels) {
-		String mixer = null;								
+		String mixer = "volume=0";								
 		if (pcmonly) { // we are using real PCM output
 			// thanks to JR Cash and his 5.1 sample
 			// et merci Yann :p

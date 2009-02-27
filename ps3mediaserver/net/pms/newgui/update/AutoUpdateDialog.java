@@ -34,7 +34,7 @@ public class AutoUpdateDialog extends JDialog implements Observer {
 	}
 
 	AutoUpdateDialog(Window parent, AutoUpdater autoUpdater) {
-		super(parent, "Auto Update");
+		super(parent, "PS3 Media Server Auto Update");
 		this.autoUpdater = autoUpdater;
 		autoUpdater.addObserver(this);
 		initComponents();
