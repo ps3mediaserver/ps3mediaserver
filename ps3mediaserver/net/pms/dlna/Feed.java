@@ -122,6 +122,11 @@ public class Feed extends DLNAResource {
 			if (tempItemThumbURL == null)
 				tempItemThumbURL = elt.getAttribute("url").getValue();
 		}
+		if ("image".equals(elt.getName()) && "exInfo".equals(elt.getNamespacePrefix())) {
+			if (tempItemThumbURL == null)
+				tempItemThumbURL = elt.getValue();
+			
+		}
 	}
 
 	public InputStream getInputStream() throws IOException {

@@ -60,6 +60,28 @@ public class WebVideoStream extends WebStream {
 				PMS.error(null, e);
 			}
 		}
+		// from issue 282... need to script this
+		else if (URL.toLowerCase().indexOf("gametrailers") > -1 && URL.toLowerCase().indexOf("?") > -1) {
+			try {
+				InputStream is = downloadAndSend(URL, false);
+				ByteArrayOutputStream bout = new ByteArrayOutputStream();
+				int n = -1;
+				byte buffer [] = new byte [4096];
+				while( (n=is.read(buffer))> -1) {
+					bout.write(buffer, 0, n);
+				}
+				is.close();
+				String content = new String(bout.toByteArray());
+				int fs = content.indexOf("http://www.gametrailers.com/download/");
+				String newURL = "";
+				if (fs > -1) {
+					newURL= content.substring(fs, content.indexOf(">", fs)-1);
+					URL = newURL.replace(".mov", ".flv");
+				}
+			} catch (IOException e) {
+				PMS.error(null, e);
+			}
+		}
 		return super.getInputStream(low, high, timeseek, mediaRenderer);
 	}
 	

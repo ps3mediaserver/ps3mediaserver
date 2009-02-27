@@ -230,7 +230,7 @@ public class PmsConfiguration {
 	}*/
 
 	public int getAudioBitrate() {
-		return getInt(KEY_AUDIO_BITRATE, 384);
+		return getInt(KEY_AUDIO_BITRATE, 640);
 	}
 
 	public void setTsmuxerPreremuxAc3(boolean value) {
