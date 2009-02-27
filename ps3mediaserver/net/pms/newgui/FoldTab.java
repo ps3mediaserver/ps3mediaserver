@@ -61,7 +61,8 @@ public class FoldTab {
 	private JButton but5;
 	private JTextField seekpos;
 	private JCheckBox  tncheckBox;
-	private JCheckBox  disablefakesize;
+	private JCheckBox  mplayer_thumb;
+	//private JCheckBox  disablefakesize;
 	private JCheckBox  cacheenable;
 	private JCheckBox  archive;
 	private JComboBox sortmethod;
@@ -96,7 +97,7 @@ public class FoldTab {
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
                 "left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref,  0:grow", //$NON-NLS-1$
-                "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, fill:default:grow"); //$NON-NLS-1$
+                "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, fill:default:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.DLU4_BORDER);
         builder.setOpaque(true);
@@ -122,193 +123,62 @@ public class FoldTab {
 		FList.setModel(df);
         JScrollPane pane = new JScrollPane(FList);
         
-       // builder.addSeparator(Messages.getString("FoldTab.1"),  cc.xyw(2, 1, 6)); //$NON-NLS-1$
-        JComponent cmp = builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 1, 8)); //$NON-NLS-1$
+        JComponent cmp = builder.addSeparator("Thumbnails",  cc.xyw(1, 1, 8));
         cmp = (JComponent) cmp.getComponent(0);
         cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
-        hidevideosettings = new JCheckBox(Messages.getString("FoldTab.6")); //$NON-NLS-1$
-        hidevideosettings.setContentAreaFilled(false);
-        if (PMS.getConfiguration().getHideVideoSettings())
-        	hidevideosettings.setSelected(true);
-        hidevideosettings.addItemListener(new ItemListener() {
-
- 			public void itemStateChanged(ItemEvent e) {
- 				PMS.getConfiguration().setHideVideoSettings((e.getStateChange() == ItemEvent.SELECTED));
- 				PMS.get().getFrame().setReloadable(true);
- 			}
-        	
-        });
-        
-
         tncheckBox = new JCheckBox(Messages.getString("NetworkTab.2")); //$NON-NLS-1$
-       tncheckBox.setContentAreaFilled(false);
-       tncheckBox.addItemListener(new ItemListener() {
+        tncheckBox.setContentAreaFilled(false);
+        tncheckBox.addItemListener(new ItemListener() {
 
- 			public void itemStateChanged(ItemEvent e) {
- 				PMS.getConfiguration().setThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
- 			}
-       	
-       });
-       if (PMS.getConfiguration().getThumbnailsEnabled())
-       	tncheckBox.setSelected(true);
-       
-       seekpos = new JTextField("" + configuration.getThumbnailSeekPos()); //$NON-NLS-1$
-       seekpos.addKeyListener(new KeyListener() {
-
-   		@Override
-   		public void keyPressed(KeyEvent e) {}
-   		@Override
-   		public void keyTyped(KeyEvent e) {}
-   		@Override
-   		public void keyReleased(KeyEvent e) {
-   			try {
-   				int ab = Integer.parseInt(seekpos.getText());
-   				configuration.setThumbnailSeekPos(ab);
-   			} catch (NumberFormatException nfe) {
-   			}
-   			
-   		}
-       	   
-          });
-        
-        
-        archive = new JCheckBox(Messages.getString("NetworkTab.1")); //$NON-NLS-1$
-        archive.setContentAreaFilled(false);
-        archive.addItemListener(new ItemListener() {
-
- 			public void itemStateChanged(ItemEvent e) {
- 				PMS.getConfiguration().setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
- 				if (PMS.get().getFrame() != null)
- 					PMS.get().getFrame().setReloadable(true);
- 			}
+  			public void itemStateChanged(ItemEvent e) {
+  				PMS.getConfiguration().setThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
+  			}
         	
         });
-        if (PMS.getConfiguration().isArchiveBrowsing())
-     	   archive.setSelected(true);
-        
-        
-        
+        if (PMS.getConfiguration().getThumbnailsEnabled())
+        	tncheckBox.setSelected(true);
         builder.add(tncheckBox,          cc.xyw(1,  3, 3));
+        
+        
+        seekpos = new JTextField("" + configuration.getThumbnailSeekPos()); //$NON-NLS-1$
+        seekpos.addKeyListener(new KeyListener() {
+
+    		@Override
+    		public void keyPressed(KeyEvent e) {}
+    		@Override
+    		public void keyTyped(KeyEvent e) {}
+    		@Override
+    		public void keyReleased(KeyEvent e) {
+    			try {
+    				int ab = Integer.parseInt(seekpos.getText());
+    				configuration.setThumbnailSeekPos(ab);
+    			} catch (NumberFormatException nfe) {
+    			}
+    			
+    		}
+        	   
+           });
+         
         
         
         builder.addLabel(Messages.getString("NetworkTab.16"),  cc.xyw(4,  3, 3)); //$NON-NLS-1$
         builder.add(seekpos,          cc.xyw(6,  3, 2));
-        builder.add(archive,          cc.xyw(1,  9, 3));
         
-        disablefakesize = new JCheckBox(Messages.getString("FoldTab.11"));  //$NON-NLS-1$
-        disablefakesize.setContentAreaFilled(false);
-        if (PMS.getConfiguration().isDisableFakeSize())
-        	disablefakesize.setSelected(true);
-        disablefakesize.addItemListener(new ItemListener() {
+        
+        mplayer_thumb = new JCheckBox("Use Mplayer for Video Thumbnails");
+        mplayer_thumb.setContentAreaFilled(false);
+        mplayer_thumb.addItemListener(new ItemListener() {
 
- 			public void itemStateChanged(ItemEvent e) {
- 				PMS.getConfiguration().setDisableFakeSize((e.getStateChange() == ItemEvent.SELECTED));
- 				PMS.get().getFrame().setReloadable(true);
- 			}
+  			public void itemStateChanged(ItemEvent e) {
+  				PMS.getConfiguration().setUseMplayerForVideoThumbs((e.getStateChange() == ItemEvent.SELECTED));
+  			}
         	
         });
-        builder.add(disablefakesize,          cc.xyw(1,  7, 7));
+        if (PMS.getConfiguration().isUseMplayerForVideoThumbs())
+        	mplayer_thumb.setSelected(true);
+        builder.add(mplayer_thumb,          cc.xyw(1,  5, 5));
         
-        final JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
-  	  
-        cacheenable = new JCheckBox(Messages.getString("NetworkTab.17")); //$NON-NLS-1$
-        cacheenable.setContentAreaFilled(false);
-        cacheenable.setSelected(PMS.getConfiguration().getUseCache());
-        cacheenable.addItemListener(new ItemListener() {
-
- 			public void itemStateChanged(ItemEvent e) {
- 				PMS.getConfiguration().setUseCache((e.getStateChange() == ItemEvent.SELECTED));
- 				cachereset.setEnabled(PMS.getConfiguration().getUseCache());
- 				PMS.get().getFrame().setReloadable(true);
- 				if ((LooksFrame) PMS.get().getFrame() != null)
- 					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(PMS.getConfiguration().getUseCache());
- 			}
-       	
-       });
-      
-       
-        //cacheenable.setEnabled(false);
-        
-     	  builder.add(cacheenable,          cc.xy(1,  13));
-     	  
-     	  
-     	  cachereset.addActionListener(new ActionListener() {
-
- 			@Override
- 			public void actionPerformed(ActionEvent e) {
- 				int option = JOptionPane.showConfirmDialog(
-    	                    (Component) PMS.get().getFrame(),
-    	                    Messages.getString("NetworkTab.13") +  //$NON-NLS-1$
-    	                    Messages.getString("NetworkTab.19"), //$NON-NLS-1$
-    	                    "Question", //$NON-NLS-1$
-    	                    JOptionPane.YES_NO_OPTION
-    	                    );
-    				if (option == JOptionPane.YES_OPTION) {
-    					PMS.get().getDatabase().init(true);
-    				}
- 				
- 			}
-     		  
-     	  });
-     	  builder.add(cachereset,          cc.xyw(4,  13, 4));
-     	  
-     	  
-     	  cachereset.setEnabled(PMS.getConfiguration().getUseCache());
-        
-        builder.add(hidevideosettings,          cc.xyw(4,  9, 3));
-        
-        hideextensions = new JCheckBox(Messages.getString("FoldTab.5")); //$NON-NLS-1$
-        hideextensions.setContentAreaFilled(false);
-        if (PMS.getConfiguration().isHideExtensions())
-        	hideextensions.setSelected(true);
-        hideextensions.addItemListener(new ItemListener() {
-
- 			public void itemStateChanged(ItemEvent e) {
- 				PMS.getConfiguration().setHideExtensions((e.getStateChange() == ItemEvent.SELECTED));
- 				PMS.get().getFrame().setReloadable(true);
- 			}
-        	
-        });
-        builder.add(hideextensions,          cc.xyw(1,  11, 3));
-        
-        hideengines = new JCheckBox(Messages.getString("FoldTab.8")); //$NON-NLS-1$
-        hideengines.setContentAreaFilled(false);
-        if (PMS.getConfiguration().isHideEngineNames())
-        	hideengines.setSelected(true);
-        hideengines.addItemListener(new ItemListener() {
-
- 			public void itemStateChanged(ItemEvent e) {
- 				PMS.getConfiguration().setHideEngineNames((e.getStateChange() == ItemEvent.SELECTED));
- 				PMS.get().getFrame().setReloadable(true);
- 			}
-        	
-        });
-        builder.add(hideengines,          cc.xyw(4,  11, 3));
-        
-        final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "0", "1" }, new Object[] { Messages.getString("FoldTab.15"), Messages.getString("FoldTab.16") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-        sortmethod = new JComboBox(kcbm);
-        sortmethod.setEditable(false);
-       
-      kcbm.setSelectedKey("" + configuration.getSortMethod()); //$NON-NLS-1$
-      
-      sortmethod.addItemListener(new ItemListener() {
-
- 			public void itemStateChanged(ItemEvent e) {
- 				if (e.getStateChange() == ItemEvent.SELECTED) {
- 					
- 					try {
- 						configuration.setSortMethod(Integer.parseInt((String) kcbm.getSelectedKey()));
- 						PMS.get().getFrame().setReloadable(true);
- 					} catch (NumberFormatException nfe) {}
- 					
- 				}
- 			}
-      	
-      });
-      
-      builder.addLabel(Messages.getString("FoldTab.18"), cc.xyw(1,17,3)); //$NON-NLS-1$
-        builder.add(sortmethod, cc.xyw(4, 17,4));
         
         final KeyedComboBoxModel thumbKCBM = new KeyedComboBoxModel(new Object[] { "0", "1", "2" }, new Object[] { Messages.getString("FoldTab.15"), Messages.getString("FoldTab.23"), Messages.getString("FoldTab.24") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         audiothumbnail = new JComboBox(thumbKCBM);
@@ -330,10 +200,10 @@ public class FoldTab {
  			}
       	
       });
-      builder.addLabel(Messages.getString("FoldTab.26"), cc.xyw(1,19,3)); //$NON-NLS-1$
-        builder.add(audiothumbnail, cc.xyw(4, 19,4));
+      builder.addLabel(Messages.getString("FoldTab.26"), cc.xyw(1,7,3)); //$NON-NLS-1$
+        builder.add(audiothumbnail, cc.xyw(4, 7,4));
         
-        builder.addLabel(Messages.getString("FoldTab.27"), cc.xyw(1, 21, 3)); //$NON-NLS-1$
+        builder.addLabel(Messages.getString("FoldTab.27"), cc.xyw(1, 9, 3)); //$NON-NLS-1$
         defaultThumbFolder = new JTextField(configuration.getAlternateThumbFolder());
         defaultThumbFolder.addKeyListener(new KeyListener() {
 
@@ -347,7 +217,7 @@ public class FoldTab {
     		}
         	   
            });
-        builder.add(defaultThumbFolder, cc.xyw(4, 21, 3));
+        builder.add(defaultThumbFolder, cc.xyw(4, 9, 3));
         
         JButton select = new JButton("..."); //$NON-NLS-1$
         select.addActionListener(new ActionListener() {
@@ -370,7 +240,161 @@ public class FoldTab {
  			}
   		  
   	  });
-  	  builder.add(select,          cc.xyw(7,  21, 1));
+  	  builder.add(select,          cc.xyw(7,  9, 1));
+        
+        cmp = builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 11, 8)); //$NON-NLS-1$
+        cmp = (JComponent) cmp.getComponent(0);
+        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+        
+        hidevideosettings = new JCheckBox(Messages.getString("FoldTab.6")); //$NON-NLS-1$
+        hidevideosettings.setContentAreaFilled(false);
+        if (PMS.getConfiguration().getHideVideoSettings())
+        	hidevideosettings.setSelected(true);
+        hidevideosettings.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				PMS.getConfiguration().setHideVideoSettings((e.getStateChange() == ItemEvent.SELECTED));
+ 				PMS.get().getFrame().setReloadable(true);
+ 			}
+        	
+        });
+        
+
+        
+        archive = new JCheckBox(Messages.getString("NetworkTab.1")); //$NON-NLS-1$
+        archive.setContentAreaFilled(false);
+        archive.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				PMS.getConfiguration().setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
+ 				if (PMS.get().getFrame() != null)
+ 					PMS.get().getFrame().setReloadable(true);
+ 			}
+        	
+        });
+        if (PMS.getConfiguration().isArchiveBrowsing())
+     	   archive.setSelected(true);
+        
+        
+        
+     
+        builder.add(archive,          cc.xyw(1,  13, 3));
+        
+        /*disablefakesize = new JCheckBox(Messages.getString("FoldTab.11"));  //$NON-NLS-1$
+        disablefakesize.setContentAreaFilled(false);
+        if (PMS.getConfiguration().isDisableFakeSize())
+        	disablefakesize.setSelected(true);
+        disablefakesize.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				PMS.getConfiguration().setDisableFakeSize((e.getStateChange() == ItemEvent.SELECTED));
+ 				PMS.get().getFrame().setReloadable(true);
+ 			}
+        	
+        });
+        builder.add(disablefakesize,          cc.xyw(1,  7, 7));
+        */
+        final JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
+  	  
+        cacheenable = new JCheckBox(Messages.getString("NetworkTab.17")); //$NON-NLS-1$
+        cacheenable.setContentAreaFilled(false);
+        cacheenable.setSelected(PMS.getConfiguration().getUseCache());
+        cacheenable.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				PMS.getConfiguration().setUseCache((e.getStateChange() == ItemEvent.SELECTED));
+ 				cachereset.setEnabled(PMS.getConfiguration().getUseCache());
+ 				PMS.get().getFrame().setReloadable(true);
+ 				if ((LooksFrame) PMS.get().getFrame() != null)
+ 					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(PMS.getConfiguration().getUseCache());
+ 			}
+       	
+       });
+      
+       
+        //cacheenable.setEnabled(false);
+        
+     	  builder.add(cacheenable,          cc.xy(1,  17));
+     	  
+     	  
+     	  cachereset.addActionListener(new ActionListener() {
+
+ 			@Override
+ 			public void actionPerformed(ActionEvent e) {
+ 				int option = JOptionPane.showConfirmDialog(
+    	                    (Component) PMS.get().getFrame(),
+    	                    Messages.getString("NetworkTab.13") +  //$NON-NLS-1$
+    	                    Messages.getString("NetworkTab.19"), //$NON-NLS-1$
+    	                    "Question", //$NON-NLS-1$
+    	                    JOptionPane.YES_NO_OPTION
+    	                    );
+    				if (option == JOptionPane.YES_OPTION) {
+    					PMS.get().getDatabase().init(true);
+    				}
+ 				
+ 			}
+     		  
+     	  });
+     	  builder.add(cachereset,          cc.xyw(4,  17, 4));
+     	  
+     	  
+     	  cachereset.setEnabled(PMS.getConfiguration().getUseCache());
+        
+        builder.add(hidevideosettings,          cc.xyw(4,  13, 3));
+        
+        hideextensions = new JCheckBox(Messages.getString("FoldTab.5")); //$NON-NLS-1$
+        hideextensions.setContentAreaFilled(false);
+        if (PMS.getConfiguration().isHideExtensions())
+        	hideextensions.setSelected(true);
+        hideextensions.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				PMS.getConfiguration().setHideExtensions((e.getStateChange() == ItemEvent.SELECTED));
+ 				PMS.get().getFrame().setReloadable(true);
+ 			}
+        	
+        });
+        builder.add(hideextensions,          cc.xyw(1,  15, 3));
+        
+        hideengines = new JCheckBox(Messages.getString("FoldTab.8")); //$NON-NLS-1$
+        hideengines.setContentAreaFilled(false);
+        if (PMS.getConfiguration().isHideEngineNames())
+        	hideengines.setSelected(true);
+        hideengines.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				PMS.getConfiguration().setHideEngineNames((e.getStateChange() == ItemEvent.SELECTED));
+ 				PMS.get().getFrame().setReloadable(true);
+ 			}
+        	
+        });
+        builder.add(hideengines,          cc.xyw(4,  15, 3));
+        
+        final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "0", "1" }, new Object[] { Messages.getString("FoldTab.15"), Messages.getString("FoldTab.16") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        sortmethod = new JComboBox(kcbm);
+        sortmethod.setEditable(false);
+       
+      kcbm.setSelectedKey("" + configuration.getSortMethod()); //$NON-NLS-1$
+      
+      sortmethod.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				if (e.getStateChange() == ItemEvent.SELECTED) {
+ 					
+ 					try {
+ 						configuration.setSortMethod(Integer.parseInt((String) kcbm.getSelectedKey()));
+ 						PMS.get().getFrame().setReloadable(true);
+ 					} catch (NumberFormatException nfe) {}
+ 					
+ 				}
+ 			}
+      	
+      });
+      
+      builder.addLabel(Messages.getString("FoldTab.18"), cc.xyw(1,21,3)); //$NON-NLS-1$
+        builder.add(sortmethod, cc.xyw(4, 21,4));
+        
+       
         
         
         FormLayout layoutFolders = new FormLayout(

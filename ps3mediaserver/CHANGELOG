@@ -6,21 +6,25 @@ v1.10
 
 - Changes / Features : Windows/Linux
 
-Streaming support for DTS / DTS-HD core (DVD ISOs not supported yet)
+DTS / DTS-HD core audio tracks are now streamable without reencoding (DVD ISOs not supported yet)
 New Option: unification of Mencoder/tsMuxer engines, including:
 . Automatic choice between H264 muxing or transcoding, based on AVC Level 4.1 compatibility and subtitles configuration
 . Remux on the fly any H264 content from MOV, MP4, and AVI containers (ex: Apple HD Trailers)
-. Can be disabled via the #Video Settings# virtual menu if anything goes wrong
+. This option is enabled by default and can be disabled via the #Video Settings# virtual menu if anything goes wrong
+TS/M2TS support improvement
+2 channels downmixing support with PCM conversion
 
 - Changes / Features : All Platforms
 
 XBox 360 unofficial support (Pictures/Music/Videos : WMV8/WMA2 transcoding)
 Mencoder archive handling (no seeking support)
+Simplified copy (always available, no more option), and much faster with remuxed videos
 Alternate subtitles directory
 Multi language external subtitles support
 Alternate cover art folder and <video>.jpg additional support (along existing <video>.<ext>.cover.jpg)
 Automatic album art download from amazon or discogs
 Option to display more recents file first in a directory
+Ability to generate video thumbnails with Mplayer
 New translations: Romanian (thanks to Marinescu Alexandru Cezar), Simplified Chinese and Traditional Chinese (thanks to KK Tong)
 Updated translations: Finnish, Greek, Icelandic, Norwegian, Portuguese, Swedish
 
@@ -28,6 +32,8 @@ Updated translations: Finnish, Greek, Icelandic, Norwegian, Portuguese, Swedish
 
 Reworked RSS parsing (youtube playlists)
 Reworked Audio/Subtitles tracks handling
+Better stability in LPCM and DTS handling
+Fixed LPCM channel ordering
 Wrong font detection on some systems: subtitles weren't loaded
 Fixed tsMuxer crash at the end of file
 Modified UPNP discovery [work in progress]

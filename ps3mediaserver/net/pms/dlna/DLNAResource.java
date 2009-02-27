@@ -584,13 +584,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			//                   01 = Range par octets
 			//                   00 = pas de range, meme pas de pause possible
 			flags = "DLNA.ORG_OP=01";
-			if (this instanceof IPushOutput && !((IPushOutput)this).isUnderlyingSeekSupported())
+			/*if (this instanceof IPushOutput && !((IPushOutput)this).isUnderlyingSeekSupported())
 				flags = "DLNA.ORG_OP=00";
-			else if (player != null) {
+			else*/ if (player != null) {
 				if (player.isTimeSeekable() && mediaRenderer == PS3) {
 					flags = "DLNA.ORG_OP=10";
-					if (this instanceof IPushOutput)
-						flags = "DLNA.ORG_OP=00";
+					/*if (this instanceof IPushOutput)
+						flags = "DLNA.ORG_OP=00";*/
 				}
 			}
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
@@ -609,9 +609,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			if (ext != null && ext.isVideo() && media != null && media.mediaparsed) {
 				if (player == null && media != null)
 					addAttribute(sb, "size", media.size);
-				else if (!PMS.getConfiguration().isDisableFakeSize() && mediaRenderer != XBOX)
+				else //if (!PMS.getConfiguration().isDisableFakeSize() && mediaRenderer != XBOX)
 				//else if (!copy)
-					addAttribute(sb, "size", DLNAMediaInfo.TRANS_SIZE);
+					addAttribute(sb, "size", -1);
 				if (media.duration != null)
 					addAttribute(sb, "duration", media.duration);
 				if (media.getResolution() != null)
@@ -743,13 +743,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			return fis;
 		} else {
 			
-			if (timeseek == -1) {
+			/*if (timeseek == -1) {
 				if (mediarenderer == HTTPResource.PS3 && PMS.getConfiguration().isDisableFakeSize() && !(this instanceof IPushOutput) && ext != null && ext.isVideo())
 					return null;
 				else
 					timeseek = 0;
 			}
-			
+			*/
 			OutputParams params = new OutputParams(PMS.getConfiguration());
 			params.aid = media_audio;
 			params.sid = media_subtitle;

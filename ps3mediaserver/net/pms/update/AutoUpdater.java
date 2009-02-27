@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 
+import net.pms.PMS;
 import net.pms.util.UriRetriever;
 import net.pms.util.UriRetrieverCallback;
 
@@ -134,7 +135,10 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 
 	private void launchExe() throws UpdateException {
 		try {
-			Runtime.getRuntime().exec(TARGET_FILENAME);
+			File exe = new File(TARGET_FILENAME);
+			if (!exe.exists())
+				exe = new File(PMS.getConfiguration().getTempFolder(), TARGET_FILENAME);
+			Runtime.getRuntime().exec(exe.getAbsolutePath());
 		} catch (IOException e) {
 			wrapException(serverProperties.getDownloadUrl(), "Unable to run new Setup", e);
 		}
@@ -198,6 +202,15 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 		InputStream downloadedFromNetwork = new ByteArrayInputStream(download);
 		FileOutputStream fileOnDisk = null;
 		try {
+			try {
+				fileOnDisk = new FileOutputStream(target);
+				fileOnDisk.write("test".getBytes());
+			} catch (Exception e) {
+				// seems no rights
+				target = new File(PMS.getConfiguration().getTempFolder(), TARGET_FILENAME);
+			} finally {
+				fileOnDisk.close();
+			}
 			fileOnDisk = new FileOutputStream(target);
 			int bytesSaved = IOUtils.copy(downloadedFromNetwork, fileOnDisk);
 			LOG.info("Wrote " + bytesSaved + " bytes to " + target.getAbsolutePath());

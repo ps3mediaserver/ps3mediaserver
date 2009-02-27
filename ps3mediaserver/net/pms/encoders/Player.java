@@ -114,11 +114,13 @@ public abstract class Player {
 		StringTokenizer st1 = new StringTokenizer(configuration.getMencoderAudioSubLanguages(), ";"); //$NON-NLS-1$
 		while (st1.hasMoreTokens()) {
 			String pair = st1.nextToken();
-			String audio = pair.substring(0, pair.indexOf(",")); //$NON-NLS-1$
-			String sub = pair.substring(pair.indexOf(",")+1); //$NON-NLS-1$
-			if (Iso639.isCodesMatching(audio, currentLang)) {
-				matchedSub = sub;
-				break;
+			if (pair.contains(",")) {
+				String audio = pair.substring(0, pair.indexOf(",")); //$NON-NLS-1$
+				String sub = pair.substring(pair.indexOf(",")+1); //$NON-NLS-1$
+				if (Iso639.isCodesMatching(audio, currentLang)) {
+					matchedSub = sub;
+					break;
+				}
 			}
 		}
 		

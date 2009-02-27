@@ -38,7 +38,7 @@ public class DLNAMediaAudio extends DLNAMediaLang{
 	}
 	
 	public boolean isPCM() {
-		return codecA.startsWith("pcm_s1");
+		return codecA.startsWith("pcm_s1") || codecA.equals("LPCM");
 	}
 	
 	public boolean isLossless() {
