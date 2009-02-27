@@ -77,8 +77,10 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			PMS.info("Starting " + cmdLine);
 			if (params.outputFile != null && params.outputFile.getParentFile().isDirectory())
 				pb.directory(params.outputFile.getParentFile());
-			//process = pb.start();
-			process = Runtime.getRuntime().exec(cmdArray);
+			if (params.workDir != null && params.workDir.isDirectory())
+				pb.directory(params.workDir);
+			process = pb.start();
+			//process = Runtime.getRuntime().exec(cmdArray);
 			PMS.get().currentProcesses.add(process);
 			stderrConsumer = new OutputTextConsumer(process.getErrorStream(), true);
 			outConsumer = null;

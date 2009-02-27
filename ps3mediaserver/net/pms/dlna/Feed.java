@@ -161,8 +161,9 @@ public class Feed extends DLNAResource {
 
 	@Override
 	public boolean refreshChildren() {
-		if (System.currentTimeMillis() - lastmodified > 3600000) {
+		if (System.currentTimeMillis() - lastmodified > 3600000) { // refresh every hour
 			try {
+				children.clear();
 				parse();
 			} catch (Exception e) {
 				PMS.error("Eror in parsing stream: " + url, e);

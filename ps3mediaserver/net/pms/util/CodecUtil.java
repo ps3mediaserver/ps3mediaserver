@@ -44,13 +44,27 @@ public class CodecUtil {
 	public static int getAC3Bitrate(PmsConfiguration configuration, DLNAMediaAudio media) {
 		int defaultBitrate = configuration.getAudioBitrate();
 		if (media != null && defaultBitrate >= 384) {
-			if (media.nrAudioChannels == 2) {
+			if (media.nrAudioChannels == 2 || configuration.getAudioChannelCount() == 2) {
 				defaultBitrate = 384;
 			} else if (media.nrAudioChannels == 1) {
 				defaultBitrate = 192;
 			}
 		}
 		return defaultBitrate;
+	}
+	
+	public static int getAC3ChannelCount(PmsConfiguration configuration, DLNAMediaAudio audio) {
+		int channelCount = configuration.getAudioChannelCount();
+		if (audio.isAC3() && configuration.isRemuxAC3() && audio.nrAudioChannels > channelCount)
+			channelCount = audio.nrAudioChannels;
+		return channelCount;
+	}
+	
+	public static int getRealChannelCount(PmsConfiguration configuration, DLNAMediaAudio audio) {
+		int channelCount = configuration.getAudioChannelCount();
+		if (audio.nrAudioChannels > 0 && audio.nrAudioChannels < channelCount)
+			channelCount = audio.nrAudioChannels;
+		return channelCount;
 	}
 	
 	public static String getDefaultFontPath() {
@@ -129,4 +143,16 @@ public class CodecUtil {
 			return null;
 		}
 
+	public static String getMixerOutput(boolean pcmonly, int nbchannels) {
+		String mixer = null;								
+		if (pcmonly) { // we are using real PCM output
+			// thanks to JR Cash and his 5.1 sample
+			// et merci Yann :p
+			mixer = "channels=6:6:0:0:1:1:3:2:5:3:4:4:2:5";
+			if (nbchannels <= 2) { // downmixing to 2 channels
+				mixer = "pan=2:1:0:0:1:1:0:0:1:0.707:0.707:1:1";
+			}
+		}
+		return mixer;
+	}
 }

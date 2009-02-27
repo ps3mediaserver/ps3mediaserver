@@ -98,19 +98,12 @@ public class DLNAMediaInfo {
 	private ProcessWrapperImpl getFFMpegThumbnail(InputFile media) {
 		String args [] = new String[14];
 		args[0] = getFfmpegPath();
-		if (media.file != null && media.file.getAbsolutePath().toLowerCase().endsWith("dvr-ms")) {
-			if (StringUtils.isNotBlank(PMS.getConfiguration().getFfmpegAlternativePath())) {
-				args[0] = PMS.getConfiguration().getFfmpegAlternativePath();
-			}
+		boolean dvrms = media.file != null && media.file.getAbsolutePath().toLowerCase().endsWith("dvr-ms");
+		if (dvrms && StringUtils.isNotBlank(PMS.getConfiguration().getFfmpegAlternativePath())) {
+			args[0] = PMS.getConfiguration().getFfmpegAlternativePath();
 		}
 		args[1] = "-ss";
 		args[2] = "" + PMS.getConfiguration().getThumbnailSeekPos();
-		/*if (media.length() > 1000000000)
-			args[2] = "20";
-		else if (media.length() > 100000000)
-			args[2] = "10";
-		else if (media.length() > 10000000)
-			args[2] = "1";*/
 		args[3] = "-i";
 		if (media.file != null)
 			args[4] = ProcessUtil.getShortFileNameIfWideChars(media.file.getAbsolutePath());
@@ -125,7 +118,7 @@ public class DLNAMediaInfo {
 		args[11] = "-f";
 		args[12] = "image2";
 		args[13] = "pipe:";
-		if (!PMS.getConfiguration().getThumbnailsEnabled() || PMS.getConfiguration().isUseMplayerForVideoThumbs()) {
+		if (!PMS.getConfiguration().getThumbnailsEnabled() || (PMS.getConfiguration().isUseMplayerForVideoThumbs() && !dvrms)) {
 			args[2] = "0";
 			for(int i=5;i<=13;i++)
 				args[i] = "-an";
@@ -158,7 +151,8 @@ public class DLNAMediaInfo {
 		String args [] = new String[14];
 		args[0] = PMS.getConfiguration().getMplayerPath();
 		args[1] = "-ss";
-		args[2] = "" + PMS.getConfiguration().getThumbnailSeekPos();
+		boolean toolong = getDurationInSeconds() < PMS.getConfiguration().getThumbnailSeekPos();
+		args[2] = "" + (toolong?(getDurationInSeconds()/2):PMS.getConfiguration().getThumbnailSeekPos());
 		args[3] = "-quiet";
 		if (media.file != null)
 			args[4] = ProcessUtil.getShortFileNameIfWideChars(media.file.getAbsolutePath());
@@ -172,13 +166,14 @@ public class DLNAMediaInfo {
 		args[10] = "1";
 		args[11] = "-vo";
 		String frameName = "" + media.hashCode();
-		if (media.file != null)
-			frameName = ProcessUtil.getShortFileNameIfWideChars(media.file.getName());
-		frameName = "mplayer_thumbs:subdirs=" + frameName;
-		//frameName = frameName.replace('\\', '/');
+		/*if (media.file != null)
+			frameName = ProcessUtil.getShortFileNameIfWideChars(media.file.getName());*/
+		frameName = "mplayer_thumbs:subdirs=\"" + frameName + "\"";
+		frameName = frameName.replace(',', '_');
 		args[12] = "jpeg:outdir=" + frameName;
 		args[13] = "-nosound";
 		OutputParams params = new OutputParams(PMS.getConfiguration());
+		params.workDir = PMS.getConfiguration().getTempFolder();
 		params.maxBufferSize = 1;
 		params.stdin = media.push;
 		params.noexitcheck = true; // not serious if anything happens during the thumbnailer
@@ -344,8 +339,11 @@ public class DLNAMediaInfo {
 				pw = getFFMpegThumbnail(f);
 				//int nbUndAudioTracks = 0;
 				String input = "-";
-				if (f.file != null)
+				boolean dvrms = false;
+				if (f.file != null) {
 					input = ProcessUtil.getShortFileNameIfWideChars(f.file.getAbsolutePath()) ;
+					dvrms = f.file.getAbsolutePath().toLowerCase().endsWith("dvr-ms");
+				}
 				if (!ffmpeg_failure) {
 					
 					if (input.equals("-"))
@@ -641,13 +639,16 @@ public class DLNAMediaInfo {
 					}
 				}
 				
-				if (PMS.getConfiguration().isUseMplayerForVideoThumbs() && type == Format.VIDEO) {
+				if (PMS.getConfiguration().isUseMplayerForVideoThumbs() && type == Format.VIDEO && !dvrms) {
 					try {
 						getMplayerThumbnail(f);
 						String frameName = "" + f.hashCode();
-						if (f.file != null)
+						/*if (f.file != null)
 							frameName = ProcessUtil.getShortFileNameIfWideChars(f.file.getName());
-						File jpg = new File("mplayer_thumbs/" + frameName + "00000001/00000001.jpg");
+						*/
+						frameName = PMS.getConfiguration().getTempFolder() + "/mplayer_thumbs/" + frameName + "00000001/00000001.jpg";
+						frameName = frameName.replace(',', '_');
+						File jpg = new File(frameName);
 						if (jpg.exists()) {
 							InputStream is = new FileInputStream(jpg);
 							int sz = is.available();

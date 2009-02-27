@@ -29,6 +29,7 @@ import net.pms.dlna.IPushOutput;
 public class OutputParams {
 	
 	public File outputFile;
+	public File workDir;
 	public double minFileSize;
 	public double minBufferSize;
 	public double maxBufferSize;

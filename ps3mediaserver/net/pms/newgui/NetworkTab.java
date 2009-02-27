@@ -57,8 +57,8 @@ import com.sun.jna.Platform;
 public class NetworkTab {
 	
 	private JCheckBox  smcheckBox;
-	private JCheckBox  tmcheckBox;
-	private JCheckBox  blockBox;
+	//private JCheckBox  tmcheckBox;
+	//private JCheckBox  blockBox;
 	private JTextField host;
 	private JTextField port; 
 	private JComboBox langs ;
@@ -271,7 +271,7 @@ public class NetworkTab {
        builder.addLabel(Messages.getString("NetworkTab.26"),  cc.xy(1,  33)); //$NON-NLS-1$
        builder.add(encoding,          cc.xyw(3,  33, 7)); 
        */
-       cmp = builder.addSeparator(Messages.getString("NetworkTab.27"),  cc.xyw(1, 37, 9)); //$NON-NLS-1$
+       /*cmp = builder.addSeparator(Messages.getString("NetworkTab.27"),  cc.xyw(1, 37, 9)); //$NON-NLS-1$
        cmp = (JComponent) cmp.getComponent(0);
        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
        
@@ -297,7 +297,7 @@ public class NetworkTab {
 			}
        	
        }); builder.add(blockBox,          cc.xyw(1,  41, 9));
-       blockBox.setEnabled(false);
+       blockBox.setEnabled(false);*/
         return builder.getPanel();
 	}
 	
