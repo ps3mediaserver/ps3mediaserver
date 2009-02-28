@@ -222,22 +222,24 @@ public class UPNPHelper {
 						if (s.startsWith("M-SEARCH")) {
 							String remoteAddr = packet_r.getAddress().getHostAddress();
 							int remotePort = packet_r.getPort();
-						
-							PMS.debug("Receiving a M-SEARCH from [" + remoteAddr + ":" + remotePort + "]");
-							PMS.debug("Data: " + s);
 							
-							/*PMS.minimal( "Receiving search request from " + packet_r.getAddress().getHostAddress() + "! Sending DISCOVER message...");*/
-							if (StringUtils.indexOf(s, "urn:schemas-upnp-org:service:ContentDirectory:1") > 0)
-								sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:service:ContentDirectory:1");
-		
-							if (StringUtils.indexOf(s, "upnp:rootdevice") > 0)
-								sendDiscover(remoteAddr, remotePort, "upnp:rootdevice");
-		
-							if (StringUtils.indexOf(s, "urn:schemas-upnp-org:device:MediaServer:1") > 0)
-								sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:device:MediaServer:1");
-		
-							if (StringUtils.indexOf(s, PMS.get().usn()) > 0)
-								sendDiscover(remoteAddr, remotePort, PMS.get().usn());
+							if(!(PMS.getConfiguration().getIpFilter().length() > 0 && !PMS.getConfiguration().getIpFilter().equals(remoteAddr))){
+								PMS.debug("Receiving a M-SEARCH from [" + remoteAddr + ":" + remotePort + "]");
+								PMS.debug("Data: " + s);
+								
+								/*PMS.minimal( "Receiving search request from " + packet_r.getAddress().getHostAddress() + "! Sending DISCOVER message...");*/
+								if (StringUtils.indexOf(s, "urn:schemas-upnp-org:service:ContentDirectory:1") > 0)
+									sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:service:ContentDirectory:1");
+			
+								if (StringUtils.indexOf(s, "upnp:rootdevice") > 0)
+									sendDiscover(remoteAddr, remotePort, "upnp:rootdevice");
+			
+								if (StringUtils.indexOf(s, "urn:schemas-upnp-org:device:MediaServer:1") > 0)
+									sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:device:MediaServer:1");
+			
+								if (StringUtils.indexOf(s, PMS.get().usn()) > 0)
+									sendDiscover(remoteAddr, remotePort, PMS.get().usn());
+							}
 						
 						}
 						else if (s.startsWith("NOTIFY")) {

@@ -176,6 +176,7 @@ public class DLNAMediaInfo {
 		params.workDir = PMS.getConfiguration().getTempFolder();
 		params.maxBufferSize = 1;
 		params.stdin = media.push;
+		params.log = true;
 		params.noexitcheck = true; // not serious if anything happens during the thumbnailer
 		final ProcessWrapperImpl pw = new ProcessWrapperImpl(args, params);
 		// FAILSAFE
@@ -183,7 +184,7 @@ public class DLNAMediaInfo {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(3000);
 					//mplayer_thumb_failure = true;
 				} catch (InterruptedException e) {}
 				pw.stopProcess();

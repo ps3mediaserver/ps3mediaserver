@@ -63,6 +63,7 @@ public class NetworkTab {
 	private JTextField port; 
 	private JComboBox langs ;
 	private JComboBox networkinterfacesCBX;
+	private JTextField ip_filter;
 	
 	private final PmsConfiguration configuration;
 	
@@ -238,12 +239,28 @@ public class NetworkTab {
      	
      });
         
+        ip_filter = new JTextField(PMS.getConfiguration().getIpFilter());
+        ip_filter.addKeyListener(new KeyListener() {
+        
+            		@Override
+            		public void keyPressed(KeyEvent e) {}
+            		@Override
+            		public void keyTyped(KeyEvent e) {}
+            		@Override
+            		public void keyReleased(KeyEvent e) {
+               			configuration.setIpFilter(ip_filter.getText());
+               			PMS.get().getFrame().setReloadable(true);
+               		}
+        });
+        
         builder.addLabel(Messages.getString("NetworkTab.20"),  cc.xy(1,  23)); //$NON-NLS-1$
         builder.add(networkinterfacesCBX,          cc.xyw(3,  23, 7)); 
         builder.addLabel(Messages.getString("NetworkTab.23"),  cc.xy(1,  25)); //$NON-NLS-1$
         builder.add(host,          cc.xyw(3,  25, 7)); 
         builder.addLabel(Messages.getString("NetworkTab.24"),  cc.xy(1, 27)); //$NON-NLS-1$
         builder.add(port,          cc.xyw(3,  27, 7)); 
+        builder.addLabel(Messages.getString("NetworkTab.30"),  cc.xy(1, 29)); //$NON-NLS-1$
+        builder.add(ip_filter,          cc.xyw(3,  29, 7)); 
        
         /*
        cmp = builder.addSeparator(Messages.getString("NetworkTab.25"),  cc.xyw(1, 31, 9)); //$NON-NLS-1$

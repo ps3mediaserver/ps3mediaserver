@@ -293,8 +293,9 @@ public class PMS {
 		
 		
 		minimal("Starting Java PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$
-		minimal("by shagrath / 2008"); //$NON-NLS-1$
+		minimal("by shagrath / 2008-2009"); //$NON-NLS-1$
 		minimal("http://ps3mediaserver.blogspot.com"); //$NON-NLS-1$
+		minimal("http://code.google.com/p/ps3mediaserver"); //$NON-NLS-1$
 		minimal(""); //$NON-NLS-1$
 		minimal("Java " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		minimal("OS " + System.getProperty("os.name") + " " + System.getProperty("os.arch")  + " " + System.getProperty("os.version")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$

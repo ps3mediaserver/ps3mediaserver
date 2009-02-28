@@ -395,7 +395,7 @@ public class Request extends HTTPResource {
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
-				
+				//PMS.debug(response.toString());
 			}
 		}
 		

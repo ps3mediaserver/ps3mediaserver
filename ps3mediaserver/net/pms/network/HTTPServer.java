@@ -168,13 +168,23 @@ public class HTTPServer implements Runnable {
 			try {
 				Socket socket = serverSocket.accept();
 				String ip = socket.getInetAddress().getHostAddress();
+				// basic ipfilter solntcev@gmail.com
+				boolean ignore = false;
 				if (!ips.contains(ip)) {
-					ips.add(ip);
-					PMS.minimal("Receiving a request from: " + ip);
+					if(PMS.getConfiguration().getIpFilter().length() > 0 && !PMS.getConfiguration().getIpFilter().equals(ip)){
+						ignore = true;
+						socket.close();
+						PMS.minimal("Ignoring request from: " + ip);
+					}else{
+						ips.add(ip);
+						PMS.minimal("Receiving a request from: " + ip);
+					}
 				}
-				RequestHandler request = new RequestHandler(socket);
-				Thread thread = new Thread(request);
-				thread.start();
+				if(!ignore){
+					RequestHandler request = new RequestHandler(socket);
+					Thread thread = new Thread(request);
+					thread.start();
+				}
 			} catch (ClosedByInterruptException e) {
 				stop = true;
 			} catch (IOException e) {
