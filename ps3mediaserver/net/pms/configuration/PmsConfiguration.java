@@ -102,6 +102,8 @@ public class PmsConfiguration {
 	private static final String KEY_ALTERNATE_SUBS_FOLDER = "alternate_subs_folder";
 	private static final String KEY_MUX_ALLAUDIOTRACKS = "tsmuxer_mux_all_audiotracks";
 	private static final String KEY_USE_MPLAYER_FOR_THUMBS = "use_mplayer_for_video_thumbs";
+	private static final String KEY_IP_FILTER = "ip_filter";
+
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -954,4 +956,13 @@ public class PmsConfiguration {
 	public boolean isUseMplayerForVideoThumbs() {
 		return getBoolean(KEY_USE_MPLAYER_FOR_THUMBS, false);
 	}
+	
+	public String getIpFilter(){
+		return getString(KEY_IP_FILTER, "");
+	}
+	
+	public void setIpFilter(String value){
+		configuration.setProperty(KEY_IP_FILTER, value);
+	}
+	
 }
