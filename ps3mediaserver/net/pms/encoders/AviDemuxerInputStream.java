@@ -35,7 +35,6 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperLiteImpl;
-import net.pms.util.DTSAudioOutputStream;
 import net.pms.util.H264AnnexBInputStream;
 import net.pms.util.PCMAudioOutputStream;
 import net.pms.util.ProcessUtil;
@@ -272,9 +271,9 @@ public class AviDemuxerInputStream extends InputStream {
 					int nbaudio = str2ushort(information, 2);
 					aud.setNbaudio(nbaudio);
 					long filelength = 100;
-					if (PMS.getConfiguration().isDTSEmbedInPCM() && params.losslessaudio)
+					/*if (PMS.getConfiguration().isDTSEmbedInPCM() && params.losslessaudio)
 						aOut = new DTSAudioOutputStream(new PCMAudioOutputStream(aOut, 2, 48000, 16));
-					else if (params.losslessaudio)
+					else */if (params.losslessaudio)
 						aOut = new PCMAudioOutputStream(aOut, nbaudio, 48000, bitspersample);
 					
 					if (!params.lossyaudio && params.losslessaudio) {

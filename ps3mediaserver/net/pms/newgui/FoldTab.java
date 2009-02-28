@@ -123,7 +123,7 @@ public class FoldTab {
 		FList.setModel(df);
         JScrollPane pane = new JScrollPane(FList);
         
-        JComponent cmp = builder.addSeparator("Thumbnails",  cc.xyw(1, 1, 8));
+        JComponent cmp = builder.addSeparator(Messages.getString("FoldTab.13"),  cc.xyw(1, 1, 8)); //$NON-NLS-1$
         cmp = (JComponent) cmp.getComponent(0);
         cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
@@ -166,7 +166,7 @@ public class FoldTab {
         builder.add(seekpos,          cc.xyw(6,  3, 2));
         
         
-        mplayer_thumb = new JCheckBox("Use Mplayer for Video Thumbnails");
+        mplayer_thumb = new JCheckBox(Messages.getString("FoldTab.14")); //$NON-NLS-1$
         mplayer_thumb.setContentAreaFilled(false);
         mplayer_thumb.addItemListener(new ItemListener() {
 
