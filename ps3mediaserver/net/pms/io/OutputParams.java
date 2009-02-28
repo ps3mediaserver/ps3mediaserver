@@ -54,6 +54,7 @@ public class OutputParams {
 	public boolean hidebuffer;
 	public byte header [];
 	public IPushOutput stdin;
+	public boolean avidemux;
 	
 	public OutputParams(PmsConfiguration configuration) {
 		waitbeforestart = 6000;

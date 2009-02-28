@@ -445,7 +445,7 @@ public class TrTab2 {
        builder.addLabel(Messages.getString("TrTab2.29"), cc.xy(1, 15)); //$NON-NLS-1$
        builder.add(abitrate, cc.xy(3, 15));
 
-       forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28")); //$NON-NLS-1$
+       forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28") + (Platform.isWindows()?Messages.getString("TrTab2.21"):"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
        forceDTSinPCM.setContentAreaFilled(false);
        //forceDTSinPCM.setEnabled(false);
        if (Platform.isMac())
@@ -492,7 +492,7 @@ public class TrTab2 {
       
        builder.add(forcePCM, cc.xyw(1, 19, 3));
        
-       ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32")); //$NON-NLS-1$
+       ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32") + (Platform.isWindows()?Messages.getString("TrTab2.21"):"")); //$NON-NLS-1$
        ac3remux.setContentAreaFilled(false);
        if (PMS.getConfiguration().isRemuxAC3())
     	   ac3remux.setSelected(true);
