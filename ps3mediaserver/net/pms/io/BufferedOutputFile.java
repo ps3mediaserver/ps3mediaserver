@@ -68,7 +68,7 @@ public class BufferedOutputFile extends OutputStream  {
 	
 	private static final int TEMP_SIZE = 50000000;
 	private static final int CHECK_INTERVAL = 500;
-	private static final int CHECK_END_OF_PROCESS = 700; // must be superior to CHECK_INTERVAL
+	private static final int CHECK_END_OF_PROCESS = 2500; // must be superior to CHECK_INTERVAL
 	private int minMemorySize;
 	private int maxMemorySize;
 	private int bufferOverflowWarning;
@@ -216,7 +216,7 @@ public class BufferedOutputFile extends OutputStream  {
 			 writeCount += len - off;
 			 if (timeseek > 0) {
 				 int packetLength = 6; // minimum to get packet size
-				 while (packetpos+packetLength < writeCount) {
+				 while (packetpos+packetLength < writeCount && buffer != null) {
 					 int packetposMB = (int) (packetpos % maxMemorySize);
 					 int streamPos = 0;
 					 if (buffer[modulo(packetposMB)] == 71)  {// TS

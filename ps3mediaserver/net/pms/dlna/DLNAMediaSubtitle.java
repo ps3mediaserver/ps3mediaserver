@@ -30,7 +30,7 @@ public class DLNAMediaSubtitle  extends DLNAMediaLang {
 			return "VobSub";
 		if (type == 6)
 			return "Embedded";
-		return null;
+		return "-";
 	}
 
 }
