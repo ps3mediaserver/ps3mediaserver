@@ -60,6 +60,8 @@ public class DLNAMediaAudio extends DLNAMediaLang{
 			return "MP3";
 		else if (codecA != null && codecA.startsWith("wm"))
 			return "WMA";
+		else if (codecA != null && codecA.equals("mp2"))
+			return "Mpeg Audio";
 		return "-";
 	}
 
