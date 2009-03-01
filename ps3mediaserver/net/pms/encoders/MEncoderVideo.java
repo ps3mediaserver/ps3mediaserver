@@ -1174,7 +1174,7 @@ private JTextField mencoder_ass_scale;
 		cmdArray[cmdArray.length-11] = "-quiet"; //$NON-NLS-1$
 		cmdArray[cmdArray.length-10] = "-quiet"; //$NON-NLS-1$
 		cmdArray[cmdArray.length-9] = "-quiet"; //$NON-NLS-1$
-		if (params.aid != null && media.audioCodes.size() > 1) {
+		if (!dts && !pcm && !avisynth() && params.aid != null && media.audioCodes.size() > 1) {
 			cmdArray[cmdArray.length-12] = "-aid"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-11] = "" + params.aid.id; //$NON-NLS-1$
 		}
@@ -1478,7 +1478,9 @@ private JTextField mencoder_ass_scale;
 				pw.attachProcess(ffVideo);
 				ffVideo.runInNewThread();
 				
-				
+				String aid = null;
+				if (media != null && media.audioCodes.size() > 1 && params.aid != null)
+					aid = params.aid.id + "";
 				
 				PipeIPCProcess ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
 				StreamModifier sm = new StreamModifier();
@@ -1489,7 +1491,7 @@ private JTextField mencoder_ass_scale;
 				sm.setBitspersample(16);
 				String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());
 				// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
-				String ffmpegLPCMextract [] = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", "-oac", sm.isDtsembed()?"copy":"pcm", (mixer!=null&&!channels_filter_present)?"-af":"-quiet", (mixer!=null&&!channels_filter_present)?mixer:"-quiet", "-srate", "48000", "-o", ffAudioPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$
+				String ffmpegLPCMextract [] = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", (aid==null)?"-quiet":"-aid", (aid==null)?"-quiet":aid, "-oac", sm.isDtsembed()?"copy":"pcm", (mixer!=null&&!channels_filter_present)?"-af":"-quiet", (mixer!=null&&!channels_filter_present)?mixer:"-quiet", "-srate", "48000", "-o", ffAudioPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$
 				ffAudioPipe.setModifier(sm);
 				
 				if (params.stdin != null)

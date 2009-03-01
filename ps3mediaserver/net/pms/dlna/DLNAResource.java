@@ -556,7 +556,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		if (isFolder()) {
 			addAttribute(sb, "childCount", childrenNumber());
 		}
-		addAttribute(sb, "parentId", fakeParentId!=null?fakeParentId:(parent==null?-1:parent.id));
+		addAttribute(sb, "parentID", fakeParentId!=null?fakeParentId:(parent==null?-1:parent.id));
 		addAttribute(sb, "restricted", "true");
 		endTag(sb);
 		
