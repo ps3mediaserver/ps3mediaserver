@@ -87,7 +87,7 @@ public class BufferedOutputFile extends OutputStream  {
 	public BufferedOutputFile(OutputParams params) {
 		this.minMemorySize = (int) (1048576 * params.minBufferSize);
 		this.maxMemorySize = (int) (1048576 * params.maxBufferSize);
-		int margin = 2000000; // Issue 220: extends to 2Mb : readCount is wrongly set cause of the ps3's
+		int margin = 6000000; // Issue 220: extends to 6Mb : readCount is wrongly set cause of the ps3's
 								// 2nd request with a range like 44-xxx, causing the end of buffer margin to be first sent 
 		if (this.maxMemorySize < margin) // for thumbnails / small buffer usage
 			margin = 600000; // margin must be superior to the buffer size of OutputBufferConsumer or direct buffer size from WindowsNamedPipe class
