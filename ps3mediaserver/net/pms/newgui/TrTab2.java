@@ -381,7 +381,7 @@ public class TrTab2 {
         
         builder.addLabel(Messages.getString("NetworkTab.7") + Runtime.getRuntime().availableProcessors() + Messages.getString("NetworkTab.8"),  cc.xy(1,  5)); //$NON-NLS-1$ //$NON-NLS-2$
         
-        nbcores = new JComboBox(new Object [] {"1", "2", "4", "8"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        nbcores = new JComboBox(new Object [] {"1", "2", "3", "4", "8"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         nbcores.setEditable(false);
         if (PMS.getConfiguration().getNumberOfCpuCores() >0 && PMS.getConfiguration().getNumberOfCpuCores() < 32) {
         	nbcores.setSelectedItem("" + PMS.getConfiguration().getNumberOfCpuCores()); //$NON-NLS-1$

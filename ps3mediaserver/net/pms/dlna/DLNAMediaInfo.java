@@ -817,7 +817,7 @@ public class DLNAMediaInfo {
 							avcHeader.parse();
 							PMS.debug("H264 file: " + f.filename + ": Profile: " + avcHeader.getProfile() + " / level: " + avcHeader.getLevel() + " / ref frames: " + avcHeader.getRef_frames());
 							muxable = true;
-							if (width > 1400) { // 1080p
+							/*if (width > 1400) { // 1080p
 								if (avcHeader.getLevel() >= 50 && avcHeader.getRef_frames() > 4)
 									muxable = false;
 							} else if (width > 1200) { // 720p
@@ -826,6 +826,13 @@ public class DLNAMediaInfo {
 							} else if (width > 700) { // 480p
 								if (avcHeader.getLevel() >= 50 && avcHeader.getRef_frames() > 16)
 									muxable = false;
+							}*/
+							if (avcHeader.getLevel() >= 50) { // Check if file is still compliant with Level4.1
+								if (width > 0 && height > 0) {
+									int maxref = (int) Math.floor( 8388608 / (width * height));
+									if (avcHeader.getRef_frames() > maxref)
+										muxable = false;
+								}
 							}
 							if (!muxable) {
 								PMS.info("H264 file: " + f.filename + " is not ps3 compatible !");
