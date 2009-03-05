@@ -90,7 +90,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public static int systemUpdateId = 1;
 	public boolean noName;
 	private int nametruncate;
-	private boolean second;
+	private DLNAResource first;
+	private DLNAResource second;
 	protected String fakeParentId;
 	
 	public String getFakeParentId() {
@@ -252,7 +253,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			if (child.ext != null && child.ext.getSecondaryFormat() != null && child.media != null) {
 				DLNAResource newChild = (DLNAResource) child.clone();
 				newChild.ext = newChild.ext.getSecondaryFormat();
-				newChild.second = true;
+				newChild.first = child;
+				child.second = newChild;
 				if (!newChild.ext.ps3compatible() && newChild.ext.getProfiles().size() > 0) {
 					newChild.player = PMS.get().getPlayer(newChild.ext.getProfiles().get(0), newChild.ext);
 				}
@@ -276,7 +278,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			}
 	}
 	
-	public ArrayList<DLNAResource> getDLNAResources(String objectId, boolean children, int start, int count) throws IOException {
+	public synchronized ArrayList<DLNAResource> getDLNAResources(String objectId, boolean children, int start, int count) throws IOException {
 		PMS.debug("Searching for objectId: " + objectId + " with children option: " +children);
 		ArrayList<DLNAResource> resources = new ArrayList<DLNAResource>();
 		DLNAResource resource = search(objectId);
@@ -333,7 +335,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 							if (child != null) {
 								tpe.execute(new Runnable() {
 									public void run() {
-										child.resolve();
+										if (child.first == null) {
+											child.resolve();
+											if (child.second != null)
+												child.second.resolve();
+										}
 									}
 								});
 								resources.add(child);
@@ -598,7 +604,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			String mime = getRendererMimeType(mimeType(), mediaRenderer);
 			String dlnaspec = "";
 			if (mediaRenderer == PS3) {
-				if (mime.equals("video/x-divx"))
+				if (mime == null)
+					mime = "video/mpeg";
+				else if (mime.equals("video/x-divx"))
 					dlnaspec = ":DLNA.ORG_PN=AVI";
 				else if (mime.equals("video/x-ms-wmv") && media != null && media.height > 700)
 					dlnaspec = ":DLNA.ORG_PN=WMVHIGH_PRO";
@@ -688,7 +696,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		//}
 		
 		String uclass = null;
-		if (second && media != null && !media.secondaryFormatValid) {
+		if (first != null && media != null && !media.secondaryFormatValid) {
 			uclass = "dummy";
 		} else {
 			if (isFolder()) {
