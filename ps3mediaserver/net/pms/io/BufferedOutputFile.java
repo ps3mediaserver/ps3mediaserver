@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -61,6 +62,7 @@ public class BufferedOutputFile extends OutputStream  {
 		}
 		
 		public void close() throws IOException {
+			inputStreams.remove(this);
 			outputStream.detachInputStream();
 		}
 
@@ -76,8 +78,7 @@ public class BufferedOutputFile extends OutputStream  {
 	private long writeCount;
 	private byte buffer [];
 	
-	private WaitBufferedInputStream inputStream;
-	private WaitBufferedInputStream oldInputStream;
+	private ArrayList<WaitBufferedInputStream> inputStreams;
 	private ProcessWrapper attachedThread;
 	private int secondread_minsize;
 	private Timer timer;
@@ -103,23 +104,24 @@ public class BufferedOutputFile extends OutputStream  {
 			PMS.debug("maxMemory: " + Runtime.getRuntime().maxMemory());
 			System.exit(1);
 		}
+		inputStreams = new ArrayList<WaitBufferedInputStream>();
 		timer = new Timer();
 		if (params.maxBufferSize > 15 && !params.hidebuffer) {
 		timer.schedule(new TimerTask() {
 
 			public void run() {
 				long rc = 0;
-				if (inputStream != null) {
-					rc = inputStream.readCount;
+				if (getCurrentInputStream() != null) {
+					rc = getCurrentInputStream().readCount;
 					PMS.get().getFrame().setReadValue(rc, "");
 				}
 				long space = (writeCount - rc);
-				PMS.debug("Buffered Space: " + space + " bytes");
+				PMS.debug("Buffered Space: " + space + " bytes / inputs: " + inputStreams.size());
 				PMS.get().getFrame().setValue( (int) (100*space/maxMemorySize), space + " bytes");
 
 			}
 			
-		}, 0, 1000);
+		}, 0, 2000);
 		}
 		
 		/*try {
@@ -131,25 +133,32 @@ public class BufferedOutputFile extends OutputStream  {
 		PMS.debug("EOF");
 		eof = true;
 	}
+	
+	public WaitBufferedInputStream getCurrentInputStream() {
+		if (inputStreams.size() > 0)
+			return inputStreams.get(0);
+		else
+			return null;
+	}
 
 	public InputStream getInputStream(long newReadPosition) {
 		if (attachedThread != null) {
 			attachedThread.setReadyToStop(false);
 		}
-		if (!PMS.getConfiguration().getTrancodeBlocksMultipleConnections() || inputStream == null) {
-			if (inputStream != null)
-				oldInputStream = inputStream;
-			inputStream = new WaitBufferedInputStream(this);
+		WaitBufferedInputStream atominputStream = null;
+		if (!PMS.getConfiguration().getTrancodeBlocksMultipleConnections() || getCurrentInputStream() == null) {
+			atominputStream = new WaitBufferedInputStream(this);
+			inputStreams.add(atominputStream);
 			
 		} else {
-			PMS.info("BufferedOutputFile is already attached to an InputStream: " + inputStream);
+			PMS.info("BufferedOutputFile is already attached to an InputStream: " + getCurrentInputStream());
 			return null;
 		}
 		if (newReadPosition > 0) {
 			PMS.info("Setting InputStream new position to: " + newReadPosition);
-			inputStream.readCount = newReadPosition;
+			atominputStream.readCount = newReadPosition;
 		}
-		return inputStream;
+		return atominputStream;
 	}
 
 	public long getWriteCount() {
@@ -168,7 +177,7 @@ public class BufferedOutputFile extends OutputStream  {
 			debugOutput.flush();
 		}
 		//PMS.debug("Writing " + len + " into the buffer");
-		 while ((inputStream !=null && (writeCount - inputStream.readCount > bufferOverflowWarning)) || (inputStream == null && writeCount > bufferOverflowWarning)) {
+		 while ((getCurrentInputStream() !=null && (writeCount - getCurrentInputStream().readCount > bufferOverflowWarning)) || (getCurrentInputStream() == null && writeCount > bufferOverflowWarning)) {
 				try {
 					Thread.sleep(CHECK_INTERVAL);
 				} catch (InterruptedException e) {
@@ -258,7 +267,7 @@ public class BufferedOutputFile extends OutputStream  {
 	
 	public void write(int b) throws IOException {
 		boolean bb = b % 100000 == 0;
-		while (bb && ((inputStream !=null && (writeCount - inputStream.readCount > bufferOverflowWarning)) || (inputStream == null && writeCount == bufferOverflowWarning))) {
+		while (bb && ((getCurrentInputStream() !=null && (writeCount - getCurrentInputStream().readCount > bufferOverflowWarning)) || (getCurrentInputStream() == null && writeCount == bufferOverflowWarning))) {
 			try {
 				Thread.sleep(CHECK_INTERVAL);
 				//PMS.debug("BufferedOutputFile Full");
@@ -465,9 +474,6 @@ public class BufferedOutputFile extends OutputStream  {
 	}
 	
 	private void detachInputStream() {
-		inputStream = null;
-		if (oldInputStream != null)
-			inputStream = oldInputStream;  // in case the old one is still alive
 		PMS.get().getFrame().setReadValue(0, "");
 		if (attachedThread != null) {
 			attachedThread.setReadyToStop(true);

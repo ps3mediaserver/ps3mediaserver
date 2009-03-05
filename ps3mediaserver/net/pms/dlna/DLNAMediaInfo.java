@@ -473,9 +473,9 @@ public class DLNAMediaInfo {
 					
 					
 				}
-				if (ffmpeg_failure || (container != null && container.equals("mpegts"))){
+				if (ffmpeg_failure || (container != null && container.equals("mpegts") && audioCodes.size() == 0)){
 					// switchin to mplayer cause ffmpeg has hung ? -> for some m2ts
-					// always useful to reparse mpegts / ffmpeg not reliable
+					// or there's no audio detected
 					// TODO: improve that
 					String cmdArray [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-msglevel", "identify=4", "-vo", "null", "-ao", "null", "-frames", "0", input};
 					OutputParams params = new OutputParams(PMS.getConfiguration());
