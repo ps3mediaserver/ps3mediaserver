@@ -33,4 +33,7 @@ public class DLNAMediaSubtitle  extends DLNAMediaLang {
 		return "-";
 	}
 
+	public String toString() {
+		return "Sub: " + getSubType() + " / lang: " + lang + " / ID: " + id + " / FILE: " + (file!=null?file.getAbsolutePath():"-");
+	}
 }

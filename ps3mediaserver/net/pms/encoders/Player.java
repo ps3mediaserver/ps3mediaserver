@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.JComponent;
 
+import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
@@ -80,9 +81,11 @@ public abstract class Player {
 			StringTokenizer st = new StringTokenizer(configuration.getMencoderAudioLanguages(), ","); //$NON-NLS-1$
 			while (st != null && st.hasMoreTokens()) {
 				String lang = st.nextToken();
+				PMS.debug("Searching an audio track with lang: " + lang);
 				for(DLNAMediaAudio audio:media.audioCodes) {
 					if (audio.matchCode(lang)) {
 						params.aid = audio;
+						PMS.debug("Matched audio track: " + audio);
 						st = null;
 						break;
 					}
@@ -94,11 +97,14 @@ public abstract class Player {
 			for(DLNAMediaAudio audio:media.audioCodes) {
 				if (audio.isDTS()) {
 					params.aid = audio;
+					PMS.debug("Found priority audio track with DTS: " + audio);
 					break;
 				}
 			}
-			if (params.aid == null)
+			if (params.aid == null) {
 				params.aid = media.audioCodes.get(0);
+				PMS.debug("Choosed a default audio track: " + params.aid);
+			}
 		}
 		
 		String currentLang = null;
@@ -107,6 +113,7 @@ public abstract class Player {
 			currentLang = params.aid.lang;
 		
 		if (params.sid != null && params.sid.id == -1) {
+			PMS.debug("Don't want subtitles!");
 			params.sid = null;
 			return;
 		}
@@ -117,14 +124,17 @@ public abstract class Player {
 			if (pair.contains(",")) { //$NON-NLS-1$
 				String audio = pair.substring(0, pair.indexOf(",")); //$NON-NLS-1$
 				String sub = pair.substring(pair.indexOf(",")+1); //$NON-NLS-1$
+				PMS.debug("Search a match for: " + currentLang + " with " + audio + " and " + sub);
 				if (Iso639.isCodesMatching(audio, currentLang)) {
 					matchedSub = sub;
+					PMS.debug(" Found a match: " + matchedSub);
 					break;
 				}
 			}
 		}
 		
 		if (matchedSub != null && matchedSub.equals("off")) { //$NON-NLS-1$
+			PMS.debug(" Disabled the subtitles: " + matchedSub);
 			params.sid = null;
 			return;
 		}
@@ -139,7 +149,9 @@ public abstract class Player {
 			if (configuration.getUseSubtitles()) {
 				// priority to external subtitles
 				for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
+					PMS.debug("Found subtitles track : " + sub);
 					if (sub.file != null) {
+						PMS.debug("Found external file : " + sub.file.getAbsolutePath());
 						params.sid = sub;
 						break;
 					}
@@ -151,9 +163,11 @@ public abstract class Player {
 				StringTokenizer st = new StringTokenizer(configuration.getMencoderSubLanguages(), ","); //$NON-NLS-1$
 				while (st != null && st.hasMoreTokens()) {
 					String lang = st.nextToken();
+					PMS.debug("Searching a subtitle track with lang: " + lang);
 					for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
 						if (sub.matchCode(lang) && !Iso639.isCodesMatching(lang, matchedSub)) {
 							params.sid = sub;
+							PMS.debug("Matched sub track : " + params.sid);
 							st = null;
 							break;
 						}
