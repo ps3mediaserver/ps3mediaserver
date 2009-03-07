@@ -30,7 +30,7 @@ public class DLNAMediaAudio extends DLNAMediaLang{
 	}
 	
 	public boolean isAC3() {
-		return codecA.equalsIgnoreCase("ac3") || codecA.equalsIgnoreCase("a52");
+		return codecA.equalsIgnoreCase("ac3") || codecA.equalsIgnoreCase("a52") || codecA.equalsIgnoreCase("liba52");
 	}
 	
 	public boolean isDTS() {
@@ -38,11 +38,11 @@ public class DLNAMediaAudio extends DLNAMediaLang{
 	}
 	
 	public boolean isPCM() {
-		return codecA.startsWith("pcm_s1") || codecA.equals("LPCM");
+		return codecA.startsWith("pcm_s1") || codecA.startsWith("pcm_s2") || codecA.startsWith("pcm_u1") || codecA.startsWith("pcm_u2") || codecA.equals("LPCM");
 	}
 	
 	public boolean isLossless() {
-		return isPCM() || codecA.startsWith("fla") || codecA.startsWith("mlp") || codecA.startsWith("wavpack");
+		return isPCM() || codecA.startsWith("fla") || codecA.equals("mlp") || codecA.equals("wv");
 	}
 	
 	public String getAudioCodec() {
@@ -62,7 +62,11 @@ public class DLNAMediaAudio extends DLNAMediaLang{
 			return "WMA";
 		else if (codecA != null && codecA.equals("mp2"))
 			return "Mpeg Audio";
-		return "-";
+		return codecA!=null?codecA:"-";
+	}
+	
+	public String toString() {
+		return "Audio: " + getAudioCodec() + " / lang: " + lang + " / ID: " + id;
 	}
 
 }

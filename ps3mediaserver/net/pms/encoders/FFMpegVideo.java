@@ -380,6 +380,7 @@ public class FFMpegVideo extends Player {
 		String movieLine = "clip=DirectShowSource(\"" + fileName + "\"" + convertfps + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String subLine = null;
 		if (subTrack != null && PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
+			PMS.debug("Avisynth script: Using sub track: " + subTrack);
 			if (subTrack.file != null) {
 				String function = "TextSub"; //$NON-NLS-1$
 				if (subTrack.type == DLNAMediaSubtitle.VOBSUB)
