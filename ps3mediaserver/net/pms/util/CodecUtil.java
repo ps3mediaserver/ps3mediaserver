@@ -1,12 +1,10 @@
 package net.pms.util;
 
-import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import net.pms.PMS;
@@ -68,14 +66,35 @@ public class CodecUtil {
 	}
 	
 	public static String getDefaultFontPath() {
-		String font = getFontPathHack("Arial");
-		if (!Platform.isWindows() && font != null) {
-			//
-		}
+		String font = null; /*getFontPathHack("Arial");
+		if (Platform.isWindows() && font != null) {
+			File fileFont = new File(font);
+			if (fileFont.exists()) {
+				
+			}
+		}*/
 		// in case of hack not working
 		if (Platform.isWindows()) {
 			// get Windows Arial
-			font = getFont("C:\\Windows\\Fonts", "Arial.ttf");
+			String winDir = PMS.get().getRegistry().getWindowsDirectory();
+			if (winDir != null) {
+				File winDirFile = new File(winDir);
+				if (winDirFile.exists()) {
+					File fontsDir = new File(winDirFile, "Fonts");
+					if (fontsDir.exists()) {
+						File arialDir = new File(fontsDir, "Arial.ttf");
+						if (arialDir.exists())
+							font = arialDir.getAbsolutePath();
+						else {
+							arialDir = new File(fontsDir, "arial.ttf");
+							if (arialDir.exists())
+								font = arialDir.getAbsolutePath();
+						}
+					}
+				}
+			}
+			if (font == null)
+				font = getFont("C:\\Windows\\Fonts", "Arial.ttf");
 			if (font == null)
 				font = getFont("C:\\WINNT\\Fonts", "Arial.ttf");
 			if (font == null)
@@ -105,7 +124,7 @@ public class CodecUtil {
 			return f.getAbsolutePath();
 		return null;
 	}
-	
+	/*
 	private static String getFontPathHack(String fontName) {
 		// Ugly hack to retrieve default font path if run on Sun JRE
 		Font f = new Font(fontName, Font.PLAIN, 12);
@@ -142,7 +161,7 @@ public class CodecUtil {
 		} catch (Exception e) {}
 			return null;
 		}
-
+*/
 	public static String getMixerOutput(boolean pcmonly, int nbchannels) {
 		String mixer = "volume=0";								
 		if (pcmonly) { // we are using real PCM output

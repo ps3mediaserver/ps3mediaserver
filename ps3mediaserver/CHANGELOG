@@ -6,6 +6,7 @@ Changelog:
 
 Regression in FLAC playback
 Cache bug when streaming web medias
+Fixed Arial font detection on Windows
 Flaw in the transcode/remux buffer, in some cases, the video stopped after a few minutes
 Duplicate items issue on Linux
 Upnp alive message sent sooner at the start of the server
