@@ -41,7 +41,7 @@ public class WinUtils {
 		
 		int GetShortPathNameW(WString lpszLongPath, char[] lpdzShortPath, int cchBuffer);
 		//NativeLong GetShortPathNameW(WString inPath, Memory outPathBuffer, NativeLong outPathBufferSize);
-		
+		int GetWindowsDirectoryW(char[] lpdzShortPath, int uSize);
 		boolean GetVolumeInformationW(
 				char[] lpRootPathName,
 				CharBuffer lpVolumeNameBuffer,
@@ -76,10 +76,13 @@ public class WinUtils {
 		System.out.println(rb.getVlcv());
 		System.out.println(rb.isAvis());
 		WinUtils w =	new WinUtils();
+		System.out.println(w.getWindowsDirectory());
 		File dir = new File("D:\\Tests\\wma");
 		File wma = dir.listFiles()[0];
-		for(int i=0;i<1000;i++)
+		for(int i=0;i<10000;i++) {
 			w.getShortPathNameW(wma.getAbsolutePath());
+			w.getWindowsDirectory();
+		}
 	}
 	
 	public String getShortPathNameW(String longPathName) {
@@ -125,6 +128,17 @@ public class WinUtils {
 				}
 			}
 			return longPathName;
+		}
+		return null;
+	}
+	
+	public String getWindowsDirectory() {
+		if (Platform.isWindows()) {
+			char test [] = new char [2+256*2];
+			int r = Kernel32.INSTANCE.GetWindowsDirectoryW(test, 256);
+			if (r > 0) {
+				return Native.toString(test);
+			}
 		}
 		return null;
 	}
