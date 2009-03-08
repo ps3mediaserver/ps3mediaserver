@@ -46,7 +46,7 @@ public class Iso639 {
 			return false;
 		String codes [] = links.get(language);
 		for(String c:codes) {
-			if (c.equals(code))
+			if (c.equalsIgnoreCase(code))
 				return true;
 		}
 		return false;
