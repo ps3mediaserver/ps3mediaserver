@@ -2,13 +2,16 @@
 Changelog:
 ==========
 
+v1.10.5
+
 - Fixes:
 
 Regression in FLAC playback
-Cache bug when streaming web medias
-Fixed Arial font detection on Windows
+Fixed subtitles font detection on Windows
 Flaw in the transcode/remux buffer, in some cases, the video stopped after a few minutes
+Cache bug when streaming web medias
 Duplicate items issue on Linux
+Windows launcher now detects Java 64 bits 
 Upnp alive message sent sooner at the start of the server
 
 v1.10

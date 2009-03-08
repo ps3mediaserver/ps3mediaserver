@@ -922,7 +922,7 @@ private JTextField mencoder_ass_scale;
 		if (StringUtils.isBlank(m))
 			m = "0"; //$NON-NLS-1$
 		
-		int mb = Integer.parseInt(m);
+		int mb = (int) Double.parseDouble(m);
 		if (mb > 0 && !quality.contains("vrc_buf_size") && !quality.contains("vrc_maxrate") && !quality.contains("vbitrate")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			mb = 1000*mb;
 			if (mb > 60000)
