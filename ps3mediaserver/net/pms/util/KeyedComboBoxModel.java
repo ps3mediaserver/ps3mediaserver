@@ -205,7 +205,8 @@ public class KeyedComboBoxModel implements ComboBoxModel
     for (int i = 0; i < tempListeners.length; i++)
     {
       final ListDataListener l = tempListeners[i];
-      l.contentsChanged(evt);
+      if (l != null && evt != null)
+    	  l.contentsChanged(evt);
     }
   }
 
