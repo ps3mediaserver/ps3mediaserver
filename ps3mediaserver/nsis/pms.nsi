@@ -40,6 +40,7 @@ ShowInstDetails nevershow
 !insertmacro GetParameters
 !include "WordFunc.nsh"
 !insertmacro VersionCompare
+!include "x64.nsh"
  
 Section ""
   Call GetJRE
@@ -52,6 +53,12 @@ Section ""
   SetOutPath $EXEDIR
   Exec $0
 SectionEnd
+
+Function .onInit
+	${If} ${RunningX64}
+ 	SetRegView 64
+ 	${EndIf}
+FunctionEnd
   
 ;  returns the full path of a valid java.exe
 ;  looks in:
@@ -80,19 +87,8 @@ Function GetJRE
     Call CheckJREVersion
     IfErrors CheckRegistry JreFound
  
-  ; 3) Check for registry for 64 bits first
+  ; 3) Check for default registry
   CheckRegistry:
-    ClearErrors
-    ReadRegStr $R1 HKLM "SOFTWARE\Wow6432Node\JavaSoft\Java Runtime Environment" "CurrentVersion"
-    ReadRegStr $R0 HKLM "SOFTWARE\Wow6432Node\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
-    StrCpy $R0 "$R0\bin\${JAVAEXE}"
-    IfErrors CheckRegistry32     
-    IfFileExists $R0 0 CheckRegistry32
-    Call CheckJREVersion
-    IfErrors CheckRegistry32 JreFound
-    
-  ; 4) Check for default registry on 32 bits
-  CheckRegistry32:
     ClearErrors
     ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
     ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
