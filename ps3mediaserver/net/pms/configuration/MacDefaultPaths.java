@@ -14,7 +14,7 @@ class MacDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getFlacPath() {
-		return null;
+		return "osx/flac";
 	}
 
 	@Override
