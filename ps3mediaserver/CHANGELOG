@@ -6,7 +6,7 @@ v1.11
 
 - Changes / Features
 
-Tsmuxer is now enabled in the OSX build, this adds a lot of features on Mac which were previously only available on Windows or Linux (like DTS)
+Tsmuxer and flac are now enabled in the OSX build, this adds a lot of features on Mac which were previously only available on Windows or Linux (like DTS)
 New translations: Slovenian (thanks to Rob Wall)
 
 v1.10.5
