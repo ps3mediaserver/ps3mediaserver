@@ -368,8 +368,6 @@ private JTextField mencoder_ass_scale;
        videoremux = new JCheckBox("<html>" + Messages.getString("MEncoderVideo.38") + "</html>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
        videoremux.setContentAreaFilled(false);
        videoremux.setFont(videoremux.getFont().deriveFont(Font.BOLD));
-       if (Platform.isMac())
-    	   videoremux.setEnabled(false);
        if (PMS.getConfiguration().isMencoderMuxWhenCompatible())
     	   videoremux.setSelected(true);
        videoremux.addItemListener(new ItemListener() {

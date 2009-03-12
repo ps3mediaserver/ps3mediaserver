@@ -640,10 +640,8 @@ public class PMS {
 		registerPlayer(new MEncoderWebVideo(configuration));
 		registerPlayer(new MPlayerWebVideoDump());
 		registerPlayer(new MPlayerWebAudio());
-		if (!Platform.isMac()) {
-			registerPlayer(new TSMuxerVideo(configuration));
-			registerPlayer(new TsMuxerAudio(configuration));
-		}
+		registerPlayer(new TSMuxerVideo(configuration));
+		registerPlayer(new TsMuxerAudio(configuration));
 		registerPlayer(new VideoLanAudioStreaming(configuration));
 		registerPlayer(new VideoLanVideoStreaming(configuration));
 		if (Platform.isWindows())

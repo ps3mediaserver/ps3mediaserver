@@ -448,9 +448,6 @@ public class TrTab2 {
        forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28") + (Platform.isWindows()?Messages.getString("TrTab2.21"):"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
        forceDTSinPCM.setContentAreaFilled(false);
        //forceDTSinPCM.setEnabled(false);
-       if (Platform.isMac())
-    	   forceDTSinPCM.setEnabled(false);
-       else {
 	        if (configuration.isDTSEmbedInPCM())
 	        	forceDTSinPCM.setSelected(true);
 	        forceDTSinPCM.addItemListener(new ItemListener() {
@@ -466,16 +463,12 @@ public class TrTab2 {
 				}
 	        	
 	        });
-      }
       
        builder.add(forceDTSinPCM, cc.xyw(1, 17, 3));
        
       
        forcePCM = new JCheckBox(Messages.getString("TrTab2.27")); //$NON-NLS-1$
        forcePCM.setContentAreaFilled(false);
-       if (Platform.isMac())
-       	forcePCM.setEnabled(false);
-       else {
 	        if (configuration.isMencoderUsePcm()) {
 	        	forcePCM.setSelected(true);
 	        	//forceDTSinPCM.setEnabled(true);
@@ -488,7 +481,6 @@ public class TrTab2 {
 				}
 	        	
 	        });
-      }
       
        builder.add(forcePCM, cc.xyw(1, 19, 3));
        

@@ -29,7 +29,7 @@ class MacDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getTsmuxerPath() {
-		return null;
+		return "osx/tsMuxeR";
 	}
 
 	@Override
