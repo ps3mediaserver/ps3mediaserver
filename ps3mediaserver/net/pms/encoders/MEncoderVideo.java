@@ -965,7 +965,7 @@ private JTextField mencoder_ass_scale;
 			dvd = true;
 		
 		
-		if (params.sid == null && !dvd && !avisynth() && media != null && media.isVideoPS3Compatible(newInput) && configuration.isMencoderMuxWhenCompatible() && !Platform.isMac() && params.mediaRenderer ==HTTPResource.PS3) {
+		if (params.sid == null && !dvd && !avisynth() && media != null && media.isVideoPS3Compatible(newInput) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer ==HTTPResource.PS3) {
 			TSMuxerVideo tv = new TSMuxerVideo(configuration);
 			params.forceFps = media.getValidFps(false);
 			if (media.codecV.equals("h264")) { //$NON-NLS-1$
