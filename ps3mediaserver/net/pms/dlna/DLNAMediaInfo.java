@@ -806,6 +806,9 @@ public class DLNAMediaInfo {
 				muxable = true;
 				if (codecV.equals("h264") && container != null && (container.equals("matroska") || container.equals("mov"))) {
 					byte headers [][] = getAnnexBFrameHeader(f);
+					if (ffmpeg_annexb_failure) {
+						PMS.minimal("Fatal error when retrieving AVC informations !");
+					}
 					if (headers != null) {
 						h264_annexB = headers[1];
 						if (h264_annexB != null) {

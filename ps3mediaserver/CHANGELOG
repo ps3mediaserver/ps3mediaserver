@@ -6,8 +6,15 @@ v1.11
 
 - Changes / Features
 
-Tsmuxer and flac are now enabled in the OSX build, this adds a lot of features on Mac which were previously only available on Windows or Linux (like DTS)
+Tsmuxer and flac binaries are now available in the OSX build, this adds a lot of features on Mac which were previously only available on Windows or Linux (like DTS and remux support)
+Handling of UTF8 and UTF16 encoded external subtitles
 New translations: Slovenian (thanks to Rob Wall)
+
+- Fixes
+
+Improved fix for the stopped videos issue
+Better support for mkvs with NTSC video track
+Fix spaces usage in the audio/subtitles configurations
 
 v1.10.5
 
@@ -18,7 +25,6 @@ Fixed subtitles font detection on Windows
 Flaw in the transcode/remux buffer, in some cases, the video stopped after a few minutes
 Cache bug when streaming web medias
 Duplicate items issue on Linux
-Windows launcher now detects Java 64 bits 
 Upnp alive message sent sooner at the start of the server
 
 v1.10

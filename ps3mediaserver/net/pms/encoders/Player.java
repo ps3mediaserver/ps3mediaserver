@@ -81,6 +81,7 @@ public abstract class Player {
 			StringTokenizer st = new StringTokenizer(configuration.getMencoderAudioLanguages(), ","); //$NON-NLS-1$
 			while (st != null && st.hasMoreTokens()) {
 				String lang = st.nextToken();
+				lang = lang.trim();
 				PMS.debug("Searching an audio track with lang: " + lang);
 				for(DLNAMediaAudio audio:media.audioCodes) {
 					if (audio.matchCode(lang)) {
@@ -124,6 +125,8 @@ public abstract class Player {
 			if (pair.contains(",")) { //$NON-NLS-1$
 				String audio = pair.substring(0, pair.indexOf(",")); //$NON-NLS-1$
 				String sub = pair.substring(pair.indexOf(",")+1); //$NON-NLS-1$
+				audio = audio.trim();
+				sub = sub.trim();
 				PMS.debug("Search a match for: " + currentLang + " with " + audio + " and " + sub);
 				if (Iso639.isCodesMatching(audio, currentLang)) {
 					matchedSub = sub;
@@ -163,6 +166,7 @@ public abstract class Player {
 				StringTokenizer st = new StringTokenizer(configuration.getMencoderSubLanguages(), ","); //$NON-NLS-1$
 				while (st != null && st.hasMoreTokens()) {
 					String lang = st.nextToken();
+					lang = lang.trim();
 					PMS.debug("Searching a subtitle track with lang: " + lang);
 					for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
 						if (sub.matchCode(lang) && !Iso639.isCodesMatching(lang, matchedSub)) {

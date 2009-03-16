@@ -101,6 +101,7 @@ public class FileUtil {
 									DLNAMediaSubtitle sub = new DLNAMediaSubtitle();
 									sub.id = 100 + media.subtitlesCodes.size(); // fake id, not used
 									sub.file = f;
+									sub.checkUnicode();
 									if (code.length() == 0) {
 										sub.lang = "und";
 										sub.type = i+1;
