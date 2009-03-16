@@ -953,8 +953,8 @@ private JTextField mencoder_ass_scale;
 		setAudioAndSubs(fileName, media, params, configuration);
 		
 		String subString = null;
-		if (params.sid != null && params.sid.file != null)
-			subString = ProcessUtil.getShortFileNameIfWideChars(params.sid.file.getAbsolutePath());
+		if (params.sid != null && params.sid.getPlayableFile() != null)
+			subString = ProcessUtil.getShortFileNameIfWideChars(params.sid.getPlayableFile().getAbsolutePath());
 		
 		InputFile newInput = new InputFile();
 		newInput.filename = fileName;
@@ -966,16 +966,24 @@ private JTextField mencoder_ass_scale;
 		
 		
 		if (params.sid == null && !dvd && !avisynth() && media != null && media.isVideoPS3Compatible(newInput) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer ==HTTPResource.PS3) {
-			TSMuxerVideo tv = new TSMuxerVideo(configuration);
-			params.forceFps = media.getValidFps(false);
-			if (media.codecV.equals("h264")) { //$NON-NLS-1$
-				params.forceType = "V_MPEG4/ISO/AVC"; //$NON-NLS-1$
-			} else if (media.codecV.equals("mpeg2video")) { //$NON-NLS-1$
-				params.forceType = "V_MPEG-2"; //$NON-NLS-1$
-			} else if (media.codecV.equals("vc1")) { //$NON-NLS-1$
-				params.forceType = "V_MS/VFW/WVC1"; //$NON-NLS-1$
+			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
+			boolean nomux = false;
+			for(String s:sArgs) {
+				if (s.equals("-nomux"))
+					nomux = true;
 			}
-			return tv.launchTranscode(fileName, media, params);
+			if (!nomux) {
+				TSMuxerVideo tv = new TSMuxerVideo(configuration);
+				params.forceFps = media.getValidFps(false);
+				if (media.codecV.equals("h264")) { //$NON-NLS-1$
+					params.forceType = "V_MPEG4/ISO/AVC"; //$NON-NLS-1$
+				} else if (media.codecV.equals("mpeg2video")) { //$NON-NLS-1$
+					params.forceType = "V_MPEG-2"; //$NON-NLS-1$
+				} else if (media.codecV.equals("vc1")) { //$NON-NLS-1$
+					params.forceType = "V_MS/VFW/WVC1"; //$NON-NLS-1$
+				}
+				return tv.launchTranscode(fileName, media, params);
+			}
 		}
 		
 		
@@ -1057,7 +1065,7 @@ private JTextField mencoder_ass_scale;
 		StringBuffer sb = new StringBuffer();
 		if (!configuration.isMencoderDisableSubs() && configuration.isMencoderAss() && !dvd && !avisynth())
 			sb.append("-ass -" + (configuration.isMencoderFontConfig()?"":"no") + "fontconfig "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		if (!configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() >  0) {
+		if (!params.sid.is_file_utf8 && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() >  0) {
 			sb.append("-subcp " +configuration.getMencoderSubCp() + " "); //$NON-NLS-1$ //$NON-NLS-2$
 			if (configuration.isMencoderSubFribidi()) {
 				sb.append("-fribidi-charset " +configuration.getMencoderSubCp() + " "); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1227,6 +1235,10 @@ private JTextField mencoder_ass_scale;
 			} else {
 				cmdArray[cmdArray.length-4] = "-sub"; //$NON-NLS-1$
 				cmdArray[cmdArray.length-3] = subString.replace(",", "\\,"); // comas in mencoder separates multiple subtitles files //$NON-NLS-1$ //$NON-NLS-2$
+				if (params.sid.is_file_utf8 && params.sid.getPlayableFile() != null) {
+					cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +1);
+					cmdArray[cmdArray.length-3] = "-utf8"; //$NON-NLS-1$
+				}
 			}
 		} else {
 			cmdArray[cmdArray.length-4] = "-quiet"; //$NON-NLS-1$
@@ -1363,7 +1375,7 @@ private JTextField mencoder_ass_scale;
 				}
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +sArgs.length);
 				for(int s=0;s<sArgs.length;s++) {
-					if (sArgs[s].equals("-noass") || sArgs[s].equals("-mpegopts") || (sArgs[s].equals("-vf") & vfConsumed) || (sArgs[s].equals("-af") && afConsumed) || sArgs[s].equals("-quality") || sArgs[s].equals("-nosync") || sArgs[s].equals("-mt")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+					if (sArgs[s].equals("-noass") || sArgs[s].equals("-nomux") || sArgs[s].equals("-mpegopts") || (sArgs[s].equals("-vf") & vfConsumed) || (sArgs[s].equals("-af") && afConsumed) || sArgs[s].equals("-quality") || sArgs[s].equals("-nosync") || sArgs[s].equals("-mt")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 						cmdArray[cmdArray.length-sArgs.length-2+s] = "-quiet"; //$NON-NLS-1$
 					} else
 						cmdArray[cmdArray.length-sArgs.length-2+s] = sArgs[s];
@@ -1730,6 +1742,7 @@ private JTextField mencoder_ass_scale;
 		+ "container == flv :: -mc 0.1\n"  //$NON-NLS-1$
 		+ "container == mov :: -mc 0.1 -noass\n"  //$NON-NLS-1$
 		+ "container == rm  :: -mc 0.1\n" //$NON-NLS-1$
+		+ "container == matroska && framerate == 29.97  :: -nomux -mc 0.1\n" //$NON-NLS-1$
 		+ "\n"  //$NON-NLS-1$
 		+ Messages.getString("MEncoderVideo.87") //$NON-NLS-1$
 		+ Messages.getString("MEncoderVideo.88") //$NON-NLS-1$

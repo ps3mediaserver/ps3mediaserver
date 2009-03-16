@@ -64,6 +64,8 @@ public class OutputParams {
 		minFileSize = PMS.getConfiguration().getMinStreamBuffer();
 		minBufferSize = configuration.getMinMemoryBufferSize();
 		maxBufferSize = configuration.getMaxMemoryBufferSize();
+		if (maxBufferSize < 100)
+			maxBufferSize = 100;
 		timeseek = 0;
 		outputFile = null;
 	}
