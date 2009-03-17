@@ -1063,9 +1063,9 @@ private JTextField mencoder_ass_scale;
 		
 		
 		StringBuffer sb = new StringBuffer();
-		if (!configuration.isMencoderDisableSubs() && configuration.isMencoderAss() && !dvd && !avisynth())
+		if (params.sid != null && !configuration.isMencoderDisableSubs() && configuration.isMencoderAss() && !dvd && !avisynth())
 			sb.append("-ass -" + (configuration.isMencoderFontConfig()?"":"no") + "fontconfig "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		if (!params.sid.is_file_utf8 && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() >  0) {
+		if (params.sid != null && !params.sid.is_file_utf8 && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() >  0) {
 			sb.append("-subcp " +configuration.getMencoderSubCp() + " "); //$NON-NLS-1$ //$NON-NLS-2$
 			if (configuration.isMencoderSubFribidi()) {
 				sb.append("-fribidi-charset " +configuration.getMencoderSubCp() + " "); //$NON-NLS-1$ //$NON-NLS-2$

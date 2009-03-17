@@ -90,8 +90,11 @@ public class BufferedOutputFile extends OutputStream  {
 		this.maxMemorySize = (int) (1048576 * params.maxBufferSize);
 		int margin = 20000000; // Issue 220: extends to 20Mb : readCount is wrongly set cause of the ps3's
 								// 2nd request with a range like 44-xxx, causing the end of buffer margin to be first sent 
-		if (this.maxMemorySize < margin) // for thumbnails / small buffer usage
+		if (this.maxMemorySize < margin) {// for thumbnails / small buffer usage
 			margin = 2000000; // margin must be superior to the buffer size of OutputBufferConsumer or direct buffer size from WindowsNamedPipe class
+			if (this.maxMemorySize < margin)
+				margin = 600000;
+		}
 		this.bufferOverflowWarning = this.maxMemorySize - margin;
 		this.secondread_minsize = params.secondread_minsize;
 		this.timeseek = params.timeseek;
@@ -395,9 +398,11 @@ public class BufferedOutputFile extends OutputStream  {
 	}
 	
 	private int read(boolean firstRead, long readCount, byte buf []) {
-		if (readCount > TEMP_SIZE) {
-			this.bufferOverflowWarning = maxMemorySize - 2000000;
-			PMS.info("Setting margin to 2Mb");
+		if (readCount > TEMP_SIZE && readCount < maxMemorySize) {
+			int newMargin = maxMemorySize - 2000000;
+			if (bufferOverflowWarning != newMargin)
+				PMS.info("Setting margin to 2Mb");
+			this.bufferOverflowWarning = newMargin;
 		}
 		if (eof) {
 			if (readCount > writeCount)
@@ -445,9 +450,11 @@ public class BufferedOutputFile extends OutputStream  {
 	}
 	
 	private int read(boolean firstRead, long readCount) {
-		if (readCount > TEMP_SIZE) {
-			this.bufferOverflowWarning = maxMemorySize - 2000000;
-			PMS.info("Setting margin to 2Mb");
+		if (readCount > TEMP_SIZE && readCount < maxMemorySize) {
+			int newMargin = maxMemorySize - 2000000;
+			if (bufferOverflowWarning != newMargin)
+				PMS.info("Setting margin to 2Mb");
+			this.bufferOverflowWarning = newMargin;
 		}
 		if (eof && readCount > writeCount)
 			return -1;
