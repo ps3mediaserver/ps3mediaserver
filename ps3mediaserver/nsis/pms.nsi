@@ -22,7 +22,8 @@ VIProductVersion "1.0.0.1"
  
 ; Definitions for Java 6.0
 !define JRE_VERSION "6.0"
-!define JRE_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=24092&/jre-6u10-windows-i586-p.exe"
+!define JRE_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=27983&/jre-6u12-windows-i586-p.exe"
+!define JRE64_URL "http://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/VerifyItem-Start/jre-6u12-windows-x64-p.exe?BundledLineItemUUID=OGJIBe.l0DsAAAEgCtg0fiBA&OrderID=3eBIBe.l3qEAAAEg_dc0fiBA&ProductID=s1lIBe.pg_kAAAEerMhTwPpP&FileName=/jre-6u12-windows-x64-p.exe"
 ;!define JRE_VERSION "5.0"
 ;!define JRE_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=18675&/jre-1_5_0_15-windows-i586-p.exe"
  
@@ -53,12 +54,6 @@ Section ""
   SetOutPath $EXEDIR
   Exec $0
 SectionEnd
-
-Function .onInit
-	${If} ${RunningX64}
- 	SetRegView 64
- 	${EndIf}
-FunctionEnd
   
 ;  returns the full path of a valid java.exe
 ;  looks in:
@@ -82,16 +77,57 @@ Function GetJRE
     ClearErrors
     ReadEnvStr $R0 "JAVA_HOME"
     StrCpy $R0 "$R0\bin\${JAVAEXE}"
-    IfErrors CheckRegistry     
-    IfFileExists $R0 0 CheckRegistry
+    IfErrors CheckRegistry1     
+    IfFileExists $R0 0 CheckRegistry1
     Call CheckJREVersion
-    IfErrors CheckRegistry JreFound
+    IfErrors CheckRegistry1 JreFound
  
-  ; 3) Check for default registry
-  CheckRegistry:
+  ; 3) Check for registry
+  CheckRegistry1:
+    ClearErrors
+    ${If} ${RunningX64}
+ 	SetRegView 64
+ 	${EndIf}
+    ReadRegStr $R1 HKLM "SOFTWARE\Wow6432Node\JavaSoft\Java Runtime Environment" "CurrentVersion"
+    ReadRegStr $R0 HKLM "SOFTWARE\Wow6432Node\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
+    StrCpy $R0 "$R0\bin\${JAVAEXE}"
+    IfErrors CheckRegistry2     
+    IfFileExists $R0 0 CheckRegistry2
+    Call CheckJREVersion
+    IfErrors CheckRegistry2 JreFound
+    
+  ; 4) Check for registry 
+  CheckRegistry2:
     ClearErrors
     ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
     ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
+    StrCpy $R0 "$R0\bin\${JAVAEXE}"
+    IfErrors CheckRegistry3
+    IfFileExists $R0 0 CheckRegistry3
+    Call CheckJREVersion
+    IfErrors CheckRegistry3 JreFound
+ 
+  ; 5) Check for registry
+  CheckRegistry3:
+    ClearErrors
+    ${If} ${RunningX64}
+ 	SetRegView 32
+ 	${Else}
+ 	Goto DownloadJRE
+ 	${EndIf}
+    ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
+    ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
+    StrCpy $R0 "$R0\bin\${JAVAEXE}"
+    IfErrors CheckRegistry4
+    IfFileExists $R0 0 CheckRegistry4
+    Call CheckJREVersion
+    IfErrors CheckRegistry4 JreFound
+    
+  ; 6) Check for registry
+  CheckRegistry4:
+    ClearErrors
+    ReadRegStr $R1 HKLM "SOFTWARE\Wow6432Node\JavaSoft\Java Runtime Environment" "CurrentVersion"
+    ReadRegStr $R0 HKLM "SOFTWARE\Wow6432Node\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
     StrCpy $R0 "$R0\bin\${JAVAEXE}"
     IfErrors DownloadJRE
     IfFileExists $R0 0 DownloadJRE

@@ -66,6 +66,8 @@ public abstract class Format implements Cloneable {
 	
 	public boolean match(String filename) {
 		boolean match = false;
+		if (filename == null)
+			return match;
 		for(String singleid:getId()) {
 			String id = singleid.toLowerCase();
 			filename = filename.toLowerCase();

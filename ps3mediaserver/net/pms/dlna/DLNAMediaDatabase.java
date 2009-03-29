@@ -3,7 +3,6 @@ package net.pms.dlna;
 import java.awt.Component;
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,6 +18,8 @@ import net.pms.Messages;
 import net.pms.PMS;
 
 import org.apache.commons.lang.StringUtils;
+import org.h2.jdbcx.JdbcConnectionPool;
+import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.RunScript;
 import org.h2.tools.Script;
@@ -44,6 +45,8 @@ public class DLNAMediaDatabase implements Runnable {
 		}*/
 	}
 	
+	private JdbcConnectionPool cp;
+	
 	public DLNAMediaDatabase(String name) {
 		dir = "database" ; //$NON-NLS-1$
 		File fileDir = new File(dir);
@@ -63,11 +66,18 @@ public class DLNAMediaDatabase implements Runnable {
 		} catch (ClassNotFoundException e) {
 			PMS.error(null, e);
 		}
+		
+		JdbcDataSource ds = new JdbcDataSource();
+		ds.setURL(url);
+		ds.setUser("sa");
+		ds.setPassword("");
+		cp = JdbcConnectionPool.create(ds);
 	}
 	
 	private Connection getConnection() throws SQLException {
-		Connection conn = DriverManager.getConnection(url, "sa", ""); //$NON-NLS-1$ //$NON-NLS-2$
-		return conn;
+		//Connection conn = DriverManager.getConnection(url, "sa", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		//return conn;
+		return cp.getConnection();
 	}
 	
 	public void init(boolean force) {
@@ -143,7 +153,7 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append(", EXPOSURE          INT"); //$NON-NLS-1$
 				sb.append(", ORIENTATION       INT"); //$NON-NLS-1$
 				sb.append(", ISO               INT"); //$NON-NLS-1$
-				sb.append(", constraint PK1 primary key (ID, FILENAME, MODIFIED))"); //$NON-NLS-1$
+				sb.append(", constraint PK1 primary key (FILENAME, MODIFIED, ID))"); //$NON-NLS-1$
 				executeUpdate(conn, sb.toString());
 				sb = new StringBuffer();
 				sb.append("CREATE TABLE AUDIOTRACKS ("); //$NON-NLS-1$
@@ -372,7 +382,9 @@ public class DLNAMediaDatabase implements Runnable {
 			}
 			rs.close();
 			if (media != null && id > -1) {
-				PreparedStatement insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); //$NON-NLS-1$
+				PreparedStatement insert = null;
+				if (media.audioCodes.size() > 0)
+					insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); //$NON-NLS-1$
 				for(DLNAMediaAudio audio:media.audioCodes) {
 					insert.clearParameters();
 					insert.setInt(1, id);
@@ -392,7 +404,8 @@ public class DLNAMediaDatabase implements Runnable {
 					insert.executeUpdate();
 				}
 				
-				insert = conn.prepareStatement("INSERT INTO SUBTRACKS VALUES (?, ?, ?, ?)"); //$NON-NLS-1$
+				if (media.subtitlesCodes.size() > 0)
+					insert = conn.prepareStatement("INSERT INTO SUBTRACKS VALUES (?, ?, ?, ?)"); //$NON-NLS-1$
 				for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
 					if (sub.file == null) { // no save of external subtitles
 						insert.clearParameters();
@@ -403,7 +416,8 @@ public class DLNAMediaDatabase implements Runnable {
 						insert.executeUpdate();
 					}
 				}
-				insert.close();
+				if (insert != null)
+					insert.close();
 			}
 			
 			

@@ -1662,6 +1662,8 @@ private JTextField mencoder_ass_scale;
 				return null;
 				
 			interpreter.set("filename", filename); //$NON-NLS-1$
+			interpreter.set("audio", params.aid != null); //$NON-NLS-1$
+			interpreter.set("subtitles", params.sid != null); //$NON-NLS-1$
 			interpreter.set("srtfile", srtFileName); //$NON-NLS-1$
 			if (params.aid != null)
 				interpreter.set("samplerate", params.aid.getSampleRate()); //$NON-NLS-1$

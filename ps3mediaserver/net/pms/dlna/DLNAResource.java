@@ -94,6 +94,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	private DLNAResource second;
 	protected String fakeParentId;
 	
+	public DLNAResource getPrimaryResource() {
+		return first;
+	}
+	
+	public DLNAResource getSecondaryResource() {
+		return second;
+	}
+	
 	public String getFakeParentId() {
 		return fakeParentId;
 	}

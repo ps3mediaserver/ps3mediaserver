@@ -43,7 +43,7 @@
 		
     	<mkdir dir="dist" />
     	<tar destfile="dist/pms-linux-${version}.tgz" compression="gzip">
-    		<tarfileset dir="." prefix="pms-linux-${version}" includes="LICENCE.txt,README,CHANGELOG,pms.jar,FAQ,PMS.sh,WEB.conf,linux/**"/> 
+    		<tarfileset dir="." mode="777" prefix="pms-linux-${version}" includes="LICENCE.txt,README,CHANGELOG,pms.jar,FAQ,PMS.sh,WEB.conf,linux/**"/> 
     	</tar>
     		
     	<delete dir="classes" />
@@ -70,7 +70,7 @@
           target: depends                      
          - - - - - - - - - - - - - - - - - -->
     <target name="depends">
-    	<property name="version" value="1.10.5" />
+    	<property name="version" value="1.11" />
     	<!--<property name="gcj" value="D:\\DEV\\thisiscool-gcc\\gcc-ecj\\bin\\gcj.exe"/>-->
     	<property name="gcj" value="D:\\DEV\\gcc-122233-win\\bin\\gcj.exe" />
     	<property name="swtjar" value="D:\\DEV\\thisiscool-gcc\\swt\\win32\\3218\\swt.jar" />

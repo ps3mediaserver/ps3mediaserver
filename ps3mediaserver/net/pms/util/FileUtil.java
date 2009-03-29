@@ -70,16 +70,16 @@ public class FileUtil {
 		return found;
 	}
 	
-	private static boolean browseFolderForSubtitles(File subFolder, File file, DLNAMediaInfo media) {
+	private synchronized static boolean browseFolderForSubtitles(File subFolder, File file, DLNAMediaInfo media) {
 		boolean found = false;
 		File allSubs [] = subFolder.listFiles();
 		for(File f:allSubs) {
 			if (f.isFile()) {
 				for(int i=0;i<DLNAMediaSubtitle.subExtensions.length;i++) {
 					String ext = DLNAMediaSubtitle.subExtensions[i];
-					if ((f.getName().startsWith(getFileNameWithoutExtension(file.getName()))
+					if ((f.getName().length() > ext.length()) && ((f.getName().startsWith(getFileNameWithoutExtension(file.getName()))
 							&& f.getName().endsWith("." + ext)) || (f.getName().startsWith(getFileNameWithoutExtension(file.getName()))
-							&& f.getName().endsWith("." + ext.toUpperCase()))) {
+							&& f.getName().endsWith("." + ext.toUpperCase())))) {
 						String code = f.getName().substring(getFileNameWithoutExtension(file.getName()).length(), f.getName().length()-ext.length()-1);
 						if (code.startsWith("."))
 							code = code.substring(1);
