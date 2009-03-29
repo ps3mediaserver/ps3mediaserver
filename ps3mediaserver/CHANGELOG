@@ -8,10 +8,12 @@ v1.11
 
 Tsmuxer and flac binaries are now available in the OSX build, this adds a lot of features on Mac which were previously only available on Windows or Linux (like DTS and remux support)
 Handling of UTF8 and UTF16 encoded external subtitles
+Windows launcher now detects Java 64 bits if installed
 New translations: Slovenian (thanks to Rob Wall)
 
 - Fixes
 
+Media library major speed and size improvements (you may have to reset the library)
 Improved fix for the stopped videos issue
 Better support for mkvs with NTSC video track
 Fix spaces usage in the audio/subtitles configurations

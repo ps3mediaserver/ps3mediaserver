@@ -92,7 +92,7 @@ public class UPNPHelper {
 	
 	public static void sendAlive() throws IOException {
 		
-		PMS.minimal( "Sending ALIVE...");
+		PMS.info( "Sending ALIVE...");
 		
 		MulticastSocket ssdpSocket = getNewMulticastSocket();
 		sendMessage(ssdpSocket,  "upnp:rootdevice", ALIVE);

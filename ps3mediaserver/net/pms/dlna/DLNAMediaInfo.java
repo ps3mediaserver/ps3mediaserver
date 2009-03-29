@@ -237,7 +237,9 @@ public class DLNAMediaInfo {
 				DLNAMediaAudio audio = new DLNAMediaAudio();
 				if (f.file != null) {
 					try {
+						PMS.debug(">>>");
 						AudioFile af = AudioFileIO.read(f.file);
+						PMS.debug("<<<");
 						AudioHeader ah = af.getAudioHeader();
 						if (ah != null) {
 							int length = ah.getTrackLength();
@@ -262,6 +264,8 @@ public class DLNAMediaInfo {
 								audio.nrAudioChannels = Integer.parseInt(ah.getChannels());
 							}
 							audio.codecA = ah.getEncodingType().toLowerCase();
+							if (audio.codecA.contains("(windows media"))
+								audio.codecA = audio.codecA.substring(0, audio.codecA.indexOf("(windows media")).trim();
 						}
 						Tag t = af.getTag();
 						if (t != null) {

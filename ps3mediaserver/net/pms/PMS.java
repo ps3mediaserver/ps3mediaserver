@@ -109,7 +109,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.10.5"; //$NON-NLS-1$
+	public static final String VERSION = "1.11"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -474,6 +474,7 @@ public class PMS {
 				}
 				br.close();
 			} catch (Exception e) {
+				e.printStackTrace();
 				PMS.minimal("Unexpected error in WEB.conf: " + e.getMessage()); //$NON-NLS-1$
 			}
 		}
@@ -731,7 +732,10 @@ public class PMS {
 	}
 	
 	public static void debug(String msg) {
-		instance.message(DEBUG, msg);
+		if (instance != null)
+			instance.message(DEBUG, msg);
+		else
+			System.out.println(msg);
 	}
 	
 	public static void info(String msg) {

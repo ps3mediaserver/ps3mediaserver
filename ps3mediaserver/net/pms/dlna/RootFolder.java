@@ -22,6 +22,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import net.pms.PMS;
 import net.pms.dlna.virtual.VirtualFolder;
@@ -86,7 +89,7 @@ public class RootFolder extends DLNAResource {
 		running = false;
 	}
 	
-	private void scan(DLNAResource resource) {
+	private synchronized void scan(DLNAResource resource) {
 		if (running) {
 			for(DLNAResource child:resource.children) {
 				if (running && child instanceof RealFile && child.isFolder()) {
@@ -101,11 +104,32 @@ public class RootFolder extends DLNAResource {
 						child.closeChildren(0, false);
 						child.discovered = true;
 					}
-					for(DLNAResource ch:child.children) {
-						if (running)
-							ch.resolve();
+					int count = child.children.size();
+					if (count == 0)
+						return;
+					ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(count);
+					int parallel_thread_number = 3;
+					ThreadPoolExecutor tpe = new ThreadPoolExecutor(Math.min(count, parallel_thread_number), count, 20, TimeUnit.SECONDS, queue);
+					for(final DLNAResource ch:child.children) {
+						if (running) {
+							tpe.execute(new Runnable() {
+								public void run() {
+									if (ch.getPrimaryResource() == null) {
+										ch.resolve();
+										if (ch.getSecondaryResource() != null)
+											ch.getSecondaryResource().resolve();
+										ch.media = null;
+									}
+								}
+							});
+						}
 					}
+					try {
+						tpe.shutdown();
+						tpe.awaitTermination(20, TimeUnit.SECONDS);
+					} catch (InterruptedException e) {}
 					scan(child);
+					children.clear();
 				}
 			}
 		}
