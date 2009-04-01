@@ -109,7 +109,7 @@ public abstract class Player {
 		}
 		
 		String currentLang = null;
-		String matchedSub = null;
+		DLNAMediaSubtitle matchedSub = null;
 		if (params.aid != null)
 			currentLang = params.aid.lang;
 		
@@ -129,16 +129,30 @@ public abstract class Player {
 				sub = sub.trim();
 				PMS.debug("Search a match for: " + currentLang + " with " + audio + " and " + sub);
 				if (Iso639.isCodesMatching(audio, currentLang)) {
-					matchedSub = sub;
-					PMS.debug(" Found a match: " + matchedSub);
-					break;
+					if (sub.equals("off")) {
+						matchedSub = new DLNAMediaSubtitle();
+						matchedSub.lang = "off";
+					} else {
+						for(DLNAMediaSubtitle present_sub:media.subtitlesCodes) {
+							if (present_sub.matchCode(sub)) {
+								matchedSub = present_sub;
+								PMS.debug(" Found a match: " + matchedSub);
+								break;
+							}
+						}
+					}
+					if (matchedSub != null)
+						break;
 				}
 			}
 		}
 		
-		if (matchedSub != null && matchedSub.equals("off")) { //$NON-NLS-1$
-			PMS.debug(" Disabled the subtitles: " + matchedSub);
-			params.sid = null;
+		if (matchedSub != null) { //$NON-NLS-1$
+			if (matchedSub.lang != null && matchedSub.lang.equals("off")) {
+				PMS.debug(" Disabled the subtitles: " + matchedSub);
+				params.sid = null;
+			} else
+				params.sid = matchedSub;
 			return;
 		}
 		
@@ -169,7 +183,7 @@ public abstract class Player {
 					lang = lang.trim();
 					PMS.debug("Searching a subtitle track with lang: " + lang);
 					for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
-						if (sub.matchCode(lang) && !Iso639.isCodesMatching(lang, matchedSub)) {
+						if (sub.matchCode(lang)) {
 							params.sid = sub;
 							PMS.debug("Matched sub track : " + params.sid);
 							st = null;
