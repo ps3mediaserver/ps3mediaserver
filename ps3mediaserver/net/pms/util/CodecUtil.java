@@ -43,7 +43,7 @@ public class CodecUtil {
 		int defaultBitrate = configuration.getAudioBitrate();
 		if (media != null && defaultBitrate >= 384) {
 			if (media.nrAudioChannels == 2 || configuration.getAudioChannelCount() == 2) {
-				defaultBitrate = 384;
+				defaultBitrate = 256;
 			} else if (media.nrAudioChannels == 1) {
 				defaultBitrate = 192;
 			}

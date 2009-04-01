@@ -129,7 +129,7 @@ public class RootFolder extends DLNAResource {
 						tpe.awaitTermination(20, TimeUnit.SECONDS);
 					} catch (InterruptedException e) {}
 					scan(child);
-					children.clear();
+					child.children.clear();
 				}
 			}
 		}
