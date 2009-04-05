@@ -55,6 +55,7 @@ public class RequestHandler implements Runnable {
 			
 			String headerLine = br.readLine();
 			boolean useragentfound = false;
+			String userAgentString = null;
 			while (headerLine != null && headerLine.length() > 0) {
 				PMS.debug( "Received on socket: " + headerLine);
 				/*if (headerLine != null && headerLine.toUpperCase().startsWith("USER-AGENT:")) {
@@ -73,7 +74,8 @@ public class RequestHandler implements Runnable {
 					}
 				}*/
 				if (!useragentfound && headerLine != null && headerLine.toUpperCase().startsWith("USER-AGENT")) {
-					RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationByUA(headerLine.substring(headerLine.indexOf(":")+1).trim());
+					userAgentString = headerLine.substring(headerLine.indexOf(":")+1).trim();
+					RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationByUA(userAgentString);
 					if (renderer != null) {
 						PMS.get().setRendererfound(renderer);
 						request.setMediaRenderer(renderer);
@@ -130,6 +132,7 @@ public class RequestHandler implements Runnable {
 			
 			// if client not recognized, take a default renderer config
 			if (request != null && request.getMediaRenderer() == null) {
+				PMS.minimal("Media renderer was not recognized. HTTP User agent :" + userAgentString);
 				request.setMediaRenderer(RendererConfiguration.getDefaultConf());
 				PMS.get().setRendererfound(request.getMediaRenderer());
 			}

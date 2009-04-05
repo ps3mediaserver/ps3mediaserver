@@ -446,7 +446,6 @@ public class BufferedOutputFile extends OutputStream  {
 			return buf.length;
 		}
 		
-		// 5D.mov: 62 830 592 bytes
 	}
 	
 	private int read(boolean firstRead, long readCount) {

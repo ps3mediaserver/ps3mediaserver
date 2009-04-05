@@ -922,8 +922,8 @@ private JTextField mencoder_ass_scale;
 			m = "0"; //$NON-NLS-1$
 		
 		int mb = (int) Double.parseDouble(m);
-		if ((mb == 0 && mediaRenderer.getMaxBitrate() > 0) || mediaRenderer.getMaxBitrate() < mb)
-			mb = mediaRenderer.getMaxBitrate();
+		if ((mb == 0 && mediaRenderer.getMaxVideoBitrate() > 0) || mediaRenderer.getMaxVideoBitrate() < mb)
+			mb = mediaRenderer.getMaxVideoBitrate();
 		if (mb > 0 && !quality.contains("vrc_buf_size") && !quality.contains("vrc_maxrate") && !quality.contains("vbitrate")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			mb = 1000*mb;
 			if (mb > 60000)
@@ -1262,11 +1262,14 @@ private JTextField mencoder_ass_scale;
 		}*/
 		
 		boolean deinterlace = configuration.isMencoderYadif();
-		boolean scaler = configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0);
+		// check if the media renderer supports this resolution
+		boolean mediaRendererScaler = params.mediaRenderer.isVideoRescale() && (media.width > params.mediaRenderer.getMaxVideoWidth()|| (media.height > params.mediaRenderer.getMaxVideoHeight()));
+		// use scaler?
+		boolean scaler = mediaRendererScaler  || (configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0));
 		if ((deinterlace || scaler) && !avisynth()) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
 			cmdArray[cmdArray.length-4] = "-vf"; //$NON-NLS-1$
-			String scalerString = "scale=" + configuration.getMencoderScaleX() + ":" + configuration.getMencoderScaleY(); //$NON-NLS-1$ //$NON-NLS-2$
+			String scalerString = "scale=" + (params.mediaRenderer.getMaxVideoWidth()>0?params.mediaRenderer.getMaxVideoWidth():configuration.getMencoderScaleX()) + ":" + (params.mediaRenderer.getMaxVideoHeight()>0?params.mediaRenderer.getMaxVideoHeight():configuration.getMencoderScaleY()); //$NON-NLS-1$ //$NON-NLS-2$
 			if (deinterlace)
 				scalerString = "," + scalerString; //$NON-NLS-1$
 			cmdArray[cmdArray.length-3] = (deinterlace?"yadif":"") + (scaler?scalerString:""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$

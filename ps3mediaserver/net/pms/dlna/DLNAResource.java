@@ -134,6 +134,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		return null;
 	}
 	
+	public boolean isCompatible(RendererConfiguration renderer) {
+		return ext == null
+			|| ext.isUnknown()
+			|| (ext.isVideo() && renderer.isVideoSupported())
+			|| (ext.isAudio() && renderer.isAudioSupported())
+			|| (ext.isImage() && renderer.isImageSupported());
+	}
+	
 	public void addChild(DLNAResource child) {
 		//child.expert = expert;
 		if (child.isValid()) {
@@ -802,13 +810,26 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					} catch (InterruptedException e) {
 						PMS.error(null, e);
 					}
+					if (newExternalProcess == null)
+						PMS.debug("External process instance is null... that sounds not good");
 					externalProcess = newExternalProcess;
 				}
 			}
 			if (externalProcess == null)
 				return null;
-			return externalProcess.getInputStream(low);
-			
+			InputStream is = null;
+			int timer = 0;
+			while (is == null && timer < 10) {
+				is = externalProcess.getInputStream(low);
+				timer++;
+				if (is == null) {
+					PMS.debug("External inputstream instance is null... that sounds not good");
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {}
+				}
+			}
+			return is;
 		}
 		
 	

@@ -119,7 +119,8 @@ public class PMS {
 		return frame;
 	}
 
-	public RootFolder getRootFolder() {
+	public RootFolder getRootFolder(RendererConfiguration renderer) {
+		// something to do here for multiple directories views for each renderer
 		return rootFolder;
 	}
 

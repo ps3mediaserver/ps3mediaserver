@@ -567,13 +567,13 @@ public class DLNAMediaDatabase implements Runnable {
 	
 	public synchronized void stopScanLibrary() {
 		if (scanner != null && scanner.isAlive()) {
-			PMS.get().getRootFolder().stopscan();
+			PMS.get().getRootFolder(null).stopscan();
 			//scanner.interrupt();
 		}
 	}
 	
 	public void run() {
-		PMS.get().getRootFolder().scan();
+		PMS.get().getRootFolder(null).scan();
 	}
 	
 	public void compact() {
