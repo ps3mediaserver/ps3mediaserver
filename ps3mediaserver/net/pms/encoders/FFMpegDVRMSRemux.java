@@ -35,6 +35,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
@@ -185,6 +186,11 @@ public class FFMpegDVRMSRemux extends Player {
         builder.add(altffpath, cc.xyw(3, 3, 3));
         
 		return builder.getPanel();
+	}
+
+	@Override
+	public boolean isPlayerCompatible(RendererConfiguration mediaRenderer) {
+		return mediaRenderer.isTranscodeToMPEGAC3();
 	}
 	
 }

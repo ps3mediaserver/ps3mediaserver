@@ -175,7 +175,7 @@ public class Request extends HTTPResource {
 		if ((method.equals("GET") || method.equals("HEAD")) && argument.startsWith("get/")) {
 			String id = argument.substring(argument.indexOf("get/") + 4, argument.lastIndexOf("/"));
 			id = id.replace("%24", "$"); // popcorn hour ?
-			ArrayList<DLNAResource> files = PMS.get().getRootFolder().getDLNAResources(id, false, 0, 0, mediaRenderer);
+			ArrayList<DLNAResource> files = PMS.get().getRootFolder(mediaRenderer).getDLNAResources(id, false, 0, 0, mediaRenderer);
 			if (files.size() == 1) {
 				String fileName = argument.substring(argument.lastIndexOf("/")+1);
 				if (fileName.startsWith("thumbnail0000")) {
@@ -346,7 +346,7 @@ public class Request extends HTTPResource {
 					}
 				}
 				
-				ArrayList<DLNAResource> files = PMS.get().getRootFolder().getDLNAResources(objectID, browseFlag!=null&&browseFlag.equals("BrowseDirectChildren"), startingIndex, requestCount, mediaRenderer);
+				ArrayList<DLNAResource> files = PMS.get().getRootFolder(mediaRenderer).getDLNAResources(objectID, browseFlag!=null&&browseFlag.equals("BrowseDirectChildren"), startingIndex, requestCount, mediaRenderer);
 				if (searchCriteria != null && files != null) {
 					for(int i=files.size()-1;i>=0;i--) {
 						if (!files.get(i).getName().equals(searchCriteria))
@@ -362,7 +362,7 @@ public class Request extends HTTPResource {
 					for(DLNAResource uf:files) {
 						if (xbox && containerID != null)
 							uf.setFakeParentId(containerID);
-						if (uf.getPlayer() == null || uf.getPlayer().isPlayerCompatible(mediaRenderer))
+						if (uf.isCompatible(mediaRenderer) && (uf.getPlayer() == null || uf.getPlayer().isPlayerCompatible(mediaRenderer)))
 							response.append(uf.toString(mediaRenderer));
 						else
 							minus++;

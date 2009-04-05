@@ -104,6 +104,11 @@ public class RendererConfiguration {
 	private static final String USER_AGENT_ADDITIONAL_HEADER="UserAgentAdditionalHeader";
 	private static final String USER_AGENT_ADDITIONAL_SEARCH="UserAgentAdditionalHeaderSearch";
 	
+	private static final String VIDEO="Video";
+	private static final String AUDIO="Audio";
+	private static final String IMAGE="Image";
+	
+	
 	private static final String SEEK_BY_TIME="SeekByTime";
 	
 	public static final String MPEGAC3 = "MPEGAC3";
@@ -119,14 +124,16 @@ public class RendererConfiguration {
 	private static final String MUX_DTS_TO_MPEG="MuxDTSToMpeg";
 	private static final String WRAP_DTS_INTO_PCM="WrapDTSIntoPCM";
 	private static final String MUX_LPCM_TO_MPEG="MuxLPCMToMpeg";
-	private static final String MAX_BITRATE="MaxBitrateMbps";
+	private static final String MAX_VIDEO_BITRATE="MaxVideoBitrateMbps";
+	private static final String MAX_VIDEO_WIDTH="MaxVideoWidth";
+	private static final String MAX_VIDEO_HEIGHT="MaxVideoHeight";
 	
 	private static final String MIME_TYPES_CHANGES="MimeTypesChanges";
 	private static final String TRANSCODE_EXT="TranscodeExtensions";
 	private static final String STREAM_EXT="StreamExtensions";
 	
 	
-	public RendererConfiguration() throws ConfigurationException {
+	private RendererConfiguration() throws ConfigurationException {
 		this(null);
 	}
 	
@@ -147,13 +154,25 @@ public class RendererConfiguration {
 			while (st.hasMoreTokens()) {
 				String mime_change = st.nextToken().trim();
 				int equals = mime_change.indexOf("=");
-				if (equals > 0) {
-					String old = mime_change.substring(0, equals);
-					String nw = mime_change.substring(equals+1);
+				if (equals > -1) {
+					String old = mime_change.substring(0, equals).trim().toLowerCase();
+					String nw = mime_change.substring(equals+1).trim().toLowerCase();
 					mimes.put(old, nw);
 				}
 			}
 		}
+	}
+	
+	public boolean isVideoSupported() {
+		return getBoolean(VIDEO, true);
+	}
+	
+	public boolean isAudioSupported() {
+		return getBoolean(AUDIO, true);
+	}
+	
+	public boolean isImageSupported() {
+		return getBoolean(IMAGE, true);
 	}
 	
 	public boolean isTranscodeToWMV() {
@@ -243,8 +262,20 @@ public class RendererConfiguration {
 		return getBoolean(DEFAULT_VBV_BUFSIZE, false);
 	}
 	
-	public int getMaxBitrate() {
-		return getInt(MAX_BITRATE, 0);
+	public int getMaxVideoBitrate() {
+		return getInt(MAX_VIDEO_BITRATE, 0);
+	}
+	
+	public int getMaxVideoWidth() {
+		return getInt(MAX_VIDEO_WIDTH, 0);
+	}
+	
+	public int getMaxVideoHeight() {
+		return getInt(MAX_VIDEO_HEIGHT, 0);
+	}
+	
+	public boolean isVideoRescale() {
+		return getMaxVideoWidth() > 0 && getMaxVideoHeight() > 0;
 	}
 	
 	public String getTranscodedExtensions() {
