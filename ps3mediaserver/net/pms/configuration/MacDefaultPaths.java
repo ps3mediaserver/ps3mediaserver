@@ -34,7 +34,7 @@ class MacDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getVlcPath() {
-		return "osx/vlc";
+		return "/Applications/VLC.app/Contents/MacOS/VLC";
 	}
 
 	@Override
