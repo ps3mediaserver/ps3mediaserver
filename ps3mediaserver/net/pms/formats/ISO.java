@@ -37,7 +37,7 @@ public class ISO extends MPG {
 	}
 
 	public String [] getId() {
-		return new String [] { "iso" }; //$NON-NLS-1$
+		return new String [] { "iso", "img" }; //$NON-NLS-1$
 	}
 
 }

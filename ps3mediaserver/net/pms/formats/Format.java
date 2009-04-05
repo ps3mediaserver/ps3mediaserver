@@ -110,16 +110,26 @@ public abstract class Format implements Cloneable {
 		media.parse(file, this, type);
 	}
 	
-	public boolean skip(String extensions) {
-		if (extensions == null || extensions.length() == 0)
-			return false;
-		StringTokenizer st = new StringTokenizer(extensions, ",");
-		while (st.hasMoreTokens()) {
-			String id = st.nextToken().toLowerCase();
-			if (matchedId != null && matchedId.toLowerCase().equals(id)) {
-				return true;
+	public boolean skip(String extensions, String another_set_of_extensions) {
+		if (extensions != null && extensions.length() > 0) {
+			StringTokenizer st = new StringTokenizer(extensions, ",");
+			while (st.hasMoreTokens()) {
+				String id = st.nextToken().toLowerCase();
+				if (matchedId != null && matchedId.toLowerCase().equals(id)) {
+					return true;
+				}
 			}
 		}
+		if (another_set_of_extensions != null && another_set_of_extensions.length() > 0) {
+			StringTokenizer st = new StringTokenizer(another_set_of_extensions, ",");
+			while (st.hasMoreTokens()) {
+				String id = st.nextToken().toLowerCase();
+				if (matchedId != null && matchedId.toLowerCase().equals(id)) {
+					return true;
+				}
+			}
+		}
+		
 		return false;
 	}
 }

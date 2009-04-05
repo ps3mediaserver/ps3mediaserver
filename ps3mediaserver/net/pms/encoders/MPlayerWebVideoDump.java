@@ -23,14 +23,20 @@ import java.io.IOException;
 import javax.swing.JComponent;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.network.HTTPResource;
 
 public class MPlayerWebVideoDump extends MPlayerAudio {
+
+	public MPlayerWebVideoDump(PmsConfiguration configuration) {
+		super(configuration);
+	}
 
 	public static final String ID = "mplayervideodump"; //$NON-NLS-1$
 	
@@ -80,7 +86,7 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 
 	@Override
 	public String mimeType() {
-		return "video/mpeg"; //$NON-NLS-1$
+		return HTTPResource.VIDEO_TRANSCODE; //$NON-NLS-1$
 	}
 
 	@Override

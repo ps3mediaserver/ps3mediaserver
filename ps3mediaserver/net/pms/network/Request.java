@@ -32,6 +32,7 @@ import java.util.TimeZone;
 import org.apache.commons.lang.StringUtils;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 
@@ -61,13 +62,13 @@ public class Request extends HTTPResource {
 	private String browseFlag;
 	private long lowRange;
 	private InputStream inputStream;
-	private int mediaRenderer;
+	private RendererConfiguration mediaRenderer;
 	
-	public int getMediaRenderer() {
+	public RendererConfiguration getMediaRenderer() {
 		return mediaRenderer;
 	}
 
-	public void setMediaRenderer(int mediaRenderer) {
+	public void setMediaRenderer(RendererConfiguration mediaRenderer) {
 		this.mediaRenderer = mediaRenderer;
 	}
 
@@ -164,6 +165,8 @@ public class Request extends HTTPResource {
 		
 		StringBuffer response = new StringBuffer();
 		
+		boolean xbox = mediaRenderer.isXBOX();
+		
 		if ((method.equals("GET") || method.equals("HEAD")) && argument.startsWith("console/")) {
 			output(output, "Content-Type: text/html");
 			response.append(HTMLConsole.servePage(argument.substring(8)));
@@ -171,7 +174,8 @@ public class Request extends HTTPResource {
 		
 		if ((method.equals("GET") || method.equals("HEAD")) && argument.startsWith("get/")) {
 			String id = argument.substring(argument.indexOf("get/") + 4, argument.lastIndexOf("/"));
-			ArrayList<DLNAResource> files = PMS.get().getRootFolder().getDLNAResources(id, false, 0, 0);
+			id = id.replace("%24", "$"); // popcorn hour ?
+			ArrayList<DLNAResource> files = PMS.get().getRootFolder().getDLNAResources(id, false, 0, 0, mediaRenderer);
 			if (files.size() == 1) {
 				String fileName = argument.substring(argument.lastIndexOf("/")+1);
 				if (fileName.startsWith("thumbnail0000")) {
@@ -209,7 +213,7 @@ public class Request extends HTTPResource {
 						}
 						output(output, "CONTENT-RANGE: bytes " + lowRange + "-" + highRange + "/" +totalsize);
 					}
-					if (files.get(0).getPlayer() == null || mediaRenderer == XBOX)
+					if (files.get(0).getPlayer() == null || xbox)
 						output(output, "Accept-Ranges: bytes");
 					output(output, "Connection: keep-alive");
 				}
@@ -235,18 +239,11 @@ public class Request extends HTTPResource {
 				inputStream.read(b);
 				String s = new String(b);
 				s = s.replace("uuid:1234567890TOTO", PMS.get().usn());//.substring(0, PMS.get().usn().length()-2));
-				if (mediaRenderer == XBOX) {
+				if (xbox) {
 					PMS.info("DLNA changes for Xbox360");
 					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "] : Windows Media Connect");
-					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect</modelName>");
-/*					s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
-							"<serviceType>urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1</serviceType>" + CRLF +
-							"<serviceId>urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar</serviceId>" + CRLF +
-							"<SCPDURL>_urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar_scpd.xml</SCPDURL>" + CRLF +
-							"<controlURL>_urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar_control</controlURL>" + CRLF +
-							"<eventSubURL>_urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar_event</eventSubURL>" + CRLF + "</service>" + CRLF);
-*/							
-              s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
+					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect</modelName>");				
+					s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
 							       "<serviceType>urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1</serviceType>" + CRLF +
                             "<serviceId>urn:microsoft.com:serviceId:X_MS_MediaReceiverRegistrar</serviceId>" + CRLF +
                             "<SCPDURL>/upnp/mrr/scpd</SCPDURL>" + CRLF +
@@ -294,7 +291,7 @@ public class Request extends HTTPResource {
 				//PMS.debug(content);
 				objectID = getEnclosingValue(content, "<ObjectID>", "</ObjectID>");
 				String containerID = null;
-				if ((objectID == null || objectID.length() == 0) && mediaRenderer == XBOX) {
+				if ((objectID == null || objectID.length() == 0) && xbox) {
 					containerID = getEnclosingValue(content, "<ContainerID>", "</ContainerID>");
 					if (!containerID.contains("$")) {
 						objectID = "0";
@@ -329,7 +326,7 @@ public class Request extends HTTPResource {
 				
 				//XBOX virtual containers ... doh
 				String searchCriteria = null;
-				if (mediaRenderer == XBOX && PMS.getConfiguration().getUseCache() && PMS.get().getLibrary() != null && containerID != null) {
+				if (xbox && PMS.getConfiguration().getUseCache() && PMS.get().getLibrary() != null && containerID != null) {
 					if (containerID.equals("7") && PMS.get().getLibrary().getAlbumFolder() != null)
 						objectID = PMS.get().getLibrary().getAlbumFolder().getId();
 					else if (containerID.equals("6") && PMS.get().getLibrary().getArtistFolder() != null)
@@ -349,7 +346,7 @@ public class Request extends HTTPResource {
 					}
 				}
 				
-				ArrayList<DLNAResource> files = PMS.get().getRootFolder().getDLNAResources(objectID, browseFlag!=null&&browseFlag.equals("BrowseDirectChildren"), startingIndex, requestCount);
+				ArrayList<DLNAResource> files = PMS.get().getRootFolder().getDLNAResources(objectID, browseFlag!=null&&browseFlag.equals("BrowseDirectChildren"), startingIndex, requestCount, mediaRenderer);
 				if (searchCriteria != null && files != null) {
 					for(int i=files.size()-1;i>=0;i--) {
 						if (!files.get(i).getName().equals(searchCriteria))
@@ -360,11 +357,15 @@ public class Request extends HTTPResource {
 					}
 				}
 				
+				int minus = 0;
 				if (files != null) {
 					for(DLNAResource uf:files) {
-						if (mediaRenderer == XBOX && containerID != null)
+						if (xbox && containerID != null)
 							uf.setFakeParentId(containerID);
-						response.append(uf.toString(mediaRenderer));
+						if (uf.getPlayer() == null || uf.getPlayer().isPlayerCompatible(mediaRenderer))
+							response.append(uf.toString(mediaRenderer));
+						else
+							minus++;
 					}
 				}
 				response.append(HTTPXMLHelper.DIDL_FOOTER);
@@ -374,12 +375,12 @@ public class Request extends HTTPResource {
 				int filessize = 0;
 				if (files != null)
 					filessize = files.size();
-				response.append("<NumberReturned>" + filessize + "</NumberReturned>");
+				response.append("<NumberReturned>" + (filessize - minus) + "</NumberReturned>");
 				response.append(CRLF);
 				DLNAResource parentFolder = null;
 				if (files != null && filessize > 0)
 					parentFolder = files.get(0).getParent();
-				response.append("<TotalMatches>" + ((parentFolder!=null)?parentFolder.childrenNumber():filessize) + "</TotalMatches>");
+				response.append("<TotalMatches>" + (((parentFolder!=null)?parentFolder.childrenNumber():filessize) - minus) + "</TotalMatches>");
 				response.append(CRLF);
 				response.append("<UpdateID>");
 				if (parentFolder != null)
@@ -418,6 +419,7 @@ public class Request extends HTTPResource {
 					output(output, "Content-Length: " + (highRange-lowRange+1));
 				} else if (CLoverride != DLNAMediaInfo.TRANS_SIZE) // since 2.50, it's wiser not to send an arbitrary Content length,
 																	// as the PS3 displays a network error and asks the last seconds of the transcoded video
+																	// deprecated since the "-1" size sent anyway
 					output(output, "Content-Length: " + CLoverride);
 			}
 			else {

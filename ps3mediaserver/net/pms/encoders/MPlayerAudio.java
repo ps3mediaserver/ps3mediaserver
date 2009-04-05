@@ -24,16 +24,24 @@ import javax.swing.JComponent;
 
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.network.HTTPResource;
 
 public class MPlayerAudio extends Player {
 
 	public static final String ID = "mplayeraudio"; //$NON-NLS-1$
+	
+	private final PmsConfiguration configuration;
+	
+	public MPlayerAudio(PmsConfiguration configuration) {
+		this.configuration = configuration;
+	}
 	
 	@Override
 	public String id() {
@@ -61,6 +69,12 @@ public class MPlayerAudio extends Player {
 		
 		if (!(this instanceof MPlayerWebAudio) && !(this instanceof MPlayerWebVideoDump))
 			params.waitbeforestart = 2000;
+		
+		if (params.mediaRenderer.isTranscodeToMP3()) {
+			FFMpegAudio audio = new FFMpegAudio(configuration);
+			return audio.launchTranscode(fileName, media, params);
+		}
+		
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
 		PipeProcess audioP = new PipeProcess("mplayer_aud" + System.currentTimeMillis()); //$NON-NLS-1$
 			
@@ -86,7 +100,7 @@ public class MPlayerAudio extends Player {
 
 	@Override
 	public String mimeType() {
-		return "audio/wav"; //$NON-NLS-1$
+		return HTTPResource.AUDIO_TRANSCODE; //$NON-NLS-1$
 	}
 
 	@Override
@@ -104,5 +118,5 @@ public class MPlayerAudio extends Player {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 }

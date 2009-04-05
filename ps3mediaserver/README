@@ -29,9 +29,6 @@ ZIP/RAR files as browsable folders for pictures/audio files
 Support for pictures based feeds, such as Flickr and Picasaweb
 Internet TV / Web Radio support with VLC, MEncoder or MPlayer
 Podcasts audio/ Video feeds support
-
-Windows/Linux Only:
-
 Lossless 5.1 PCM transcoding with DTS movies
 Remux video and remux/reencode all audio tracks to AC3/PCM in real time with tsMuxer
 FLAC 96kHz/24bits/5.1 support
@@ -130,9 +127,9 @@ It's also working the same way for virtual based folders, such as web folders na
 See the following web streaming engines:
 
 MPlayer audio streaming = [mplayerwebaudio]
-VideoLan audio streaming = [vclaudio]
+VideoLan audio streaming = [vlcaudio]
 MEncoder video streaming = [mencoderwebvideo]
-VideoLan video streaming = [vclvideo]
+VideoLan video streaming = [vlcvideo]
 Mplayer stream dump = [mplayervideodump]
 
 

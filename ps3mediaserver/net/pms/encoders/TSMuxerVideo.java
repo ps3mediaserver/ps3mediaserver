@@ -31,6 +31,7 @@ import javax.swing.JComponent;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.InputFile;
@@ -258,7 +259,7 @@ public class TSMuxerVideo extends Player {
 					if (numAudioTracks <= 1) {
 						ffAudioPipe = new PipeIPCProcess [numAudioTracks];
 						ffAudioPipe[0] = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
-						if ((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && (params.aid.isLossless() || params.aid.isDTS())) {
+						if ((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && (params.aid.isLossless() || params.aid.isDTS()) && params.mediaRenderer.isDTSPlayable()) {
 							StreamModifier sm = new StreamModifier();
 							sm.setPcm(true);
 							sm.setDtsembed(configuration.isDTSEmbedInPCM() && params.aid.isDTS()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -267,7 +268,8 @@ public class TSMuxerVideo extends Player {
 							sm.setBitspersample(16);
 							String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());
 							ffmpegLPCMextract = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", "-oac", sm.isDtsembed()?"copy":"pcm", mixer!=null?"-af":"-quiet", mixer!=null?mixer:"-quiet", singleMediaAudio?"-quiet":"-aid", singleMediaAudio?"-quiet":("" + params.aid.id), "-srate", "48000", "-o", ffAudioPipe[0].getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$ //$NON-NLS-27$ //$NON-NLS-28$ //$NON-NLS-29$
-							ffAudioPipe[0].setModifier(sm);
+							if (!params.mediaRenderer.isMuxDTSToMpeg())
+								ffAudioPipe[0].setModifier(sm);
 						} else 
 							//ffmpegLPCMextract = new String [] { configuration.getFfmpegPath(), "-ss", "0", "-i", fileName, "-f", "ac3", "-ab", "" + configuration.getAudioBitrate()*1000 + "", "-ac", "6", "-vn", "-y", ffAudioPipe[0].getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
 							ffmpegLPCMextract = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + CodecUtil.getAC3ChannelCount(configuration, params.aid), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", "-oac", (params.aid.isAC3() && configuration.isRemuxAC3())?"copy":"lavc", params.aid.isAC3()?"-fafmttag":"-quiet", params.aid.isAC3()?"0x2000":"-quiet", "-lavcopts", "acodec=ac3:abitrate="+CodecUtil.getAC3Bitrate(configuration, params.aid), "-af", "lavcresample=48000", "-srate", "48000", singleMediaAudio?"-quiet":"-aid", singleMediaAudio?"-quiet":("" + params.aid.id), "-o", ffAudioPipe[0].getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$ //$NON-NLS-27$ //$NON-NLS-28$ //$NON-NLS-29$ //$NON-NLS-30$ //$NON-NLS-31$ //$NON-NLS-32$ //$NON-NLS-33$ //$NON-NLS-34$
@@ -294,7 +296,7 @@ public class TSMuxerVideo extends Player {
 						for(int i=0;i<media.audioCodes.size();i++) {
 							DLNAMediaAudio audio = media.audioCodes.get(i);
 							ffAudioPipe[i] = new PipeIPCProcess(System.currentTimeMillis() + "ffmpeg" + i, System.currentTimeMillis() + "audioout" + i, false, true); //$NON-NLS-1$ //$NON-NLS-2$
-							if ((audio.isLossless() || audio.isDTS()) && (configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM())) {
+							if ((audio.isLossless() || audio.isDTS()) && (configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && params.mediaRenderer.isDTSPlayable()) {
 								//ByteArrayOutputStream aOut = new ByteArrayOutputStream();
 								//AviDemuxerInputStream.writePCMHeader(aOut, 100, 6, 48000, 2, 16);
 								//ffAudioPipe[i].setHeader(aOut.toByteArray());
@@ -304,7 +306,8 @@ public class TSMuxerVideo extends Player {
 								sm.setNbchannels(sm.isDtsembed()?2:CodecUtil.getRealChannelCount(configuration, audio));
 								sm.setSampleFrequency(48000);
 								sm.setBitspersample(16);
-								ffAudioPipe[i].setModifier(sm);
+								if (!params.mediaRenderer.isMuxDTSToMpeg())
+									ffAudioPipe[i].setModifier(sm);
 								String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());
 								ffmpegLPCMextract = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", "-oac", sm.isDtsembed()?"copy":"pcm", mixer!=null?"-af":"-quiet", mixer!=null?mixer:"-quiet", singleMediaAudio?"-quiet":"-aid", singleMediaAudio?"-quiet":("" + audio.id), "-srate", "48000", "-o", ffAudioPipe[i].getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$ //$NON-NLS-27$ //$NON-NLS-28$ //$NON-NLS-29$
 								//ffmpegLPCMextract = new String [] { configuration.getFfmpegPath(), "-ss", "0", "-i", fileName, "-f", "wav", "-acodec", "pcm_s16le", "-ac", "6", "-vn", "-y", ffAudioPipe[i].getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
@@ -394,8 +397,11 @@ public class TSMuxerVideo extends Player {
 			if (ffAudioPipe != null && ffAudioPipe.length == 1) {
 				String timeshift = ""; //$NON-NLS-1$
 				String type = "A_AC3"; //$NON-NLS-1$
-				if (((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && (params.aid.isDTS() || params.aid.isLossless()) || this instanceof TsMuxerAudio))
+				if (((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && (params.aid.isDTS() || params.aid.isLossless()) && params.mediaRenderer.isDTSPlayable()) || this instanceof TsMuxerAudio) {
 					type = "A_LPCM"; //$NON-NLS-1$
+					if (params.mediaRenderer.isMuxDTSToMpeg())
+						type = "A_DTS"; //$NON-NLS-1$
+				}
 				if (params.aid != null && params.aid.delay != 0)
 					timeshift = "timeshift=" + params.aid.delay + "ms, "; //$NON-NLS-1$ //$NON-NLS-2$
 				pw.println(type + ", \"" + ffAudioPipe[0].getOutputPipe() + "\", " + timeshift + "track=2"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -404,12 +410,15 @@ public class TSMuxerVideo extends Player {
 					DLNAMediaAudio lang = media.audioCodes.get(i);
 					String timeshift = ""; //$NON-NLS-1$
 					boolean lossless = false;
-					if ((lang.isDTS() || lang.isLossless()) && (configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM())) {
+					if ((lang.isDTS() || lang.isLossless()) && (configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && params.mediaRenderer.isDTSPlayable()) {
 						lossless = true;
 					}
 					String type = "A_AC3"; //$NON-NLS-1$
-					if (lossless)
+					if (lossless) {
 						type = "A_LPCM"; //$NON-NLS-1$
+						if (params.mediaRenderer.isMuxDTSToMpeg())
+							type = "A_DTS"; //$NON-NLS-1$
+					}
 					if (lang.delay != 0)
 						timeshift = "timeshift=" + lang.delay + "ms, "; //$NON-NLS-1$ //$NON-NLS-2$
 					pw.println(type + ", \"" + ffAudioPipe[i].getOutputPipe() + "\", " + timeshift + "track=" + (2+i)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -577,4 +586,8 @@ public class TSMuxerVideo extends Player {
 		return false;
 	}
 
+	@Override
+	public boolean isPlayerCompatible(RendererConfiguration mediaRenderer) {
+		return mediaRenderer != null && mediaRenderer.isMuxH264MpegTS();
+	}
 }

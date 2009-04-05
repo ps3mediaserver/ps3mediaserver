@@ -41,6 +41,7 @@ import net.pms.io.PipeIPCProcess;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.network.HTTPResource;
 import net.pms.util.ProcessUtil;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -128,7 +129,7 @@ public class FFMpegVideo extends Player {
 
 	@Override
 	public String mimeType() {
-		return "video/mpeg"; //$NON-NLS-1$
+		return HTTPResource.VIDEO_TRANSCODE; //$NON-NLS-1$
 	}
 
 	@Override
@@ -138,10 +139,10 @@ public class FFMpegVideo extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
-		return getFFMpegTranscode(fileName, media, params);
+		return getFFMpegTranscode(fileName, media, params, args());
 	}
 
-	protected ProcessWrapperImpl getFFMpegTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
+	protected ProcessWrapperImpl getFFMpegTranscode(String fileName, DLNAMediaInfo media, OutputParams params, String args[]) throws IOException {
 		
 		setAudioAndSubs(fileName, media, params, PMS.getConfiguration());
 		
@@ -153,7 +154,7 @@ public class FFMpegVideo extends Player {
 		}
 		PipeProcess ffPipe = null;
 		
-		String cmdArray [] = new String [14+args().length];
+		String cmdArray [] = new String [14+args.length];
 		cmdArray[0] = executable();
 		cmdArray[1] = "-title"; //$NON-NLS-1$
 		cmdArray[2] = "dummy"; //$NON-NLS-1$
@@ -194,8 +195,8 @@ public class FFMpegVideo extends Player {
 				cmdArray[8] = fileName;
 			}
 		}
-		for(int i=0;i<args().length;i++)
-			cmdArray[11+i] = args()[i];
+		for(int i=0;i<args.length;i++)
+			cmdArray[11+i] = args[i];
 		/*
 		String mm = PMS.get().getMaximumbitrate();
 		int bufs = 0;

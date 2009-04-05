@@ -10,6 +10,8 @@ Tsmuxer and flac binaries are now available in the OSX build, this adds a lot of
 Handling of UTF8 and UTF16 encoded external subtitles
 Windows launcher now detects Java 64 bits if installed
 New translations: Slovenian (thanks to Rob Wall)
+Updated tsMuxer binaries for Windows/Linux
+Externalization of PS3/Xbox playback profiles, it's now possible to create profiles for any media renderer
 
 - Fixes
 

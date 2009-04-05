@@ -22,6 +22,7 @@ import java.io.File;
 
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.IPushOutput;
@@ -50,7 +51,7 @@ public class OutputParams {
 	public boolean no_videoencode;
 	public String forceFps;
 	public String forceType;
-	public int mediaRenderer;
+	public RendererConfiguration mediaRenderer;
 	public boolean hidebuffer;
 	public byte header [];
 	public IPushOutput stdin;

@@ -486,7 +486,7 @@ public class DLNAMediaDatabase implements Runnable {
 			int i = 0;
 			int oldpercent = 0;
 			if (count > 0) {
-				ps = conn.prepareStatement("SELECT FILENAME, MODIFIED FROM FILES", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE); //$NON-NLS-1$
+				ps = conn.prepareStatement("SELECT FILENAME, MODIFIED, ID FROM FILES", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE); //$NON-NLS-1$
 				rs = ps.executeQuery();
 				while (rs.next()) {
 					String filename = rs.getString("FILENAME"); //$NON-NLS-1$
