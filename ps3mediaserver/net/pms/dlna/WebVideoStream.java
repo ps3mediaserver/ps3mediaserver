@@ -24,12 +24,13 @@ import java.io.InputStream;
 import java.util.StringTokenizer;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.Format;
 
 public class WebVideoStream extends WebStream {
 
 	@Override
-	public InputStream getInputStream(long low, long high, double timeseek, int mediaRenderer) throws IOException {
+	public InputStream getInputStream(long low, long high, double timeseek, RendererConfiguration mediaRenderer) throws IOException {
 		if (URL.toLowerCase().indexOf("youtube") > -1 && URL.toLowerCase().indexOf("?") > -1) {
 			try {
 				InputStream is = downloadAndSend(URL, false);

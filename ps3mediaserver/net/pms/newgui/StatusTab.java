@@ -21,6 +21,7 @@ package net.pms.newgui;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -35,7 +36,12 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class StatusTab {
 	
+	private static final int MAX_RENDERERS = 10;
+	
 	private ImagePanel imagePanel;
+	private ImagePanel renderers [] = new ImagePanel [MAX_RENDERERS];
+	private JLabel rendererLabels [] = new JLabel [MAX_RENDERERS];
+	private int numRenderers;
 	private JLabel jl ;
 	private JProgressBar jpb;
 	private JLabel jio;
@@ -57,7 +63,7 @@ public class StatusTab {
 	public JComponent build() {
 		 FormLayout layout = new FormLayout(
 	                "0:grow, pref, 0:grow", //$NON-NLS-1$
-	                "pref, 9dlu, pref, 3dlu, pref, 15dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
+	                "pref, 9dlu, pref, 3dlu, pref, 15dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 5dlu, p"); //$NON-NLS-1$
 
 	        PanelBuilder builder = new PanelBuilder(layout);
 	        builder.setDefaultDialogBorder();
@@ -71,7 +77,7 @@ public class StatusTab {
 	        jl = new JLabel(Messages.getString("StatusTab.3")); //$NON-NLS-1$
 		        
 	        builder.add(jl, cc.xy(2, 3));
-	         imagePanel = buildImagePanel();
+	         imagePanel = buildImagePanel("/resources/images/connect_no-256.png");
 	        builder.add(imagePanel, cc.xy(2, 5, "center, fill")); //$NON-NLS-1$
 	        
 	        jpb = new JProgressBar(0, 100);
@@ -83,6 +89,25 @@ public class StatusTab {
 	        builder.addLabel(Messages.getString("StatusTab.7"),  cc.xy(2,  11)); //$NON-NLS-1$
 	        jio = new JLabel(Messages.getString("StatusTab.8")); //$NON-NLS-1$
 	        builder.add(jio, cc.xy(2, 13));
+	        
+	        cmp =  builder.addSeparator("Detected media renderers:",  cc.xy(2, 15));
+	        cmp = (JComponent) cmp.getComponent(0);
+	        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+	        
+	        FormLayout layoutRenderer = new FormLayout(
+	                "0:grow, pref, pref, pref,pref,pref,pref,pref,pref,pref,pref, 0:grow", //$NON-NLS-1$
+	                "pref, 3dlu, pref" );
+	        PanelBuilder rendererBuilder = new PanelBuilder(layoutRenderer);
+	        rendererBuilder.setOpaque(true);
+	        for(int i=0;i<MAX_RENDERERS;i++) {
+	        	renderers[i] = buildImagePanel(null);
+	        	rendererBuilder.add(renderers[i], cc.xy(2+i, 1));
+	        	rendererLabels[i] = new JLabel("");
+	        	rendererBuilder.add(rendererLabels[i], cc.xy(2+i,3, CellConstraints.CENTER, CellConstraints.DEFAULT));
+	        }
+	        
+	        builder.add(rendererBuilder.getPanel(), cc.xy(2, 17));
+	        
 	        return builder.getPanel();
 	}
 	
@@ -98,12 +123,32 @@ public class StatusTab {
 		}
 	}
 	
-	public ImagePanel buildImagePanel() {
+	public ImagePanel buildImagePanel(String url) {
 		BufferedImage bi = null;
+		if (url != null) {
 		try {
-			bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/PS3_2.png")); //$NON-NLS-1$
+			bi = ImageIO.read(LooksFrame.class.getResourceAsStream(url)); //$NON-NLS-1$
 		} catch (IOException e) {
 		}
+		}
 		return new ImagePanel(bi);
+	}
+	
+	public void addRendererIcon(int code, String msg, String icon) {
+		BufferedImage bi = null;
+		if (icon != null) {
+			try {
+				InputStream is = LooksFrame.class.getResourceAsStream("/resources/images/clients/" + icon);
+				if (is == null)
+					is = LooksFrame.class.getResourceAsStream("/renderers/" + icon);
+				if (is != null)
+					bi = ImageIO.read(is); //$NON-NLS-1$
+			} catch (IOException e) {
+			}
+		}
+		if (bi != null)
+			renderers[numRenderers].set(bi);
+		rendererLabels[numRenderers].setText(msg);
+		numRenderers++;
 	}
 }

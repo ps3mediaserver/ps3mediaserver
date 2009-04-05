@@ -23,14 +23,23 @@ import java.io.IOException;
 import javax.swing.JComponent;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
+import net.pms.network.HTTPResource;
 
 public class FFMpegAudio extends FFMpegVideo {
 	
 	public static final String ID = "ffmpegaudio"; //$NON-NLS-1$
+	
+	@SuppressWarnings("unused")
+	private final PmsConfiguration configuration;
+	
+	public FFMpegAudio(PmsConfiguration configuration) {
+		this.configuration = configuration;
+	}
 	
 	@Override
 	public JComponent config() {
@@ -45,10 +54,6 @@ public class FFMpegAudio extends FFMpegVideo {
 	@Override
 	public String id() {
 		return ID;
-	}
-	
-	public FFMpegAudio() {
-		//check args
 	}
 	
 	@Override
@@ -80,7 +85,7 @@ public class FFMpegAudio extends FFMpegVideo {
 
 	@Override
 	public String mimeType() {
-		return "audio/wav"; //$NON-NLS-1$
+		return HTTPResource.AUDIO_TRANSCODE; //$NON-NLS-1$
 	}
 
 	/*@Override
@@ -92,7 +97,11 @@ public class FFMpegAudio extends FFMpegVideo {
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
 		params.waitbeforestart = 2000;
-		return getFFMpegTranscode(fileName, media, params);
+		String args [] = args();
+		if (params.mediaRenderer.isTranscodeToMP3()) {
+			args = new String [] { "-f", "mp3", "-ab", "320000" };
+		}
+		return getFFMpegTranscode(fileName, media, params,args);
 	}
 
 }

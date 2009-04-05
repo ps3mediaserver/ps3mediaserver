@@ -65,6 +65,7 @@ import net.pms.util.PMSUtil;
 
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.sun.jna.Platform;
 
 public class LooksFrame extends JFrame implements IFrame, Observer {
 	
@@ -131,7 +132,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 				selectedLaf = new PlasticLookAndFeel();
 			}
         }
-        else if (System.getProperty("nativelook") == null) //$NON-NLS-1$
+        else if (System.getProperty("nativelook") == null && !Platform.isMac()) //$NON-NLS-1$
         	selectedLaf = new PlasticLookAndFeel();
 		else {
 			try {
@@ -390,5 +391,10 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		if (line == null)
 			line = " "; //$NON-NLS-1$
 		status.setText(line);
+	}
+
+	@Override
+	public void addRendererIcon(int code, String msg, String icon) {
+		st.addRendererIcon(code, msg, icon);
 	}
 }

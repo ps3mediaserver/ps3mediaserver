@@ -46,6 +46,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import com.sun.jna.Platform;
 
 import net.pms.configuration.PmsConfiguration;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.AudiosFeed;
 import net.pms.dlna.DLNAMediaDatabase;
 import net.pms.dlna.DLNAResource;
@@ -93,7 +94,6 @@ import net.pms.gui.IFrame;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.io.WinUtils;
-import net.pms.network.HTTPResource;
 import net.pms.network.HTTPServer;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
@@ -131,16 +131,21 @@ public class PMS {
 		sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US); //$NON-NLS-1$
 	}
 	
-	private ArrayList<Integer> foundRenderers = new ArrayList<Integer>();
-
-	public void setRendererfound(int mediarenderer) {
-		if (!foundRenderers.contains(mediarenderer))
+	private ArrayList<RendererConfiguration> foundRenderers = new ArrayList<RendererConfiguration>();
+	
+	public void setRendererfound(RendererConfiguration mediarenderer) {
+		if (!foundRenderers.contains(mediarenderer)) {
 			foundRenderers.add(mediarenderer);
-		if (mediarenderer == HTTPResource.PS3) {
+			frame.addRendererIcon(mediarenderer.getRank(), mediarenderer.getRendererName(), mediarenderer.getRendererIcon());
+			if (mediarenderer.isPS3())
+				frame.setStatusCode(0, Messages.getString("PMS.5"), "clients/PS3_256.png"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		/*if (mediarenderer == HTTPResource.PS3) {
 			frame.setStatusCode(0, Messages.getString("PMS.5"), "PS3_2.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		} else if (mediarenderer == HTTPResource.XBOX && !foundRenderers.contains(HTTPResource.PS3)) {
 			frame.setStatusCode(0, "Xbox found", "xbox360.png"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+		}*/
+		
 	}
 	
 	private RootFolder rootFolder;
@@ -302,6 +307,8 @@ public class PMS {
 		minimal("Encoding: " + System.getProperty("file.encoding")); //$NON-NLS-1$ //$NON-NLS-2$
 		minimal("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
 		
+		RendererConfiguration.loadRendererConfigurations();
+		
 		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 				
 		
@@ -367,11 +374,18 @@ public class PMS {
 				try {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {}
-				if (!foundRenderers.contains(HTTPResource.PS3)) {
-					if (foundRenderers.contains(HTTPResource.XBOX))
-						frame.setStatusCode(0, "Xbox found", "xbox360.png"); //$NON-NLS-1$ //$NON-NLS-2$
-					else
+				boolean ps3found = false;
+				for(RendererConfiguration r:foundRenderers) {
+					if (r.isPS3())
+						ps3found = true;
+				}
+				if (!ps3found) {
+					if (foundRenderers.size() == 0)
 						frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
+					else {
+						frame.setStatusCode(0, "Another media renderer other than PS3 has been detected... This software is tuned for PS3 but may work with your renderer", "messagebox_warning-256.png");
+					}
+					
 				}
 			}
 		}.start();
@@ -633,14 +647,14 @@ public class PMS {
 		assertThat(configuration, notNullValue());
 		if (Platform.isWindows())
 			registerPlayer(new FFMpegVideo());
-		registerPlayer(new FFMpegAudio());
+		registerPlayer(new FFMpegAudio(configuration));
 		registerPlayer(new MEncoderVideo(configuration));
 		if (Platform.isWindows())
 			registerPlayer(new MEncoderAviSynth(configuration));
-		registerPlayer(new MPlayerAudio());
+		registerPlayer(new MPlayerAudio(configuration));
 		registerPlayer(new MEncoderWebVideo(configuration));
-		registerPlayer(new MPlayerWebVideoDump());
-		registerPlayer(new MPlayerWebAudio());
+		registerPlayer(new MPlayerWebVideoDump(configuration));
+		registerPlayer(new MPlayerWebAudio(configuration));
 		registerPlayer(new TSMuxerVideo(configuration));
 		registerPlayer(new TsMuxerAudio(configuration));
 		registerPlayer(new VideoLanAudioStreaming(configuration));

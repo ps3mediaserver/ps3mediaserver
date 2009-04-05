@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.Player;
@@ -93,6 +94,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	private DLNAResource first;
 	private DLNAResource second;
 	protected String fakeParentId;
+	private RendererConfiguration defaultRenderer;
 	
 	public DLNAResource getPrimaryResource() {
 		return first;
@@ -144,7 +146,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			
 			boolean skipTranscode = false;
 			if (child.ext != null)
-				skipTranscode = child.ext.skip(PMS.getConfiguration().getNoTranscode());
+				skipTranscode = child.ext.skip(PMS.getConfiguration().getNoTranscode(), defaultRenderer!=null?defaultRenderer.getStreamedExtensions():null);
 			
 			if (!skipTranscode && child.ext != null && child.ext.transcodable() && child.media == null) {
 			
@@ -182,7 +184,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					if (pl != null) {
 						boolean forceTranscode = false;
 						if (child.ext != null)
-							forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode());
+							forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode(), defaultRenderer!=null?defaultRenderer.getTranscodedExtensions():null);
 						
 						if (forceTranscode || !child.ext.ps3compatible() || (PMS.getConfiguration().getUseSubtitles() && child.srtFile)) {
 							child.player = pl;
@@ -286,15 +288,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			}
 	}
 	
-	public synchronized ArrayList<DLNAResource> getDLNAResources(String objectId, boolean children, int start, int count) throws IOException {
+	public synchronized ArrayList<DLNAResource> getDLNAResources(String objectId, boolean children, int start, int count, RendererConfiguration renderer) throws IOException {
 		PMS.debug("Searching for objectId: " + objectId + " with children option: " +children);
 		ArrayList<DLNAResource> resources = new ArrayList<DLNAResource>();
 		DLNAResource resource = search(objectId);
 		
 		if (resource != null) {
-			/*if (resource instanceof VirtualFile) {
-				((VirtualFile) resource).action();
-			} else {*/
+			resource.defaultRenderer = renderer;
+			
 				if (!children) {
 					resources.add(resource);
 					if (resource.discovered) {
@@ -559,7 +560,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public String getFlags() {
 		return flags;
 	}
-	public String toString(int mediaRenderer) {
+	public String toString(RendererConfiguration mediaRenderer) {
 		StringBuffer sb = new StringBuffer();
 		if (isFolder())
 			openTag(sb, "container");
@@ -601,7 +602,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			/*if (this instanceof IPushOutput && !((IPushOutput)this).isUnderlyingSeekSupported())
 				flags = "DLNA.ORG_OP=00";
 			else*/ if (player != null) {
-				if (player.isTimeSeekable() && mediaRenderer == PS3) {
+				if (player.isTimeSeekable() && mediaRenderer.isSeekByTime()) {
 					flags = "DLNA.ORG_OP=10";
 					/*if (this instanceof IPushOutput)
 						flags = "DLNA.ORG_OP=00";*/
@@ -611,7 +612,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			
 			String mime = getRendererMimeType(mimeType(), mediaRenderer);
 			String dlnaspec = "";
-			if (mediaRenderer == PS3) {
+			if (mediaRenderer.isPS3()) { // TO REMOVE, OR AT LEAST MAKE THIS GENERIC
 				if (mime == null)
 					mime = "video/mpeg";
 				else if (mime.equals("video/x-divx"))
@@ -709,13 +710,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		} else {
 			if (isFolder()) {
 				uclass = "object.container.storageFolder";
-				if (mediaRenderer == XBOX && fakeParentId != null && fakeParentId.equals("7"))
+				boolean xbox = mediaRenderer.isXBOX();
+				if (xbox && fakeParentId != null && fakeParentId.equals("7"))
 					uclass = "object.container.album.musicAlbum";
-				else if (mediaRenderer == XBOX && fakeParentId != null && fakeParentId.equals("6"))
+				else if (xbox && fakeParentId != null && fakeParentId.equals("6"))
 					uclass = "object.container.person.musicArtist";
-				else if (mediaRenderer == XBOX && fakeParentId != null && fakeParentId.equals("5"))
+				else if (xbox && fakeParentId != null && fakeParentId.equals("5"))
 					uclass = "object.container.genre.musicGenre";
-				else if (mediaRenderer == XBOX && fakeParentId != null && fakeParentId.equals("F"))
+				else if (xbox && fakeParentId != null && fakeParentId.equals("F"))
 					uclass = "object.container.playlistContainer";
 			} else if (ext != null && ext.isVideo()) {
 				uclass = "object.item.videoItem";
@@ -737,7 +739,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		return sb.toString();
 	}
 	
-	public InputStream getInputStream(long low, long high, double timeseek, int mediarenderer) throws IOException {
+	public InputStream getInputStream(long low, long high, double timeseek, RendererConfiguration mediarenderer) throws IOException {
 		
 		PMS.debug( "Asked stream chunk [" + low + "-" + high + "] timeseek: " + timeseek + " of " + getName() + " and player " + player);
 		

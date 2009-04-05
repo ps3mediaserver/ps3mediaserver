@@ -26,6 +26,7 @@ import javax.swing.JComponent;
 
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
@@ -50,6 +51,10 @@ public abstract class Player {
 	
 	public boolean excludeFormat(Format extension) {
 		return false;
+	}
+	
+	public boolean isPlayerCompatible(RendererConfiguration mediaRenderer) {
+		return true;
 	}
 	
 	public abstract int purpose();

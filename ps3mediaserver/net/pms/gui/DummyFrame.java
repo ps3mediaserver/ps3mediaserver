@@ -59,4 +59,10 @@ public class DummyFrame implements IFrame {
 		// TODO Auto-generated method stub
 	}
 
+	@Override
+	public void addRendererIcon(int code, String msg, String icon) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

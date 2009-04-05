@@ -26,6 +26,7 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 
 public class RequestHandler implements Runnable {
@@ -53,9 +54,10 @@ public class RequestHandler implements Runnable {
 			int receivedContentLength = -1;
 			
 			String headerLine = br.readLine();
+			boolean useragentfound = false;
 			while (headerLine != null && headerLine.length() > 0) {
 				PMS.debug( "Received on socket: " + headerLine);
-				if (headerLine != null && headerLine.toUpperCase().startsWith("USER-AGENT:")) {
+				/*if (headerLine != null && headerLine.toUpperCase().startsWith("USER-AGENT:")) {
 					if (headerLine.toUpperCase().contains("PLAYSTATION")) {
 						PMS.get().setRendererfound(Request.PS3);
 						request.setMediaRenderer(Request.PS3);
@@ -68,6 +70,22 @@ public class RequestHandler implements Runnable {
 					if (headerLine.toUpperCase().contains("PLAYSTATION")) {
 						PMS.get().setRendererfound(Request.PS3);
 						request.setMediaRenderer(Request.PS3);
+					}
+				}*/
+				if (!useragentfound && headerLine != null && headerLine.toUpperCase().startsWith("USER-AGENT")) {
+					RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationByUA(headerLine.substring(headerLine.indexOf(":")+1).trim());
+					if (renderer != null) {
+						PMS.get().setRendererfound(renderer);
+						request.setMediaRenderer(renderer);
+						useragentfound = true;
+					}
+				}
+				if (!useragentfound && headerLine != null && request != null) {
+					RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationByUAAHH(headerLine);
+					if (renderer != null) {
+						PMS.get().setRendererfound(renderer);
+						request.setMediaRenderer(renderer);
+						useragentfound = true;
 					}
 				}
 				try {
@@ -110,10 +128,15 @@ public class RequestHandler implements Runnable {
 				headerLine = br.readLine();
 			}
 			
+			// if client not recognized, take a default renderer config
+			if (request != null && request.getMediaRenderer() == null) {
+				request.setMediaRenderer(RendererConfiguration.getDefaultConf());
+				PMS.get().setRendererfound(request.getMediaRenderer());
+			}
 			
 			if (receivedContentLength > 0) {
 				
-				char buf [] = new char [receivedContentLength-1];
+				char buf [] = new char [receivedContentLength];
 				br.read(buf);
 				if (request != null)
 					request.setTextContent(new String(buf));

@@ -29,6 +29,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.Format;
 
 public class HTTPResource {
@@ -48,6 +49,7 @@ public class HTTPResource {
 	public static final String WMV_TYPEMIME = "video/x-ms-wmv";
 	public static final String ASF_TYPEMIME = "video/x-ms-asf";
 	public static final String VIDEO_TRANSCODE = "video/transcode";
+	public static final String AUDIO_TRANSCODE = "audio/transcode";
 	
 	public static final String PNG_TYPEMIME = "image/png";
 	public static final String JPEG_TYPEMIME = "image/jpeg";
@@ -55,8 +57,8 @@ public class HTTPResource {
 	public static final String GIF_TYPEMIME = "image/gif";
 	public static final String BMP_TYPEMIME = "image/bmp";
 	
-	public static final int PS3 = 1;
-	public static final int XBOX = 2;
+	//public static final int PS3 = 1;
+	//public static final int XBOX = 2;
 	
 	
 	public HTTPResource() {
@@ -144,21 +146,30 @@ public class HTTPResource {
 		return url;
 	}
 	
-	public String getRendererMimeType(String mimetype, int mediarenderer) {
-		if (mimetype != null && mimetype.equals(AVI_TYPEMIME)) {
-			if (mediarenderer == PS3) {
-				return "video/x-divx";
-			} else if (mediarenderer == XBOX) {
-				return AVI_TYPEMIME;
-			}
-		}
+	public String getRendererMimeType(String mimetype, RendererConfiguration mediarenderer) {
+//		if (mimetype != null && mimetype.equals(AVI_TYPEMIME)) {
+//			if (mediarenderer == PS3) {
+//				return "video/x-divx";
+//			} else if (mediarenderer == XBOX) {
+//				return AVI_TYPEMIME;
+//			}
+//		}
+//		if (mimetype != null && mimetype.equals(VIDEO_TRANSCODE)) {
+//			if (mediarenderer == XBOX) {
+//				return WMV_TYPEMIME;
+//			} else
+//				return MPEG_TYPEMIME;
+//		}
 		if (mimetype != null && mimetype.equals(VIDEO_TRANSCODE)) {
-			if (mediarenderer == XBOX) {
-				return WMV_TYPEMIME;
-			} else
-				return MPEG_TYPEMIME;
+			mimetype = MPEG_TYPEMIME;
+			if (mediarenderer.isTranscodeToWMV())
+				mimetype = WMV_TYPEMIME;
+		} else if (mimetype != null && mimetype.equals(AUDIO_TRANSCODE)) {
+			mimetype = AUDIO_WAV_TYPEMIME;
+			if (mediarenderer.isTranscodeToMP3())
+				mimetype = AUDIO_MP3_TYPEMIME;
 		}
-		return mimetype;
+		return mediarenderer.getMimeType(mimetype);
 	}
 
 }

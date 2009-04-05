@@ -53,6 +53,7 @@ import javax.swing.SwingUtilities;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
@@ -909,7 +910,7 @@ private JTextField mencoder_ass_scale;
 		return configuration.getMencoderPath();
 	}
 	
-	private String addMaximumBitrateConstraints(String encodeSettings, DLNAMediaInfo media, String quality,int mediaRenderer) {
+	private String addMaximumBitrateConstraints(String encodeSettings, DLNAMediaInfo media, String quality,RendererConfiguration mediaRenderer) {
 		String m = "" + PMS.getConfiguration().getMaximumBitrate(); //$NON-NLS-1$
 		int bufs = 0;
 		if (m.contains("(") && m.contains(")")) { //$NON-NLS-1$ //$NON-NLS-2$
@@ -921,6 +922,8 @@ private JTextField mencoder_ass_scale;
 			m = "0"; //$NON-NLS-1$
 		
 		int mb = (int) Double.parseDouble(m);
+		if ((mb == 0 && mediaRenderer.getMaxBitrate() > 0) || mediaRenderer.getMaxBitrate() < mb)
+			mb = mediaRenderer.getMaxBitrate();
 		if (mb > 0 && !quality.contains("vrc_buf_size") && !quality.contains("vrc_maxrate") && !quality.contains("vbitrate")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			mb = 1000*mb;
 			if (mb > 60000)
@@ -934,7 +937,7 @@ private JTextField mencoder_ass_scale;
 			if (bufs > 0)
 				bufSize = bufs * 1000;
 			
-			if (mediaRenderer != HTTPResource.PS3)
+			if (mediaRenderer.isDefaultVBVSize())
 				bufSize = 1835;
 			
 			//bufSize = 2000;
@@ -965,7 +968,7 @@ private JTextField mencoder_ass_scale;
 			dvd = true;
 		
 		
-		if (params.sid == null && !dvd && !avisynth() && media != null && media.isVideoPS3Compatible(newInput) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer ==HTTPResource.PS3) {
+		if (params.sid == null && !dvd && !avisynth() && media != null && media.isVideoPS3Compatible(newInput) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
 			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
 			boolean nomux = false;
 			for(String s:sArgs) {
@@ -990,18 +993,18 @@ private JTextField mencoder_ass_scale;
 		String vcodec = "mpeg2video"; //$NON-NLS-1$
 		
 		wmv = false;
-		if (params.mediaRenderer ==HTTPResource.XBOX) {
+		if (params.mediaRenderer.isTranscodeToWMV()) {
 			wmv = true;
 			vcodec = "wmv2"; // http://wiki.megaframe.org/wiki/Ubuntu_XBOX_360#MEncoder not usable in streaming //$NON-NLS-1$
 		}
 		
 		oaccopy = false;
-		if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !avisynth() && params.mediaRenderer ==HTTPResource.PS3) {
+		if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !avisynth() && params.mediaRenderer.isTranscodeToMPEGAC3()) {
 			oaccopy = true;
 		}
 		
-		dts = configuration.isDTSEmbedInPCM() && !dvd && params.aid != null && params.aid.isDTS() && !avisynth() && params.mediaRenderer ==HTTPResource.PS3;
-		pcm = configuration.isMencoderUsePcm() && !dvd && (params.aid != null && (params.aid.isDTS() || params.aid.isLossless())) && params.mediaRenderer ==HTTPResource.PS3;
+		dts = configuration.isDTSEmbedInPCM() && !dvd && params.aid != null && params.aid.isDTS() && !avisynth() && params.mediaRenderer.isDTSPlayable();
+		pcm = configuration.isMencoderUsePcm() && !dvd && (params.aid != null && (params.aid.isDTS() || params.aid.isLossless())) && params.mediaRenderer.isMuxLPCMToMpeg();
 		
 		if (dts || pcm) {
 			if (dts)
@@ -1502,7 +1505,8 @@ private JTextField mencoder_ass_scale;
 				String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());
 				// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
 				String ffmpegLPCMextract [] = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", (aid==null)?"-quiet":"-aid", (aid==null)?"-quiet":aid, "-oac", sm.isDtsembed()?"copy":"pcm", (mixer!=null&&!channels_filter_present)?"-af":"-quiet", (mixer!=null&&!channels_filter_present)?mixer:"-quiet", "-srate", "48000", "-o", ffAudioPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$
-				ffAudioPipe.setModifier(sm);
+				if (!params.mediaRenderer.isMuxDTSToMpeg()) // no need to use the PCM trick when media renderer supports DTS
+					ffAudioPipe.setModifier(sm);
 				
 				if (params.stdin != null)
 					ffmpegLPCMextract[3] = "-"; //$NON-NLS-1$
@@ -1533,6 +1537,8 @@ private JTextField mencoder_ass_scale;
 					fps = "fps=" + params.forceFps + ", "; //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				String audioType = "A_LPCM"; //$NON-NLS-1$
+				if (params.mediaRenderer.isMuxDTSToMpeg())
+					audioType = "A_DTS"; //$NON-NLS-1$
 				if (params.lossyaudio)
 					audioType = "A_AC3"; //$NON-NLS-1$
 				pwMux.println(videoType + ", \"" + ffVideoPipe.getOutputPipe() + "\", " +  fps + "level=4.1, insertSEI, contSPS, track=1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

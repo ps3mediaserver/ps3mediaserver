@@ -33,6 +33,7 @@ ShowUninstDetails show
 Section "Program Files"
   SetOutPath "$INSTDIR"
   SetOverwrite on
+  File /r /x ".svn" "renderers"
   File /r /x ".svn" "win32"
   File "PMS.exe"
   File "PMS.bat"
@@ -71,6 +72,7 @@ Section "Uninstall"
   SetShellVarContext all
 
   Delete /REBOOTOK "$INSTDIR\Uninst.exe"
+  RMDir /R /REBOOTOK "$INSTDIR\renderers"
   RMDir /R /REBOOTOK "$INSTDIR\win32"
   Delete /REBOOTOK "$INSTDIR\PMS.exe"
   Delete /REBOOTOK "$INSTDIR\PMS.bat"
