@@ -73,7 +73,7 @@ public class RequestHandler implements Runnable {
 						request.setMediaRenderer(Request.PS3);
 					}
 				}*/
-				if (!useragentfound && headerLine != null && headerLine.toUpperCase().startsWith("USER-AGENT")) {
+				if (!useragentfound && headerLine != null && headerLine.toUpperCase().startsWith("USER-AGENT") && request != null) {
 					userAgentString = headerLine.substring(headerLine.indexOf(":")+1).trim();
 					RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationByUA(userAgentString);
 					if (renderer != null) {
@@ -132,9 +132,12 @@ public class RequestHandler implements Runnable {
 			
 			// if client not recognized, take a default renderer config
 			if (request != null && request.getMediaRenderer() == null) {
-				PMS.minimal("Media renderer was not recognized. HTTP User agent :" + userAgentString);
 				request.setMediaRenderer(RendererConfiguration.getDefaultConf());
-				PMS.get().setRendererfound(request.getMediaRenderer());
+				if (userAgentString != null) {
+					// we have found an unknown renderer
+					PMS.minimal("Media renderer was not recognized. HTTP User agent :" + userAgentString);
+					PMS.get().setRendererfound(request.getMediaRenderer());
+				}
 			}
 			
 			if (receivedContentLength > 0) {

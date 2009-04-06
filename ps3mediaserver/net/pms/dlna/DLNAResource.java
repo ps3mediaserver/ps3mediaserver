@@ -811,7 +811,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						PMS.error(null, e);
 					}
 					if (newExternalProcess == null)
-						PMS.debug("External process instance is null... that sounds not good");
+						PMS.debug("External process instance is null... sounds not good");
 					externalProcess = newExternalProcess;
 				}
 			}
@@ -823,7 +823,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				is = externalProcess.getInputStream(low);
 				timer++;
 				if (is == null) {
-					PMS.debug("External inputstream instance is null... that sounds not good");
+					PMS.debug("External inputstream instance is null... sounds not good, waiting 500ms");
 					try {
 						Thread.sleep(500);
 					} catch (InterruptedException e) {}
