@@ -1263,7 +1263,7 @@ private JTextField mencoder_ass_scale;
 		
 		boolean deinterlace = configuration.isMencoderYadif();
 		// check if the media renderer supports this resolution
-		boolean mediaRendererScaler = params.mediaRenderer.isVideoRescale() && (media.width > params.mediaRenderer.getMaxVideoWidth()|| (media.height > params.mediaRenderer.getMaxVideoHeight()));
+		boolean mediaRendererScaler = params.mediaRenderer.isVideoRescale() && media != null && (media.width > params.mediaRenderer.getMaxVideoWidth()|| (media.height > params.mediaRenderer.getMaxVideoHeight()));
 		// use scaler?
 		boolean scaler = mediaRendererScaler  || (configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0));
 		if ((deinterlace || scaler) && !avisynth()) {

@@ -1,6 +1,7 @@
 package net.pms.util;
 
 import java.io.File;
+import java.io.IOException;
 
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
@@ -62,7 +63,14 @@ public class FileUtil {
 	public static boolean doesSubtitlesExists(File file, DLNAMediaInfo media) {
 		boolean found = browseFolderForSubtitles(file.getParentFile(), file, media);
 		if (PMS.getConfiguration().getAlternateSubsFolder() != null) {
-			File subFolder = new File(PMS.getConfiguration().getAlternateSubsFolder());
+			String alternate = PMS.getConfiguration().getAlternateSubsFolder();
+			File subFolder = new File(alternate);
+			if (!subFolder.isAbsolute()) {
+				subFolder = new File(file.getParent() + "/" + alternate);
+				try {
+					subFolder = subFolder.getCanonicalFile();
+				} catch (IOException e) {}
+			}
 			if (subFolder.exists()) {
 				found = found || browseFolderForSubtitles(subFolder, file, media);
 			}
@@ -73,14 +81,14 @@ public class FileUtil {
 	private synchronized static boolean browseFolderForSubtitles(File subFolder, File file, DLNAMediaInfo media) {
 		boolean found = false;
 		File allSubs [] = subFolder.listFiles();
+		String fileName = getFileNameWithoutExtension(file.getName()).toLowerCase();
 		for(File f:allSubs) {
-			if (f.isFile()) {
+			if (f.isFile() && !f.isHidden()) {
+				String fName = f.getName().toLowerCase();
 				for(int i=0;i<DLNAMediaSubtitle.subExtensions.length;i++) {
 					String ext = DLNAMediaSubtitle.subExtensions[i];
-					if ((f.getName().length() > ext.length()) && ((f.getName().startsWith(getFileNameWithoutExtension(file.getName()))
-							&& f.getName().endsWith("." + ext)) || (f.getName().startsWith(getFileNameWithoutExtension(file.getName()))
-							&& f.getName().endsWith("." + ext.toUpperCase())))) {
-						String code = f.getName().substring(getFileNameWithoutExtension(file.getName()).length(), f.getName().length()-ext.length()-1);
+					if (!fName.startsWith(".") && fName.length() > ext.length() && fName.startsWith(fileName) && fName.endsWith("." + ext)) {
+						String code = fName.substring(fileName.length(), fName.length()-ext.length()-1);
 						if (code.startsWith("."))
 							code = code.substring(1);
 						if (Iso639.getCodeList().contains(code) || code.length() == 0) {
