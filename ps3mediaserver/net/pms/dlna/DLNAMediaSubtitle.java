@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 import net.pms.PMS;
 
 
-public class DLNAMediaSubtitle  extends DLNAMediaLang {
+public class DLNAMediaSubtitle  extends DLNAMediaLang implements Cloneable{
 	
 	public static int SUBRIP = 1;
 	public static int MICRODVD = 2;
@@ -94,5 +94,10 @@ public class DLNAMediaSubtitle  extends DLNAMediaLang {
 					} catch (IOException e) {}
 			}
 		}
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

@@ -156,16 +156,16 @@ public class FFMpegVideo extends Player {
 		
 		String cmdArray [] = new String [14+args.length];
 		cmdArray[0] = executable();
-		cmdArray[1] = "-title"; //$NON-NLS-1$
-		cmdArray[2] = "dummy"; //$NON-NLS-1$
+		cmdArray[1] = "-sn"; //$NON-NLS-1$
+		cmdArray[2] = "-sn"; //$NON-NLS-1$
 		if (params.timeseek > 0 && !mplayer()) {
 			cmdArray[1] = "-ss"; //$NON-NLS-1$
 			cmdArray[2] = "" + params.timeseek; //$NON-NLS-1$
 		}
-		cmdArray[3] = "-title"; //$NON-NLS-1$
-		cmdArray[4] = "dummy"; //$NON-NLS-1$
-		cmdArray[5] = "-title"; //$NON-NLS-1$
-		cmdArray[6] = "dummy"; //$NON-NLS-1$
+		cmdArray[3] = "-sn"; //$NON-NLS-1$
+		cmdArray[4] = "-sn"; //$NON-NLS-1$
+		cmdArray[5] = "-sn"; //$NON-NLS-1$
+		cmdArray[6] = "-sn"; //$NON-NLS-1$
 		if (type() == Format.VIDEO) {
 			cmdArray[5] = "-i"; //$NON-NLS-1$
 			cmdArray[6] = fileName;
@@ -179,10 +179,10 @@ public class FFMpegVideo extends Player {
 				cmdArray[6] = ProcessUtil.getShortFileNameIfWideChars(avsFile.getAbsolutePath());
 			}
 		}
-		cmdArray[7] = "-title"; //$NON-NLS-1$
-		cmdArray[8] = "dummy"; //$NON-NLS-1$
-		cmdArray[9] = "-title"; //$NON-NLS-1$
-		cmdArray[10] = "dummy"; //$NON-NLS-1$
+		cmdArray[7] = "-sn"; //$NON-NLS-1$
+		cmdArray[8] = "-sn"; //$NON-NLS-1$
+		cmdArray[9] = "-sn"; //$NON-NLS-1$
+		cmdArray[10] = "-sn"; //$NON-NLS-1$
 		if (type() == Format.VIDEO || type() == Format.AUDIO) {
 			if (type() == Format.VIDEO && (mplayer())) {
 				cmdArray[7] = "-f"; //$NON-NLS-1$
@@ -194,6 +194,10 @@ public class FFMpegVideo extends Player {
 				cmdArray[7] = "-i"; //$NON-NLS-1$
 				cmdArray[8] = fileName;
 			}
+		}
+		if (params.timeend > 0) {
+			cmdArray[9] = "-t"; //$NON-NLS-1$
+			cmdArray[10] = "" + params.timeend; //$NON-NLS-1$
 		}
 		for(int i=0;i<args.length;i++)
 			cmdArray[11+i] = args[i];

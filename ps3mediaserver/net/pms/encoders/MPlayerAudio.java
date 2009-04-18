@@ -19,6 +19,7 @@
 package net.pms.encoders;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.swing.JComponent;
 
@@ -80,6 +81,19 @@ public class MPlayerAudio extends Player {
 			
 		String mPlayerdefaultAudioArgs [] = new String [] { PMS.getConfiguration().getMplayerPath(), fileName, "-prefer-ipv4", "-nocache", "-af", "channels=2", "-srate", "44100", "-vo", "null", "-ao", "pcm:waveheader:fast:file=" + audioP.getInputPipe(), "-quiet" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 		params.input_pipes [0]= audioP;
+		
+		if (params.timeseek > 0 || params.timeend > 0) {
+			mPlayerdefaultAudioArgs = Arrays.copyOf(mPlayerdefaultAudioArgs, mPlayerdefaultAudioArgs.length +4);
+			mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-4] = "-ss";
+			mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-3] = "" + params.timeseek;
+			if (params.timeend > 0) {
+				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-2] = "-endpos";
+				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-1] = "" + params.timeend;
+			} else {
+				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-2] = "-quiet";
+				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-1] = "-quiet";
+			}
+		}
 			
 		ProcessWrapper mkfifo_process = audioP.getPipeProcess();
 		

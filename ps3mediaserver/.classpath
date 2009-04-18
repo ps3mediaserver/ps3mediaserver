@@ -24,5 +24,6 @@
 	<classpathentry kind="lib" path="lib/bsh-core-2.0b4.jar"/>
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/rome-1.0RC2.jar"/>
+	<classpathentry kind="lib" path="lib/cuelib-1.2.1-2008-06-13.jar"/>
 	<classpathentry kind="output" path="eclipse-classes"/>
 </classpath>

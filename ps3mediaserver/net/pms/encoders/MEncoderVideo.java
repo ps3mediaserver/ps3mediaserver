@@ -1396,6 +1396,11 @@ private JTextField mencoder_ass_scale;
 			cmdArray[cmdArray.length-3] = "-noskip"; //$NON-NLS-1$
 		}
 		
+		if (params.timeend > 0) {
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
+			cmdArray[cmdArray.length-4] = "-endpos"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-3] = "" + params.timeend; //$NON-NLS-1$
+		}
 		
 		// force srate -> cause ac3's mencoder doesn't like anything other than 48khz
 		if (media != null && !pcm && !dts && !mux) {

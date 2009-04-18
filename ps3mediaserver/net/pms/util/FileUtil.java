@@ -87,8 +87,12 @@ public class FileUtil {
 				String fName = f.getName().toLowerCase();
 				for(int i=0;i<DLNAMediaSubtitle.subExtensions.length;i++) {
 					String ext = DLNAMediaSubtitle.subExtensions[i];
-					if (!fName.startsWith(".") && fName.length() > ext.length() && fName.startsWith(fileName) && fName.endsWith("." + ext)) {
-						String code = fName.substring(fileName.length(), fName.length()-ext.length()-1);
+					if (fName.length() > ext.length() && fName.startsWith(fileName) && fName.endsWith("." + ext)) {
+						int a = fileName.length();
+						int b = fName.length()-ext.length()-1;
+						String code = "";
+						if (a <= b) // handling case with several dots: <video>..<extension>
+							code = fName.substring(a, b);
 						if (code.startsWith("."))
 							code = code.substring(1);
 						if (Iso639.getCodeList().contains(code) || code.length() == 0) {

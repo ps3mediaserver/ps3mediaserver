@@ -59,7 +59,7 @@ import org.jaudiotagger.tag.Tag;
 
 
 
-public class DLNAMediaInfo {
+public class DLNAMediaInfo implements Cloneable {
 		
 	public static final long ENDFILE_POS = 99999475712L;
 	public static final long TRANS_SIZE = 100000000000L;
@@ -477,10 +477,9 @@ public class DLNAMediaInfo {
 					
 					
 				}
-				if (ffmpeg_failure || (container != null && container.equals("mpegts") && audioCodes.size() == 0)){
-					// switchin to mplayer cause ffmpeg has hung ? -> for some m2ts
-					// or there's no audio detected
-					// TODO: improve that
+				// Apr 09: maybe removed later because latest ffmpeg builds seems to work better against mpeg ts
+				if ((ffmpeg_failure && type == Format.VIDEO) || (container != null && container.equals("mpegts") && audioCodes.size() == 0)){
+					// switchin to mplayer cause ffmpeg has hung ?
 					String cmdArray [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-msglevel", "identify=4", "-vo", "null", "-ao", "null", "-frames", "0", input};
 					OutputParams params = new OutputParams(PMS.getConfiguration());
 					params.stdin = f.push;
@@ -509,16 +508,6 @@ public class DLNAMediaInfo {
 							frameRate = s.substring(17);
 						if (s.startsWith("TS file format detected."))
 							container = "mpegts";
-						/*if (s.startsWith("VIDEO") && s.contains("(pid")) {
-							codecV = s.substring(6, s.indexOf("(pid")).trim().toLowerCase();
-							if (codecV.equals("mpeg2"))
-								codecV = "mpeg2video";
-							if (s.contains("AUDIO ") && s.contains("(pid") && !s.contains("NO AUDIO")) {
-								int audioString = s.indexOf("AUDIO ")+5;
-								audio.codecA = s.substring(audioString, s.indexOf("(pid", audioString)).trim().toLowerCase();
-								audio.sampleFrequency = "48000";
-							}
-						}*/
 						
 						if (codecV == null && s.startsWith("ID_VIDEO_CODEC=")) {
 							String cv = s.substring(15).trim();
@@ -588,7 +577,7 @@ public class DLNAMediaInfo {
 					}
 				}
 				// let's try tsmuxer for the end
-				if (f.file != null && (ffmpeg_failure  || (container != null && container.equals("mpegts")))) {
+				if (f.file != null && type == Format.VIDEO && (ffmpeg_failure  || (container != null && container.equals("mpegts")))) {
 					String tsMuxer = PMS.getConfiguration().getTsmuxerPath();
 					if (tsMuxer != null) {
 						String cmd [] = new String [] {tsMuxer , ProcessUtil.getShortFileNameIfWideChars(f.file.getAbsolutePath()) };
@@ -1077,6 +1066,25 @@ public class DLNAMediaInfo {
 			
 		}
 		return returnData;
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		
+		Object cloned = super.clone();
+		if (cloned instanceof DLNAMediaInfo) {
+			DLNAMediaInfo mediaCloned = ((DLNAMediaInfo) cloned);
+			mediaCloned.audioCodes = new ArrayList<DLNAMediaAudio>();
+			for(DLNAMediaAudio audio:audioCodes) {
+				mediaCloned.audioCodes.add((DLNAMediaAudio) audio.clone());
+			}
+			mediaCloned.subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
+			for(DLNAMediaSubtitle sub:subtitlesCodes) {
+				mediaCloned.subtitlesCodes.add((DLNAMediaSubtitle) sub.clone());
+			}
+		}
+		
+		return cloned;
 	}
 	
 }

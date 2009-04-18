@@ -85,6 +85,8 @@ public class RealFile extends DLNAResource {
 				addChild(new DVDISOFile(f));
 			} else if (f.getName().toLowerCase().endsWith(".m3u") || f.getName().toLowerCase().endsWith(".m3u8") || f.getName().toLowerCase().endsWith(".pls")) {
 				addChild(new PlaylistFolder(f));
+			} else if (f.getName().toLowerCase().endsWith(".cue")) {
+				addChild(new CueFolder(f));
 			} else {
 				RealFile file = new RealFile(f);
 				addChild(file);
@@ -227,8 +229,11 @@ public class RealFile extends DLNAResource {
 			boolean found = false;
 			InputFile input = new InputFile();
 			input.file = file;
+			String fileName = file.getAbsolutePath();
+			if (splitTrack > 0)
+				fileName += "#SplitTrack" + splitTrack; 
 			if (PMS.getConfiguration().getUseCache()) {
-				ArrayList<DLNAMediaInfo> medias = PMS.get().getDatabase().getData(file.getAbsolutePath(), file.lastModified());
+				ArrayList<DLNAMediaInfo> medias = PMS.get().getDatabase().getData(fileName, file.lastModified());
 				if (medias != null && medias.size() == 1) {
 					media = medias.get(0);
 					media.finalize(getType(), input);
@@ -246,7 +251,7 @@ public class RealFile extends DLNAResource {
 				else //don't think that will ever happen
 					media.parse(input, ext, getType());
 				if (found && PMS.getConfiguration().getUseCache()) {
-					PMS.get().getDatabase().insertData(file.getAbsolutePath(), file.lastModified(), getType(), media);
+					PMS.get().getDatabase().insertData(fileName, file.lastModified(), getType(), media);
 				}
 			}
 		}
