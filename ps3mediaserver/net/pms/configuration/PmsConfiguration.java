@@ -309,7 +309,7 @@ public class PmsConfiguration {
 		return getInt(KEY_MIN_MEMORY_BUFFER_SIZE, 12);
 	}
 
-	public double getMaxMemoryBufferSize() {
+	public int getMaxMemoryBufferSize() {
 		return getInt(KEY_MAX_MEMORY_BUFFER_SIZE, 400);
 	}
 

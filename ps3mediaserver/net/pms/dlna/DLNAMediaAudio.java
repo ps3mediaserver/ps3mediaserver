@@ -1,6 +1,6 @@
 package net.pms.dlna;
 
-public class DLNAMediaAudio extends DLNAMediaLang{
+public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	
 	public int bitsperSample;
 	public String sampleFrequency;
@@ -37,6 +37,10 @@ public class DLNAMediaAudio extends DLNAMediaLang{
 		return codecA.equalsIgnoreCase("dts") || codecA.equalsIgnoreCase("dca");
 	}
 	
+	public boolean isMP3() {
+		return codecA.equalsIgnoreCase("mp3");
+	}
+	
 	public boolean isPCM() {
 		return codecA.startsWith("pcm_s1") || codecA.startsWith("pcm_s2") || codecA.startsWith("pcm_u1") || codecA.startsWith("pcm_u2") || codecA.equals("LPCM");
 	}
@@ -67,6 +71,11 @@ public class DLNAMediaAudio extends DLNAMediaLang{
 	
 	public String toString() {
 		return "Audio: " + getAudioCodec() + " / lang: " + lang + " / ID: " + id;
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 }

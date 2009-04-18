@@ -93,6 +93,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	private int nametruncate;
 	private DLNAResource first;
 	private DLNAResource second;
+	protected double splitStart;
+	protected double splitLength;
+	protected int splitTrack;
 	protected String fakeParentId;
 	private RendererConfiguration defaultRenderer;
 	
@@ -780,6 +783,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			params.aid = media_audio;
 			params.sid = media_subtitle;
 			params.mediaRenderer = mediarenderer;
+			params.timeseek = splitStart;
+			params.timeend = splitLength;
 			
 			if (this instanceof IPushOutput)
 				params.stdin = (IPushOutput) this;

@@ -9,9 +9,10 @@ v1.11
 Tsmuxer and flac binaries are now available in the OSX build, this adds a lot of features on Mac which were previously only available on Windows or Linux (like DTS and remux support)
 Handling of UTF8 and UTF16 encoding, and case insensitive external subtitles
 OSX: now using Mac native look
+Externalization of PS3/Xbox playback profiles, it's now possible to create profiles for any media renderer (Popcorn Hour already included)
 Windows: launcher now detects Java 64 bits if installed
-Updated tsMuxer binaries for Windows/Linux
-Externalization of PS3/Xbox playback profiles, it's now possible to create profiles for any media renderer
+Updated tsMuxer binaries for Windows/Linux (Better H264 camcorders support)
+CUE playlist support
 New build script for OSX to make a bundle or dmg automatically (thanks to Josh Klun)
 New translations: Slovenian (thanks to Rob Wall)
 
