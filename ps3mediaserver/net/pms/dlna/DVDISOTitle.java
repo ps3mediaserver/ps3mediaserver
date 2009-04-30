@@ -84,7 +84,7 @@ public class DVDISOTitle extends DLNAResource {
 				lang.id = Integer.parseInt(line.substring(line.indexOf("): ")+3, line.lastIndexOf("language")).trim());
 				lang.lang = line.substring(line.indexOf("language: ")+10).trim();
 				if (lang.lang.equals("unknown"))
-					lang.lang = "und";
+					lang.lang = DLNAMediaLang.UND;
 				lang.type = DLNAMediaSubtitle.EMBEDDED;
 				subs.add(lang);
 			}

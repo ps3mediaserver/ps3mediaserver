@@ -268,13 +268,9 @@ public class RealFile extends DLNAResource {
 		File cachedThumbnail = null;
 		if (getParent() != null && getParent() instanceof RealFile) {
 			cachedThumbnail = ((RealFile) getParent()).potentialCover;
-			if (cachedThumbnail == null) {
-				File thumbFolder = null;
-				if (StringUtils.isNotBlank(PMS.getConfiguration().getAlternateThumbFolder())) {
-					thumbFolder = new File(PMS.getConfiguration().getAlternateThumbFolder());
-					if (!thumbFolder.exists() || !thumbFolder.isDirectory())
-						thumbFolder = null;
-				}
+			File thumbFolder = null;
+			boolean alternativeCheck = false;
+			while (cachedThumbnail == null) {
 				if (thumbFolder == null)
 					thumbFolder = file.getParentFile();
 				cachedThumbnail = FileUtil.getFileNameWitNewExtension(thumbFolder, file, "jpg");
@@ -284,6 +280,16 @@ public class RealFile extends DLNAResource {
 					cachedThumbnail = FileUtil.getFileNameWitAddedExtension(thumbFolder, file, ".cover.jpg");
 				if (cachedThumbnail == null)
 					cachedThumbnail = FileUtil.getFileNameWitAddedExtension(thumbFolder, file, ".cover.png");
+				if (alternativeCheck)
+					break;
+				if (StringUtils.isNotBlank(PMS.getConfiguration().getAlternateThumbFolder())) {
+					thumbFolder = new File(PMS.getConfiguration().getAlternateThumbFolder());
+					if (!thumbFolder.exists() || !thumbFolder.isDirectory()) {
+						thumbFolder = null;
+						break;
+					}
+				}
+				alternativeCheck = true;
 			}
 		}
 		boolean hasAlreadyEmbeddedCoverArt = getType() == Format.AUDIO && media != null && media.thumb != null;

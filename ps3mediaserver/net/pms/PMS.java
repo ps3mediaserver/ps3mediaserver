@@ -938,7 +938,9 @@ public class PMS {
 			if (GraphicsEnvironment.isHeadless() && System.getProperty("noconsole") == null) //$NON-NLS-1$
 				System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (Throwable t) {
-			System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+			System.err.println("Toolkit error: " + t.getMessage()); //$NON-NLS-1$
+			if (System.getProperty("noconsole") == null) //$NON-NLS-1$
+				System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		configuration = new PmsConfiguration();
 		PMS.get();

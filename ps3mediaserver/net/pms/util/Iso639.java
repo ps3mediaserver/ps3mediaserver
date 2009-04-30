@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import net.pms.dlna.DLNAMediaLang;
+
 public class Iso639 {
 
 	private static HashMap<String, String[]> links;
@@ -531,7 +533,7 @@ public class Iso639 {
 		putCode("Uighur", "ug", "uig", "uig");
 		putCode("Ukrainian", "uk", "ukr", "ukr");
 		putCode("Umbundu", null, "umb", "umb");
-		putCode("Undetermined", null, "und", "und");
+		putCode("Undetermined", null, DLNAMediaLang.UND, DLNAMediaLang.UND);
 		putCode("Urdu", "ur", "urd", "urd");
 		putCode("Uzbek", "uz", "uzb", "uzb");
 		putCode("Vai", null, "vai", "vai");

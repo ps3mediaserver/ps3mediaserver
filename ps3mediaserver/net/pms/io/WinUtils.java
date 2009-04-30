@@ -52,7 +52,12 @@ public class WinUtils {
 				CharBuffer lpFileSystemNameBuffer,
 				int nFileSystemNameSize
 				);	
+		
+		int SetThreadExecutionState(int EXECUTION_STATE);
 		    
+		int ES_DISPLAY_REQUIRED = 0x00000002;
+		int ES_SYSTEM_REQUIRED = 0x00000001;
+		int ES_CONTINUOUS = 0x80000000;
 	}
 
 	private static final int KEY_READ = 0x20019;
@@ -60,6 +65,35 @@ public class WinUtils {
 	private String vlcv;
 	private boolean avis;
 	private String avsPluginsDir;
+	
+	public long lastDontSleepCall = 0;
+	public long lastGoToSleepCall = 0;
+	
+	public void disableGoToSleep() {
+		if (PMS.getConfiguration().isPreventsSleep()) {
+			if (Platform.isWindows()) {
+				// Disable go to sleep (every 5 minutes at min)
+				if (System.currentTimeMillis() - lastDontSleepCall > 300000) {
+					PMS.info("Calling SetThreadExecutionState ES_SYSTEM_REQUIRED");
+					Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_SYSTEM_REQUIRED | Kernel32.ES_CONTINUOUS);
+					lastDontSleepCall = System.currentTimeMillis();
+				}
+			}
+		}
+	}
+	
+	public void reenableGoToSleep() {
+		if (PMS.getConfiguration().isPreventsSleep()) {
+			if (Platform.isWindows()) {
+				// Reenable go to sleep
+				if (System.currentTimeMillis() - lastGoToSleepCall > 300000) {
+					PMS.info("Calling SetThreadExecutionState ES_CONTINUOUS");
+					Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_CONTINUOUS);
+					lastGoToSleepCall = System.currentTimeMillis();
+				}
+			}
+		}
+	}
 
 	public File getAvsPluginsDir() {
 		if (avsPluginsDir == null)

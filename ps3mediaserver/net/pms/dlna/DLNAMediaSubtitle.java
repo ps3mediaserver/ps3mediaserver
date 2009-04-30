@@ -22,6 +22,7 @@ public class DLNAMediaSubtitle  extends DLNAMediaLang implements Cloneable{
 	public static String subExtensions[] = new String [] {"srt", "sub", "smi", "ass", "idx" };
 	
 	public int type;
+	public String flavor;
 	public File file;
 	private File utf8_file;
 	public boolean is_file_utf8;

@@ -133,7 +133,7 @@ public class DLNAMediaInfo implements Cloneable {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					Thread.sleep(7000);
+					Thread.sleep(10000);
 					ffmpeg_failure = true;
 				} catch (InterruptedException e) {}
 				pw.stopProcess();
@@ -405,7 +405,7 @@ public class DLNAMediaInfo implements Cloneable {
 								if (a > -1 && b > a) {
 									audio.lang = line.substring(a+1, b);
 								} else {
-									audio.lang = "und";
+									audio.lang = DLNAMediaLang.UND;
 									//nbUndAudioTracks++;
 								}
 								// get ts ids
@@ -448,7 +448,7 @@ public class DLNAMediaInfo implements Cloneable {
 									String token = st.nextToken().trim();
 									if (token.startsWith("Stream")) {
 										codecV = token.substring(token.indexOf("Video: ")+7);
-									} else if (token.indexOf(".") > -1 && token.indexOf("tb") > -1) {
+									} else if (token.indexOf(".") > -1 && token.indexOf("tb") > -1 && frameRate == null) {
 										frameRate = token.substring(0, token.indexOf("tb")).trim();
 									} else if (token.indexOf("x") > -1) {
 										String resolution = token.trim();
@@ -468,7 +468,7 @@ public class DLNAMediaInfo implements Cloneable {
 								if (a > -1 && b > a) {
 									lang.lang = line.substring(a+1, b);
 								} else
-									lang.lang = "und";
+									lang.lang = DLNAMediaLang.UND;
 								lang.id = subId++;
 								subtitlesCodes.add(lang);
 							}
@@ -477,104 +477,103 @@ public class DLNAMediaInfo implements Cloneable {
 					
 					
 				}
-				// Apr 09: maybe removed later because latest ffmpeg builds seems to work better against mpeg ts
+				// mplayer parsing in case of ffmpeg failure
+//				// Apr 09: removed because latest ffmpeg builds seems to work much better against mpeg ts
 				if ((ffmpeg_failure && type == Format.VIDEO) || (container != null && container.equals("mpegts") && audioCodes.size() == 0)){
-					// switchin to mplayer cause ffmpeg has hung ?
-					String cmdArray [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-msglevel", "identify=4", "-vo", "null", "-ao", "null", "-frames", "0", input};
-					OutputParams params = new OutputParams(PMS.getConfiguration());
-					params.stdin = f.push;
-					params.maxBufferSize = 1;
-					params.log = true;
-					params.noexitcheck = true; // not serious if anything happens during the thumbnailer
-					final ProcessWrapperImpl pw2 = new ProcessWrapperImpl(cmdArray, params);
-					// FAILSAFE
-					parsing = true;
-					Runnable r = new Runnable() {
-						public void run() {
-							try {
-								Thread.sleep(5000);
-							} catch (InterruptedException e) {}
-							pw2.stopProcess();
-							parsing = false;
-						}
-					};
-					Thread failsafe = new Thread(r);
-					failsafe.start();
-					pw2.run();
-					List<String> results = pw2.getOtherResults();
-					DLNAMediaAudio currentAudioTrack = null;
-					for(String s:results) {
-						if (s.startsWith("FPS seems to be: "))
-							frameRate = s.substring(17);
-						if (s.startsWith("TS file format detected."))
-							container = "mpegts";
-						
-						if (codecV == null && s.startsWith("ID_VIDEO_CODEC=")) {
-							String cv = s.substring(15).trim();
-							if (cv.toLowerCase().contains("h264"))
-								codecV = "h264";
-							else if (cv.toLowerCase().contains("mpegpes"))
-								codecV = "mpeg2video";
-							else if (cv.toLowerCase().contains("vc1"))
-								codecV = "vc1";
-						}
-						
-						if (s.startsWith("ID_AUDIO_CODEC=")) {
-							if (currentAudioTrack != null) {
-								currentAudioTrack.codecA = s.substring(15).trim();
-							}
-						}
-						
-						if (s.startsWith("ID_AUDIO_RATE=")) {
-							if (currentAudioTrack != null) {
-								currentAudioTrack.sampleFrequency = s.substring(14).trim();
-							}
-						}
-						
-						if (s.startsWith("ID_AUDIO_NCH=")) {
-							if (currentAudioTrack != null) {
-								try {
-									currentAudioTrack.nrAudioChannels = Integer.parseInt(s.substring(13).trim());
-								} catch( NumberFormatException nfe) {}
-							}
-						}
-						
-						if (s.startsWith("ID_AUDIO_ID=")) {
-							try {
-								int id = Integer.parseInt(s.substring(12).trim());
-								for(DLNAMediaAudio audio:audioCodes) {
-									if (audio.id == id) {
-										currentAudioTrack = audio;
-										break;
-									}
-								}
-								if (currentAudioTrack == null) {
-									currentAudioTrack = new DLNAMediaAudio();
-									currentAudioTrack.id = id;
-									audioCodes.add(currentAudioTrack);
-								}
-							} catch (NumberFormatException ne) {}
-						}
-						
-						if (getDurationInSeconds() == 0 && s.startsWith("ID_LENGTH=")) {
-							try {
-								String len = s.substring(10);
-								double lenD = Double.parseDouble(len);
-								setDurationString(lenD);
-							} catch (Throwable t) {
-								PMS.debug("Error in parsing duration infos: " + s + " - " + t.getMessage());
-							}
-						}
-						if (width == 0 && s.contains("VDec: vo config request - ")) {
-							try {
-								String wh = s.substring(26, s.indexOf("(")).trim();
-								width = Integer.parseInt(wh.substring(0, wh.indexOf("x")).trim());
-								height = Integer.parseInt(wh.substring(wh.indexOf("x")+1).trim());
-							} catch (Throwable t) {
-								PMS.debug("Error in parsing image infos: " + s + " - " + t.getMessage());
-							}
-						}
-					}
+//					String cmdArray [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-msglevel", "identify=4", "-vo", "null", "-ao", "null", "-frames", "0", input};
+//					OutputParams params = new OutputParams(PMS.getConfiguration());
+//					params.stdin = f.push;
+//					params.maxBufferSize = 1;
+//					params.log = true;
+//					params.noexitcheck = true; // not serious if anything happens during the thumbnailer
+//					final ProcessWrapperImpl pw2 = new ProcessWrapperImpl(cmdArray, params);
+//					parsing = true;
+//					Runnable r = new Runnable() {
+//						public void run() {
+//							try {
+//								Thread.sleep(5000);
+//							} catch (InterruptedException e) {}
+//							pw2.stopProcess();
+//							parsing = false;
+//						}
+//					};
+//					Thread failsafe = new Thread(r);
+//					failsafe.start();
+//					pw2.run();
+//					List<String> results = pw2.getOtherResults();
+//					DLNAMediaAudio currentAudioTrack = null;
+//					for(String s:results) {
+//						if (s.startsWith("FPS seems to be: "))
+//							frameRate = s.substring(17);
+//						if (s.startsWith("TS file format detected."))
+//							container = "mpegts";
+//						
+//						if (codecV == null && s.startsWith("ID_VIDEO_CODEC=")) {
+//							String cv = s.substring(15).trim();
+//							if (cv.toLowerCase().contains("h264"))
+//								codecV = "h264";
+//							else if (cv.toLowerCase().contains("mpegpes"))
+//								codecV = "mpeg2video";
+//							else if (cv.toLowerCase().contains("vc1"))
+//								codecV = "vc1";
+//						}
+//						
+//						if (s.startsWith("ID_AUDIO_CODEC=")) {
+//							if (currentAudioTrack != null) {
+//								currentAudioTrack.codecA = s.substring(15).trim();
+//							}
+//						}
+//						
+//						if (s.startsWith("ID_AUDIO_RATE=")) {
+//							if (currentAudioTrack != null) {
+//								currentAudioTrack.sampleFrequency = s.substring(14).trim();
+//							}
+//						}
+//						
+//						if (s.startsWith("ID_AUDIO_NCH=")) {
+//							if (currentAudioTrack != null) {
+//								try {
+//									currentAudioTrack.nrAudioChannels = Integer.parseInt(s.substring(13).trim());
+//								} catch( NumberFormatException nfe) {}
+//							}
+//						}
+//						
+//						if (s.startsWith("ID_AUDIO_ID=")) {
+//							try {
+//								int id = Integer.parseInt(s.substring(12).trim());
+//								for(DLNAMediaAudio audio:audioCodes) {
+//									if (audio.id == id) {
+//										currentAudioTrack = audio;
+//										break;
+//									}
+//								}
+//								if (currentAudioTrack == null) {
+//									currentAudioTrack = new DLNAMediaAudio();
+//									currentAudioTrack.id = id;
+//									audioCodes.add(currentAudioTrack);
+//								}
+//							} catch (NumberFormatException ne) {}
+//						}
+//						
+//						if (getDurationInSeconds() == 0 && s.startsWith("ID_LENGTH=")) {
+//							try {
+//								String len = s.substring(10);
+//								double lenD = Double.parseDouble(len);
+//								setDurationString(lenD);
+//							} catch (Throwable t) {
+//								PMS.debug("Error in parsing duration infos: " + s + " - " + t.getMessage());
+//							}
+//						}
+//						if (width == 0 && s.contains("VDec: vo config request - ")) {
+//							try {
+//								String wh = s.substring(26, s.indexOf("(")).trim();
+//								width = Integer.parseInt(wh.substring(0, wh.indexOf("x")).trim());
+//								height = Integer.parseInt(wh.substring(wh.indexOf("x")+1).trim());
+//							} catch (Throwable t) {
+//								PMS.debug("Error in parsing image infos: " + s + " - " + t.getMessage());
+//							}
+//						}
+//					}
 				}
 				// let's try tsmuxer for the end
 				if (f.file != null && type == Format.VIDEO && (ffmpeg_failure  || (container != null && container.equals("mpegts")))) {
@@ -823,7 +822,7 @@ public class DLNAMediaInfo implements Cloneable {
 								if (avcHeader.getLevel() >= 50 && avcHeader.getRef_frames() > 16)
 									muxable = false;
 							}*/
-							if (avcHeader.getLevel() >= 50) { // Check if file is still compliant with Level4.1
+							if (avcHeader.getLevel() >= 41) { // Check if file is compliant with Level4.1
 								if (width > 0 && height > 0) {
 									int maxref = (int) Math.floor( 8388608 / (width * height));
 									if (avcHeader.getRef_frames() > maxref)

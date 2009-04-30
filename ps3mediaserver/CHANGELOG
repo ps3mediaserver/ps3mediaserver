@@ -11,6 +11,7 @@ Handling of UTF8 and UTF16 encoding, and case insensitive external subtitles
 CUE playlist support
 Updated tsMuxeR binaries (better H264 camcorders support)
 Windows: Launcher now detects Java 64 bits if installed
+Windows: Updated mencoder/mplayer/ffmpeg builds
 OSX: Native look, now looks like a Mac application
 OSX: Updated mencoder/mplayer/ffmpeg builds, support for FriBidi
 OSX: Updated build script to make a bundle or dmg automatically (thanks to Josh Klun)
@@ -22,6 +23,9 @@ Media library major speed and size improvements (you may have to reset the libra
 Improved fix for the stopped videos issue
 Better support for mkvs with NTSC video track
 Fix spaces usage in the audio/subtitles configurations
+Fixed black screen with some AVC videos badly flagged at L4.1
+Fixed cover art files not always read
+Fixed bug with multiple playlist in one folder
 
 v1.10.5
 

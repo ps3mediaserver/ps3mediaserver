@@ -55,7 +55,7 @@ public class PlaylistFolder extends DLNAResource {
 	}
 
 	@Override
-	public void resolve() {
+	public synchronized void resolve() {
 		if (playlistfile.length() < 10000000) {
 			ArrayList<String> entries = new ArrayList<String>();
 			try {

@@ -31,7 +31,7 @@ public class FileUtil {
 	}
 	
 	public static File getFileNameWitNewExtension(File parent, File f, String ext) {
-		File ff = isFileExists(new File(parent, getFileNameWithoutExtension(f.getName())), ext);
+		File ff = isFileExists(new File(parent, f.getName()), ext);
 		if (ff !=null && ff.exists())
 			return ff;
 		return null;
@@ -95,7 +95,7 @@ public class FileUtil {
 							code = fName.substring(a, b);
 						if (code.startsWith("."))
 							code = code.substring(1);
-						if (Iso639.getCodeList().contains(code) || code.length() == 0) {
+						//if (code.length() == 0) {
 							if (media != null) {
 								boolean exists = false;
 								for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
@@ -114,9 +114,20 @@ public class FileUtil {
 									sub.id = 100 + media.subtitlesCodes.size(); // fake id, not used
 									sub.file = f;
 									sub.checkUnicode();
-									if (code.length() == 0) {
-										sub.lang = "und";
+									if (code.length() == 0 || !Iso639.getCodeList().contains(code)) {
+										sub.lang = DLNAMediaSubtitle.UND;
 										sub.type = i+1;
+										if (code.length() > 0) {
+											sub.flavor = code;
+											if (sub.flavor.contains("-")) {
+												String flavorLang = sub.flavor.substring(0, sub.flavor.indexOf("-"));
+												String flavorTitle = sub.flavor.substring(sub.flavor.indexOf("-")+1);
+												if (Iso639.getCodeList().contains(flavorLang)) {
+													sub.lang = flavorLang;
+													sub.flavor = flavorTitle;
+												}
+											}
+										}
 									} else {
 										sub.lang = code;
 										sub.type = i+1;
@@ -124,36 +135,14 @@ public class FileUtil {
 									found = true;
 									media.subtitlesCodes.add(sub);
 								}
-							} else
+							} /*else
 								return true;
-						}
+						}*/
 					}
 				}
 			}
 		}
 		return found;
 	}
-	/*
-	private static int doesSubtitlesExists(File parent, File file, String code) {
-		if (parent != null) {
-			file = new File(parent, file.getName());
-		}
-		File srt = FileUtil.isFileExists(file, code + "srt");
-		if (srt.exists()) {
-			return DLNAMediaSubtitle.SUBRIP;
-			break;
-		}
-			srt = FileUtil.isFileExists(file, "sub");
-			srtFile = srt != null;
-			if (!srtFile) {
-				srt = FileUtil.isFileExists(file, "ass");
-				srtFile = srt != null;
-				if (!srtFile) {
-					srt = FileUtil.isFileExists(file, "smi");
-					srtFile = srt != null;
-				}
-			}
-		}
-	}
-*/
+
 }
