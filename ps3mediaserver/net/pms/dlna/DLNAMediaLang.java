@@ -24,13 +24,15 @@ import net.pms.util.Iso639;
 
 public class DLNAMediaLang {
 	
+	public static String UND = "und";
+	
 	public int id;
 	public String lang;
 	
 	public String getLang() {
 		if (StringUtils.isNotBlank(lang))
 			return Iso639.getLanguage(lang);
-		return Iso639.getLanguage("und");
+		return Iso639.getLanguage(DLNAMediaLang.UND);
 	}
 	
 	public boolean matchCode(String code) {

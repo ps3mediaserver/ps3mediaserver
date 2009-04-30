@@ -474,7 +474,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			name = (player!=null?player.name():"") + " {Audio: " + media_audio.getAudioCodec() + "/" + media_audio.getLang() + "}";
 		
 		if (media_subtitle != null && media_subtitle.id != -1)
-			name += " {Sub: " + media_subtitle.getSubType() + "/" +  media_subtitle.getLang() + "}";
+			name += " {Sub: " + media_subtitle.getSubType() + "/" + media_subtitle.getLang() + (media_subtitle.flavor!=null?("/"+media_subtitle.flavor):"") +  "}";
 		
 		if (avisynth)
 			name = (player!=null?player.name():"") + " + AviSynth";
@@ -496,7 +496,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		if (media_subtitle != null && media_subtitle.id != -1)
 			id = media_subtitle.lang;
 		if ((media_subtitle != null || media_audio != null) && StringUtils.isBlank(id))
-			id = "und";
+			id = DLNAMediaLang.UND;
 		if (id != null) {
 			String code = Iso639.getISO639_2Code(id.toLowerCase());
 			sb.append("codes/" + code + ".png");

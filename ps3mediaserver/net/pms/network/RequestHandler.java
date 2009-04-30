@@ -50,6 +50,7 @@ public class RequestHandler implements Runnable {
 		try {
 			
 			PMS.debug("Opened handler on socket " + socket);
+			PMS.get().getRegistry().disableGoToSleep();
 			
 			int receivedContentLength = -1;
 			
@@ -156,6 +157,8 @@ public class RequestHandler implements Runnable {
 			
 			if (request != null && request.getInputStream() != null)
 				request.getInputStream().close();
+			
+			PMS.get().getRegistry().reenableGoToSleep();
 			
 		} catch (IOException e) {
 			PMS.debug("Unexpected IO Error: " + e.getClass() + ": " +  e.getMessage());

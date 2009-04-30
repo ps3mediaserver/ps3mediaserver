@@ -103,6 +103,7 @@ public class PmsConfiguration {
 	private static final String KEY_MUX_ALLAUDIOTRACKS = "tsmuxer_mux_all_audiotracks";
 	private static final String KEY_USE_MPLAYER_FOR_THUMBS = "use_mplayer_for_video_thumbs";
 	private static final String KEY_IP_FILTER = "ip_filter";
+	private static final String KEY_PREVENTS_SLEEP = "prevents_sleep_mode";
 
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
@@ -963,6 +964,14 @@ public class PmsConfiguration {
 	
 	public void setIpFilter(String value){
 		configuration.setProperty(KEY_IP_FILTER, value);
+	}
+	
+	public void setPreventsSleep(boolean value) {
+		configuration.setProperty(KEY_PREVENTS_SLEEP, value);
+	}
+
+	public boolean isPreventsSleep() {
+		return getBoolean(KEY_PREVENTS_SLEEP, false);
 	}
 	
 }

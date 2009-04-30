@@ -132,6 +132,8 @@ public class CueFolder extends DLNAResource {
 								if (StringUtils.isNotBlank(sheet.getPerformer())) {
 									r.media.getFirstAudioTrack().artist = sheet.getPerformer();
 								}
+								if (StringUtils.isNotBlank(track.getPerformer()))
+									r.media.getFirstAudioTrack().artist = track.getPerformer();
 							}
 							
 						}
