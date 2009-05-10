@@ -96,22 +96,24 @@ public class FileUtil {
 						if (code.startsWith("."))
 							code = code.substring(1);
 						//if (code.length() == 0) {
-							if (media != null) {
+							 
 								boolean exists = false;
-								for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
-									if (f.equals(sub.file))
-										exists = true;
-									else if (i == 4 && sub.type == DLNAMediaSubtitle.MICRODVD) { // VOBSUB
-										sub.type = DLNAMediaSubtitle.VOBSUB;
-										exists = true;
-									} else if (i == 1 && sub.type == DLNAMediaSubtitle.VOBSUB) { // VOBSUB
-										sub.file = f;
-										exists = true;
+								if (media != null) {
+									for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
+										if (f.equals(sub.file))
+											exists = true;
+										else if (i == 4 && sub.type == DLNAMediaSubtitle.MICRODVD) { // VOBSUB
+											sub.type = DLNAMediaSubtitle.VOBSUB;
+											exists = true;
+										} else if (i == 1 && sub.type == DLNAMediaSubtitle.VOBSUB) { // VOBSUB
+											sub.file = f;
+											exists = true;
+										}
 									}
 								}
 								if (!exists) {
 									DLNAMediaSubtitle sub = new DLNAMediaSubtitle();
-									sub.id = 100 + media.subtitlesCodes.size(); // fake id, not used
+									sub.id = 100 + (media==null?0:media.subtitlesCodes.size()); // fake id, not used
 									sub.file = f;
 									sub.checkUnicode();
 									if (code.length() == 0 || !Iso639.getCodeList().contains(code)) {
@@ -133,11 +135,11 @@ public class FileUtil {
 										sub.type = i+1;
 									}
 									found = true;
-									media.subtitlesCodes.add(sub);
+									if (media != null)
+										media.subtitlesCodes.add(sub);
 								}
-							} /*else
-								return true;
-						}*/
+							
+						/*}*/
 					}
 				}
 			}
