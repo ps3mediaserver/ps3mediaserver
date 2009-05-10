@@ -42,7 +42,7 @@ public class OutputTextConsumer extends OutputConsumer {
 	public void run() {
 		BufferedReader br = null;
 		try {
-    		br = new BufferedReader(new InputStreamReader(inputStream));
+    		br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
     	    String line = null;
     	    int authorized = 10;
     	    while ((line = br.readLine()) != null) {
