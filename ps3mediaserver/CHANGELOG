@@ -27,7 +27,8 @@ Fixed black screen with some AVC videos badly flagged at L4.1
 Fixed cover art files not always read
 Fixed bug with multiple playlist in one folder
 OSX: Reopening of the main window after you closed it is now possible, also fixes start as minimized (thanks to grcvoodoorush)
-OSX: Unicode files should now be playable (thanks to Thierry Pittet)
+OSX: Configuration file now stored outside of the bundle so that you don't lose your settings when you upgrade to a new version (thanks to grcvoodoorush)
+OSX: Unicode files are now playable (thanks to Thierry Pittet)
 
 v1.10.5
 

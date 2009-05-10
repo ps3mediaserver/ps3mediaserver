@@ -128,6 +128,7 @@ public class PmsConfiguration {
 	private static final int MAX_MAX_MEMORY_BUFFER_SIZE = 600;
 	
 	private static final String CONFIGURATION_FILENAME = "PMS.conf";
+	private static final String CONFIGURATION_PATH_MAC = System.getProperty("user.home") + "/Library/Application Support/PS3 Media Server/";
 	private static final char LIST_SEPARATOR = ',';
 	private static final String KEY_FOLDERS = "folders";
 
@@ -141,6 +142,8 @@ public class PmsConfiguration {
 		String strAppData = System.getenv("APPDATA");
 		if (Platform.isWindows() && strAppData != null && new File(strAppData + PMSDIR + CONFIGURATION_FILENAME).exists()) {
 			configuration.load(strAppData + PMSDIR + CONFIGURATION_FILENAME);
+		} else if (Platform.isMac() && new File(CONFIGURATION_PATH_MAC + CONFIGURATION_FILENAME).exists()) {
+			configuration.load(CONFIGURATION_PATH_MAC + CONFIGURATION_FILENAME);
 		} else {
 			if (new File(CONFIGURATION_FILENAME).exists())
 				configuration.load(CONFIGURATION_FILENAME);
@@ -771,7 +774,11 @@ public class PmsConfiguration {
 	private static final String PMSDIR = "\\PMS\\";
 
 	public void save() throws ConfigurationException {
-		configuration.setFileName(CONFIGURATION_FILENAME);
+		if(Platform.isMac()) {
+			configuration.setFileName(CONFIGURATION_PATH_MAC + CONFIGURATION_FILENAME);
+		} else {
+			configuration.setFileName(CONFIGURATION_FILENAME);
+		}
 		try {
 			configuration.save();
 		} catch (ConfigurationException ce) {
