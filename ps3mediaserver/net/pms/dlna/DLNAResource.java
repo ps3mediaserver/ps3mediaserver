@@ -192,7 +192,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 							
 						}
 					}
-					if (pl != null) {
+					boolean allAreFolder = true;
+					for(DLNAResource r:children) allAreFolder &= r.isFolder();
+					if (pl != null && !allAreFolder) {
 						boolean forceTranscode = false;
 						if (child.ext != null)
 							forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode(), defaultRenderer!=null?defaultRenderer.getTranscodedExtensions():null);

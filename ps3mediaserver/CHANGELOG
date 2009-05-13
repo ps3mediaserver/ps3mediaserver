@@ -5,17 +5,18 @@ v1.11
 
 - Changes / Features
 
-OSX: tsMuxeR and FLAC binaries are now available in this build, this adds a lot of features on Mac which were previously only available on Windows or Linux (like DTS and remux support)
 Externalization of PS3/Xbox playback profiles, it's now possible to create profiles for any media renderer (Popcorn Hour already included)
 Handling of UTF8 and UTF16 encoding, and case insensitive external subtitles
 CUE playlist support
 Updated tsMuxeR binaries (better H264 camcorders support)
 Windows: Launcher now detects Java 64 bits if installed
 Windows: Updated mencoder/mplayer/ffmpeg builds
+OSX: tsMuxeR and FLAC binaries are now available in this build, this adds a lot of features on Mac which were previously only available on Windows or Linux (like DTS and remux support)
+OSX: iPhoto and iTunes library support (thanks to Pedro Simoes)
 OSX: Native look, now looks like a Mac application
 OSX: Updated mencoder/mplayer/ffmpeg builds, support for FriBidi
 OSX: Updated build script to make a bundle or dmg automatically (thanks to Josh Klun)
-New translations: Slovenian (thanks to Rob Wall)
+New translations: Czech (thanks to Mila), Slovenian (thanks to Rob Wall)
 
 - Fixes
 

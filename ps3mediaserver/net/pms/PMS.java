@@ -103,6 +103,15 @@ import net.pms.util.PMSUtil;
 import net.pms.util.ProcessUtil;
 import net.pms.util.SystemErrWrapper;
 
+import net.pms.xmlwise.Plist;
+import java.util.Map;
+import java.util.HashMap;
+import net.pms.dlna.RealFile;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLDecoder;
+
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -184,7 +193,7 @@ public class PMS {
 	public boolean isWindows() {
 		return Platform.isWindows();
 	}
-	
+
 	private int proxy;
 	
 	private WinUtils registry;
@@ -493,12 +502,88 @@ public class PMS {
 				PMS.minimal("Unexpected error in WEB.conf: " + e.getMessage()); //$NON-NLS-1$
 			}
 		}
+
+	
+		if (Platform.isMac()) {
+			addiPhotoFolder();
+			addiTunesFolder();
+		}
 	
 		addMediaLibraryFolder();
 	
 		addVideoSettingssFolder();
 		
 		rootFolder.closeChildren(0, false);
+	}
+
+
+	public void addiPhotoFolder() {
+		if (Platform.isMac()) {
+
+			Map<String, Object> iPhotoLib;
+			ArrayList ListofRolls;
+			HashMap Roll;
+			HashMap PhotoList;
+			HashMap Photo;
+			ArrayList RollPhotos;
+
+			try {
+				iPhotoLib = Plist.load(System.getProperty("user.home") + "/Pictures/iPhoto Library/AlbumData.xml");	// loads the (nested) properties.
+				PhotoList = (HashMap) iPhotoLib.get("Master Image List");	// the list of photos
+				ListofRolls = (ArrayList) iPhotoLib.get("List of Rolls");	// the list of events (rolls)
+				VirtualFolder vf = new VirtualFolder("iPhoto Library",null); //$NON-NLS-1$
+				for (Object item : ListofRolls) {
+					Roll = (HashMap) item;
+					VirtualFolder rf = new VirtualFolder(Roll.get("RollName").toString(),null); //$NON-NLS-1$
+					RollPhotos = (ArrayList) Roll.get("KeyList");	// list of photos in an event (roll)
+					for (Object p : RollPhotos) {
+						Photo = (HashMap) PhotoList.get(p);
+						RealFile file = new RealFile(new File(Photo.get("ImagePath").toString()));
+	       	                         	rf.addChild(file);
+					}
+					vf.addChild(rf); //$NON-NLS-1$
+	 			}
+				rootFolder.addChild(vf);	
+			} catch (Exception e) {
+				PMS.error("Something wrong with the iPhoto Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                	}
+		}
+	}
+
+	public void addiTunesFolder() {
+		if (Platform.isMac()) {
+			Map<String, Object> iTunesLib;
+			ArrayList Playlists;
+       	         	HashMap Playlist;
+                	HashMap Tracks;
+            		HashMap Track;
+	                ArrayList PlaylistTracks;
+
+	                try {
+	                        iTunesLib = Plist.load(System.getProperty("user.home") + "/Music/iTunes/iTunes Music Library.xml");     // loads the (nested) properties.
+	                        Tracks = (HashMap) iTunesLib.get("Tracks");       // the list of tracks
+	                        Playlists = (ArrayList) iTunesLib.get("Playlists");       // the list of Playlists
+	                        VirtualFolder vf = new VirtualFolder("iTunes Library",null); //$NON-NLS-1$
+	                        for (Object item : Playlists) {
+	                                Playlist = (HashMap) item;
+	                                VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(),null); //$NON-NLS-1$
+	                                PlaylistTracks = (ArrayList) Playlist.get("Playlist Items");   // list of tracks in a playlist
+					if (PlaylistTracks != null) {
+	                                	for (Object t : PlaylistTracks) {
+							HashMap td = (HashMap) t;
+							Track = (HashMap) Tracks.get(td.get("Track ID").toString());
+							URI tURI = new URI(Track.get("Location").toString());
+							RealFile file = new RealFile(new File(URLDecoder.decode(tURI.toURL().getFile(), "UTF-8")));
+	       	                                 	pf.addChild(file);
+	                                	}
+					}
+	                                vf.addChild(pf); //$NON-NLS-1$
+	                        }
+	                        rootFolder.addChild(vf);
+	                } catch (Exception e) {
+	                        PMS.error("Something wrong with the iTunes Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	                }
+		}
 	}
 	
 	public void addVideoSettingssFolder() {
