@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/rome-1.0RC2.jar"/>
 	<classpathentry kind="lib" path="lib/cuelib-1.2.1-2008-06-13.jar"/>
+	<classpathentry kind="lib" path="lib/netty-3.1.0.BETA2.jar" sourcepath="lib/netty-3.1.0.BETA2-sources.jar"/>
 	<classpathentry kind="output" path="eclipse-classes"/>
 </classpath>

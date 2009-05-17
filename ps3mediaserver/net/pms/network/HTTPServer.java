@@ -30,15 +30,19 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ServerSocketChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.concurrent.Executors;
 
 import net.pms.PMS;
 import net.pms.util.PMSUtil;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 public class HTTPServer implements Runnable {
 	
-	private boolean newHTTP = false;
+	//private boolean newHTTP = false;
 	private ArrayList<String> ips;
 	private int port;
 	private String hostName;
@@ -111,7 +115,7 @@ public class HTTPServer implements Runnable {
 		}
 		PMS.minimal("Created socket: " + address);
 		
-		if (!newHTTP) {
+		if (!PMS.getConfiguration().isHTTPEngineV2()) {
 			serverSocketChannel = ServerSocketChannel.open();
 			
 			serverSocket = serverSocketChannel.socket();
@@ -129,22 +133,23 @@ public class HTTPServer implements Runnable {
 			runnable.start();
 			
 		} else {
-			/*ChannelFactory factory = new NioServerSocketChannelFactory(
+			ChannelFactory factory = new NioServerSocketChannelFactory(
 				Executors.newCachedThreadPool(),
 				Executors.newCachedThreadPool());
 			ServerBootstrap bootstrap = new ServerBootstrap(factory);
-			HttpServerPipelineFactory pipeline = new HttpServerPipelineFactory(new HttpRequestHandler());
+			HttpServerPipelineFactory pipeline = new HttpServerPipelineFactory();
 			bootstrap.setPipelineFactory(pipeline);
 			bootstrap.setOption("child.tcpNoDelay", true);
 			bootstrap.setOption("child.keepAlive", true);
-			
+			bootstrap.setOption("child.sendBufferSize", 65536);
+			bootstrap.setOption("child.receiveBufferSize", 65536);
 			bootstrap.bind(address);
 			
 			if (hostName == null && iafinal !=null)
 				hostName = iafinal.getHostAddress();
 			else if (hostName == null)
 				hostName = InetAddress.getLocalHost().getHostAddress();
-			*/
+			
 		}
 		
 		return true;

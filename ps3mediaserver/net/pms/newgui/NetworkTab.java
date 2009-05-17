@@ -57,7 +57,8 @@ import com.sun.jna.Platform;
 public class NetworkTab {
 	
 	private JCheckBox  smcheckBox;
-	//private JCheckBox  tmcheckBox;
+	private JCheckBox  newHTTPEngine;
+	private JCheckBox  preventSleep;
 	//private JCheckBox  blockBox;
 	private JTextField host;
 	private JTextField port; 
@@ -262,59 +263,33 @@ public class NetworkTab {
         builder.addLabel(Messages.getString("NetworkTab.30"),  cc.xy(1, 29)); //$NON-NLS-1$
         builder.add(ip_filter,          cc.xyw(3,  29, 7)); 
        
-        /*
-       cmp = builder.addSeparator(Messages.getString("NetworkTab.25"),  cc.xyw(1, 31, 9)); //$NON-NLS-1$
+        
+       cmp = builder.addSeparator("Advanced HTTP and System Settings",  cc.xyw(1, 31, 9));
        cmp = (JComponent) cmp.getComponent(0);
        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
      
-       encoding = new JTextField(PMS.getConfiguration().getCharsetEncoding());
-       
-       encoding.addKeyListener(new KeyListener() {
-
-   		@Override
-   		public void keyPressed(KeyEvent e) {}
-   		@Override
-   		public void keyTyped(KeyEvent e) {}
-   		@Override
-   		public void keyReleased(KeyEvent e) {
-   			try {
-   				PMS.getConfiguration().setCharsetEncoding(encoding.getText());
-   			} catch (NumberFormatException nfe) {
-   			}
-   			
-   		}
-       	   
-          });
-       builder.addLabel(Messages.getString("NetworkTab.26"),  cc.xy(1,  33)); //$NON-NLS-1$
-       builder.add(encoding,          cc.xyw(3,  33, 7)); 
-       */
-       /*cmp = builder.addSeparator(Messages.getString("NetworkTab.27"),  cc.xyw(1, 37, 9)); //$NON-NLS-1$
-       cmp = (JComponent) cmp.getComponent(0);
-       cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-       
-       tmcheckBox = new JCheckBox(Messages.getString("NetworkTab.28")); //$NON-NLS-1$
-       tmcheckBox.setContentAreaFilled(false);
-       tmcheckBox.setSelected(PMS.getConfiguration().isTurboModeEnabled());
-       tmcheckBox.addItemListener(new ItemListener() {
+      
+      
+       newHTTPEngine = new JCheckBox("HTTP Engine V2");
+       newHTTPEngine.setSelected(PMS.getConfiguration().isHTTPEngineV2());
+       newHTTPEngine.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setTurboModeEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				PMS.getConfiguration().setHTTPEngineV2((e.getStateChange() == ItemEvent.SELECTED));
 			}
        	
-       }); builder.add(tmcheckBox,          cc.xyw(1,  39, 9));
-       tmcheckBox.setEnabled(false);
+       }); builder.add(newHTTPEngine,          cc.xyw(1,  33, 9));
        
-       blockBox = new JCheckBox(Messages.getString("NetworkTab.29")); //$NON-NLS-1$
-       blockBox.setContentAreaFilled(false);
-       blockBox.setSelected(PMS.getConfiguration().getTrancodeBlocksMultipleConnections());
-       blockBox.addItemListener(new ItemListener() {
+       preventSleep = new JCheckBox("Prevents OS from sleeping when streaming");
+       preventSleep.setSelected(PMS.getConfiguration().isPreventsSleep());
+       preventSleep.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setTranscodeBlocksMultipleConnections((e.getStateChange() == ItemEvent.SELECTED));
+				PMS.getConfiguration().setPreventsSleep((e.getStateChange() == ItemEvent.SELECTED));
 			}
        	
-       }); builder.add(blockBox,          cc.xyw(1,  41, 9));
-       blockBox.setEnabled(false);*/
+       }); builder.add(preventSleep,          cc.xyw(1,  35, 9));
+      
         return builder.getPanel();
 	}
 	

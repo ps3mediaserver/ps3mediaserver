@@ -108,7 +108,6 @@ import java.util.Map;
 import java.util.HashMap;
 import net.pms.dlna.RealFile;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLDecoder;
 
 
@@ -118,7 +117,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.11"; //$NON-NLS-1$
+	public static final String VERSION = "1.20"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -517,6 +516,7 @@ public class PMS {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public void addiPhotoFolder() {
 		if (Platform.isMac()) {
 
@@ -550,6 +550,7 @@ public class PMS {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void addiTunesFolder() {
 		if (Platform.isMac()) {
 			Map<String, Object> iTunesLib;

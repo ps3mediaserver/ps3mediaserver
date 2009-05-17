@@ -138,7 +138,7 @@ private JTextField mencoder_ass_scale;
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
                 "left:pref, 3dlu, p:grow, 3dlu, right:p:grow, 3dlu, p:grow, 3dlu, right:p:grow,3dlu, p:grow, 3dlu, right:p:grow,3dlu, pref:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p , 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
+                "p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu,p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p , 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -1758,7 +1758,7 @@ private JTextField mencoder_ass_scale;
 		+ "container == flv :: -mc 0.1\n"  //$NON-NLS-1$
 		+ "container == mov :: -mc 0.1 -noass\n"  //$NON-NLS-1$
 		+ "container == rm  :: -mc 0.1\n" //$NON-NLS-1$
-		+ "container == matroska && framerate == 29.97  :: -nomux -mc 0.1\n" //$NON-NLS-1$
+		+ "container == matroska && framerate == 29.97  :: -nomux -mc 0\n" //$NON-NLS-1$
 		+ "\n"  //$NON-NLS-1$
 		+ Messages.getString("MEncoderVideo.87") //$NON-NLS-1$
 		+ Messages.getString("MEncoderVideo.88") //$NON-NLS-1$

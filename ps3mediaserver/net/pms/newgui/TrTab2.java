@@ -346,7 +346,7 @@ public class TrTab2 {
 	public JComponent buildCommon() {
 		FormLayout layout = new FormLayout(
 				"left:pref, 2dlu, pref:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p,3dlu,  p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
+                "p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p,2dlu,  p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -575,18 +575,18 @@ public class TrTab2 {
        decodeTips.setEditable(false);
        decodeTips.setBorder(BorderFactory.createEtchedBorder());
        decodeTips.setBackground(new Color(255, 255, 192));
-       builder.add(decodeTips, cc.xyw(1, 31, 3));
+       builder.add(decodeTips, cc.xyw(1, 41, 3));
        
        disableSubs = new JCheckBox(Messages.getString("TrTab2.51")); //$NON-NLS-1$
        disableSubs.setContentAreaFilled(false);
      
-       cmp = builder.addSeparator(Messages.getString("TrTab2.7"),  cc.xyw(1, 35, 3)); //$NON-NLS-1$
+       cmp = builder.addSeparator(Messages.getString("TrTab2.7"),  cc.xyw(1, 31, 3)); //$NON-NLS-1$
        cmp = (JComponent) cmp.getComponent(0);
        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
        
-       builder.add(disableSubs,          cc.xy(1,  37));
+       builder.add(disableSubs,          cc.xy(1,  33));
        
-       builder.addLabel(Messages.getString("TrTab2.8"), cc.xy(1,39)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("TrTab2.8"), cc.xy(1,35)); //$NON-NLS-1$
        
        notranscode = new JTextField(configuration.getNoTranscode());
        notranscode.addKeyListener(new KeyListener() {
@@ -602,9 +602,9 @@ public class TrTab2 {
    		}
        	   
           });
-       builder.add(notranscode, cc.xy(3, 39));
+       builder.add(notranscode, cc.xy(3, 35));
        
-       builder.addLabel(Messages.getString("TrTab2.9"), cc.xy(1,41)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("TrTab2.9"), cc.xy(1,37)); //$NON-NLS-1$
        
        forcetranscode = new JTextField(configuration.getForceTranscode());
        forcetranscode.addKeyListener(new KeyListener() {
@@ -620,7 +620,7 @@ public class TrTab2 {
    		}
        	   
           });
-       builder.add(forcetranscode, cc.xy(3, 41));
+       builder.add(forcetranscode, cc.xy(3, 37));
        
         return builder.getPanel();
 	}

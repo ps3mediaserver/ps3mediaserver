@@ -34,6 +34,7 @@ public class BufferedOutputFile extends OutputStream  {
 		
 		
 
+		
 		private BufferedOutputFile outputStream;
 		private long readCount;
 		private boolean firstRead;
@@ -56,6 +57,12 @@ public class BufferedOutputFile extends OutputStream  {
 			firstRead = false;
 			return returned;
 		}
+		
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			return read(b);
+		}
+
 		
 		public int available() throws IOException {
 			return (int) outputStream.writeCount;
