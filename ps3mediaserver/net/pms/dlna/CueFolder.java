@@ -86,8 +86,11 @@ public class CueFolder extends DLNAResource {
 						if (i > 0) {
 							double end = getTime(track.getIndices().get(0).getPosition());
 							DLNAResource prec = children.get(i-1);
-							if (prec.isFolder())
-								prec = children.get(i);
+							int count = 0;
+							while (prec.isFolder() && i+count < children.size()) {
+								prec = children.get(i+count);
+								count++;
+							}
 							prec.splitLength = end - prec.splitStart;
 							prec.media.setDurationString(prec.splitLength);
 							PMS.info("Track #" + i + " split range: " + prec.splitStart + " - " + prec.splitLength);
@@ -140,7 +143,7 @@ public class CueFolder extends DLNAResource {
 						
 					}
 					
-					if (tracks.size() > 0) {
+					if (tracks.size() > 0 && childrenNumber() > 0) {
 						// last track
 						DLNAResource prec = children.get(childrenNumber()-1);
 						prec.splitLength = prec.media.getDurationInSeconds() - prec.splitStart;
