@@ -502,10 +502,14 @@ public class PMS {
 			}
 		}
 
-	
+
 		if (Platform.isMac()) {
-			addiPhotoFolder();
-			addiTunesFolder();
+ 			if (PMS.getConfiguration().getIphotoEnabled()) {
+ 				addiPhotoFolder();
+ 			}
+ 			if (PMS.getConfiguration().getItunesEnabled()) {
+ 				addiTunesFolder();
+ 			}
 		}
 	
 		addMediaLibraryFolder();
@@ -528,7 +532,17 @@ public class PMS {
 			ArrayList RollPhotos;
 
 			try {
-				iPhotoLib = Plist.load(System.getProperty("user.home") + "/Pictures/iPhoto Library/AlbumData.xml");	// loads the (nested) properties.
+ 				Process prc = Runtime.getRuntime().exec("defaults read com.apple.iapps iPhotoRecentDatabases");  
+ 				BufferedReader in = new BufferedReader(  
+							new InputStreamReader(prc.getInputStream()));  
+ 				String line = null;  
+ 				if ((line = in.readLine()) != null) {
+ 					line = in.readLine();		//we want the 2nd line
+ 					line = line.trim();		//remove extra spaces	
+ 					line = line.substring(1, line.length() - 1); // remove quotes and spaces
+ 				}
+ 				URI tURI = new URI(line);
+ 				iPhotoLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile()));    // loads the (nested) properties.
 				PhotoList = (HashMap) iPhotoLib.get("Master Image List");	// the list of photos
 				ListofRolls = (ArrayList) iPhotoLib.get("List of Rolls");	// the list of events (rolls)
 				VirtualFolder vf = new VirtualFolder("iPhoto Library",null); //$NON-NLS-1$
@@ -561,7 +575,17 @@ public class PMS {
 	                ArrayList PlaylistTracks;
 
 	                try {
-	                        iTunesLib = Plist.load(System.getProperty("user.home") + "/Music/iTunes/iTunes Music Library.xml");     // loads the (nested) properties.
+ 				Process prc = Runtime.getRuntime().exec("defaults read com.apple.iapps iTunesRecentDatabases");
+                                BufferedReader in = new BufferedReader(
+                                                        new InputStreamReader(prc.getInputStream()));
+                                String line = null;
+                                if ((line = in.readLine()) != null) {
+                                        line = in.readLine();           //we want the 2nd line
+                                        line = line.trim();             //remove extra spaces
+                                        line = line.substring(1, line.length() - 1); // remove quotes and spaces
+                                }
+                                URI tURI = new URI(line);
+ 				iTunesLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile()));     // loads the (nested) properties.
 	                        Tracks = (HashMap) iTunesLib.get("Tracks");       // the list of tracks
 	                        Playlists = (ArrayList) iTunesLib.get("Playlists");       // the list of Playlists
 	                        VirtualFolder vf = new VirtualFolder("iTunes Library",null); //$NON-NLS-1$
@@ -573,10 +597,11 @@ public class PMS {
 	                                	for (Object t : PlaylistTracks) {
 							HashMap td = (HashMap) t;
 							Track = (HashMap) Tracks.get(td.get("Track ID").toString());
-							URI tURI = new URI(Track.get("Location").toString());
-							RealFile file = new RealFile(new File(URLDecoder.decode(tURI.toURL().getFile(), "UTF-8")));
-	       	                                 	pf.addChild(file);
-	                                	}
+ 							if (Track.get("Location").toString().startsWith("file://")) {
+ 								URI tURI2 = new URI(Track.get("Location").toString());
+ 								RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
+ 	       	                                 		pf.addChild(file);
+ 							}	                                	}
 					}
 	                                vf.addChild(pf); //$NON-NLS-1$
 	                        }

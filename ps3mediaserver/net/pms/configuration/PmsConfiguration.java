@@ -105,7 +105,8 @@ public class PmsConfiguration {
 	private static final String KEY_IP_FILTER = "ip_filter";
 	private static final String KEY_PREVENTS_SLEEP = "prevents_sleep_mode";
 	private static final String KEY_HTTP_ENGINE_V2 = "http_engine_v2";
-
+ 	private static final String KEY_IPHOTO_ENABLED = "iphoto";
+ 	private static final String KEY_ITUNES_ENABLED = "itunes";
 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -989,5 +990,21 @@ public class PmsConfiguration {
 	public boolean isHTTPEngineV2() {
 		return getBoolean(KEY_HTTP_ENGINE_V2, true);
 	}
-	
+
+	public boolean getIphotoEnabled() {
+ 		return getBoolean(KEY_IPHOTO_ENABLED, false);
+ 	}
+ 
+ 	public void setIphotoEnabled(boolean value) {
+ 		configuration.setProperty(KEY_IPHOTO_ENABLED, value);
+ 	}
+ 
+ 	public boolean getItunesEnabled() {
+ 		return getBoolean(KEY_ITUNES_ENABLED, false);
+ 	}
+ 
+ 	public void setItunesEnabled(boolean value) {
+ 		configuration.setProperty(KEY_ITUNES_ENABLED, value);
+ 	}
+
 }

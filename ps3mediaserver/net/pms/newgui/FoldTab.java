@@ -49,6 +49,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.sun.jna.Platform;
 
 public class FoldTab {
 	
@@ -68,7 +69,9 @@ public class FoldTab {
 	private JComboBox sortmethod;
 	private JComboBox audiothumbnail;
 	private JTextField defaultThumbFolder;
-	
+ 	private JCheckBox  iphoto;
+ 	private JCheckBox  itunes;
+
 	public DefaultListModel getDf() {
 		return df;
 	}
@@ -97,7 +100,7 @@ public class FoldTab {
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
                 "left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref,  0:grow", //$NON-NLS-1$
-                "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, fill:default:grow"); //$NON-NLS-1$
+                "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, fill:default:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.DLU4_BORDER);
         builder.setOpaque(true);
@@ -314,7 +317,7 @@ public class FoldTab {
        
         //cacheenable.setEnabled(false);
         
-     	  builder.add(cacheenable,          cc.xy(1,  17));
+     	  builder.add(cacheenable,          cc.xy(1,  19));
      	  
      	  
      	  cachereset.addActionListener(new ActionListener() {
@@ -335,7 +338,7 @@ public class FoldTab {
  			}
      		  
      	  });
-     	  builder.add(cachereset,          cc.xyw(4,  17, 4));
+     	  builder.add(cachereset,          cc.xyw(4,  19, 4));
      	  
      	  
      	  cachereset.setEnabled(PMS.getConfiguration().getUseCache());
@@ -370,10 +373,40 @@ public class FoldTab {
         });
         builder.add(hideengines,          cc.xyw(4,  15, 3));
         
+ 	itunes = new JCheckBox(Messages.getString("FoldTab.30")); //$NON-NLS-1$
+        itunes.setContentAreaFilled(false);
+        if (PMS.getConfiguration().getItunesEnabled())
+        	itunes.setSelected(true);
+        if (!Platform.isMac())
+	        iphoto.setEnabled(false);
+        itunes.addItemListener(new ItemListener() {
+ 
+  		public void itemStateChanged(ItemEvent e) {
+  			PMS.getConfiguration().setItunesEnabled((e.getStateChange() == ItemEvent.SELECTED));
+  			PMS.get().getFrame().setReloadable(true);
+  		}
+         	
+        });
+        builder.add(itunes,          cc.xyw(1,  17, 3));
+
+ 	iphoto = new JCheckBox(Messages.getString("FoldTab.29")); //$NON-NLS-1$
+        iphoto.setContentAreaFilled(false);
+        if (PMS.getConfiguration().getIphotoEnabled())
+        	iphoto.setSelected(true);
+        if (!Platform.isMac())
+	        iphoto.setEnabled(false);
+	iphoto.addItemListener(new ItemListener() {
+  		public void itemStateChanged(ItemEvent e) {
+  			PMS.getConfiguration().setIphotoEnabled((e.getStateChange() == ItemEvent.SELECTED));
+  			PMS.get().getFrame().setReloadable(true);
+  		}	
+        });
+        builder.add(iphoto,          cc.xyw(4,  17, 3));
+       
         final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "0", "1" }, new Object[] { Messages.getString("FoldTab.15"), Messages.getString("FoldTab.16") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         sortmethod = new JComboBox(kcbm);
         sortmethod.setEditable(false);
-       
+
       kcbm.setSelectedKey("" + configuration.getSortMethod()); //$NON-NLS-1$
       
       sortmethod.addItemListener(new ItemListener() {
@@ -528,7 +561,7 @@ public class FoldTab {
        
        builderFolder.add(pane,          cc.xyw(1,  5,6));
        
-       builder.add(builderFolder.getPanel(), cc.xyw(1, 23, 8));
+       builder.add(builderFolder.getPanel(), cc.xyw(1, 25, 8));
        
         return builder.getPanel();
 	}
