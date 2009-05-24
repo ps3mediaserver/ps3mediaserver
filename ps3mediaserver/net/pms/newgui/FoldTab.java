@@ -378,7 +378,7 @@ public class FoldTab {
         if (PMS.getConfiguration().getItunesEnabled())
         	itunes.setSelected(true);
         if (!Platform.isMac())
-	        iphoto.setEnabled(false);
+	        itunes.setEnabled(false);
         itunes.addItemListener(new ItemListener() {
  
   		public void itemStateChanged(ItemEvent e) {
