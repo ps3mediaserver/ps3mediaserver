@@ -145,7 +145,6 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			}
 		}
 		if (nettyRequest.getContentLength() > 0) {
-			PMS.debug(":" + nettyRequest.getContentLength());
 			byte data[] = new byte[nettyRequest.getContentLength()];
 			ChannelBuffer content = nettyRequest.getContent();
 			content.readBytes(data);

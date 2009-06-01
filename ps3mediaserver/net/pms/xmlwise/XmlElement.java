@@ -202,7 +202,6 @@ public class XmlElement extends LinkedList<XmlElement>
 	 * @param name the key to match.
 	 * @return a linked list of matching xml elements
 	 */
-	@SuppressWarnings({"MethodOverloadsMethodOfSuperclass"})
 	public LinkedList<XmlElement> get(String name)
 	{
 		LinkedList<XmlElement> list = new LinkedList<XmlElement>();
@@ -246,7 +245,6 @@ public class XmlElement extends LinkedList<XmlElement>
 	 * @param key the name of the sub-element.
 	 * @return true if the element exists, false otherwise.
 	 */
-	@SuppressWarnings({"MethodOverloadsMethodOfSuperclass"})
 	public boolean contains(String key)
 	{
 		for (XmlElement element : this)

@@ -75,9 +75,40 @@ public class RealFile extends DLNAResource {
 	
 	private File potentialCover;
 	
+	private boolean isFileRelevant(File f) {
+		String fileName = f.getName().toLowerCase();
+		return (PMS.getConfiguration().isArchiveBrowsing() && (fileName.endsWith(".zip") || fileName.endsWith(".cbz") ||
+			fileName.endsWith(".rar") || fileName.endsWith(".cbr"))) ||
+			fileName.endsWith(".iso") || fileName.endsWith(".img") || 
+			fileName.endsWith(".m3u") || fileName.endsWith(".m3u8") || fileName.endsWith(".pls") || fileName.endsWith(".cue");
+	}
+	
+	private boolean isFolderRelevant(File f) {
+	
+		boolean excludeNonRelevantFolder = true;
+		if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders()) {
+			File children [] = f.listFiles();
+			for(File child:children) {
+				if (child.isFile()) {
+					if (PMS.get().getAssociatedExtension(child.getName()) != null || isFileRelevant(child)) {
+						excludeNonRelevantFolder = false;
+						break;
+					}
+				} else {
+					if (isFolderRelevant(child)) {
+						excludeNonRelevantFolder = false;
+						break;
+					}
+				}
+			}
+		}
+		
+		return !excludeNonRelevantFolder;
+	}
+	
 	private void manageFile(File f) {
 		if ((f.isFile() || f.isDirectory()) && !f.isHidden()) {
-			if (PMS.getConfiguration().isArchiveBrowsing() && (f.getName().toLowerCase().endsWith(".zip") || f.getName().toLowerCase().endsWith(".cbz") || f.getName().toLowerCase().endsWith(".jar"))) {
+			if (PMS.getConfiguration().isArchiveBrowsing() && (f.getName().toLowerCase().endsWith(".zip") || f.getName().toLowerCase().endsWith(".cbz"))) {
 				addChild(new ZippedFile(f));
 			} else if (PMS.getConfiguration().isArchiveBrowsing() && (f.getName().toLowerCase().endsWith(".rar") || f.getName().toLowerCase().endsWith(".cbr"))) {
 				addChild(new RarredFile(f));
@@ -88,8 +119,17 @@ public class RealFile extends DLNAResource {
 			} else if (f.getName().toLowerCase().endsWith(".cue")) {
 				addChild(new CueFolder(f));
 			} else {
-				RealFile file = new RealFile(f);
-				addChild(file);
+				
+				/* Optionally ignore empty directories */
+				if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders() && !isFolderRelevant(f)) {
+					PMS.info("Ignoring empty/non relevant directory: " + f.getName());
+				}
+				
+				/* Otherwise add the file */
+				else {
+					RealFile file = new RealFile(f);
+					addChild(file);
+				}
 			}
 		}
 		if (f.isFile()) {
