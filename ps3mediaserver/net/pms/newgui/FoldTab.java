@@ -57,7 +57,9 @@ public class FoldTab {
 	private JList FList;
 	private  DefaultListModel df;
 	private JCheckBox  hidevideosettings ;
+	private JCheckBox  hidemedialibraryfolder ;
 	private JCheckBox  hideextensions ;
+	private JCheckBox  hideemptyfolders ;
 	private JCheckBox  hideengines ;
 	private JButton but5;
 	private JTextField seekpos;
@@ -99,7 +101,7 @@ public class FoldTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref,  0:grow", //$NON-NLS-1$
+                "left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref, 25dlu, pref, default:grow", //$NON-NLS-1$
                 "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, fill:default:grow"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.DLU4_BORDER);
@@ -126,7 +128,7 @@ public class FoldTab {
 		FList.setModel(df);
         JScrollPane pane = new JScrollPane(FList);
         
-        JComponent cmp = builder.addSeparator(Messages.getString("FoldTab.13"),  cc.xyw(1, 1, 8)); //$NON-NLS-1$
+        JComponent cmp = builder.addSeparator(Messages.getString("FoldTab.13"),  cc.xyw(1, 1, 10)); //$NON-NLS-1$
         cmp = (JComponent) cmp.getComponent(0);
         cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
@@ -180,7 +182,7 @@ public class FoldTab {
         });
         if (PMS.getConfiguration().isUseMplayerForVideoThumbs())
         	mplayer_thumb.setSelected(true);
-        builder.add(mplayer_thumb,          cc.xyw(1,  5, 5));
+        builder.add(mplayer_thumb,          cc.xyw(8,  3, 3));
         
         
         final KeyedComboBoxModel thumbKCBM = new KeyedComboBoxModel(new Object[] { "0", "1", "2" }, new Object[] { Messages.getString("FoldTab.15"), Messages.getString("FoldTab.23"), Messages.getString("FoldTab.24") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
@@ -245,7 +247,7 @@ public class FoldTab {
   	  });
   	  builder.add(select,          cc.xyw(7,  9, 1));
         
-        cmp = builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 11, 8)); //$NON-NLS-1$
+        cmp = builder.addSeparator(Messages.getString("NetworkTab.15"),  cc.xyw(1, 11, 10)); //$NON-NLS-1$
         cmp = (JComponent) cmp.getComponent(0);
         cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
@@ -261,6 +263,20 @@ public class FoldTab {
  			}
         	
         });
+        
+        hidemedialibraryfolder = new JCheckBox(Messages.getString("FoldTab.32")); //$NON-NLS-1$
+        hidemedialibraryfolder.setContentAreaFilled(false);
+        if (PMS.getConfiguration().isHideMediaLibraryFolder())
+        	hidemedialibraryfolder.setSelected(true);
+        hidemedialibraryfolder.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				PMS.getConfiguration().setHideMediaLibraryFolder((e.getStateChange() == ItemEvent.SELECTED));
+ 				PMS.get().getFrame().setReloadable(true);
+ 			}
+        	
+        });
+    	
         
 
         
@@ -345,6 +361,8 @@ public class FoldTab {
         
         builder.add(hidevideosettings,          cc.xyw(4,  13, 3));
         
+        builder.add(hidemedialibraryfolder,          cc.xyw(8,  19, 3));
+        
         hideextensions = new JCheckBox(Messages.getString("FoldTab.5")); //$NON-NLS-1$
         hideextensions.setContentAreaFilled(false);
         if (PMS.getConfiguration().isHideExtensions())
@@ -372,6 +390,20 @@ public class FoldTab {
         	
         });
         builder.add(hideengines,          cc.xyw(4,  15, 3));
+        
+        hideemptyfolders = new JCheckBox(Messages.getString("FoldTab.31")); //$NON-NLS-1$
+        hideemptyfolders.setContentAreaFilled(false);
+        if (PMS.getConfiguration().isHideEmptyFolders())
+        	hideemptyfolders.setSelected(true);
+        hideemptyfolders.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				PMS.getConfiguration().setHideEmptyFolders((e.getStateChange() == ItemEvent.SELECTED));
+ 				PMS.get().getFrame().setReloadable(true);
+ 			}
+        	
+        });
+        builder.add(hideemptyfolders,          cc.xyw(8,  15, 3));
         
  	itunes = new JCheckBox(Messages.getString("FoldTab.30")); //$NON-NLS-1$
         itunes.setContentAreaFilled(false);
@@ -561,7 +593,7 @@ public class FoldTab {
        
        builderFolder.add(pane,          cc.xyw(1,  5,6));
        
-       builder.add(builderFolder.getPanel(), cc.xyw(1, 25, 8));
+       builder.add(builderFolder.getPanel(), cc.xyw(1, 25, 10));
        
         return builder.getPanel();
 	}

@@ -107,7 +107,9 @@ public class PmsConfiguration {
 	private static final String KEY_HTTP_ENGINE_V2 = "http_engine_v2";
  	private static final String KEY_IPHOTO_ENABLED = "iphoto";
  	private static final String KEY_ITUNES_ENABLED = "itunes";
-	
+ 	private static final String KEY_HIDE_EMPTY_FOLDERS = "hide_empty_folders";
+ 	private static final String KEY_HIDE_MEDIA_LIBRARY_FOLDER = "hide_media_library_folder";
+ 	
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final String UNLIMITED_BITRATE = "0";
@@ -1006,5 +1008,21 @@ public class PmsConfiguration {
  	public void setItunesEnabled(boolean value) {
  		configuration.setProperty(KEY_ITUNES_ENABLED, value);
  	}
+ 	
+ 	public boolean isHideEmptyFolders() {
+		return getBoolean(PmsConfiguration.KEY_HIDE_EMPTY_FOLDERS, false);
+	}
+	
+	public void setHideEmptyFolders(final boolean value) {
+		this.configuration.setProperty(PmsConfiguration.KEY_HIDE_EMPTY_FOLDERS, value);
+	}
+	
+	public boolean isHideMediaLibraryFolder() {
+		return getBoolean(PmsConfiguration.KEY_HIDE_MEDIA_LIBRARY_FOLDER, false);
+	}
+	
+	public void setHideMediaLibraryFolder(final boolean value) {
+		this.configuration.setProperty(PmsConfiguration.KEY_HIDE_MEDIA_LIBRARY_FOLDER, value);
+	}
 
 }

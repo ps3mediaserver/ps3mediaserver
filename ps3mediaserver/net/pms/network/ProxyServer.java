@@ -53,5 +53,10 @@ public class ProxyServer extends Thread {
 		}
 		
 	}
+	
+	public static void main(String args[]) {
+		ProxyServer ps = new ProxyServer(5015);
+		ps.start();
+	}
 
 }

@@ -78,7 +78,7 @@ public class HTTPServer implements Runnable {
 			if (fixedNI != null)
 				ni = fixedNI;
 			PMS.minimal("Scanning network interface " + ni.getName() + " / " + ni.getDisplayName());
-			if (!PMSUtil.isNetworkInterfaceLoopback(ni) && ni.getName() != null) {
+			if (!PMSUtil.isNetworkInterfaceLoopback(ni) && ni.getName() != null && !ni.getName().contains("vmnet")) {
 				
 				Enumeration<InetAddress> addrs = ni.getInetAddresses();
 				while (addrs.hasMoreElements()) {
@@ -141,6 +141,8 @@ public class HTTPServer implements Runnable {
 			bootstrap.setPipelineFactory(pipeline);
 			bootstrap.setOption("child.tcpNoDelay", true);
 			bootstrap.setOption("child.keepAlive", true);
+			bootstrap.setOption("reuseAddress", true);
+			bootstrap.setOption("child.reuseAddress", true);
 			bootstrap.setOption("child.sendBufferSize", 65536);
 			bootstrap.setOption("child.receiveBufferSize", 65536);
 			bootstrap.bind(address);
@@ -157,12 +159,14 @@ public class HTTPServer implements Runnable {
 	
 	public void stop() {
 		PMS.info( "Stopping server on host " + hostName + " and port " + port + "...");
-		runnable.interrupt();
-		runnable = null;
-		try {
-			serverSocket.close();
-			serverSocketChannel.close();
-		} catch (IOException e) {}
+		if (!PMS.getConfiguration().isHTTPEngineV2()) {
+			runnable.interrupt();
+			runnable = null;
+			try {
+				serverSocket.close();
+				serverSocketChannel.close();
+			} catch (IOException e) {}
+		}
 		
 	}
 	

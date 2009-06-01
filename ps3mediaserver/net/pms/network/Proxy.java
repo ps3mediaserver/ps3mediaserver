@@ -51,36 +51,58 @@ public class Proxy extends Thread {
 		fromBrowser = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		toBrowser = socket.getOutputStream();
 		this.writeCache = writeCache;
+		PMS.debug("Got connection from " + socket);
 		start();
 	}
 
 	public void run() {
+		
+		// mms://202.167.254.196/FOX
+		// http://www.cnn.com/video/live/cnnlive_1.asx  [rtsp]
+		// http://atdhe.net/watchtv4.php?b=n   [rtmp, like hulu]
+		
 		try {
 			String getter = null;
 			String str, targetHost = "", httpHeader = "";
+			int targetPort = 80;
 			while (true) {
 				str = fromBrowser.readLine();
-				if (str.startsWith("GET") || str.startsWith("POST") || str.startsWith("HEAD")) {
+				if (str.startsWith("GET") || str.startsWith("DESCRIBE") || str.startsWith("POST") || str.startsWith("HEAD")) {
 					getter = str;
+					/*String s [] = str.split(" ");
+					if (s.length == 3 && s[1].contains(":")) {
+						int newPort = -1;
+						try {
+							newPort = Integer.parseInt(s[1].substring(s[1].lastIndexOf(":")+1));
+						} catch (NumberFormatException nfe) {}
+						if (newPort > -1)
+							targetPort = newPort;
+					}*/
 				}
 				if (str.startsWith("Accept-Encoding: gzip")) {
 					str = "Accept-Encoding: identity";
 				}
 				//if (!str.startsWith("If-Modified-Since") && !str.startsWith("Range") && !str.startsWith("If-None-Match"))
-					httpHeader += str + "\n";
+					httpHeader += str + "\r\n";
 				if (str.startsWith("Host: "))
 					targetHost = str.substring(6);
+				else if (str.startsWith("DESCRIBE")) {
+					targetPort = 554;
+					targetHost = str.substring(str.indexOf("//")+2);
+					targetHost = targetHost.substring(0, targetHost.indexOf("/"));
+				}
 				if (str.length() == 0)
 					break;
 			}
 
-			int targetPort = 80;
 			String target = targetHost;
 			if (targetHost.indexOf(":") > -1) {
-				targetPort = Integer.parseInt(targetHost.substring(targetHost.indexOf(":")+1));
+				try {
+					targetPort = Integer.parseInt(targetHost.substring(targetHost.indexOf(":")+1));
+				} catch (NumberFormatException nfe) {}
 				target = targetHost.substring(0, targetHost.indexOf(":"));
 			}
-			PMS.debug("[PROXY] Trying to connect to: " + target);
+			PMS.debug("[PROXY] Connect to: " + target + " and port: " + targetPort);
 			socketToWeb = new Socket(InetAddress.getByName(target), targetPort);
 			InputStream sockWebInputStream = socketToWeb.getInputStream();
 			toWeb = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socketToWeb.getOutputStream())), true);
@@ -134,11 +156,12 @@ public class Proxy extends Thread {
 		      long CL = 10000000000L;
 		      while(total_read < CL && (bytes_read = sockWebInputStream.read(buffer)) != -1) {
 		    	  if (!resourceExists) {
-		    		  if (10000000 == CL ) {
+		    		  if (10000000000L == CL ) {
 				    	  String s = new String(buffer, 0, bytes_read);
 				    	  int clPos = s.indexOf("Content-Length: ");
 				    	  if (clPos > -1) {
 				    		  CL = Integer.parseInt(s.substring(clPos+16, s.indexOf("\n", clPos)).trim());
+				    		  PMS.debug("Found Content Length: " + CL);
 				    	  }
 			    	  }
 			    	  if (bytes_read >= 7) {
@@ -152,6 +175,13 @@ public class Proxy extends Thread {
 			    	  if (writeCache)
 			    		  fOUT.write(buffer, 0, bytes_read);
 		    	  }
+		    	 //String h = new String(buffer);
+		    	// PMS.debug(h);
+		    	  /*h = h.replace("rtmp://", "rtmpt://");
+		    	  if (h.contains("rtmpt://")) {
+		    		  System.out.println("héhé");
+		    	  }*/
+		    	 // buffer = h.getBytes();
 		    	  baos.write(buffer, 0, bytes_read);
 		    	  total_read += bytes_read;
 		      }

@@ -541,8 +541,9 @@ public class PMS {
  					line = line.trim();		//remove extra spaces	
  					line = line.substring(1, line.length() - 1); // remove quotes and spaces
  				}
+ 				in.close();
  				URI tURI = new URI(line);
- 				iPhotoLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile()));    // loads the (nested) properties.
+ 				iPhotoLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile(), System.getProperty("file.encoding")));    // loads the (nested) properties.
 				PhotoList = (HashMap) iPhotoLib.get("Master Image List");	// the list of photos
 				ListofRolls = (ArrayList) iPhotoLib.get("List of Rolls");	// the list of events (rolls)
 				VirtualFolder vf = new VirtualFolder("iPhoto Library",null); //$NON-NLS-1$
@@ -584,8 +585,9 @@ public class PMS {
                                         line = line.trim();             //remove extra spaces
                                         line = line.substring(1, line.length() - 1); // remove quotes and spaces
                                 }
+                                in.close();
                                 URI tURI = new URI(line);
- 				iTunesLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile()));     // loads the (nested) properties.
+ 				iTunesLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile(), System.getProperty("file.encoding")));     // loads the (nested) properties.
 	                        Tracks = (HashMap) iTunesLib.get("Tracks");       // the list of tracks
 	                        Playlists = (ArrayList) iTunesLib.get("Playlists");       // the list of Playlists
 	                        VirtualFolder vf = new VirtualFolder("iTunes Library",null); //$NON-NLS-1$
@@ -698,7 +700,8 @@ public class PMS {
 	public boolean addMediaLibraryFolder() {
 		if (PMS.configuration.getUseCache() && !mediaLibraryAdded) {
 			library = new MediaLibrary();
-			rootFolder.addChild(library);
+			if (!PMS.configuration.isHideMediaLibraryFolder())
+				rootFolder.addChild(library);
 			mediaLibraryAdded = true;
 			return true;
 		}

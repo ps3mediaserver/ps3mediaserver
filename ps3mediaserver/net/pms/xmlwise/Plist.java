@@ -112,7 +112,6 @@ public final class Plist
 	 * @param file the destination File to store the data to.
 	 * @throws IOException if there was an IO error saving the file.
 	 */
-	@SuppressWarnings({"IOResourceOpenedButNotSafelyClosed"})
 	public static void store(Map<String, Object> data, File file) throws IOException
 	{
 		FileOutputStream stream = null;
@@ -210,7 +209,6 @@ public final class Plist
 	 * Map or List.
 	 * @return an <tt>XmlElement</tt> containing the serialized version of the object.
 	 */
-	@SuppressWarnings({"EnumSwitchStatementWhichMissesCases", "SwitchStatementWithoutDefaultBranch"})
 	XmlElement objectToXml(Object o)
 	{
 		ElementType type = m_simpleTypes.get(o.getClass());

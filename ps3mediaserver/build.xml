@@ -14,7 +14,7 @@
 	<taskdef name="nsis" classname="net.sf.nsisant.Task" classpath="lib/nsisant-1.2.jar" />
 
 	<path id="lib.path.ref">
-		<fileset id="libs.ref" dir="lib" includes="*.jar"/>
+		<fileset id="libs.ref" dir="lib" includes="*.jar" excludes="*source*.*"/>
 	</path>
 	
 	<target name="clean">
