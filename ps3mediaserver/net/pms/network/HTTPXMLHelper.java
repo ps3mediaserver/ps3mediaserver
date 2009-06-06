@@ -32,6 +32,7 @@ public class HTTPXMLHelper {
 	public static final String SEARCHRESPONSE_FOOTER = "</u:SearchResponse>";
 	public static final String SORTCAPS_RESPONSE = "<u:GetSortCapabilitiesResponse xmlns:u=\"urn:schemas-upnp-org:service:ContentDirectory:1\"><SortCaps></SortCaps></u:GetSortCapabilitiesResponse>";
 	public static final String SEARCHCAPS_RESPONSE = "<u:GetSearchCapabilitiesResponse xmlns:u=\"urn:schemas-upnp-org:service:ContentDirectory:1\"><SearchCaps></SearchCaps></u:GetSearchCapabilitiesResponse>";
+	public static final String PROTOCOLINFO_RESPONSE = "<u:GetProtocolInfoResponse xmlns:u=\"urn:schemas-upnp-org:service:ConnectionManager:1\"><Source>http-get:*:*:*,http-get:*:video/*:*,http-get:*:audio/*:*,http-get:*:image/*:*</Source><Sink></Sink></u:GetProtocolInfoResponse>";
 	public static final String RESULT_HEADER = "<Result>";
 	public static final String RESULT_FOOTER = "</Result>";
 	

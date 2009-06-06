@@ -270,10 +270,20 @@ public class Request extends HTTPResource {
 				response.append(HTTPXMLHelper.XBOX_1);
 				response.append(CRLF);
 			}
-			response.append(HTTPXMLHelper.BROWSERESPONSE_FOOTER);
-			response.append(CRLF);
 			response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 			response.append(CRLF);
+		} else if (method.equals("POST") && argument.equals("upnp/control/connection_manager")) {
+			output(output, CONTENT_TYPE_UTF8);
+			if (soapaction.indexOf("ConnectionManager:1#GetProtocolInfo") > -1) {
+				response.append(HTTPXMLHelper.XML_HEADER);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SOAP_ENCODING_HEADER);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.PROTOCOLINFO_RESPONSE);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
+				response.append(CRLF);
+			}
 		} else if (method.equals("POST") && argument.equals("upnp/control/content_directory")) {
 			output(output, CONTENT_TYPE_UTF8);
 			if (soapaction.indexOf("ContentDirectory:1#GetSystemUpdateID") > -1) {
