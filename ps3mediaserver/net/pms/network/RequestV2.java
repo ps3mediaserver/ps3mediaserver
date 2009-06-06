@@ -267,6 +267,18 @@ public class RequestV2 extends HTTPResource {
 			response.append(CRLF);
 			response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 			response.append(CRLF);
+		} else if (method.equals("POST") && argument.equals("upnp/control/connection_manager")) {
+			output.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/xml; charset=\"utf-8\"");
+			if (soapaction.indexOf("ConnectionManager:1#GetProtocolInfo") > -1) {
+				response.append(HTTPXMLHelper.XML_HEADER);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SOAP_ENCODING_HEADER);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.PROTOCOLINFO_RESPONSE);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
+				response.append(CRLF);
+			}
 		} else if (method.equals("POST") && argument.equals("upnp/control/content_directory")) {
 			output.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/xml; charset=\"utf-8\"");
 			if (soapaction.indexOf("ContentDirectory:1#GetSystemUpdateID") > -1) {
