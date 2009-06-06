@@ -289,6 +289,24 @@ public class Request extends HTTPResource {
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
+			} else if (soapaction.indexOf("ContentDirectory:1#GetSortCapabilities") > -1) {
+				response.append(HTTPXMLHelper.XML_HEADER);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SOAP_ENCODING_HEADER);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SORTCAPS_RESPONSE);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
+				response.append(CRLF);
+			} else if (soapaction.indexOf("ContentDirectory:1#GetSearchCapabilities") > -1) {
+				response.append(HTTPXMLHelper.XML_HEADER);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SOAP_ENCODING_HEADER);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SEARCHCAPS_RESPONSE);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
+				response.append(CRLF);
 			} else if (soapaction.contains("ContentDirectory:1#Browse") || soapaction.contains("ContentDirectory:1#Search")) {
 				//PMS.debug(content);
 				objectID = getEnclosingValue(content, "<ObjectID>", "</ObjectID>");

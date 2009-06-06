@@ -448,7 +448,7 @@ public class DLNAMediaInfo implements Cloneable {
 									String token = st.nextToken().trim();
 									if (token.startsWith("Stream")) {
 										codecV = token.substring(token.indexOf("Video: ")+7);
-									} else if (token.indexOf(".") > -1 && token.indexOf("tb") > -1 && frameRate == null) {
+									} else if ((token.indexOf("tbr") > -1 || token.indexOf("tb(r)") > -1) && frameRate == null) {
 										frameRate = token.substring(0, token.indexOf("tb")).trim();
 									} else if (token.indexOf("x") > -1) {
 										String resolution = token.trim();

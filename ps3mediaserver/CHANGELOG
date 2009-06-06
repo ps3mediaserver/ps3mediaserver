@@ -21,7 +21,6 @@ New translations: Czech (thanks to Mila), Slovenian (thanks to Rob Wall)
 - Fixes
 
 !New and experimental HTTP engine!
-. no more random sound cuts when playing mp3s
 . better network performances ?
 . better media renderer support ? (my set top box at least)
 . better AVI/MP4 support on ps3 ?
