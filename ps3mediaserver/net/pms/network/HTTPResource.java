@@ -138,14 +138,14 @@ public class HTTPResource {
 	}
 	
 	protected String convertURLToFileName(String url) {
-		url = url.replace('/', '�');
-		url = url.replace('\\', '�');
-		url = url.replace(':', '�');
-		url = url.replace('?', '�');
-		url = url.replace('*', '�');
-		url = url.replace('|', '�');
-		url = url.replace('<', '�');
-		url = url.replace('>', '�');
+		url = url.replace('/', '\u00b5');
+		url = url.replace('\\', '\u00b5');
+		url = url.replace(':', '\u00b5');
+		url = url.replace('?', '\u00b5');
+		url = url.replace('*', '\u00b5');
+		url = url.replace('|', '\u00b5');
+		url = url.replace('<', '\u00b5');
+		url = url.replace('>', '\u00b5');
 		return url;
 	}
 	
