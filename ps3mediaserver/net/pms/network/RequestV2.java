@@ -91,6 +91,16 @@ public class RequestV2 extends HTTPResource {
 	public void setTransferMode(String transferMode) {
 		this.transferMode = transferMode;
 	}
+	
+	private String contentFeatures;
+	
+	public String getContentFeatures() {
+		return contentFeatures;
+	}
+
+	public void setContentFeatures(String contentFeatures) {
+		this.contentFeatures = contentFeatures;
+	}
 
 	private double timeseek;
 	
@@ -167,6 +177,9 @@ public class RequestV2 extends HTTPResource {
 			String id = argument.substring(argument.indexOf("get/") + 4, argument.lastIndexOf("/"));
 			id = id.replace("%24", "$"); // popcorn hour ?
 			ArrayList<DLNAResource> files = PMS.get().getRootFolder(mediaRenderer).getDLNAResources(id, false, 0, 0, mediaRenderer);
+			if (transferMode != null) {
+				output.setHeader("TransferMode.DLNA.ORG", transferMode);
+			}
 			if (files.size() == 1) {
 				String fileName = argument.substring(argument.lastIndexOf("/")+1);
 				if (fileName.startsWith("thumbnail0000")) {
@@ -204,6 +217,8 @@ public class RequestV2 extends HTTPResource {
 						}
 						output.setHeader(HttpHeaders.Names.CONTENT_RANGE, "bytes " + lowRange + "-" + highRange + "/" +totalsize);
 					}
+					if (contentFeatures != null)
+						output.setHeader("ContentFeatures.DLNA.ORG", files.get(0).getDlnaContentFeatures());
 					if (files.get(0).getPlayer() == null || xbox)
 						output.setHeader(HttpHeaders.Names.ACCEPT_RANGES, "bytes");
 					output.setHeader(HttpHeaders.Names.CONNECTION, "keep-alive");
@@ -493,7 +508,7 @@ public class RequestV2 extends HTTPResource {
 								} catch (IOException e) {
 									//
 								} 
-								if (close)
+								//if (close) // have to comment this because of freeze at the end of video due to no channel close sent
 				            		chunkWriteFuture.addListener(ChannelFutureListener.CLOSE);
 				            	 
 				            }

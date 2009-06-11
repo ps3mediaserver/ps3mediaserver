@@ -98,7 +98,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	protected int splitTrack;
 	protected String fakeParentId;
 	private RendererConfiguration defaultRenderer;
+	private String dlnaspec;
 	
+	public String getDlnaContentFeatures() {
+		return (dlnaspec!=null?(dlnaspec + ";"):"") + getFlags() + ";DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000";
+	}
 	public DLNAResource getPrimaryResource() {
 		return first;
 	}
@@ -591,7 +595,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().songname))
 			addXMLTagAndAttribute(sb, "dc:title", encodeXML(media.getFirstAudioTrack().songname + (player!=null&&!PMS.getConfiguration().isHideEngineNames()?(" [" + player.name() + "]"):"")));
 		else
-			addXMLTagAndAttribute(sb, "dc:title", encodeXML(getDisplayName()));
+			addXMLTagAndAttribute(sb, "dc:title", encodeXML(isFolder()?getDisplayName():mediaRenderer.getUseSameExtension(getDisplayName())));
 			
 		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().album)) {
 			addXMLTagAndAttribute(sb, "upnp:album", encodeXML(media.getFirstAudioTrack().album));
@@ -624,25 +628,24 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
 			
 			String mime = getRendererMimeType(mimeType(), mediaRenderer);
-			String dlnaspec = "";
 			if (mime == null)
 				mime = "video/mpeg";
 			if (mediaRenderer.isPS3()) { // TO REMOVE, OR AT LEAST MAKE THIS GENERIC // whole extensions/mime-types mess to rethink anyway
 				if (mime.equals("video/x-divx"))
-					dlnaspec = ":DLNA.ORG_PN=AVI";
+					dlnaspec = "DLNA.ORG_PN=AVI";
 				else if (mime.equals("video/x-ms-wmv") && media != null && media.height > 700)
-					dlnaspec = ":DLNA.ORG_PN=WMVHIGH_PRO";
+					dlnaspec = "DLNA.ORG_PN=WMVHIGH_PRO";
 			} else {
 				if (mime.equals("video/mpeg"))
-					dlnaspec = ":DLNA.ORG_PN=MPEG_PS_PAL";
+					dlnaspec = "DLNA.ORG_PN=MPEG_PS_PAL";
 				else if (mime.equals("image/jpeg"))
-					dlnaspec = ":DLNA.ORG_PN=JPEG_LRG";
+					dlnaspec = "DLNA.ORG_PN=JPEG_LRG";
 				else if (mime.equals("audio/mpeg"))
-					dlnaspec = ":DLNA.ORG_PN=MP3";
-				else if (mime.equals("audio/L16"))
-					dlnaspec = ":DLNA.ORG_PN=LPCM";
+					dlnaspec = "DLNA.ORG_PN=MP3";
+				else if (mime.equals("audio/L16") || mime.equals("audio/wav"))
+					dlnaspec = "DLNA.ORG_PN=LPCM";
 			}
-			addAttribute(sb, "protocolInfo", "http-get:*:" + mime + dlnaspec + (dlnaspec.length()>0?";":":") + flags);
+			addAttribute(sb, "protocolInfo", "http-get:*:" + mime + ":" + (dlnaspec!=null?(dlnaspec + ";"):"") + flags);
 			
 			
 			if (ext != null && ext.isVideo() && media != null && media.mediaparsed) {

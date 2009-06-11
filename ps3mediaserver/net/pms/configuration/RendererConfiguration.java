@@ -1,6 +1,7 @@
 package net.pms.configuration;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,25 @@ public class RendererConfiguration {
 				}
 			}
 		}
+	}
+	
+	private InetAddress currentRendererAddress;
+	
+	public InetAddress getCurrentRendererAddress() {
+		return currentRendererAddress;
+	}
+
+	public void associateIP(InetAddress sa) {
+		currentRendererAddress = sa;
+		PMS.minimal("Associate renderer " + this + " to address: " + sa);
+	}
+	
+	public static RendererConfiguration getRendererConfigurationBySocketAddress(InetAddress sa) {
+		for(RendererConfiguration r:renderersConfs) {
+			if (sa.equals(r.currentRendererAddress))
+				return r;
+		}
+		return null;
 	}
 	
 	public static RendererConfiguration getRendererConfiguration(int mediarenderer) {
@@ -127,7 +147,7 @@ public class RendererConfiguration {
 	private static final String MAX_VIDEO_BITRATE="MaxVideoBitrateMbps";
 	private static final String MAX_VIDEO_WIDTH="MaxVideoWidth";
 	private static final String MAX_VIDEO_HEIGHT="MaxVideoHeight";
-	
+	private static final String USE_SAME_EXTENSION="UseSameExtension";
 	private static final String MIME_TYPES_CHANGES="MimeTypesChanges";
 	private static final String TRANSCODE_EXT="TranscodeExtensions";
 	private static final String STREAM_EXT="StreamExtensions";
@@ -214,6 +234,13 @@ public class RendererConfiguration {
 		return getString(RENDERER_NAME, "Unknown Renderer");
 	}
 	
+	public String getRendererNameWithAddress() {
+		String s = getString(RENDERER_NAME, "Unknown Renderer");
+		if (currentRendererAddress != null)
+			s = s + " [" + currentRendererAddress.getHostAddress() + "]";
+		return s;
+	}
+	
 	public String getRendererIcon() {
 		return getString(RENDERER_ICON, "unknown.png");
 	}
@@ -224,6 +251,15 @@ public class RendererConfiguration {
 	
 	public String getUserAgentAdditionalHttpHeaderSearch() {
 		return getString(USER_AGENT_ADDITIONAL_SEARCH, "DefaultUserAgent");
+	}
+	
+	public String getUseSameExtension(String file) {
+		String s = getString(USE_SAME_EXTENSION, null);
+		if (s != null)
+			s = file + "." + s;
+		else
+			s = file;
+		return s;
 	}
 	
 	public boolean isSeekByTime() {

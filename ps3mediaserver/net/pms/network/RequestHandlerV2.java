@@ -19,6 +19,9 @@
 package net.pms.network;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.nio.channels.ClosedChannelException;
 import java.util.StringTokenizer;
 
 import net.pms.PMS;
@@ -52,9 +55,11 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		HttpRequest nettyRequest = this.nettyRequest = (HttpRequest) e
 				.getMessage();
 
-		PMS.debug("Opened handler on socket " + e.getRemoteAddress());
+		InetAddress ia = ((InetSocketAddress) e.getChannel().getRemoteAddress()).getAddress();
+		RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(ia);
+		PMS.debug("Opened handler on socket " + e.getChannel().getRemoteAddress() + (renderer!=null?(" // "+renderer):""));
 		PMS.get().getRegistry().disableGoToSleep();
-		boolean useragentfound = false;
+		boolean useragentfound = renderer != null;
 		String userAgentString = null;
 		if (HttpMethod.GET.equals(nettyRequest.getMethod()))
 			request = new RequestV2("GET", nettyRequest.getUri().substring(1));
@@ -64,31 +69,35 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			request = new RequestV2("HEAD", nettyRequest.getUri().substring(1));
 		if (nettyRequest.getProtocolVersion().getMinorVersion() == 0)
 			request.setHttp10(true);
+		if (useragentfound) {
+			PMS.get().setRendererfound(renderer);
+			request.setMediaRenderer(renderer);
+		}
 		for (String name : nettyRequest.getHeaderNames()) {
 			String headerLine = name + ": " + nettyRequest.getHeader(name);
 			PMS.debug("Received on socket: " + headerLine);
 			if (!useragentfound && headerLine != null
 					&& headerLine.toUpperCase().startsWith("USER-AGENT")
 					&& request != null) {
-				userAgentString = headerLine.substring(
-						headerLine.indexOf(":") + 1).trim();
-				RendererConfiguration renderer = RendererConfiguration
-						.getRendererConfigurationByUA(userAgentString);
+				userAgentString = headerLine.substring(headerLine.indexOf(":") + 1).trim();
+				renderer = RendererConfiguration.getRendererConfigurationByUA(userAgentString);
 				if (renderer != null) {
-					PMS.get().setRendererfound(renderer);
 					request.setMediaRenderer(renderer);
+					renderer.associateIP(ia);
+					PMS.get().setRendererfound(renderer);
 					useragentfound = true;
 				}
 			}
 			if (!useragentfound && headerLine != null && request != null) {
-				RendererConfiguration renderer = RendererConfiguration
-						.getRendererConfigurationByUAAHH(headerLine);
-				if (renderer != null) {
-					PMS.get().setRendererfound(renderer);
-					request.setMediaRenderer(renderer);
+				RendererConfiguration alternateRenderer = RendererConfiguration.getRendererConfigurationByUAAHH(headerLine);
+				if (alternateRenderer != null) {
+					request.setMediaRenderer(alternateRenderer);
+					alternateRenderer.associateIP(ia);
+					PMS.get().setRendererfound(alternateRenderer);
 					useragentfound = true;
 				}
 			}
+			
 			try {
 				StringTokenizer s = new StringTokenizer(headerLine);
 				String temp = s.nextToken();
@@ -106,8 +115,10 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 						request.setHighRange(Long.parseLong(st.nextToken()));
 					else
 						request.setHighRange(DLNAMediaInfo.TRANS_SIZE);
-				} else if (headerLine.indexOf("transferMode.dlna.org:") > -1) {
-					request.setTransferMode(headerLine);
+				} else if (headerLine.toLowerCase().indexOf("transfermode.dlna.org:") > -1) {
+					request.setTransferMode(headerLine.substring(headerLine.toLowerCase().indexOf("transfermode.dlna.org:")+22).trim());
+				} else if (headerLine.toLowerCase().indexOf("getcontentfeatures.dlna.org:") > -1) {
+					request.setContentFeatures(headerLine.substring(headerLine.toLowerCase().indexOf("getcontentfeatures.dlna.org:")+28).trim());
 				} else if (headerLine.toUpperCase().indexOf(
 						"TIMESEEKRANGE.DLNA.ORG: NPT=") > -1) { // firmware
 					// 2.50+
@@ -182,6 +193,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 							: HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 
 		try {
+			PMS.debug("close: " + close);
 			request.answer(response, e, close);
 		} catch (IOException e1) {
 			PMS.debug("Error IO 02: " + e1.getMessage());
@@ -192,6 +204,8 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
 			throws Exception {
+		if (e.getCause() != null && !e.getCause().getClass().equals(ClosedChannelException.class) && !e.getCause().getClass().equals(IOException.class))
+			e.getCause().printStackTrace();
 		e.getChannel().close();
 	}
 }
