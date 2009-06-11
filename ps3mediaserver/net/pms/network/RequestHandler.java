@@ -111,8 +111,10 @@ public class RequestHandler implements Runnable {
 							request.setHighRange(Long.parseLong(st.nextToken()));
 						else
 							request.setHighRange(DLNAMediaInfo.TRANS_SIZE);
-					} else if (headerLine.indexOf("transferMode.dlna.org:") > -1) {
-						request.setTransferMode(headerLine);
+					} else if (headerLine.toLowerCase().indexOf("transfermode.dlna.org:") > -1) {
+						request.setTransferMode(headerLine.substring(headerLine.toLowerCase().indexOf("transfermode.dlna.org:")+22).trim());
+					} else if (headerLine.toLowerCase().indexOf("getcontentfeatures.dlna.org:") > -1) {
+						request.setContentFeatures(headerLine.substring(headerLine.toLowerCase().indexOf("getcontentfeatures.dlna.org:")+28).trim());
 					} else if (headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG: NPT=") > -1) { // firmware 2.50+
 						String timeseek = headerLine.substring(headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG: NPT=")+28);
 						if (timeseek.endsWith("-"))

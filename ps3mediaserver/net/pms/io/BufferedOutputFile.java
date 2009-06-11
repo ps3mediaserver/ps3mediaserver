@@ -53,7 +53,8 @@ public class BufferedOutputFile extends OutputStream  {
 		@Override
 		public int read(byte[] b) throws IOException {
 			int returned = outputStream.read(firstRead, readCount, b);
-			readCount += returned;
+			if (returned != -1)
+				readCount += returned;
 			firstRead = false;
 			return returned;
 		}
@@ -412,7 +413,7 @@ public class BufferedOutputFile extends OutputStream  {
 			this.bufferOverflowWarning = newMargin;
 		}
 		if (eof) {
-			if (readCount > writeCount)
+			if (readCount >= writeCount)
 				return -1;
 		}
 		int c = 0;

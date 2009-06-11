@@ -93,6 +93,17 @@ public class Request extends HTTPResource {
 	public void setTransferMode(String transferMode) {
 		this.transferMode = transferMode;
 	}
+	
+	private String contentFeatures;
+	
+
+	public String getContentFeatures() {
+		return contentFeatures;
+	}
+
+	public void setContentFeatures(String contentFeatures) {
+		this.contentFeatures = contentFeatures;
+	}
 
 	private double timeseek;
 	
@@ -176,6 +187,9 @@ public class Request extends HTTPResource {
 			String id = argument.substring(argument.indexOf("get/") + 4, argument.lastIndexOf("/"));
 			id = id.replace("%24", "$"); // popcorn hour ?
 			ArrayList<DLNAResource> files = PMS.get().getRootFolder(mediaRenderer).getDLNAResources(id, false, 0, 0, mediaRenderer);
+			if (transferMode != null) {
+				output(output, "TransferMode.DLNA.ORG: " + transferMode);
+			}
 			if (files.size() == 1) {
 				String fileName = argument.substring(argument.lastIndexOf("/")+1);
 				if (fileName.startsWith("thumbnail0000")) {
@@ -213,6 +227,8 @@ public class Request extends HTTPResource {
 						}
 						output(output, "CONTENT-RANGE: bytes " + lowRange + "-" + highRange + "/" +totalsize);
 					}
+					if (contentFeatures != null)
+						output(output, "ContentFeatures.DLNA.ORG: "+ files.get(0).getDlnaContentFeatures());
 					if (files.get(0).getPlayer() == null || xbox)
 						output(output, "Accept-Ranges: bytes");
 					output(output, "Connection: keep-alive");

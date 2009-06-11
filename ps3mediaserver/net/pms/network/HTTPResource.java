@@ -42,12 +42,15 @@ public class HTTPResource {
 	public static final String AUDIO_MP4_TYPEMIME = "audio/mp4";
 	public static final String AUDIO_WAV_TYPEMIME = "audio/wav";
 	public static final String AUDIO_WMA_TYPEMIME = "audio/x-ms-wma";
+	public static final String AUDIO_FLAC_TYPEMIME = "audio/x-flac";
+	public static final String AUDIO_OGG_TYPEMIME = "audio/x-ogg";
 	
 	public static final String MPEG_TYPEMIME = "video/mpeg";
 	public static final String MP4_TYPEMIME = "video/mp4";
 	public static final String AVI_TYPEMIME = "video/avi";
 	public static final String WMV_TYPEMIME = "video/x-ms-wmv";
 	public static final String ASF_TYPEMIME = "video/x-ms-asf";
+	public static final String MATROSKA_TYPEMIME = "video/x-matroska";
 	public static final String VIDEO_TRANSCODE = "video/transcode";
 	public static final String AUDIO_TRANSCODE = "audio/transcode";
 	
@@ -135,14 +138,14 @@ public class HTTPResource {
 	}
 	
 	protected String convertURLToFileName(String url) {
-		url = url.replace('/', 'µ');
-		url = url.replace('\\', 'µ');
-		url = url.replace(':', 'µ');
-		url = url.replace('?', 'µ');
-		url = url.replace('*', 'µ');
-		url = url.replace('|', 'µ');
-		url = url.replace('<', 'µ');
-		url = url.replace('>', 'µ');
+		url = url.replace('/', 'ï¿½');
+		url = url.replace('\\', 'ï¿½');
+		url = url.replace(':', 'ï¿½');
+		url = url.replace('?', 'ï¿½');
+		url = url.replace('*', 'ï¿½');
+		url = url.replace('|', 'ï¿½');
+		url = url.replace('<', 'ï¿½');
+		url = url.replace('>', 'ï¿½');
 		return url;
 	}
 	

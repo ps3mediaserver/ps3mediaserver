@@ -145,7 +145,7 @@ public class PMS {
 	public void setRendererfound(RendererConfiguration mediarenderer) {
 		if (!foundRenderers.contains(mediarenderer)) {
 			foundRenderers.add(mediarenderer);
-			frame.addRendererIcon(mediarenderer.getRank(), mediarenderer.getRendererName(), mediarenderer.getRendererIcon());
+			frame.addRendererIcon(mediarenderer.getRank(), mediarenderer.getRendererNameWithAddress(), mediarenderer.getRendererIcon());
 			if (mediarenderer.isPS3())
 				frame.setStatusCode(0, Messages.getString("PMS.5"), "clients/PS3_256.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
