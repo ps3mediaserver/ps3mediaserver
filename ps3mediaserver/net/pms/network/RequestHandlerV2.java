@@ -193,7 +193,6 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 							: HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 
 		try {
-			PMS.debug("close: " + close);
 			request.answer(response, e, close);
 		} catch (IOException e1) {
 			PMS.debug("Error IO 02: " + e1.getMessage());
