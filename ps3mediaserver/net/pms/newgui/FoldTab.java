@@ -56,11 +56,12 @@ public class FoldTab {
 	public static final String ALL_DRIVES = Messages.getString("FoldTab.0"); //$NON-NLS-1$
 	private JList FList;
 	private  DefaultListModel df;
-	private JCheckBox  hidevideosettings ;
-	private JCheckBox  hidemedialibraryfolder ;
-	private JCheckBox  hideextensions ;
-	private JCheckBox  hideemptyfolders ;
-	private JCheckBox  hideengines ;
+	private JCheckBox  hidevideosettings;
+	private JCheckBox  hidetranscode;
+	private JCheckBox  hidemedialibraryfolder;
+	private JCheckBox  hideextensions;
+	private JCheckBox  hideemptyfolders;
+	private JCheckBox  hideengines;
 	private JButton but5;
 	private JTextField seekpos;
 	private JCheckBox  tncheckBox;
@@ -264,6 +265,17 @@ public class FoldTab {
         	
         });
         
+     	hidetranscode = new JCheckBox(Messages.getString("FoldTab.33")); //$NON-NLS-1$
+        hidetranscode.setContentAreaFilled(false);
+        if (PMS.getConfiguration().getHideTranscodeEnabled())
+        	hidetranscode.setSelected(true);
+	hidetranscode.addItemListener(new ItemListener() {
+  		public void itemStateChanged(ItemEvent e) {
+  			PMS.getConfiguration().setHideTranscodeEnabled((e.getStateChange() == ItemEvent.SELECTED));
+  			PMS.get().getFrame().setReloadable(true);
+  		}	
+        });
+
         hidemedialibraryfolder = new JCheckBox(Messages.getString("FoldTab.32")); //$NON-NLS-1$
         hidemedialibraryfolder.setContentAreaFilled(false);
         if (PMS.getConfiguration().isHideMediaLibraryFolder())
@@ -360,6 +372,8 @@ public class FoldTab {
      	  cachereset.setEnabled(PMS.getConfiguration().getUseCache());
         
         builder.add(hidevideosettings,          cc.xyw(4,  13, 3));
+
+        builder.add(hidetranscode,          cc.xyw(8,  13, 3));
         
         builder.add(hidemedialibraryfolder,          cc.xyw(8,  19, 3));
         

@@ -109,7 +109,8 @@ public class PmsConfiguration {
  	private static final String KEY_ITUNES_ENABLED = "itunes";
  	private static final String KEY_HIDE_EMPTY_FOLDERS = "hide_empty_folders";
  	private static final String KEY_HIDE_MEDIA_LIBRARY_FOLDER = "hide_media_library_folder";
- 	
+	private static final String KEY_HIDE_TRANSCODE_FOLDER = "hide_transcode_folder";
+
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final String UNLIMITED_BITRATE = "0";
@@ -318,14 +319,15 @@ public class PmsConfiguration {
 	}
 
 	public int getMaxMemoryBufferSize() {
-		return getInt(KEY_MAX_MEMORY_BUFFER_SIZE, 400);
+		return Math.max(0, Math.min(MAX_MAX_MEMORY_BUFFER_SIZE, getInt(KEY_MAX_MEMORY_BUFFER_SIZE, 400)));
+	}
+
+	public String getMaxMemoryBufferSizeStr() {
+		return String.valueOf(MAX_MAX_MEMORY_BUFFER_SIZE);
 	}
 
 	public void setMaxMemoryBufferSize(int value) {
-		if (value > 600) {
-			value = MAX_MAX_MEMORY_BUFFER_SIZE;
-		}
-		configuration.setProperty(KEY_MAX_MEMORY_BUFFER_SIZE, value);		
+		configuration.setProperty(KEY_MAX_MEMORY_BUFFER_SIZE, Math.max(0, Math.min(MAX_MAX_MEMORY_BUFFER_SIZE, value)));
 	}
 	
 	public String getMencoderAssScale() {
@@ -1023,6 +1025,14 @@ public class PmsConfiguration {
 	
 	public void setHideMediaLibraryFolder(final boolean value) {
 		this.configuration.setProperty(PmsConfiguration.KEY_HIDE_MEDIA_LIBRARY_FOLDER, value);
+	}
+
+	public boolean getHideTranscodeEnabled() {
+		return getBoolean(KEY_HIDE_TRANSCODE_FOLDER, false);
+	}
+	
+	public void setHideTranscodeEnabled(boolean value) {
+		configuration.setProperty(KEY_HIDE_TRANSCODE_FOLDER, value);
 	}
 
 }

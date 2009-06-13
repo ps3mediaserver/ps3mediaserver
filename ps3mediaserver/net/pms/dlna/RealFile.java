@@ -171,11 +171,15 @@ public class RealFile extends DLNAResource {
 			PMS.info("File automatically added: " + f.getName());
 		}
 		
+
 		TranscodeVirtualFolder vf = null;
-		for(DLNAResource r:children) {
-			if (r instanceof TranscodeVirtualFolder) {
-				vf = (TranscodeVirtualFolder) r;
-				break;
+		if (!PMS.getConfiguration().getHideTranscodeEnabled())
+		{
+			for(DLNAResource r:children) {
+				if (r instanceof TranscodeVirtualFolder) {
+					vf = (TranscodeVirtualFolder) r;
+					break;
+				}
 			}
 		}
 		
