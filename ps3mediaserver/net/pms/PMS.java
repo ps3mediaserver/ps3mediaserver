@@ -677,6 +677,15 @@ public class PMS {
 				}
 			});
 			
+			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.27"), true) { //$NON-NLS-1$
+				public boolean enable() {
+					try {
+						configuration.save();
+					} catch (ConfigurationException e) {}
+					return true;
+				}
+			});
+
 			vf.addChild(new VirtualVideoAction(Messages.getString("LooksFrame.12"), true) { //$NON-NLS-1$
 				public boolean enable() {
 					try {

@@ -208,7 +208,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 							PMS.info("Switching " + child.getName() + " to player: " + pl.toString());
 						}
 							
-						if (child.ext.isVideo() && !child.notranscodefolder) {
+						if (child.ext.isVideo() && (!child.notranscodefolder) && (!PMS.getConfiguration().getHideTranscodeEnabled())) {
 							//search for transcode folder
 							for(DLNAResource r:children) {
 								if (r instanceof TranscodeVirtualFolder) {
