@@ -110,6 +110,7 @@ public class PmsConfiguration {
  	private static final String KEY_HIDE_EMPTY_FOLDERS = "hide_empty_folders";
  	private static final String KEY_HIDE_MEDIA_LIBRARY_FOLDER = "hide_media_library_folder";
 	private static final String KEY_HIDE_TRANSCODE_FOLDER = "hide_transcode_folder";
+	private static final String KEY_DVDISO_THUMBNAILS = "dvd_isos_thumbnails";
 
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -1033,6 +1034,14 @@ public class PmsConfiguration {
 	
 	public void setHideTranscodeEnabled(boolean value) {
 		configuration.setProperty(KEY_HIDE_TRANSCODE_FOLDER, value);
+	}
+	
+	public boolean isDvdIsoThumbnails() {
+		return getBoolean(KEY_DVDISO_THUMBNAILS, false);
+	}
+	
+	public void setDvdIsoThumbnails(boolean value) {
+		configuration.setProperty(KEY_DVDISO_THUMBNAILS, value);
 	}
 
 }

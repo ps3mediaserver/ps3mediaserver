@@ -19,14 +19,18 @@
 package net.pms.dlna;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import net.pms.PMS;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
 
 public class DVDISOTitle extends DLNAResource {
@@ -36,6 +40,19 @@ public class DVDISOTitle extends DLNAResource {
 		String cmd [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()), "dvd://"+title };
 		OutputParams params = new OutputParams(PMS.getConfiguration());
 		params.maxBufferSize = 1;
+		if (PMS.getConfiguration().isDvdIsoThumbnails()) {
+			try {
+				params.workDir = PMS.getConfiguration().getTempFolder();
+			} catch (IOException e1) {}
+			cmd [2] = "-frames";
+			cmd [3] = "2";
+			cmd [7] = "-quiet";
+			cmd [8] = "-quiet";
+			String frameName = "" + this.hashCode();
+			frameName = "mplayer_thumbs:subdirs=\"" + frameName + "\"";
+			frameName = frameName.replace(',', '_');
+			cmd [10] = "jpeg:outdir=" + frameName;
+		}
 		params.log = true;
 		final ProcessWrapperImpl pw = new ProcessWrapperImpl(cmd, params);
 		Runnable r = new Runnable() {
@@ -102,6 +119,37 @@ public class DVDISOTitle extends DLNAResource {
 			}
 			if (line.startsWith("ID_VIDEO_ASPECT=")) {
 				aspect = line.substring(line.indexOf("ID_VIDEO_ASPECT=")+16).trim();
+			}
+		}
+		
+		if (PMS.getConfiguration().isDvdIsoThumbnails()) {
+			try {
+				String frameName = "" + this.hashCode();
+				frameName = PMS.getConfiguration().getTempFolder() + "/mplayer_thumbs/" + frameName + "00000001/0000000";
+				frameName = frameName.replace(',', '_');
+				File jpg = new File(frameName + "2.jpg");
+				if (jpg.exists()) {
+					InputStream is = new FileInputStream(jpg);
+					int sz = is.available();
+					if (sz > 0) {
+						media.thumb = new byte [sz];
+						is.read(media.thumb);
+					}
+					is.close();
+					if (!jpg.delete())
+						jpg.deleteOnExit();
+					if (!jpg.getParentFile().delete())
+						jpg.getParentFile().delete();
+				}
+				jpg = new File(frameName + "1.jpg");
+				if (jpg.exists()) {
+					if (!jpg.delete())
+						jpg.deleteOnExit();
+					if (!jpg.getParentFile().delete())
+						jpg.getParentFile().delete();
+				}
+			} catch (IOException e) {
+				PMS.debug("Error in DVD ISO thumbnail retrieval: " + e.getMessage());
 			}
 		}
 		
@@ -179,8 +227,41 @@ public class DVDISOTitle extends DLNAResource {
 		return DLNAMediaInfo.TRANS_SIZE;
 	}
 	
-	public InputStream getThumbnailInputStream() throws IOException {
+	/*public InputStream getThumbnailInputStream() throws IOException {
 		return getResourceInputStream("images/cdrwblank-256.png");
+	}*/
+	
+	@Override
+	public InputStream getThumbnailInputStream() throws IOException {
+		File cachedThumbnail = null;
+		File thumbFolder = null;
+		boolean alternativeCheck = false;
+		while (cachedThumbnail == null) {
+			if (thumbFolder == null)
+				thumbFolder = f.getParentFile();
+			cachedThumbnail = FileUtil.getFileNameWitNewExtension(thumbFolder, f, "jpg");
+			if (cachedThumbnail == null)
+				cachedThumbnail = FileUtil.getFileNameWitNewExtension(thumbFolder, f, "png");
+			if (cachedThumbnail == null)
+				cachedThumbnail = FileUtil.getFileNameWitAddedExtension(thumbFolder, f, ".cover.jpg");
+			if (cachedThumbnail == null)
+				cachedThumbnail = FileUtil.getFileNameWitAddedExtension(thumbFolder, f, ".cover.png");
+			if (alternativeCheck)
+				break;
+			if (StringUtils.isNotBlank(PMS.getConfiguration().getAlternateThumbFolder())) {
+				thumbFolder = new File(PMS.getConfiguration().getAlternateThumbFolder());
+				if (!thumbFolder.exists() || !thumbFolder.isDirectory()) {
+					thumbFolder = null;
+					break;
+				}
+			}
+			alternativeCheck = true;
+		}
+		if (cachedThumbnail != null)
+			return new FileInputStream(cachedThumbnail);
+		else if (media != null && media.thumb != null)
+			return media.getThumbnailInputStream();
+		else return getResourceInputStream("images/cdrwblank-256.png");
 	}
 
 }

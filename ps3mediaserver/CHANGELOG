@@ -5,9 +5,11 @@ v1.20
 
 - Changes / Features
 
-Externalization of PS3/Xbox playback profiles, it's now possible to create profiles for any media renderer (Popcorn Hour already included)
+Externalization of PS3/Xbox playback profiles, it's now possible to create profiles for any media renderer
+Includes preliminary support for Sony Bravia, Popcorn Hour, Samsung Wiselink, Freebox HD
 Handling of UTF8 and UTF16 encoding, and case insensitive external subtitles
 CUE playlist support
+DVD ISO thumbnails
 Updated tsMuxeR binaries (better H264 camcorders support)
 Windows: Launcher now detects Java 64 bits if installed
 Windows: Updated mencoder/mplayer/ffmpeg builds
@@ -21,6 +23,7 @@ New translations: Czech (thanks to Mila), Danish (thanks to Niclas Gleesborg), S
 - Fixes
 
 !New and experimental HTTP engine!
+. no more random sound cuts when playing mp3s
 . better network performances ?
 . better media renderer support ? (my set top box at least)
 . better AVI/MP4 support on ps3 ?
