@@ -47,7 +47,7 @@ public class RequestV2 extends HTTPResource {
 		
 	private static SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
 	
-	private static int BUFFER_SIZE = 32*1024;
+	private static int BUFFER_SIZE = 8*1024;
 	
 	int sendB = 0;
 	private String method;

@@ -66,7 +66,7 @@ public class FoldTab {
 	private JTextField seekpos;
 	private JCheckBox  tncheckBox;
 	private JCheckBox  mplayer_thumb;
-	//private JCheckBox  disablefakesize;
+	private JCheckBox  dvdiso_thumb;
 	private JCheckBox  cacheenable;
 	private JCheckBox  archive;
 	private JComboBox sortmethod;
@@ -183,8 +183,20 @@ public class FoldTab {
         });
         if (PMS.getConfiguration().isUseMplayerForVideoThumbs())
         	mplayer_thumb.setSelected(true);
-        builder.add(mplayer_thumb,          cc.xyw(8,  3, 3));
+        builder.add(mplayer_thumb,          cc.xyw(1,  5, 3));
         
+        dvdiso_thumb = new JCheckBox("DVD ISOs thumbnails");
+        dvdiso_thumb.setContentAreaFilled(false);
+        dvdiso_thumb.addItemListener(new ItemListener() {
+
+  			public void itemStateChanged(ItemEvent e) {
+  				PMS.getConfiguration().setDvdIsoThumbnails((e.getStateChange() == ItemEvent.SELECTED));
+  			}
+        	
+        });
+        if (PMS.getConfiguration().isDvdIsoThumbnails())
+        	dvdiso_thumb.setSelected(true);
+        builder.add(dvdiso_thumb,          cc.xyw(3,  5, 3));
         
         final KeyedComboBoxModel thumbKCBM = new KeyedComboBoxModel(new Object[] { "0", "1", "2" }, new Object[] { Messages.getString("FoldTab.15"), Messages.getString("FoldTab.23"), Messages.getString("FoldTab.24") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         audiothumbnail = new JComboBox(thumbKCBM);

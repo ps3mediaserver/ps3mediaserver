@@ -184,13 +184,13 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		HttpResponse response = null;
 		if (request.getLowRange() > 0 || request.getHighRange() > 0) {
 			response = new DefaultHttpResponse(
-					request.isHttp10() ? HttpVersion.HTTP_1_0
-							: HttpVersion.HTTP_1_1,
+					/*request.isHttp10() ? HttpVersion.HTTP_1_0
+							: */HttpVersion.HTTP_1_1,
 					HttpResponseStatus.PARTIAL_CONTENT);
 		} else
 			response = new DefaultHttpResponse(
-					request.isHttp10() ? HttpVersion.HTTP_1_0
-							: HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+					/*request.isHttp10() ? HttpVersion.HTTP_1_0
+							: */HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 
 		try {
 			request.answer(response, e, close);
