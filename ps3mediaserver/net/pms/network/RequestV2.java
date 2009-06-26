@@ -245,8 +245,10 @@ public class RequestV2 extends HTTPResource {
 				inputStream.read(b);
 				String s = new String(b);
 				s = s.replace("uuid:1234567890TOTO", PMS.get().usn());//.substring(0, PMS.get().usn().length()-2));
-				s = s.replace("<host>", PMS.get().getServer().getHost());
-				s = s.replace("<port>", "" +PMS.get().getServer().getPort());
+				if (PMS.get().getServer().getHost() != null) {
+					s = s.replace("<host>", PMS.get().getServer().getHost());
+					s = s.replace("<port>", "" +PMS.get().getServer().getPort());
+				}
 				if (xbox) {
 					PMS.info("DLNA changes for Xbox360");
 					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "] : Windows Media Connect");
@@ -476,7 +478,10 @@ public class RequestV2 extends HTTPResource {
 			future = e.getChannel().write(output);
 			
 			if (lowRange != DLNAMediaInfo.ENDFILE_POS && !method.equals("HEAD")) {
-				
+				// Use of the newest 3.1.0 data streaming feature with Netty
+				// Too bad it doesn't work with half MPEG videos on PS3 !? (really weird)
+				// ChannelFuture chunkWriteFuture = e.getChannel().write(new ChunkedStream(inputStream, BUFFER_SIZE));
+				// Then, let's keep the old way of doing large file streaming:
 				future.addListener(new ChannelFutureListener() {
 					private final ChannelBuffer buf = ChannelBuffers.buffer(BUFFER_SIZE); 
 					public void operationComplete(ChannelFuture future) {

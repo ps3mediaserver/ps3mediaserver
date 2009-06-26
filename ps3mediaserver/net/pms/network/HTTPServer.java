@@ -37,6 +37,7 @@ import net.pms.util.PMSUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
@@ -133,7 +134,7 @@ public class HTTPServer implements Runnable {
 			runnable.start();
 			
 		} else {
-			ChannelFactory factory = new NioServerSocketChannelFactory(
+			factory = new NioServerSocketChannelFactory(
 				Executors.newCachedThreadPool(),
 				Executors.newCachedThreadPool());
 			ServerBootstrap bootstrap = new ServerBootstrap(factory);
@@ -145,7 +146,7 @@ public class HTTPServer implements Runnable {
 			bootstrap.setOption("child.reuseAddress", true);
 			bootstrap.setOption("child.sendBufferSize", 65536);
 			bootstrap.setOption("child.receiveBufferSize", 65536);
-			bootstrap.bind(address);
+			channel = bootstrap.bind(address);
 			
 			if (hostName == null && iafinal !=null)
 				hostName = iafinal.getHostAddress();
@@ -157,6 +158,9 @@ public class HTTPServer implements Runnable {
 		return true;
 	}
 	
+	private ChannelFactory factory;
+	private Channel channel;
+	
 	public void stop() {
 		PMS.info( "Stopping server on host " + hostName + " and port " + port + "...");
 		if (!PMS.getConfiguration().isHTTPEngineV2()) {
@@ -166,8 +170,13 @@ public class HTTPServer implements Runnable {
 				serverSocket.close();
 				serverSocketChannel.close();
 			} catch (IOException e) {}
+		} else if (channel != null) {
+			channel.disconnect().awaitUninterruptibly();
+			channel.close().awaitUninterruptibly();
+		    channel.unbind().awaitUninterruptibly();
+		    if (factory != null)
+		    	factory.releaseExternalResources();
 		}
-		
 	}
 	
 	public void run() {
