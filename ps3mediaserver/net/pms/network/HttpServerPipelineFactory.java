@@ -27,6 +27,7 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import org.jboss.netty.handler.stream.ChunkedWriteHandler;
 
 /**
  * @author The Netty Project (netty-dev@lists.jboss.org)
@@ -39,6 +40,7 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast("decoder", new HttpRequestDecoder());
         pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("handler", new RequestHandlerV2());
+        pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
         return pipeline;
     }
 }

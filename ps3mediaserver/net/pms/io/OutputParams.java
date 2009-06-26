@@ -20,7 +20,6 @@ package net.pms.io;
 
 import java.io.File;
 
-import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
@@ -62,9 +61,11 @@ public class OutputParams {
 		fromFrame = -1;
 		toFrame = -1;
 		secondread_minsize = 1000000;
-		minFileSize = PMS.getConfiguration().getMinStreamBuffer();
-		minBufferSize = configuration.getMinMemoryBufferSize();
-		maxBufferSize = configuration.getMaxMemoryBufferSize();
+		if (configuration != null) {
+			minFileSize = configuration.getMinStreamBuffer();
+			minBufferSize = configuration.getMinMemoryBufferSize();
+			maxBufferSize = configuration.getMaxMemoryBufferSize();
+		}
 		if (maxBufferSize < 100)
 			maxBufferSize = 100;
 		timeseek = 0;

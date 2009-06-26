@@ -412,6 +412,7 @@ public class PMS {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 				try {
+					UPNPHelper.shutDownListener();
 					UPNPHelper.sendByeBye();
 					PMS.info("Forcing shutdown of all active processes"); //$NON-NLS-1$
 					for(Process p:currentProcesses) {
@@ -423,7 +424,6 @@ public class PMS {
 						}
 					}
 					PMS.get().getServer().stop();
-					UPNPHelper.shutDownListener();
 					if (pw != null)
 						pw.close();
 					Thread.sleep(500);
@@ -542,26 +542,30 @@ public class PMS {
  					line = line.substring(1, line.length() - 1); // remove quotes and spaces
  				}
  				in.close();
- 				URI tURI = new URI(line);
- 				iPhotoLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile(), System.getProperty("file.encoding")));    // loads the (nested) properties.
-				PhotoList = (HashMap) iPhotoLib.get("Master Image List");	// the list of photos
-				ListofRolls = (ArrayList) iPhotoLib.get("List of Rolls");	// the list of events (rolls)
-				VirtualFolder vf = new VirtualFolder("iPhoto Library",null); //$NON-NLS-1$
-				for (Object item : ListofRolls) {
-					Roll = (HashMap) item;
-					VirtualFolder rf = new VirtualFolder(Roll.get("RollName").toString(),null); //$NON-NLS-1$
-					RollPhotos = (ArrayList) Roll.get("KeyList");	// list of photos in an event (roll)
-					for (Object p : RollPhotos) {
-						Photo = (HashMap) PhotoList.get(p);
-						RealFile file = new RealFile(new File(Photo.get("ImagePath").toString()));
-	       	                         	rf.addChild(file);
-					}
-					vf.addChild(rf); //$NON-NLS-1$
-	 			}
-				rootFolder.addChild(vf);	
+ 				if (line != null) {
+	 				URI tURI = new URI(line);
+	 				iPhotoLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile(), System.getProperty("file.encoding")));    // loads the (nested) properties.
+					PhotoList = (HashMap) iPhotoLib.get("Master Image List");	// the list of photos
+					ListofRolls = (ArrayList) iPhotoLib.get("List of Rolls");	// the list of events (rolls)
+					VirtualFolder vf = new VirtualFolder("iPhoto Library",null); //$NON-NLS-1$
+					for (Object item : ListofRolls) {
+						Roll = (HashMap) item;
+						VirtualFolder rf = new VirtualFolder(Roll.get("RollName").toString(),null); //$NON-NLS-1$
+						RollPhotos = (ArrayList) Roll.get("KeyList");	// list of photos in an event (roll)
+						for (Object p : RollPhotos) {
+							Photo = (HashMap) PhotoList.get(p);
+							RealFile file = new RealFile(new File(Photo.get("ImagePath").toString()));
+		       	                         	rf.addChild(file);
+						}
+						vf.addChild(rf); //$NON-NLS-1$
+		 			}
+					rootFolder.addChild(vf);
+ 				} else {
+ 					PMS.minimal("iPhoto folder not found !?");
+ 				}
 			} catch (Exception e) {
 				PMS.error("Something wrong with the iPhoto Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                	}
+               }
 		}
 	}
 
@@ -586,28 +590,32 @@ public class PMS {
                                         line = line.substring(1, line.length() - 1); // remove quotes and spaces
                                 }
                                 in.close();
-                                URI tURI = new URI(line);
- 				iTunesLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile(), System.getProperty("file.encoding")));     // loads the (nested) properties.
-	                        Tracks = (HashMap) iTunesLib.get("Tracks");       // the list of tracks
-	                        Playlists = (ArrayList) iTunesLib.get("Playlists");       // the list of Playlists
-	                        VirtualFolder vf = new VirtualFolder("iTunes Library",null); //$NON-NLS-1$
-	                        for (Object item : Playlists) {
-	                                Playlist = (HashMap) item;
-	                                VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(),null); //$NON-NLS-1$
-	                                PlaylistTracks = (ArrayList) Playlist.get("Playlist Items");   // list of tracks in a playlist
-					if (PlaylistTracks != null) {
-	                                	for (Object t : PlaylistTracks) {
-							HashMap td = (HashMap) t;
-							Track = (HashMap) Tracks.get(td.get("Track ID").toString());
- 							if (Track.get("Location").toString().startsWith("file://")) {
- 								URI tURI2 = new URI(Track.get("Location").toString());
- 								RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
- 	       	                                 		pf.addChild(file);
- 							}	                                	}
-					}
-	                                vf.addChild(pf); //$NON-NLS-1$
-	                        }
-	                        rootFolder.addChild(vf);
+                                if (line != null) {
+	                                URI tURI = new URI(line);
+	 				iTunesLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile(), System.getProperty("file.encoding")));     // loads the (nested) properties.
+		                        Tracks = (HashMap) iTunesLib.get("Tracks");       // the list of tracks
+		                        Playlists = (ArrayList) iTunesLib.get("Playlists");       // the list of Playlists
+		                        VirtualFolder vf = new VirtualFolder("iTunes Library",null); //$NON-NLS-1$
+		                        for (Object item : Playlists) {
+		                                Playlist = (HashMap) item;
+		                                VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(),null); //$NON-NLS-1$
+		                                PlaylistTracks = (ArrayList) Playlist.get("Playlist Items");   // list of tracks in a playlist
+						if (PlaylistTracks != null) {
+		                                	for (Object t : PlaylistTracks) {
+								HashMap td = (HashMap) t;
+								Track = (HashMap) Tracks.get(td.get("Track ID").toString());
+	 							if (Track.get("Location").toString().startsWith("file://")) {
+	 								URI tURI2 = new URI(Track.get("Location").toString());
+	 								RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
+	 	       	                                 		pf.addChild(file);
+	 							}	                                	}
+						}
+		                                vf.addChild(pf); //$NON-NLS-1$
+		                        }
+		                        rootFolder.addChild(vf);
+                                } else {
+                                	PMS.minimal("iTunes folder not found !?");
+                                }
 	                } catch (Exception e) {
 	                        PMS.error("Something wrong with the iTunes Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	                }
@@ -877,15 +885,18 @@ public class PMS {
 	}
 	
 	public static void info(String msg) {
-		instance.message(INFO, msg);
+		if (instance != null)
+			instance.message(INFO, msg);
 	}
 	
 	public static void minimal(String msg) {
-		instance.message(MINIMAL, msg);
+		if (instance != null)
+			instance.message(MINIMAL, msg);
 	}
 	
 	public static void error(String msg, Throwable t) {
-		instance.message(msg, t);
+		if (instance != null)
+			instance.message(msg, t);
 	}
 	
 	private void message(int l, String message) {

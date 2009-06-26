@@ -4,16 +4,21 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import net.pms.PMS;
+import net.pms.io.OutputParams;
+import net.pms.io.ProcessWrapperImpl;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
+
+import com.sun.jna.Platform;
 
 public class RendererConfiguration {
 	
@@ -53,14 +58,63 @@ public class RendererConfiguration {
 	}
 	
 	private InetAddress currentRendererAddress;
+	private int speedInMbits;
 	
+	public int getSpeedInMbits() {
+		return speedInMbits;
+	}
+
 	public InetAddress getCurrentRendererAddress() {
 		return currentRendererAddress;
 	}
 
 	public void associateIP(InetAddress sa) {
 		currentRendererAddress = sa;
-		PMS.minimal("Associate renderer " + this + " to address: " + sa);
+		PMS.minimal("Renderer " + this + " found on this address: " + sa);
+		
+		// let's get that speed
+		OutputParams op = new OutputParams(null);
+		op.log = true;
+		op.maxBufferSize = 1;
+		String count = Platform.isWindows()?"-n":"-c";
+		String size= Platform.isWindows()?"-l":"-s";
+		final ProcessWrapperImpl pw = new ProcessWrapperImpl(new String[] {"ping", count, "3", size, "64000", sa.getHostAddress()}, op);
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {}
+				pw.stopProcess();
+			}
+		};
+		Thread failsafe = new Thread(r);
+		failsafe.start();
+		pw.run();
+		List<String> ls = pw.getOtherResults();
+		int time = 0;
+		int c = 0;
+		for(String line:ls) {
+			int msPos = line.indexOf(" ms");
+			try {
+				if (msPos > -1) {
+					String timeString = line.substring(line.lastIndexOf("=", msPos)+1, msPos).trim();
+					time += Double.parseDouble(timeString);
+					c++;
+				}
+			} catch (Exception e) {
+				// no big deal
+			}
+		}
+		if (c > 0)
+			time = (int) (time / c);
+		if (time > 0) {
+			speedInMbits = (int) (1024 / time);
+			PMS.minimal("Renderer " + this + " have an estimated network speed of: " + speedInMbits + " Mb/s");
+		}
+	}
+	
+	public static void main(String args[]) throws Exception{
+		new RendererConfiguration().associateIP(InetAddress.getByName("192.168.0.10"));
 	}
 	
 	public static RendererConfiguration getRendererConfigurationBySocketAddress(InetAddress sa) {
@@ -131,7 +185,8 @@ public class RendererConfiguration {
 	
 	private static final String SEEK_BY_TIME="SeekByTime";
 	
-	public static final String MPEGAC3 = "MPEGAC3";
+	public static final String MPEGPSAC3 = "MPEGAC3";
+	public static final String MPEGTSAC3 = "MPEGTSAC3";
 	public static final String WMV = "WMV";
 	
 	public static final String PCM = "PCM";
@@ -199,8 +254,16 @@ public class RendererConfiguration {
 		return getVideoTranscode().startsWith(WMV);
 	}
 	
-	public boolean isTranscodeToMPEGAC3() {
-		return getVideoTranscode().startsWith(MPEGAC3);
+	public boolean isTranscodeToAC3() {
+		return isTranscodeToMPEGPSAC3() || isTranscodeToMPEGTSAC3();
+	}
+	
+	public boolean isTranscodeToMPEGPSAC3() {
+		return getVideoTranscode().startsWith(MPEGPSAC3);
+	}
+	
+	public boolean isTranscodeToMPEGTSAC3() {
+		return getVideoTranscode().startsWith(MPEGTSAC3);
 	}
 	
 	public boolean isTranscodeToMP3() {
@@ -238,6 +301,9 @@ public class RendererConfiguration {
 		String s = getString(RENDERER_NAME, "Unknown Renderer");
 		if (currentRendererAddress != null)
 			s = s + " [" + currentRendererAddress.getHostAddress() + "]";
+		if (speedInMbits > 0) {
+			s = "<html><p align=center>" + s + "<br><b>Speed: " + speedInMbits + " Mb/s</b></p></html>";
+		}
 		return s;
 	}
 	
@@ -287,7 +353,7 @@ public class RendererConfiguration {
 	}
 	
 	public String getVideoTranscode() {
-		return getString(TRANSCODE_VIDEO, MPEGAC3);
+		return getString(TRANSCODE_VIDEO, MPEGPSAC3);
 	}
 	
 	public String getAudioTranscode() {

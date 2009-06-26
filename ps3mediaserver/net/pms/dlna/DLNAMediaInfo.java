@@ -936,6 +936,10 @@ public class DLNAMediaInfo implements Cloneable {
 		return (width > 1200 || height > 700);
 	}
 	
+	public boolean isMpegTS() {
+		return container != null && container.equals("mpegts");
+	}
+	
 	/*
 	public int [] getAudioSubLangIds() {
 		int audiosubs [] = null;

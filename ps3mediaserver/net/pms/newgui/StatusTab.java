@@ -86,7 +86,7 @@ public class StatusTab {
 	        
 	        builder.addLabel(Messages.getString("StatusTab.6"),  cc.xy(2,  7)); //$NON-NLS-1$
 	        builder.add(jpb, cc.xy(2, 9));
-	        builder.addLabel(Messages.getString("StatusTab.7"),  cc.xy(2,  11)); //$NON-NLS-1$
+	        //builder.addLabel(Messages.getString("StatusTab.7"),  cc.xy(2,  11)); //$NON-NLS-1$
 	        jio = new JLabel(Messages.getString("StatusTab.8")); //$NON-NLS-1$
 	        builder.add(jio, cc.xy(2, 13));
 	        

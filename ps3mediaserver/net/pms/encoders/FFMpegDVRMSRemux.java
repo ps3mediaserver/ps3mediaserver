@@ -190,7 +190,7 @@ public class FFMpegDVRMSRemux extends Player {
 
 	@Override
 	public boolean isPlayerCompatible(RendererConfiguration mediaRenderer) {
-		return mediaRenderer.isTranscodeToMPEGAC3();
+		return mediaRenderer.isTranscodeToMPEGPSAC3();
 	}
 	
 }

@@ -36,7 +36,9 @@ import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
+import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
+import net.pms.encoders.TSMuxerVideo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
@@ -163,7 +165,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			if (child.ext != null)
 				skipTranscode = child.ext.skip(PMS.getConfiguration().getNoTranscode(), defaultRenderer!=null?defaultRenderer.getStreamedExtensions():null);
 			
-			if (!skipTranscode && child.ext != null && child.ext.transcodable() && child.media == null) {
+			if (child.ext != null && child.ext.transcodable() && child.media == null) {
 			
 				child.media = new DLNAMediaInfo();
 				
@@ -203,7 +205,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						if (child.ext != null)
 							forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode(), defaultRenderer!=null?defaultRenderer.getTranscodedExtensions():null);
 						
-						if (forceTranscode || !child.ext.ps3compatible() || (PMS.getConfiguration().getUseSubtitles() && child.srtFile)) {
+						if (forceTranscode || (!child.ext.ps3compatible() && !skipTranscode) || (PMS.getConfiguration().getUseSubtitles() && child.srtFile)) {
 							child.player = pl;
 							PMS.info("Switching " + child.getName() + " to player: " + pl.toString());
 						}
@@ -595,13 +597,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().songname))
 			addXMLTagAndAttribute(sb, "dc:title", encodeXML(media.getFirstAudioTrack().songname + (player!=null&&!PMS.getConfiguration().isHideEngineNames()?(" [" + player.name() + "]"):"")));
 		else
-			addXMLTagAndAttribute(sb, "dc:title", encodeXML(isFolder()?getDisplayName():mediaRenderer.getUseSameExtension(getDisplayName())));
+			addXMLTagAndAttribute(sb, "dc:title", encodeXML((isFolder()||player==null)?getDisplayName():mediaRenderer.getUseSameExtension(getDisplayName())));
 			
 		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().album)) {
 			addXMLTagAndAttribute(sb, "upnp:album", encodeXML(media.getFirstAudioTrack().album));
 		}
 		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().artist)) {
 			addXMLTagAndAttribute(sb, "upnp:artist", encodeXML(media.getFirstAudioTrack().artist));
+			addXMLTagAndAttribute(sb, "dc:creator", encodeXML(media.getFirstAudioTrack().artist));
 		}
 		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().genre)) {
 			addXMLTagAndAttribute(sb, "upnp:genre", encodeXML(media.getFirstAudioTrack().genre));
@@ -636,9 +639,27 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				else if (mime.equals("video/x-ms-wmv") && media != null && media.height > 700)
 					dlnaspec = "DLNA.ORG_PN=WMVHIGH_PRO";
 			} else {
-				if (mime.equals("video/mpeg"))
-					dlnaspec = "DLNA.ORG_PN=MPEG_PS_PAL";
-				else if (mime.equals("image/jpeg"))
+				if (mime.equals("video/mpeg")) {
+					if(player != null){
+						// do we have some mpegts to offer ?
+						boolean mpegTsMux = TSMuxerVideo.ID.equals(player.id());
+						if (!mpegTsMux) { // maybe, like the ps3, mencoder can launch tsmuxer if this a compatible H264 video
+							mpegTsMux = MEncoderVideo.ID.equals(player.id()) && media_subtitle == null && media != null && media.dvdtrack == 0
+								&& PMS.getConfiguration().isMencoderMuxWhenCompatible() && mediaRenderer.isMuxH264MpegTS();
+						}
+	                  if (mpegTsMux)
+	                     dlnaspec = media.isH264()?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=MPEG_TS_SD_EU_ISO";
+	                  else   
+	                     dlnaspec = "DLNA.ORG_PN=MPEG_PS_PAL";
+	               } else if(media != null){
+	                  if(media.isMpegTS())
+	                     dlnaspec = media.isH264()?"DLNA.ORG_PN=AVC_TS_HD_50_AC3":"DLNA.ORG_PN=MPEG_TS_SD_EU";
+	                  else if (media.isMpegTS())
+	                     dlnaspec = "DLNA.ORG_PN=MPEG_PS_PAL";
+	               }
+	               else
+	            	   dlnaspec = "DLNA.ORG_PN=MPEG_PS_PAL";
+				} else if (mime.equals("image/jpeg"))
 					dlnaspec = "DLNA.ORG_PN=JPEG_LRG";
 				else if (mime.equals("audio/mpeg"))
 					dlnaspec = "DLNA.ORG_PN=MP3";

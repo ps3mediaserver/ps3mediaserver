@@ -29,11 +29,15 @@ import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -156,7 +160,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			}
 		}
 		if (nettyRequest.getContentLength() > 0) {
-			byte data[] = new byte[nettyRequest.getContentLength()];
+			byte data[] = new byte[(int) nettyRequest.getContentLength()];
 			ChannelBuffer content = nettyRequest.getContent();
 			content.readBytes(data);
 			request.setTextContent(new String(data, "UTF-8"));
@@ -203,8 +207,29 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
 			throws Exception {
-		if (e.getCause() != null && !e.getCause().getClass().equals(ClosedChannelException.class) && !e.getCause().getClass().equals(IOException.class))
-			e.getCause().printStackTrace();
+		Channel ch = e.getChannel();
+		Throwable cause = e.getCause();
+		if (cause instanceof TooLongFrameException) {
+			sendError(ctx, HttpResponseStatus.BAD_REQUEST);
+			return;
+		}
+		if (cause != null && !cause.getClass().equals(ClosedChannelException.class) && !cause.getClass().equals(IOException.class))
+			cause.printStackTrace();
+		if (ch.isConnected()) {
+		sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+		}
 		e.getChannel().close();
 	}
+	
+	private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+		HttpResponse response = new DefaultHttpResponse(
+		   HttpVersion.HTTP_1_1, status);
+		 response.setHeader(
+		      HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
+		      response.setContent(ChannelBuffers.copiedBuffer(
+	                "Failure: " + status.toString() + "\r\n", "UTF-8"));
+		
+	     // Close the connection as soon as the error message is sent.
+		        ctx.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
+		     }
 }
