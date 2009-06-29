@@ -119,11 +119,15 @@ public class RequestHandler implements Runnable {
 						String timeseek = headerLine.substring(headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG: NPT=")+28);
 						if (timeseek.endsWith("-"))
 							timeseek = timeseek.substring(0, timeseek.length()-1);
+						else if (timeseek.indexOf("-") > -1)
+							timeseek = timeseek.substring(0, timeseek.indexOf("-"));
 						request.setTimeseek(Double.parseDouble(timeseek));
 					} else if (headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG : NPT=") > -1) { // firmware 2.40
 						String timeseek = headerLine.substring(headerLine.toUpperCase().indexOf("TIMESEEKRANGE.DLNA.ORG : NPT=")+29);
 						if (timeseek.endsWith("-"))
 							timeseek = timeseek.substring(0, timeseek.length()-1);
+						else if (timeseek.indexOf("-") > -1)
+							timeseek = timeseek.substring(0, timeseek.indexOf("-"));
 						request.setTimeseek(Double.parseDouble(timeseek));
 					}
 				} catch (Exception e) {

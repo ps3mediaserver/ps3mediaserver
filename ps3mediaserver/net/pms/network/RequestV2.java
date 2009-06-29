@@ -24,6 +24,7 @@ import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -541,6 +542,11 @@ public class RequestV2 extends HTTPResource {
 			if (close) {
 	            future.addListener(ChannelFutureListener.CLOSE);
 	        }
+		}
+		Iterator<String> it = output.getHeaderNames().iterator();
+		while (it.hasNext()) {
+			String headerName = it.next();
+			PMS.debug("Sent to socket: " + headerName + ": " + output.getHeader(headerName));
 		}
 		return future;
 	}
