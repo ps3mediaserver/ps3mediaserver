@@ -71,6 +71,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			request = new RequestV2("POST", nettyRequest.getUri().substring(1));
 		else if (HttpMethod.HEAD.equals(nettyRequest.getMethod()))
 			request = new RequestV2("HEAD", nettyRequest.getUri().substring(1));
+		PMS.debug("Handler infos: " + nettyRequest.getProtocolVersion().getText() + " : " + request.getMethod() + " : " + request.getArgument());
 		if (nettyRequest.getProtocolVersion().getMinorVersion() == 0)
 			request.setHttp10(true);
 		if (useragentfound) {
@@ -131,6 +132,8 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 									"TIMESEEKRANGE.DLNA.ORG: NPT=") + 28);
 					if (timeseek.endsWith("-"))
 						timeseek = timeseek.substring(0, timeseek.length() - 1);
+					else if (timeseek.indexOf("-") > -1)
+						timeseek = timeseek.substring(0, timeseek.indexOf("-"));
 					request.setTimeseek(Double.parseDouble(timeseek));
 				} else if (headerLine.toUpperCase().indexOf(
 						"TIMESEEKRANGE.DLNA.ORG : NPT=") > -1) { // firmware
@@ -140,6 +143,8 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 									"TIMESEEKRANGE.DLNA.ORG : NPT=") + 29);
 					if (timeseek.endsWith("-"))
 						timeseek = timeseek.substring(0, timeseek.length() - 1);
+					else if (timeseek.indexOf("-") > -1)
+						timeseek = timeseek.substring(0, timeseek.indexOf("-"));
 					request.setTimeseek(Double.parseDouble(timeseek));
 				}
 			} catch (Exception ee) {

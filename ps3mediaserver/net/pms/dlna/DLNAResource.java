@@ -39,6 +39,7 @@ import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
 import net.pms.encoders.TSMuxerVideo;
+import net.pms.encoders.VideoLanVideoStreaming;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
@@ -623,7 +624,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				flags = "DLNA.ORG_OP=00";
 			else*/ if (player != null) {
 				if (player.isTimeSeekable() && mediaRenderer.isSeekByTime()) {
-					flags = "DLNA.ORG_OP=10";
+					if (mediaRenderer.isPS3()) // ps3 doesn't like OP=11
+						flags = "DLNA.ORG_OP=10";
+					else
+						flags = "DLNA.ORG_OP=11";
 					/*if (this instanceof IPushOutput)
 						flags = "DLNA.ORG_OP=00";*/
 				}
@@ -642,19 +646,19 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				if (mime.equals("video/mpeg")) {
 					if(player != null){
 						// do we have some mpegts to offer ?
-						boolean mpegTsMux = TSMuxerVideo.ID.equals(player.id());
+						boolean mpegTsMux = TSMuxerVideo.ID.equals(player.id()) || VideoLanVideoStreaming.ID.equals(player.id());
 						if (!mpegTsMux) { // maybe, like the ps3, mencoder can launch tsmuxer if this a compatible H264 video
 							mpegTsMux = MEncoderVideo.ID.equals(player.id()) && media_subtitle == null && media != null && media.dvdtrack == 0
 								&& PMS.getConfiguration().isMencoderMuxWhenCompatible() && mediaRenderer.isMuxH264MpegTS();
 						}
 	                  if (mpegTsMux)
-	                     dlnaspec = media.isH264()?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=MPEG_TS_SD_EU_ISO";
+	                     dlnaspec = media.isH264()&&!VideoLanVideoStreaming.ID.equals(player.id())?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=MPEG_TS_SD_EU_ISO";
 	                  else   
 	                     dlnaspec = "DLNA.ORG_PN=MPEG_PS_PAL";
 	               } else if(media != null){
 	                  if(media.isMpegTS())
 	                     dlnaspec = media.isH264()?"DLNA.ORG_PN=AVC_TS_HD_50_AC3":"DLNA.ORG_PN=MPEG_TS_SD_EU";
-	                  else if (media.isMpegTS())
+	                  else
 	                     dlnaspec = "DLNA.ORG_PN=MPEG_PS_PAL";
 	               }
 	               else
