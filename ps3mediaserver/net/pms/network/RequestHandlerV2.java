@@ -71,6 +71,8 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			request = new RequestV2("POST", nettyRequest.getUri().substring(1));
 		else if (HttpMethod.HEAD.equals(nettyRequest.getMethod()))
 			request = new RequestV2("HEAD", nettyRequest.getUri().substring(1));
+		else
+			request = new RequestV2(nettyRequest.getMethod().getName(), nettyRequest.getUri().substring(1));
 		PMS.debug("Handler infos: " + nettyRequest.getProtocolVersion().getText() + " : " + request.getMethod() + " : " + request.getArgument());
 		if (nettyRequest.getProtocolVersion().getMinorVersion() == 0)
 			request.setHttp10(true);

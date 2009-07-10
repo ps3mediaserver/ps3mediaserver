@@ -969,7 +969,7 @@ private JTextField mencoder_ass_scale;
 			dvd = true;
 		
 		
-		if (params.sid == null && !dvd && !avisynth() && media != null && media.isVideoPS3Compatible(newInput) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
+		if (params.sid == null && !dvd && !avisynth() && media != null && (!params.mediaRenderer.isH264Level41Limited() || media.isVideoPS3Compatible(newInput)) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
 			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
 			boolean nomux = false;
 			for(String s:sArgs) {
@@ -1175,10 +1175,10 @@ private JTextField mencoder_ass_scale;
 		String arguments [] = args();
 		for(i=0;i<arguments.length;i++) {
 			cmdArray[6+i] = arguments[i];
-			if (params.timeseek > 0 && arguments[i].contains("format=mpegts")) { //$NON-NLS-1$
+			/*if (params.timeseek > 0 && arguments[i].contains("format=mpegts")) { //$NON-NLS-1$
 				cmdArray[6+i] += ":preload=" + params.timeseek; //$NON-NLS-1$
 				params.timeseek = 0; 
-			}
+			}*/
 			if (arguments[i].contains("format=mpeg2") && media.aspect != null && media.getValidAspect(true) != null) { //$NON-NLS-1$
 				cmdArray[6+i] += ":vaspect=" + media.getValidAspect(true); //$NON-NLS-1$
 			}

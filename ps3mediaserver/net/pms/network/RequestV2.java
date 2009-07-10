@@ -166,6 +166,7 @@ public class RequestV2 extends HTTPResource {
 		ChannelFuture future = null;
 		long CLoverride = -1;
 		StringBuffer response = new StringBuffer();
+		DLNAResource dlna = null;
 		
 		boolean xbox = mediaRenderer.isXBOX();
 		
@@ -182,17 +183,17 @@ public class RequestV2 extends HTTPResource {
 				output.setHeader("TransferMode.DLNA.ORG", transferMode);
 			}
 			if (files.size() == 1) {
+				dlna = files.get(0);
 				String fileName = argument.substring(argument.lastIndexOf("/")+1);
 				if (fileName.startsWith("thumbnail0000")) {
 					output.setHeader(HttpHeaders.Names.CONTENT_TYPE, files.get(0).getThumbnailContentType());
 					output.setHeader(HttpHeaders.Names.ACCEPT_RANGES,  "bytes");
 					output.setHeader(HttpHeaders.Names.EXPIRES,  getFUTUREDATE() + " GMT");
 					output.setHeader(HttpHeaders.Names.CONNECTION,  "keep-alive");
-					inputStream = files.get(0).getThumbnailInputStream();
+					inputStream = dlna.getThumbnailInputStream();
 				} else {
-					inputStream = files.get(0).getInputStream(lowRange, highRange, timeseek, mediaRenderer);
+					inputStream = dlna.getInputStream(lowRange, highRange, timeseek, mediaRenderer);
 					output.setHeader(HttpHeaders.Names.CONTENT_TYPE, getRendererMimeType(files.get(0).mimeType(), mediaRenderer));
-					DLNAResource dlna = files.get(0);
 					String name = dlna.getDisplayName();
 					if (dlna.media != null) {
 						if (StringUtils.isNotBlank(dlna.media.container)) {
@@ -483,6 +484,9 @@ public class RequestV2 extends HTTPResource {
 				// Too bad it doesn't work with half MPEG videos on PS3 !? (really weird)
 				// ChannelFuture chunkWriteFuture = e.getChannel().write(new ChunkedStream(inputStream, BUFFER_SIZE));
 				// Then, let's keep the old way of doing large file streaming:
+				final DLNAResource resource = dlna;
+				if (dlna != null)
+					dlna.startPlaying();
 				future.addListener(new ChannelFutureListener() {
 					private final ChannelBuffer buf = ChannelBuffers.buffer(BUFFER_SIZE); 
 					public void operationComplete(ChannelFuture future) {
@@ -516,6 +520,8 @@ public class RequestV2 extends HTTPResource {
 								} 
 								//if (close) // have to comment this because of freeze at the end of video due to no channel close sent
 				            		chunkWriteFuture.addListener(ChannelFutureListener.CLOSE);
+				            		if (resource != null)
+				            			resource.stopPlaying();
 				            	 
 				            }
 						} catch (IOException e1) {

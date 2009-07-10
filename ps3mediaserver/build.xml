@@ -43,7 +43,7 @@
 		
     	<mkdir dir="dist" />
     	<tar destfile="dist/pms-linux-${version}.tgz" compression="gzip">
-    		<tarfileset dir="." mode="777" prefix="pms-linux-${version}" includes="LICENCE.txt,README,CHANGELOG,pms.jar,FAQ,PMS.sh,WEB.conf,renderers/**,linux/**"/> 
+    		<tarfileset dir="." mode="777" prefix="pms-linux-${version}" includes="LICENCE.txt,README,CHANGELOG,pms.jar,FAQ,PMS.sh,WEB.conf,renderers/**,plugins/*.txt,linux/**"/> 
     	</tar>
     		
     	<delete dir="classes" />

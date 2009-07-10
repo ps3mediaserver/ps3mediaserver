@@ -74,6 +74,8 @@ import net.pms.encoders.TSMuxerVideo;
 import net.pms.encoders.TsMuxerAudio;
 import net.pms.encoders.VideoLanAudioStreaming;
 import net.pms.encoders.VideoLanVideoStreaming;
+import net.pms.external.ExternalFactory;
+import net.pms.external.ExternalListener;
 import net.pms.formats.DVRMS;
 import net.pms.formats.FLAC;
 import net.pms.formats.Format;
@@ -408,10 +410,21 @@ public class PMS {
 		
 		getDatabase();
 		
+		try {
+			ExternalFactory.lookup();
+		} catch (Exception e) {
+			PMS.error("Error in the plugins lookup", e);
+		}
+		
+		frame.serverReady();
+		
 		//UPNPHelper.sendByeBye();
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 				try {
+					for(ExternalListener l:ExternalFactory.getExternalListeners()) {
+						l.shutdown();
+					}
 					UPNPHelper.shutDownListener();
 					UPNPHelper.sendByeBye();
 					PMS.info("Forcing shutdown of all active processes"); //$NON-NLS-1$

@@ -1043,5 +1043,13 @@ public class PmsConfiguration {
 	public void setDvdIsoThumbnails(boolean value) {
 		configuration.setProperty(KEY_DVDISO_THUMBNAILS, value);
 	}
+	
+	public Object getCustomProperty(String property) {
+		return configuration.getProperty(property);
+	}
+	
+	public void setCustomProperty(String property, Object value) {
+		configuration.setProperty(property, value);
+	}
 
 }

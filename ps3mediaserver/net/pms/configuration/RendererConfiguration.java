@@ -206,6 +206,7 @@ public class RendererConfiguration {
 	private static final String MIME_TYPES_CHANGES="MimeTypesChanges";
 	private static final String TRANSCODE_EXT="TranscodeExtensions";
 	private static final String STREAM_EXT="StreamExtensions";
+	private static final String H264_L41_LIMITED="H264Level41Limited";
 	
 	
 	private RendererConfiguration() throws ConfigurationException {
@@ -272,6 +273,10 @@ public class RendererConfiguration {
 	
 	public boolean isTranscodeToPCM() {
 		return getAudioTranscode().startsWith(PCM);
+	}
+	
+	public boolean isH264Level41Limited() {
+		return getBoolean(H264_L41_LIMITED, false);
 	}
 	
 	public String getMimeType(String old) {

@@ -65,4 +65,10 @@ public class DummyFrame implements IFrame {
 		
 	}
 
+	@Override
+	public void serverReady() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

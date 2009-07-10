@@ -27,8 +27,8 @@ import net.pms.network.HTTPResource;
 public class VirtualFolder extends DLNAResource {
 	
 	protected String name;
-	private String thumbnailIcon;
-	private String thumbnailContentType;
+	protected String thumbnailIcon;
+	protected String thumbnailContentType;
 	
 	public VirtualFolder(String name, String thumbnailIcon) {
 		this.name = name;
