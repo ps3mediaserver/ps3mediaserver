@@ -432,10 +432,12 @@ public class DLNAMediaInfo implements Cloneable {
 										audio.nrAudioChannels = 1;
 									} else if (token.equals("stereo")) {
 										audio.nrAudioChannels = 2;
-									} else if (token.equals("5:1") || token.equals("5.1")) {
+									} else if (token.equals("5:1") || token.equals("5.1") || token.equals("6 channels")) {
 										audio.nrAudioChannels = 6;
 									} else if (token.equals("4 channels")) {
 										audio.nrAudioChannels = 4;
+									} else if (token.equals("2 channels")) {
+										audio.nrAudioChannels = 2;
 									} else if (token.equals("s32")) {
 										audio.bitsperSample = 32;
 									} else if (token.equals("s24")) {

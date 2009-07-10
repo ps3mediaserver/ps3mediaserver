@@ -335,9 +335,15 @@ public class RealFile extends DLNAResource {
 				}
 				alternativeCheck = true;
 			}
+			if(file.isDirectory()){
+				cachedThumbnail = FileUtil.getFileNameWitNewExtension(file.getParentFile(), file, "/folder.jpg");
+				if (cachedThumbnail == null)
+					cachedThumbnail = FileUtil.getFileNameWitNewExtension(file.getParentFile(), file, "/folder.png");
+			}
+
 		}
 		boolean hasAlreadyEmbeddedCoverArt = getType() == Format.AUDIO && media != null && media.thumb != null;
-		if (cachedThumbnail != null && !hasAlreadyEmbeddedCoverArt)
+		if (cachedThumbnail != null && (!hasAlreadyEmbeddedCoverArt || file.isDirectory()))
 			return new FileInputStream(cachedThumbnail);
 		else if (media != null && media.thumb != null)
 			return media.getThumbnailInputStream();

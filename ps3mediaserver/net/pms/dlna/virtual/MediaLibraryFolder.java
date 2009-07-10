@@ -95,6 +95,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 	private String transformName(String name) {
 		if (name.equals(DLNAMediaDatabase.NONAME))
 			name = "";
+		name = name.replace("'", "''"); // issue 448
 		return name;
 	}
 
@@ -124,7 +125,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 			for(File f:list) {
 				boolean present = false;
 				for(DLNAResource d:children) {
-					if (i == 0 && (!(d instanceof TranscodeVirtualFolder) || (d instanceof DVDISOFile)))
+					if (i == 0 && (!(d instanceof VirtualFolder) || (d instanceof MediaLibraryFolder)))
 						removedFiles.add(d);
 					String name = d.getName();
 					long lm = d.getLastmodified();
@@ -144,7 +145,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 			for(String f:strings) {
 				boolean present = false;
 				for(DLNAResource d:children) {
-					if (i == 0 && (!(d instanceof TranscodeVirtualFolder) || (d instanceof DVDISOFile)))
+					if (i == 0 && (!(d instanceof VirtualFolder) || (d instanceof MediaLibraryFolder)))
 						removedString.add(d);
 					String name = d.getName();
 					if (f.equals(name)) {

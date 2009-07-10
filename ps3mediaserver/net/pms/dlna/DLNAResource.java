@@ -40,6 +40,10 @@ import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
 import net.pms.encoders.TSMuxerVideo;
 import net.pms.encoders.VideoLanVideoStreaming;
+import net.pms.external.AdditionalResourceFolderListener;
+import net.pms.external.ExternalFactory;
+import net.pms.external.ExternalListener;
+import net.pms.external.StartStopListener;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
@@ -66,11 +70,17 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		return children;
 	}
 	protected DLNAResource parent;
+	public void setParent(DLNAResource parent) {
+		this.parent = parent;
+	}
 	protected Format ext;
 	public DLNAMediaInfo media;
 	public DLNAMediaAudio media_audio;
 	public DLNAMediaSubtitle media_subtitle;
 	protected boolean notranscodefolder;
+	public boolean isNotranscodefolder() {
+		return notranscodefolder;
+	}
 	protected long lastmodified;
 	public long getLastmodified() {
 		return lastmodified;
@@ -240,38 +250,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 							
 							vf.addChild(fileFolder);
 							
-							/*if (PMS.getConfiguration().isDisableFakeSize()) {
-								//search for copy folder
-								for(DLNAResource r:children) {
-									if (r instanceof CopyVirtualFolder) {
-										vfCopy = (CopyVirtualFolder) r;
-										break;
-									}
-								}
-								if (vfCopy == null) {
-									vfCopy = new CopyVirtualFolder(null);
-									children.add(vfCopy);
-									vfCopy.parent = this;
-								}
-								
-								VirtualFolder copyFileFolder = new FileTranscodeVirtualFolder(child.getName(), null, true);
-								
-								
-								newChild = (DLNAResource) child.clone();
-								newChild.player = pl;
-								newChild.copy = true;
-								newChild.media = child.media;
-								//newChild.original = child;
-								copyFileFolder.children.add(newChild);
-								newChild.parent = copyFileFolder;
-								PMS.info("Duplicate copied " + child.getName() + " with player: " + pl.toString());
-								
-								
-								
-								vfCopy.addChild(copyFileFolder);
-							}*/
 						}
 						
+						for(ExternalListener listener:ExternalFactory.getExternalListeners()) {
+							if (listener instanceof AdditionalResourceFolderListener) {
+								((AdditionalResourceFolderListener) listener).addAdditionalFolder(this, child);
+							}
+						}
 						
 						//}
 					} else if (!child.ext.ps3compatible()/* && !child.ext.isImage()*/) {
@@ -620,17 +605,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			//                   01 = Range par octets
 			//                   00 = pas de range, meme pas de pause possible
 			flags = "DLNA.ORG_OP=01";
-			/*if (this instanceof IPushOutput && !((IPushOutput)this).isUnderlyingSeekSupported())
-				flags = "DLNA.ORG_OP=00";
-			else*/ if (player != null) {
+			if (player != null) {
 				if (player.isTimeSeekable() && mediaRenderer.isSeekByTime()) {
 					if (mediaRenderer.isPS3()) // ps3 doesn't like OP=11
 						flags = "DLNA.ORG_OP=10";
-					else
-						flags = "DLNA.ORG_OP=11";
-					/*if (this instanceof IPushOutput)
-						flags = "DLNA.ORG_OP=00";*/
 				}
+			} else {
+				if (mediaRenderer.isSeekByTime() && !mediaRenderer.isPS3())
+					flags = "DLNA.ORG_OP=11";
 			}
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
 			
@@ -648,8 +630,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						// do we have some mpegts to offer ?
 						boolean mpegTsMux = TSMuxerVideo.ID.equals(player.id()) || VideoLanVideoStreaming.ID.equals(player.id());
 						if (!mpegTsMux) { // maybe, like the ps3, mencoder can launch tsmuxer if this a compatible H264 video
-							mpegTsMux = MEncoderVideo.ID.equals(player.id()) && media_subtitle == null && media != null && media.dvdtrack == 0
-								&& PMS.getConfiguration().isMencoderMuxWhenCompatible() && mediaRenderer.isMuxH264MpegTS();
+							mpegTsMux = MEncoderVideo.ID.equals(player.id()) && ((media_subtitle == null && media != null && media.dvdtrack == 0
+								&& PMS.getConfiguration().isMencoderMuxWhenCompatible() && mediaRenderer.isMuxH264MpegTS())
+								|| mediaRenderer.isTranscodeToMPEGTSAC3());
 						}
 	                  if (mpegTsMux)
 	                     dlnaspec = media.isH264()&&!VideoLanVideoStreaming.ID.equals(player.id())?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=MPEG_TS_SD_EU_ISO";
@@ -749,6 +732,17 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			closeTag(sb, "upnp:albumArtURI");
 		}
 		
+		if (isFolder() && thumbURL != null){
+			openTag(sb, "res");
+			if (getThumbnailContentType().equals(PNG_TYPEMIME))
+				addAttribute(sb, "protocolInfo", "http-get:*:image/png:DLNA.ORG_PN=PNG_TN");
+			else
+				addAttribute(sb, "protocolInfo", "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_TN");
+			endTag(sb);
+			sb.append(thumbURL);
+			closeTag(sb, "res");
+		}
+		
 		//if (isFolder()) {
 		if (getLastmodified() > 0)
 			addXMLTagAndAttribute(sb, "dc:date", PMS.sdfDate.format(new Date(getLastmodified())));
@@ -787,6 +781,20 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			closeTag(sb, "item");
 		
 		return sb.toString();
+	}
+	
+	public void startPlaying() {
+		for(ExternalListener listener:ExternalFactory.getExternalListeners()) {
+			if (listener instanceof StartStopListener)
+				((StartStopListener) listener).nowPlaying(media, this);
+		}
+	}
+	
+	public void stopPlaying() {
+		for(ExternalListener listener:ExternalFactory.getExternalListeners()) {
+			if (listener instanceof StartStopListener)
+				((StartStopListener) listener).donePlaying(media, this);
+		}
 	}
 	
 	public InputStream getInputStream(long low, long high, double timeseek, RendererConfiguration mediarenderer) throws IOException {
@@ -901,7 +909,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	}
 	
 	public String getThumbnailContentType() {
-		return HTTPResource.PNG_TYPEMIME;
+		return HTTPResource.JPEG_TYPEMIME;
 	}
 	public int getType() {
 		if (ext != null)

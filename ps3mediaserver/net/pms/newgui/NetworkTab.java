@@ -46,6 +46,8 @@ import org.apache.commons.lang.StringUtils;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.external.ExternalFactory;
+import net.pms.external.ExternalListener;
 import net.pms.util.KeyedComboBoxModel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -65,6 +67,7 @@ public class NetworkTab {
 	private JComboBox langs ;
 	private JComboBox networkinterfacesCBX;
 	private JTextField ip_filter;
+	private JButton plugins [];
 	
 	private final PmsConfiguration configuration;
 	
@@ -75,7 +78,7 @@ public class NetworkTab {
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
                 "left:pref, 2dlu, p, 2dlu , p, 2dlu, p, 2dlu, pref:grow", //$NON-NLS-1$
-                "p, 0dlu, p, 0dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 15dlu, p, 3dlu,p, 3dlu, p,  3dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu "); //$NON-NLS-1$
+                "p, 0dlu, p, 0dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 15dlu, p, 3dlu,p, 3dlu, p,  3dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu "); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.DLU4_BORDER);
         builder.setOpaque(true);
@@ -290,8 +293,44 @@ public class NetworkTab {
        	
        }); builder.add(preventSleep,          cc.xyw(1,  35, 9));
       
+       cmp = builder.addSeparator("Plugins system",  cc.xyw(1, 37, 9));
+       cmp = (JComponent) cmp.getComponent(0);
+       cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+       
+       int y = 39;
+       plugins = new JButton[8];
+       for(int i=0;i<plugins.length;i++) {
+    	   plugins[i] = new JButton();
+    	   plugins[i].setVisible(false);
+    	   builder.add(plugins[i], cc.xyw(1, y, 9));
+    	   y+=2;
+       }
+      
         return builder.getPanel();
 	}
 	
+	public void addPlugins() {
+		
+       
+       int i = 0;
+       for(final ExternalListener listener:ExternalFactory.getExternalListeners()) {
+    	   plugins[i].setText(listener.name());
+    	   plugins[i].setVisible(true);
+    	  
+		   //listener to show option screen
+		   plugins[i++].addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+						listener.config(), "Options", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+			}
+			   
+		   });
+    	   
+    	   i++;
+       }
+	      
+	}
 	
 }
