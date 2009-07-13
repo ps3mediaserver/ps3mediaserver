@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
@@ -450,8 +451,23 @@ public class DLNAMediaInfo implements Cloneable {
 									String token = st.nextToken().trim();
 									if (token.startsWith("Stream")) {
 										codecV = token.substring(token.indexOf("Video: ")+7);
+									} else if ((token.indexOf("tbc") > -1 || token.indexOf("tb(c)") > -1)) {
+										// A/V sync issues with newest ffmpeg, due to the new tbr/tbn/tbc outputs
+										// priority to tb(c)
+										String frameRateDoubleString = token.substring(0, token.indexOf("tb")).trim();
+										try {
+											if (!frameRateDoubleString.equals(frameRate)) {// tbc taken into account only if different than tbr
+												Double frameRateDouble = Double.parseDouble(frameRateDoubleString);
+												frameRate = String.format(Locale.ENGLISH,"%.2f", frameRateDouble/2);
+											}
+										} catch (NumberFormatException nfe) {
+											// no need to log, could happen if tbc is "1k" or something like that, no big deal
+										}
+										
 									} else if ((token.indexOf("tbr") > -1 || token.indexOf("tb(r)") > -1) && frameRate == null) {
 										frameRate = token.substring(0, token.indexOf("tb")).trim();
+									} else if ((token.indexOf("fps") > -1 || token.indexOf("fps(r)") > -1) && frameRate == null) { // dvr-ms ?
+										frameRate = token.substring(0, token.indexOf("fps")).trim();
 									} else if (token.indexOf("x") > -1) {
 										String resolution = token.trim();
 										if (resolution.indexOf(" [") > -1)
@@ -875,21 +891,21 @@ public class DLNAMediaInfo implements Cloneable {
 		if (frameRate != null && frameRate.length() > 0) {
 			try {
 				double fr = Double.parseDouble(frameRate);
-				if (fr > 23.96 && fr < 23.99) {
+				if (fr > 23.9 && fr < 23.99) {
 					validFrameRate = ratios?"24000/1001":"23.976";
-				} else if (fr > 23.99 && fr < 24.01) {
+				} else if (fr > 23.99 && fr < 24.1) {
 					validFrameRate = "24";
-				} else if (fr > 24.99 && fr < 25.01) {
+				} else if (fr >= 24.99 && fr < 25.1) {
 					validFrameRate = "25";
-				} else if (fr > 29.96 && fr < 29.99) {
+				} else if (fr > 29.9 && fr < 29.99) {
 					validFrameRate = ratios?"30000/1001":"29.97";
-				} else if (fr > 29.99 && fr < 30.01) {
+				} else if (fr >= 29.99 && fr < 30.1) {
 					validFrameRate = "30";
-				} else if (fr > 49.99 && fr < 50.01) {
+				} else if (fr > 49.9 && fr < 50.1) {
 					validFrameRate = "50";
-				} else if (fr > 59.96 && fr < 59.99) {
+				} else if (fr > 59.9 && fr < 59.99) {
 					validFrameRate = ratios?"60000/1001":"59.97";
-				} else if (fr > 59.99 && fr < 60.01) {
+				} else if (fr >= 59.99 && fr < 60.1) {
 					validFrameRate = "60";
 				}
 			} catch (NumberFormatException nfe) {
