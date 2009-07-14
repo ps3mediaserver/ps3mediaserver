@@ -61,8 +61,14 @@ public class RealFile extends DLNAResource {
 					return new Long(o2.lastModified()).compareTo(new Long(o1.lastModified()));
 				}
 			}); 
-		} else
-			Arrays.sort(files);
+		} else {
+			Arrays.sort(files, new Comparator<File>()
+			{
+				public int compare(File o1, File o2) {
+					return o2.getName().compareToIgnoreCase(o2.getName());
+				}
+			});
+		}
 		for(File f:files) {
 			if (f.isDirectory())
 				manageFile(f);

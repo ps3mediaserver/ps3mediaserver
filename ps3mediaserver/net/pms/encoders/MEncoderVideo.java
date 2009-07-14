@@ -923,7 +923,7 @@ private JTextField mencoder_ass_scale;
 			m = "0"; //$NON-NLS-1$
 		
 		int mb = (int) Double.parseDouble(m);
-		if ((mb == 0 && mediaRenderer.getMaxVideoBitrate() > 0) || mediaRenderer.getMaxVideoBitrate() < mb)
+		if ((mb == 0 && mediaRenderer.getMaxVideoBitrate() > 0) || mediaRenderer.getMaxVideoBitrate() < mb && mediaRenderer.getMaxVideoBitrate() > 0)
 			mb = mediaRenderer.getMaxVideoBitrate();
 		if (mb > 0 && !quality.contains("vrc_buf_size") && !quality.contains("vrc_maxrate") && !quality.contains("vbitrate")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			mb = 1000*mb;
