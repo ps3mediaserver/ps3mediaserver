@@ -19,7 +19,7 @@ public class DLNAMediaSubtitle  extends DLNAMediaLang implements Cloneable{
 	public static int VOBSUB = 5;
 	public static int EMBEDDED = 6;
 	
-	public static String subExtensions[] = new String [] {"srt", "sub", "smi", "ass", "idx" };
+	public static String subExtensions[] = new String [] {"srt", "txt", "sub", "smi", "ass", "idx" };
 	
 	public int type;
 	public String flavor;

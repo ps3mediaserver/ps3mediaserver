@@ -65,7 +65,7 @@ public class RealFile extends DLNAResource {
 			Arrays.sort(files, new Comparator<File>()
 			{
 				public int compare(File o1, File o2) {
-					return o2.getName().compareToIgnoreCase(o2.getName());
+					return o1.getName().compareToIgnoreCase(o2.getName());
 				}
 			});
 		}
