@@ -33,7 +33,7 @@ ShowUninstDetails show
 Section "Program Files"
   SetOutPath "$INSTDIR"
   SetOverwrite on
-  File /r /x ".svn" /x "*.jar" /x "*.conf" /x "*.dll" /x "third-party" "plugins"
+  File /r /x ".svn" /x "*.jar" /x "*.conf" /x "*.zip" /x "*.dll" /x "third-party" "plugins"
   File /r /x ".svn" "renderers"
   File /r /x ".svn" "win32"
   File "PMS.exe"

@@ -338,7 +338,10 @@ public class RendererConfiguration {
 	}
 	
 	public boolean isMuxH264MpegTS() {
-		return getBoolean(MUX_H264_WITH_MPEGTS, true);
+		boolean muxCompatible = getBoolean(MUX_H264_WITH_MPEGTS, true);
+		if (Platform.isMac() && System.getProperty("os.version") != null && System.getProperty("os.version").contains("10.4."))
+			muxCompatible = false; // no tsMuxer for 10.4 (yet?)
+		return muxCompatible;
 	}
 	
 	public boolean isDTSPlayable() {

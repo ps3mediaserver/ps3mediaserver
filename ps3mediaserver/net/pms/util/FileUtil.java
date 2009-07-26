@@ -102,10 +102,10 @@ public class FileUtil {
 									for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
 										if (f.equals(sub.file))
 											exists = true;
-										else if (i == 4 && sub.type == DLNAMediaSubtitle.MICRODVD) { // VOBSUB
+										else if (ext.equals("idx") && sub.type == DLNAMediaSubtitle.MICRODVD) { // VOBSUB
 											sub.type = DLNAMediaSubtitle.VOBSUB;
 											exists = true;
-										} else if (i == 1 && sub.type == DLNAMediaSubtitle.VOBSUB) { // VOBSUB
+										} else if (ext.equals("sub") && sub.type == DLNAMediaSubtitle.VOBSUB) { // VOBSUB
 											sub.file = f;
 											exists = true;
 										}
