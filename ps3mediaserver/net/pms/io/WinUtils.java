@@ -72,8 +72,8 @@ public class WinUtils {
 	public void disableGoToSleep() {
 		if (PMS.getConfiguration().isPreventsSleep()) {
 			if (Platform.isWindows()) {
-				// Disable go to sleep (every 5 minutes at min)
-				if (System.currentTimeMillis() - lastDontSleepCall > 300000) {
+				// Disable go to sleep (every 40s)
+				if (System.currentTimeMillis() - lastDontSleepCall > 40000) {
 					PMS.info("Calling SetThreadExecutionState ES_SYSTEM_REQUIRED");
 					Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_SYSTEM_REQUIRED | Kernel32.ES_CONTINUOUS);
 					lastDontSleepCall = System.currentTimeMillis();
@@ -86,7 +86,7 @@ public class WinUtils {
 		if (PMS.getConfiguration().isPreventsSleep()) {
 			if (Platform.isWindows()) {
 				// Reenable go to sleep
-				if (System.currentTimeMillis() - lastGoToSleepCall > 300000) {
+				if (System.currentTimeMillis() - lastGoToSleepCall > 40000) {
 					PMS.info("Calling SetThreadExecutionState ES_CONTINUOUS");
 					Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_CONTINUOUS);
 					lastGoToSleepCall = System.currentTimeMillis();

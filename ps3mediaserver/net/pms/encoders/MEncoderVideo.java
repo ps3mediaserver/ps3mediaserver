@@ -880,7 +880,7 @@ private JTextField mencoder_ass_scale;
 	//protected String defaultSubArgs [];
 		
 	protected String [] getDefaultArgs() {
-		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", (wmv||mpegts)?"lavf":(pcm&&avisynth())?"avi":(((pcm||dts||mux)?"rawvideo":"mpeg")), "-lavfopts", wmv?"format=asf":"format=mpegts", "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", (mux||ovccopy)?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$
+		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", (wmv||mpegts)?"lavf":(pcm&&avisynth())?"avi":(((pcm||dts||mux)?"rawvideo":"mpeg")), (wmv||mpegts)?"-lavfopts":"-quiet", wmv?"format=asf":(mpegts?"format=mpegts":"-quiet"), "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", (mux||ovccopy)?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$
 	}
 
 	@Override
@@ -969,7 +969,7 @@ private JTextField mencoder_ass_scale;
 			dvd = true;
 		
 		
-		if (params.sid == null && !dvd && !avisynth() && media != null && (!params.mediaRenderer.isH264Level41Limited() || media.isVideoPS3Compatible(newInput)) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
+		if (params.sid == null && !dvd && !avisynth() && media != null && (media.isVideoPS3Compatible(newInput) || !params.mediaRenderer.isH264Level41Limited()) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
 			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
 			boolean nomux = false;
 			for(String s:sArgs) {
@@ -1408,13 +1408,17 @@ private JTextField mencoder_ass_scale;
 			cmdArray[cmdArray.length-3] = "" + params.timeend; //$NON-NLS-1$
 		}
 		
+		String rate = "48000";
+		if (params.mediaRenderer.isXBOX())
+			rate = "44100";
+		
 		// force srate -> cause ac3's mencoder doesn't like anything other than 48khz
 		if (media != null && !pcm && !dts && !mux) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +4);
 			cmdArray[cmdArray.length-6] = "-af"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-5] = "lavcresample=48000"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-5] = "lavcresample=" + rate; //$NON-NLS-1$
 			cmdArray[cmdArray.length-4] = "-srate"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-3] = "48000"; //$NON-NLS-1$
+			cmdArray[cmdArray.length-3] = rate; //$NON-NLS-1$
 		}
 	
 		PipeProcess pipe = null;

@@ -442,6 +442,9 @@ public class RequestV2 extends HTTPResource {
 				response.append(CRLF);
 				//PMS.debug(response.toString());
 			}
+		} else if(method.equals("SUBSCRIBE")) {
+			output.setHeader("SID", PMS.get().usn());
+			output.setHeader("TIMEOUT", "Second-1800");
 		}
 		
 		//output(output, "DATE: " + getDATE() + " GMT");

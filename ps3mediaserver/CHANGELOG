@@ -22,15 +22,12 @@ New translations: Czech (thanks to Mila), Danish (thanks to Niclas Gleesborg), S
 
 - Fixes
 
-!New and experimental HTTP engine!
-. no more random sound cuts when playing mp3s
-. better network performances ?
-. better media renderer support ? (my set top box at least)
-. better AVI/MP4 support on ps3 ?
+New and experimental HTTP engine: better media renderer support / no more random sound cuts when playing mp3s
+Fixed slow a/v out of sync on Xbox360 ?
 Media library major speed and size improvements (you may have to reset the library)
 Improved fix for the stopped videos issue
 Better support for mkvs with NTSC video track
-Fix spaces usage in the audio/subtitles configurations
+Fixed spaces usage in the audio/subtitles configurations
 Fixed black screen with some AVC videos badly flagged at L4.1
 Fixed cover art files not always read
 Fixed bug with multiple playlist in one folder
