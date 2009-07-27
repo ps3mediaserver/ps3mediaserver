@@ -911,8 +911,22 @@ private JTextField mencoder_ass_scale;
 		return configuration.getMencoderPath();
 	}
 	
+	private int [] getVideoBitrateConfig(String bitrate) {
+		int bitrates [] = new int [2];
+		if (bitrate.contains("(") && bitrate.contains(")")) { //$NON-NLS-1$ //$NON-NLS-2$
+			bitrates[1] = Integer.parseInt(bitrate.substring(bitrate.indexOf("(")+1, bitrate.indexOf(")"))); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		if (bitrate.contains("(")) //$NON-NLS-1$
+			bitrate = bitrate.substring(0, bitrate.indexOf("(")).trim(); //$NON-NLS-1$
+		if (StringUtils.isBlank(bitrate))
+			bitrate = "0"; //$NON-NLS-1$
+		
+		bitrates[0] = (int) Double.parseDouble(bitrate);
+		return bitrates;
+	}
+	
 	private String addMaximumBitrateConstraints(String encodeSettings, DLNAMediaInfo media, String quality,RendererConfiguration mediaRenderer) {
-		String m = "" + PMS.getConfiguration().getMaximumBitrate(); //$NON-NLS-1$
+		/*String m = "" + PMS.getConfiguration().getMaximumBitrate(); //$NON-NLS-1$
 		int bufs = 0;
 		if (m.contains("(") && m.contains(")")) { //$NON-NLS-1$ //$NON-NLS-2$
 			bufs = Integer.parseInt(m.substring(m.indexOf("(")+1, m.indexOf(")"))); //$NON-NLS-1$ //$NON-NLS-2$
@@ -922,27 +936,31 @@ private JTextField mencoder_ass_scale;
 		if (StringUtils.isBlank(m))
 			m = "0"; //$NON-NLS-1$
 		
-		int mb = (int) Double.parseDouble(m);
-		if ((mb == 0 && mediaRenderer.getMaxVideoBitrate() > 0) || mediaRenderer.getMaxVideoBitrate() < mb && mediaRenderer.getMaxVideoBitrate() > 0)
-			mb = mediaRenderer.getMaxVideoBitrate();
-		if (mb > 0 && !quality.contains("vrc_buf_size") && !quality.contains("vrc_maxrate") && !quality.contains("vbitrate")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			mb = 1000*mb;
-			if (mb > 60000)
-				mb = 60000;
+		int mb = (int) Double.parseDouble(m);*/
+		int defaultMaxBitrates [] = getVideoBitrateConfig(PMS.getConfiguration().getMaximumBitrate());
+		int rendererMaxBitrates [] = new int [2];
+		if (mediaRenderer.getMaxVideoBitrate() != null)
+			rendererMaxBitrates = getVideoBitrateConfig(mediaRenderer.getMaxVideoBitrate());
+		if ((defaultMaxBitrates[0] == 0 && rendererMaxBitrates[0] > 0) || rendererMaxBitrates[0] < defaultMaxBitrates[0] && rendererMaxBitrates[0] > 0)
+			defaultMaxBitrates = rendererMaxBitrates;
+		if (defaultMaxBitrates[0] > 0 && !quality.contains("vrc_buf_size") && !quality.contains("vrc_maxrate") && !quality.contains("vbitrate")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			defaultMaxBitrates[0] = 1000*defaultMaxBitrates[0];
+			if (defaultMaxBitrates[0] > 60000)
+				defaultMaxBitrates[0] = 60000;
 			int bufSize = 1835;
 			if (media.isHDVideo())
-				bufSize = mb / 3;
+				bufSize = defaultMaxBitrates[0] / 3;
 			if (bufSize > 7000)
 				bufSize = 7000;
 			
-			if (bufs > 0)
-				bufSize = bufs * 1000;
+			if (defaultMaxBitrates[1] > 0)
+				bufSize = defaultMaxBitrates[1] /** 1000*/;
 			
-			if (mediaRenderer.isDefaultVBVSize())
+			if (mediaRenderer.isDefaultVBVSize() && rendererMaxBitrates[1] == 0)
 				bufSize = 1835;
 			
 			//bufSize = 2000;
-			encodeSettings += ":vrc_maxrate=" + mb + ":vrc_buf_size=" + bufSize; //$NON-NLS-1$ //$NON-NLS-2$
+			encodeSettings += ":vrc_maxrate=" + defaultMaxBitrates[0] + ":vrc_buf_size=" + bufSize; //$NON-NLS-1$ //$NON-NLS-2$
 		} /*else if (mediaRenderer != HTTPResource.PS3)
 			encodeSettings += ":vrc_buf_size=1835"; //$NON-NLS-1$*/
 		return encodeSettings;
@@ -1068,12 +1086,15 @@ private JTextField mencoder_ass_scale;
 			}
 		}
 
-		
+		boolean needAssFixPTS = false;
 		
 		
 		StringBuffer sb = new StringBuffer();
-		if (params.sid != null && !configuration.isMencoderDisableSubs() && configuration.isMencoderAss() && !dvd && !avisynth())
+		if (params.sid != null && !configuration.isMencoderDisableSubs() && configuration.isMencoderAss() && !dvd && !avisynth()) {
 			sb.append("-ass -" + (configuration.isMencoderFontConfig()?"":"no") + "fontconfig "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			if (mpegts)
+				needAssFixPTS = true;
+		}
 		if (params.sid != null && !params.sid.is_file_utf8 && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() >  0) {
 			sb.append("-subcp " +configuration.getMencoderSubCp() + " "); //$NON-NLS-1$ //$NON-NLS-2$
 			if (configuration.isMencoderSubFribidi()) {
@@ -1261,11 +1282,11 @@ private JTextField mencoder_ass_scale;
 		}
 		
 		
-		/*if (fileName.toLowerCase().endsWith("flv") || fileName.toLowerCase().endsWith("mov") || fileName.toLowerCase().endsWith("evo") || fileName.toLowerCase().endsWith("rmvb") || fileName.toLowerCase().endsWith("rm")) {
+		if (needAssFixPTS) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
 			cmdArray[cmdArray.length-4] = "-vf"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-3] = "fixpts"; //$NON-NLS-1$
-		}*/
+			cmdArray[cmdArray.length-3] = "ass,fixpts"; //$NON-NLS-1$
+		}
 		
 		boolean deinterlace = configuration.isMencoderYadif();
 		// check if the media renderer supports this resolution

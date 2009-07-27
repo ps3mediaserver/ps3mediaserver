@@ -20,7 +20,9 @@ package net.pms.dlna;
 
 import net.pms.PMS;
 import net.pms.dlna.virtual.VirtualFolder;
+import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
+import net.pms.encoders.TSMuxerVideo;
 
 public class FileTranscodeVirtualFolder extends VirtualFolder {
 
@@ -28,7 +30,6 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 	
 	public FileTranscodeVirtualFolder(String name, String thumbnailIcon, boolean copy) {
 		super(name, thumbnailIcon);
-		this.copy = copy;
 	}
 	
 	@Override
@@ -37,7 +38,6 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 		if (!resolved && children.size() == 1) { //OK
 			DLNAResource child = children.get(0);
 			child.resolve();
-			child.copy = copy;
 			if (child.ext.getProfiles() != null) {
 				DLNAResource ref = child;
 				Player tsMuxer = null;
@@ -46,16 +46,16 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					if (pl !=null && !child.player.equals(pl)) {
 						DLNAResource avisnewChild = (DLNAResource) child.clone();
 						avisnewChild.player = pl;
-						avisnewChild.copy = copy;
 						avisnewChild.noName = true;
 						avisnewChild.id = avisnewChild.parent.id + "$" + children.size();
 						avisnewChild.media = child.media;
 						children.add(avisnewChild);
 						avisnewChild.parent = this;
-						if (avisnewChild.player.id().equals("mencoder"))
+						if (avisnewChild.player.id().equals(MEncoderVideo.ID))
 							ref = avisnewChild;
-						if (avisnewChild.player.id().equals("tsmuxer"))
+						if (avisnewChild.player.id().equals(TSMuxerVideo.ID))
 							tsMuxer = pl;
+						addChapterFile(avisnewChild);
 					}
 				}
 				for(int i=0;i<child.media.audioCodes.size();i++) {
@@ -63,7 +63,6 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					newChildNoSub.player = ref.player;
 					newChildNoSub.id = newChildNoSub.parent.id + "$" + children.size();
 					newChildNoSub.media = ref.media;
-					newChildNoSub.copy = ref.copy;
 					newChildNoSub.noName = true;
 					children.add(newChildNoSub);
 					newChildNoSub.parent = this;
@@ -71,19 +70,21 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					newChildNoSub.media_subtitle = new DLNAMediaSubtitle();
 					newChildNoSub.media_subtitle.id = -1;
 					
+					addChapterFile(newChildNoSub);
+					
+					
 					for(int j=0;j<child.media.subtitlesCodes.size();j++) {
 						DLNAResource newChild = (DLNAResource) ref.clone();
 						newChild.player = ref.player;
 						newChild.id = newChild.parent.id + "$" + children.size();
 						newChild.media = ref.media;
-						newChild.copy = ref.copy;
 						newChild.noName = true;
 						children.add(newChild);
 						newChild.parent = this;
 						newChild.media_audio = ref.media.audioCodes.get(i);
-						//if (j >= 0) {
-							newChild.media_subtitle = ref.media.subtitlesCodes.get(j);
-						//}
+						newChild.media_subtitle = ref.media.subtitlesCodes.get(j);
+						addChapterFile(newChild);
+						
 						PMS.info("Duplicate " + ref.getName() + " with player: " + ref.player.toString() + " and aid: " + newChild.media_audio.id + " and sid: " + newChild.media_subtitle);
 					}
 				}
@@ -94,16 +95,30 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 						newChildNoSub.player = tsMuxer;
 						newChildNoSub.id = newChildNoSub.parent.id + "$" + children.size();
 						newChildNoSub.media = ref.media;
-						newChildNoSub.copy = ref.copy;
 						newChildNoSub.noName = true;
 						children.add(newChildNoSub);
 						newChildNoSub.parent = this;
 						newChildNoSub.media_audio = ref.media.audioCodes.get(i);
+						addChapterFile(newChildNoSub);
+						
 					}
 				}
 			}
 		}
 		resolved = true;
+	}
+	
+	private void addChapterFile(DLNAResource ref) {
+		if (PMS.getConfiguration().getChapterInterval() > 0 && PMS.getConfiguration().isChapterSupport()) {
+			ChapterFileTranscodeVirtualFolder chapterFolder = new ChapterFileTranscodeVirtualFolder("Chapters:" + ref.getDisplayName(), null, PMS.getConfiguration().getChapterInterval());
+			chapterFolder.parent = this;
+			DLNAResource newSeekChild = (DLNAResource) ref.clone();
+			newSeekChild.parent = chapterFolder;
+			newSeekChild.id = newSeekChild.parent.id + "$0";
+			newSeekChild.noName = true;
+			chapterFolder.children.add(newSeekChild);
+			children.add(chapterFolder);
+		}
 	}
 
 	@Override

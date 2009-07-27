@@ -372,8 +372,8 @@ public class RendererConfiguration {
 		return getBoolean(DEFAULT_VBV_BUFSIZE, false);
 	}
 	
-	public int getMaxVideoBitrate() {
-		return getInt(MAX_VIDEO_BITRATE, 0);
+	public String getMaxVideoBitrate() {
+		return getString(MAX_VIDEO_BITRATE, null);
 	}
 	
 	public int getMaxVideoWidth() {

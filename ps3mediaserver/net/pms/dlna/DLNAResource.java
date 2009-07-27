@@ -96,7 +96,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public abstract long length();
 	public abstract InputStream getInputStream() throws IOException;
 	public abstract boolean isFolder();
-	protected boolean copy;
 	protected boolean discovered = false;
 	private ProcessWrapper externalProcess;
 	protected boolean srtFile;
@@ -473,6 +472,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		if (avisynth)
 			name = (player!=null?player.name():"") + " + AviSynth";
 		
+		if (splitStart > 0 && splitLength > 0) {
+			name = ">> " + DLNAMediaInfo.getDurationString(splitStart);
+		}
+		
 		return name;
 	}
 	
@@ -662,8 +665,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				else //if (!PMS.getConfiguration().isDisableFakeSize() && mediaRenderer != XBOX)
 				//else if (!copy)
 					addAttribute(sb, "size", -1);
-				if (media.duration != null)
-					addAttribute(sb, "duration", media.duration);
+				if (media.duration != null) {
+					if (splitStart > 0 && splitLength > 0) {
+						addAttribute(sb, "duration", DLNAMediaInfo.getDurationString(splitLength));
+					} else
+						addAttribute(sb, "duration", media.duration);
+				}
 				if (media.getResolution() != null)
 					addAttribute(sb, "resolution", media.getResolution());
 				addAttribute(sb, "bitrate", media.getRealVideoBitrate());
