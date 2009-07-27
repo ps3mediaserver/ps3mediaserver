@@ -93,6 +93,8 @@ public class TrTab2 {
 	private JComboBox channels;
 	private JComboBox vq ;
 	private JCheckBox  ac3remux ;
+	private JCheckBox  chapter_support ;
+	private JTextField chapter_interval;
 	
 	private void updateEngineModel() {
 		ArrayList<String> engines = new ArrayList<String>();
@@ -346,7 +348,7 @@ public class TrTab2 {
 	public JComponent buildCommon() {
 		FormLayout layout = new FormLayout(
 				"left:pref, 2dlu, pref:grow", //$NON-NLS-1$
-                "p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p,2dlu,  p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p"); //$NON-NLS-1$
+                "p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p,2dlu,  p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -397,7 +399,44 @@ public class TrTab2 {
         });
         builder.add(nbcores,          cc.xy(3,  5)); 
         
+        chapter_interval = new JTextField("" + configuration.getChapterInterval()); //$NON-NLS-1$
+        chapter_interval.setEnabled(configuration.isChapterSupport());
+        chapter_interval.addKeyListener(new KeyListener() {
+
+    		@Override
+    		public void keyPressed(KeyEvent e) {}
+    		@Override
+    		public void keyTyped(KeyEvent e) {}
+    		@Override
+    		public void keyReleased(KeyEvent e) {
+    			try {
+    				int ab = Integer.parseInt(chapter_interval.getText());
+    				configuration.setChapterInterval(ab);
+    			} catch (NumberFormatException nfe) {
+    			}
+    			
+    		}
+        	   
+           });
         
+        chapter_support = new JCheckBox("Chapters #Transcoded folder support / Interval in minutes: ");
+        chapter_support.setContentAreaFilled(false);
+        chapter_support.setSelected(configuration.isChapterSupport());
+        
+        chapter_support.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				configuration.setChapterSupport( (e.getStateChange() == ItemEvent.SELECTED));
+ 				chapter_interval.setEnabled(configuration.isChapterSupport());
+ 				PMS.get().getFrame().setReloadable(true);
+ 		        
+ 			}
+        	
+        });
+        
+        builder.add(chapter_support, cc.xy(1, 7));
+        
+        builder.add(chapter_interval, cc.xy(3, 7));
         
        cmp = builder.addSeparator(Messages.getString("TrTab2.3"),  cc.xyw(1, 11, 3)); //$NON-NLS-1$
         cmp = (JComponent) cmp.getComponent(0);

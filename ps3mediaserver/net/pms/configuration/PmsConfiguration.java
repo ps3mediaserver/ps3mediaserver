@@ -111,6 +111,8 @@ public class PmsConfiguration {
  	private static final String KEY_HIDE_MEDIA_LIBRARY_FOLDER = "hide_media_library_folder";
 	private static final String KEY_HIDE_TRANSCODE_FOLDER = "hide_transcode_folder";
 	private static final String KEY_DVDISO_THUMBNAILS = "dvd_isos_thumbnails";
+	private static final String KEY_CHAPTER_SUPPORT = "chapter_support";
+	private static final String KEY_CHAPTER_INTERVAL = "chapter_interval";
 
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -1051,5 +1053,20 @@ public class PmsConfiguration {
 	public void setCustomProperty(String property, Object value) {
 		configuration.setProperty(property, value);
 	}
+	
+	public boolean isChapterSupport() {
+		return getBoolean(KEY_CHAPTER_SUPPORT, false);
+	}
+	
+	public void setChapterSupport(boolean value) {
+		configuration.setProperty(KEY_CHAPTER_SUPPORT, value);
+	}
 
+	public int getChapterInterval() {
+		return getInt(KEY_CHAPTER_INTERVAL, 5);
+	}
+	
+	public void setChapterInterval(int value) {
+		configuration.setProperty(KEY_CHAPTER_INTERVAL, value);
+	}
 }

@@ -106,6 +106,7 @@ public class BufferedOutputFile extends OutputStream  {
 		this.bufferOverflowWarning = this.maxMemorySize - margin;
 		this.secondread_minsize = params.secondread_minsize;
 		this.timeseek = params.timeseek;
+		this.timeend = params.timeend;
 		try {
 			buffer = new byte [this.maxMemorySize<TEMP_SIZE?this.maxMemorySize:TEMP_SIZE];
 		} catch (OutOfMemoryError ooe) {
@@ -177,6 +178,7 @@ public class BufferedOutputFile extends OutputStream  {
 	}
 	
 	private double timeseek;
+	private double timeend;
 	//private int scr;
 	
 	private long packetpos = 0;
@@ -234,7 +236,7 @@ public class BufferedOutputFile extends OutputStream  {
 			 }
 			 
 			 writeCount += len - off;
-			 if (timeseek > 0) {
+			 if (timeseek > 0 && timeend == 0) {
 				 int packetLength = 6; // minimum to get packet size
 				 while (packetpos+packetLength < writeCount && buffer != null) {
 					 int packetposMB = (int) (packetpos % maxMemorySize);
