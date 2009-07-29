@@ -51,8 +51,8 @@ public class BufferedOutputFile extends OutputStream  {
 		}
 		
 		@Override
-		public int read(byte[] b) throws IOException {
-			int returned = outputStream.read(firstRead, readCount, b);
+		public int read(byte[] b, int off, int len) throws IOException {
+			int returned = outputStream.read(firstRead, readCount, b, off, len);
 			if (returned != -1)
 				readCount += returned;
 			firstRead = false;
@@ -60,8 +60,8 @@ public class BufferedOutputFile extends OutputStream  {
 		}
 		
 		@Override
-		public int read(byte[] b, int off, int len) throws IOException {
-			return read(b);
+		public int read(byte[] b) throws IOException {
+			return read(b, 0, b.length);
 		}
 
 		
@@ -407,7 +407,7 @@ public class BufferedOutputFile extends OutputStream  {
 		buffer[m0] = (byte) (pts_left_low & 255);
 	}
 	
-	private int read(boolean firstRead, long readCount, byte buf []) {
+	private int read(boolean firstRead, long readCount, byte buf [], int off, int len) {
 		if (readCount > TEMP_SIZE && readCount < maxMemorySize) {
 			int newMargin = maxMemorySize - 2000000;
 			if (bufferOverflowWarning != newMargin)
@@ -442,18 +442,18 @@ public class BufferedOutputFile extends OutputStream  {
 		int endOF = buffer.length;
 		int cut = 0;
 		if (eof) {
-			if ((writeCount - readCount) < buf.length) {
-				cut = (int) (buf.length - (writeCount - readCount));
+			if ((writeCount - readCount) < len) {
+				cut = (int) (len- (writeCount - readCount));
 			}
 		}
 		/*if (eof)
 			endOF =(int) (writeCount % maxMemorySize);*/
-		if (mb>=endOF - buf.length) {
-			System.arraycopy(buffer, mb, buf, 0, endOF-mb-cut);
+		if (mb>=endOF - len) {
+			System.arraycopy(buffer, mb, buf, off, endOF-mb-cut);
 			return endOF-mb;
 		} else {
-			System.arraycopy(buffer, mb, buf, 0, buf.length-cut);
-			return buf.length;
+			System.arraycopy(buffer, mb, buf, off, len-cut);
+			return len;
 		}
 		
 	}

@@ -483,13 +483,23 @@ public class RequestV2 extends HTTPResource {
 			future = e.getChannel().write(output);
 			
 			if (lowRange != DLNAMediaInfo.ENDFILE_POS && !method.equals("HEAD")) {
-				// Use of the newest 3.1.0 data streaming feature with Netty
-				// Too bad it doesn't work with half MPEG videos on PS3 !? (really weird)
-				// ChannelFuture chunkWriteFuture = e.getChannel().write(new ChunkedStream(inputStream, BUFFER_SIZE));
-				// Then, let's keep the old way of doing large file streaming:
 				final DLNAResource resource = dlna;
 				if (dlna != null)
 					dlna.startPlaying();
+				/* ChannelFuture chunkWriteFuture = e.getChannel().write(new ChunkedStream(inputStream, BUFFER_SIZE));
+				 chunkWriteFuture.addListener(new ChannelFutureListener() {
+					 public void operationComplete(ChannelFuture future) {
+						 try {
+			                PMS.get().getRegistry().reenableGoToSleep();
+			                inputStream.close();
+						} catch (IOException e) {
+						} 
+						 future.getChannel().close(); // always closed because of freeze at the end of video due to no channel close sent
+						 if (resource != null)
+		            		resource.stopPlaying();
+					 }
+				 });*/
+				 //old way of doing large file streaming:
 				future.addListener(new ChannelFutureListener() {
 					private final ChannelBuffer buf = ChannelBuffers.buffer(BUFFER_SIZE); 
 					public void operationComplete(ChannelFuture future) {
@@ -498,6 +508,7 @@ public class RequestV2 extends HTTPResource {
 							//future.getCause().printStackTrace(); 
 							try {
 			                	PMS.get().getRegistry().reenableGoToSleep();
+			                	PMS.debug("future: isSuccess() = false");
 								inputStream.close();
 							} catch (IOException e) {
 								//
@@ -517,6 +528,7 @@ public class RequestV2 extends HTTPResource {
 				                // Wrote the last chunk - close the connection if the write is done. 
 				            	try {
 				                	PMS.get().getRegistry().reenableGoToSleep();
+				                	PMS.debug("future: wrote the last chunk, remaining" + bytes);
 									inputStream.close();
 								} catch (IOException e) {
 									//
