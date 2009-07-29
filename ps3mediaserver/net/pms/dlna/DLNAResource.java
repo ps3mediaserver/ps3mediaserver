@@ -577,7 +577,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		
 		addAttribute(sb, "id", id);
 		if (isFolder()) {
-			addAttribute(sb, "childCount", childrenNumber());
+			if (mediaRenderer.isXBMC()) // todo: make that generic ?
+				addAttribute(sb, "childCount", 1);
+			else
+				addAttribute(sb, "childCount", childrenNumber());
 		}
 		addAttribute(sb, "parentID", fakeParentId!=null?fakeParentId:(parent==null?-1:parent.id));
 		addAttribute(sb, "restricted", "true");

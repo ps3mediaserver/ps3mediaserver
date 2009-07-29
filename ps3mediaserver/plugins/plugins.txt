@@ -1,1 +1,1 @@
-drop some plugins here
+You can drop plugins (*.jar files) here

@@ -9,6 +9,7 @@ Externalization of PS3/Xbox playback profiles, it's now possible to create profi
 Includes preliminary support for Sony Bravia, Popcorn Hour, Samsung Wiselink, Freebox HD
 Handling of UTF8 and UTF16 encoding, and case insensitive external subtitles
 CUE playlist support
+Pseudo chapters support via the #Transcoded folder
 DVD ISO thumbnails
 Updated tsMuxeR binaries (better H264 camcorders support)
 Windows: Launcher now detects Java 64 bits if installed

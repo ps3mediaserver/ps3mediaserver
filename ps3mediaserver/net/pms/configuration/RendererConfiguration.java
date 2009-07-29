@@ -168,6 +168,10 @@ public class RendererConfiguration {
 		return getRendererName().toUpperCase().contains("XBOX");
 	}
 	
+	public boolean isXBMC() {
+		return getRendererName().toUpperCase().contains("XBMC");
+	}
+	
 	public boolean isPS3() {
 		return getRendererName().toUpperCase().contains("PLAYSTATION") || getRendererName().toUpperCase().contains("PS3");
 	}
