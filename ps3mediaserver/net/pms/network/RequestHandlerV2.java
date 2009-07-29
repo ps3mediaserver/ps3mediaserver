@@ -34,6 +34,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipelineCoverage;
+import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
@@ -239,4 +240,13 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 	     // Close the connection as soon as the error message is sent.
 		        ctx.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
 		     }
+
+	@Override
+	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e)
+			throws Exception {
+		// as seen in http://www.jboss.org/netty/community.html#nabble-td2423020
+		super.channelOpen(ctx, e);
+		if (HTTPServer.group != null)
+			HTTPServer.group.add(ctx.getChannel());
+	}
 }

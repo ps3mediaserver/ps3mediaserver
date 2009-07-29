@@ -39,6 +39,8 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 public class HTTPServer implements Runnable {
@@ -134,6 +136,7 @@ public class HTTPServer implements Runnable {
 			runnable.start();
 			
 		} else {
+			group = new DefaultChannelGroup("myServer");
 			factory = new NioServerSocketChannelFactory(
 				Executors.newCachedThreadPool(),
 				Executors.newCachedThreadPool());
@@ -147,7 +150,7 @@ public class HTTPServer implements Runnable {
 			bootstrap.setOption("child.sendBufferSize", 65536);
 			bootstrap.setOption("child.receiveBufferSize", 65536);
 			channel = bootstrap.bind(address);
-			
+			group.add(channel);
 			if (hostName == null && iafinal !=null)
 				hostName = iafinal.getHostAddress();
 			else if (hostName == null)
@@ -160,6 +163,7 @@ public class HTTPServer implements Runnable {
 	
 	private ChannelFactory factory;
 	private Channel channel;
+	public static ChannelGroup group ;
 	
 	public void stop() {
 		PMS.info( "Stopping server on host " + hostName + " and port " + port + "...");
@@ -171,10 +175,12 @@ public class HTTPServer implements Runnable {
 				serverSocketChannel.close();
 			} catch (IOException e) {}
 		} else if (channel != null) {
-			channel.disconnect().awaitUninterruptibly();
+			/*channel.disconnect().awaitUninterruptibly();
 			channel.close().awaitUninterruptibly();
-		    channel.unbind().awaitUninterruptibly();
-		    if (factory != null)
+		    channel.unbind().awaitUninterruptibly();*/
+			if (group != null)
+				group.close().awaitUninterruptibly();
+			if (factory != null)
 		    	factory.releaseExternalResources();
 		}
 	}

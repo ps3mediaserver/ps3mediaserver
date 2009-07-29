@@ -348,6 +348,9 @@ public class PMS {
 		
 		if (registry.getVlcv() != null && registry.getVlcp() != null) {
 			PMS.minimal("Found VideoLAN version " + registry.getVlcv() + " at: " + registry.getVlcp()); //$NON-NLS-1$ //$NON-NLS-2$
+			if (registry.getVlcv().startsWith("1") && Platform.isWindows()) {
+				PMS.minimal("Unfortunately, VideoLAN 1.x is not supported at this point. Last known working version is 0.98");
+			}
 		}
 		
 		// force use of specific dvr ms muxer when it's installed in the right place
@@ -408,7 +411,9 @@ public class PMS {
 			proxyServer = new ProxyServer(proxy);
 		}
 		
-		getDatabase();
+		if (getDatabase() != null) {
+			minimal("A tiny media library admin interface is available at : http://" + server.getHost() + ":" + server.getPort() + "/console/home");
+		}
 		
 		try {
 			ExternalFactory.lookup();
