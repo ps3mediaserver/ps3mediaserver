@@ -108,11 +108,12 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 		resolved = true;
 	}
 	
-	private void addChapterFile(DLNAResource ref) {
+	private void addChapterFile(DLNAResource source) {
 		if (PMS.getConfiguration().getChapterInterval() > 0 && PMS.getConfiguration().isChapterSupport()) {
-			ChapterFileTranscodeVirtualFolder chapterFolder = new ChapterFileTranscodeVirtualFolder("Chapters:" + ref.getDisplayName(), null, PMS.getConfiguration().getChapterInterval());
+			ChapterFileTranscodeVirtualFolder chapterFolder = new ChapterFileTranscodeVirtualFolder("Chapters:" + source.getDisplayName(), null, PMS.getConfiguration().getChapterInterval());
 			chapterFolder.parent = this;
-			DLNAResource newSeekChild = (DLNAResource) ref.clone();
+			chapterFolder.id = this.id + "$" + children.size();
+			DLNAResource newSeekChild = (DLNAResource) source.clone();
 			newSeekChild.parent = chapterFolder;
 			newSeekChild.id = newSeekChild.parent.id + "$0";
 			newSeekChild.noName = true;
