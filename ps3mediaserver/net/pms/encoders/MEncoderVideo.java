@@ -1608,7 +1608,7 @@ private JTextField mencoder_ass_scale;
 			
 		} else {
 			
-			boolean directpipe = Platform.isMac();
+			boolean directpipe = Platform.isMac() || Platform.isFreeBSD();
 			if (directpipe) {
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +3);
 				cmdArray[cmdArray.length-3] = "-really-quiet"; //$NON-NLS-1$
