@@ -90,7 +90,7 @@ public class StatusTab {
 	        jio = new JLabel(Messages.getString("StatusTab.8")); //$NON-NLS-1$
 	        builder.add(jio, cc.xy(2, 13));
 	        
-	        cmp =  builder.addSeparator("Detected media renderers:",  cc.xy(2, 15));
+	        cmp =  builder.addSeparator(Messages.getString("StatusTab.9"),  cc.xy(2, 15));
 	        cmp = (JComponent) cmp.getComponent(0);
 	        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 	        

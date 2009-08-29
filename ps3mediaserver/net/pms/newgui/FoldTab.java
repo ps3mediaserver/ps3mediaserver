@@ -185,7 +185,7 @@ public class FoldTab {
         	mplayer_thumb.setSelected(true);
         builder.add(mplayer_thumb,          cc.xyw(1,  5, 3));
         
-        dvdiso_thumb = new JCheckBox("DVD ISOs thumbnails");
+        dvdiso_thumb = new JCheckBox(Messages.getString("FoldTab.19"));
         dvdiso_thumb.setContentAreaFilled(false);
         dvdiso_thumb.addItemListener(new ItemListener() {
 
