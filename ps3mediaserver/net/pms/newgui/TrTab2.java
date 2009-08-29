@@ -419,7 +419,7 @@ public class TrTab2 {
         	   
            });
         
-        chapter_support = new JCheckBox("Chapters #Transcoded folder support / Interval in minutes: ");
+        chapter_support = new JCheckBox(Messages.getString("TrTab2.52"));
         chapter_support.setContentAreaFilled(false);
         chapter_support.setSelected(configuration.isChapterSupport());
         
