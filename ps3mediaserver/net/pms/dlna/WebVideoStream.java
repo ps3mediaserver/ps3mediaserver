@@ -42,18 +42,40 @@ public class WebVideoStream extends WebStream {
 				}
 				is.close();
 				String content = new String(bout.toByteArray());
-				int fs = content.indexOf("/watch_fullscreen?");
+				int fs = content.indexOf("swfArgs");
+				int hd = content.indexOf("isHDAvailable = true");
 				String newURL = "http://www.youtube.com/get_video%3F";
 				if (fs > -1) {
-					String seq = content.substring(fs+18, content.indexOf("'", fs));
+					String seq = content.substring(fs+18, content.indexOf("}", fs));
 					seq = seq.trim();
-					StringTokenizer st = new StringTokenizer(seq, "&");
+					StringTokenizer st = new StringTokenizer(seq, ",");
 					while (st.hasMoreTokens()) {
 						String elt = st.nextToken();
-						if (elt.startsWith("video_id="))
-							newURL += elt.replace("=", "%3D") + "%26";
-						else if (elt.startsWith("t="))
-							newURL += elt.replace("=", "%3D");
+						if (elt.startsWith(" \"video_id\""))
+						{	
+							newURL += "&video_id%3D";
+							newURL += elt.substring(14, elt.length()-1);
+							if (hd>-1)newURL += "&fmt=22";
+							else newURL += "&fmt=18";
+						}
+						else if (elt.startsWith(" \"l\""))
+						{
+							newURL += "&l=";
+							newURL += elt.substring(6, elt.length());
+							
+						}
+						else if (elt.startsWith(" \"sk\""))
+						{
+							newURL += "&sk=";
+							newURL += elt.substring(8, elt.length()-1);
+							
+						}
+						else if (elt.startsWith(" \"t\""))
+						{
+							newURL += "&t=";
+							newURL += elt.substring(7, elt.length()-1);
+						}
+						newURL = newURL.replace("=", "%3D");
 					}
 					URL = newURL;
 				}
