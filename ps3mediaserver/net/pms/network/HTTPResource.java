@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Locale;
 
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
@@ -174,5 +175,34 @@ public class HTTPResource {
 		}
 		return mediarenderer.getMimeType(mimetype);
 	}
-
+	
+	public boolean isNorthAmericanLocale() {
+		return Locale.US.getCountry().equals(Locale.getDefault().getCountry()) || Locale.CANADA.getCountry().equals(Locale.getDefault().getCountry());
+	}
+	
+	public boolean isJapaneseLocale() {
+		return Locale.JAPAN.getCountry().equals(Locale.getDefault().getCountry());
+	}
+	
+	public String getMPEG_PS_PALLocalizedValue() {
+		if (isNorthAmericanLocale() || isJapaneseLocale())
+			return "MPEG_PS_NTSC";
+		return "MPEG_PS_PAL";
+	}
+	
+	public String getMPEG_TS_SD_EU_ISOLocalizedValue() {
+		if (isNorthAmericanLocale())
+			return "MPEG_TS_SD_NA_ISO";
+		if (isJapaneseLocale())
+			return "MPEG_TS_SD_JP_ISO";
+		return "MPEG_TS_SD_EU_ISO";
+	}
+	
+	public String getMPEG_TS_SD_EULocalizedValue() {
+		if (isNorthAmericanLocale())
+			return "MPEG_TS_SD_NA";
+		if (isJapaneseLocale())
+			return "MPEG_TS_SD_JP";
+		return "MPEG_TS_SD_EU";
+	}
 }

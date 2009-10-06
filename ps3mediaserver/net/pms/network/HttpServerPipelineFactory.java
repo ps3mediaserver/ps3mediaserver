@@ -25,6 +25,7 @@ import static org.jboss.netty.channel.Channels.*;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.stream.ChunkedWriteHandler;
@@ -38,9 +39,10 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory {
         // Create a default pipeline implementation.
         ChannelPipeline pipeline = pipeline();
         pipeline.addLast("decoder", new HttpRequestDecoder());
+        pipeline.addLast("aggregator", new HttpChunkAggregator(65536)); // eliminate the need to decode http chunks from the client
         pipeline.addLast("encoder", new HttpResponseEncoder());
-        pipeline.addLast("handler", new RequestHandlerV2());
         pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
+        pipeline.addLast("handler", new RequestHandlerV2());
         return pipeline;
     }
 }
