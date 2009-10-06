@@ -38,6 +38,7 @@ import java.util.StringTokenizer;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -109,7 +110,7 @@ private JTextField mencoder_ass_scale;
 	private JCheckBox  scaler ;
 	private JTextField scaleX;
 	private JTextField scaleY;
-	private JCheckBox  asscolor ;
+	private JCheckBox  assdefaultstyle ;
 	private JCheckBox  fc ;
 	private JCheckBox  ass ;
 	private JCheckBox  checkBox ;
@@ -118,6 +119,7 @@ private JTextField mencoder_ass_scale;
 	private JCheckBox  noskip ;
 	private JCheckBox  intelligentsync ;
 	private JTextField alternateSubFolder;
+	private JButton subColor;
 	public JCheckBox getNoskip() {
 		return noskip;
 	}
@@ -777,9 +779,9 @@ private JTextField mencoder_ass_scale;
       builder.add(fc,          cc.xyw(3,  37, 5));
       fc.setSelected(configuration.isMencoderFontConfig());
       
-      asscolor = new JCheckBox(Messages.getString("MEncoderVideo.36")); //$NON-NLS-1$
-      asscolor.setContentAreaFilled(false);
-      asscolor.addItemListener(new ItemListener() {
+      assdefaultstyle = new JCheckBox(Messages.getString("MEncoderVideo.36")); //$NON-NLS-1$
+      assdefaultstyle.setContentAreaFilled(false);
+      assdefaultstyle.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setMencoderAssDefaultStyle(e.getStateChange() == ItemEvent.SELECTED);
@@ -787,8 +789,8 @@ private JTextField mencoder_ass_scale;
       	
       });
       
-      builder.add(asscolor,          cc.xyw(8,  37, 7));
-      asscolor.setSelected(configuration.isMencoderAssDefaultStyle());
+      builder.add(assdefaultstyle,          cc.xyw(8,  37, 4));
+      assdefaultstyle.setSelected(configuration.isMencoderAssDefaultStyle());
        
        subs = new JCheckBox(Messages.getString("MEncoderVideo.22")); //$NON-NLS-1$
        subs.setContentAreaFilled(false);
@@ -802,6 +804,25 @@ private JTextField mencoder_ass_scale;
        	
        });
        builder.add(subs, cc.xyw(1, 43, 15));
+       
+       subColor = new JButton();
+       subColor.setText("Subs color");
+       subColor.setBackground(new Color(configuration.getSubsColor()));
+       subColor.addActionListener(new ActionListener() {
+
+   		@Override
+   		public void actionPerformed(ActionEvent e) {
+   			Color newColor = JColorChooser.showDialog(
+   					(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+                    "Choose Subtitles Color",
+                    subColor.getBackground());
+   			if (newColor != null) {
+   				subColor.setBackground(newColor);
+   				configuration.setSubsColor(newColor.getRGB());
+   			}
+   		}
+       });
+       builder.add(subColor, cc.xyw(12,  37, 4));
        
        JTextArea decodeTips = new JTextArea(Messages.getString("MEncoderVideo.23")); //$NON-NLS-1$
        decodeTips.setEditable(false);
@@ -820,7 +841,7 @@ private JTextField mencoder_ass_scale;
 				defaultsubs.setEnabled(!configuration.isMencoderDisableSubs());
 				subcp.setEnabled(!configuration.isMencoderDisableSubs());
 				ass.setEnabled(!configuration.isMencoderDisableSubs());
-				asscolor.setEnabled(!configuration.isMencoderDisableSubs());
+				assdefaultstyle.setEnabled(!configuration.isMencoderDisableSubs());
 				fribidi.setEnabled(!configuration.isMencoderDisableSubs());
 				fc.setEnabled(!configuration.isMencoderDisableSubs());
 				mencoder_ass_scale.setEnabled(!configuration.isMencoderDisableSubs());
@@ -1092,8 +1113,8 @@ private JTextField mencoder_ass_scale;
 		StringBuffer sb = new StringBuffer();
 		if (params.sid != null && !configuration.isMencoderDisableSubs() && configuration.isMencoderAss() && !dvd && !avisynth()) {
 			sb.append("-ass -" + (configuration.isMencoderFontConfig()?"":"no") + "fontconfig "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			if (mpegts)
-				needAssFixPTS = true;
+			if (mpegts || wmv)
+				needAssFixPTS = Platform.isWindows(); // don't think the fixpts filter is in the mplayer trunk
 		}
 		if (params.sid != null && !params.sid.is_file_utf8 && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() >  0) {
 			sb.append("-subcp " +configuration.getMencoderSubCp() + " "); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1113,7 +1134,13 @@ private JTextField mencoder_ass_scale;
 			}
 			if (configuration.isMencoderAss()) {
 				if (!configuration.isMencoderAssDefaultStyle() || (subString != null && params.sid.type != DLNAMediaSubtitle.ASS)) {
-					sb.append("-ass-color ffffff00 -ass-border-color 00000000 -ass-font-scale " + configuration.getMencoderAssScale()); //$NON-NLS-1$
+					String assSubColor = "ffffff00";
+					if (configuration.getSubsColor() != 0) {
+						assSubColor = Integer.toHexString(configuration.getSubsColor());
+						if (assSubColor.length() > 2)
+							assSubColor = assSubColor.substring(2) + "00";
+					}
+					sb.append("-ass-color " + assSubColor + " -ass-border-color 00000000 -ass-font-scale " + configuration.getMencoderAssScale()); //$NON-NLS-1$
 					sb.append(" -ass-force-style FontName=Arial,Outline=" + configuration.getMencoderAssOutline() + ",Shadow=" + configuration.getMencoderAssShadow() + ",MarginV=" + configuration.getMencoderAssMargin() + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 				}
 			} else {
