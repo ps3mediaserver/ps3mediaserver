@@ -41,6 +41,7 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.stream.ChunkedStream;
 
 public class RequestV2 extends HTTPResource {
 	
@@ -221,7 +222,7 @@ public class RequestV2 extends HTTPResource {
 					}
 					if (contentFeatures != null)
 						output.setHeader("ContentFeatures.DLNA.ORG", files.get(0).getDlnaContentFeatures());
-					if (files.get(0).getPlayer() == null || xbox)
+					//if (files.get(0).getPlayer() == null || xbox)
 						output.setHeader(HttpHeaders.Names.ACCEPT_RANGES, "bytes");
 					output.setHeader(HttpHeaders.Names.CONNECTION, "keep-alive");
 				}
@@ -445,6 +446,23 @@ public class RequestV2 extends HTTPResource {
 		} else if(method.equals("SUBSCRIBE")) {
 			output.setHeader("SID", PMS.get().usn());
 			output.setHeader("TIMEOUT", "Second-1800");
+		} else if(method.equals("NOTIFY")) {
+			output.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/xml");
+			output.setHeader("NT", "upnp:event");
+			output.setHeader("NTS", "upnp:propchange");
+			output.setHeader("SID", PMS.get().usn());
+			output.setHeader("SEQ", "0");
+			response.append("<e:propertyset xmlns:e=\"urn:schemas-upnp-org:event-1-0\">");
+			response.append("<e:property>");
+			response.append("<TransferIDs></TransferIDs>");
+			response.append("</e:property>");
+			response.append("<e:property>");
+			response.append("<ContainerUpdateIDs></ContainerUpdateIDs>");
+			response.append("</e:property>");
+			response.append("<e:property>");
+			response.append("<SystemUpdateID>" + DLNAResource.systemUpdateId + "</SystemUpdateID>");
+			response.append("</e:property>");
+			response.append("</e:propertyset>");
 		}
 		
 		//output(output, "DATE: " + getDATE() + " GMT");
@@ -486,7 +504,8 @@ public class RequestV2 extends HTTPResource {
 				final DLNAResource resource = dlna;
 				if (dlna != null)
 					dlna.startPlaying();
-				/* ChannelFuture chunkWriteFuture = e.getChannel().write(new ChunkedStream(inputStream, BUFFER_SIZE));
+				
+				 ChannelFuture chunkWriteFuture = e.getChannel().write(new ChunkedStream(inputStream, BUFFER_SIZE));
 				 chunkWriteFuture.addListener(new ChannelFutureListener() {
 					 public void operationComplete(ChannelFuture future) {
 						 try {
@@ -498,9 +517,9 @@ public class RequestV2 extends HTTPResource {
 						 if (resource != null)
 		            		resource.stopPlaying();
 					 }
-				 });*/
+				 });
 				 //old way of doing large file streaming:
-				future.addListener(new ChannelFutureListener() {
+				/*future.addListener(new ChannelFutureListener() {
 					private final ChannelBuffer buf = ChannelBuffers.buffer(BUFFER_SIZE); 
 					public void operationComplete(ChannelFuture future) {
 						//PMS.debug("operationComplete1");
@@ -544,7 +563,7 @@ public class RequestV2 extends HTTPResource {
 						} 
 			            
 					}
-				});
+				});*/
 			} else {
 				inputStream.close();
 				if (close) {
