@@ -159,6 +159,7 @@ public class RendererConfiguration {
 	private PropertiesConfiguration configuration;
 	private int rank;
 	private Map<String, String> mimes;
+	private Map<String, String> DLNAPN;
 	
 	public int getRank() {
 		return rank;
@@ -211,6 +212,9 @@ public class RendererConfiguration {
 	private static final String TRANSCODE_EXT="TranscodeExtensions";
 	private static final String STREAM_EXT="StreamExtensions";
 	private static final String H264_L41_LIMITED="H264Level41Limited";
+	private static final String TRANSCODE_AUDIO_441KHZ="TranscodeAudioTo441kHz";
+	private static final String TRANSCODED_SIZE="TranscodedVideoFileSize";
+	private static final String DLNA_PN_CHANGES="DLNAProfileChanges";
 	
 	
 	private RendererConfiguration() throws ConfigurationException {
@@ -241,6 +245,28 @@ public class RendererConfiguration {
 				}
 			}
 		}
+		DLNAPN = new HashMap<String, String>();
+		String DLNAPNchanges = configuration.getString(DLNA_PN_CHANGES, null);
+		PMS.minimal("Config: " + DLNAPNchanges);
+		if (StringUtils.isNotBlank(DLNAPNchanges)) {
+			StringTokenizer st = new StringTokenizer(DLNAPNchanges, "|");
+			while (st.hasMoreTokens()) {
+				String DLNAPN_change = st.nextToken().trim();
+				int equals = DLNAPN_change.indexOf("=");
+				if (equals > -1) {
+					String old = DLNAPN_change.substring(0, equals).trim().toUpperCase();
+					String nw = DLNAPN_change.substring(equals+1).trim().toUpperCase();
+					DLNAPN.put(old, nw);
+				}
+			}
+		}
+	}
+	
+	public String getDLNAPN(String old) {
+		if (DLNAPN.containsKey(old)) {
+			return DLNAPN.get(old);
+		}
+		return old;
 	}
 	
 	public boolean isVideoSupported() {
@@ -277,6 +303,10 @@ public class RendererConfiguration {
 	
 	public boolean isTranscodeToPCM() {
 		return getAudioTranscode().startsWith(PCM);
+	}
+	
+	public boolean isTranscodeAudioTo441() {
+		return getBoolean(TRANSCODE_AUDIO_441KHZ, false);
 	}
 	
 	public boolean isH264Level41Limited() {
@@ -399,10 +429,22 @@ public class RendererConfiguration {
 	public String getStreamedExtensions() {
 		return getString(STREAM_EXT, "");
 	}
+	
+	public long getTranscodedSize() {
+		return getLong(TRANSCODED_SIZE, 0);
+	}
 
 	private int getInt(String key, int def) {
 		try {
 			return configuration.getInt(key, def);
+		} catch (ConversionException e) {
+			return def;
+		}
+	}
+	
+	private long getLong(String key, int def) {
+		try {
+			return configuration.getLong(key, def);
 		} catch (ConversionException e) {
 			return def;
 		}

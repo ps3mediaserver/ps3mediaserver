@@ -1,5 +1,6 @@
 package net.pms.configuration;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -113,7 +114,7 @@ public class PmsConfiguration {
 	private static final String KEY_DVDISO_THUMBNAILS = "dvd_isos_thumbnails";
 	private static final String KEY_CHAPTER_SUPPORT = "chapter_support";
 	private static final String KEY_CHAPTER_INTERVAL = "chapter_interval";
-
+	private static final String KEY_SUBS_COLOR = "subs_color"; 
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final String UNLIMITED_BITRATE = "0";
@@ -1068,5 +1069,13 @@ public class PmsConfiguration {
 	
 	public void setChapterInterval(int value) {
 		configuration.setProperty(KEY_CHAPTER_INTERVAL, value);
+	}
+	
+	public int getSubsColor() {
+		return getInt(KEY_SUBS_COLOR, Color.WHITE.getRGB());
+	}
+	
+	public void setSubsColor(int value) {
+		configuration.setProperty(KEY_SUBS_COLOR, value);
 	}
 }

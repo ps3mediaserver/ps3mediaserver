@@ -641,17 +641,17 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 								|| mediaRenderer.isTranscodeToMPEGTSAC3());
 						}
 	                  if (mpegTsMux)
-	                     dlnaspec = media.isH264()&&!VideoLanVideoStreaming.ID.equals(player.id())?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=MPEG_TS_SD_EU_ISO";
+	                     dlnaspec = media.isH264()&&!VideoLanVideoStreaming.ID.equals(player.id())?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=" + getMPEG_TS_SD_EU_ISOLocalizedValue();
 	                  else   
-	                     dlnaspec = "DLNA.ORG_PN=MPEG_PS_PAL";
+	                     dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue();
 	               } else if(media != null){
 	                  if(media.isMpegTS())
-	                     dlnaspec = media.isH264()?"DLNA.ORG_PN=AVC_TS_HD_50_AC3":"DLNA.ORG_PN=MPEG_TS_SD_EU";
+	                     dlnaspec = media.isH264()?"DLNA.ORG_PN=AVC_TS_HD_50_AC3":"DLNA.ORG_PN=" + getMPEG_TS_SD_EULocalizedValue();
 	                  else
-	                     dlnaspec = "DLNA.ORG_PN=MPEG_PS_PAL";
+	                     dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue();
 	               }
 	               else
-	            	   dlnaspec = "DLNA.ORG_PN=MPEG_PS_PAL";
+	            	   dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue();
 				} else if (mime.equals("image/jpeg"))
 					dlnaspec = "DLNA.ORG_PN=JPEG_LRG";
 				else if (mime.equals("audio/mpeg"))
@@ -659,15 +659,21 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				else if (mime.equals("audio/L16") || mime.equals("audio/wav"))
 					dlnaspec = "DLNA.ORG_PN=LPCM";
 			}
+			
+			if(dlnaspec != null)
+				dlnaspec = "DLNA.ORG_PN=" + mediaRenderer.getDLNAPN(dlnaspec.substring(12));
+			
 			addAttribute(sb, "protocolInfo", "http-get:*:" + mime + ":" + (dlnaspec!=null?(dlnaspec + ";"):"") + flags);
 			
 			
 			if (ext != null && ext.isVideo() && media != null && media.mediaparsed) {
 				if (player == null && media != null)
 					addAttribute(sb, "size", media.size);
-				else //if (!PMS.getConfiguration().isDisableFakeSize() && mediaRenderer != XBOX)
-				//else if (!copy)
-					addAttribute(sb, "size", -1);
+				else {
+					long transcoded_size = mediaRenderer.getTranscodedSize();
+					if (transcoded_size != 0)
+						addAttribute(sb, "size", transcoded_size);
+				}
 				if (media.duration != null) {
 					if (splitStart > 0 && splitLength > 0) {
 						addAttribute(sb, "duration", DLNAMediaInfo.getDurationString(splitLength));
@@ -706,8 +712,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						// calcul taille wav
 						if (media.getFirstAudioTrack() != null && media.getFirstAudioTrack().sampleFrequency != null) {
 							int ns = Integer.parseInt(media.getFirstAudioTrack().sampleFrequency);
-							if (ns > 44100) // mplayer currently transcodes to 44.1kHz and stereo
-								ns = 44100;
+							int defaultFrequency = mediaRenderer.isTranscodeAudioTo441()?44100:48000;
+							if (ns > defaultFrequency) // mplayer currently transcodes to 44.1kHz and stereo
+								ns = defaultFrequency;
 							int na = media.getFirstAudioTrack().nrAudioChannels;
 							if (na > 2)
 								na = 2;
