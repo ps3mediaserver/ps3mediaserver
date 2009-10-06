@@ -212,9 +212,11 @@ public class DLNAMediaDatabase implements Runnable {
 	}
 	
 	private void executeUpdate(Connection conn, String sql) throws SQLException {
-		Statement stmt = conn.createStatement();
-		stmt.executeUpdate(sql);
-		stmt.close();
+		if (conn != null) {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(sql);
+			stmt.close();
+		}
 	}
 	
 	public boolean isDataExists(String name, long modified) {
