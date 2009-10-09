@@ -435,7 +435,7 @@ public class FoldTab {
         itunes.setContentAreaFilled(false);
         if (PMS.getConfiguration().getItunesEnabled())
         	itunes.setSelected(true);
-        if (!Platform.isMac())
+        if (!(Platform.isMac() || Platform.isWindows()))
 	        itunes.setEnabled(false);
         itunes.addItemListener(new ItemListener() {
  

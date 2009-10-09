@@ -133,13 +133,13 @@ public abstract class Player {
 				audio = audio.trim();
 				sub = sub.trim();
 				PMS.debug("Search a match for: " + currentLang + " with " + audio + " and " + sub);
-				if (Iso639.isCodesMatching(audio, currentLang)) {
+				if (Iso639.isCodesMatching(audio, currentLang) || (currentLang != null && audio.equals("*"))) {
 					if (sub.equals("off")) {
 						matchedSub = new DLNAMediaSubtitle();
 						matchedSub.lang = "off";
 					} else {
 						for(DLNAMediaSubtitle present_sub:media.subtitlesCodes) {
-							if (present_sub.matchCode(sub)) {
+							if (present_sub.matchCode(sub) || sub.equals("*")) {
 								matchedSub = present_sub;
 								PMS.debug(" Found a match: " + matchedSub);
 								break;
@@ -152,13 +152,13 @@ public abstract class Player {
 			}
 		}
 		
-		if (matchedSub != null && params.sid == null) { //$NON-NLS-1$
+		if (matchedSub != null) {
 			if (matchedSub.lang != null && matchedSub.lang.equals("off")) {
 				PMS.debug(" Disabled the subtitles: " + matchedSub);
 				params.sid = null;
+				return;
 			} else
 				params.sid = matchedSub;
-			return;
 		}
 		
 		
