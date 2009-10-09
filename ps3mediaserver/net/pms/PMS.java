@@ -525,6 +525,9 @@ public class PMS {
  			if (PMS.getConfiguration().getIphotoEnabled()) {
  				addiPhotoFolder();
  			}
+		} 
+		
+		if (Platform.isMac() || Platform.isWindows()) {
  			if (PMS.getConfiguration().getItunesEnabled()) {
  				addiTunesFolder();
  			}
@@ -586,57 +589,87 @@ public class PMS {
                }
 		}
 	}
-
+	
+	@SuppressWarnings("deprecation")
+	private String getiTunesFile(boolean isOsx) throws Exception {
+		String line = null;
+		String iTunesFile = null;
+		if(Platform.isMac()) {
+			Process prc = Runtime.getRuntime().exec("defaults read com.apple.iapps iTunesRecentDatabases");
+			BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
+			if ((line = in.readLine()) != null) {
+				line = in.readLine();           //we want the 2nd line
+				line = line.trim();             //remove extra spaces
+				line = line.substring(1, line.length() - 1); // remove quotes and spaces
+				URI tURI = new URI(line);
+				iTunesFile = URLDecoder.decode(tURI.toURL().getFile());
+			}
+			if (in != null)
+				in.close();
+		} else if (Platform.isWindows()) {
+			Process prc = Runtime.getRuntime().exec("reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\" /v \"My Music\"");
+			BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
+			String location = null;
+			while((line = in.readLine()) != null) {
+				final String LOOK_FOR = "REG_SZ";
+				if(line.contains(LOOK_FOR)) {
+					location = line.substring(line.indexOf(LOOK_FOR) + LOOK_FOR.length()).trim();
+				}
+			}
+			if (in != null)
+				in.close();
+			if(location != null) {
+				// add the itunes folder to the end
+				location = location + "\\iTunes\\iTunes Music Library.xml";
+				iTunesFile = location;
+			} else {
+				PMS.minimal("Could not find the My Music folder");
+			}
+		}
+		
+		return iTunesFile;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void addiTunesFolder() {
-		if (Platform.isMac()) {
+		if (Platform.isMac() || Platform.isWindows()) {
 			Map<String, Object> iTunesLib;
 			ArrayList Playlists;
-       	         	HashMap Playlist;
-                	HashMap Tracks;
-            		HashMap Track;
-	                ArrayList PlaylistTracks;
-
-	                try {
- 				Process prc = Runtime.getRuntime().exec("defaults read com.apple.iapps iTunesRecentDatabases");
-                                BufferedReader in = new BufferedReader(
-                                                        new InputStreamReader(prc.getInputStream()));
-                                String line = null;
-                                if ((line = in.readLine()) != null) {
-                                        line = in.readLine();           //we want the 2nd line
-                                        line = line.trim();             //remove extra spaces
-                                        line = line.substring(1, line.length() - 1); // remove quotes and spaces
-                                }
-                                in.close();
-                                if (line != null) {
-	                                URI tURI = new URI(line);
-	 				iTunesLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile(), System.getProperty("file.encoding")));     // loads the (nested) properties.
-		                        Tracks = (HashMap) iTunesLib.get("Tracks");       // the list of tracks
-		                        Playlists = (ArrayList) iTunesLib.get("Playlists");       // the list of Playlists
-		                        VirtualFolder vf = new VirtualFolder("iTunes Library",null); //$NON-NLS-1$
-		                        for (Object item : Playlists) {
-		                                Playlist = (HashMap) item;
-		                                VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(),null); //$NON-NLS-1$
-		                                PlaylistTracks = (ArrayList) Playlist.get("Playlist Items");   // list of tracks in a playlist
+			HashMap Playlist;
+			HashMap Tracks;
+			HashMap Track;
+			ArrayList PlaylistTracks;
+	
+			try {
+				String iTunesFile = getiTunesFile(Platform.isMac());
+				if(iTunesFile != null && (new File(iTunesFile)).exists()) {
+					iTunesLib = Plist.load(URLDecoder.decode(iTunesFile, System.getProperty("file.encoding")));     // loads the (nested) properties.
+					Tracks = (HashMap) iTunesLib.get("Tracks");       // the list of tracks
+					Playlists = (ArrayList) iTunesLib.get("Playlists");       // the list of Playlists
+					VirtualFolder vf = new VirtualFolder("iTunes Library",null); //$NON-NLS-1$
+					for (Object item : Playlists) {
+						Playlist = (HashMap) item;
+						VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(),null); //$NON-NLS-1$
+						PlaylistTracks = (ArrayList) Playlist.get("Playlist Items");   // list of tracks in a playlist
 						if (PlaylistTracks != null) {
-		                                	for (Object t : PlaylistTracks) {
+							for (Object t : PlaylistTracks) {
 								HashMap td = (HashMap) t;
 								Track = (HashMap) Tracks.get(td.get("Track ID").toString());
-	 							if (Track.get("Location").toString().startsWith("file://")) {
-	 								URI tURI2 = new URI(Track.get("Location").toString());
-	 								RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
-	 	       	                                 		pf.addChild(file);
-	 							}	                                	}
+								if (Track.get("Location").toString().startsWith("file://")) {
+									URI tURI2 = new URI(Track.get("Location").toString());
+									RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
+									pf.addChild(file);
+								}	                                	}
 						}
-		                                vf.addChild(pf); //$NON-NLS-1$
-		                        }
-		                        rootFolder.addChild(vf);
-                                } else {
-                                	PMS.minimal("iTunes folder not found !?");
-                                }
-	                } catch (Exception e) {
-	                        PMS.error("Something wrong with the iTunes Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	                }
+						vf.addChild(pf); //$NON-NLS-1$
+					}
+					rootFolder.addChild(vf);
+				} else {
+					PMS.minimal("Could not find the iTunes file");
+				}
+			} catch (Exception e) {
+				PMS.error("Something wrong with the iTunes Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			}
 		}
 	}
 	

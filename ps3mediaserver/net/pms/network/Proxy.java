@@ -175,13 +175,7 @@ public class Proxy extends Thread {
 			    	  if (writeCache)
 			    		  fOUT.write(buffer, 0, bytes_read);
 		    	  }
-		    	 //String h = new String(buffer);
-		    	// PMS.debug(h);
-		    	  /*h = h.replace("rtmp://", "rtmpt://");
-		    	  if (h.contains("rtmpt://")) {
-		    		  System.out.println("héhé");
-		    	  }*/
-		    	 // buffer = h.getBytes();
+		    	
 		    	  baos.write(buffer, 0, bytes_read);
 		    	  total_read += bytes_read;
 		      }
@@ -217,10 +211,13 @@ public class Proxy extends Thread {
 	}
 	
 	private String getWritableFileName(String resource) {
-		resource = resource.replace('?', 'µ');
-		resource = resource.replace('|', 'µ');
-		resource = resource.replace('/', 'µ');
-		resource = resource.replace('\\', 'µ');
+		resource = resource.replace('?', '\u00b5');
+		resource = resource.replace('|', '\u00b5');
+		resource = resource.replace('/', '\u00b5');
+		resource = resource.replace('\\', '\u00b5');
+		resource = resource.replace('>', '\u00b5');
+		resource = resource.replace('<', '\u00b5');
+		resource = resource.replace('|', '\u00b5');
 		return resource;
 	}
 	

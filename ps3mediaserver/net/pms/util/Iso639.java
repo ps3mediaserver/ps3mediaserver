@@ -270,7 +270,7 @@ public class Iso639 {
 		putCode("Greek, Modern (1453-)", "el", "ell", "gre");
 		putCode("Guarani", "gn", "grn", "grn");
 		putCode("Gujarati", "gu", "guj", "guj");
-		putCode("Gwich´in", null, "gwi", "gwi");
+		putCode("Gwich-in", null, "gwi", "gwi");
 		putCode("Haida", null, "hai", "hai");
 		putCode("Hausa", "ha", "hau", "hau");
 		putCode("Hawaiian", null, "haw", "haw");
@@ -408,7 +408,7 @@ public class Iso639 {
 		putCode("North American Indian(Other)", null, "nai", "nai");
 		putCode("Northern Sami", "se", "sme", "sme");
 		putCode("Norwegian", "no", "nor", "nor");
-		putCode("Norwegian Bokmål", "nb", "nob", "nob");
+		putCode("Norwegian Bokmal", "nb", "nob", "nob");
 		putCode("Norwegian Nynorsk", "nn", "nno", "nno");
 		putCode("Nubian languages", null, "nub", "nub");
 		putCode("Nyamwezi", null, "nym", "nym");
@@ -416,7 +416,7 @@ public class Iso639 {
 		putCode("Nyankole", null, "nyn", "nyn");
 		putCode("Nyoro", null, "nyo", "nyo");
 		putCode("Nzima", null, "nzi", "nzi");
-		putCode("Occitan (post 1500); Provençal", "oc", "oci", "oci");
+		putCode("Occitan (post 1500); Provencal", "oc", "oci", "oci");
 		putCode("Ojibwa", null, "oji", "oji");
 		putCode("Oriya", "or", "ori", "ori");
 		putCode("Oromo", "om", "orm", "orm");
@@ -439,8 +439,8 @@ public class Iso639 {
 		putCode("Polish", "pl", "pol", "pol");
 		putCode("Portuguese", "pt", "por", "por");
 		putCode("Prakrit languages", null, "pra", "pra");
-		putCode("Provençal; Occitan (post 1500)", "oc", "oci", "oci");
-		putCode("Provençal, Old (to 1500)", null, "pro", "pro");
+		putCode("Provencal; Occitan (post 1500)", "oc", "oci", "oci");
+		putCode("Provencal, Old (to 1500)", null, "pro", "pro");
 		putCode("Pushto", "ps", "pus", "pus");
 		putCode("Quechua", "qu", "que", "que");
 		putCode("Raeto-Romance", "rm", "roh", "roh");
@@ -539,7 +539,7 @@ public class Iso639 {
 		putCode("Vai", null, "vai", "vai");
 		putCode("Venda", null, "ven", "ven");
 		putCode("Vietnamese", "vi", "vie", "vie");
-		putCode("Volapük", "vo", "vol", "vol");
+		putCode("Volapuk", "vo", "vol", "vol");
 		putCode("Votic", null, "vot", "vot");
 		putCode("Wakashan languages", null, "wak", "wak");
 		putCode("Walamo", null, "wal", "wal");
