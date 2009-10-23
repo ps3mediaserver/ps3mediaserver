@@ -94,7 +94,7 @@ public class DLNAMediaInfo implements Cloneable {
 	private boolean ffmpeg_failure;
 	//private boolean mplayer_thumb_failure;
 	private boolean ffmpeg_annexb_failure;
-	private boolean muxable;
+	public boolean muxable;
 	
 	private ProcessWrapperImpl getFFMpegThumbnail(InputFile media) {
 		String args [] = new String[14];
@@ -807,7 +807,7 @@ public class DLNAMediaInfo implements Cloneable {
 			secondaryFormatValid = true;
 		
 		// Check for external subs here
-		if (f.file != null)
+		if (f.file != null && type == Format.VIDEO)
 			FileUtil.doesSubtitlesExists(f.file, this);
 		
 		

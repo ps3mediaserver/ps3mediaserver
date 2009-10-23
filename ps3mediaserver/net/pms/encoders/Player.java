@@ -152,10 +152,9 @@ public abstract class Player {
 			}
 		}
 		
-		if (matchedSub != null) {
+		if (matchedSub != null && params.sid == null) {
 			if (matchedSub.lang != null && matchedSub.lang.equals("off")) {
 				PMS.debug(" Disabled the subtitles: " + matchedSub);
-				params.sid = null;
 				return;
 			} else
 				params.sid = matchedSub;

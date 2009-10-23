@@ -619,6 +619,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			} else {
 				if (mediaRenderer.isSeekByTime() && !mediaRenderer.isPS3())
 					flags = "DLNA.ORG_OP=11";
+				else
+					flags = "DLNA.ORG_OP=11";
 			}
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
 			
@@ -636,12 +638,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						// do we have some mpegts to offer ?
 						boolean mpegTsMux = TSMuxerVideo.ID.equals(player.id()) || VideoLanVideoStreaming.ID.equals(player.id());
 						if (!mpegTsMux) { // maybe, like the ps3, mencoder can launch tsmuxer if this a compatible H264 video
-							mpegTsMux = MEncoderVideo.ID.equals(player.id()) && ((media_subtitle == null && media != null && media.dvdtrack == 0
+							mpegTsMux = MEncoderVideo.ID.equals(player.id()) && ((media_subtitle == null && media != null && media.dvdtrack == 0 && media.muxable
 								&& PMS.getConfiguration().isMencoderMuxWhenCompatible() && mediaRenderer.isMuxH264MpegTS())
 								|| mediaRenderer.isTranscodeToMPEGTSAC3());
 						}
 	                  if (mpegTsMux)
-	                     dlnaspec = media.isH264()&&!VideoLanVideoStreaming.ID.equals(player.id())?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=" + getMPEG_TS_SD_EU_ISOLocalizedValue();
+	                	  dlnaspec = media.isH264()&&!VideoLanVideoStreaming.ID.equals(player.id())&&media.muxable?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=" + getMPEG_TS_SD_EU_ISOLocalizedValue();
 	                  else   
 	                     dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue();
 	               } else if(media != null){
@@ -711,14 +713,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					else {
 						// calcul taille wav
 						if (media.getFirstAudioTrack() != null && media.getFirstAudioTrack().sampleFrequency != null) {
-							int ns = Integer.parseInt(media.getFirstAudioTrack().sampleFrequency);
 							int defaultFrequency = mediaRenderer.isTranscodeAudioTo441()?44100:48000;
-							if (ns > defaultFrequency) // mplayer currently transcodes to 44.1kHz and stereo
-								ns = defaultFrequency;
 							int na = media.getFirstAudioTrack().nrAudioChannels;
-							if (na > 2)
+							if (na > 2) // no 5.1 dump in mplayer
 								na = 2;
-							int finalsize=(int) media.getDurationInSeconds() *ns* 2*na;
+							int finalsize=(int) media.getDurationInSeconds() *defaultFrequency* 2*na;
 							PMS.info("Calculated size: " + finalsize);
 							addAttribute(sb, "size", finalsize);
 						}
