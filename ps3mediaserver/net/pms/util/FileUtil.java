@@ -82,7 +82,8 @@ public class FileUtil {
 		boolean found = false;
 		File allSubs [] = subFolder.listFiles();
 		String fileName = getFileNameWithoutExtension(file.getName()).toLowerCase();
-		for(File f:allSubs) {
+		if(allSubs != null)
+			for(File f:allSubs) {
 			if (f.isFile() && !f.isHidden()) {
 				String fName = f.getName().toLowerCase();
 				for(int i=0;i<DLNAMediaSubtitle.subExtensions.length;i++) {
