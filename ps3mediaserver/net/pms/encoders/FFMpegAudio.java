@@ -97,6 +97,7 @@ public class FFMpegAudio extends FFMpegVideo {
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
 		params.waitbeforestart = 2000;
+		params.manageFastStart();
 		String args [] = args();
 		if (params.mediaRenderer.isTranscodeToMP3()) {
 			args = new String [] { "-f", "mp3", "-ar", "48000", "-ab", "320000" };
