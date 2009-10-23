@@ -57,7 +57,10 @@ public class OutputParams {
 	public boolean avidemux;
 	
 	public OutputParams(PmsConfiguration configuration) {
-		waitbeforestart = 6000;
+		if (configuration != null)
+			waitbeforestart = configuration.getVideoTranscodeStartDelay() * 1000;
+		else
+			waitbeforestart = 6000;
 		fromFrame = -1;
 		toFrame = -1;
 		secondread_minsize = 1000000;
@@ -70,6 +73,16 @@ public class OutputParams {
 			maxBufferSize = 100;
 		timeseek = 0;
 		outputFile = null;
+	}
+	
+	/**
+	 * Set some values to allow fast streaming start of transcoded videos
+	 */
+	public void manageFastStart() {
+		if (mediaRenderer != null && mediaRenderer.isTranscodeFastStart()) {
+			waitbeforestart = 0; // no delay when the transcode is starting
+			minBufferSize = 1; // 1Mb of minimum buffer before sending the file
+		}
 	}
 
 }

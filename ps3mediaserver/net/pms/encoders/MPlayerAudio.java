@@ -71,6 +71,8 @@ public class MPlayerAudio extends Player {
 		if (!(this instanceof MPlayerWebAudio) && !(this instanceof MPlayerWebVideoDump))
 			params.waitbeforestart = 2000;
 		
+		params.manageFastStart();
+		
 		if (params.mediaRenderer.isTranscodeToMP3()) {
 			FFMpegAudio audio = new FFMpegAudio(configuration);
 			return audio.launchTranscode(fileName, media, params);

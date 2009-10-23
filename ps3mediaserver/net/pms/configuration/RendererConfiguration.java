@@ -215,6 +215,7 @@ public class RendererConfiguration {
 	private static final String TRANSCODE_AUDIO_441KHZ="TranscodeAudioTo441kHz";
 	private static final String TRANSCODED_SIZE="TranscodedVideoFileSize";
 	private static final String DLNA_PN_CHANGES="DLNAProfileChanges";
+	private static final String TRANSCODE_FAST_START="TranscodeFastStart";
 	
 	
 	private RendererConfiguration() throws ConfigurationException {
@@ -247,7 +248,7 @@ public class RendererConfiguration {
 		}
 		DLNAPN = new HashMap<String, String>();
 		String DLNAPNchanges = configuration.getString(DLNA_PN_CHANGES, null);
-		PMS.minimal("Config: " + DLNAPNchanges);
+		PMS.debug("Config: " + DLNAPNchanges);
 		if (StringUtils.isNotBlank(DLNAPNchanges)) {
 			StringTokenizer st = new StringTokenizer(DLNAPNchanges, "|");
 			while (st.hasMoreTokens()) {
@@ -311,6 +312,10 @@ public class RendererConfiguration {
 	
 	public boolean isH264Level41Limited() {
 		return getBoolean(H264_L41_LIMITED, false);
+	}
+	
+	public boolean isTranscodeFastStart() {
+		return getBoolean(TRANSCODE_FAST_START, false);
 	}
 	
 	public String getMimeType(String old) {

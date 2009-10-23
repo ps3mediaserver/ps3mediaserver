@@ -212,6 +212,7 @@ public class TSMuxerVideo extends Player {
 		} else {
 			
 			params.waitbeforestart = 5000;
+			params.manageFastStart();
 		
 			//if (((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && media.losslessaudio) || configuration.isTsmuxerPreremuxAc3()) {
 				ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegvideo", System.currentTimeMillis() + "videoout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
@@ -392,6 +393,9 @@ public class TSMuxerVideo extends Player {
 				String videoparams = "level=4.1, insertSEI, contSPS, track=1"; //$NON-NLS-1$
 				if (this instanceof TsMuxerAudio)
 					videoparams = "track=224"; //$NON-NLS-1$
+				if (configuration.isFix25FPSAvMismatch()) {
+					fps = "25";
+				}
 				pw.println(videoType + ", \"" + ffVideoPipe.getOutputPipe() + "\", "  + (fps!=null?("fps=" +fps + ", "):"") + videoparams); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			}
 			if (ffAudioPipe != null && ffAudioPipe.length == 1) {

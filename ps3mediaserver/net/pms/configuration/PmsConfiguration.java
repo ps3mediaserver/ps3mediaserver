@@ -115,6 +115,8 @@ public class PmsConfiguration {
 	private static final String KEY_CHAPTER_SUPPORT = "chapter_support";
 	private static final String KEY_CHAPTER_INTERVAL = "chapter_interval";
 	private static final String KEY_SUBS_COLOR = "subs_color"; 
+	private static final String KEY_FIX_25FPS_AV_MISMATCH = "fix_25fps_av_mismatch";
+	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final String UNLIMITED_BITRATE = "0";
@@ -1077,5 +1079,21 @@ public class PmsConfiguration {
 	
 	public void setSubsColor(int value) {
 		configuration.setProperty(KEY_SUBS_COLOR, value);
+	}
+	
+	public boolean isFix25FPSAvMismatch() {
+		return getBoolean(KEY_FIX_25FPS_AV_MISMATCH, false);
+	}
+	
+	public void setFix25FPSAvMismatch(boolean value) {
+		configuration.setProperty(KEY_FIX_25FPS_AV_MISMATCH, value);
+	}
+	
+	public int getVideoTranscodeStartDelay() {
+		return getInt(KEY_VIDEOTRANSCODE_START_DELAY, 6);
+	}
+	
+	public void setVideoTranscodeStartDelay(int value) {
+		configuration.setProperty(KEY_VIDEOTRANSCODE_START_DELAY, value);
 	}
 }

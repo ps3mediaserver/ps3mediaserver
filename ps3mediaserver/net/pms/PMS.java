@@ -694,6 +694,15 @@ public class PMS {
 				}
 			});
 			
+			vf.addChild(new VirtualVideoAction("  !!-- Fix 23.976/25fps A/V Mismatch --!!", PMS.getConfiguration().isFix25FPSAvMismatch()) { //$NON-NLS-1$
+				public boolean enable() {
+					PMS.getConfiguration().setMencoderForceFps(!PMS.getConfiguration().isFix25FPSAvMismatch());
+					PMS.getConfiguration().setFix25FPSAvMismatch(!PMS.getConfiguration().isFix25FPSAvMismatch());
+					return PMS.getConfiguration().isFix25FPSAvMismatch();
+				}              
+			});
+			
+			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.4"), configuration.isMencoderYadif()) { //$NON-NLS-1$
 				public boolean enable() {
 					configuration.setMencoderYadif(!configuration.isMencoderYadif());

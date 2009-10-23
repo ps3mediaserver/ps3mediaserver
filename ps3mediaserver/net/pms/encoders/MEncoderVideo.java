@@ -991,6 +991,8 @@ private JTextField mencoder_ass_scale;
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params)
 			throws IOException {
 		
+		params.manageFastStart();
+		
 		boolean avisynth = avisynth()/* || params.avisynth*/;
 	
 		setAudioAndSubs(fileName, media, params, configuration);
@@ -1266,7 +1268,7 @@ private JTextField mencoder_ass_scale;
 		cmdArray[cmdArray.length-8] = "-quiet"; //$NON-NLS-1$
 		cmdArray[cmdArray.length-7] = "-quiet"; //$NON-NLS-1$
 		
-		if (configuration.isMencoderForceFps()) {
+		if (configuration.isMencoderForceFps() && !configuration.isFix25FPSAvMismatch()) {
 			cmdArray[cmdArray.length-8] = "-fps"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-7] = "24000/1001"; //$NON-NLS-1$
 		}
@@ -1278,8 +1280,15 @@ private JTextField mencoder_ass_scale;
 		}
 		if (frameRate != null) {
 			cmdArray[cmdArray.length-5] = frameRate;
-			if (configuration.isMencoderForceFps())
-				cmdArray[cmdArray.length-7] = cmdArray[cmdArray.length-5];
+			if (configuration.isMencoderForceFps()) {
+				if (configuration.isFix25FPSAvMismatch()) {
+					cmdArray[cmdArray.length-8] = "-mc";
+					cmdArray[cmdArray.length-7] = "0.005";
+					cmdArray[cmdArray.length-5] = "25";
+				} else {
+					cmdArray[cmdArray.length-7] = cmdArray[cmdArray.length-5];
+				}
+			}
 		}
 		
 		if (subString != null && !configuration.isMencoderDisableSubs() && !avisynth()) {
@@ -1448,6 +1457,10 @@ private JTextField mencoder_ass_scale;
 			cmdArray[cmdArray.length-5] = "-mc"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-4] = "0"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-3] = "-noskip"; //$NON-NLS-1$
+			if (configuration.isFix25FPSAvMismatch()) {
+				cmdArray[cmdArray.length-4] = "0.005"; //$NON-NLS-1$
+				cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
+			}
 		}
 		
 		if (params.timeend > 0) {
