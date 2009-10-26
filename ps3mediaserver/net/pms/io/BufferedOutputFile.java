@@ -45,7 +45,9 @@ public class BufferedOutputFile extends OutputStream  {
 		}
 
 		public int read() throws IOException {
-			int r = outputStream.read(firstRead, readCount++);
+			int r = outputStream.read(firstRead, readCount);
+			if (r != -1)
+				readCount ++;
 			firstRead = false;
 			return r;
 		}
@@ -465,7 +467,7 @@ public class BufferedOutputFile extends OutputStream  {
 				PMS.info("Setting margin to 2Mb");
 			this.bufferOverflowWarning = newMargin;
 		}
-		if (eof && readCount > writeCount)
+		if (eof && readCount >= writeCount)
 			return -1;
 		int c = 0;
 		int minBufferS = firstRead?minMemorySize:secondread_minsize;
