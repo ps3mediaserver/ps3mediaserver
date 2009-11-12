@@ -149,7 +149,7 @@ public class PMS {
 			foundRenderers.add(mediarenderer);
 			frame.addRendererIcon(mediarenderer.getRank(), mediarenderer.getRendererNameWithAddress(), mediarenderer.getRendererIcon());
 			if (mediarenderer.isPS3())
-				frame.setStatusCode(0, Messages.getString("PMS.5"), "clients/PS3_256.png"); //$NON-NLS-1$ //$NON-NLS-2$
+				frame.setStatusCode(0, Messages.getString("PMS.5"), "clients/ps3slim_256.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		/*if (mediarenderer == HTTPResource.PS3) {
 			frame.setStatusCode(0, Messages.getString("PMS.5"), "PS3_2.png"); //$NON-NLS-1$ //$NON-NLS-2$
