@@ -161,6 +161,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			|| (ext.isImage() && renderer.isImageSupported());
 	}
 	
+	public boolean skipTranscode = false;
+	
 	public void addChild(DLNAResource child) {
 		//child.expert = expert;
 		if (child.isValid()) {
@@ -171,7 +173,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			children.add(child);
 			child.parent = this;
 			
-			boolean skipTranscode = false;
 			if (child.ext != null)
 				skipTranscode = child.ext.skip(PMS.getConfiguration().getNoTranscode(), defaultRenderer!=null?defaultRenderer.getStreamedExtensions():null);
 			
@@ -448,14 +449,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		}
 		if (player != null) {
 			if (noName)
-				name = " [" + player.name() + "]";
+				name = "[" + player.name() + "]";
 			else {
 				if (!PMS.getConfiguration().isHideEngineNames()) {
 					name += " [" + player.name() + "]";
 				}
 			}
 		} else {
-			if (nametruncate > 0)
+			if (noName)
+				name = "[No encoding]";
+			else if (nametruncate > 0)
 				name = name.substring(0, nametruncate).trim();
 		}
 		
@@ -464,13 +467,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				name += " {External Subtitles}"; 
 		
 		if (media_audio != null)
-			name = (player!=null?player.name():"") + " {Audio: " + media_audio.getAudioCodec() + "/" + media_audio.getLang() + "}";
+			name = (player!=null?("[" + player.name() + "]"):"") + " {Audio: " + media_audio.getAudioCodec() + "/" + media_audio.getLang() + "}";
 		
 		if (media_subtitle != null && media_subtitle.id != -1)
 			name += " {Sub: " + media_subtitle.getSubType() + "/" + media_subtitle.getLang() + (media_subtitle.flavor!=null?("/"+media_subtitle.flavor):"") +  "}";
 		
 		if (avisynth)
-			name = (player!=null?player.name():"") + " + AviSynth";
+			name = (player!=null?("[" + player.name()):"") + " + AviSynth]";
 		
 		if (splitStart > 0 && splitLength > 0) {
 			name = ">> " + DLNAMediaInfo.getDurationString(splitStart);
@@ -615,11 +618,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				if (player.isTimeSeekable() && mediaRenderer.isSeekByTime()) {
 					if (mediaRenderer.isPS3()) // ps3 doesn't like OP=11
 						flags = "DLNA.ORG_OP=10";
+					else
+						flags = "DLNA.ORG_OP=11";
 				}
 			} else {
 				if (mediaRenderer.isSeekByTime() && !mediaRenderer.isPS3())
-					flags = "DLNA.ORG_OP=11";
-				else
 					flags = "DLNA.ORG_OP=11";
 			}
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
