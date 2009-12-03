@@ -1043,8 +1043,11 @@ public class PMS {
 			}
 			
 			if (!uuidBasedOnMAC) {
-				UUID u = UUID.randomUUID();
-				uuid = u.toString();
+				if (ni != null && (ni.getDisplayName() != null || ni.getName() != null))
+					uuid = UUID.nameUUIDFromBytes((ni.getDisplayName()!=null?ni.getDisplayName():(ni.getName()!=null?ni.getName():"dummy")).getBytes()).toString(); //$NON-NLS-1$
+				else {
+					uuid = UUID.randomUUID().toString();
+				}
 			}
 			PMS.minimal("Using following UUID: " + uuid); //$NON-NLS-1$
 		}

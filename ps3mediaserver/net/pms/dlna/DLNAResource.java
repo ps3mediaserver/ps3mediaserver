@@ -49,6 +49,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.network.HTTPResource;
 import net.pms.util.FileUtil;
+import net.pms.util.ImagesUtil;
 import net.pms.util.Iso639;
 
 public abstract class DLNAResource extends HTTPResource implements Cloneable {
@@ -162,6 +163,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	}
 	
 	public boolean skipTranscode = false;
+	protected int childrenNumber;
 	
 	public void addChild(DLNAResource child) {
 		//child.expert = expert;
@@ -171,6 +173,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			//VirtualFolder vfCopy = null;
 			
 			children.add(child);
+			childrenNumber++;
 			child.parent = this;
 			
 			if (child.ext != null)
@@ -232,6 +235,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 							if (vf == null) {
 								vf = new TranscodeVirtualFolder(null);
 								children.add(vf);
+								childrenNumber++;
 								vf.parent = this;
 							}
 							
@@ -243,6 +247,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 							newChild.media = child.media;
 							//newChild.original = child;
 							fileFolder.children.add(newChild);
+							fileFolder.childrenNumber++;
 							newChild.parent = fileFolder;
 							PMS.info("Duplicate " + child.getName() + " with player: " + pl.toString());
 							
@@ -305,7 +310,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					resources.add(resource);
 					if (resource.discovered) {
 						if (resource.refreshChildren()) {
-							resource.closeChildren(resource.childrenNumber(), true);
+							resource.closeChildren(resource.childrenNumber, true);
 							resource.updateId++;
 							/*TranscodeVirtualFolder vf = null;
 							for(DLNAResource r:resource.children) {
@@ -832,7 +837,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				return fis;
 			}
 			
-			InputStream fis = getInputStream();
+			InputStream fis = null;
+			if (ext != null && ext.isImage() && media != null && media.orientation > 1 && mediarenderer.isAutoRotateBasedOnExif()) {
+				// seems it's a jpeg file with an orientation setting to take care of
+				fis = ImagesUtil.getAutoRotateInputStreamImage(getInputStream(), media.orientation);
+				if (fis == null) // error, let's return the original one
+					fis = getInputStream();
+			} else
+				fis = getInputStream();
 			if (low > 0 && fis != null)
 				fis.skip(low);
 			return fis;

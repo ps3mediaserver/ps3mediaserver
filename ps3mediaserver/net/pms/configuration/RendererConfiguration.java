@@ -94,7 +94,7 @@ public class RendererConfiguration {
 		int time = 0;
 		int c = 0;
 		for(String line:ls) {
-			int msPos = line.indexOf(" ms");
+			int msPos = line.indexOf("ms");
 			try {
 				if (msPos > -1) {
 					String timeString = line.substring(line.lastIndexOf("=", msPos)+1, msPos).trim();
@@ -216,6 +216,7 @@ public class RendererConfiguration {
 	private static final String TRANSCODED_SIZE="TranscodedVideoFileSize";
 	private static final String DLNA_PN_CHANGES="DLNAProfileChanges";
 	private static final String TRANSCODE_FAST_START="TranscodeFastStart";
+	private static final String AUTO_EXIF_ROTATE="AutoExifRotate";
 	
 	
 	private RendererConfiguration() throws ConfigurationException {
@@ -296,6 +297,10 @@ public class RendererConfiguration {
 	
 	public boolean isTranscodeToMPEGTSAC3() {
 		return getVideoTranscode().startsWith(MPEGTSAC3);
+	}
+	
+	public boolean isAutoRotateBasedOnExif() {
+		return getBoolean(AUTO_EXIF_ROTATE, false);
 	}
 	
 	public boolean isTranscodeToMP3() {

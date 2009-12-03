@@ -26,5 +26,6 @@
 	<classpathentry kind="lib" path="lib/rome-1.0RC2.jar"/>
 	<classpathentry kind="lib" path="lib/cuelib-1.2.1-2008-06-13.jar"/>
 	<classpathentry kind="lib" path="lib/netty-3.1.5.GA.jar" sourcepath="lib/netty-3.1.5.GA-sources.jar"/>
+	<classpathentry kind="lib" path="lib/mediautil.jar"/>
 	<classpathentry kind="output" path="eclipse-classes"/>
 </classpath>

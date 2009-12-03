@@ -238,9 +238,7 @@ public class DLNAMediaInfo implements Cloneable {
 				DLNAMediaAudio audio = new DLNAMediaAudio();
 				if (f.file != null) {
 					try {
-						PMS.debug(">>>");
 						AudioFile af = AudioFileIO.read(f.file);
-						PMS.debug("<<<");
 						AudioHeader ah = af.getAudioHeader();
 						if (ah != null) {
 							int length = ah.getTrackLength();
