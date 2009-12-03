@@ -165,7 +165,21 @@ public class BufferedOutputFile extends OutputStream  {
 			inputStreams.add(atominputStream);
 			
 		} else {
-			PMS.info("BufferedOutputFile is already attached to an InputStream: " + getCurrentInputStream());
+			if (PMS.getConfiguration().getTrancodeKeepFirstConnections()) {
+				PMS.info("BufferedOutputFile is already attached to an InputStream: " + getCurrentInputStream());
+			} else {
+				for(WaitBufferedInputStream inputs:inputStreams) {
+					try {
+						inputs.close();
+					} catch (IOException e) {
+						PMS.error("Error: ", e);
+					}
+				}
+				inputStreams.clear();
+				atominputStream = new WaitBufferedInputStream(this);
+				inputStreams.add(atominputStream);
+				PMS.info("Reassign inputstream: " + getCurrentInputStream());
+			}
 			return null;
 		}
 		if (newReadPosition > 0) {

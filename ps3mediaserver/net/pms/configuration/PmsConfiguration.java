@@ -75,6 +75,7 @@ public class PmsConfiguration {
 	private static final String KEY_FFMPEG_SETTINGS = "ffmpeg";
 	private static final String KEY_MENCODER_NO_OUT_OF_SYNC  = "mencoder_nooutofsync";
 	private static final String KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS = "transcode_block_multiple_connections";
+	private static final String KEY_TRANSCODE_KEEP_FIRST_CONNECTION = "transcode_keep_first_connection";
 	private static final String KEY_CHARSET_ENCODING = "charsetencoding";
 	private static final String KEY_MENCODER_INTELLIGENT_SYNC = "mencoder_intelligent_sync";
 	private static final String KEY_FFMPEG_ALTERNATIVE_PATH = "alternativeffmpegpath";
@@ -697,6 +698,14 @@ public class PmsConfiguration {
 	public void setTranscodeBlocksMultipleConnections(boolean value) {
 		configuration.setProperty(KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS, value);
 	}
+	
+	public boolean getTrancodeKeepFirstConnections() {
+		return configuration.getBoolean(KEY_TRANSCODE_KEEP_FIRST_CONNECTION, true);
+	}
+
+	public void setTrancodeKeepFirstConnections(boolean value) {
+		configuration.setProperty(KEY_TRANSCODE_KEEP_FIRST_CONNECTION, value);
+	}
 
 	public String getCharsetEncoding() {
 		return getString(KEY_CHARSET_ENCODING, "850");
@@ -878,7 +887,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean isRemuxAC3() {
-		return getBoolean(KEY_MENCODER_REMUX_AC3, false);
+		return getBoolean(KEY_MENCODER_REMUX_AC3, true);
 	}
 	
 	public void setMencoderRemuxMPEG2(boolean value) {
