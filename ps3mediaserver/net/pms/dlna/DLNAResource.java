@@ -95,6 +95,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public abstract String getName();
 	public abstract String getSystemName();
 	public abstract long length();
+	// Ditlew
+	public long length(RendererConfiguration mediaRenderer) {return DLNAMediaInfo.TRANS_SIZE;};	
 	public abstract InputStream getInputStream() throws IOException;
 	public abstract boolean isFolder();
 	protected boolean discovered = false;
@@ -110,7 +112,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	protected double splitLength;
 	protected int splitTrack;
 	protected String fakeParentId;
-	private RendererConfiguration defaultRenderer;
+	// Ditlew - org
+	//private RendererConfiguration defaultRenderer;
+	// Ditlew - needs this in one of the derived classes
+	protected RendererConfiguration defaultRenderer;
 	private String dlnaspec;
 	
 	public String getDlnaContentFeatures() {
@@ -446,7 +451,15 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		sb.append("&gt;");
 	}
 	
+	// Ditlew
 	public String getDisplayName() {
+		return getDisplayName(null);
+	}
+	
+	// Ditlew - org
+	//public String getDisplayName() {
+	// Ditlew
+	public String getDisplayName(RendererConfiguration mediaRenderer) {
 		String name = getName();
 		if (this instanceof RealFile) {
 			if (PMS.getConfiguration().isHideExtensions() && !isFolder())
@@ -456,6 +469,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			if (noName)
 				name = "[" + player.name() + "]";
 			else {
+				// Ditlew - WDTV Live don't show durations otherwize, and this is usefull for finding the main title
+				if (mediaRenderer != null && mediaRenderer.isShowDVDTitleDuration() && media.dvdtrack > 0)
+				{
+					name += " - " + media.duration;
+				}
+
 				if (!PMS.getConfiguration().isHideEngineNames()) {
 					name += " [" + player.name() + "]";
 				}
@@ -597,7 +616,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().songname))
 			addXMLTagAndAttribute(sb, "dc:title", encodeXML(media.getFirstAudioTrack().songname + (player!=null&&!PMS.getConfiguration().isHideEngineNames()?(" [" + player.name() + "]"):"")));
 		else
-			addXMLTagAndAttribute(sb, "dc:title", encodeXML((isFolder()||player==null)?getDisplayName():mediaRenderer.getUseSameExtension(getDisplayName())));
+			// Ditlew - org
+			//addXMLTagAndAttribute(sb, "dc:title", encodeXML((isFolder()||player==null)?getDisplayName():mediaRenderer.getUseSameExtension(getDisplayName())));
+			// Ditlew
+			addXMLTagAndAttribute(sb, "dc:title", encodeXML((isFolder()||player==null)?getDisplayName():mediaRenderer.getUseSameExtension(getDisplayName(mediaRenderer))));
 			
 		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().album)) {
 			addXMLTagAndAttribute(sb, "upnp:album", encodeXML(media.getFirstAudioTrack().album));
@@ -822,9 +844,34 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	}
 	
 	public InputStream getInputStream(long low, long high, double timeseek, RendererConfiguration mediarenderer) throws IOException {
-		
+				
 		PMS.debug( "Asked stream chunk [" + low + "-" + high + "] timeseek: " + timeseek + " of " + getName() + " and player " + player);
 		
+		// Ditlew - WDTV Live
+		// Ditlew - We convert byteoffset to timeoffset here. This needs the stream to be CBR!
+		int cbr_video_bitrate = mediarenderer.getCBRVideoBitrate();
+		if (player != null && low > 0 && cbr_video_bitrate > 0)
+		{
+			int used_bit_rated = (int)((cbr_video_bitrate + 256) * 1024 / 8 * 1.04); // 1.04 = container overhead
+			if (low > used_bit_rated)
+			{
+				timeseek = low / (used_bit_rated);
+				low = 0;
+
+				// WDTV Live - if set to TS it ask multible times and ends by asking for a vild offset which kills mencoder
+				if (timeseek > media.getDurationInSeconds())
+				{
+					return null;
+				}   
+					
+				// Should we rewind a little (in case our overhead isn't accurate enough)
+				int rewind_secs = mediarenderer.getByteToTimeseekRewindSeconds();
+				timeseek = (timeseek > rewind_secs) ? timeseek - rewind_secs : 0;
+					
+				//PMS.debug( "Ditlew - calculated timeseek: " + timeseek);			
+			}				
+		}
+
 		if (player == null) {
 			
 			if (this instanceof IPushOutput) {
@@ -861,12 +908,15 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			params.aid = media_audio;
 			params.sid = media_subtitle;
 			params.mediaRenderer = mediarenderer;
-			params.timeseek = splitStart;
+			// Ditlew - org
+			//params.timeseek = splitStart; 
+			// Ditlew - For some reason sometimes timeseek gets ignored if I dont set it here.
+			params.timeseek = timeseek; 
 			params.timeend = splitLength;
 			
 			if (this instanceof IPushOutput)
 				params.stdin = (IPushOutput) this;
-			
+				
 			if (externalProcess == null || externalProcess.isDestroyed()) {
 				PMS.minimal("Starting transcode/remux of " + getName());
 				externalProcess = player.launchTranscode(getSystemName(), media, params);

@@ -195,7 +195,10 @@ public class RequestV2 extends HTTPResource {
 				} else {
 					inputStream = dlna.getInputStream(lowRange, highRange, timeseek, mediaRenderer);
 					output.setHeader(HttpHeaders.Names.CONTENT_TYPE, getRendererMimeType(files.get(0).mimeType(), mediaRenderer));
-					String name = dlna.getDisplayName();
+					// Ditlew - org
+					//String name = dlna.getDisplayName();
+					// Ditlew
+					String name = dlna.getDisplayName(mediaRenderer);
 					if (dlna.media != null) {
 						if (StringUtils.isNotBlank(dlna.media.container)) {
 							name += " [container: " + dlna.media.container + "]";
@@ -208,7 +211,10 @@ public class RequestV2 extends HTTPResource {
 //						}
 					}
 					PMS.get().getFrame().setStatusLine("Serving " + name);
-					CLoverride = files.get(0).length();
+					// Ditlew - org
+					//CLoverride = files.get(0).length();
+					// Ditlew
+					CLoverride = files.get(0).length(mediaRenderer);
 					if (lowRange > 0 || highRange > 0) {
 						long totalsize = CLoverride;
 						if (highRange >= CLoverride)
