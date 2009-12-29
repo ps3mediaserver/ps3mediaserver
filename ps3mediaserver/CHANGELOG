@@ -6,7 +6,7 @@ v1.20
 - Changes / Features
 
 Externalization of PS3/Xbox playback profiles, it's now possible to create profiles for any media renderer
-Includes preliminary support for Sony Bravia, Popcorn Hour, Samsung Wiselink, Freebox HD
+Includes preliminary support for Sony Bravia, Popcorn Hour, Samsung Wiselink, Freebox HD, WDTV Live
 Handling of UTF8 and UTF16 encoding, and case insensitive external subtitles
 CUE playlist support
 Pseudo chapters support via the #Transcoded folder
