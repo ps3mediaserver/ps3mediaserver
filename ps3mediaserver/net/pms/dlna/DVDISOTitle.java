@@ -32,6 +32,8 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
+// Ditlew
+import net.pms.configuration.RendererConfiguration;
 
 public class DVDISOTitle extends DLNAResource {
 	
@@ -225,6 +227,13 @@ public class DVDISOTitle extends DLNAResource {
 	@Override
 	public long length() {
 		return DLNAMediaInfo.TRANS_SIZE;
+	}
+
+	// Ditlew
+	public long length(RendererConfiguration mediaRenderer) {
+		// WDTV Live at least, needs a realistic size for stop/resume to works proberly. 2030879 = ((15000 + 256) * 1024 / 8 * 1.04) : 1.04 = overhead
+		int cbr_video_bitrate = defaultRenderer.getCBRVideoBitrate();
+		return (cbr_video_bitrate > 0) ? (long)(((cbr_video_bitrate + 256) * 1024 / 8 * 1.04) * media.getDurationInSeconds()) : DLNAMediaInfo.TRANS_SIZE;
 	}
 	
 	/*public InputStream getThumbnailInputStream() throws IOException {

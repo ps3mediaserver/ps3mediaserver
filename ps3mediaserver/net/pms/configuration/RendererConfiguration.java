@@ -218,6 +218,25 @@ public class RendererConfiguration {
 	private static final String TRANSCODE_FAST_START="TranscodeFastStart";
 	private static final String AUTO_EXIF_ROTATE="AutoExifRotate";
 	
+	// Ditlew
+	private static final String SHOW_DVD_TITLE_DURATION="ShowDVDTitleDuration";
+	private static final String CBR_VIDEO_BITRATE="CBRVideoBitrate";
+	private static final String BYTE_TO_TIMESEEK_REWIND_SECONDS="ByteToTimeseekRewindSeconds";
+	
+	// Ditlew
+	public int getByteToTimeseekRewindSeconds() {
+		return getInt(BYTE_TO_TIMESEEK_REWIND_SECONDS, 0);
+	}
+	
+	// Ditlew
+	public int getCBRVideoBitrate() {
+		return getInt(CBR_VIDEO_BITRATE, 0);
+	}	
+
+	// Ditlew
+	public boolean isShowDVDTitleDuration() {
+		return getBoolean(SHOW_DVD_TITLE_DURATION, false);
+	}	
 	
 	private RendererConfiguration() throws ConfigurationException {
 		this(null);

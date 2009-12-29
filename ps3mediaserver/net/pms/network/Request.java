@@ -202,7 +202,10 @@ public class Request extends HTTPResource {
 					inputStream = files.get(0).getInputStream(lowRange, highRange, timeseek, mediaRenderer);
 					output(output, "Content-Type: " + getRendererMimeType(files.get(0).mimeType(), mediaRenderer));
 					DLNAResource dlna = files.get(0);
-					String name = dlna.getDisplayName();
+					// Ditlew - org
+					//String name = dlna.getDisplayName();
+					// Ditlew
+					String name = dlna.getDisplayName(mediaRenderer);
 					if (dlna.media != null) {
 						if (StringUtils.isNotBlank(dlna.media.container)) {
 							name += " [container: " + dlna.media.container + "]";
@@ -487,7 +490,7 @@ public class Request extends HTTPResource {
 			output(output, "");
 		}
 	}
-	
+		
 	private void output(OutputStream output, String line) throws IOException {
 		output.write((line + CRLF).getBytes("UTF-8"));
 		PMS.debug( "Wrote on socket: " + line);

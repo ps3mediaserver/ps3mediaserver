@@ -75,7 +75,6 @@ public class BufferedOutputFile extends OutputStream  {
 			inputStreams.remove(this);
 			outputStream.detachInputStream();
 		}
-
 	}
 	
 	private static final int TEMP_SIZE = 50000000;
@@ -138,9 +137,11 @@ public class BufferedOutputFile extends OutputStream  {
 		}, 0, 2000);
 		}
 		
-		/*try {
+		/*
+		try {
 			debugOutput = new FileOutputStream("debug.mpg");
-		} catch (Exception e) {}*/
+		} catch (Exception e) {}
+		*/
 	}
 
 	public void close() throws IOException {
@@ -150,11 +151,17 @@ public class BufferedOutputFile extends OutputStream  {
 	
 	public WaitBufferedInputStream getCurrentInputStream() {
 		if (inputStreams.size() > 0)
-			return inputStreams.get(0);
+		{
+			// Ditlew - org
+			//return inputStreams.get(0);
+			// Ditlew - WDTV Live - Fixes multible connections
+			return (PMS.getConfiguration().getTrancodeBlocksMultipleConnections() && PMS.getConfiguration().getTrancodeKeepFirstConnections())
+				? inputStreams.get(0) : inputStreams.get(inputStreams.size() - 1);
+		}
 		else
 			return null;
 	}
-
+	
 	public InputStream getInputStream(long newReadPosition) {
 		if (attachedThread != null) {
 			attachedThread.setReadyToStop(false);
@@ -163,18 +170,29 @@ public class BufferedOutputFile extends OutputStream  {
 		if (!PMS.getConfiguration().getTrancodeBlocksMultipleConnections() || getCurrentInputStream() == null) {
 			atominputStream = new WaitBufferedInputStream(this);
 			inputStreams.add(atominputStream);
-			
-		} else {
+ 		} else {
 			if (PMS.getConfiguration().getTrancodeKeepFirstConnections()) {
 				PMS.info("BufferedOutputFile is already attached to an InputStream: " + getCurrentInputStream());
 			} else {
+				// Ditlew - org
+				/*
 				for(WaitBufferedInputStream inputs:inputStreams) {
 					try {
 						inputs.close();
 					} catch (IOException e) {
 						PMS.error("Error: ", e);
 					}
-				}
+				}*/
+				
+				// Ditlew - fixes the above (the above iterator breaks on items getting close, cause they will remove them self from the arraylist)
+				while(inputStreams.size() > 0) {
+					try {
+						((WaitBufferedInputStream)inputStreams.get(0)).close();
+					} catch (IOException e) {
+						PMS.error("Error: ", e);
+					}
+				}				
+				
 				inputStreams.clear();
 				atominputStream = new WaitBufferedInputStream(this);
 				inputStreams.add(atominputStream);
@@ -200,7 +218,6 @@ public class BufferedOutputFile extends OutputStream  {
 	private long packetpos = 0;
 	
 	public void write(byte b[], int off, int len) throws IOException {
-
 		if (debugOutput != null) {
 			debugOutput.write(b, off, len);
 			debugOutput.flush();
@@ -250,7 +267,17 @@ public class BufferedOutputFile extends OutputStream  {
 				 
 	
 			 }
-			 
+			
+			// Ditlew - WDTV Live
+			if (timeseek > 0 && writeCount > 10)
+			{
+				for (int i=0;i<len;i++)
+				{
+					shiftSCRByTimeSeek(mb+i, (int)timeseek); // Ditlew - update any SCR headers
+					//shiftGOPByTimeSeek(mb+i, (int)timeseek); // Ditlew - update any GOP headers - Not needed for WDTV Live
+				}
+			}
+
 			 writeCount += len - off;
 			 if (timeseek > 0 && timeend == 0) {
 				 int packetLength = 6; // minimum to get packet size
@@ -275,24 +302,21 @@ public class BufferedOutputFile extends OutputStream  {
 						 packetLength = 6 + ((int) ((buffer[modulo(packetposMB+4)]+256)%256))*256 + ((buffer[modulo(packetposMB+5)]+256)%256);
 					 }
 					 if (streamPos != -1) {
-						 mb = packetposMB + streamPos + 18;
+						 mb = packetposMB + streamPos + 18;						 
 						 if (!shiftVideo(mb, true )) {
 							 mb = mb-5;
 							 shiftAudio(mb, true);
 						 }
 					 }
 					 packetpos+= packetLength;
-				 } 
-			 }
-			 
-		 }
-		
-		    }
+				} 
+			}		 
+		}
+	}
 	
 	private int modulo(int mb) {
 		return (mb + maxMemorySize) % maxMemorySize;
 	}
-	
 	
 	public void write(int b) throws IOException {
 		boolean bb = b % 100000 == 0;
@@ -330,10 +354,127 @@ public class BufferedOutputFile extends OutputStream  {
 			if (timeseek > 0 && writeCount > 19) 
 				shiftByTimeSeek(mb, mb <= 20);
 			
-	
+			// Ditlew - Update any GOP headers - Not needed by WDTV Live
+			//if (timeseek > 0 && writeCount > 8)
+				//shiftGOPByTimeSeek(mb, (int)timeseek);
+
+			// Ditlew - WDTV Live - update any SCR headers
+			if (timeseek > 0 && writeCount > 10)
+				shiftSCRByTimeSeek(mb, (int)timeseek);
 		}
 	}
-	
+
+	// Ditlew - Modify SCR
+	private void shiftSCRByTimeSeek(int buffer_index, int offset_sec)
+	{
+		int m9 = modulo(buffer_index - 9);
+		int m8 = modulo(buffer_index - 8);
+		int m7 = modulo(buffer_index - 7);
+		int m6 = modulo(buffer_index - 6);
+		int m5 = modulo(buffer_index - 5);
+		int m4 = modulo(buffer_index - 4);
+		int m3 = modulo(buffer_index - 3);
+		int m2 = modulo(buffer_index - 2);
+		int m1 = modulo(buffer_index - 1);
+		int m0 = modulo(buffer_index);
+
+		// SCR
+		if (
+		    buffer[m9] == 0 &&
+		    buffer[m8] == 0 &&
+		    buffer[m7] == 1 &&
+		    buffer[m6] == -70 && // 0xBA - Java/PMS wants -70
+		    // control bits
+			 !((buffer[m5] & 128) == 128) &&
+				((buffer[m5] & 64) == 64) &&
+				((buffer[m5] & 4) == 4) &&
+				((buffer[m3] & 4) == 4) &&
+				((buffer[m1] & 4) == 4) &&
+				((buffer[m0] & 1) == 1)
+		)
+		{
+			long scr_32_30 = ((buffer[m5] & 56) >> 3);
+			long scr_29_15 = ((buffer[m5] & 3) << 13) + (buffer[m4] << 5) + ((buffer[m3] & 248) >> 3);
+			long scr_14_00 = ((buffer[m3] & 3) << 13) + (buffer[m2] << 5) + ((buffer[m1] & 248) >> 3);
+			
+			long scr = (scr_32_30 << 30) + (scr_29_15 << 15) + scr_14_00;
+			long scr_new = scr + (offset_sec * 90000);
+			
+			long scr_32_30_new = (scr_new & 7516192768L) >> 30;  // 111000000000000000000000000000000
+			long scr_29_15_new = (scr_new & 1073709056L) >> 15;  // 000111111111111111000000000000000
+			long scr_14_00_new = (scr_new & 32767L);             // 000000000000000000111111111111111
+			
+			// scr_32_30_new
+			buffer[m5] = (byte)((buffer[m5] & 199) + ((scr_32_30_new << 3) & 56)); // 11000111
+			
+			// scr_29_15_new
+			buffer[m5] = (byte)((buffer[m5] & 252) + ((scr_29_15_new >> 13) & 3)); // 00000011
+			buffer[m4] = (byte)(scr_29_15_new >> 5);                               // 11111111
+			buffer[m3] = (byte)((buffer[m3] & 7) + ((scr_29_15_new << 3) & 248));  // 11111000
+			
+			// scr_14_00_new
+			buffer[m3] = (byte)((buffer[m3] & 252) + ((scr_14_00_new >> 13) & 3)); // 00000011
+			buffer[m2] = (byte)(scr_14_00_new >> 5);                               // 11111111
+			buffer[m1] = (byte)((buffer[m1] & 7) + ((scr_14_00_new << 3) & 248));  // 11111000
+
+			// Debug
+			//PMS.debug("Ditlew - SCR "+scr+" ("+(int)(scr/90000)+") -> "+scr_new+" ("+(int)(scr_new/90000)+")  "+offset_sec+" secs");
+		}
+	}
+
+	// Ditlew - Modify GOP
+	private void shiftGOPByTimeSeek(int buffer_index, int offset_sec)
+	{
+		int m7 = modulo(buffer_index - 7);
+		int m6 = modulo(buffer_index - 6);
+		int m5 = modulo(buffer_index - 5);
+		int m4 = modulo(buffer_index - 4);
+		int m3 = modulo(buffer_index - 3);
+		int m2 = modulo(buffer_index - 2);
+		int m1 = modulo(buffer_index - 1);
+		int m0 = modulo(buffer_index);
+				
+		// check if valid gop
+		if (
+				buffer[m7] == 0 &&
+				buffer[m6] == 0 &&
+				buffer[m5] == 1 &&
+				buffer[m4] == -72 && // 0xB8 - Java/PMS wants -72
+				// control bits
+			((buffer[m2] & 0x08) == 0x08) &&
+			((buffer[m0] & 31) == 0) &&
+				// of interest
+		 !((buffer[m3] & 128) == 128) && // not drop frm
+		 !((buffer[m0] & 16) == 16) // not broken
+		)
+		{
+			// org timecode
+			byte h = (byte)((buffer[m3] & 124) >> 2);
+			byte m = (byte)(((buffer[m3] & 3) << 4) + ((buffer[m2] & 240) >> 4));
+			byte s = (byte)(((buffer[m2] & 7) << 3) + ((buffer[m1] & 224) >> 5));
+			
+			// updated offset
+			int _offset = s + m * 60 + h * 60 + offset_sec;
+			
+			// new timecode
+			byte _h = (byte)((int)(_offset / 3600) % 24);
+			byte _m = (byte)((int)(_offset / 60) % 60);
+			byte _s = (byte)(_offset % 60);
+			
+			// update gop
+			// h - ok
+			buffer[m3] = (byte)((buffer[m3] & 131) + (_h << 2)); // 10000011
+			// m - ok
+			buffer[m3] = (byte)((buffer[m3] & 252) + (_m >> 4)); // 11111100
+			buffer[m2] = (byte)((buffer[m2] & 15)  + (_m << 4)); // 00001111
+			// s - ok
+			buffer[m2] = (byte)((buffer[m2] & 248) + (_s >> 3)); // 11111000
+			buffer[m1] = (byte)((buffer[m1] & 31)  + (_s << 5)); // 00011111
+
+			// Debug
+			//PMS.debug("Ditlew - GOP "+h+":"+m+":"+s+" -> "+_h+":"+_m+":"+_s+"  "+offset_sec+" secs");
+		}
+	}
 	
 	private void shiftByTimeSeek(int mb, boolean mod) {
 		shiftVideo(mb, mod);
@@ -346,15 +487,31 @@ public class BufferedOutputFile extends OutputStream  {
 		if (bb) {
 			int pts = (((((buffer[modulo(mb-3)]&0xff)<<8) + (buffer[modulo(mb-2)]&0xff))>>1)<<15) + ((((buffer[modulo(mb-1)]&0xff)<<8) + (buffer[modulo(mb)]&0xff))>>1);
 			pts += (int) (timeseek*90000);
+			
 			setTS(pts, mb, mod);
 			return true;
 		}
 		return false;
 	}
-	
+
 	private boolean shiftVideo(int mb, boolean mod) {
-		boolean bb = (!mod && (buffer[mb-15] == -32|| buffer[mb-15] == -3) && buffer[mb-16] == 1 && buffer[mb-17] == 0 && buffer[mb-18] == 0 && /*&& buffer[mb-12] == -128*//*(buffer[mb-12]&128)==128&&*/ (buffer[mb-11]&128)==128 && (buffer[mb-9]&32)==32/* && (buffer[mb-4]&16)==16*/)
-		|| (mod && (buffer[modulo(mb-15)] == -32 || buffer[modulo(mb-15)] == -3) && buffer[modulo(mb-16)] == 1 && buffer[modulo(mb-17)] == 0 && buffer[modulo(mb-18)] == 0 && /*buffer[modulo(mb-12)] == -128*//*(buffer[modulo(mb-12)]&128)==128 && */(buffer[modulo(mb-11)]&128)==128 && (buffer[modulo(mb-9)]&32)==32 /*&& (buffer[modulo(mb-4)]&16)==16*/);
+		boolean bb = (
+			!mod &&
+		 (buffer[mb-15] == -32 || buffer[mb-15] == -3) &&
+			buffer[mb-16] == 1 && 
+			buffer[mb-17] == 0 && 
+			buffer[mb-18] == 0 &&
+		 (buffer[mb-11]&128)==128 && 
+		 (buffer[mb-9]&32)==32
+		 ) || (
+		  mod &&
+		 (buffer[modulo(mb-15)] == -32 || buffer[modulo(mb-15)] == -3) && 
+		  buffer[modulo(mb-16)] == 1 && 
+		  buffer[modulo(mb-17)] == 0 && 
+		  buffer[modulo(mb-18)] == 0 && 
+		 (buffer[modulo(mb-11)]&128)==128 && 
+		 (buffer[modulo(mb-9)]&32)==32);
+		 
 		if (bb) { // check EO or FD (tsmuxer)
 			int pts = getTS(mb-5, mod);
 			int dts = 0;
@@ -367,6 +524,7 @@ public class BufferedOutputFile extends OutputStream  {
 					dts = getTS(mb, mod);
 				}
 			}
+			
 			int ts = (int) (timeseek*90000);
 			if (mb == 50 && writeCount < maxMemorySize) {
 				/*scr = ts;
@@ -374,6 +532,7 @@ public class BufferedOutputFile extends OutputStream  {
 				dts--;
 			}
 			pts += ts;
+			
 			setTS(pts, mb-5, mod);
 			if (dts_present) {
 				if (dts < 0)
@@ -381,7 +540,7 @@ public class BufferedOutputFile extends OutputStream  {
 				dts += ts;
 				setTS(dts, mb, mod);
 			}
-			//PMS.debug("setting PTS");
+			
 			return true;
 		}
 		return false;
@@ -398,8 +557,10 @@ public class BufferedOutputFile extends OutputStream  {
 			m1 = modulo(m1);
 			m0 = modulo(m0);
 		}
-		return (((((buffer[m3] & 0xff) << 8) + (buffer[m2] & 0xff)) >> 1) << 15)
-				+ ((((buffer[m1] & 0xff) << 8) + (buffer[m0] & 0xff)) >> 1);
+		
+		return
+			(((((buffer[m3] & 0xff) << 8) + (buffer[m2] & 0xff)) >> 1) << 15)
+			+((((buffer[m1] & 0xff) << 8) + (buffer[m0] & 0xff)) >> 1);
 	}
 
 	private void setTS(int ts, int mb, boolean modulo) {
