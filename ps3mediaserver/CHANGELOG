@@ -8,9 +8,10 @@ v1.20
 Externalization of PS3/Xbox playback profiles, it's now possible to create profiles for any media renderer
 Includes preliminary support for Sony Bravia, Popcorn Hour, Samsung Wiselink, Freebox HD, WDTV Live
 Handling of UTF8 and UTF16 encoding, and case insensitive external subtitles
+DVD ISO remuxed by default / DTS 768kBps support on ps3 
 CUE playlist support
 Pseudo chapters support via the #Transcoded folder
-DVD ISO thumbnails
+DVD ISO thumbnails support
 Updated tsMuxeR binaries (better H264 camcorders support)
 Windows: Launcher now detects Java 64 bits if installed
 Windows: Updated mencoder/mplayer/ffmpeg builds
