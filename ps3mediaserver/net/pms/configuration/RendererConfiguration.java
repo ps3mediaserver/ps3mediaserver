@@ -135,10 +135,28 @@ public class RendererConfiguration {
 	
 	public static RendererConfiguration getRendererConfigurationByUA(String userAgentString) {
 		for(RendererConfiguration r:renderersConfs) {
-			if (r.matchUserAgent(userAgentString))
-				return r;
+			if (r.matchUserAgent(userAgentString)) {
+				return manageRendererMatch(r);
+			}
 		}
 		return null;
+	}
+	
+	private static RendererConfiguration manageRendererMatch(RendererConfiguration r) {
+		if (r.currentRendererAddress == null)
+			return r; // no other clients with the same renderer on this network (yet)
+		else {
+			// seems there's another same machine on the network
+			PMS.minimal("Another renderer like " + r.getRendererName() + " was found!");
+			try {
+				RendererConfiguration duplicated = new RendererConfiguration(r.configurationFile);
+				renderersConfs.add(duplicated);
+				return duplicated;
+			} catch (ConfigurationException e) {
+				PMS.minimal("Serious error in adding a duplicated renderer: " + e.getMessage());
+			}
+		}
+		return r;
 	}
 	
 	public static RendererConfiguration getRendererConfigurationByUAAHH(String header) {
@@ -146,7 +164,7 @@ public class RendererConfiguration {
 			if (StringUtils.isNotBlank(r.getUserAgentAdditionalHttpHeader()) && header.startsWith(r.getUserAgentAdditionalHttpHeader())) {
 				String value = header.substring(header.indexOf(":", r.getUserAgentAdditionalHttpHeader().length())+1);
 				if (r.matchAdditionalUserAgent(value))
-					return r;
+					return manageRendererMatch(r);
 			}
 		}
 		return null;
@@ -156,6 +174,7 @@ public class RendererConfiguration {
 	 * 
 	 */
 	
+	private File configurationFile;
 	private PropertiesConfiguration configuration;
 	private int rank;
 	private Map<String, String> mimes;
@@ -217,6 +236,7 @@ public class RendererConfiguration {
 	private static final String DLNA_PN_CHANGES="DLNAProfileChanges";
 	private static final String TRANSCODE_FAST_START="TranscodeFastStart";
 	private static final String AUTO_EXIF_ROTATE="AutoExifRotate";
+	private static final String DLNA_LOCALIZATION_REQUIRED="DLNALocalizationRequired";
 	
 	// Ditlew
 	private static final String SHOW_DVD_TITLE_DURATION="ShowDVDTitleDuration";
@@ -248,6 +268,7 @@ public class RendererConfiguration {
 	public RendererConfiguration(File f) throws ConfigurationException {
 		configuration = new PropertiesConfiguration();
 		configuration.setListDelimiter((char)0);
+		configurationFile = f;
 		if (f != null)
 			configuration.load(f);
 		userAgentPattern = Pattern.compile(getUserAgent(), Pattern.CASE_INSENSITIVE);
@@ -340,6 +361,10 @@ public class RendererConfiguration {
 	
 	public boolean isTranscodeFastStart() {
 		return getBoolean(TRANSCODE_FAST_START, false);
+	}
+	
+	public boolean isDLNALocalizationRequired() {
+		return getBoolean(DLNA_LOCALIZATION_REQUIRED, false);
 	}
 	
 	public String getMimeType(String old) {
