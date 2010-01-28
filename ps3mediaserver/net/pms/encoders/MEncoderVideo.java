@@ -1009,6 +1009,7 @@ private JTextField mencoder_ass_scale;
 		if (media != null && media.dvdtrack > 0)
 			dvd = true;
 		
+		ovccopy = false;
 		if (params.sid == null && !dvd && !avisynth() && media != null && (media.isVideoPS3Compatible(newInput) || !params.mediaRenderer.isH264Level41Limited()) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
 			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
 			boolean nomux = false;
@@ -1054,7 +1055,6 @@ private JTextField mencoder_ass_scale;
 			mpegts = true;
 		}
 		
-		ovccopy = false;
 		oaccopy = false;
 		if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
 			oaccopy = true;

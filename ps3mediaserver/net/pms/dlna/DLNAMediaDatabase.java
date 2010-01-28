@@ -51,6 +51,18 @@ public class DLNAMediaDatabase implements Runnable {
 		dir = "database" ; //$NON-NLS-1$
 		File fileDir = new File(dir);
 		boolean defaultLocation = fileDir.mkdir() || fileDir.exists();
+		if (defaultLocation) {
+			// check if the database wasn't created during the installation run, with UAC activated.
+			String to_delete = "to_delete";
+			File checkDir = new File(to_delete);
+			if (checkDir.exists()) {
+				defaultLocation = checkDir.delete();
+			} else {
+				defaultLocation = checkDir.mkdir();
+				if (defaultLocation)
+					defaultLocation = checkDir.delete();
+			}
+		}
 		String strAppData = System.getenv("APPDATA"); //$NON-NLS-1$
 		if (Platform.isWindows() && !defaultLocation && strAppData != null) {
 			url = "jdbc:h2:" + strAppData + "\\PMS\\" + dir + "/" + name; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
