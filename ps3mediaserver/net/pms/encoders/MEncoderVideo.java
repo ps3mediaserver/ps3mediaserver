@@ -1009,7 +1009,6 @@ private JTextField mencoder_ass_scale;
 		if (media != null && media.dvdtrack > 0)
 			dvd = true;
 		
-		
 		if (params.sid == null && !dvd && !avisynth() && media != null && (media.isVideoPS3Compatible(newInput) || !params.mediaRenderer.isH264Level41Limited()) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
 			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
 			boolean nomux = false;
@@ -1029,6 +1028,16 @@ private JTextField mencoder_ass_scale;
 				}
 				return tv.launchTranscode(fileName, media, params);
 			}
+		} else if (params.sid == null && dvd && configuration.isMencoderRemuxMPEG2()) {
+			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
+			boolean nomux = false;
+			for(String s:sArgs) {
+				if (s.equals("-nomux"))
+					nomux = true;
+			}
+			if (!nomux) {
+				ovccopy = true;
+			}
 		}
 		
 		
@@ -1045,13 +1054,14 @@ private JTextField mencoder_ass_scale;
 			mpegts = true;
 		}
 		
+		ovccopy = false;
 		oaccopy = false;
 		if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
 			oaccopy = true;
 		}
 		
-		dts = configuration.isDTSEmbedInPCM() && !dvd && params.aid != null && params.aid.isDTS() && !avisynth() && params.mediaRenderer.isDTSPlayable();
-		pcm = configuration.isMencoderUsePcm() && !dvd && (params.aid != null && (params.aid.isDTS() || params.aid.isLossless())) && params.mediaRenderer.isMuxLPCMToMpeg();
+		dts = configuration.isDTSEmbedInPCM() && (!dvd || configuration.isMencoderRemuxMPEG2()) && params.aid != null && params.aid.isDTS() && !avisynth() && params.mediaRenderer.isDTSPlayable();
+		pcm = configuration.isMencoderUsePcm() && (!dvd || configuration.isMencoderRemuxMPEG2()) && (params.aid != null && (params.aid.isDTS() || params.aid.isLossless())) && params.mediaRenderer.isMuxLPCMToMpeg();
 		
 		if (dts || pcm) {
 			if (dts)
@@ -1601,7 +1611,11 @@ private JTextField mencoder_ass_scale;
 				if (!params.mediaRenderer.isMuxDTSToMpeg()) // no need to use the PCM trick when media renderer supports DTS
 					ffAudioPipe.setModifier(sm);
 				
-				if (params.stdin != null)
+				if (media != null && media.dvdtrack > 0) {
+					ffmpegLPCMextract[3] = "-dvd-device"; //$NON-NLS-1$
+					ffmpegLPCMextract[4] = fileName;
+					ffmpegLPCMextract[5] = "dvd://" + media.dvdtrack; //$NON-NLS-1$
+				} else if (params.stdin != null)
 					ffmpegLPCMextract[3] = "-"; //$NON-NLS-1$
 				
 				if (fileName.toLowerCase().endsWith(".evo")) { //$NON-NLS-1$
