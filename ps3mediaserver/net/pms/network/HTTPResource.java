@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Locale;
 
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
@@ -175,7 +174,7 @@ public class HTTPResource {
 		}
 		return mediarenderer.getMimeType(mimetype);
 	}
-	
+	/*
 	public boolean isNorthAmericanLocale() {
 		return Locale.US.getCountry().equals(Locale.getDefault().getCountry()) || Locale.CANADA.getCountry().equals(Locale.getDefault().getCountry());
 	}
@@ -202,6 +201,32 @@ public class HTTPResource {
 		if (isNorthAmericanLocale())
 			return "MPEG_TS_SD_NA";
 		if (isJapaneseLocale())
+			return "MPEG_TS_SD_JP";
+		return "MPEG_TS_SD_EU";
+	}*/
+	
+	public int getDLNALocalesCount() {
+		return 3;
+	}
+	
+	public String getMPEG_PS_PALLocalizedValue(int index) {
+		if (index == 1 || index == 2)
+			return "MPEG_PS_NTSC";
+		return "MPEG_PS_PAL";
+	}
+	
+	public String getMPEG_TS_SD_EU_ISOLocalizedValue(int index) {
+		if (index == 1)
+			return "MPEG_TS_SD_NA_ISO";
+		if (index == 2)
+			return "MPEG_TS_SD_JP_ISO";
+		return "MPEG_TS_SD_EU_ISO";
+	}
+	
+	public String getMPEG_TS_SD_EULocalizedValue(int index) {
+		if (index == 1)
+			return "MPEG_TS_SD_NA";
+		if (index == 2)
 			return "MPEG_TS_SD_JP";
 		return "MPEG_TS_SD_EU";
 	}

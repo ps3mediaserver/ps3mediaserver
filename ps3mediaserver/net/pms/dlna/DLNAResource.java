@@ -637,6 +637,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		}
 		
 		if (!isFolder()) {
+			int indexCount = 1;
+			if (mediaRenderer.isDLNALocalizationRequired())
+				indexCount = getDLNALocalesCount();
+			for(int c=0;c<indexCount;c++) {
 			openTag(sb, "res");
 			// DLNA.ORG_OP : 1er 10 = exemple: TimeSeekRange.dlna.org :npt=187.000-
 			//                   01 = Range par octets
@@ -674,17 +678,17 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 								|| mediaRenderer.isTranscodeToMPEGTSAC3());
 						}
 	                  if (mpegTsMux)
-	                	  dlnaspec = media.isH264()&&!VideoLanVideoStreaming.ID.equals(player.id())&&media.muxable?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=" + getMPEG_TS_SD_EU_ISOLocalizedValue();
+	                	  dlnaspec = media.isH264()&&!VideoLanVideoStreaming.ID.equals(player.id())&&media.muxable?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=" + getMPEG_TS_SD_EU_ISOLocalizedValue(c);
 	                  else   
-	                     dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue();
+	                     dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue(c);
 	               } else if(media != null){
 	                  if(media.isMpegTS())
-	                     dlnaspec = media.isH264()?"DLNA.ORG_PN=AVC_TS_HD_50_AC3":"DLNA.ORG_PN=" + getMPEG_TS_SD_EULocalizedValue();
+	                     dlnaspec = media.isH264()?"DLNA.ORG_PN=AVC_TS_HD_50_AC3":"DLNA.ORG_PN=" + getMPEG_TS_SD_EULocalizedValue(c);
 	                  else
-	                     dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue();
+	                     dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue(c);
 	               }
 	               else
-	            	   dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue();
+	            	   dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue(c);
 				} else if (mime.equals("image/jpeg"))
 					dlnaspec = "DLNA.ORG_PN=JPEG_LRG";
 				else if (mime.equals("audio/mpeg"))
@@ -763,7 +767,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			endTag(sb);
 			sb.append(getFileURL());
 			closeTag(sb, "res");
-
+			}
 		}
 		
 		String thumbURL = getThumbnailURL();
