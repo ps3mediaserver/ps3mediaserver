@@ -78,7 +78,7 @@ public class FileUtil {
 		return found;
 	}
 	
-	private synchronized static boolean browseFolderForSubtitles(File subFolder, File file, DLNAMediaInfo media) {
+	private static boolean browseFolderForSubtitles(File subFolder, File file, DLNAMediaInfo media) {
 		boolean found = false;
 		File allSubs [] = subFolder.listFiles();
 		String fileName = getFileNameWithoutExtension(file.getName()).toLowerCase();

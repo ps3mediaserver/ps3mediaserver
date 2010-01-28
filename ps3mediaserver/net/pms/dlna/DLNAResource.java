@@ -51,6 +51,7 @@ import net.pms.network.HTTPResource;
 import net.pms.util.FileUtil;
 import net.pms.util.ImagesUtil;
 import net.pms.util.Iso639;
+import net.pms.util.MpegUtil;
 
 public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	
@@ -847,6 +848,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				
 		PMS.debug( "Asked stream chunk [" + low + "-" + high + "] timeseek: " + timeseek + " of " + getName() + " and player " + player);
 		
+		// shagrath: small fix, regression on chapters
+		boolean timeseek_auto = false;
 		// Ditlew - WDTV Live
 		// Ditlew - We convert byteoffset to timeoffset here. This needs the stream to be CBR!
 		int cbr_video_bitrate = mediarenderer.getCBRVideoBitrate();
@@ -868,6 +871,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				int rewind_secs = mediarenderer.getByteToTimeseekRewindSeconds();
 				timeseek = (timeseek > rewind_secs) ? timeseek - rewind_secs : 0;
 					
+				//shagrath:
+				timeseek_auto = true;
+				
 				//PMS.debug( "Ditlew - calculated timeseek: " + timeseek);			
 			}				
 		}
@@ -894,6 +900,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				fis = getInputStream();
 			if (low > 0 && fis != null)
 				fis.skip(low);
+			if (timeseek != 0 && this instanceof RealFile)
+				fis.skip(MpegUtil.getPossitionForTimeInMpeg(((RealFile)this).file, (int) timeseek));
 			return fis;
 		} else {
 			
@@ -908,10 +916,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			params.aid = media_audio;
 			params.sid = media_subtitle;
 			params.mediaRenderer = mediarenderer;
-			// Ditlew - org
-			//params.timeseek = splitStart; 
-			// Ditlew - For some reason sometimes timeseek gets ignored if I dont set it here.
-			params.timeseek = timeseek; 
+			params.timeseek = timeseek_auto?timeseek:splitStart; 
 			params.timeend = splitLength;
 			
 			if (this instanceof IPushOutput)

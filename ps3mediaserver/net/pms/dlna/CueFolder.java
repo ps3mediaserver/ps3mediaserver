@@ -85,6 +85,10 @@ public class CueFolder extends DLNAResource {
 						TrackData track = tracks.get(i);
 						if (i > 0) {
 							double end = getTime(track.getIndices().get(0).getPosition());
+							if (children.size() == 0) {
+								// seems the first file was invalid or non existent
+								return;
+							}
 							DLNAResource prec = children.get(i-1);
 							int count = 0;
 							while (prec.isFolder() && i+count < children.size()) {

@@ -1072,7 +1072,13 @@ private JTextField mencoder_ass_scale;
 		String alternativeCodec = "";//"-ac ffac3,ffdca, ";  //$NON-NLS-1$
 		if (dvd)
 			alternativeCodec = ""; //$NON-NLS-1$
-		StringTokenizer st = new StringTokenizer(alternativeCodec + "-channels " + (wmv?2:PMS.getConfiguration().getAudioChannelCount()) + " " + configuration.getMencoderDecode() + add, " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+		int channels = wmv?2:PMS.getConfiguration().getAudioChannelCount();
+		if (media != null && params.aid != null)
+			channels = wmv?2:CodecUtil.getRealChannelCount(configuration, params.aid);
+		PMS.debug("channels=" + channels);
+
+		StringTokenizer st = new StringTokenizer(alternativeCodec + "-channels " + channels + " " + configuration.getMencoderDecode() + add, " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		overridenMainArgs = new String [st.countTokens()];
 		int i = 0;
 		boolean next = false;

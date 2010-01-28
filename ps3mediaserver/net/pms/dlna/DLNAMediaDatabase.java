@@ -313,7 +313,7 @@ public class DLNAMediaDatabase implements Runnable {
 					media.subtitlesCodes.add(sub);
 				}
 				subrs.close();
-				audios.close();
+				subs.close();
 				
 				list.add(media);
 			}

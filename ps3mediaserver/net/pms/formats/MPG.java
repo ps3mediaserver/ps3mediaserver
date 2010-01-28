@@ -63,7 +63,7 @@ public class MPG extends Format {
 
 	@Override
 	public String[] getId() {
-		return new String [] { "mpg", "mpeg", "mpe", "mod", "ts", "tp", "m2t", "m2ts", "m2p", "mts", "mp4", "m4v", "avi", "wmv", "wm", "vob", "divx", "div" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$
+		return new String [] { "mpg", "mpeg", "mpe", "mod", "tivo", "ty", "tmf", "ts", "tp", "m2t", "m2ts", "m2p", "mts", "mp4", "m4v", "avi", "wmv", "wm", "vob", "divx", "div" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$
 	}
 
 	@Override
