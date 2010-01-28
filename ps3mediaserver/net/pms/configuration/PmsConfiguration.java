@@ -895,7 +895,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean isMencoderRemuxMPEG2() {
-		return getBoolean(KEY_MENCODER_REMUX_MPEG2, false);
+		return getBoolean(KEY_MENCODER_REMUX_MPEG2, true);
 	}
 	
 	public void setDisableFakeSize(boolean value) {

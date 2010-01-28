@@ -94,6 +94,7 @@ import net.pms.formats.WEB;
 import net.pms.gui.DummyFrame;
 import net.pms.gui.IFrame;
 import net.pms.io.OutputParams;
+import net.pms.io.OutputTextConsumer;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.io.WinUtils;
 import net.pms.network.HTTPServer;
@@ -131,7 +132,9 @@ public class PMS {
 
 	public RootFolder getRootFolder(RendererConfiguration renderer) {
 		// something to do here for multiple directories views for each renderer
-		return rootFolder;
+		if (renderer == null)
+			renderer = RendererConfiguration.getDefaultConf();
+		return renderer.getRootFolder();
 	}
 
 	private static PMS instance = null;
@@ -159,7 +162,7 @@ public class PMS {
 		
 	}
 	
-	private RootFolder rootFolder;
+	//private RootFolder rootFolder;
 	private HTTPServer server;
 	private String serverName;
 	private ArrayList<Format> extensions;
@@ -203,7 +206,7 @@ public class PMS {
 		return registry;
 	}
 
-	/*private boolean checkProcessExistence(String name, boolean error, String...params) throws Exception {
+	private boolean checkProcessExistence(String name, boolean error, String...params) throws Exception {
 		PMS.info("launching: " + params[0]); //$NON-NLS-1$
 		
 		try {
@@ -225,7 +228,7 @@ public class PMS {
 			};
 			Thread checkThread = new Thread(r);
 			checkThread.start();
-			checkThread.join(2000);
+			checkThread.join(60000);
 			checkThread.interrupt();
 			checkThread = null;
 			
@@ -246,7 +249,7 @@ public class PMS {
 				PMS.error("Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ...", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return false;
 		}
-	}*/
+	}
 	
 	@SuppressWarnings("unused")
 	private PrintStream stderr = System.err;  
@@ -322,7 +325,9 @@ public class PMS {
 		
 		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 				
-		
+		PMS.minimal("Checking font cache... launching simple instance of MPlayer... You may have to wait 60 seconds !");
+		checkProcessExistence("MPlayer", true, configuration.getMplayerPath(), "dummy");
+		PMS.minimal("Done!");
 		/*
 		if (!checkProcessExistence("FFmpeg", true, configuration.getFfmpegPath(), "-h")) //$NON-NLS-1$ //$NON-NLS-2$
 			configuration.disableFfmpeg();
@@ -372,7 +377,7 @@ public class PMS {
 		registerExtensions();
 		registerPlayers();
 		
-		manageRoot();
+		manageRoot(null);
 		
 		boolean binding = false;
 		try {
@@ -458,15 +463,14 @@ public class PMS {
 		return true;
 	}
 	
-	private void manageRoot() throws IOException {
+	public void manageRoot(RendererConfiguration renderer) throws IOException {
 		File files [] = loadFoldersConf(configuration.getFolders());
 		if (files == null || files.length == 0)
 			files = File.listRoots();
 		if (PMS.get().isWindows()) {
 			
 		}
-		rootFolder = new RootFolder();
-		rootFolder.browse(files);
+		getRootFolder(renderer).browse(files);
 		
 		
 		File webConf = new File("WEB.conf"); //$NON-NLS-1$
@@ -486,7 +490,7 @@ public class PMS {
 							DLNAResource parent = null;
 							if (keys[1] != null) {
 								StringTokenizer st = new StringTokenizer(keys[1], ","); //$NON-NLS-1$
-								DLNAResource currentRoot = rootFolder;
+								DLNAResource currentRoot = getRootFolder(renderer);
 								while (st.hasMoreTokens()) {
 									String folder = st.nextToken();
 									parent = currentRoot.searchByName(folder);
@@ -498,7 +502,7 @@ public class PMS {
 								}
 							}
 							if (parent == null)
-								parent = rootFolder;
+								parent = getRootFolder(renderer);
 							if (keys[0].equals("imagefeed")) { //$NON-NLS-1$
 								parent.addChild(new ImagesFeed(values[0]));
 							} else if (keys[0].equals("videofeed")) { //$NON-NLS-1$
@@ -523,26 +527,26 @@ public class PMS {
 
 		if (Platform.isMac()) {
  			if (PMS.getConfiguration().getIphotoEnabled()) {
- 				addiPhotoFolder();
+ 				addiPhotoFolder(renderer);
  			}
 		} 
 		
 		if (Platform.isMac() || Platform.isWindows()) {
  			if (PMS.getConfiguration().getItunesEnabled()) {
- 				addiTunesFolder();
+ 				addiTunesFolder(renderer);
  			}
 		}
 	
-		addMediaLibraryFolder();
+		addMediaLibraryFolder(renderer);
 	
-		addVideoSettingssFolder();
+		addVideoSettingssFolder(renderer);
 		
-		rootFolder.closeChildren(0, false);
+		getRootFolder(renderer).closeChildren(0, false);
 	}
 
 
 	@SuppressWarnings("unchecked")
-	public void addiPhotoFolder() {
+	public void addiPhotoFolder(RendererConfiguration renderer) {
 		if (Platform.isMac()) {
 
 			Map<String, Object> iPhotoLib;
@@ -580,7 +584,7 @@ public class PMS {
 						}
 						vf.addChild(rf); //$NON-NLS-1$
 		 			}
-					rootFolder.addChild(vf);
+					getRootFolder(renderer).addChild(vf);
  				} else {
  					PMS.minimal("iPhoto folder not found !?");
  				}
@@ -631,7 +635,7 @@ public class PMS {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void addiTunesFolder() {
+	public void addiTunesFolder(RendererConfiguration renderer) {
 		if (Platform.isMac() || Platform.isWindows()) {
 			Map<String, Object> iTunesLib;
 			ArrayList Playlists;
@@ -663,7 +667,7 @@ public class PMS {
 						}
 						vf.addChild(pf); //$NON-NLS-1$
 					}
-					rootFolder.addChild(vf);
+					getRootFolder(renderer).addChild(vf);
 				} else {
 					PMS.minimal("Could not find the iTunes file");
 				}
@@ -673,7 +677,7 @@ public class PMS {
 		}
 	}
 	
-	public void addVideoSettingssFolder() {
+	public void addVideoSettingssFolder(RendererConfiguration renderer) {
 		if (!PMS.configuration.getHideVideoSettings()) {
 			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.37"), null); //$NON-NLS-1$
 			VirtualFolder vfSub = new VirtualFolder(Messages.getString("PMS.8"), null); //$NON-NLS-1$
@@ -763,7 +767,7 @@ public class PMS {
 				}
 			});
 			//vf.closeChildren(0, false);
-			rootFolder.addChild(vf);
+			getRootFolder(renderer).addChild(vf);
 		}
 	}
 	
@@ -774,11 +778,11 @@ public class PMS {
 		return library;
 	}
 
-	public boolean addMediaLibraryFolder() {
+	public boolean addMediaLibraryFolder(RendererConfiguration renderer) {
 		if (PMS.configuration.getUseCache() && !mediaLibraryAdded) {
 			library = new MediaLibrary();
 			if (!PMS.configuration.isHideMediaLibraryFolder())
-				rootFolder.addChild(library);
+				getRootFolder(renderer).addChild(library);
 			mediaLibraryAdded = true;
 			return true;
 		}
@@ -925,7 +929,7 @@ public class PMS {
 		server.stop();
 		server = null;
 		mediaLibraryAdded = false;
-		manageRoot();
+		manageRoot(null);
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {

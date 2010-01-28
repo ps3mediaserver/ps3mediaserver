@@ -93,6 +93,7 @@ public class TrTab2 {
 	private JComboBox channels;
 	private JComboBox vq ;
 	private JCheckBox  ac3remux ;
+	private JCheckBox  mpeg2remux ;
 	private JCheckBox  chapter_support ;
 	private JTextField chapter_interval;
 	
@@ -536,14 +537,28 @@ public class TrTab2 {
        });
        
        builder.add(ac3remux, cc.xyw(1, 21,3));
+       
+       mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows()?Messages.getString("TrTab2.21"):"")); //$NON-NLS-1$
+       mpeg2remux.setContentAreaFilled(false);
+       if (PMS.getConfiguration().isMencoderRemuxMPEG2())
+    	   mpeg2remux.setSelected(true);
+       mpeg2remux.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				PMS.getConfiguration().setMencoderRemuxMPEG2((e.getStateChange() == ItemEvent.SELECTED));
+			}
+       	
+       });
+       
+       builder.add(mpeg2remux, cc.xyw(1, 23,3));
       
        
-      cmp = builder.addSeparator(Messages.getString("TrTab2.4"),  cc.xyw(1, 23, 3)); //$NON-NLS-1$
+      cmp = builder.addSeparator(Messages.getString("TrTab2.4"),  cc.xyw(1, 25, 3)); //$NON-NLS-1$
        cmp = (JComponent) cmp.getComponent(0);
        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
        
        
-       builder.addLabel(Messages.getString("TrTab2.30"), cc.xy(1, 25)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("TrTab2.30"), cc.xy(1, 27)); //$NON-NLS-1$
        
        
        maxbitrate = new JTextField("" + PMS.getConfiguration().getMaximumBitrate()); //$NON-NLS-1$
@@ -559,9 +574,9 @@ public class TrTab2 {
 		}
 
        });
-       builder.add(maxbitrate, cc.xy(3, 25));
+       builder.add(maxbitrate, cc.xy(3, 27));
       
-       builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 27, 3)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 29, 3)); //$NON-NLS-1$
        
         Object data [] = new Object [] { PMS.getConfiguration().getMencoderMainSettings(),
     		   "keyint=1:vqscale=1:vqmin=2  /* Best Quality */", //$NON-NLS-1$
@@ -600,7 +615,7 @@ public class TrTab2 {
        	
        });
        vq.setEditable(true);
-       builder.add(vq,          cc.xyw(1,  29, 3));
+       builder.add(vq,          cc.xyw(1,  31, 3));
        
       String help1 = Messages.getString("TrTab2.39"); //$NON-NLS-1$
       help1 += Messages.getString("TrTab2.40"); //$NON-NLS-1$
@@ -614,18 +629,18 @@ public class TrTab2 {
        decodeTips.setEditable(false);
        decodeTips.setBorder(BorderFactory.createEtchedBorder());
        decodeTips.setBackground(new Color(255, 255, 192));
-       builder.add(decodeTips, cc.xyw(1, 41, 3));
+       builder.add(decodeTips, cc.xyw(1, 43, 3));
        
        disableSubs = new JCheckBox(Messages.getString("TrTab2.51")); //$NON-NLS-1$
        disableSubs.setContentAreaFilled(false);
      
-       cmp = builder.addSeparator(Messages.getString("TrTab2.7"),  cc.xyw(1, 31, 3)); //$NON-NLS-1$
+       cmp = builder.addSeparator(Messages.getString("TrTab2.7"),  cc.xyw(1, 33, 3)); //$NON-NLS-1$
        cmp = (JComponent) cmp.getComponent(0);
        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
        
-       builder.add(disableSubs,          cc.xy(1,  33));
+       builder.add(disableSubs,          cc.xy(1,  35));
        
-       builder.addLabel(Messages.getString("TrTab2.8"), cc.xy(1,35)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("TrTab2.8"), cc.xy(1,37)); //$NON-NLS-1$
        
        notranscode = new JTextField(configuration.getNoTranscode());
        notranscode.addKeyListener(new KeyListener() {
@@ -641,9 +656,9 @@ public class TrTab2 {
    		}
        	   
           });
-       builder.add(notranscode, cc.xy(3, 35));
+       builder.add(notranscode, cc.xy(3, 37));
        
-       builder.addLabel(Messages.getString("TrTab2.9"), cc.xy(1,37)); //$NON-NLS-1$
+       builder.addLabel(Messages.getString("TrTab2.9"), cc.xy(1,39)); //$NON-NLS-1$
        
        forcetranscode = new JTextField(configuration.getForceTranscode());
        forcetranscode.addKeyListener(new KeyListener() {
@@ -659,7 +674,7 @@ public class TrTab2 {
    		}
        	   
           });
-       builder.add(forcetranscode, cc.xy(3, 37));
+       builder.add(forcetranscode, cc.xy(3, 39));
        
         return builder.getPanel();
 	}

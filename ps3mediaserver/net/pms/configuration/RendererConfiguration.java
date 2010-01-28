@@ -1,6 +1,7 @@
 package net.pms.configuration;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import net.pms.PMS;
+import net.pms.dlna.RootFolder;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 
@@ -59,7 +61,20 @@ public class RendererConfiguration {
 	
 	private InetAddress currentRendererAddress;
 	private int speedInMbits;
+	private RootFolder rootFolder;
 	
+	public RootFolder getRootFolder() {
+		if (rootFolder == null) {
+			rootFolder = new RootFolder();
+			try {
+				PMS.get().manageRoot(this);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return rootFolder;
+	}
+
 	public int getSpeedInMbits() {
 		return speedInMbits;
 	}
@@ -289,7 +304,8 @@ public class RendererConfiguration {
 		}
 		DLNAPN = new HashMap<String, String>();
 		String DLNAPNchanges = configuration.getString(DLNA_PN_CHANGES, null);
-		PMS.debug("Config: " + DLNAPNchanges);
+		if (DLNAPNchanges != null)
+			PMS.debug("Config DLNAPNchanges: " + DLNAPNchanges);
 		if (StringUtils.isNotBlank(DLNAPNchanges)) {
 			StringTokenizer st = new StringTokenizer(DLNAPNchanges, "|");
 			while (st.hasMoreTokens()) {
