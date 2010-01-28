@@ -12,9 +12,9 @@ public class MpegUtil {
 	public static int getDurationFromMpeg(File f) throws IOException {
 		RandomAccessFile raf = new RandomAccessFile(f, "r");
 		if (raf.length() >= 500000) {
-			Map<Integer, Integer> ptsStart = checkRange(raf, 250000, false);
+			Map<Integer, Integer> ptsStart = checkRange(raf, 0, 250000, false);
 			if (ptsStart != null) {
-				Map<Integer, Integer> ptsEnd = checkRange(raf, 250000, true);
+				Map<Integer, Integer> ptsEnd = checkRange(raf, 0, 250000, true);
 				if (ptsEnd != null) {
 					Iterator<Integer> iterator = ptsStart.keySet().iterator();
 					while (iterator.hasNext()) {
@@ -33,14 +33,14 @@ public class MpegUtil {
 		return 0;
 	}
 
-	private static Map<Integer, Integer> checkRange(RandomAccessFile raf,
+	private static Map<Integer, Integer> checkRange(RandomAccessFile raf, long startingPos,
 			int range, boolean end) throws IOException {
 		Map<Integer, Integer> pts = new HashMap<Integer, Integer>();
 		byte buffer[] = new byte[range];
-		if (end)
+		if (end) // statringPos not applicable for end==true
 			raf.seek(raf.length() - range);
 		else
-			raf.seek(0);
+			raf.seek(0 + startingPos);
 		raf.read(buffer, 0, buffer.length);
 		int ps = 0;
 		int start = 0;
@@ -59,7 +59,7 @@ public class MpegUtil {
 		}
 		if (ps == 0)
 			return null;
-		for (int i = start; i < buffer.length; i += ps) {
+		for (int i = start; i < buffer.length - ps; i += ps) {
 			Integer id = (((buffer[i+1]+256)%256) - 64) * 256 + ((buffer[i+2]+256)%256); // calc id
 			if (buffer[i+7] == -32 && buffer [i+6] == 1) {
 				int diff = i + 7 + 4; // 47 50 11 11 00 00 01 E0 00 00 84 C0
@@ -77,4 +77,55 @@ public class MpegUtil {
 				+ ((((buffer[diff+2] & 0xff) << 8) + (buffer[diff+3] & 0xff)) >> 1);
 	}
 
+	/**
+	 * gets possition for specified time in mpeg stream (M2TS, TS) 
+	 * @param f - file to check
+	 * @param timeS - time (in seconds) to find
+	 * @return position in stream (in bytes).
+	 * @throws IOException
+	 */
+	public static long getPossitionForTimeInMpeg(File f, int timeS) throws IOException
+	{
+		RandomAccessFile raf = new RandomAccessFile(f, "r");
+		Map<Integer, Integer> ptsStart = checkRange(raf, 0, 250000, false);
+		long currentPos = 0;
+		
+		if (ptsStart != null && !ptsStart.isEmpty())
+		{
+			long minRangePos = 0;
+			long maxRangePos = raf.length();
+			boolean nextPossition = true;
+			while (maxRangePos - minRangePos > 250000 && nextPossition)
+			{
+				nextPossition = false;
+				currentPos = minRangePos + (maxRangePos - minRangePos) / 2;
+				Map<Integer, Integer> ptsEnd = checkRange(raf, currentPos, 250000, false);
+				if (ptsEnd != null)
+				{
+					Iterator<Integer> iterator = ptsStart.keySet().iterator();
+					while (iterator.hasNext())
+					{
+						Integer id = iterator.next();
+						if (ptsEnd.get(id) != null)
+						{
+							int time = (ptsEnd.get(id).intValue() - ptsStart.get(id).intValue()) / 90000;
+
+							if (time == timeS) // found it
+								return currentPos;
+							
+							nextPossition = true;
+							if (time > timeS)
+								maxRangePos = currentPos;
+							else
+								minRangePos = currentPos;
+							break;
+						}
+					}
+				}
+				else
+					return currentPos;
+			}
+		}
+		return currentPos;
+	}
 }

@@ -53,7 +53,7 @@ public class CodecUtil {
 	
 	public static int getAC3ChannelCount(PmsConfiguration configuration, DLNAMediaAudio audio) {
 		int channelCount = configuration.getAudioChannelCount();
-		if (audio.isAC3() && configuration.isRemuxAC3() && audio.nrAudioChannels > channelCount)
+		if (audio.isAC3() && configuration.isRemuxAC3() && audio.nrAudioChannels > 2 && audio.nrAudioChannels != channelCount)
 			channelCount = audio.nrAudioChannels;
 		return channelCount;
 	}
@@ -167,7 +167,11 @@ public class CodecUtil {
 		if (pcmonly) { // we are using real PCM output
 			// thanks to JR Cash and his 5.1 sample
 			// et merci Yann :p
-			mixer = "channels=6:6:0:0:1:1:3:2:5:3:4:4:2:5";
+			if (nbchannels == 5)
+				/* Were missing an LFE channel so create one from the fronts */
+				mixer = "channels=6:6:0:0:1:1:3:2:5:3:4:4:2:5,sub=80:5";
+			else
+				mixer = "channels=6:6:0:0:1:1:3:2:5:3:4:4:2:5";
 			if (nbchannels <= 2) { // downmixing to 2 channels
 				mixer = "pan=2:1:0:0:1:1:0:0:1:0.707:0.707:1:1";
 			}

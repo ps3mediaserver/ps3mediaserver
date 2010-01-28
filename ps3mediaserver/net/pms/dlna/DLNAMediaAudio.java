@@ -30,23 +30,23 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	}
 	
 	public boolean isAC3() {
-		return codecA.equalsIgnoreCase("ac3") || codecA.equalsIgnoreCase("a52") || codecA.equalsIgnoreCase("liba52");
+		return codecA != null && (codecA.equalsIgnoreCase("ac3") || codecA.equalsIgnoreCase("a52") || codecA.equalsIgnoreCase("liba52"));
 	}
 	
 	public boolean isDTS() {
-		return codecA.equalsIgnoreCase("dts") || codecA.equalsIgnoreCase("dca");
+		return codecA != null && (codecA.equalsIgnoreCase("dts") || codecA.equalsIgnoreCase("dca"));
 	}
 	
 	public boolean isMP3() {
-		return codecA.equalsIgnoreCase("mp3");
+		return codecA != null && codecA.equalsIgnoreCase("mp3");
 	}
 	
 	public boolean isPCM() {
-		return codecA.startsWith("pcm_s1") || codecA.startsWith("pcm_s2") || codecA.startsWith("pcm_u1") || codecA.startsWith("pcm_u2") || codecA.equals("LPCM");
+		return codecA != null && (codecA.startsWith("pcm_s1") || codecA.startsWith("pcm_s2") || codecA.startsWith("pcm_u1") || codecA.startsWith("pcm_u2") || codecA.equals("LPCM"));
 	}
 	
 	public boolean isLossless() {
-		return isPCM() || codecA.startsWith("fla") || codecA.equals("mlp") || codecA.equals("wv");
+		return codecA != null && (isPCM() || codecA.startsWith("fla") || codecA.equals("mlp") || codecA.equals("wv"));
 	}
 	
 	public String getAudioCodec() {

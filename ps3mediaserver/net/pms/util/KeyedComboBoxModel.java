@@ -115,7 +115,8 @@ public class KeyedComboBoxModel implements ComboBoxModel
      *
      * @param value the new value.
      */
-    public void setValue(final Object value)
+    @SuppressWarnings("unused")
+	public void setValue(final Object value)
     {
       this.value = value;
     }

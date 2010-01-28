@@ -29,7 +29,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
@@ -433,6 +432,8 @@ public class DLNAMediaInfo implements Cloneable {
 										audio.nrAudioChannels = 2;
 									} else if (token.equals("5:1") || token.equals("5.1") || token.equals("6 channels")) {
 										audio.nrAudioChannels = 6;
+									} else if (token.equals("5 channels")) {
+										audio.nrAudioChannels = 5;
 									} else if (token.equals("4 channels")) {
 										audio.nrAudioChannels = 4;
 									} else if (token.equals("2 channels")) {
@@ -592,7 +593,7 @@ public class DLNAMediaInfo implements Cloneable {
 //					}
 				}
 				// let's try tsmuxer for the end
-				if (f.file != null && type == Format.VIDEO && (ffmpeg_failure  || (container != null && container.equals("mpegts")))) {
+				/*if (f.file != null && type == Format.VIDEO && (ffmpeg_failure  || (container != null && container.equals("mpegts")))) {
 					String tsMuxer = PMS.getConfiguration().getTsmuxerPath();
 					if (tsMuxer != null) {
 						String cmd [] = new String [] {tsMuxer , ProcessUtil.getShortFileNameIfWideChars(f.file.getAbsolutePath()) };
@@ -635,7 +636,7 @@ public class DLNAMediaInfo implements Cloneable {
 							}
 						}
 					}
-				}
+				}*/
 				
 				if (container != null && f.file != null && container.equals("mpegts") && isH264() && getDurationInSeconds() == 0) {
 					// let's do the parsing for getting the duration...

@@ -231,6 +231,10 @@ public class HTTPServer implements Runnable {
 		return "http://" + hostName + ":" + port;
 	}
 	
+	public String getURLP() {
+		return "http://" + hostName + ":" + (port+1);
+	}
+	
 	public String getHost() {
 		return hostName;
 	}
