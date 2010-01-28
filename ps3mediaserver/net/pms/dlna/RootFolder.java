@@ -106,7 +106,7 @@ public class RootFolder extends DLNAResource {
 					}
 					int count = child.children.size();
 					if (count == 0)
-						return;
+						continue;
 					ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(count);
 					int parallel_thread_number = 3;
 					ThreadPoolExecutor tpe = new ThreadPoolExecutor(Math.min(count, parallel_thread_number), count, 20, TimeUnit.SECONDS, queue);

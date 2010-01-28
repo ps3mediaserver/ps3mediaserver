@@ -18,9 +18,18 @@
  */
 package net.pms.encoders;
 
+import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
@@ -34,16 +43,43 @@ public class FFMpegAudio extends FFMpegVideo {
 	
 	public static final String ID = "ffmpegaudio"; //$NON-NLS-1$
 	
-	@SuppressWarnings("unused")
 	private final PmsConfiguration configuration;
 	
 	public FFMpegAudio(PmsConfiguration configuration) {
 		this.configuration = configuration;
 	}
 	
+	JCheckBox noresample;
+	
 	@Override
 	public JComponent config() {
-		return null;
+		FormLayout layout = new FormLayout(
+                "left:pref, 0:grow", //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow"); //$NON-NLS-1$
+         PanelBuilder builder = new PanelBuilder(layout);
+        builder.setBorder(Borders.EMPTY_BORDER);
+        builder.setOpaque(false);
+
+        CellConstraints cc = new CellConstraints();
+        
+        
+        JComponent cmp = builder.addSeparator("Audio settings",  cc.xyw(2, 1, 1));
+        cmp = (JComponent) cmp.getComponent(0);
+        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+        
+        noresample = new JCheckBox("Automatic audio resampling to 44.1 or 48 kHz");
+        noresample.setContentAreaFilled(false);
+        noresample.setSelected(configuration.isAudioResample());
+        noresample.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				configuration.setAudioResample(e.getStateChange() == ItemEvent.SELECTED);
+ 			}
+        	
+        });
+        builder.add(noresample, cc.xy(2, 3));
+        
+        return builder.getPanel();
 	}
 	
 	@Override
@@ -101,6 +137,12 @@ public class FFMpegAudio extends FFMpegVideo {
 		String args [] = args();
 		if (params.mediaRenderer.isTranscodeToMP3()) {
 			args = new String [] { "-f", "mp3", "-ar", "48000", "-ab", "320000" };
+		}
+		if (params.mediaRenderer.isTranscodeAudioTo441())
+			args[3] = "44100";
+		if (!configuration.isAudioResample()) {
+			args[2] = "-vn";
+			args[3] = "-vn";
 		}
 		if (params.mediaRenderer.isTranscodeAudioTo441())
 			args[3] = "44100";

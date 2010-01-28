@@ -749,6 +749,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						// calcul taille wav
 						if (media.getFirstAudioTrack() != null && media.getFirstAudioTrack().sampleFrequency != null) {
 							int defaultFrequency = mediaRenderer.isTranscodeAudioTo441()?44100:48000;
+							if (!PMS.getConfiguration().isAudioResample()) {
+								try {
+									defaultFrequency = Integer.parseInt(media.getFirstAudioTrack().sampleFrequency);
+								} catch (Exception e) {
+									defaultFrequency = 44100;
+								}
+							}
 							int na = media.getFirstAudioTrack().nrAudioChannels;
 							if (na > 2) // no 5.1 dump in mplayer
 								na = 2;

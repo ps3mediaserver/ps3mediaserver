@@ -18,10 +18,19 @@
  */
 package net.pms.encoders;
 
+import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.Arrays;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 
 import net.pms.PMS;
@@ -84,6 +93,10 @@ public class MPlayerAudio extends Player {
 		String mPlayerdefaultAudioArgs [] = new String [] { PMS.getConfiguration().getMplayerPath(), fileName, "-prefer-ipv4", "-nocache", "-af", "channels=2", "-srate", "48000", "-vo", "null", "-ao", "pcm:waveheader:fast:file=" + audioP.getInputPipe(), "-quiet" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 		if (params.mediaRenderer.isTranscodeAudioTo441())
 			mPlayerdefaultAudioArgs[7] = "44100";
+		if (!configuration.isAudioResample()) {
+			mPlayerdefaultAudioArgs[6] = "-quiet";
+			mPlayerdefaultAudioArgs[7] = "-quiet";
+		}
 		params.input_pipes [0]= audioP;
 		
 		if (params.timeseek > 0 || params.timeend > 0) {
@@ -131,10 +144,37 @@ public class MPlayerAudio extends Player {
 		return Format.AUDIO;
 	}
 
+	JCheckBox noresample;
+	
 	@Override
 	public JComponent config() {
-		// TODO Auto-generated method stub
-		return null;
+		FormLayout layout = new FormLayout(
+                "left:pref, 0:grow", //$NON-NLS-1$
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow"); //$NON-NLS-1$
+         PanelBuilder builder = new PanelBuilder(layout);
+        builder.setBorder(Borders.EMPTY_BORDER);
+        builder.setOpaque(false);
+
+        CellConstraints cc = new CellConstraints();
+        
+        
+        JComponent cmp = builder.addSeparator("Audio settings",  cc.xyw(2, 1, 1));
+        cmp = (JComponent) cmp.getComponent(0);
+        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+        
+        noresample = new JCheckBox("Automatic audio resampling to 44.1 or 48 kHz");
+        noresample.setContentAreaFilled(false);
+        noresample.setSelected(configuration.isAudioResample());
+        noresample.addItemListener(new ItemListener() {
+
+ 			public void itemStateChanged(ItemEvent e) {
+ 				configuration.setAudioResample(e.getStateChange() == ItemEvent.SELECTED);
+ 			}
+        	
+        });
+        builder.add(noresample, cc.xy(2, 3));
+        
+        return builder.getPanel();
 	}
 	
 }

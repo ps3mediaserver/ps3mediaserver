@@ -118,6 +118,7 @@ public class PmsConfiguration {
 	private static final String KEY_SUBS_COLOR = "subs_color"; 
 	private static final String KEY_FIX_25FPS_AV_MISMATCH = "fix_25fps_av_mismatch";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
+	private static final String KEY_AUDIO_RESAMPLE = "audio_resample";
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final String UNLIMITED_BITRATE = "0";
@@ -1104,5 +1105,13 @@ public class PmsConfiguration {
 	
 	public void setVideoTranscodeStartDelay(int value) {
 		configuration.setProperty(KEY_VIDEOTRANSCODE_START_DELAY, value);
+	}
+	
+	public boolean isAudioResample() {
+		return getBoolean(KEY_AUDIO_RESAMPLE, true);
+	}
+	
+	public void setAudioResample(boolean value) {
+		configuration.setProperty(KEY_AUDIO_RESAMPLE, value);
 	}
 }
