@@ -53,7 +53,7 @@ public class CodecUtil {
 	
 	public static int getAC3ChannelCount(PmsConfiguration configuration, DLNAMediaAudio audio) {
 		int channelCount = configuration.getAudioChannelCount();
-		if (audio.isAC3() && configuration.isRemuxAC3() && audio.nrAudioChannels > 2 && audio.nrAudioChannels != channelCount)
+		if (audio.isAC3() && configuration.isRemuxAC3() && audio.nrAudioChannels != channelCount)
 			channelCount = audio.nrAudioChannels;
 		return channelCount;
 	}

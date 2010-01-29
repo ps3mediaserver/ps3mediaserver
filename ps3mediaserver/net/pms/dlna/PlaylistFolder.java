@@ -57,39 +57,101 @@ public class PlaylistFolder extends DLNAResource {
 	@Override
 	public synchronized void resolve() {
 		if (playlistfile.length() < 10000000) {
-			ArrayList<String> entries = new ArrayList<String>();
+			ArrayList<Entry> entries = new ArrayList<Entry>();
+			boolean m3u = false;
+			boolean pls = false;
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(playlistfile));
-				String line = null;
-				boolean pls = false;
-				while ((line=br.readLine()) !=null) {
-					if (!line.startsWith("#")) {
-						if (line.equals("[playlist]"))
+				String line;
+				int lineno = 0;
+				while (!m3u && !pls && (line=br.readLine()) !=null) {
+					lineno++;
+					line = line.trim();
+					if (line.startsWith("#EXTM3U")) {
+						m3u = true;
+						PMS.info("Reading m3u playlist: " + playlistfile.getName());
+					} else if (line.length() > 0) {
+						if (line.equals("[playlist]")) {
 							pls = true;
-						if (!pls) {
-							entries.add(line);
-						} else {
-							if (line.startsWith("File")) {
-								line = line.substring(line.indexOf("=")+1);
-								entries.add(line);
+							PMS.info("Reading PLS playlist: " + playlistfile.getName());
+						} else if (!line.startsWith("#")) {
+							throw new IOException(playlistfile.getName() + ":" + lineno + ": Bad playlist format");
+						}
+					}
+				}
+				String fileName = null;
+				String title = null;
+				while ((line=br.readLine()) !=null) {
+					lineno++;
+					line = line.trim();
+					if (pls) {
+						if (line.length() > 0 && !line.startsWith("#")) {
+							int eq = line.indexOf("=");
+							if (eq != -1) {
+								String value = line.substring(eq+1);
+								String var = line.substring(0, eq).toLowerCase();
+								fileName = null;
+								title = null;
+								int index = 0;
+								if (var.startsWith("file")) {
+									index = Integer.valueOf(var.substring(4));
+									fileName = value;
+								} else if (var.startsWith("title")) {
+									index = Integer.valueOf(var.substring(5));
+									title = value;
+								}
+								if (index > 0) {
+									while (entries.size() < index)
+										entries.add(null);
+									Entry entry = entries.get(index - 1);
+									if (entry == null) {
+										entry = new Entry();
+										entries.set(index - 1, entry);
+									}
+									if (fileName != null)
+										entry.fileName = fileName;
+									if (title != null)
+										entry.title = title;
+								}
 							}
+						}
+					} else if (m3u) {
+						if (line.startsWith("#EXTINF:")) {
+							line = line.substring(8).trim();
+							if (line.matches("^-?\\d+,"))
+								title = line.substring(line.indexOf(",")+1).trim();
+							else
+								title = line;
+						} else if (!line.startsWith("#")) {
+							fileName = line;
+							Entry entry = new Entry();
+							entry.fileName = fileName;
+							entry.title = title;
+							entries.add(entry);
+							title = null;
 						}
 					}
 				}
 				br.close();
+			} catch (NumberFormatException e) {
+				PMS.error(null, e);
 			} catch (IOException e) {
 				PMS.error(null, e);
 			}
-			for(String entry:entries) {
-				if (!entry.toLowerCase().startsWith("http://") && !entry.toLowerCase().startsWith("mms://")) {
-					File en1= new File(playlistfile.getParentFile(), entry);
-					File en2= new File(entry);
+			for(Entry entry:entries) {
+				if (entry == null)
+					continue;
+				String fileName = entry.fileName;
+				PMS.info("Adding " + (pls? "PLS ": (m3u? "M3U ": "")) + "entry: " + entry);
+				if (!fileName.toLowerCase().startsWith("http://") && !fileName.toLowerCase().startsWith("mms://")) {
+					File en1= new File(playlistfile.getParentFile(), fileName);
+					File en2= new File(fileName);
 					if (en1.exists()) {
-						addChild(new RealFile(en1));
+						addChild(new RealFile(en1, entry.title));
 						valid = true;
 					} else {
 						if (en2.exists()) {
-							addChild(new RealFile(en2));
+							addChild(new RealFile(en2, entry.title));
 							valid = true;
 						}
 					}
@@ -106,4 +168,12 @@ public class PlaylistFolder extends DLNAResource {
 		}
 	}
 
+	private static class Entry {
+		public String fileName;
+		public String title;
+		@Override
+		public String toString() {
+			return "[" + fileName + "," + title + "]";
+		}
+	}
 }

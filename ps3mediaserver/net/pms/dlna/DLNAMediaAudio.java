@@ -33,6 +33,10 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 		return codecA != null && (codecA.equalsIgnoreCase("ac3") || codecA.equalsIgnoreCase("a52") || codecA.equalsIgnoreCase("liba52"));
 	}
 	
+	public boolean isTrueHD() {
+		return codecA != null && codecA.equalsIgnoreCase("truehd");
+	}
+	
 	public boolean isDTS() {
 		return codecA != null && (codecA.equalsIgnoreCase("dts") || codecA.equalsIgnoreCase("dca"));
 	}
@@ -54,6 +58,8 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 			return "AC3";
 		else if (isDTS())
 			return "DTS";
+		else if (isTrueHD())
+			return "TrueHD";
 		else if (isPCM())
 			return "LPCM";
 		else if (codecA != null && codecA.equals("vorbis"))
