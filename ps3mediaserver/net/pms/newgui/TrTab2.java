@@ -490,10 +490,11 @@ public class TrTab2 {
        //forceDTSinPCM.setEnabled(false);
 	        if (configuration.isDTSEmbedInPCM())
 	        	forceDTSinPCM.setSelected(true);
-	        forceDTSinPCM.addItemListener(new ItemListener() {
-	
-				public void itemStateChanged(ItemEvent e) {
-					configuration.setDTSEmbedInPCM(e.getStateChange() == ItemEvent.SELECTED);
+	        forceDTSinPCM.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					configuration.setDTSEmbedInPCM(forceDTSinPCM.isSelected());
 					if (configuration.isDTSEmbedInPCM())
 						JOptionPane.showMessageDialog(
 								(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),

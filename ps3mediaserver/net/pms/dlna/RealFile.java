@@ -39,7 +39,8 @@ import net.pms.util.ProcessUtil;
 public class RealFile extends DLNAResource {
 	
 	private String driveName;
-	
+	private String virtualName;
+
 	
 	@Override
 	public boolean isValid() {
@@ -220,6 +221,12 @@ public class RealFile extends DLNAResource {
 		lastmodified = file.lastModified();
 	}
 
+	public RealFile(File file, String name) {
+		this.file = file;
+		this.virtualName = name;
+		lastmodified = file.lastModified();
+	}
+	
 	public InputStream getInputStream() {
 		try {
 			return new FileInputStream(file);
@@ -238,7 +245,9 @@ public class RealFile extends DLNAResource {
 
 	public String getName() {
 		String name = null;
-		if (file.getName().trim().equals("")) {
+		if (virtualName != null) {
+			name = virtualName;
+		} else if (file.getName().trim().equals("")) {
 			if (PMS.get().isWindows()) {
 				if (driveName == null) {
 					driveName = PMS.get().getRegistry().getDiskLabel(file);

@@ -168,10 +168,11 @@ private JTextField mencoder_ass_scale;
         mencodermt.setContentAreaFilled(false);
         if (PMS.getConfiguration().getMencoderMT())
         	mencodermt.setSelected(true);
-        mencodermt.addItemListener(new ItemListener() {
-
-			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setMencoderMT(e.getStateChange() == ItemEvent.SELECTED);
+        mencodermt.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				PMS.getConfiguration().setMencoderMT(mencodermt.isSelected());
 				if (PMS.getConfiguration().getMencoderMT())
 				JOptionPane.showMessageDialog(
 						(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
