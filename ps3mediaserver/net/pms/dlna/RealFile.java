@@ -276,6 +276,15 @@ public class RealFile extends DLNAResource {
 	public long lastModified() {
 		return 0;
 	}
+	
+	@Override
+	protected void checktype() {
+		if (ext == null) {
+			ext = PMS.get().getAssociatedExtension(file.getAbsolutePath());
+		}
+
+		super.checktype();
+	}
 
 	@Override
 	public String getSystemName() {
