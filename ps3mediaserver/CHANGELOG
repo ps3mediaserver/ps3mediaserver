@@ -20,7 +20,7 @@ OSX: iPhoto and iTunes library support (thanks to Pedro Simoes)
 OSX: Native look, now looks more like a Mac application
 OSX: Updated mencoder/mplayer/ffmpeg builds, support for FriBidi
 OSX: Updated build script to make a bundle or dmg automatically (thanks to Josh Klun)
-New translations: Czech (thanks to Mila), Danish (thanks to Niclas Gleesborg), Slovenian (thanks to Rob Wall)
+New translations: Catalan (Thanks to adrianeitor92), Czech (thanks to Mila), Danish (thanks to Niclas Gleesborg), Slovenian (thanks to Rob Wall)
 
 - Fixes
 
