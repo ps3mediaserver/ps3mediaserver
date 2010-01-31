@@ -96,6 +96,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public abstract String getName();
 	public abstract String getSystemName();
 	public abstract long length();
+	// Ditlew
+	public long length(RendererConfiguration mediaRenderer) {return length();};	
 	public abstract InputStream getInputStream() throws IOException;
 	public abstract boolean isFolder();
 	protected boolean discovered = false;
