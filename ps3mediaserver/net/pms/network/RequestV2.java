@@ -211,7 +211,10 @@ public class RequestV2 extends HTTPResource {
 //						}
 					}
 					PMS.get().getFrame().setStatusLine("Serving " + name);
-					CLoverride = files.get(0).length();
+					// Ditlew - org
+					//CLoverride = files.get(0).length();
+					// Ditlew
+					CLoverride = files.get(0).length(mediaRenderer);
 					if (lowRange > 0 || highRange > 0) {
 						long totalsize = CLoverride;
 						if (highRange >= CLoverride)
