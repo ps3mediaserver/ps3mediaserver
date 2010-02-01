@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.BindException;
@@ -476,7 +477,7 @@ public class PMS {
 		File webConf = new File("WEB.conf"); //$NON-NLS-1$
 		if (webConf.exists()) {
 			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(webConf), "UTF-8")); //$NON-NLS-1$
+				LineNumberReader br = new LineNumberReader(new InputStreamReader(new FileInputStream(webConf), "UTF-8")); //$NON-NLS-1$
 				String line = null;
 				while ((line=br.readLine()) != null) {
 					line = line.trim();
@@ -484,7 +485,8 @@ public class PMS {
 						String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
 						String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
 						String keys [] = parseFeedKey((String) key);
-						if (keys[0].equals("imagefeed") || keys[0].equals("audiofeed") || keys[0].equals("videofeed") || keys[0].equals("audiostream") || keys[0].equals("videostream")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+						try {
+							if (keys[0].equals("imagefeed") || keys[0].equals("audiofeed") || keys[0].equals("videofeed") || keys[0].equals("audiostream") || keys[0].equals("videostream")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 							
 							String values [] = parseFeedValue((String) value);
 							DLNAResource parent = null;
@@ -515,6 +517,12 @@ public class PMS {
 								parent.addChild(new WebVideoStream(values[0], values[1], values[2]));
 							}
 						}
+						
+						// catch exception here and go with parsing
+	                  } catch (ArrayIndexOutOfBoundsException e) {
+	                     PMS.minimal("Error in line " + br.getLineNumber() + " of file WEB.conf: " + e.getMessage()); //$NON-NLS-1$
+	                     
+	                  }
 					}
 				}
 				br.close();

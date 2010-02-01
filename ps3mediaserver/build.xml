@@ -42,7 +42,7 @@
 		</jar>
 		
     	<mkdir dir="dist" />
-    	<tar destfile="dist/pms-linux-${version}.tgz" compression="gzip">
+    	<tar destfile="dist/pms-generic-linux-unix-${version}.tgz" compression="gzip">
     		<tarfileset dir="." mode="777" prefix="pms-linux-${version}" includes="LICENSE.txt,README,CHANGELOG,pms.jar,FAQ,PMS.sh,WEB.conf,renderers/**,plugins/*.txt,linux/**"/> 
     	</tar>
     		

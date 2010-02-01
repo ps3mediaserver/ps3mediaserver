@@ -253,7 +253,16 @@ public class BufferedOutputFile extends OutputStream  {
 							PMS.debug("freeMemory: " + Runtime.getRuntime().freeMemory());
 							PMS.debug("totalMemory: " + Runtime.getRuntime().totalMemory());
 							PMS.debug("maxMemory: " + Runtime.getRuntime().maxMemory());
-							System.exit(1);
+							//System.exit(1);
+							PMS.minimal("Not enough memory to allocate " + maxMemorySize + " bytes... Using half of it");
+							maxMemorySize = maxMemorySize/2;
+							byte[] copy = new byte[maxMemorySize];
+					       try {
+					    	   System.arraycopy(buffer, 0, copy, 0, Math.min(buffer!=null?buffer.length:0, maxMemorySize));
+					    	   buffer = copy;
+					       } catch (NullPointerException npe) {
+					    	   return;
+					       }
 						}
 						PMS.debug("Done extending");
 					}
@@ -423,6 +432,7 @@ public class BufferedOutputFile extends OutputStream  {
 	}
 
 	// Ditlew - Modify GOP
+	@SuppressWarnings("unused")
 	private void shiftGOPByTimeSeek(int buffer_index, int offset_sec)
 	{
 		int m7 = modulo(buffer_index - 7);

@@ -272,7 +272,12 @@ public class RequestV2 extends HTTPResource {
 							
 				} else
 					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "]");
-				//inputStream = new ByteArrayInputStream(s.getBytes());
+				
+				if (!mediaRenderer.isPS3()) {
+					// hacky stuff. replace the png icon by a jpeg one. Like mpeg2 remux, really need a proper format compatibility list by renderer
+					s = s.replace("<mimetype>image/png</mimetype>", "<mimetype>image/jpeg</mimetype>");
+					s = s.replace("/images/Play1Hot_256.png", "/images/Play1Hot_256.jpg");
+				}
 				response.append(s);
 				inputStream = null;
 			}
