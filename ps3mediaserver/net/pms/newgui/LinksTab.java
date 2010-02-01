@@ -66,84 +66,88 @@ public class LinksTab {
 	        builder.setOpaque(true);
 	        CellConstraints cc = new CellConstraints();
 
-	       jl = new JLabel("PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$
-	        builder.add(jl, cc.xy(2, 1, "center, fill")); //$NON-NLS-1$
-	         imagePanel = buildImagePanel();
-	        builder.add(imagePanel, cc.xy(2, 3, "center, fill")); //$NON-NLS-1$
+        	final LinkMouseListener pms3Link = new LinkMouseListener("PS3 Media Server v" + PMS.VERSION,
+        			"http://code.google.com/p/ps3mediaserver/");
+	        builder.addLabel(pms3Link.getLabel(), cc.xy(2, 1, "center, fill")).addMouseListener(pms3Link);
+	        
+	        imagePanel = buildImagePanel();
+	        builder.add(imagePanel, cc.xy(2, 3, "center, fill"));
 	        
 	       
 	        builder.addLabel(Messages.getString("LinksTab.5"),  cc.xy(2,  5, "center, fill")); //$NON-NLS-1$ //$NON-NLS-2$
-	        builder.addLabel("<html>tsMuxer (c) SMartlabs: <a href='http://www.smlabs.net/tsmuxer_en.html'>http://www.smlabs.net/tsmuxer_en.html</a></html>",  cc.xy(2,  7, "center, fill")).addMouseListener(new MouseListener() { //$NON-NLS-1$ //$NON-NLS-2$
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					try {
-						PMSUtil.browseURI("http://www.smlabs.net/tsmuxer_en.html"); //$NON-NLS-1$
-					} catch (Exception e1) {}
-				}
-				@Override
-				public void mouseEntered(MouseEvent e) {}
-				@Override
-				public void mouseExited(MouseEvent e) {}
-				@Override
-				public void mousePressed(MouseEvent e) {}
-				@Override
-				public void mouseReleased(MouseEvent e) {}
-	        });
+	        
+        	final LinkMouseListener tsMuxerLink = new LinkMouseListener("tsMuxer (c) SMartlabs", 
+        			"http://www.smlabs.net/tsmuxer_en.html");
+	        builder.addLabel(tsMuxerLink.getLabel(),  
+	        		cc.xy(2, 7, "center, fill")).addMouseListener(tsMuxerLink);
+	        			       
+        	final LinkMouseListener ffmpegLink = new LinkMouseListener("FFmpeg", 
+        			"http://ffmpeg.mplayerhq.hu");
+	        builder.addLabel(ffmpegLink.getLabel(), 
+	        		cc.xy(2, 9, "center, fill")).addMouseListener(ffmpegLink);
 	       
-	        builder.addLabel("<html>FFmpeg: <a href='http://ffmpeg.mplayerhq.hu'>http://ffmpeg.mplayerhq.hu</a></html>",  cc.xy(2,  9, "center, fill")).addMouseListener(new MouseListener() { //$NON-NLS-1$ //$NON-NLS-2$
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					try {
-						PMSUtil.browseURI("http://ffmpeg.mplayerhq.hu"); //$NON-NLS-1$
-					} catch (Exception e1) {}
-				}
-				@Override
-				public void mouseEntered(MouseEvent e) {}
-				@Override
-				public void mouseExited(MouseEvent e) {}
-				@Override
-				public void mousePressed(MouseEvent e) {}
-				@Override
-				public void mouseReleased(MouseEvent e) {}
-	        });
+        	final LinkMouseListener mplayerLink = new LinkMouseListener("MPlayer", 
+        			"http://www.mplayerhq.hu");
+	        builder.addLabel(mplayerLink.getLabel(), 
+	        		cc.xy(2, 11, "center, fill")).addMouseListener(mplayerLink);
 	       
-	        builder.addLabel("<html>MPlayer: <a href='http://www.mplayerhq.hu/'>http://www.mplayerhq.hu/</a></html>",  cc.xy(2,  11, "center, fill")).addMouseListener(new MouseListener() { //$NON-NLS-1$ //$NON-NLS-2$
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					try {
-						PMSUtil.browseURI("http://www.mplayerhq.hu/"); //$NON-NLS-1$
-					} catch (Exception e1) {}
-				}
-				@Override
-				public void mouseEntered(MouseEvent e) {}
-				@Override
-				public void mouseExited(MouseEvent e) {}
-				@Override
-				public void mousePressed(MouseEvent e) {}
-				@Override
-				public void mouseReleased(MouseEvent e) {}
-	        });
-	       
-	        builder.addLabel("<html>MPlayer's Sherpya Builds: <a href='http://oss.netfarm.it/mplayer-win32.php'>http://oss.netfarm.it/mplayer-win32.php</a></html>",  cc.xy(2,  13, "center, fill")).addMouseListener(new MouseListener() { //$NON-NLS-1$ //$NON-NLS-2$
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					try {
-						PMSUtil.browseURI("http://oss.netfarm.it/mplayer-win32.php"); //$NON-NLS-1$
-					} catch (Exception e1) {}
-				}
-				@Override
-				public void mouseEntered(MouseEvent e) {}
-				@Override
-				public void mouseExited(MouseEvent e) {}
-				@Override
-				public void mousePressed(MouseEvent e) {}
-				@Override
-				public void mouseReleased(MouseEvent e) {}
-	        });
+        	final LinkMouseListener mplayerSherpiaBuildsLink = new LinkMouseListener("MPlayer's Sherpya Builds", 
+        			"http://oss.netfarm.it/mplayer-win32.php");
+	        builder.addLabel(mplayerSherpiaBuildsLink.getLabel(), 
+	        		cc.xy(2, 13, "center, fill")).addMouseListener(mplayerSherpiaBuildsLink);
 	        
 	        return builder.getPanel();
 	}
-	
+
+	private static class LinkMouseListener implements MouseListener
+	{
+		private String name;
+		private String link;
+		
+		public LinkMouseListener(String n, String l)
+		{
+			name = n;
+			link = l;
+		}
+
+		public String getLabel()
+		{
+			final StringBuffer sb = new StringBuffer();
+			sb.append("<html>");
+			sb.append("<a href=\"");
+			sb.append(link);
+			sb.append("\">");
+			sb.append(name);
+			sb.append("</a>");
+			sb.append("</html>");
+			return sb.toString();
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			try {
+				PMSUtil.browseURI(link); //$NON-NLS-1$
+			} catch (Exception e1) {
+			}
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		}
+
+	}
 	
 	
 	public ImagePanel buildImagePanel() {

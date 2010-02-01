@@ -565,7 +565,7 @@ public class PMS {
 			ArrayList RollPhotos;
 
 			try {
- 				Process prc = Runtime.getRuntime().exec("defaults read com.apple.iapps iPhotoRecentDatabases");  
+ 				Process prc = Runtime.getRuntime().exec("defaults read com.apple.iApps iPhotoRecentDatabases");  
  				BufferedReader in = new BufferedReader(  
 							new InputStreamReader(prc.getInputStream()));  
  				String line = null;  
@@ -607,7 +607,7 @@ public class PMS {
 		String line = null;
 		String iTunesFile = null;
 		if(Platform.isMac()) {
-			Process prc = Runtime.getRuntime().exec("defaults read com.apple.iapps iTunesRecentDatabases");
+			Process prc = Runtime.getRuntime().exec("defaults read com.apple.iApps iTunesRecentDatabases");
 			BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
 			if ((line = in.readLine()) != null) {
 				line = in.readLine();           //we want the 2nd line
