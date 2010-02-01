@@ -1030,7 +1030,7 @@ private JTextField mencoder_ass_scale;
 				}
 				return tv.launchTranscode(fileName, media, params);
 			}
-		} else if (params.sid == null && dvd && configuration.isMencoderRemuxMPEG2()) {
+		} else if (params.sid == null && dvd && configuration.isMencoderRemuxMPEG2() && params.mediaRenderer.isPS3()) { // need to do a proper check of renderer who supports mpeg-ps and mpeg2 :\
 			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
 			boolean nomux = false;
 			for(String s:sArgs) {
