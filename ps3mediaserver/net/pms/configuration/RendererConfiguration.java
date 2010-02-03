@@ -199,6 +199,7 @@ public class RendererConfiguration {
 		return rank;
 	}
 	
+	// Those 'is' methods should disappear
 	public boolean isXBOX() {
 		return getRendererName().toUpperCase().contains("XBOX");
 	}
@@ -209,6 +210,10 @@ public class RendererConfiguration {
 	
 	public boolean isPS3() {
 		return getRendererName().toUpperCase().contains("PLAYSTATION") || getRendererName().toUpperCase().contains("PS3");
+	}
+	
+	public boolean isBRAVIA() {
+		return getRendererName().toUpperCase().contains("BRAVIA");
 	}
 	
 	private static final String RENDERER_NAME="RendererName";

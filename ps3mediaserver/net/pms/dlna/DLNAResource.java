@@ -781,7 +781,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 		if (!isFolder() && (ext == null || (ext != null && thumbURL != null))) {
 			openTag(sb, "upnp:albumArtURI");
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
-			if (getThumbnailContentType().equals(PNG_TYPEMIME))
+			if (getThumbnailContentType().equals(PNG_TYPEMIME) && !mediaRenderer.isBRAVIA())
 				addAttribute(sb, "dlna:profileID", "PNG_TN");
 			else
 				addAttribute(sb, "dlna:profileID", "JPEG_TN");
@@ -790,9 +790,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			closeTag(sb, "upnp:albumArtURI");
 		}
 		
-		if (isFolder() && thumbURL != null){
+		if ((isFolder() || mediaRenderer.isBRAVIA()) && thumbURL != null){
 			openTag(sb, "res");
-			if (getThumbnailContentType().equals(PNG_TYPEMIME))
+			if (getThumbnailContentType().equals(PNG_TYPEMIME) && !mediaRenderer.isBRAVIA())
 				addAttribute(sb, "protocolInfo", "http-get:*:image/png:DLNA.ORG_PN=PNG_TN");
 			else
 				addAttribute(sb, "protocolInfo", "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_TN");
