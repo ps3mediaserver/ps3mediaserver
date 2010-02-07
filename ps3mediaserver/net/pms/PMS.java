@@ -75,6 +75,7 @@ import net.pms.encoders.TSMuxerVideo;
 import net.pms.encoders.TsMuxerAudio;
 import net.pms.encoders.VideoLanAudioStreaming;
 import net.pms.encoders.VideoLanVideoStreaming;
+import net.pms.external.AdditionalFolderAtRoot;
 import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.formats.DVRMS;
@@ -546,6 +547,8 @@ public class PMS {
 		}
 	
 		addMediaLibraryFolder(renderer);
+		
+		addAdditionalFoldersAtRoot(renderer);
 	
 		addVideoSettingssFolder(renderer);
 		
@@ -776,6 +779,13 @@ public class PMS {
 			});
 			//vf.closeChildren(0, false);
 			getRootFolder(renderer).addChild(vf);
+		}
+	}
+	
+	private void addAdditionalFoldersAtRoot(RendererConfiguration renderer) {
+		for(ExternalListener listener:ExternalFactory.getExternalListeners()) {
+			if (listener instanceof AdditionalFolderAtRoot)
+				getRootFolder(renderer).addChild(((AdditionalFolderAtRoot) listener).getChild());
 		}
 	}
 	
