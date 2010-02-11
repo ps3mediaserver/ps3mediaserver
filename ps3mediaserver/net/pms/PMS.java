@@ -122,7 +122,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.20"; //$NON-NLS-1$
+	public static final String VERSION = "1.20.390"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -264,10 +264,10 @@ public class PMS {
 				database = new DLNAMediaDatabase("medias"); //$NON-NLS-1$
 				database.init(false);
 				/*try {
-					Server server = Server.createWebServer(null);
+					org.h2.tools.Server server = org.h2.tools.Server.createWebServer(null);
 					server.start();
 					PMS.minimal("Starting H2 console on port " + server.getPort());
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}*/
 			}
@@ -379,7 +379,7 @@ public class PMS {
 		registerExtensions();
 		registerPlayers();
 		
-		manageRoot(null);
+		manageRoot(RendererConfiguration.getDefaultConf());
 		
 		boolean binding = false;
 		try {
@@ -789,7 +789,7 @@ public class PMS {
 		}
 	}
 	
-	private boolean mediaLibraryAdded = false;
+	//private boolean mediaLibraryAdded = false;
 	private MediaLibrary library;
 	
 	public MediaLibrary getLibrary() {
@@ -797,11 +797,11 @@ public class PMS {
 	}
 
 	public boolean addMediaLibraryFolder(RendererConfiguration renderer) {
-		if (PMS.configuration.getUseCache() && !mediaLibraryAdded) {
+		if (PMS.configuration.getUseCache() && !renderer.isMediaLibraryAdded()) {
 			library = new MediaLibrary();
 			if (!PMS.configuration.isHideMediaLibraryFolder())
 				getRootFolder(renderer).addChild(library);
-			mediaLibraryAdded = true;
+			renderer.setMediaLibraryAdded(true);
 			return true;
 		}
 		return false;
@@ -946,8 +946,8 @@ public class PMS {
 		UPNPHelper.sendByeBye();
 		server.stop();
 		server = null;
-		mediaLibraryAdded = false;
-		manageRoot(null);
+		RendererConfiguration.resetAllRenderers();
+		manageRoot(RendererConfiguration.getDefaultConf());
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {

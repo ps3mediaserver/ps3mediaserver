@@ -39,7 +39,7 @@ public class HTTPResource {
 	public static final String UNKNOWN_AUDIO_TYPEMIME = "audio/mpeg";
 	
 	public static final String AUDIO_MP3_TYPEMIME = "audio/mpeg";
-	public static final String AUDIO_MP4_TYPEMIME = "audio/mp4";
+	public static final String AUDIO_MP4_TYPEMIME = "audio/x-m4a";
 	public static final String AUDIO_WAV_TYPEMIME = "audio/wav";
 	public static final String AUDIO_WMA_TYPEMIME = "audio/x-ms-wma";
 	public static final String AUDIO_FLAC_TYPEMIME = "audio/x-flac";
@@ -163,15 +163,15 @@ public class HTTPResource {
 //			} else
 //				return MPEG_TYPEMIME;
 //		}
-		if (mimetype != null && mimetype.equals(VIDEO_TRANSCODE)) {
-			mimetype = MPEG_TYPEMIME;
-			if (mediarenderer.isTranscodeToWMV())
-				mimetype = WMV_TYPEMIME;
-		} else if (mimetype != null && mimetype.equals(AUDIO_TRANSCODE)) {
-			mimetype = AUDIO_WAV_TYPEMIME;
-			if (mediarenderer.isTranscodeToMP3())
-				mimetype = AUDIO_MP3_TYPEMIME;
-		}
+//		if (mimetype != null && mimetype.equals(VIDEO_TRANSCODE)) {
+//			mimetype = MPEG_TYPEMIME;
+//			if (mediarenderer.isTranscodeToWMV())
+//				mimetype = WMV_TYPEMIME;
+//		} else if (mimetype != null && mimetype.equals(AUDIO_TRANSCODE)) {
+//			mimetype = AUDIO_WAV_TYPEMIME;
+//			if (mediarenderer.isTranscodeToMP3())
+//				mimetype = AUDIO_MP3_TYPEMIME;
+//		}
 		return mediarenderer.getMimeType(mimetype);
 	}
 	/*

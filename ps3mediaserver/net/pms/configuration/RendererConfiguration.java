@@ -11,9 +11,11 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import net.pms.PMS;
+import net.pms.dlna.MediaInfoParser;
 import net.pms.dlna.RootFolder;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.network.HTTPResource;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
@@ -62,7 +64,22 @@ public class RendererConfiguration {
 	private InetAddress currentRendererAddress;
 	private int speedInMbits;
 	private RootFolder rootFolder;
+	private boolean mediaLibraryAdded = false;
 	
+	public boolean isMediaLibraryAdded() {
+		return mediaLibraryAdded;
+	}
+
+	public void setMediaLibraryAdded(boolean mediaLibraryAdded) {
+		this.mediaLibraryAdded = mediaLibraryAdded;
+	}
+	
+	public static void resetAllRenderers() {
+		for(RendererConfiguration r:renderersConfs) {
+			r.mediaLibraryAdded = false;
+		}
+	}
+
 	public RootFolder getRootFolder() {
 		if (rootFolder == null) {
 			rootFolder = new RootFolder();
@@ -191,6 +208,10 @@ public class RendererConfiguration {
 	
 	private File configurationFile;
 	private PropertiesConfiguration configuration;
+	private FormatConfiguration formatConfiguration;
+	public FormatConfiguration getFormatConfiguration() {
+		return formatConfiguration;
+	}
 	private int rank;
 	private Map<String, String> mimes;
 	private Map<String, String> DLNAPN;
@@ -257,6 +278,9 @@ public class RendererConfiguration {
 	private static final String TRANSCODE_FAST_START="TranscodeFastStart";
 	private static final String AUTO_EXIF_ROTATE="AutoExifRotate";
 	private static final String DLNA_LOCALIZATION_REQUIRED="DLNALocalizationRequired";
+	private static final String MEDIAPARSERV2="MediaInfo";
+	private static final String MEDIAPARSERV2_THUMB="MediaParserV2_ThumbnailGeneration";
+	private static final String SUPPORTED="Supported";
 	
 	// Ditlew
 	private static final String SHOW_DVD_TITLE_DURATION="ShowDVDTitleDuration";
@@ -323,6 +347,15 @@ public class RendererConfiguration {
 				}
 			}
 		}
+		if (f == null) {
+			// the default renderer supports everything !
+			configuration.addProperty(MEDIAPARSERV2, true);
+			configuration.addProperty(MEDIAPARSERV2_THUMB, true);
+			configuration.addProperty(SUPPORTED, "f:.+");
+		}
+		if (isMediaParserV2()) {
+			formatConfiguration = new FormatConfiguration(configuration.getList(SUPPORTED));
+		}
 	}
 	
 	public String getDLNAPN(String old) {
@@ -388,11 +421,36 @@ public class RendererConfiguration {
 		return getBoolean(DLNA_LOCALIZATION_REQUIRED, false);
 	}
 	
-	public String getMimeType(String old) {
-		if (mimes.containsKey(old)) {
-			return mimes.get(old);
+	public String getMimeType(String mimetype) {
+		if (isMediaParserV2()) {
+			if (mimetype != null && mimetype.equals(HTTPResource.VIDEO_TRANSCODE)) {
+				if (isTranscodeToMPEGPSAC3())
+					mimetype = getFormatConfiguration().match(FormatConfiguration.MPEGPS, FormatConfiguration.MPEG2, FormatConfiguration.AC3);
+				else if (isTranscodeToMPEGTSAC3())
+					mimetype = getFormatConfiguration().match(FormatConfiguration.MPEGTS, FormatConfiguration.MPEG2, FormatConfiguration.AC3);
+				else if (isTranscodeToWMV())
+					mimetype = getFormatConfiguration().match(FormatConfiguration.WMV, FormatConfiguration.WMV, FormatConfiguration.WMA);
+			} else if (mimetype != null && mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
+				if (isTranscodeToPCM())
+					mimetype = getFormatConfiguration().match(FormatConfiguration.WAV, null, null);
+				else if (isTranscodeToMP3())
+					mimetype = getFormatConfiguration().match(FormatConfiguration.MP3, null, null);
+			}
+			return mimetype;
 		}
-		return old;
+		if (mimetype != null && mimetype.equals(HTTPResource.VIDEO_TRANSCODE)) {
+			mimetype = HTTPResource.MPEG_TYPEMIME;
+			if (isTranscodeToWMV())
+				mimetype = HTTPResource.WMV_TYPEMIME;
+		} else if (mimetype != null && mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
+			mimetype = HTTPResource.AUDIO_WAV_TYPEMIME;
+			if (isTranscodeToMP3())
+				mimetype = HTTPResource.AUDIO_MP3_TYPEMIME;
+		}
+		if (mimes.containsKey(mimetype)) {
+			return mimes.get(mimetype);
+		}
+		return mimetype;
 	}
 	
 	public boolean matchUserAgent(String userAgent) {
@@ -448,6 +506,8 @@ public class RendererConfiguration {
 	
 	public boolean isMuxH264MpegTS() {
 		boolean muxCompatible = getBoolean(MUX_H264_WITH_MPEGTS, true);
+		if (isMediaParserV2())
+			muxCompatible = getFormatConfiguration().match(FormatConfiguration.MPEGTS, FormatConfiguration.H264, null) != null;
 		if (Platform.isMac() && System.getProperty("os.version") != null && System.getProperty("os.version").contains("10.4."))
 			muxCompatible = false; // no tsMuxer for 10.4 (yet?)
 		return muxCompatible;
@@ -458,6 +518,8 @@ public class RendererConfiguration {
 	}
 	
 	public boolean isMuxDTSToMpeg() {
+		if (isMediaParserV2())
+			return getFormatConfiguration().isDTSSupported();
 		return getBoolean(MUX_DTS_TO_MPEG, false);
 	}
 	
@@ -466,14 +528,38 @@ public class RendererConfiguration {
 	}
 	
 	public boolean isMuxLPCMToMpeg() {
+		if (isMediaParserV2())
+			return getFormatConfiguration().isLPCMSupported();
 		return getBoolean(MUX_LPCM_TO_MPEG, true);
 	}
 	
+	public boolean isMpeg2Supported() {
+		if (isMediaParserV2())
+			return getFormatConfiguration().isMpeg2Supported();
+		return isPS3();
+	}
+	
 	public String getVideoTranscode() {
+		/*if (isMediaParserV2()) {
+			String videoTranscoder = getFormatConfiguration().getPrimaryVideoTranscoder();
+			if (FormatConfiguration.MPEGPS.equals(videoTranscoder))
+				return MPEGPSAC3;
+			else if (FormatConfiguration.MPEGTS.equals(videoTranscoder))
+				return MPEGTSAC3;
+			else if (FormatConfiguration.WMV.equals(videoTranscoder))
+				return WMV;
+		}*/
 		return getString(TRANSCODE_VIDEO, MPEGPSAC3);
 	}
 	
 	public String getAudioTranscode() {
+		/*if (isMediaParserV2()) {
+			String audioTranscoder = getFormatConfiguration().getPrimaryAudioTranscoder();
+			if (FormatConfiguration.WAV.equals(audioTranscoder))
+				return PCM;
+			else if (FormatConfiguration.MP3.equals(audioTranscoder))
+				return MP3;
+		}*/
 		return getString(TRANSCODE_AUDIO, PCM);
 	}
 	
@@ -498,10 +584,14 @@ public class RendererConfiguration {
 	}
 	
 	public String getTranscodedExtensions() {
+		if (isMediaParserV2())
+			return "";
 		return getString(TRANSCODE_EXT, "");
 	}
 	
 	public String getStreamedExtensions() {
+		if (isMediaParserV2())
+			return "";
 		return getString(STREAM_EXT, "");
 	}
 	
@@ -543,6 +633,14 @@ public class RendererConfiguration {
 
 	public String toString() {
 		return getRendererName();
+	}
+	
+	public boolean isMediaParserV2() {
+		return getBoolean(MEDIAPARSERV2, false) && MediaInfoParser.isValid();
+	}
+	
+	public boolean isMediaParserV2ThumbnailGeneration() {
+		return getBoolean(MEDIAPARSERV2_THUMB, false) && MediaInfoParser.isValid();
 	}
 
 }

@@ -22,11 +22,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.ArrayBlockingQueue;
+//import java.util.concurrent.ThreadPoolExecutor;
+//import java.util.concurrent.TimeUnit;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.newgui.LooksFrame;
 
@@ -79,6 +80,7 @@ public class RootFolder extends DLNAResource {
 	public void scan() {
 		running = true;
 		refreshChildren();
+		defaultRenderer = RendererConfiguration.getDefaultConf();
 		scan(this);
 		((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(true);
 		PMS.get().getDatabase().cleanup();
@@ -93,6 +95,7 @@ public class RootFolder extends DLNAResource {
 		if (running) {
 			for(DLNAResource child:resource.children) {
 				if (running && child instanceof RealFile && child.isFolder()) {
+					child.defaultRenderer = resource.defaultRenderer;
 					String trace = "Scanning Folder: " + ((RealFile) child).file.getAbsolutePath();
 					PMS.info(trace);
 					PMS.get().getFrame().setStatusLine(trace);
@@ -101,13 +104,14 @@ public class RootFolder extends DLNAResource {
 						child.closeChildren(child.childrenNumber(), true);
 					} else {
 						child.discoverChildren();
+						child.analyzeChildren(-1);
 						child.closeChildren(0, false);
 						child.discovered = true;
 					}
 					int count = child.children.size();
 					if (count == 0)
 						continue;
-					ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(count);
+					/*ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(count);
 					int parallel_thread_number = 3;
 					ThreadPoolExecutor tpe = new ThreadPoolExecutor(Math.min(count, parallel_thread_number), count, 20, TimeUnit.SECONDS, queue);
 					for(final DLNAResource ch:child.children) {
@@ -127,7 +131,7 @@ public class RootFolder extends DLNAResource {
 					try {
 						tpe.shutdown();
 						tpe.awaitTermination(20, TimeUnit.SECONDS);
-					} catch (InterruptedException e) {}
+					} catch (InterruptedException e) {}*/
 					scan(child);
 					child.children.clear();
 				}

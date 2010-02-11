@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -48,12 +49,38 @@ public class RealFile extends DLNAResource {
 		if (getType() == Format.VIDEO && file.exists() && file.getName().length() > 4) {
 			srtFile = FileUtil.doesSubtitlesExists(file, null);
 		}
-		return file.exists() && (ext != null || file.isDirectory());
+		boolean valid = file.exists() && (ext != null || file.isDirectory());
+		
+		if (valid && parent.defaultRenderer != null && parent.defaultRenderer.isMediaParserV2()) {
+			// we need to resolve the dlna resource now
+			if (getPrimaryResource() == null) {
+				resolve();
+				if (getSecondaryResource() != null)
+					getSecondaryResource().resolve();
+			}
+			if (media != null && media.thumb == null)
+				media.thumbready = false;
+			if (media != null && (media.container == null || media.container.equals(DLNAMediaLang.UND))) {
+				// fine tuning: bad parsing = no file !
+				valid = false;
+			}
+			if (parent.defaultRenderer.isMediaParserV2ThumbnailGeneration())
+				checkThumbnail();
+		}
+		
+		return valid;
 	}
+	
+	private List<File> discoverable;
 
 	@Override
 	public void discoverChildren() {
 		super.discoverChildren();
+		
+		if (discoverable == null)
+			discoverable = new ArrayList<File>();
+		else
+			return;
 		File files [] = getFileList();
 		if (PMS.getConfiguration().getSortMethod() > 0) {
 			Arrays.sort( files, new Comparator<File>()
@@ -72,12 +99,22 @@ public class RealFile extends DLNAResource {
 		}
 		for(File f:files) {
 			if (f.isDirectory())
-				manageFile(f);
+				discoverable.add(f);//manageFile(f);
 		}
 		for(File f:files) {
 			if (f.isFile())
-				manageFile(f);
+				discoverable.add(f);//manageFile(f);
 		}
+	}
+	
+	public boolean analyzeChildren(int count) {
+		int currentChildrenCount = children.size();
+		while ((children.size() - currentChildrenCount) < count || count == -1) {
+			if (discoverable.size() == 0)
+				break;
+			manageFile(discoverable.remove(0));
+		}
+		return discoverable.size() == 0;
 	}
 	
 	private File potentialCover;
@@ -293,7 +330,7 @@ public class RealFile extends DLNAResource {
 
 	@Override
 	public void resolve() {
-		if (file.isFile() && file.exists()) {
+		if (file.isFile() && file.exists() && (media == null || !media.mediaparsed)) {
 			boolean found = false;
 			InputFile input = new InputFile();
 			input.file = file;
@@ -315,7 +352,7 @@ public class RealFile extends DLNAResource {
 				}
 				found = !media.mediaparsed && !media.parsing;
 				if (ext != null) 
-					ext.parse(media, input, getType());
+					ext.parse(media, input, getType(), parent.defaultRenderer);
 				else //don't think that will ever happen
 					media.parse(input, ext, getType());
 				if (found && PMS.getConfiguration().getUseCache()) {
@@ -372,6 +409,13 @@ public class RealFile extends DLNAResource {
 		else if (media != null && media.thumb != null)
 			return media.getThumbnailInputStream();
 		else return super.getThumbnailInputStream();
+	}
+	
+	@Override
+	public void checkThumbnail() {
+		InputFile input = new InputFile();
+		input.file = file;
+		checkThumbnail(input);
 	}
 
 	@Override

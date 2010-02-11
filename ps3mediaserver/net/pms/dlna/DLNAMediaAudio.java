@@ -38,7 +38,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	}
 	
 	public boolean isDTS() {
-		return codecA != null && (codecA.equalsIgnoreCase("dts") || codecA.equalsIgnoreCase("dca"));
+		return codecA != null && (codecA.startsWith("dts") || codecA.equalsIgnoreCase("dca"));
 	}
 	
 	public boolean isMP3() {
@@ -46,7 +46,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	}
 	
 	public boolean isPCM() {
-		return codecA != null && (codecA.startsWith("pcm_s1") || codecA.startsWith("pcm_s2") || codecA.startsWith("pcm_u1") || codecA.startsWith("pcm_u2") || codecA.equals("LPCM"));
+		return codecA != null && (codecA.startsWith("pcm") || codecA.equals("LPCM"));
 	}
 	
 	public boolean isLossless() {
