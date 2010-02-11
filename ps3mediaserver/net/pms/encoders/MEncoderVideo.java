@@ -1023,14 +1023,14 @@ private JTextField mencoder_ass_scale;
 				params.forceFps = media.getValidFps(false);
 				if (media.codecV.equals("h264")) { //$NON-NLS-1$
 					params.forceType = "V_MPEG4/ISO/AVC"; //$NON-NLS-1$
-				} else if (media.codecV.equals("mpeg2video")) { //$NON-NLS-1$
+				} else if (media.codecV.startsWith("mpeg2")) { //$NON-NLS-1$
 					params.forceType = "V_MPEG-2"; //$NON-NLS-1$
 				} else if (media.codecV.equals("vc1")) { //$NON-NLS-1$
 					params.forceType = "V_MS/VFW/WVC1"; //$NON-NLS-1$
 				}
 				return tv.launchTranscode(fileName, media, params);
 			}
-		} else if (params.sid == null && dvd && configuration.isMencoderRemuxMPEG2() && params.mediaRenderer.isPS3()) { // need to do a proper check of renderer who supports mpeg-ps and mpeg2 :\
+		} else if (params.sid == null && dvd && configuration.isMencoderRemuxMPEG2() && params.mediaRenderer.isMpeg2Supported()) {
 			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
 			boolean nomux = false;
 			for(String s:sArgs) {
@@ -1070,6 +1070,10 @@ private JTextField mencoder_ass_scale;
 			params.losslessaudio = true;
 			params.forceFps = media.getValidFps(false);
 		}
+		
+		// mpeg2 remux still buggy with mencoder :\
+		if (!pcm && !dts && !mux && ovccopy)
+			ovccopy = false;
 		
 		if (pcm && avisynth()) {
 			params.avidemux = true;
@@ -1758,16 +1762,20 @@ private JTextField mencoder_ass_scale;
 				for(String type:types) {
 					int r = rank++;
 					interpreter.set("" + type, r); //$NON-NLS-1$
-					if (media.container != null && media.container.equals(type)) {
+					String secondaryType = "dummy"; //$NON-NLS-1$
+					if (type.equals("matroska")) { //$NON-NLS-1$
+						secondaryType = "mkv"; interpreter.set(secondaryType, r); //$NON-NLS-1$
+					} else if (type.equals("rm")) { //$NON-NLS-1$
+						secondaryType = "rmvb"; interpreter.set(secondaryType, r); //$NON-NLS-1$
+					} else if (type.equals("mpeg2video")) { //$NON-NLS-1$
+						secondaryType = "mpeg2"; interpreter.set(secondaryType, r); //$NON-NLS-1$
+					} else if (type.equals("mpeg1video")) { //$NON-NLS-1$
+						secondaryType = "mpeg1"; interpreter.set(secondaryType, r); //$NON-NLS-1$
+					}
+					if (media.container != null && (media.container.equals(type) || media.container.equals(secondaryType))) {
 						interpreter.set("container", r); //$NON-NLS-1$
-						if (type.equals("matroska")) //$NON-NLS-1$
-							interpreter.set("mkv", r); //$NON-NLS-1$
-						else if (type.equals("rm")) //$NON-NLS-1$
-							interpreter.set("rmvb", r); //$NON-NLS-1$
-					} else if (media.codecV != null && media.codecV.equals(type)) {
+					} else if (media.codecV != null && (media.codecV.equals(type) || media.codecV.equals(secondaryType))) {
 						interpreter.set("vcodec", r); //$NON-NLS-1$
-						if (type.equals("mpeg2video")) //$NON-NLS-1$
-							interpreter.set("mpeg2", r); //$NON-NLS-1$
 					} else if (params.aid != null && params.aid.codecA != null && params.aid.codecA.equals(type)) {
 						interpreter.set("acodec", r); //$NON-NLS-1$
 					}

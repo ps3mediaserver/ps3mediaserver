@@ -155,8 +155,12 @@ public class BufferedOutputFile extends OutputStream  {
 			// Ditlew - org
 			//return inputStreams.get(0);
 			// Ditlew - WDTV Live - Fixes multible connections
-			return (PMS.getConfiguration().getTrancodeBlocksMultipleConnections() && PMS.getConfiguration().getTrancodeKeepFirstConnections())
-				? inputStreams.get(0) : inputStreams.get(inputStreams.size() - 1);
+			boolean forcefirst = (PMS.getConfiguration().getTrancodeBlocksMultipleConnections() && PMS.getConfiguration().getTrancodeKeepFirstConnections());
+			WaitBufferedInputStream wai = null;
+			try {
+				wai = forcefirst ? inputStreams.get(0) : inputStreams.get(inputStreams.size() - 1);
+			} catch (ArrayIndexOutOfBoundsException ai) {}
+			return wai;
 		}
 		else
 			return null;

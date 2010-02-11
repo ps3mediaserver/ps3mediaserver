@@ -1,7 +1,22 @@
 Changelog:
 ==========
 
-v1.20
+v1.20.390 BETA
+
+- Changes / Features
+
+MediaInfo support by default for PS3/XBOX, ongoing work on other renderers:
+-> Faster XMB navigation (faster parsing, plus file list appears before thumbnails generation)
+-> Proper auto detection of non supported files (PS3: Mpeg w/ DTS, Qpel/Gmc/H264 AVI files, Apple Lossless AAC files, 6 channels WMV, etc.)
+OS X: Dropped official support for Mac OS X 10.4 (Tiger) and Intel processors without 64bit support (anything older then Core 2)
+
+- Fixes
+
+Issues with some audio m4a and video mp4 files (wrong mime types)
+Slowdown on FLAC media library scan
+
+
+v1.10.6 through 1.11.381 BETA versions
 
 - Changes / Features
 
@@ -16,7 +31,6 @@ Updated tsMuxeR binaries (better H264 camcorders support)
 Windows: Launcher now detects Java 64 bits if installed
 Windows: Updated mencoder/mplayer/ffmpeg builds
 OS X: tsMuxeR and FLAC binaries are now available in this build, this adds a lot of features on Mac which were previously only available on Windows or Linux (like DTS and remux support)
-OS X: Dropped official support for Mac OS X 10.4 (Tiger) and Intel processors without 64bit support (anything older then Core 2)
 OS X: iPhoto and iTunes library support (thanks to Pedro Simoes)
 OS X: Native look, now looks more like a Mac application
 OS X: Updated mencoder/mplayer/ffmpeg builds, support for FriBidi

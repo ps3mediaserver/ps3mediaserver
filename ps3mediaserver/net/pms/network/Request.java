@@ -197,6 +197,8 @@ public class Request extends HTTPResource {
 					output(output, "Accept-Ranges: bytes");
 					output(output, "Expires: " + getFUTUREDATE() + " GMT");
 					output(output, "Connection: keep-alive");
+					if (mediaRenderer.isMediaParserV2())
+						files.get(0).checkThumbnail();
 					inputStream = files.get(0).getThumbnailInputStream();
 				} else {
 					inputStream = files.get(0).getInputStream(lowRange, highRange, timeseek, mediaRenderer);
@@ -429,7 +431,10 @@ public class Request extends HTTPResource {
 				DLNAResource parentFolder = null;
 				if (files != null && filessize > 0)
 					parentFolder = files.get(0).getParent();
-				response.append("<TotalMatches>" + (((parentFolder!=null)?parentFolder.childrenNumber():filessize) - minus) + "</TotalMatches>");
+				if (browseFlag!=null&&browseFlag.equals("BrowseDirectChildren") && mediaRenderer.isMediaParserV2()) // ugly hack
+					response.append("<TotalMatches>10000</TotalMatches>");
+				else
+					response.append("<TotalMatches>" + (((parentFolder!=null)?parentFolder.childrenNumber():filessize) - minus) + "</TotalMatches>");
 				response.append(CRLF);
 				response.append("<UpdateID>");
 				if (parentFolder != null)

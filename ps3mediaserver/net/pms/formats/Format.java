@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.InputFile;
 import net.pms.encoders.Player;
@@ -107,7 +108,17 @@ public abstract class Format implements Cloneable {
 	}
 	// method which allow us the fine tuning of parsing with different formats in the future
 	public void parse(DLNAMediaInfo media, InputFile file, int type) {
-		media.parse(file, this, type);
+		parse(media, file, type, null);
+	}
+	
+	// 10/02/03 now this is useful :p
+	public void parse(DLNAMediaInfo media, InputFile file, int type, RendererConfiguration renderer) {
+		if (renderer != null && renderer.isMediaParserV2()) {
+			renderer.getFormatConfiguration().parse(media, file, this, type);
+		} else {
+			media.parse(file, this, type);	
+		}
+		PMS.debug("Parsing results: " + file + " / " + media);
 	}
 	
 	public boolean skip(String extensions, String another_set_of_extensions) {

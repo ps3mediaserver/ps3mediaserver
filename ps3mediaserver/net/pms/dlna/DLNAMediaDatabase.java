@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -16,6 +17,7 @@ import javax.swing.SwingUtilities;
 
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.FormatConfiguration;
 
 import org.apache.commons.lang.StringUtils;
 import org.h2.jdbcx.JdbcConnectionPool;
@@ -287,6 +289,8 @@ public class DLNAMediaDatabase implements Runnable {
 				media.thumb = rs.getBytes("THUMB"); //$NON-NLS-1$
 				media.container = rs.getString("CONTAINER"); //$NON-NLS-1$
 				media.model = rs.getString("MODEL"); //$NON-NLS-1$
+				if (media.model != null && !FormatConfiguration.JPG.equals(media.container))
+					media.setExtrasAsString(media.model);
 				media.exposure = rs.getInt("EXPOSURE"); //$NON-NLS-1$
 				media.orientation = rs.getInt("ORIENTATION"); //$NON-NLS-1$
 				media.iso = rs.getInt("ISO"); //$NON-NLS-1$
@@ -366,7 +370,10 @@ public class DLNAMediaDatabase implements Runnable {
 				ps.setInt(12, media.bitsPerPixel);
 				ps.setBytes(13, media.thumb);
 				ps.setString(14, media.container);
-				ps.setString(15, media.model);
+				if (media.getExtras() != null)
+					ps.setString(15, media.getExtrasAsString());
+				else
+					ps.setString(15, media.model);
 				ps.setInt(16, media.exposure);
 				ps.setInt(17, media.orientation);
 				ps.setInt(18, media.iso);
@@ -450,6 +457,33 @@ public class DLNAMediaDatabase implements Runnable {
 		}
 	}
 	
+	public synchronized void updateThumbnail(String name, long modified, int type, DLNAMediaInfo media) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("UPDATE FILES SET THUMB = ? WHERE FILENAME = ? AND MODIFIED = ?"); //$NON-NLS-1$
+			ps.setString(2, name);
+			ps.setTimestamp(3, new Timestamp(modified));
+			if (media != null) {
+				ps.setBytes(1, media.thumb);
+			} else
+				ps.setNull(1, Types.BINARY);
+			ps.executeUpdate();
+		} catch (SQLException se) {
+			if (se.getMessage().contains("[23001")) { //$NON-NLS-1$
+				PMS.info("Duplicate key while inserting this entry: " + name  + " into the database: " + se.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			} else
+				PMS.error(null, se);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {}
+		}
+	}
 	
 	public ArrayList<String> getStrings(String sql) {
 		ArrayList<String> list = new ArrayList<String>();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.InputFile;
 import net.pms.encoders.Player;
@@ -38,7 +39,7 @@ public class RAW extends JPG {
 	}
 
 	@Override
-	public void parse(DLNAMediaInfo media, InputFile file, int type) {
+	public void parse(DLNAMediaInfo media, InputFile file, int type, RendererConfiguration renderer) {
 		
 		try {
 			
@@ -76,6 +77,9 @@ public class RAW extends JPG {
 				media.thumb = RAWThumbnailer.getThumbnail(params, file.file.getAbsolutePath());
 				if (media.thumb != null)
 					media.size = media.thumb.length;
+				
+				media.codecV = "jpg";
+				media.container = "jpg";
 			}
 			
 			media.finalize(type, file);

@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 
 import net.pms.PMS;
+import net.pms.configuration.FormatConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
@@ -173,21 +174,40 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	
 	public void addChild(DLNAResource child) {
 		//child.expert = expert;
+		child.parent = this;
 		if (child.isValid()) {
+			
 			PMS.info("Adding " + child.getName() + " / class: " + child.getClass().getName());
 			VirtualFolder vf = null;
 			//VirtualFolder vfCopy = null;
 			
 			children.add(child);
 			childrenNumber++;
-			child.parent = this;
 			
-			if (child.ext != null)
+			boolean parserV2 = child.media != null && defaultRenderer != null && defaultRenderer.isMediaParserV2();
+			boolean transcodable = false;
+			
+			if (child.ext != null && !parserV2) {
 				skipTranscode = child.ext.skip(PMS.getConfiguration().getNoTranscode(), defaultRenderer!=null?defaultRenderer.getStreamedExtensions():null);
+				transcodable = child.ext.transcodable();
+			}
 			
-			if (child.ext != null && child.ext.transcodable() && child.media == null) {
+			if (parserV2) {
+				// We already have useful infos, just need to layout folders
+				String mimeType = defaultRenderer.getFormatConfiguration().match(child.media);
+				if (mimeType != null) {
+					// This is streamable
+					child.media.mimeType = mimeType.equals(FormatConfiguration.MIMETYPE_AUTO)?child.media.mimeType:mimeType;
+				} else {
+					// This is transcodable
+					transcodable = true;
+				}
+			}
 			
-				child.media = new DLNAMediaInfo();
+			if (child.ext != null && child.ext.transcodable() && (child.media == null || parserV2)) {
+			
+				if (!parserV2)
+					child.media = new DLNAMediaInfo();
 				
 				
 					Player pl = null;
@@ -222,10 +242,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					for(DLNAResource r:children) allAreFolder &= r.isFolder();
 					if (pl != null && !allAreFolder) {
 						boolean forceTranscode = false;
-						if (child.ext != null)
-							forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode(), defaultRenderer!=null?defaultRenderer.getTranscodedExtensions():null);
+						if (child.ext != null) {
+							if (!parserV2)
+								forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode(), defaultRenderer!=null?defaultRenderer.getTranscodedExtensions():null);
+							else
+								forceTranscode = transcodable;
+						}
 						
-						if (forceTranscode || (!child.ext.ps3compatible() && !skipTranscode) || (PMS.getConfiguration().getUseSubtitles() && child.srtFile)) {
+						if (forceTranscode || ((!parserV2 && !child.ext.ps3compatible()) && !skipTranscode) || (PMS.getConfiguration().getUseSubtitles() && child.srtFile)) {
 							child.player = pl;
 							PMS.info("Switching " + child.getName() + " to player: " + pl.toString());
 						}
@@ -337,8 +361,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					// Discovering if not already done.
 					if (!resource.discovered) {
 						resource.discoverChildren();
+						boolean ready = true;
+						if (renderer.isMediaParserV2())
+							ready = resource.analyzeChildren(count);
+						else
+							resource.analyzeChildren(-1);
 						resource.closeChildren(0, false);
-						resource.discovered = true;
+						if (!renderer.isMediaParserV2() || ready)
+							resource.discovered = true;
 					} /*else {
 						resource.refreshChildren();
 						resource.closeChildren(resource.childrenNumber());
@@ -400,6 +430,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	
 	public void discoverChildren() {
 		
+	}
+	
+	public boolean analyzeChildren(int count) {
+		return true;
 	}
 	
 	public boolean refreshChildren() {
@@ -751,7 +785,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 							int defaultFrequency = mediaRenderer.isTranscodeAudioTo441()?44100:48000;
 							if (!PMS.getConfiguration().isAudioResample()) {
 								try {
-									defaultFrequency = Integer.parseInt(media.getFirstAudioTrack().sampleFrequency);
+									defaultFrequency = media.getFirstAudioTrack().getSampleRate();
 								} catch (Exception e) {
 									defaultFrequency = 44100;
 								}
@@ -997,6 +1031,20 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			return ext.mimeType();
 		else
 			return getDefaultMimeType(specificType);
+	}
+	
+	public void checkThumbnail() {
+		// need to override if some thumbnail works are to be done when mediaparserv2 enabled
+	}
+	
+	protected void checkThumbnail(InputFile input) {
+		if (media != null && !media.thumbready) {
+			media.thumbready = true;
+			media.generateThumbnail(input, ext, getType());
+			if (media.thumb != null && PMS.getConfiguration().getUseCache() && input.file != null) {
+				PMS.get().getDatabase().updateThumbnail(input.file.getAbsolutePath(), input.file.lastModified(), getType(), media);
+			}
+		}
 	}
 	
 	public InputStream getThumbnailInputStream() throws IOException {
