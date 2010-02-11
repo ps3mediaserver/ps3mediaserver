@@ -15,11 +15,12 @@ DVD ISO thumbnails support
 Updated tsMuxeR binaries (better H264 camcorders support)
 Windows: Launcher now detects Java 64 bits if installed
 Windows: Updated mencoder/mplayer/ffmpeg builds
-OSX: tsMuxeR and FLAC binaries are now available in this build, this adds a lot of features on Mac which were previously only available on Windows or Linux (like DTS and remux support)
-OSX: iPhoto and iTunes library support (thanks to Pedro Simoes)
-OSX: Native look, now looks more like a Mac application
-OSX: Updated mencoder/mplayer/ffmpeg builds, support for FriBidi
-OSX: Updated build script to make a bundle or dmg automatically (thanks to Josh Klun)
+OS X: tsMuxeR and FLAC binaries are now available in this build, this adds a lot of features on Mac which were previously only available on Windows or Linux (like DTS and remux support)
+OS X: Dropped official support for Mac OS X 10.4 (Tiger) and Intel processors without 64bit support (anything older then Core 2)
+OS X: iPhoto and iTunes library support (thanks to Pedro Simoes)
+OS X: Native look, now looks more like a Mac application
+OS X: Updated mencoder/mplayer/ffmpeg builds, support for FriBidi
+OS X: Updated build script to make a bundle or dmg automatically (thanks to Josh Klun)
 New translations: Catalan (Thanks to adrianeitor92), Czech (thanks to Mila), Danish (thanks to Niclas Gleesborg), Slovenian (thanks to Rob Wall)
 
 - Fixes
@@ -33,9 +34,9 @@ Fixed spaces usage in the audio/subtitles configurations
 Fixed black screen with some AVC videos badly flagged at L4.1
 Fixed cover art files not always read
 Fixed bug with multiple playlist in one folder
-OSX: Reopening of the main window after you closed it is now possible, also fixes start as minimized (thanks to grcvoodoorush)
-OSX: Configuration file now stored outside of the bundle so that you don't lose your settings when you upgrade to a new version (thanks to grcvoodoorush)
-OSX: Unicode files are now playable (thanks to Thierry Pittet)
+OS X: Reopening of the main window after you closed it is now possible, also fixes start as minimized (thanks to grcvoodoorush)
+OS X: Configuration file now stored outside of the bundle so that you don't lose your settings when you upgrade to a new version (thanks to grcvoodoorush)
+OS X: Unicode files are now playable (thanks to Thierry Pittet)
 Linux: Included PMS.conf and fixed the permissions on executables
 FreeBSD: Fixed transcoding
 
