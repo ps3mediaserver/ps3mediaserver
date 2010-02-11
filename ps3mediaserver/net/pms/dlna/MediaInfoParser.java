@@ -64,7 +64,7 @@ public class MediaInfoParser {
 							subPrepped = true;
 							step = MediaInfo.StreamKind.Text;
 						}
-						else if (line.equals("Menu")) {
+						else if (line.equals("Menu") || line.startsWith("Menu #")) {
 							step = MediaInfo.StreamKind.Menu;
 						}
 						else if (line.equals("Chapters")) {
