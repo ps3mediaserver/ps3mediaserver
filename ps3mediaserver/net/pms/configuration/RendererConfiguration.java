@@ -584,14 +584,10 @@ public class RendererConfiguration {
 	}
 	
 	public String getTranscodedExtensions() {
-		if (isMediaParserV2())
-			return "";
 		return getString(TRANSCODE_EXT, "");
 	}
 	
 	public String getStreamedExtensions() {
-		if (isMediaParserV2())
-			return "";
 		return getString(STREAM_EXT, "");
 	}
 	
