@@ -63,7 +63,7 @@ public class MediaInfo
     interface MediaInfoDLL_Internal extends Library
     {
 
-        MediaInfoDLL_Internal INSTANCE = (MediaInfoDLL_Internal) Native.loadLibrary("mediainfo", MediaInfoDLL_Internal.class, singletonMap(OPTION_FUNCTION_MAPPER, new FunctionMapper()
+        MediaInfoDLL_Internal INSTANCE = (MediaInfoDLL_Internal) Native.loadLibrary((Platform.isWindows()&&Platform.is64Bit())?"mediainfo64":"mediainfo", MediaInfoDLL_Internal.class, singletonMap(OPTION_FUNCTION_MAPPER, new FunctionMapper()
             {
 
                 @Override
