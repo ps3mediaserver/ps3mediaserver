@@ -184,14 +184,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			children.add(child);
 			childrenNumber++;
 			
+			boolean forceTranscodeV2 = false;
 			boolean parserV2 = child.media != null && defaultRenderer != null && defaultRenderer.isMediaParserV2();
-			boolean transcodable = false;
-			
-			if (child.ext != null && !parserV2) {
-				skipTranscode = child.ext.skip(PMS.getConfiguration().getNoTranscode(), defaultRenderer!=null?defaultRenderer.getStreamedExtensions():null);
-				transcodable = child.ext.transcodable();
-			}
-			
 			if (parserV2) {
 				// We already have useful infos, just need to layout folders
 				String mimeType = defaultRenderer.getFormatConfiguration().match(child.media);
@@ -200,11 +194,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					child.media.mimeType = mimeType.equals(FormatConfiguration.MIMETYPE_AUTO)?child.media.mimeType:mimeType;
 				} else {
 					// This is transcodable
-					transcodable = true;
+					forceTranscodeV2 = true;
 				}
 			}
 			
-			if (child.ext != null && child.ext.transcodable() && (child.media == null || parserV2)) {
+			if (child.ext != null)
+				skipTranscode = child.ext.skip(PMS.getConfiguration().getNoTranscode(), defaultRenderer!=null?defaultRenderer.getStreamedExtensions():null);
+			
+			if (child.ext != null && (child.ext.transcodable() || parserV2) && (child.media == null || parserV2)) {
 			
 				if (!parserV2)
 					child.media = new DLNAMediaInfo();
@@ -242,14 +239,15 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 					for(DLNAResource r:children) allAreFolder &= r.isFolder();
 					if (pl != null && !allAreFolder) {
 						boolean forceTranscode = false;
-						if (child.ext != null) {
-							if (!parserV2)
-								forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode(), defaultRenderer!=null?defaultRenderer.getTranscodedExtensions():null);
-							else
-								forceTranscode = transcodable;
-						}
+						if (child.ext != null)
+							forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode(), defaultRenderer!=null?defaultRenderer.getTranscodedExtensions():null);
 						
-						if (forceTranscode || ((!parserV2 && !child.ext.ps3compatible()) && !skipTranscode) || (PMS.getConfiguration().getUseSubtitles() && child.srtFile)) {
+						// Force transcoding if
+						// 1- MediaInfo support detected the file was not matched with supported codec configs and no SkipTranscode extension forced by user
+						// or 2- ForceTranscode extension forced by user
+						// or 3- FFmpeg support and the file is not ps3 compatible (need to remove this ?) and no SkipTranscode extension forced by user
+						// or 4- There's some sub files to deal with
+						if ((forceTranscodeV2 && !skipTranscode) || forceTranscode || (!parserV2 && !child.ext.ps3compatible() && !skipTranscode) || (PMS.getConfiguration().getUseSubtitles() && child.srtFile)) {
 							child.player = pl;
 							PMS.info("Switching " + child.getName() + " to player: " + pl.toString());
 						}

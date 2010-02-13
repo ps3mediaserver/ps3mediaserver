@@ -42,7 +42,7 @@ public class MediaInfoParser {
 				boolean subPrepped = false;
 				if (StringUtils.isNotBlank(infos)) {
 					media.size = filename.length();
-					StringTokenizer st = new StringTokenizer(infos, "\n");
+					StringTokenizer st = new StringTokenizer(infos, "\n\r");
 					while (st.hasMoreTokens()) {
 						String line = st.nextToken().trim();
 						//System.out.println(line);
