@@ -363,7 +363,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						if (renderer.isMediaParserV2())
 							ready = resource.analyzeChildren(count);
 						else
-							resource.analyzeChildren(-1);
+							ready = resource.analyzeChildren(-1);
 						resource.closeChildren(0, false);
 						if (!renderer.isMediaParserV2() || ready)
 							resource.discovered = true;
@@ -779,14 +779,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						addAttribute(sb, "size", media.size);
 					else {
 						// calcul taille wav
-						if (media.getFirstAudioTrack() != null && media.getFirstAudioTrack().sampleFrequency != null) {
+						if (media.getFirstAudioTrack() != null) {
 							int defaultFrequency = mediaRenderer.isTranscodeAudioTo441()?44100:48000;
 							if (!PMS.getConfiguration().isAudioResample()) {
 								try {
 									defaultFrequency = media.getFirstAudioTrack().getSampleRate();
-								} catch (Exception e) {
-									defaultFrequency = 44100;
-								}
+								} catch (Exception e) {}
 							}
 							int na = media.getFirstAudioTrack().nrAudioChannels;
 							if (na > 2) // no 5.1 dump in mplayer
@@ -1036,7 +1034,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	}
 	
 	protected void checkThumbnail(InputFile input) {
-		if (media != null && !media.thumbready) {
+		if (media != null && !media.thumbready && PMS.getConfiguration().getThumbnailsEnabled()) {
 			media.thumbready = true;
 			media.generateThumbnail(input, ext, getType());
 			if (media.thumb != null && PMS.getConfiguration().getUseCache() && input.file != null) {

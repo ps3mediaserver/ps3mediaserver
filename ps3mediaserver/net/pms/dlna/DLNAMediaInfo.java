@@ -100,6 +100,7 @@ public class DLNAMediaInfo implements Cloneable {
 	private boolean ffmpeg_annexb_failure;
 	public boolean muxable;
 	private Map<String, String> extras;
+	public boolean encrypted;
 	
 	public Map<String, String> getExtras() {
 		return extras;
