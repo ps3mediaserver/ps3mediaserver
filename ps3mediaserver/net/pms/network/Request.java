@@ -431,9 +431,16 @@ public class Request extends HTTPResource {
 				DLNAResource parentFolder = null;
 				if (files != null && filessize > 0)
 					parentFolder = files.get(0).getParent();
-				if (browseFlag!=null&&browseFlag.equals("BrowseDirectChildren") && mediaRenderer.isMediaParserV2()) // ugly hack
-					response.append("<TotalMatches>10000</TotalMatches>");
-				else
+				if (browseFlag!=null&&browseFlag.equals("BrowseDirectChildren") && mediaRenderer.isMediaParserV2()) {
+					// with the new parser, files are parsed and analyzed *before* creating the DLNA tree, every 10 items (the ps3 asks 10 by 10),
+					// so we do not know exactly the total number of items in the DLNA folder to send
+					// (regular files, plus the #transcode folder, maybe the #imdb one, also files can be invalidated and hidden if format is broken or encrypted, etc.).
+					// let's send a fake total size to force the renderer to ask following items
+					int totalCount = startingIndex + requestCount + 1; // returns 11 when 10 asked
+					if (filessize - minus <= 0) // if no more elements, send 0
+						totalCount = 0;
+					response.append("<TotalMatches>" + totalCount + "</TotalMatches>");
+				} else
 					response.append("<TotalMatches>" + (((parentFolder!=null)?parentFolder.childrenNumber():filessize) - minus) + "</TotalMatches>");
 				response.append(CRLF);
 				response.append("<UpdateID>");

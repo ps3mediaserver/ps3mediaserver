@@ -95,6 +95,8 @@ public class MediaInfoParser {
 									currentSubTrack.lang = getLang(value);
 							} else if (key.equals("Width")) {
 								media.width = getPixelValue(value);
+							} else if (key.equals("Encryption") && !media.encrypted) {
+								media.encrypted = "encrypted".equals(value);
 							} else if (key.equals("Height")) {
 								media.height = getPixelValue(value);
 							} else if (key.equals("FrameRate")) {
@@ -211,7 +213,7 @@ public class MediaInfoParser {
 			format =  FormatConfiguration.OGG;
 		} else if (value.contains("realmedia") || value.startsWith("rv") || value.startsWith("cook")) {
 			format =  FormatConfiguration.RM;
-		} else if (value.contains("windows media")) {
+		} else if (value.contains("windows media") || value.equals("wmv1") || value.equals("wmv2") || value.equals("wmv7") || value.equals("wmv8")) {
 			format =  FormatConfiguration.WMV;
 		} else if (value.contains("mjpg") || value.contains("m-jpeg")) {
 			format =  FormatConfiguration.MJPEG;
@@ -227,7 +229,7 @@ public class MediaInfoParser {
 			format =  FormatConfiguration.DV;
 		} else if (value.contains("mpeg video")) {
 			format =  FormatConfiguration.MPEG2;
-		} else if (value.equals("vc-1") || value.equals("vc1") || value.equals("wvc1")) {
+		} else if (value.equals("vc-1") || value.equals("vc1") || value.equals("wvc1") || value.equals("wmv3") || value.equals("wmv9") || value.equals("wmva")) {
 			format =  FormatConfiguration.VC1;
 		} else if (value.equals("version 1")) {
 			if (media.codecV != null && media.codecV.equals(FormatConfiguration.MPEG2) && audio.codecA == null)
@@ -236,7 +238,7 @@ public class MediaInfoParser {
 			if (audio.codecA != null && audio.codecA.equals(FormatConfiguration.MPA)) {
 				format=  FormatConfiguration.MP3;
 				// special case:
-				if (media.container.equals(FormatConfiguration.MPA))
+				if (media.container != null && media.container.equals(FormatConfiguration.MPA))
 					media.container = FormatConfiguration.MP3;
 			}
 		} else if (value.equals("ma")) {
@@ -266,7 +268,7 @@ public class MediaInfoParser {
 			format =  FormatConfiguration.DTS;
 		else if (value.equals("mpeg audio"))
 			format =  FormatConfiguration.MPA;
-		else if (value.equals("161") || value.equals("wma")) {
+		else if (value.equals("161") || value.startsWith("wma")) {
 			format =  FormatConfiguration.WMA;
 			if (media.codecV == null)
 				media.container = FormatConfiguration.WMA;
@@ -276,6 +278,15 @@ public class MediaInfoParser {
 			format =  FormatConfiguration.APE;
 		else if (value.contains("musepack"))
 			format =  FormatConfiguration.MPC;
+		else if (value.contains("wavpack"))
+			format =  FormatConfiguration.WAVPACK;
+		else if (value.contains("mlp"))
+			format =  FormatConfiguration.MLP;
+		else if (value.contains("atrac3")) {
+			format =  FormatConfiguration.ATRAC;
+			if (media.codecV == null)
+				media.container = FormatConfiguration.ATRAC;
+		}
 		else if (value.equals("jpeg"))
 			format =  FormatConfiguration.JPG;
 		else if (value.equals("png"))

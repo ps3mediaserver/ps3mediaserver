@@ -75,7 +75,8 @@ public class PlaylistFolder extends DLNAResource {
 							pls = true;
 							PMS.info("Reading PLS playlist: " + playlistfile.getName());
 						} else if (!line.startsWith("#")) {
-							throw new IOException(playlistfile.getName() + ":" + lineno + ": Bad playlist format");
+							// not that bad
+							// throw new IOException(playlistfile.getName() + ":" + lineno + ": Bad playlist format");
 						}
 					}
 				}
