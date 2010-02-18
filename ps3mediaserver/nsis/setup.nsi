@@ -11,7 +11,7 @@ OutFile "dist\pms-setup-windows-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\PS3 Media Server"
 
 ;Get install folder from registry for updates
-InstallDirRegKey HKCU $REG_KEY_SOFTWARE ""
+InstallDirRegKey HKCU "${REG_KEY_SOFTWARE}" ""
 
 SetCompressor /SOLID lzma
 SetCompressorDictSize 32
@@ -49,13 +49,13 @@ Section "Program Files"
   File "WEB.conf"
   
   ;Store install folder
-  WriteRegStr HKCU $REG_KEY_SOFTWARE "" $INSTDIR
+  WriteRegStr HKCU "${REG_KEY_SOFTWARE}" "" $INSTDIR
  
  ;Create uninstaller
  WriteUninstaller "$INSTDIR\Uninst.exe"
  
-  WriteRegStr HKEY_LOCAL_MACHINE $REG_KEY_UNINSTALL "DisplayName" "PS3 Media Server"
-  WriteRegStr HKEY_LOCAL_MACHINE $REG_KEY_UNINSTALL "UninstallString" '"$INSTDIR\uninst.exe"'
+  WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayName" "PS3 Media Server"
+  WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "UninstallString" '"$INSTDIR\uninst.exe"'
   WriteUnInstaller "uninst.exe"
 SectionEnd
  
@@ -97,6 +97,6 @@ Section "Uninstall"
   Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server\PS3 Media Server.lnk"
    Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server\Uninstall.lnk"
  
-  DeleteRegKey HKEY_LOCAL_MACHINE $REG_KEY_UNINSTALL
-  DeleteRegKey HKCU $REG_KEY_SOFTWARE
+  DeleteRegKey HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}"
+  DeleteRegKey HKCU "${REG_KEY_SOFTWARE}"
 SectionEnd

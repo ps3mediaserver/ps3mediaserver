@@ -81,7 +81,7 @@ public class HTTPServer implements Runnable {
 			if (fixedNI != null)
 				ni = fixedNI;
 			PMS.minimal("Scanning network interface " + ni.getName() + " / " + ni.getDisplayName());
-			if (!PMSUtil.isNetworkInterfaceLoopback(ni) && ni.getName() != null && !ni.getDisplayName().toLowerCase().contains("vmnet") && !ni.getName().toLowerCase().contains("vmnet")) {
+			if (!PMSUtil.isNetworkInterfaceLoopback(ni) && ni.getName() != null && (ni.getDisplayName() == null || !ni.getDisplayName().toLowerCase().contains("vmnet")) && !ni.getName().toLowerCase().contains("vmnet")) {
 				
 				Enumeration<InetAddress> addrs = ni.getInetAddresses();
 				while (addrs.hasMoreElements()) {
