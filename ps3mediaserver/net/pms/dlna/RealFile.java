@@ -358,7 +358,7 @@ public class RealFile extends DLNAResource {
 				if (ext != null) 
 					ext.parse(media, input, getType(), parent.defaultRenderer);
 				else //don't think that will ever happen
-					media.parse(input, ext, getType());
+					media.parse(input, ext, getType(), false);
 				if (found && PMS.getConfiguration().getUseCache()) {
 					PMS.get().getDatabase().insertData(fileName, file.lastModified(), getType(), media);
 				}

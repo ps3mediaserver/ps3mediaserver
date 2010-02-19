@@ -445,8 +445,8 @@ public class RequestV2 extends HTTPResource {
 					// (regular files, plus the #transcode folder, maybe the #imdb one, also files can be invalidated and hidden if format is broken or encrypted, etc.).
 					// let's send a fake total size to force the renderer to ask following items
 					int totalCount = startingIndex + requestCount + 1; // returns 11 when 10 asked
-					if (filessize - minus <= 0) // if no more elements, send 0
-						totalCount = 0;
+					if (filessize - minus <= 0) // if no more elements, send the startingIndex
+						totalCount = startingIndex;
 					response.append("<TotalMatches>" + totalCount + "</TotalMatches>");
 				} else
 					response.append("<TotalMatches>" + (((parentFolder!=null)?parentFolder.childrenNumber():filessize) - minus) + "</TotalMatches>");

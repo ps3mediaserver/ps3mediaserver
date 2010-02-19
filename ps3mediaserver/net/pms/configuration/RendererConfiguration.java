@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import net.pms.PMS;
 import net.pms.dlna.MediaInfoParser;
 import net.pms.dlna.RootFolder;
+import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
@@ -363,6 +364,16 @@ public class RendererConfiguration {
 			return DLNAPN.get(old);
 		}
 		return old;
+	}
+	
+	public boolean supportsFormat(Format f) { 
+		switch (f.getType()) { 
+			case Format.VIDEO: return isVideoSupported();
+			case Format.AUDIO: return isAudioSupported();
+			case Format.IMAGE: return isImageSupported();
+			default: break; 
+		}
+		return false; 
 	}
 	
 	public boolean isVideoSupported() {
