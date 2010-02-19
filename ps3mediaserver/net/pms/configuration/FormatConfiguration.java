@@ -82,12 +82,12 @@ public class FormatConfiguration {
     			}
     		}
 	    	if (force_v1) {
-	    		media.parse(file, ext, type);
+	    		media.parse(file, ext, type, false);
 	    	} else {
 	    		MediaInfoParser.parse(media, file, type);
 	    	}
     	} else
-    		media.parse(file, ext, type);
+    		media.parse(file, ext, type, false);
     }
 	
     public static final String MIMETYPE_AUTO = "MIMETYPE_AUTO";

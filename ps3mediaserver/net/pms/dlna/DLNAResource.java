@@ -298,7 +298,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				//}
 			}
 			
-			if (child.ext != null && child.ext.getSecondaryFormat() != null && child.media != null) {
+			if (child.ext != null && child.ext.getSecondaryFormat() != null && child.media != null && defaultRenderer != null && defaultRenderer.supportsFormat(child.ext.getSecondaryFormat())) {
 				DLNAResource newChild = (DLNAResource) child.clone();
 				newChild.ext = newChild.ext.getSecondaryFormat();
 				newChild.first = child;

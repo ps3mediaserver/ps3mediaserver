@@ -142,7 +142,7 @@ public class DLNAMediaInfo implements Cloneable {
 	
 	public void generateThumbnail(InputFile input, Format ext, int type) {
 		DLNAMediaInfo forThumbnail = new DLNAMediaInfo();
-		forThumbnail.parse(input, ext, type);
+		forThumbnail.parse(input, ext, type, true);
 		thumb = forThumbnail.thumb;
 	}
 	
@@ -259,7 +259,7 @@ public class DLNAMediaInfo implements Cloneable {
 		}
 	}
 
-	public void parse(InputFile f, Format ext, int type) {
+	public void parse(InputFile f, Format ext, int type, boolean thumbOnly) {
 		int i=0;
 		while (parsing) {
 			if (i == 5) {
@@ -392,7 +392,8 @@ public class DLNAMediaInfo implements Cloneable {
 				}
 			}
 			if (ffmpeg_parsing) {
-				pw = getFFMpegThumbnail(f);
+				if (!thumbOnly || !PMS.getConfiguration().isUseMplayerForVideoThumbs())
+					pw = getFFMpegThumbnail(f);
 				//int nbUndAudioTracks = 0;
 				String input = "-";
 				boolean dvrms = false;
@@ -400,7 +401,7 @@ public class DLNAMediaInfo implements Cloneable {
 					input = ProcessUtil.getShortFileNameIfWideChars(f.file.getAbsolutePath()) ;
 					dvrms = f.file.getAbsolutePath().toLowerCase().endsWith("dvr-ms");
 				}
-				if (!ffmpeg_failure) {
+				if (!ffmpeg_failure && !thumbOnly) {
 					
 					if (input.equals("-"))
 						input = "pipe:";
@@ -547,151 +548,8 @@ public class DLNAMediaInfo implements Cloneable {
 					
 					
 				}
-				// mplayer parsing in case of ffmpeg failure
-//				// Apr 09: removed because latest ffmpeg builds seems to work much better against mpeg ts
-				if ((ffmpeg_failure && type == Format.VIDEO) || (container != null && container.equals("mpegts") && audioCodes.size() == 0)){
-//					String cmdArray [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-msglevel", "identify=4", "-vo", "null", "-ao", "null", "-frames", "0", input};
-//					OutputParams params = new OutputParams(PMS.getConfiguration());
-//					params.stdin = f.push;
-//					params.maxBufferSize = 1;
-//					params.log = true;
-//					params.noexitcheck = true; // not serious if anything happens during the thumbnailer
-//					final ProcessWrapperImpl pw2 = new ProcessWrapperImpl(cmdArray, params);
-//					parsing = true;
-//					Runnable r = new Runnable() {
-//						public void run() {
-//							try {
-//								Thread.sleep(5000);
-//							} catch (InterruptedException e) {}
-//							pw2.stopProcess();
-//							parsing = false;
-//						}
-//					};
-//					Thread failsafe = new Thread(r);
-//					failsafe.start();
-//					pw2.run();
-//					List<String> results = pw2.getOtherResults();
-//					DLNAMediaAudio currentAudioTrack = null;
-//					for(String s:results) {
-//						if (s.startsWith("FPS seems to be: "))
-//							frameRate = s.substring(17);
-//						if (s.startsWith("TS file format detected."))
-//							container = "mpegts";
-//						
-//						if (codecV == null && s.startsWith("ID_VIDEO_CODEC=")) {
-//							String cv = s.substring(15).trim();
-//							if (cv.toLowerCase().contains("h264"))
-//								codecV = "h264";
-//							else if (cv.toLowerCase().contains("mpegpes"))
-//								codecV = "mpeg2video";
-//							else if (cv.toLowerCase().contains("vc1"))
-//								codecV = "vc1";
-//						}
-//						
-//						if (s.startsWith("ID_AUDIO_CODEC=")) {
-//							if (currentAudioTrack != null) {
-//								currentAudioTrack.codecA = s.substring(15).trim();
-//							}
-//						}
-//						
-//						if (s.startsWith("ID_AUDIO_RATE=")) {
-//							if (currentAudioTrack != null) {
-//								currentAudioTrack.sampleFrequency = s.substring(14).trim();
-//							}
-//						}
-//						
-//						if (s.startsWith("ID_AUDIO_NCH=")) {
-//							if (currentAudioTrack != null) {
-//								try {
-//									currentAudioTrack.nrAudioChannels = Integer.parseInt(s.substring(13).trim());
-//								} catch( NumberFormatException nfe) {}
-//							}
-//						}
-//						
-//						if (s.startsWith("ID_AUDIO_ID=")) {
-//							try {
-//								int id = Integer.parseInt(s.substring(12).trim());
-//								for(DLNAMediaAudio audio:audioCodes) {
-//									if (audio.id == id) {
-//										currentAudioTrack = audio;
-//										break;
-//									}
-//								}
-//								if (currentAudioTrack == null) {
-//									currentAudioTrack = new DLNAMediaAudio();
-//									currentAudioTrack.id = id;
-//									audioCodes.add(currentAudioTrack);
-//								}
-//							} catch (NumberFormatException ne) {}
-//						}
-//						
-//						if (getDurationInSeconds() == 0 && s.startsWith("ID_LENGTH=")) {
-//							try {
-//								String len = s.substring(10);
-//								double lenD = Double.parseDouble(len);
-//								setDurationString(lenD);
-//							} catch (Throwable t) {
-//								PMS.debug("Error in parsing duration infos: " + s + " - " + t.getMessage());
-//							}
-//						}
-//						if (width == 0 && s.contains("VDec: vo config request - ")) {
-//							try {
-//								String wh = s.substring(26, s.indexOf("(")).trim();
-//								width = Integer.parseInt(wh.substring(0, wh.indexOf("x")).trim());
-//								height = Integer.parseInt(wh.substring(wh.indexOf("x")+1).trim());
-//							} catch (Throwable t) {
-//								PMS.debug("Error in parsing image infos: " + s + " - " + t.getMessage());
-//							}
-//						}
-//					}
-				}
-				// let's try tsmuxer for the end
-				/*if (f.file != null && type == Format.VIDEO && (ffmpeg_failure  || (container != null && container.equals("mpegts")))) {
-					String tsMuxer = PMS.getConfiguration().getTsmuxerPath();
-					if (tsMuxer != null) {
-						String cmd [] = new String [] {tsMuxer , ProcessUtil.getShortFileNameIfWideChars(f.file.getAbsolutePath()) };
-						OutputParams params = new OutputParams(PMS.getConfiguration());
-						params.log = true;
-						ProcessWrapperImpl p = new ProcessWrapperImpl(cmd, params);
-						p.run();
-						List<String> results = p.getOtherResults();
-						int currentId = 0;
-						DLNAMediaAudio currentAudioTrack = null;
-						for(String s:results) {
-							if (s.startsWith("Track ID:")) {
-								currentId = Integer.parseInt(s.substring(9).trim());
-							} else if (s.startsWith("Stream type:") && currentId > 0) {
-								String streamType = s.substring(12).trim();
-								if (streamType.equals("AC3") || streamType.equals("DTS-HD") || streamType.equals("DTS") || streamType.equals("TRUE-HD") || streamType.equals("LPCM") ) {
-									for(DLNAMediaAudio audio:audioCodes) {
-										if (audio.id == currentId) {
-											currentAudioTrack = audio;
-											break;
-										}
-									}
-									if (currentAudioTrack == null) {
-										currentAudioTrack = new DLNAMediaAudio();
-										currentAudioTrack.id = currentId;
-										audioCodes.add(currentAudioTrack);
-									}
-									if (streamType.equals("DTS-HD"))
-										streamType = "DTS";
-									currentAudioTrack.codecA = streamType;
-								}
-							} else if (s.startsWith("Stream delay:") && currentId > 0) {
-								if (currentAudioTrack != null) {
-									currentAudioTrack.delay = Integer.parseInt(s.substring(13).trim());
-								}
-							}  else if (s.startsWith("Stream lang:") && currentId > 0) {
-								if (currentAudioTrack != null) {
-									currentAudioTrack.lang = s.substring(12).trim();
-								}
-							}
-						}
-					}
-				}*/
 				
-				if (container != null && f.file != null && container.equals("mpegts") && isH264() && getDurationInSeconds() == 0) {
+				if (!thumbOnly && container != null && f.file != null && container.equals("mpegts") && isH264() && getDurationInSeconds() == 0) {
 					// let's do the parsing for getting the duration...
 					try {
 						int length = MpegUtil.getDurationFromMpeg(f.file);
@@ -872,7 +730,7 @@ public class DLNAMediaInfo implements Cloneable {
 		if (!h264_parsed) {
 			if (codecV != null && (codecV.equals("h264") || codecV.startsWith("mpeg2"))) { // what about VC1 ?
 				muxable = true;
-				if (codecV.equals("h264") && container != null && (container.equals("matroska") || container.equals("mkv") || container.equals("mov"))) {
+				if (codecV.equals("h264") && container != null && (container.equals("matroska") || container.equals("mkv") || container.equals("mov") || container.equals("mp4") || container.equals("avi"))) { // compatible h264 containers
 					byte headers [][] = getAnnexBFrameHeader(f);
 					if (ffmpeg_annexb_failure) {
 						PMS.minimal("Fatal error when retrieving AVC informations !");

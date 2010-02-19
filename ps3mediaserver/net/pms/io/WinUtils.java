@@ -64,6 +64,7 @@ public class WinUtils {
 	private String vlcp;
 	private String vlcv;
 	private boolean avis;
+	private boolean kerio;
 	private String avsPluginsDir;
 	
 	public long lastDontSleepCall = 0;
@@ -286,10 +287,20 @@ public class WinUtils {
 					avsPluginsDir = (valb != null ? new String(valb).trim() : null);
 					closeKey.invoke(systemRoot, handles[0]);
 				}
+				key = "SOFTWARE\\Kerio";
+				handles = (int[]) openKey.invoke(systemRoot, -2147483646,
+						toCstr(key), KEY_READ);
+				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
+					kerio = true;
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean isKerioFirewall() {
+		return kerio;
 	}
 
 	private static byte[] toCstr(String str) {

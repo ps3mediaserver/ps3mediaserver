@@ -122,7 +122,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.20.396"; //$NON-NLS-1$
+	public static final String VERSION = "1.20.399"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -358,6 +358,11 @@ public class PMS {
 			if (registry.getVlcv().startsWith("1") && Platform.isWindows()) {
 				PMS.minimal("Unfortunately, VideoLAN 1.x is not supported at this point. Last known working version is 0.98");
 			}
+		}
+		
+		//check if Kerio is installed
+		if (registry.isKerioFirewall()) {
+			//todo: Warning message
 		}
 		
 		// force use of specific dvr ms muxer when it's installed in the right place
