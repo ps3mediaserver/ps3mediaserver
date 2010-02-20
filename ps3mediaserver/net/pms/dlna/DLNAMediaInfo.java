@@ -730,7 +730,7 @@ public class DLNAMediaInfo implements Cloneable {
 		if (!h264_parsed) {
 			if (codecV != null && (codecV.equals("h264") || codecV.startsWith("mpeg2"))) { // what about VC1 ?
 				muxable = true;
-				if (codecV.equals("h264") && container != null && (container.equals("matroska") || container.equals("mkv") || container.equals("mov") || container.equals("mp4") || container.equals("avi"))) { // compatible h264 containers
+				if (codecV.equals("h264") && container != null && (container.equals("matroska") || container.equals("mkv") || container.equals("mov") || container.equals("mp4"))) { // containers without h264_annexB
 					byte headers [][] = getAnnexBFrameHeader(f);
 					if (ffmpeg_annexb_failure) {
 						PMS.minimal("Fatal error when retrieving AVC informations !");
