@@ -1,7 +1,7 @@
 Changelog:
 ==========
 
-v1.20.392 BETA
+v1.20.401 BETA
 
 - Changes / Features
 
@@ -9,6 +9,7 @@ MediaInfo support by default for PS3/XBOX, ongoing work on other renderers:
 -> Faster XMB navigation (faster parsing, plus file list appears before thumbnails generation)
 -> Proper auto detection of non supported files (PS3: Mpeg w/ DTS, Qpel/Gmc/H264 AVI files, Apple Lossless AAC files, 6 channels WMV, etc.)
 OS X: Dropped official support for Mac OS X 10.4 (Tiger) and Intel processors without 64bit support (anything older then Core 2)
+AIFF support
 
 - Fixes
 

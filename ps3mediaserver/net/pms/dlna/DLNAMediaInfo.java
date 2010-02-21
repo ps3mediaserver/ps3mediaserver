@@ -59,6 +59,7 @@ import org.apache.sanselan.formats.tiff.constants.TiffConstants;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
+import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 
 
@@ -318,10 +319,10 @@ public class DLNAMediaInfo implements Cloneable {
 						}
 						Tag t = af.getTag();
 						if (t != null) {
-							audio.album = t.getFirstAlbum();
-							audio.artist = t.getFirstArtist();
-							audio.songname = t.getFirstTitle();
-							String y = t.getFirstYear();
+							audio.album = t.getFirst(FieldKey.ALBUM);
+							audio.artist = t.getFirst(FieldKey.ARTIST);
+							audio.songname = t.getFirst(FieldKey.TITLE);
+							String y = t.getFirst(FieldKey.YEAR);
 							if (t.getArtworkList().size() > 0) {
 								thumb = t.getArtworkList().get(0).getBinaryData();
 							} else {
@@ -332,9 +333,9 @@ public class DLNAMediaInfo implements Cloneable {
 								if (y.length() > 4)
 									y = y.substring(0, 4);
 								audio.year = Integer.parseInt(((y != null && y.length() > 0)?y:"0"));
-								y = t.getFirstTrack();
+								y = t.getFirst(FieldKey.TRACK);
 								audio.track = Integer.parseInt(((y != null && y.length() > 0)?y:"1"));
-								audio.genre = t.getFirstGenre();
+								audio.genre = t.getFirst(FieldKey.GENRE);
 							} catch (Throwable e) {
 								PMS.info("error in parsing unimportant metadata: " + e.getMessage());
 							}
