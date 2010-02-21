@@ -220,10 +220,10 @@ public class FormatConfiguration {
             	while (keyIt.hasNext()) {
             		String key = keyIt.next();
             		String value = extras.get(key);
-            		if (matched && key.equals(MI_QPEL)) {
-            			matched = miExtras.get(MI_QPEL) != null && miExtras.get(MI_QPEL).matcher(value).matches();
-            		} else if (matched && key.equals(MI_GMC)) {
-            			matched = miExtras.get(MI_GMC) != null && miExtras.get(MI_GMC).matcher(value).matches();
+            		if (matched && key.equals(MI_QPEL) && miExtras.get(MI_QPEL) != null) {
+            			matched = miExtras.get(MI_QPEL).matcher(value).matches();
+            		} else if (matched && key.equals(MI_GMC) && miExtras.get(MI_GMC) != null) {
+            			matched = miExtras.get(MI_GMC).matcher(value).matches();
             		}
             	}
             }

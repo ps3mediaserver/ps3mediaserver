@@ -431,11 +431,11 @@ public class RealFile extends DLNAResource {
 		sb.append("/");
 		if (media != null && media.thumb != null)
 			return super.getThumbnailURL();
-		else if (getType() == Format.AUDIO) {
+		/*else if (getType() == Format.AUDIO) {
 			if (getParent() != null && getParent() instanceof RealFile && ((RealFile) getParent()).potentialCover != null)
 				return super.getThumbnailURL();
 			return null;
-		}
+		}*/
 		return super.getThumbnailURL();
 	}
 

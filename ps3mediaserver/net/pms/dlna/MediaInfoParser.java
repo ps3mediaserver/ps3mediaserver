@@ -111,7 +111,8 @@ public class MediaInfoParser {
 								if (step == MediaInfo.StreamKind.Audio)
 									currentAudioTrack.sampleFrequency = getSampleFrequency(value);
 							} else if (key.equals("ID/String")) {
-								if (value.contains("(0x")) {
+								// Special check for OGM: MediaInfo reports specific Audio/Subs IDs (0xn) while mencoder does not
+								if (value.contains("(0x") && !FormatConfiguration.OGG.equals(media.container)) {
 									if (step == MediaInfo.StreamKind.Audio)
 										currentAudioTrack.id = getSpecificID(value);
 									else if (step == MediaInfo.StreamKind.Text)
@@ -119,7 +120,7 @@ public class MediaInfoParser {
 								} else {
 									if (step == MediaInfo.StreamKind.Audio) {
 										currentAudioTrack.id = media.audioCodes.size();
-										if (media.container != null && (media.container.equals(FormatConfiguration.AVI) || media.container.equals(FormatConfiguration.FLV) || media.container.equals(FormatConfiguration.OGG) || media.container.equals(FormatConfiguration.MOV)))
+										if (media.container != null && (media.container.equals(FormatConfiguration.AVI) || media.container.equals(FormatConfiguration.FLV) || media.container.equals(FormatConfiguration.MOV)))
 											currentAudioTrack.id++;
 									}
 									else if (step == MediaInfo.StreamKind.Text)
