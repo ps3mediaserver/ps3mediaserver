@@ -94,7 +94,7 @@ public class DLNAMediaInfo implements Cloneable {
 	public boolean mediaparsed;
 	public boolean thumbready; // isMediaParserV2 related, used to manage thumbnail management separated from the main parsing process
 	public int dvdtrack;
-	public boolean secondaryFormatValid;
+	public boolean secondaryFormatValid = true;
 	public boolean parsing = false;
 	private boolean ffmpeg_failure;
 	//private boolean mplayer_thumb_failure;
@@ -143,6 +143,7 @@ public class DLNAMediaInfo implements Cloneable {
 	
 	public void generateThumbnail(InputFile input, Format ext, int type) {
 		DLNAMediaInfo forThumbnail = new DLNAMediaInfo();
+		forThumbnail.duration = duration;
 		forThumbnail.parse(input, ext, type, true);
 		thumb = forThumbnail.thumb;
 	}
@@ -291,7 +292,7 @@ public class DLNAMediaInfo implements Cloneable {
 					try {
 						AudioFile af = AudioFileIO.read(f.file);
 						AudioHeader ah = af.getAudioHeader();
-						if (ah != null) {
+						if (ah != null && !thumbOnly) {
 							int length = ah.getTrackLength();
 							int rate = ah.getSampleRateAsNumber();
 							if (ah.getEncodingType().toLowerCase().contains("flac 24")) {
@@ -319,25 +320,27 @@ public class DLNAMediaInfo implements Cloneable {
 						}
 						Tag t = af.getTag();
 						if (t != null) {
-							audio.album = t.getFirst(FieldKey.ALBUM);
-							audio.artist = t.getFirst(FieldKey.ARTIST);
-							audio.songname = t.getFirst(FieldKey.TITLE);
-							String y = t.getFirst(FieldKey.YEAR);
 							if (t.getArtworkList().size() > 0) {
 								thumb = t.getArtworkList().get(0).getBinaryData();
 							} else {
 								if (PMS.getConfiguration().getAudioThumbnailMethod() > 0)
 									thumb = CoverUtil.get().getThumbnailFromArtistAlbum(PMS.getConfiguration().getAudioThumbnailMethod()==1?CoverUtil.AUDIO_AMAZON:CoverUtil.AUDIO_DISCOGS, audio.artist, audio.album);
 							}
-							try {
-								if (y.length() > 4)
-									y = y.substring(0, 4);
-								audio.year = Integer.parseInt(((y != null && y.length() > 0)?y:"0"));
-								y = t.getFirst(FieldKey.TRACK);
-								audio.track = Integer.parseInt(((y != null && y.length() > 0)?y:"1"));
-								audio.genre = t.getFirst(FieldKey.GENRE);
-							} catch (Throwable e) {
-								PMS.info("error in parsing unimportant metadata: " + e.getMessage());
+							if (!thumbOnly) {
+								audio.album = t.getFirst(FieldKey.ALBUM);
+								audio.artist = t.getFirst(FieldKey.ARTIST);
+								audio.songname = t.getFirst(FieldKey.TITLE);
+								String y = t.getFirst(FieldKey.YEAR);
+								try {
+									if (y.length() > 4)
+										y = y.substring(0, 4);
+									audio.year = Integer.parseInt(((y != null && y.length() > 0)?y:"0"));
+									y = t.getFirst(FieldKey.TRACK);
+									audio.track = Integer.parseInt(((y != null && y.length() > 0)?y:"1"));
+									audio.genre = t.getFirst(FieldKey.GENRE);
+								} catch (Throwable e) {
+									PMS.info("error in parsing unimportant metadata: " + e.getMessage());
+								}
 							}
 						}
 					} catch (Throwable e) {
@@ -384,6 +387,8 @@ public class DLNAMediaInfo implements Cloneable {
 							codecV = "png";
 						} else if (formatName.startsWith("GIF")) {
 							codecV = "gif";
+						} else if (formatName.startsWith("TIF")) {
+							codecV = "tiff";
 						}
 						container = codecV;
 					} catch (Throwable e) {
@@ -714,8 +719,8 @@ public class DLNAMediaInfo implements Cloneable {
 			mimeType = new HTTPResource().getDefaultMimeType(type);
 		}
 		
-		if (getFirstAudioTrack() !=null && getFirstAudioTrack().bitsperSample == 24)
-			secondaryFormatValid = true;
+		if (getFirstAudioTrack() ==null || !(type == Format.AUDIO && getFirstAudioTrack().bitsperSample == 24 && getFirstAudioTrack().getSampleRate() > 48000))
+			secondaryFormatValid = false;
 		
 		// Check for external subs here
 		if (f.file != null && type == Format.VIDEO)

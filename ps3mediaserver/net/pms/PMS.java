@@ -122,7 +122,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.20.401"; //$NON-NLS-1$
+	public static final String VERSION = "1.20.404"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -314,7 +314,7 @@ public class PMS {
 		
 		
 		minimal("Starting Java PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$
-		minimal("by shagrath / 2008-2009"); //$NON-NLS-1$
+		minimal("by shagrath / 2008-2010"); //$NON-NLS-1$
 		minimal("http://ps3mediaserver.blogspot.com"); //$NON-NLS-1$
 		minimal("http://code.google.com/p/ps3mediaserver"); //$NON-NLS-1$
 		minimal(""); //$NON-NLS-1$

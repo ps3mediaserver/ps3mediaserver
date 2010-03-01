@@ -19,7 +19,6 @@
 	<classpathentry kind="lib" path="lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/jaudiotagger.jar"/>
 	<classpathentry kind="lib" path="lib/h2-1.1.105.jar"/>
-	<classpathentry kind="lib" path="lib/sanselan-0.95-incubator.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/bsh-core-2.0b4.jar"/>
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
@@ -27,5 +26,6 @@
 	<classpathentry kind="lib" path="lib/cuelib-1.2.1-2008-06-13.jar"/>
 	<classpathentry kind="lib" path="lib/netty-3.1.5.GA.jar" sourcepath="lib/netty-3.1.5.GA-sources.jar"/>
 	<classpathentry kind="lib" path="lib/mediautil.jar"/>
+	<classpathentry kind="lib" path="lib/sanselan-0.97-incubator.jar"/>
 	<classpathentry kind="output" path="eclipse-classes"/>
 </classpath>

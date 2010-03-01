@@ -286,7 +286,8 @@ public class BufferedOutputFile extends OutputStream  {
 			{
 				for (int i=0;i<len;i++)
 				{
-					shiftSCRByTimeSeek(mb+i, (int)timeseek); // Ditlew - update any SCR headers
+					if (buffer != null)
+						shiftSCRByTimeSeek(mb+i, (int)timeseek); // Ditlew - update any SCR headers
 					//shiftGOPByTimeSeek(mb+i, (int)timeseek); // Ditlew - update any GOP headers - Not needed for WDTV Live
 				}
 			}

@@ -158,11 +158,11 @@ public class MediaInfoParser {
 				if (subPrepped) {
 					addSub(currentSubTrack, media);
 				}
-				MI.Close();
 				media.finalize(type, file);
 			} catch (Exception e) {
 				PMS.error("Error in MediaInfo parsing :", e);
 			} finally {
+				MI.Close();
 				if (media.container == null)
 					media.container = DLNAMediaLang.UND;
 				if (media.codecV == null)
@@ -257,7 +257,7 @@ public class MediaInfoParser {
 			format =  FormatConfiguration.MP3;
 		else if (value.equals("m4a") || value.equals("40") || value.equals("a_aac") || value.equals("aac"))
 			format =  FormatConfiguration.AAC;
-		else if (value.equals("pcm") || value.equals("1"))
+		else if (value.equals("pcm") || (value.equals("1") && (audio.codecA == null || !audio.codecA.equals(FormatConfiguration.DTS))))
 			format =  FormatConfiguration.LPCM;
 		else if (value.equals("alac"))
 			format =  FormatConfiguration.ALAC;
@@ -364,6 +364,9 @@ public class MediaInfoParser {
 	public static String getLang(String value) {
 		if (value.indexOf("(") > -1)
 			value = value.substring(0, value.indexOf("("));
+		if (value.indexOf("/") > -1)
+			value = value.substring(0, value.indexOf("/"));
+		value = value.trim();
 		return value;
 	}
 	

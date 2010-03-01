@@ -3,6 +3,7 @@ package net.pms.dlna;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -81,18 +82,19 @@ public class CueFolder extends DLNAResource {
 					List<TrackData> tracks = f.getTrackData();
 					Player defaultPlayer = null;
 					DLNAMediaInfo originalMedia = null;
+					ArrayList<DLNAResource> addedResources = new ArrayList<DLNAResource>();
 					for(int i=0;i<tracks.size();i++) {
 						TrackData track = tracks.get(i);
 						if (i > 0) {
 							double end = getTime(track.getIndices().get(0).getPosition());
-							if (children.size() == 0) {
+							if (addedResources.size() == 0) {
 								// seems the first file was invalid or non existent
 								return;
 							}
-							DLNAResource prec = children.get(i-1);
+							DLNAResource prec = addedResources.get(i-1);
 							int count = 0;
-							while (prec.isFolder() && i+count < children.size()) {
-								prec = children.get(i+count);
+							while (prec.isFolder() && i+count < addedResources.size()) { // not used anymore
+								prec = addedResources.get(i+count);
 								count++;
 							}
 							prec.splitLength = end - prec.splitStart;
@@ -102,7 +104,8 @@ public class CueFolder extends DLNAResource {
 						Position start = track.getIndices().get(0).getPosition();
 						RealFile r = new RealFile(new File(playlistfile.getParentFile(), f.getFile()));
 						addChild(r);
-						if (i > 0) {
+						addedResources.add(r);
+						if (i > 0 && r.media == null) {
 							r.media = new DLNAMediaInfo();
 							r.media.mediaparsed = true;
 						}
@@ -147,9 +150,9 @@ public class CueFolder extends DLNAResource {
 						
 					}
 					
-					if (tracks.size() > 0 && childrenNumber() > 0) {
+					if (tracks.size() > 0 && addedResources.size() > 0) {
 						// last track
-						DLNAResource prec = children.get(childrenNumber()-1);
+						DLNAResource prec = addedResources.get(addedResources.size()-1);
 						prec.splitLength = prec.media.getDurationInSeconds() - prec.splitStart;
 						prec.media.setDurationString(prec.splitLength);
 						PMS.info("Track #" + childrenNumber() + " split range: " + prec.splitStart + " - " + prec.splitLength);
