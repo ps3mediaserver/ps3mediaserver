@@ -93,7 +93,7 @@ public class RootFolder extends DLNAResource {
 	
 	private synchronized void scan(DLNAResource resource) {
 		if (running) {
-			for(DLNAResource child:resource.children) {
+			/*for(DLNAResource child:resource.children) {
 				if (running && child instanceof RealFile && child.isFolder()) {
 					child.defaultRenderer = resource.defaultRenderer;
 					String trace = "Scanning Folder: " + ((RealFile) child).file.getAbsolutePath();
@@ -111,29 +111,33 @@ public class RootFolder extends DLNAResource {
 					int count = child.children.size();
 					if (count == 0)
 						continue;
-					/*ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(count);
-					int parallel_thread_number = 3;
-					ThreadPoolExecutor tpe = new ThreadPoolExecutor(Math.min(count, parallel_thread_number), count, 20, TimeUnit.SECONDS, queue);
-					for(final DLNAResource ch:child.children) {
-						if (running) {
-							tpe.execute(new Runnable() {
-								public void run() {
-									if (ch.getPrimaryResource() == null) {
-										ch.resolve();
-										if (ch.getSecondaryResource() != null)
-											ch.getSecondaryResource().resolve();
-										ch.media = null;
-									}
-								}
-							});
-						}
-					}
-					try {
-						tpe.shutdown();
-						tpe.awaitTermination(20, TimeUnit.SECONDS);
-					} catch (InterruptedException e) {}*/
 					scan(child);
 					child.children.clear();
+				}
+			}*/
+			// No recursive calls anymore, seems it make mediainfo crash on Linux
+			ArrayList<DLNAResource> toScan = new ArrayList<DLNAResource>();
+			toScan.addAll(resource.children);
+			while ( running && toScan.size() > 0) {
+				DLNAResource child = toScan.remove(0);
+				if (running && child instanceof RealFile && child.isFolder()) {
+					child.defaultRenderer = resource.defaultRenderer;
+					String trace = "Scanning Folder: " + ((RealFile) child).file.getAbsolutePath();
+					PMS.info(trace);
+					PMS.get().getFrame().setStatusLine(trace);
+					if (child.discovered) {
+						child.refreshChildren();
+						child.closeChildren(child.childrenNumber(), true);
+					} else {
+						child.discoverChildren();
+						child.analyzeChildren(-1);
+						child.closeChildren(0, false);
+						child.discovered = true;
+					}
+					int count = child.children.size();
+					if (count == 0)
+						continue;
+					toScan.addAll(0, child.children);
 				}
 			}
 		}

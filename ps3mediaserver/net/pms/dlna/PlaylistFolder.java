@@ -119,7 +119,7 @@ public class PlaylistFolder extends DLNAResource {
 					} else if (m3u) {
 						if (line.startsWith("#EXTINF:")) {
 							line = line.substring(8).trim();
-							if (line.matches("^-?\\d+,"))
+							if (line.matches("^-?\\d+,.+"))
 								title = line.substring(line.indexOf(",")+1).trim();
 							else
 								title = line;

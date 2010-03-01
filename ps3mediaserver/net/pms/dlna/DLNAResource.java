@@ -175,6 +175,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 	public void addChild(DLNAResource child) {
 		//child.expert = expert;
 		child.parent = this;
+		if (parent != null)
+			defaultRenderer = parent.defaultRenderer;
 		if (child.isValid()) {
 			
 			PMS.info("Adding " + child.getName() + " / class: " + child.getClass().getName());
@@ -306,7 +308,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 				if (!newChild.ext.ps3compatible() && newChild.ext.getProfiles().size() > 0) {
 					newChild.player = PMS.get().getPlayer(newChild.ext.getProfiles().get(0), newChild.ext);
 				}
-				addChild(newChild);
+				if (child.media != null && child.media.secondaryFormatValid)
+					addChild(newChild);
 			}
 		}
 	}
