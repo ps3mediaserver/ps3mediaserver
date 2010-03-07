@@ -93,7 +93,7 @@ public class RootFolder extends DLNAResource {
 	
 	private synchronized void scan(DLNAResource resource) {
 		if (running) {
-			/*for(DLNAResource child:resource.children) {
+			for(DLNAResource child:resource.children) {
 				if (running && child instanceof RealFile && child.isFolder()) {
 					child.defaultRenderer = resource.defaultRenderer;
 					String trace = "Scanning Folder: " + ((RealFile) child).file.getAbsolutePath();
@@ -114,9 +114,10 @@ public class RootFolder extends DLNAResource {
 					scan(child);
 					child.children.clear();
 				}
-			}*/
-			// No recursive calls anymore, seems it make mediainfo crash on Linux
-			ArrayList<DLNAResource> toScan = new ArrayList<DLNAResource>();
+			}
+			
+			// Sequential version, not used right now
+			/*ArrayList<DLNAResource> toScan = new ArrayList<DLNAResource>();
 			toScan.addAll(resource.children);
 			while ( running && toScan.size() > 0) {
 				DLNAResource child = toScan.remove(0);
@@ -139,7 +140,7 @@ public class RootFolder extends DLNAResource {
 						continue;
 					toScan.addAll(0, child.children);
 				}
-			}
+			}*/
 		}
 	}
 

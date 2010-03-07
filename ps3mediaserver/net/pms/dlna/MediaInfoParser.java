@@ -6,18 +6,20 @@ import java.util.StringTokenizer;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 
 public class MediaInfoParser {
 	
 	private static MediaInfo MI;
-	
+	private static Base64 base64;
 	static {
 		MI = new MediaInfo();
 		if (MI.isValid()) {
 			MI.Option("Complete", "1");
 			MI.Option("Language", "raw");
 		}
+		base64 = new Base64();
 	}
 	
 	public static boolean isValid() {
@@ -126,6 +128,8 @@ public class MediaInfoParser {
 									else if (step == MediaInfo.StreamKind.Text)
 										currentSubTrack.id = media.subtitlesCodes.size();
 								}
+							} else if (key.equals("Cover_Data") && step == MediaInfo.StreamKind.General) {
+								media.thumb = getCover(ovalue);
 							} else if (key.equals("Track") && step == MediaInfo.StreamKind.General) {
 								currentAudioTrack.songname = ovalue;
 							} else if (key.equals("Album") && step == MediaInfo.StreamKind.General) {
@@ -393,6 +397,16 @@ public class MediaInfoParser {
 			}
 		}
 		return String.format("%02d:%02d:%02d.00", h, m, s);
+	}
+	
+	public static byte [] getCover(String based64Value) {
+		try {
+			if (base64 != null)
+				return base64.decode(based64Value.getBytes());
+		} catch (Exception e) {
+			PMS.error("Error in decoding thumbnail data", e);
+		}
+		return null;
 	}
 
 }
