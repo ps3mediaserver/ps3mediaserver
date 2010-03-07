@@ -58,7 +58,7 @@ public class RealFile extends DLNAResource {
 				if (getSecondaryResource() != null)
 					getSecondaryResource().resolve();
 			}
-			if (media != null && media.thumb == null)
+			if (media != null && media.thumb == null && getType() != Format.AUDIO)  // MediaInfo retrieves cover art now
 				media.thumbready = false;
 			if (media != null && (media.encrypted || media.container == null || media.container.equals(DLNAMediaLang.UND))) {
 				// fine tuning: bad parsing = no file !
@@ -431,11 +431,11 @@ public class RealFile extends DLNAResource {
 		sb.append("/");
 		if (media != null && media.thumb != null)
 			return super.getThumbnailURL();
-		/*else if (getType() == Format.AUDIO) {
+		else if (getType() == Format.AUDIO) {
 			if (getParent() != null && getParent() instanceof RealFile && ((RealFile) getParent()).potentialCover != null)
 				return super.getThumbnailURL();
 			return null;
-		}*/
+		}
 		return super.getThumbnailURL();
 	}
 
