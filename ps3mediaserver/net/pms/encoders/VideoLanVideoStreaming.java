@@ -106,6 +106,10 @@ public class VideoLanVideoStreaming extends Player {
 			cmdArray[3] = "--dummy-quiet"; //$NON-NLS-1$
 			cmdArray[4] = fileName;
 			cmdArray[5] = ":sout=" + trans; //$NON-NLS-1$
+		} else if (Platform.isMac()) {
+ 			cmdArray[3] = fileName;
+			cmdArray[4] = "--sout=" + trans; //$NON-NLS-1$
+                        cmdArray[5] = "";
 		} else {
 			cmdArray[3] = fileName;
 			cmdArray[4] = "--sout"; //$NON-NLS-1$
