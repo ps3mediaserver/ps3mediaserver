@@ -8,14 +8,13 @@ v1.20.401 BETA
 MediaInfo support by default for PS3/XBOX, ongoing work on other renderers:
 -> Faster XMB navigation (faster parsing, plus file list appears before thumbnails generation)
 -> Proper auto detection of non supported files (PS3: Mpeg w/ DTS, Qpel/Gmc/H264 AVI files, Apple Lossless AAC files, 6 channels WMV, etc.)
-OS X: Dropped official support for Mac OS X 10.4 (Tiger) and Intel processors without 64bit support (anything older then Core 2)
+OS X: Switched to Java 6 which means Tiger is no longer supported, Leopard only with a 64bit capable processor (Intel Core 2 or newer) and Snow Leopard works with all Intel processors.
 AIFF support
 
 - Fixes
 
 Issues with some audio m4a and video mp4 files (wrong mime types)
 Slowdown on FLAC media library scan
-
 
 v1.10.6 through 1.11.381 BETA versions
 
