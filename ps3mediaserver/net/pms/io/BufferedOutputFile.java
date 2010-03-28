@@ -86,12 +86,12 @@ public class BufferedOutputFile extends OutputStream  {
 	private boolean eof;
 	private long writeCount;
 	private byte buffer [];
-	
+	private boolean forcefirst = (PMS.getConfiguration().getTrancodeBlocksMultipleConnections() && PMS.getConfiguration().getTrancodeKeepFirstConnections());
 	private ArrayList<WaitBufferedInputStream> inputStreams;
 	private ProcessWrapper attachedThread;
 	private int secondread_minsize;
 	private Timer timer;
-	
+	private boolean shiftScr;
 	private FileOutputStream debugOutput = null;
 	
 	public BufferedOutputFile(OutputParams params) {
@@ -108,6 +108,7 @@ public class BufferedOutputFile extends OutputStream  {
 		this.secondread_minsize = params.secondread_minsize;
 		this.timeseek = params.timeseek;
 		this.timeend = params.timeend;
+		this.shiftScr = params.shift_scr;
 		try {
 			buffer = new byte [this.maxMemorySize<TEMP_SIZE?this.maxMemorySize:TEMP_SIZE];
 		} catch (OutOfMemoryError ooe) {
@@ -152,10 +153,6 @@ public class BufferedOutputFile extends OutputStream  {
 	public WaitBufferedInputStream getCurrentInputStream() {
 		if (inputStreams.size() > 0)
 		{
-			// Ditlew - org
-			//return inputStreams.get(0);
-			// Ditlew - WDTV Live - Fixes multible connections
-			boolean forcefirst = (PMS.getConfiguration().getTrancodeBlocksMultipleConnections() && PMS.getConfiguration().getTrancodeKeepFirstConnections());
 			WaitBufferedInputStream wai = null;
 			try {
 				wai = forcefirst ? inputStreams.get(0) : inputStreams.get(inputStreams.size() - 1);
@@ -178,16 +175,6 @@ public class BufferedOutputFile extends OutputStream  {
 			if (PMS.getConfiguration().getTrancodeKeepFirstConnections()) {
 				PMS.info("BufferedOutputFile is already attached to an InputStream: " + getCurrentInputStream());
 			} else {
-				// Ditlew - org
-				/*
-				for(WaitBufferedInputStream inputs:inputStreams) {
-					try {
-						inputs.close();
-					} catch (IOException e) {
-						PMS.error("Error: ", e);
-					}
-				}*/
-				
 				// Ditlew - fixes the above (the above iterator breaks on items getting close, cause they will remove them self from the arraylist)
 				while(inputStreams.size() > 0) {
 					try {
@@ -226,8 +213,8 @@ public class BufferedOutputFile extends OutputStream  {
 			debugOutput.write(b, off, len);
 			debugOutput.flush();
 		}
-		//PMS.debug("Writing " + len + " into the buffer");
-		 while ((getCurrentInputStream() !=null && (writeCount - getCurrentInputStream().readCount > bufferOverflowWarning)) || (getCurrentInputStream() == null && writeCount > bufferOverflowWarning)) {
+		WaitBufferedInputStream input = getCurrentInputStream();
+		 while ((input !=null && (writeCount - input.readCount > bufferOverflowWarning)) || (input == null && writeCount > bufferOverflowWarning)) {
 				try {
 					Thread.sleep(CHECK_INTERVAL);
 				} catch (InterruptedException e) {
@@ -286,7 +273,7 @@ public class BufferedOutputFile extends OutputStream  {
 			{
 				for (int i=0;i<len;i++)
 				{
-					if (buffer != null)
+					if (buffer != null && shiftScr)
 						shiftSCRByTimeSeek(mb+i, (int)timeseek); // Ditlew - update any SCR headers
 					//shiftGOPByTimeSeek(mb+i, (int)timeseek); // Ditlew - update any GOP headers - Not needed for WDTV Live
 				}
@@ -329,12 +316,15 @@ public class BufferedOutputFile extends OutputStream  {
 	}
 	
 	private int modulo(int mb) {
+		if (mb >= 0)
+			return mb%maxMemorySize;
 		return (mb + maxMemorySize) % maxMemorySize;
 	}
 	
 	public void write(int b) throws IOException {
 		boolean bb = b % 100000 == 0;
-		while (bb && ((getCurrentInputStream() !=null && (writeCount - getCurrentInputStream().readCount > bufferOverflowWarning)) || (getCurrentInputStream() == null && writeCount == bufferOverflowWarning))) {
+		WaitBufferedInputStream input = getCurrentInputStream() ;
+		while (bb && ((input !=null && (writeCount - input.readCount > bufferOverflowWarning)) || (input == null && writeCount == bufferOverflowWarning))) {
 			try {
 				Thread.sleep(CHECK_INTERVAL);
 				//PMS.debug("BufferedOutputFile Full");

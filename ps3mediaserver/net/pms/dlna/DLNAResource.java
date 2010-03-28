@@ -54,7 +54,7 @@ import net.pms.util.ImagesUtil;
 import net.pms.util.Iso639;
 import net.pms.util.MpegUtil;
 
-public abstract class DLNAResource extends HTTPResource implements Cloneable {
+public abstract class DLNAResource extends HTTPResource implements Cloneable, Runnable {
 	
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
@@ -389,15 +389,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 						if (i < resource.children.size()) {
 							final DLNAResource child = resource.children.get(i);
 							if (child != null) {
-								tpe.execute(new Runnable() {
-									public void run() {
-										if (child.first == null) {
-											child.resolve();
-											if (child.second != null)
-												child.second.resolve();
-										}
-									}
-								});
+								tpe.execute(child);
 								resources.add(child);
 							}
 						}
@@ -411,6 +403,15 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			//}
 		}
 		return resources;
+	}
+	
+	@Override
+	public void run() {
+		if (first == null) {
+			resolve();
+			if (second != null)
+				second.resolve();
+		}
 	}
 	
 	public DLNAResource search(String searchId) {
@@ -962,6 +963,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable {
 			params.mediaRenderer = mediarenderer;
 			params.timeseek = timeseek_auto?timeseek:splitStart; 
 			params.timeend = splitLength;
+			params.shift_scr = timeseek_auto;
 			
 			if (this instanceof IPushOutput)
 				params.stdin = (IPushOutput) this;

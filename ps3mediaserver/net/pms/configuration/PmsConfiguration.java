@@ -1,6 +1,7 @@
 package net.pms.configuration;
 
 import java.awt.Color;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -1084,7 +1085,10 @@ public class PmsConfiguration {
 	}
 	
 	public int getSubsColor() {
-		return getInt(KEY_SUBS_COLOR, Color.WHITE.getRGB());
+		 if (!GraphicsEnvironment.isHeadless())
+			 return getInt(KEY_SUBS_COLOR, Color.WHITE.getRGB());
+		 else
+			 return 0xffffff; 
 	}
 	
 	public void setSubsColor(int value) {

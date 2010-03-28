@@ -55,6 +55,7 @@ public class OutputParams {
 	public byte header [];
 	public IPushOutput stdin;
 	public boolean avidemux;
+	public boolean shift_scr;
 	
 	public OutputParams(PmsConfiguration configuration) {
 		if (configuration != null)

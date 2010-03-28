@@ -69,9 +69,9 @@ public abstract class Format implements Cloneable {
 		boolean match = false;
 		if (filename == null)
 			return match;
+		filename = filename.toLowerCase();
 		for(String singleid:getId()) {
 			String id = singleid.toLowerCase();
-			filename = filename.toLowerCase();
 			match = filename.endsWith("." + id) || filename.startsWith(id + "://"); //$NON-NLS-1$ //$NON-NLS-2$
 			if (match) {
 				matchedId = singleid;

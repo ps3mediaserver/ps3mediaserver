@@ -28,6 +28,8 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 
 public class MPlayerWebAudio extends MPlayerAudio {
+	
+	public static final String ID = "mplayerwebaudio"; //$NON-NLS-1$
 
 	public MPlayerWebAudio(PmsConfiguration configuration) {
 		super(configuration);
