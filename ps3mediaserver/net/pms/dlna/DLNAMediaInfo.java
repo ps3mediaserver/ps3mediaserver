@@ -610,7 +610,7 @@ public class DLNAMediaInfo implements Cloneable {
 						}
 						is.close();
 						
-						if (sz > 0) {
+						if (sz > 0 && !java.awt.GraphicsEnvironment.isHeadless()) {
 							BufferedImage image = ImageIO.read(new ByteArrayInputStream(thumb));
 							if (image != null) {
 								Graphics g = image.getGraphics();
@@ -723,7 +723,7 @@ public class DLNAMediaInfo implements Cloneable {
 			secondaryFormatValid = false;
 		
 		// Check for external subs here
-		if (f.file != null && type == Format.VIDEO)
+		if (f.file != null && type == Format.VIDEO && PMS.getConfiguration().getUseSubtitles())
 			FileUtil.doesSubtitlesExists(f.file, this);
 		
 		

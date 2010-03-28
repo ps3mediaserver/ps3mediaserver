@@ -319,8 +319,10 @@ public class MediaInfoParser {
 			subt.type = DLNAMediaSubtitle.ASS;
 		else if (value.equals("pgs"))
 			subt.type =  -1; // PGS not yet supported
-		else if (value.equals("s_text/utf8"))
+		else if (value.equals("s_text/utf8")) {
 			subt.type =  DLNAMediaSubtitle.EMBEDDED;
+			subt.is_file_utf8 = true;
+		}
 	}
 	
 	public static int getPixelValue(String value) {

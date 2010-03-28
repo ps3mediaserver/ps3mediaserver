@@ -1270,7 +1270,8 @@ private JTextField mencoder_ass_scale;
 		cmdArray[cmdArray.length-9] = "-quiet"; //$NON-NLS-1$
 		if (!dts && !pcm && !avisynth() && params.aid != null && media.audioCodes.size() > 1) {
 			cmdArray[cmdArray.length-12] = "-aid"; //$NON-NLS-1$
-			cmdArray[cmdArray.length-11] = "" + params.aid.id; //$NON-NLS-1$
+			boolean lavf = false; // Need to add support for LAVF demuxing
+			cmdArray[cmdArray.length-11] = "" + (lavf?params.aid.id+1:params.aid.id); //$NON-NLS-1$
 		}
 		
 		

@@ -85,7 +85,7 @@ public class PipeProcess {
 			mkfifo_vid_params.maxBufferSize = 0.1;
 			mkfifo_vid_params.log = true;
 			String cmdArray [] = new String[] { "mkfifo", PMS.get().isWindows()?"":"--mode=777", linuxPipeName };
-			if (Platform.isMac() || Platform.isFreeBSD()) {
+			if (Platform.isMac() || Platform.isFreeBSD() || Platform.isSolaris()) {
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length+1);
 				cmdArray[1] = "-m";
 				cmdArray[3] = cmdArray[2];

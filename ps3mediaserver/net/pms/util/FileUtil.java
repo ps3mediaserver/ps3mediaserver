@@ -2,6 +2,8 @@ package net.pms.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
@@ -61,7 +63,11 @@ public class FileUtil {
 	}
 	
 	public static boolean doesSubtitlesExists(File file, DLNAMediaInfo media) {
-		boolean found = browseFolderForSubtitles(file.getParentFile(), file, media);
+		return doesSubtitlesExists(file, media, true);
+	}
+	
+	public static boolean doesSubtitlesExists(File file, DLNAMediaInfo media, boolean usecache) {
+		boolean found = browseFolderForSubtitles(file.getParentFile(), file, media, usecache);
 		if (PMS.getConfiguration().getAlternateSubsFolder() != null) {
 			String alternate = PMS.getConfiguration().getAlternateSubsFolder();
 			File subFolder = new File(alternate);
@@ -72,15 +78,27 @@ public class FileUtil {
 				} catch (IOException e) {}
 			}
 			if (subFolder.exists()) {
-				found = found || browseFolderForSubtitles(subFolder, file, media);
+				found = found || browseFolderForSubtitles(subFolder, file, media, usecache);
 			}
 		}
 		return found;
 	}
 	
-	private static boolean browseFolderForSubtitles(File subFolder, File file, DLNAMediaInfo media) {
+	static Map<File, File []> cache;
+	
+	private synchronized static boolean browseFolderForSubtitles(File subFolder, File file, DLNAMediaInfo media, boolean usecache) {
 		boolean found = false;
-		File allSubs [] = subFolder.listFiles();
+		if (!usecache)
+			cache = null;
+		if (cache == null) {
+			cache = new HashMap<File, File[]>();
+		}
+		File allSubs [] = cache.get(subFolder);
+		if (allSubs == null) {
+			allSubs = subFolder.listFiles();
+			if (allSubs != null)
+				cache.put(subFolder, allSubs);
+		}
 		String fileName = getFileNameWithoutExtension(file.getName()).toLowerCase();
 		if(allSubs != null)
 			for(File f:allSubs) {

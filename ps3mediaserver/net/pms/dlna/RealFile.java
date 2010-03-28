@@ -46,18 +46,14 @@ public class RealFile extends DLNAResource {
 	@Override
 	public boolean isValid() {
 		checktype();
-		if (getType() == Format.VIDEO && file.exists() && file.getName().length() > 4) {
+		if (getType() == Format.VIDEO && file.exists() && PMS.getConfiguration().getUseSubtitles() && file.getName().length() > 4) {
 			srtFile = FileUtil.doesSubtitlesExists(file, null);
 		}
 		boolean valid = file.exists() && (ext != null || file.isDirectory());
 		
 		if (valid && parent.defaultRenderer != null && parent.defaultRenderer.isMediaParserV2()) {
 			// we need to resolve the dlna resource now
-			if (getPrimaryResource() == null) {
-				resolve();
-				if (getSecondaryResource() != null)
-					getSecondaryResource().resolve();
-			}
+			run();
 			if (media != null && media.thumb == null && getType() != Format.AUDIO)  // MediaInfo retrieves cover art now
 				media.thumbready = false;
 			if (media != null && (media.encrypted || media.container == null || media.container.equals(DLNAMediaLang.UND))) {
