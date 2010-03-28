@@ -219,6 +219,7 @@ public class BufferedOutputFile extends OutputStream  {
 					Thread.sleep(CHECK_INTERVAL);
 				} catch (InterruptedException e) {
 				}
+				input = getCurrentInputStream();
 			}
 		 int mb = (int) (writeCount % maxMemorySize);
 		 if (buffer != null) {
@@ -330,6 +331,7 @@ public class BufferedOutputFile extends OutputStream  {
 				//PMS.debug("BufferedOutputFile Full");
 			} catch (InterruptedException e) {
 			}
+			input = getCurrentInputStream();
 		}
 		int mb = (int) (writeCount++ % maxMemorySize);
 		if (buffer != null) {
