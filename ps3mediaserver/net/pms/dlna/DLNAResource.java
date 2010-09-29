@@ -709,12 +709,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						// do we have some mpegts to offer ?
 						boolean mpegTsMux = TSMuxerVideo.ID.equals(player.id()) || VideoLanVideoStreaming.ID.equals(player.id());
 						if (!mpegTsMux) { // maybe, like the ps3, mencoder can launch tsmuxer if this a compatible H264 video
-							mpegTsMux = MEncoderVideo.ID.equals(player.id()) && ((media_subtitle == null && media != null && media.dvdtrack == 0 && media.muxable
+							mpegTsMux = MEncoderVideo.ID.equals(player.id()) && ((media_subtitle == null && media != null && media.dvdtrack == 0 && media.isMuxable(mediaRenderer)
 								&& PMS.getConfiguration().isMencoderMuxWhenCompatible() && mediaRenderer.isMuxH264MpegTS())
 								|| mediaRenderer.isTranscodeToMPEGTSAC3());
 						}
 	                  if (mpegTsMux)
-	                	  dlnaspec = media.isH264()&&!VideoLanVideoStreaming.ID.equals(player.id())&&media.muxable?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=" + getMPEG_TS_SD_EU_ISOLocalizedValue(c);
+	                	  dlnaspec = media.isH264()&&!VideoLanVideoStreaming.ID.equals(player.id())&&media.isMuxable(mediaRenderer)?"DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO":"DLNA.ORG_PN=" + getMPEG_TS_SD_EU_ISOLocalizedValue(c);
 	                  else   
 	                     dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue(c);
 	               } else if(media != null){
@@ -735,6 +735,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			
 			if(dlnaspec != null)
 				dlnaspec = "DLNA.ORG_PN=" + mediaRenderer.getDLNAPN(dlnaspec.substring(12));
+			
+			if (!mediaRenderer.isDLNAOrgPNUsed())
+				dlnaspec = null;
 			
 			addAttribute(sb, "protocolInfo", "http-get:*:" + mime + ":" + (dlnaspec!=null?(dlnaspec + ";"):"") + flags);
 			

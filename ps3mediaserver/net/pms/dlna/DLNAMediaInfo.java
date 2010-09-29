@@ -38,6 +38,7 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.AudioAsVideo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
@@ -99,9 +100,21 @@ public class DLNAMediaInfo implements Cloneable {
 	private boolean ffmpeg_failure;
 	//private boolean mplayer_thumb_failure;
 	private boolean ffmpeg_annexb_failure;
-	public boolean muxable;
+	private boolean muxable;
 	private Map<String, String> extras;
 	public boolean encrypted;
+	
+	public boolean isMuxable(RendererConfiguration mediaRenderer) {
+		// temporary fix, MediaInfo support will take care of that in the future
+		
+		// for now, http://ps3mediaserver.org/forum/viewtopic.php?f=11&t=6361&start=0
+		if (mediaRenderer.isBRAVIA() && codecV != null && codecV.startsWith("mpeg2"))
+			muxable = true;
+		if (mediaRenderer.isBRAVIA() && height < 288) // not supported for these small heights
+			muxable = false;
+		
+		return muxable;
+	}
 	
 	public Map<String, String> getExtras() {
 		return extras;

@@ -208,11 +208,14 @@ public class PMS {
 		return registry;
 	}
 
-	private boolean checkProcessExistence(String name, boolean error, String...params) throws Exception {
+	private boolean checkProcessExistence(String name, boolean error, File workDir, String...params) throws Exception {
 		PMS.info("launching: " + params[0]); //$NON-NLS-1$
 		
 		try {
-			final Process process = Runtime.getRuntime().exec(params);
+			ProcessBuilder pb = new ProcessBuilder(params);
+			if (workDir != null)
+				pb.directory(workDir);
+			final Process process = pb.start();
 		
 			OutputTextConsumer stderrConsumer = new OutputTextConsumer(process.getErrorStream(), false);
 			stderrConsumer.start();
@@ -238,8 +241,7 @@ public class PMS {
 				return true;
 			if (params[0].equals("ffmpeg") && stderrConsumer.getResults().get(0).startsWith("FF")) //$NON-NLS-1$ //$NON-NLS-2$
 				return true;
-			int exit = 0;
-			process.exitValue();
+			int exit = process.exitValue();
 			if (exit != 0) {
 				if (error)
 					PMS.minimal("[" + exit + "] Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ..."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -328,7 +330,8 @@ public class PMS {
 		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 				
 		PMS.minimal("Checking font cache... launching simple instance of MPlayer... You may have to wait 60 seconds !");
-		checkProcessExistence("MPlayer", true, configuration.getMplayerPath(), "dummy");
+		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
+		checkProcessExistence("MPlayer", true, PMS.getConfiguration().getTempFolder(), configuration.getMplayerPath(), "dummy");
 		PMS.minimal("Done!");
 		/*
 		if (!checkProcessExistence("FFmpeg", true, configuration.getFfmpegPath(), "-h")) //$NON-NLS-1$ //$NON-NLS-2$

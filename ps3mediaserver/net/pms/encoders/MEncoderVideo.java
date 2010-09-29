@@ -1011,7 +1011,7 @@ private JTextField mencoder_ass_scale;
 			dvd = true;
 		
 		ovccopy = false;
-		if (params.sid == null && !dvd && !avisynth() && media != null && (media.isVideoPS3Compatible(newInput) || !params.mediaRenderer.isH264Level41Limited()) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
+		if (params.sid == null && !dvd && !avisynth() && media != null && (media.isVideoPS3Compatible(newInput) || !params.mediaRenderer.isH264Level41Limited()) && media.isMuxable(params.mediaRenderer) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
 			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
 			boolean nomux = false;
 			for(String s:sArgs) {
@@ -1117,6 +1117,8 @@ private JTextField mencoder_ass_scale;
 		//}
 		if (configuration.getMencoderMainSettings() != null) {
 			String mainConfig = configuration.getMencoderMainSettings();
+			if (params.mediaRenderer.getCustomMencoderQualitySettings() != null)
+				mainConfig = params.mediaRenderer.getCustomMencoderQualitySettings();
 			if (mainConfig.contains("/*")) // in case of //$NON-NLS-1$
 				mainConfig = mainConfig.substring(mainConfig.indexOf("/*")); //$NON-NLS-1$
 			

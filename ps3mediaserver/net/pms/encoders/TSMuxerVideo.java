@@ -200,7 +200,7 @@ public class TSMuxerVideo extends Player {
 				if (media != null && media.getFirstAudioTrack().bitsperSample >=24)
 					depth = "pcm_s24le"; //$NON-NLS-1$
 				if (media != null && media.getFirstAudioTrack().getSampleRate() >48000)
-					rate = "96000"; //$NON-NLS-1$
+					rate = "" + media.getFirstAudioTrack().getSampleRate(); //$NON-NLS-1$
 				String flacCmd [] = new String [] { configuration.getFfmpegPath(), "-ar", rate, "-i", fileName , "-f", "wav", "-acodec", depth, "-y", ffAudioPipe[0].getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				
 				ffparams = new OutputParams(PMS.getConfiguration());
