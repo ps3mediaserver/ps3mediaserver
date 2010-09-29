@@ -278,10 +278,12 @@ public class RendererConfiguration {
 	private static final String DLNA_PN_CHANGES="DLNAProfileChanges";
 	private static final String TRANSCODE_FAST_START="TranscodeFastStart";
 	private static final String AUTO_EXIF_ROTATE="AutoExifRotate";
+	private static final String DLNA_ORGPN_USE="DLNAOrgPN";
 	private static final String DLNA_LOCALIZATION_REQUIRED="DLNALocalizationRequired";
 	private static final String MEDIAPARSERV2="MediaInfo";
 	private static final String MEDIAPARSERV2_THUMB="MediaParserV2_ThumbnailGeneration";
 	private static final String SUPPORTED="Supported";
+	private static final String CUSTOM_MENCODER_QUALITYSETTINGS="CustomMencoderQualitySettings";
 	
 	// Ditlew
 	private static final String SHOW_DVD_TITLE_DURATION="ShowDVDTitleDuration";
@@ -582,6 +584,10 @@ public class RendererConfiguration {
 		return getString(MAX_VIDEO_BITRATE, null);
 	}
 	
+	public String getCustomMencoderQualitySettings() {
+		return getString(CUSTOM_MENCODER_QUALITYSETTINGS, null);
+	}
+	
 	public int getMaxVideoWidth() {
 		return getInt(MAX_VIDEO_WIDTH, 0);
 	}
@@ -592,6 +598,10 @@ public class RendererConfiguration {
 	
 	public boolean isVideoRescale() {
 		return getMaxVideoWidth() > 0 && getMaxVideoHeight() > 0;
+	}
+	
+	public boolean isDLNAOrgPNUsed() {
+		return getBoolean(DLNA_ORGPN_USE, true);
 	}
 	
 	public String getTranscodedExtensions() {

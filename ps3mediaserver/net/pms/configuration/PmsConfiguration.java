@@ -438,9 +438,9 @@ public class PmsConfiguration {
 
 	private String getDefaultLanguages() {
 		if ("fr".equals(getLanguage())) {
-			return "fre,jpn,ger,eng";
+			return "fre,jpn,ger,eng,und";
 		} else {
-			return "eng,fre,jpn,ger";
+			return "eng,fre,jpn,ger,und";
 		}
 	}
 
