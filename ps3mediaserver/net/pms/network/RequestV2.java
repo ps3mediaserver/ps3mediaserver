@@ -521,6 +521,13 @@ public class RequestV2 extends HTTPResource {
 				PMS.debug("Available Content-Length: " + cl);
 				output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + cl);
 			}
+			
+			if (timeseek > 0 && dlna != null) {
+				String timeseekValue = DLNAMediaInfo.getDurationString(timeseek);
+				String timetotalValue = dlna.media.duration;
+				output.setHeader("TimeSeekRange.dlna.org", "npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
+				output.setHeader("X-Seek-Range", "npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
+			}
 			//output(output, "");
 			future = e.getChannel().write(output);
 			
