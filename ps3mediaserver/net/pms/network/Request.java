@@ -175,7 +175,7 @@ public class Request extends HTTPResource {
 			output(output, http10?HTTP_200_OK_10:HTTP_200_OK);
 		
 		StringBuffer response = new StringBuffer();
-		
+		DLNAResource dlna = null;
 		boolean xbox = mediaRenderer.isXBOX();
 		
 		if ((method.equals("GET") || method.equals("HEAD")) && argument.startsWith("console/")) {
@@ -203,7 +203,7 @@ public class Request extends HTTPResource {
 				} else {
 					inputStream = files.get(0).getInputStream(lowRange, highRange, timeseek, mediaRenderer);
 					output(output, "Content-Type: " + getRendererMimeType(files.get(0).mimeType(), mediaRenderer));
-					DLNAResource dlna = files.get(0);
+					dlna = files.get(0);
 					// Ditlew - org
 					//String name = dlna.getDisplayName();
 					// Ditlew
@@ -487,6 +487,12 @@ public class Request extends HTTPResource {
 				int cl = inputStream.available();
 				PMS.debug("Available Content-Length: " + cl);
 				output(output, "Content-Length: " + cl);
+			}
+			if (timeseek > 0 && dlna != null) {
+				String timeseekValue = DLNAMediaInfo.getDurationString(timeseek);
+				String timetotalValue = dlna.media.duration;
+				output(output, "TimeSeekRange.dlna.org: npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
+				output(output, "X-Seek-Range: npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
 			}
 			output(output, "");
 			int sendB = 0;
