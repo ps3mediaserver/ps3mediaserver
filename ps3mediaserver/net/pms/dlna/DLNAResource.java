@@ -949,7 +949,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			if (low > 0 && fis != null)
 				fis.skip(low);
 			if (timeseek != 0 && this instanceof RealFile)
-				fis.skip(MpegUtil.getPossitionForTimeInMpeg(((RealFile)this).file, (int) timeseek));
+				fis.skip(MpegUtil.getPossitionForTimeInMpeg(((RealFile)this).getFile(), (int) timeseek));
 			return fis;
 		} else {
 			
@@ -1067,5 +1067,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			return Format.UNKNOWN;
 	}
 	public abstract boolean isValid();
+	
+	public boolean allowScan() {
+		return false;
+	};
 	
 }

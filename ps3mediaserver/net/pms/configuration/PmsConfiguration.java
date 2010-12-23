@@ -123,6 +123,7 @@ public class PmsConfiguration {
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final String UNLIMITED_BITRATE = "0";
+	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
 	
 	private static final String DEFAULT_AVI_SYNTH_SCRIPT = 
 		  "#AviSynth script is now fully customisable !\n" 
@@ -1117,5 +1118,9 @@ public class PmsConfiguration {
 	
 	public void setAudioResample(boolean value) {
 		configuration.setProperty(KEY_AUDIO_RESAMPLE, value);
+	}
+	
+	public String getVirtualFolders() {
+		return getString(KEY_VIRTUAL_FOLDERS, "");
 	}
 }

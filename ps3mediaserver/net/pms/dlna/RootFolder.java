@@ -22,13 +22,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 //import java.util.concurrent.ArrayBlockingQueue;
 //import java.util.concurrent.ThreadPoolExecutor;
 //import java.util.concurrent.TimeUnit;
 
 import net.pms.PMS;
+import net.pms.configuration.MapFileConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
+import net.pms.gui.IFrame;
 import net.pms.newgui.LooksFrame;
 
 
@@ -82,7 +85,11 @@ public class RootFolder extends DLNAResource {
 		refreshChildren();
 		defaultRenderer = RendererConfiguration.getDefaultConf();
 		scan(this);
-		((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(true);
+		IFrame frame = PMS.get().getFrame();
+		if (frame instanceof LooksFrame) {
+			LooksFrame looksframe = (LooksFrame)frame;
+			looksframe.getFt().setScanLibraryEnabled(true);
+		}
 		PMS.get().getDatabase().cleanup();
 		PMS.get().getFrame().setStatusLine(null);
 	}
@@ -91,18 +98,32 @@ public class RootFolder extends DLNAResource {
 		running = false;
 	}
 	
+	public void browse(List<MapFileConfiguration> startVirtualFolders) {
+		if (startVirtualFolders==null)
+			return;
+		for (MapFileConfiguration f : startVirtualFolders) {
+			addChild(new MapFile(f));
+		}
+	}
+	
 	private synchronized void scan(DLNAResource resource) {
 		if (running) {
 			for(DLNAResource child:resource.children) {
-				if (running && child instanceof RealFile && child.isFolder()) {
+				if (running && child.allowScan()) {
 					child.defaultRenderer = resource.defaultRenderer;
-					String trace = "Scanning Folder: " + ((RealFile) child).file.getAbsolutePath();
-					PMS.info(trace);
-					PMS.get().getFrame().setStatusLine(trace);
+					String trace = null;
+					if (child instanceof RealFile)
+						trace = "Scanning Folder: " + child.getName();
+					if (trace != null) {
+						PMS.info(trace);
+						PMS.get().getFrame().setStatusLine(trace);
+					}
 					if (child.discovered) {
 						child.refreshChildren();
 						child.closeChildren(child.childrenNumber(), true);
 					} else {
+						if (child instanceof DVDISOFile || child instanceof DVDISOTitle) // ugly hack
+							child.resolve();
 						child.discoverChildren();
 						child.analyzeChildren(-1);
 						child.closeChildren(0, false);
@@ -159,10 +180,10 @@ public class RootFolder extends DLNAResource {
 			for(File f:files) {
 				boolean present = false;
 				for(DLNAResource d:children) {
-					if (i == 0 && !(d instanceof VirtualFolder) ) {
+					if (i == 0 && !(d instanceof VirtualFolder)  && !(d instanceof MapFile)) {
 						removedFiles.add(d);
 					}
-					if (d instanceof RealFile && f.exists() && ((RealFile)d).file.getAbsolutePath().equals(f.getAbsolutePath())) {
+					if (d instanceof RealFile && f.exists() && ((RealFile)d).getFile().getAbsolutePath().equals(f.getAbsolutePath())) {
 						removedFiles.remove(d);
 						present = true;
 					}
@@ -177,7 +198,7 @@ public class RootFolder extends DLNAResource {
 			for(File f:addedFiles) {
 				addChild(new RealFile(f));
 			}
-			refreshed = removedFiles.size() > 0 || addedFiles.size() > 0;
+			refreshed = !removedFiles.isEmpty() || addedFiles.isEmpty();
 		} catch (IOException e) {}
 		
 		
