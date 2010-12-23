@@ -46,6 +46,7 @@ import org.apache.commons.configuration.ConfigurationException;
 
 import com.sun.jna.Platform;
 
+import net.pms.configuration.MapFileConfiguration;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.AudiosFeed;
@@ -76,6 +77,7 @@ import net.pms.encoders.TsMuxerAudio;
 import net.pms.encoders.VideoLanAudioStreaming;
 import net.pms.encoders.VideoLanVideoStreaming;
 import net.pms.external.AdditionalFolderAtRoot;
+import net.pms.external.AdditionalFoldersAtRoot;
 import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.formats.DVRMS;
@@ -122,7 +124,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class PMS {
 	
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.20.409"; //$NON-NLS-1$
+	public static final String VERSION = "1.20.412"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -481,6 +483,7 @@ public class PMS {
 			
 		}
 		getRootFolder(renderer).browse(files);
+		getRootFolder(renderer).browse(MapFileConfiguration.parse(configuration.getVirtualFolders()));
 		
 		
 		File webConf = new File("WEB.conf"); //$NON-NLS-1$
@@ -794,6 +797,12 @@ public class PMS {
 		for(ExternalListener listener:ExternalFactory.getExternalListeners()) {
 			if (listener instanceof AdditionalFolderAtRoot)
 				getRootFolder(renderer).addChild(((AdditionalFolderAtRoot) listener).getChild());
+			else if (listener instanceof AdditionalFoldersAtRoot) {
+				java.util.Iterator<DLNAResource> folders =((AdditionalFoldersAtRoot)listener).getChildren();
+				while ( folders.hasNext()) {
+					getRootFolder(renderer).addChild(folders.next());
+				}
+			}
 		}
 	}
 	
