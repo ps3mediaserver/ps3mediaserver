@@ -378,27 +378,29 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					if (count == 0) {
 	                    count = resource.children.size();
 	                }
-					ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(count);
-				 
-					int parallel_thread_number = 3;
-					if (resource instanceof DVDISOFile)
-						parallel_thread_number = 1; // my dvd drive is dying wih 3 parallel threads 
-					ThreadPoolExecutor tpe = new ThreadPoolExecutor(Math.min(count, parallel_thread_number), count, 20, TimeUnit.SECONDS, queue);
-					
-					for(int i=start;i<start+count;i++) {
-						if (i < resource.children.size()) {
-							final DLNAResource child = resource.children.get(i);
-							if (child != null) {
-								tpe.execute(child);
-								resources.add(child);
+					if (count > 0) {
+						ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(count);
+					 
+						int parallel_thread_number = 3;
+						if (resource instanceof DVDISOFile)
+							parallel_thread_number = 1; // my dvd drive is dying wih 3 parallel threads 
+						ThreadPoolExecutor tpe = new ThreadPoolExecutor(Math.min(count, parallel_thread_number), count, 20, TimeUnit.SECONDS, queue);
+						
+						for(int i=start;i<start+count;i++) {
+							if (i < resource.children.size()) {
+								final DLNAResource child = resource.children.get(i);
+								if (child != null) {
+									tpe.execute(child);
+									resources.add(child);
+								}
 							}
 						}
+						try {
+							tpe.shutdown();
+							tpe.awaitTermination(20, TimeUnit.SECONDS);
+						} catch (InterruptedException e) {}
+						PMS.debug("End of analysis");
 					}
-					try {
-						tpe.shutdown();
-						tpe.awaitTermination(20, TimeUnit.SECONDS);
-					} catch (InterruptedException e) {}
-					PMS.debug("End of analysis");
 				}
 			//}
 		}
