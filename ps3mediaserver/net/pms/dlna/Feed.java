@@ -45,7 +45,7 @@ public class Feed extends DLNAResource {
 		try {
 			parse();
 		} catch (Exception e) {
-			PMS.error("Eror in parsing stream: " + url, e);
+			PMS.error("Error in parsing stream: " + url, e);
 		}
 	}
 	
@@ -171,7 +171,7 @@ public class Feed extends DLNAResource {
 				children.clear();
 				parse();
 			} catch (Exception e) {
-				PMS.error("Eror in parsing stream: " + url, e);
+				PMS.error("Error in parsing stream: " + url, e);
 			}
 			return true;
 		}
