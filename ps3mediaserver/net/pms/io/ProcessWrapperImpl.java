@@ -84,6 +84,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			//process = Runtime.getRuntime().exec(cmdArray);
 			PMS.get().currentProcesses.add(process);
 			stderrConsumer = new OutputTextConsumer(process.getErrorStream(), true);
+			stderrConsumer.start();
 			outConsumer = null;
 			if (params.outputFile != null) {
 				PMS.info("Writing in " + params.outputFile.getAbsolutePath());
@@ -109,7 +110,6 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			if (params.stdin != null) {
 				params.stdin.push(process.getOutputStream());
 			}
-			stderrConsumer.start();
 			if (outConsumer != null) 
 				outConsumer.start();
 			process.waitFor();
