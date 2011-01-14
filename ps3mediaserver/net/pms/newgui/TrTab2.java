@@ -96,6 +96,8 @@ public class TrTab2 {
 	private JCheckBox  mpeg2remux ;
 	private JCheckBox  chapter_support ;
 	private JTextField chapter_interval;
+
+	private static final int MAX_CORES = 32;
 	
 	private void updateEngineModel() {
 		ArrayList<String> engines = new ArrayList<String>();
@@ -384,17 +386,21 @@ public class TrTab2 {
         
         builder.addLabel(Messages.getString("NetworkTab.7") + Runtime.getRuntime().availableProcessors() + Messages.getString("NetworkTab.8"),  cc.xy(1,  5)); //$NON-NLS-1$ //$NON-NLS-2$
         
-        nbcores = new JComboBox(new Object [] {"1", "2", "3", "4", "8"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        String[] guiCores = new String[MAX_CORES];
+        for(int i=0;i<MAX_CORES;i++)
+            guiCores[i] = Integer.toString(i+1);
+        nbcores = new JComboBox(guiCores);
         nbcores.setEditable(false);
-        if (PMS.getConfiguration().getNumberOfCpuCores() >0 && PMS.getConfiguration().getNumberOfCpuCores() < 32) {
-        	nbcores.setSelectedItem("" + PMS.getConfiguration().getNumberOfCpuCores()); //$NON-NLS-1$
+        int nbConfCores = PMS.getConfiguration().getNumberOfCpuCores();
+        if (nbConfCores > 0 && nbConfCores <= MAX_CORES) {
+        	nbcores.setSelectedItem(Integer.toString(nbConfCores));
         } else
         	nbcores.setSelectedIndex(0);
   
         nbcores.addItemListener(new ItemListener() {
 
  			public void itemStateChanged(ItemEvent e) {
- 				PMS.getConfiguration().setNumberOfCpuCores(Integer.parseInt(e.getItem().toString().substring(0, 1)));
+ 				PMS.getConfiguration().setNumberOfCpuCores(Integer.parseInt(e.getItem().toString()));
  			}
         	
         });
