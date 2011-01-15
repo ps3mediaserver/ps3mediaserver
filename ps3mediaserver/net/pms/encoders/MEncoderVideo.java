@@ -1358,7 +1358,7 @@ private JTextField mencoder_ass_scale;
 				cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
 			} else {
 				cmdArray[cmdArray.length-4] = "-sub"; //$NON-NLS-1$
-				cmdArray[cmdArray.length-3] = subString.replace(",", "\\,"); // comas in mencoder separates multiple subtitles files //$NON-NLS-1$ //$NON-NLS-2$
+				cmdArray[cmdArray.length-3] = subString.replace(",", "\\,"); // commas in mencoder separates multiple subtitles files //$NON-NLS-1$ //$NON-NLS-2$
 				if (params.sid.is_file_utf8 && params.sid.getPlayableFile() != null) {
 					cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +1);
 					cmdArray[cmdArray.length-3] = "-utf8"; //$NON-NLS-1$

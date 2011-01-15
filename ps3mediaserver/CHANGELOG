@@ -151,7 +151,7 @@ Default platform charset issue
 Transcode buffer optimization on Windows
 Application crash on Windows when too many widechars filenames were parsed
 Audio tracks sorted by track number (if present) in media library
-Better filenames/subtitles management (m2ts/ts/dvr-ms issues, comas, widechars, etc.)
+Better filenames/subtitles management (m2ts/ts/dvr-ms issues, commas, widechars, etc.)
 External subtitles not always loaded, again
 DVD images are listed in the media library
 Fixed RSS parsing for Youtube and maybe other feeds
