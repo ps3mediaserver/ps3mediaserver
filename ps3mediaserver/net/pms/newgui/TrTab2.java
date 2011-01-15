@@ -135,163 +135,135 @@ public class TrTab2 {
         
         return builder.getPanel();
 	}
-	
-	
-	
+
 	public JComponent buildRightTabbedPane() {
 		cl = new CardLayout();
 		  tabbedPane = new JPanel (cl);
 		  tabbedPane.setBorder(BorderFactory.createEmptyBorder());
 		return tabbedPane;
 	}
-	
+
 	public JComponent buildLeft() {
 		FormLayout layout = new FormLayout(
-                "left:pref, pref, pref, pref, 0:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 30dlu, 0:grow"); //$NON-NLS-1$
-         PanelBuilder builder = new PanelBuilder(layout);
-        builder.setBorder(Borders.EMPTY_BORDER);
-        builder.setOpaque(false);
-        
-        
-        
-        CellConstraints cc = new CellConstraints();
-      
-       
-       JButton but = new JButton(LooksFrame.readImageIcon("kdevelop_down-32.png")); //$NON-NLS-1$
-       but.setToolTipText(Messages.getString("TrTab2.6")); //$NON-NLS-1$
-      // but.setBorder(BorderFactory.createEmptyBorder());
-       but.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			TreePath path = tree.getSelectionModel().getSelectionPath();
-			if (path != null && path.getLastPathComponent() instanceof TreeNodeSettings) {
-				TreeNodeSettings node = ((TreeNodeSettings) path.getLastPathComponent());
-				if (node.getPlayer() != null) {
-					DefaultTreeModel dtm = (DefaultTreeModel)tree.getModel();   // get the tree model
-			         //now get the index of the selected node in the DefaultTreeModel
-			         int index = dtm.getIndexOfChild(node.getParent(), node);
-			         // if selected node is first, return (can't move it up)
-			         if(index < node.getParent().getChildCount()-1) {
-			            dtm.insertNodeInto(node, (DefaultMutableTreeNode)node.getParent(), index+1);   // move the node
-			            dtm.reload();
-			            for(int i=0;i<tree.getRowCount();i++)
-			    			tree.expandRow(i);
-			            tree.getSelectionModel().setSelectionPath(new TreePath(node.getPath()));
-			            updateEngineModel();
-			         }
+			"left:pref, pref, pref, pref, 0:grow", //$NON-NLS-1$
+			"p, 3dlu, p, 3dlu, p, 3dlu, p, 30dlu, 0:grow"
+		); //$NON-NLS-1$
+
+		PanelBuilder builder = new PanelBuilder(layout);
+		builder.setBorder(Borders.EMPTY_BORDER);
+		builder.setOpaque(false);
+
+		CellConstraints cc = new CellConstraints();
+
+		JButton but = new JButton(LooksFrame.readImageIcon("kdevelop_down-32.png")); //$NON-NLS-1$
+		but.setToolTipText(Messages.getString("TrTab2.6")); //$NON-NLS-1$
+		but.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TreePath path = tree.getSelectionModel().getSelectionPath();
+				if (path != null && path.getLastPathComponent() instanceof TreeNodeSettings) {
+					TreeNodeSettings node = ((TreeNodeSettings) path.getLastPathComponent());
+					if (node.getPlayer() != null) {
+						DefaultTreeModel dtm = (DefaultTreeModel)tree.getModel();   // get the tree model
+						//now get the index of the selected node in the DefaultTreeModel
+						int index = dtm.getIndexOfChild(node.getParent(), node);
+					        // if selected node is first, return (can't move it up)
+						if(index < node.getParent().getChildCount()-1) {
+							dtm.insertNodeInto(node, (DefaultMutableTreeNode)node.getParent(), index+1);   // move the node
+							dtm.reload();
+							for(int i=0;i<tree.getRowCount();i++)
+								tree.expandRow(i);
+							tree.getSelectionModel().setSelectionPath(new TreePath(node.getPath()));
+							updateEngineModel();
+						}
+					}
 				}
 			}
-		}   	   
-       });
-       
-       
-       
-       builder.add(but,          cc.xy(2,  3));
-       JButton but2 = new JButton(LooksFrame.readImageIcon("up-32.png")); //$NON-NLS-1$
-       but2.setToolTipText(Messages.getString("TrTab2.6")); //$NON-NLS-1$
-      // but2.setBorder(BorderFactory.createEmptyBorder());
-       but2.addActionListener(new ActionListener() {
-   		public void actionPerformed(ActionEvent e) {
-   			TreePath path = tree.getSelectionModel().getSelectionPath();
-			if (path != null && path.getLastPathComponent() instanceof TreeNodeSettings) {
-				TreeNodeSettings node = ((TreeNodeSettings) path.getLastPathComponent());
-				if (node.getPlayer() != null) {
-					DefaultTreeModel dtm = (DefaultTreeModel)tree.getModel();   // get the tree model
-			         //now get the index of the selected node in the DefaultTreeModel
-			         int index = dtm.getIndexOfChild(node.getParent(), node);
-			         // if selected node is first, return (can't move it up)
-			         if(index != 0) {
-			            dtm.insertNodeInto(node, (DefaultMutableTreeNode)node.getParent(), index-1);   // move the node
-			            dtm.reload();
-			            for(int i=0;i<tree.getRowCount();i++)
-			    			tree.expandRow(i);
-			            tree.getSelectionModel().setSelectionPath(new TreePath(node.getPath()));
-			            updateEngineModel();
-			         }
+		});
+		builder.add(but,          cc.xy(2,  3));
+
+		JButton but2 = new JButton(LooksFrame.readImageIcon("up-32.png")); //$NON-NLS-1$
+		but2.setToolTipText(Messages.getString("TrTab2.6")); //$NON-NLS-1$
+		but2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TreePath path = tree.getSelectionModel().getSelectionPath();
+				if (path != null && path.getLastPathComponent() instanceof TreeNodeSettings) {
+					TreeNodeSettings node = ((TreeNodeSettings) path.getLastPathComponent());
+					if (node.getPlayer() != null) {
+						DefaultTreeModel dtm = (DefaultTreeModel)tree.getModel();   // get the tree model
+						//now get the index of the selected node in the DefaultTreeModel
+						int index = dtm.getIndexOfChild(node.getParent(), node);
+						// if selected node is first, return (can't move it up)
+						if(index != 0) {
+							dtm.insertNodeInto(node, (DefaultMutableTreeNode)node.getParent(), index-1);   // move the node
+							dtm.reload();
+							for(int i=0;i<tree.getRowCount();i++)
+								tree.expandRow(i);
+							tree.getSelectionModel().setSelectionPath(new TreePath(node.getPath()));
+							updateEngineModel();
+						}
+					}
 				}
 			}
-   		}   	   
-          });
-       builder.add(but2,          cc.xy(3,  3));
-       JButton but3 = new JButton(LooksFrame.readImageIcon("connect_no-32.png")); //$NON-NLS-1$
-       but3.setToolTipText(Messages.getString("TrTab2.0")); //$NON-NLS-1$
-       //but3.setBorder(BorderFactory.createEmptyBorder());
-       but3.addActionListener(new ActionListener() {
+		});
+		builder.add(but2,          cc.xy(3,  3));
 
-		public void actionPerformed(ActionEvent e) {
-			
-			TreePath path = tree.getSelectionModel().getSelectionPath();
-			if (path != null && path.getLastPathComponent() instanceof TreeNodeSettings && ((TreeNodeSettings) path.getLastPathComponent()).getPlayer() != null) {
-				((TreeNodeSettings) path.getLastPathComponent()).setEnable(!((TreeNodeSettings) path.getLastPathComponent()).isEnable());
-				updateEngineModel();
-				tree.updateUI();
+		JButton but3 = new JButton(LooksFrame.readImageIcon("connect_no-32.png")); //$NON-NLS-1$
+		but3.setToolTipText(Messages.getString("TrTab2.0")); //$NON-NLS-1$
+		but3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TreePath path = tree.getSelectionModel().getSelectionPath();
+				if (path != null && path.getLastPathComponent() instanceof TreeNodeSettings && ((TreeNodeSettings) path.getLastPathComponent()).getPlayer() != null) {
+					((TreeNodeSettings) path.getLastPathComponent()).setEnable(!((TreeNodeSettings) path.getLastPathComponent()).isEnable());
+					updateEngineModel();
+					tree.updateUI();
+				}
 			}
-			
-		}
-    	   
-       });
-       builder.add(but3,          cc.xy(4,  3));
-       
-       DefaultMutableTreeNode root = new DefaultMutableTreeNode(Messages.getString("TrTab2.11")); //$NON-NLS-1$
-      /* TreeNodeSettings commonDec = new TreeNodeSettings(Messages.getString("TrTab2.12"), null, buildCommon()); //$NON-NLS-1$
-       tabbedPane.add(commonDec.id(), commonDec.getConfigPanel());
-       TreeNodeSettings commonEnc = new TreeNodeSettings(Messages.getString("TrTab2.13"), null, buildMEncoder()); //$NON-NLS-1$
-       tabbedPane.add(commonEnc.id(), commonEnc.getConfigPanel());*/
-       TreeNodeSettings commonEnc = new TreeNodeSettings(Messages.getString("TrTab2.5"), null, buildCommon()); //$NON-NLS-1$
-       tabbedPane.add(commonEnc.id(), commonEnc.getConfigPanel());
-     //  root.add(commonDec);
-       root.add(commonEnc);
-       
-       parent = new DefaultMutableTreeNode[5];
-       parent[0] = new DefaultMutableTreeNode(Messages.getString("TrTab2.14")); //$NON-NLS-1$
-       parent[1] = new DefaultMutableTreeNode(Messages.getString("TrTab2.15")); //$NON-NLS-1$
-       parent[2] = new DefaultMutableTreeNode(Messages.getString("TrTab2.16")); //$NON-NLS-1$
-       parent[3] = new DefaultMutableTreeNode(Messages.getString("TrTab2.17")); //$NON-NLS-1$
-       parent[4] = new DefaultMutableTreeNode(Messages.getString("TrTab2.18")); //$NON-NLS-1$
-       root.add(parent[0]);
-       root.add(parent[1]);
-       root.add(parent[2]);
-       root.add(parent[3]);
-       root.add(parent[4]);
-       
+		});
+		builder.add(but3,          cc.xy(4,  3));
 
-       tree = new JTree(new DefaultTreeModel(root)) {
-    	   
-		private static final long serialVersionUID = -6703434752606636290L;
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode(Messages.getString("TrTab2.11")); //$NON-NLS-1$
+		TreeNodeSettings commonEnc = new TreeNodeSettings(Messages.getString("TrTab2.5"), null, buildCommon()); //$NON-NLS-1$
+		tabbedPane.add(commonEnc.id(), commonEnc.getConfigPanel());
+		root.add(commonEnc);
 
-		/*protected void setExpandedState(TreePath path, boolean state) {
-	           // Ignore all collapse requests; collapse events will not be fired
-	           if (state) {
-	               super.setExpandedState(path, state);
-	           }
-	       }*/
-       };
-      tree.setRootVisible(false);
-      tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-      tree.addTreeSelectionListener(new TreeSelectionListener() {
+		parent = new DefaultMutableTreeNode[5];
+		parent[0] = new DefaultMutableTreeNode(Messages.getString("TrTab2.14")); //$NON-NLS-1$
+		parent[1] = new DefaultMutableTreeNode(Messages.getString("TrTab2.15")); //$NON-NLS-1$
+		parent[2] = new DefaultMutableTreeNode(Messages.getString("TrTab2.16")); //$NON-NLS-1$
+		parent[3] = new DefaultMutableTreeNode(Messages.getString("TrTab2.17")); //$NON-NLS-1$
+		parent[4] = new DefaultMutableTreeNode(Messages.getString("TrTab2.18")); //$NON-NLS-1$
+		root.add(parent[0]);
+		root.add(parent[1]);
+		root.add(parent[2]);
+		root.add(parent[3]);
+		root.add(parent[4]);
 
-		@Override
-		public void valueChanged(TreeSelectionEvent e) {
-			if (e.getNewLeadSelectionPath() != null && e.getNewLeadSelectionPath().getLastPathComponent() instanceof TreeNodeSettings) {
-				TreeNodeSettings tns = (TreeNodeSettings)e.getNewLeadSelectionPath().getLastPathComponent();
-				cl.show(tabbedPane, tns.id());
+		tree = new JTree(new DefaultTreeModel(root)) {
+			private static final long serialVersionUID = -6703434752606636290L;
+		};
+		tree.setRootVisible(false);
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+				if (e.getNewLeadSelectionPath() != null && e.getNewLeadSelectionPath().getLastPathComponent() instanceof TreeNodeSettings) {
+					TreeNodeSettings tns = (TreeNodeSettings)e.getNewLeadSelectionPath().getLastPathComponent();
+					cl.show(tabbedPane, tns.id());
+				}
 			}
-		}
-    	  
-      });
-      
-      tree.setCellRenderer(new TreeRenderer());
-       JScrollPane pane = new JScrollPane(tree);
-       
-       builder.add(pane,          cc.xyw(2,  1, 4));
-       
-       builder.addLabel(Messages.getString("TrTab2.19"), cc.xyw(2, 5, 4)); //$NON-NLS-1$
-       builder.addLabel(Messages.getString("TrTab2.20"), cc.xyw(2, 7, 4)); //$NON-NLS-1$
-    //   
-       
-        return builder.getPanel();
+		});
+
+		tree.setCellRenderer(new TreeRenderer());
+		JScrollPane pane = new JScrollPane(tree);
+
+		builder.add(pane,          cc.xyw(2,  1, 4));
+
+		builder.addLabel(Messages.getString("TrTab2.19"), cc.xyw(2, 5, 4)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("TrTab2.20"), cc.xyw(2, 7, 4)); //$NON-NLS-1$
+
+		return builder.getPanel();
 	}
-	
+
 	public void addEngines() {
 		ArrayList<Player> disPlayers = new ArrayList<Player>();
 		ArrayList<Player> ordPlayers = new ArrayList<Player>();
