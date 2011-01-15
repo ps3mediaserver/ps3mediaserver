@@ -105,6 +105,7 @@ private JTextField mencoder_ass_scale;
 	private JTextField defaultaudiosubs;
 	private JTextField defaultfont;
 	private JComboBox subcp;
+	private JTextField subq;
 	private JCheckBox  forcefps ;
 	private JCheckBox  yadif ;
 	private JCheckBox  scaler ;
@@ -140,7 +141,7 @@ private JTextField mencoder_ass_scale;
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
                 "left:pref, 3dlu, p:grow, 3dlu, right:p:grow, 3dlu, p:grow, 3dlu, right:p:grow,3dlu, p:grow, 3dlu, right:p:grow,3dlu, pref:grow", //$NON-NLS-1$
-                "p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu,p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p , 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p"); //$NON-NLS-1$
+                "p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu,p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p , 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(Borders.EMPTY_BORDER);
         builder.setOpaque(false);
@@ -805,7 +806,23 @@ private JTextField mencoder_ass_scale;
        	
        });
        builder.add(subs, cc.xyw(1, 43, 15));
-       
+
+       builder.addLabel(Messages.getString("MEncoderVideo.92"), cc.xy(1, 45)); //$NON-NLS-1$
+       subq = new JTextField(configuration.getMencoderVobsubSubtitleQuality());
+       subq.addKeyListener(new KeyListener() {
+
+   		@Override
+   		public void keyPressed(KeyEvent e) {}
+   		@Override
+   		public void keyTyped(KeyEvent e) {}
+   		@Override
+   		public void keyReleased(KeyEvent e) {
+   			configuration.setMencoderVobsubSubtitleQuality(subq.getText());
+   		}
+
+          });
+       builder.add(subq, cc.xyw(3, 45, 1));
+
        subColor = new JButton();
        subColor.setText("Subs color");
        subColor.setBackground(new Color(configuration.getSubsColor()));
@@ -829,9 +846,9 @@ private JTextField mencoder_ass_scale;
        decodeTips.setEditable(false);
        decodeTips.setBorder(BorderFactory.createEtchedBorder());
        decodeTips.setBackground(new Color(255, 255, 192));
-       builder.add(decodeTips, cc.xyw(1, 45, 15));
-       
-      
+       builder.add(decodeTips, cc.xyw(1, 49, 15));
+
+
       JCheckBox disableSubs = ((LooksFrame) PMS.get().getFrame()).getTr().getDisableSubs();
       disableSubs.addItemListener(new ItemListener() {
 
@@ -839,6 +856,7 @@ private JTextField mencoder_ass_scale;
 				configuration.setMencoderDisableSubs(e.getStateChange() == ItemEvent.SELECTED);
 				
 				subs.setEnabled(!configuration.isMencoderDisableSubs());
+				subq.setEnabled(!configuration.isMencoderDisableSubs());
 				defaultsubs.setEnabled(!configuration.isMencoderDisableSubs());
 				subcp.setEnabled(!configuration.isMencoderDisableSubs());
 				ass.setEnabled(!configuration.isMencoderDisableSubs());
@@ -1149,6 +1167,14 @@ private JTextField mencoder_ass_scale;
 			if (mpegts || wmv)
 				needAssFixPTS = Platform.isWindows(); // don't think the fixpts filter is in the mplayer trunk
 		}
+
+		// Apply DVD/VOBsub subtitle quality
+		if (configuration.getMencoderVobsubSubtitleQuality() != null) {
+			String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
+
+			sb.append("-spuaa " + subtitleQuality + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		}
+
 		if (params.sid != null && !params.sid.is_file_utf8 && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() >  0) {
 			sb.append("-subcp " +configuration.getMencoderSubCp() + " "); //$NON-NLS-1$ //$NON-NLS-2$
 			if (configuration.isMencoderSubFribidi()) {

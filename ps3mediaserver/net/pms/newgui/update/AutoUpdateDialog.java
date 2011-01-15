@@ -50,7 +50,7 @@ public class AutoUpdateDialog extends JDialog implements Observer {
 		private static final long serialVersionUID = 4762020878159496712L;
 
 		DownloadButton() {
-			super("Download Update");
+			super("Download");
 			setEnabled(false);
 			addActionListener(this);
 		}

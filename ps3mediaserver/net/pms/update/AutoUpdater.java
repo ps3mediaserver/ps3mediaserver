@@ -140,14 +140,14 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 				exe = new File(PMS.getConfiguration().getTempFolder(), TARGET_FILENAME);
 			Runtime.getRuntime().exec(exe.getAbsolutePath());
 		} catch (IOException e) {
-			wrapException(serverProperties.getDownloadUrl(), "Unable to run new Setup", e);
+			wrapException(serverProperties.getDownloadUrl(), "Unable to run update. You may need to manually download it.", e);
 		}
 	}
 
 	private void assertUpdateIsAvailable() throws UpdateException {
 		synchronized (stateLock) {
 			if (!serverProperties.isStateValid()) {
-				throw new UpdateException("Server error.  Try again later.");
+				throw new UpdateException("Server error. Try again later.");
 			}
 	
 			if (!isUpdateAvailable()) {
@@ -221,7 +221,7 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 	}
 
 	private void wrapException(String downloadUrl, String message, Throwable cause) throws UpdateException {
-		throw new UpdateException("Error while downloading " + downloadUrl + ": " + message, cause);
+		throw new UpdateException("Error: " + message, cause);
 	}
 
 	private String getPropertiesUrl() {
