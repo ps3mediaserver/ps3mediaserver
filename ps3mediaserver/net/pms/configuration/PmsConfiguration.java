@@ -807,25 +807,29 @@ public class PmsConfiguration {
 	private static final String PMSDIR = "\\PMS\\";
 
 	public void save() throws ConfigurationException {
+		String strAppData = System.getenv("APPDATA");
+
 		if(Platform.isMac()) {
 			configuration.setFileName(CONFIGURATION_PATH_MAC + CONFIGURATION_FILENAME);
+		// Else if it is Windows with AppData
+		} else if (Platform.isWindows() && strAppData != null) {
+			// If config file already exists in AppData
+			if (new File(strAppData + PMSDIR + CONFIGURATION_FILENAME).exists()) {
+				configuration.setFileName(strAppData+PMSDIR+CONFIGURATION_FILENAME);
+			// Else create the file and directory if needed
+			} else {
+				File pmsDir = new File(strAppData+PMSDIR);
+				if (!pmsDir.exists())
+					pmsDir.mkdir();
+				configuration.setFileName(strAppData+PMSDIR+CONFIGURATION_FILENAME);
+			}
 		} else {
 			configuration.setFileName(CONFIGURATION_FILENAME);
 		}
 		try {
 			configuration.save();
 		} catch (ConfigurationException ce) {
-			PMS.minimal("Troubles to save PMS.conf in application folder... not admin access ?");
-			String strAppData = System.getenv("APPDATA");
-			if (Platform.isWindows() && strAppData != null) {
-				PMS.minimal("Switching save folder to: " + strAppData + PMSDIR);
-				File pmsDir = new File(strAppData+PMSDIR);
-				if (!pmsDir.exists())
-					pmsDir.mkdir();
-				configuration.setFileName(strAppData+PMSDIR+CONFIGURATION_FILENAME);
-				configuration.save();
-			} else
-				throw ce;
+			throw ce;
 		}
 		PMS.minimal("Configuration saved.");
 	}

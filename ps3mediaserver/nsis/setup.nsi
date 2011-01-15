@@ -45,8 +45,6 @@ Section "Program Files"
   File "README"
   File "FAQ"
   File "LICENSE.txt"
-  SetOverwrite off
-  File "WEB.conf"
   
   ;Store install folder
   WriteRegStr HKCU "${REG_KEY_SOFTWARE}" "" $INSTDIR
@@ -57,6 +55,10 @@ Section "Program Files"
   WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayName" "PS3 Media Server"
   WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "UninstallString" '"$INSTDIR\uninst.exe"'
   WriteUnInstaller "uninst.exe"
+
+  SetOutPath "$APPDATA\PMS"
+  SetOverwrite off
+  File "WEB.conf"
 SectionEnd
  
 Section "Start Menu Shortcuts"

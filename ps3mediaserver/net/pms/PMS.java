@@ -474,19 +474,29 @@ public class PMS {
 		
 		return true;
 	}
-	
+
+	private static final String PMSDIR = "\\PMS\\";
+
 	public void manageRoot(RendererConfiguration renderer) throws IOException {
+		String webConfPath;
+
 		File files [] = loadFoldersConf(configuration.getFolders());
 		if (files == null || files.length == 0)
 			files = File.listRoots();
-		if (PMS.get().isWindows()) {
-			
-		}
+
 		getRootFolder(renderer).browse(files);
 		getRootFolder(renderer).browse(MapFileConfiguration.parse(configuration.getVirtualFolders()));
-		
-		
-		File webConf = new File("WEB.conf"); //$NON-NLS-1$
+
+		String strAppData = System.getenv("APPDATA");
+
+		if (Platform.isWindows() && strAppData != null) {
+			webConfPath = strAppData + PMSDIR + "WEB.conf";
+		} else {
+			webConfPath = "WEB.conf";
+		}
+
+		File webConf = new File(webConfPath); //$NON-NLS-1$
+
 		if (webConf.exists()) {
 			try {
 				LineNumberReader br = new LineNumberReader(new InputStreamReader(new FileInputStream(webConf), "UTF-8")); //$NON-NLS-1$
@@ -498,43 +508,46 @@ public class PMS {
 						String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
 						String keys [] = parseFeedKey((String) key);
 						try {
-							if (keys[0].equals("imagefeed") || keys[0].equals("audiofeed") || keys[0].equals("videofeed") || keys[0].equals("audiostream") || keys[0].equals("videostream")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-							
-							String values [] = parseFeedValue((String) value);
-							DLNAResource parent = null;
-							if (keys[1] != null) {
-								StringTokenizer st = new StringTokenizer(keys[1], ","); //$NON-NLS-1$
-								DLNAResource currentRoot = getRootFolder(renderer);
-								while (st.hasMoreTokens()) {
-									String folder = st.nextToken();
-									parent = currentRoot.searchByName(folder);
-									if (parent == null) {
-										parent = new VirtualFolder(folder, ""); //$NON-NLS-1$
-										currentRoot.addChild(parent);
+							if (
+								keys[0].equals("imagefeed") ||
+								keys[0].equals("audiofeed") ||
+								keys[0].equals("videofeed") ||
+								keys[0].equals("audiostream") ||
+								keys[0].equals("videostream")
+							) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+								String values [] = parseFeedValue((String) value);
+								DLNAResource parent = null;
+								if (keys[1] != null) {
+									StringTokenizer st = new StringTokenizer(keys[1], ","); //$NON-NLS-1$
+									DLNAResource currentRoot = getRootFolder(renderer);
+									while (st.hasMoreTokens()) {
+										String folder = st.nextToken();
+										parent = currentRoot.searchByName(folder);
+										if (parent == null) {
+											parent = new VirtualFolder(folder, ""); //$NON-NLS-1$
+											currentRoot.addChild(parent);
+										}
+										currentRoot = parent;
 									}
-									currentRoot = parent;
+								}
+								if (parent == null)
+									parent = getRootFolder(renderer);
+								if (keys[0].equals("imagefeed")) { //$NON-NLS-1$
+									parent.addChild(new ImagesFeed(values[0]));
+								} else if (keys[0].equals("videofeed")) { //$NON-NLS-1$
+									parent.addChild(new VideosFeed(values[0]));
+								} else if (keys[0].equals("audiofeed")) { //$NON-NLS-1$
+									parent.addChild(new AudiosFeed(values[0]));
+								} else if (keys[0].equals("audiostream")) { //$NON-NLS-1$
+									parent.addChild(new WebAudioStream(values[0], values[1], values[2]));
+								} else if (keys[0].equals("videostream")) { //$NON-NLS-1$
+									parent.addChild(new WebVideoStream(values[0], values[1], values[2]));
 								}
 							}
-							if (parent == null)
-								parent = getRootFolder(renderer);
-							if (keys[0].equals("imagefeed")) { //$NON-NLS-1$
-								parent.addChild(new ImagesFeed(values[0]));
-							} else if (keys[0].equals("videofeed")) { //$NON-NLS-1$
-								parent.addChild(new VideosFeed(values[0]));
-							} else if (keys[0].equals("audiofeed")) { //$NON-NLS-1$
-								parent.addChild(new AudiosFeed(values[0]));
-							} else if (keys[0].equals("audiostream")) { //$NON-NLS-1$
-								parent.addChild(new WebAudioStream(values[0], values[1], values[2]));
-							} else if (keys[0].equals("videostream")) { //$NON-NLS-1$
-								parent.addChild(new WebVideoStream(values[0], values[1], values[2]));
-							}
-						}
-						
 						// catch exception here and go with parsing
-	                  } catch (ArrayIndexOutOfBoundsException e) {
-	                     PMS.minimal("Error in line " + br.getLineNumber() + " of file WEB.conf: " + e.getMessage()); //$NON-NLS-1$
-	                     
-	                  }
+						} catch (ArrayIndexOutOfBoundsException e) {
+							PMS.minimal("Error in line " + br.getLineNumber() + " of file WEB.conf: " + e.getMessage()); //$NON-NLS-1$
+						}
 					}
 				}
 				br.close();
@@ -543,7 +556,6 @@ public class PMS {
 				PMS.minimal("Unexpected error in WEB.conf: " + e.getMessage()); //$NON-NLS-1$
 			}
 		}
-
 
 		if (Platform.isMac()) {
  			if (PMS.getConfiguration().getIphotoEnabled()) {
