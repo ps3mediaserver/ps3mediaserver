@@ -90,7 +90,7 @@ public class MEncoderVideo extends Player {
 	public JCheckBox getCheckBox() {
 		return checkBox;
 	}
-	
+
 private JTextField mencoder_ass_scale;
 	private JTextField mencoder_ass_margin;
 	private JTextField mencoder_ass_outline;
@@ -128,15 +128,15 @@ private JTextField mencoder_ass_scale;
 	public JCheckBox getSubs() {
 		return subs;
 	}
-	
+
 	private JCheckBox fribidi;
-	
+
 	private final PmsConfiguration configuration;
-	
+
 	public MEncoderVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
 	}
-	
+
 	@Override
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
@@ -147,7 +147,7 @@ private JTextField mencoder_ass_scale;
         builder.setOpaque(false);
 
         CellConstraints cc = new CellConstraints();
-        
+
          checkBox = new JCheckBox(Messages.getString("MEncoderVideo.0")); //$NON-NLS-1$
         checkBox.setContentAreaFilled(false);
         if (PMS.getConfiguration().getSkipLoopFilterEnabled())
@@ -157,20 +157,20 @@ private JTextField mencoder_ass_scale;
 			public void itemStateChanged(ItemEvent e) {
 				PMS.getConfiguration().setSkipLoopFilterEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
-        	
+
         });
-        
+
         JComponent cmp = builder.addSeparator(Messages.getString("MEncoderVideo.1"),  cc.xyw(1, 1, 15)); //$NON-NLS-1$
         cmp = (JComponent) cmp.getComponent(0);
         cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-        
+
         mencodermt = new JCheckBox(Messages.getString("MEncoderVideo.35")); //$NON-NLS-1$
         mencodermt.setFont(mencodermt.getFont().deriveFont(Font.BOLD));
         mencodermt.setContentAreaFilled(false);
         if (PMS.getConfiguration().getMencoderMT())
         	mencodermt.setSelected(true);
         mencodermt.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				PMS.getConfiguration().setMencoderMT(mencodermt.isSelected());
@@ -182,13 +182,13 @@ private JTextField mencoder_ass_scale;
 	                    JOptionPane.INFORMATION_MESSAGE);
 				
 			}
-        	
+
         });
         mencodermt.setEnabled(Platform.isWindows() || Platform.isMac());
-        
+
         builder.add(mencodermt,          cc.xy(1,  3));
        builder.add(checkBox,          cc.xyw(3,  3, 12));
-       
+
        noskip = new JCheckBox(Messages.getString("MEncoderVideo.2")); //$NON-NLS-1$
        noskip.setContentAreaFilled(false);
        if (PMS.getConfiguration().isMencoderNoOutOfSync())
@@ -199,16 +199,16 @@ private JTextField mencoder_ass_scale;
 				PMS.getConfiguration().setMencoderNoOutOfSync((e.getStateChange() == ItemEvent.SELECTED));
 				//intelligentsync.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
 			}
-       	
+
        });
-       
+
        builder.add(noskip,          cc.xy(1,  5));
-       
-      
+
+
 //       if (!PMS.get().isMencoder_nooutofsync())
 //    	   intelligentsync.setEnabled(false);
       // builder.add(intelligentsync,          cc.xyw(3,  5, 7));
-       
+
        JButton button = new JButton(Messages.getString("MEncoderVideo.29")); //$NON-NLS-1$
        button.addActionListener(new ActionListener() {
 
@@ -218,18 +218,18 @@ private JTextField mencoder_ass_scale;
 			final JTextArea textArea = new JTextArea();
 			textArea.setText(PMS.getConfiguration().getCodecSpecificConfig());
 			textArea.setFont(new Font("Courier", Font.PLAIN, 12)); //$NON-NLS-1$
-			JScrollPane scrollPane = new JScrollPane(textArea);		
+			JScrollPane scrollPane = new JScrollPane(textArea);
 			scrollPane.setPreferredSize(new java.awt.Dimension(900, 100));
-			
+
 			final JTextArea textAreaDefault = new JTextArea();
 			textAreaDefault.setText(DEFAULT_CODEC_CONF_SCRIPT);
 			textAreaDefault.setBackground(Color.WHITE);
 			textAreaDefault.setFont(new Font("Courier", Font.PLAIN, 12)); //$NON-NLS-1$
 			textAreaDefault.setEditable(false);
 			textAreaDefault.setEnabled(PMS.getConfiguration().isMencoderIntelligentSync());
-			JScrollPane scrollPaneDefault = new JScrollPane(textAreaDefault);		
+			JScrollPane scrollPaneDefault = new JScrollPane(textAreaDefault);
 			scrollPaneDefault.setPreferredSize(new java.awt.Dimension(900, 450));
-			
+
 			JPanel customPanel = new JPanel(new BorderLayout());
 			 intelligentsync = new JCheckBox(Messages.getString("MEncoderVideo.3")); //$NON-NLS-1$
 		       intelligentsync.setContentAreaFilled(false);
@@ -240,15 +240,15 @@ private JTextField mencoder_ass_scale;
 					public void itemStateChanged(ItemEvent e) {
 						PMS.getConfiguration().setMencoderIntelligentSync((e.getStateChange() == ItemEvent.SELECTED));
 						textAreaDefault.setEnabled(PMS.getConfiguration().isMencoderIntelligentSync());
-						
+
 					}
-		       	
+
 		       });
-		       
+
 		       JLabel label = new JLabel(Messages.getString("MEncoderVideo.33")); //$NON-NLS-1$
 		       customPanel.add(label, BorderLayout.NORTH);
 		       customPanel.add(scrollPane, BorderLayout.SOUTH);
-		       
+
 			codecPanel.add(intelligentsync, BorderLayout.NORTH);
 			codecPanel.add(scrollPaneDefault, BorderLayout.CENTER);
 			codecPanel.add(customPanel, BorderLayout.SOUTH);
@@ -271,18 +271,18 @@ private JTextField mencoder_ass_scale;
 				if (result.length > 0 && result[0].startsWith("@@")) { //$NON-NLS-1$
 					String errorMessage = result[0].substring(2);
 					JOptionPane.showMessageDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), errorMessage);
-					
+
 				} else {
 					configuration.setCodecSpecificConfig(newCodecparam);
 					break;
 				}
 			}
-			
+
 		}
-    	   
+
        });
        builder.add(button,          cc.xyw(1,  11, 2));
-       
+
        forcefps = new JCheckBox(Messages.getString("MEncoderVideo.4")); //$NON-NLS-1$
        forcefps.setContentAreaFilled(false);
        if (configuration.isMencoderForceFps())
@@ -292,11 +292,11 @@ private JTextField mencoder_ass_scale;
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setMencoderForceFps(e.getStateChange() == ItemEvent.SELECTED);
 			}
-       	
+
        });
-       
+
        builder.add(forcefps,          cc.xyw(1,  7, 2));
-       
+
        yadif = new JCheckBox(Messages.getString("MEncoderVideo.26")); //$NON-NLS-1$
        yadif.setContentAreaFilled(false);
        if (configuration.isMencoderYadif())
@@ -306,11 +306,11 @@ private JTextField mencoder_ass_scale;
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setMencoderYadif(e.getStateChange() == ItemEvent.SELECTED);
 			}
-       	
+
        });
-       
+
        builder.add(yadif,          cc.xyw(3,  7, 7));
-       
+
        scaler = new JCheckBox(Messages.getString("MEncoderVideo.27")); //$NON-NLS-1$
        scaler.setContentAreaFilled(false);
        scaler.addItemListener(new ItemListener() {
@@ -320,11 +320,11 @@ private JTextField mencoder_ass_scale;
 				scaleX.setEnabled(configuration.isMencoderScaler());
 				scaleY.setEnabled(configuration.isMencoderScaler());
 			}
-       	
+
        });
-       
+
        builder.add(scaler,          cc.xyw(3,  5,7));
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.28"), cc.xyw(10, 5, 3, CellConstraints.RIGHT, CellConstraints.CENTER)); //$NON-NLS-1$
        scaleX = new JTextField("" + configuration.getMencoderScaleX()); //$NON-NLS-1$
        scaleX.addKeyListener(new KeyListener() {
@@ -339,10 +339,10 @@ private JTextField mencoder_ass_scale;
    				configuration.setMencoderScaleX(Integer.parseInt(scaleX.getText()));
    			} catch (NumberFormatException nfe) {}
    		}
-       	   
+
           });
        builder.add(scaleX, cc.xyw(13, 5, 3));
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.30"), cc.xyw(10, 7, 3, CellConstraints.RIGHT, CellConstraints.CENTER)); //$NON-NLS-1$
        scaleY = new JTextField("" + configuration.getMencoderScaleY()); //$NON-NLS-1$
        scaleY.addKeyListener(new KeyListener() {
@@ -357,19 +357,19 @@ private JTextField mencoder_ass_scale;
    				configuration.setMencoderScaleY(Integer.parseInt(scaleY.getText()));
    			} catch (NumberFormatException nfe) {}
    		}
-       	   
+
           });
        builder.add(scaleY, cc.xyw(13, 7, 3));
-       
+
        if (configuration.isMencoderScaler())
     	   scaler.setSelected(true);
        else {
     	   scaleX.setEnabled(false);
     	   scaleY.setEnabled(false);
        }
-       
-       
-       
+
+
+
        videoremux = new JCheckBox("<html>" + Messages.getString("MEncoderVideo.38") + "</html>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
        videoremux.setContentAreaFilled(false);
        videoremux.setFont(videoremux.getFont().deriveFont(Font.BOLD));
@@ -380,9 +380,9 @@ private JTextField mencoder_ass_scale;
 			public void itemStateChanged(ItemEvent e) {
 				PMS.getConfiguration().setMencoderMuxWhenCompatible((e.getStateChange() == ItemEvent.SELECTED));
 			}
-       	
+
        });
-       
+
        builder.add(videoremux, cc.xyw(1, 9,13));
   
        cmp = builder.addSeparator(Messages.getString("MEncoderVideo.5"), cc.xyw(1, 19, 15)); //$NON-NLS-1$
@@ -401,12 +401,10 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderDecode(decode.getText());
    		}
-       	   
+
           });
        builder.add(decode, cc.xyw(3, 21, 13));
-       
-      
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.7"), cc.xyw(1, 23, 15)); //$NON-NLS-1$
        langs = new JTextField(configuration.getMencoderAudioLanguages());
        langs.addKeyListener(new KeyListener() {
@@ -419,16 +417,14 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderAudioLanguages(langs.getText());
    		}
-       	   
+
           });
        builder.add(langs, cc.xyw(3, 23, 8));
-       
+
        cmp = builder.addSeparator(Messages.getString("MEncoderVideo.8"),  cc.xyw(1, 25, 15)); //$NON-NLS-1$
        cmp = (JComponent) cmp.getComponent(0);
        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-        
-     
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.9"), cc.xy(1, 27)); //$NON-NLS-1$
        defaultsubs = new JTextField(configuration.getMencoderSubLanguages());
        defaultsubs.addKeyListener(new KeyListener() {
@@ -441,7 +437,7 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderSubLanguages(defaultsubs.getText());
    		}
-       	   
+
           });
        builder.add(defaultsubs, cc.xyw(3, 27, 8));
        
@@ -457,10 +453,10 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderAudioSubLanguages(defaultaudiosubs.getText());
    		}
-       	   
+
           });
        builder.add(defaultaudiosubs, cc.xyw(3, 29, 8));
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.11"), cc.xy(1,31)); //$NON-NLS-1$
        /*subcp = new JTextField(configuration.getMencoderSubCp());
        subcp.addKeyListener(new KeyListener() {
@@ -473,7 +469,7 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoder_subcp(subcp.getText());
    		}
-       	   
+
           });*/
        Object data [] = new Object [] { configuration.getMencoderSubCp(),
     		   "cp1250  /* Windows - Eastern Europe */", //$NON-NLS-1$
@@ -505,7 +501,7 @@ private JTextField mencoder_ass_scale;
     		   "cp949   /* Korean */", //$NON-NLS-1$
     		   "cp950   /* Big5, Taiwanese, Cantonese */"}; //$NON-NLS-1$
        MyComboBoxModel cbm = new MyComboBoxModel(data);
-       
+
        subcp = new JComboBox(cbm);
        subcp.addItemListener(new ItemListener() {
 
@@ -518,11 +514,11 @@ private JTextField mencoder_ass_scale;
 					configuration.setMencoderSubCp(s);
 				}
 			}
-       	
+
        });
        subcp.setEditable(true);
        builder.add(subcp, cc.xyw(3, 31,7));
-       
+
        fribidi = new JCheckBox("FriBiDi mode"); //$NON-NLS-1$
        fribidi.setContentAreaFilled(false);
        if (configuration.isMencoderSubFribidi())
@@ -532,10 +528,10 @@ private JTextField mencoder_ass_scale;
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setMencoderSubFribidi(e.getStateChange() == ItemEvent.SELECTED);
 			}
-       	
+
        });
        builder.add(fribidi, cc.xyw(11, 31, 4));
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.24"), cc.xy(1, 33)); //$NON-NLS-1$
        defaultfont = new JTextField(configuration.getMencoderFont());
        defaultfont.addKeyListener(new KeyListener() {
@@ -548,10 +544,10 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderFont(defaultfont.getText());
    		}
-       	   
+
           });
        builder.add(defaultfont, cc.xyw(3, 33, 8));
-       
+
        JButton fontselect = new JButton("..."); //$NON-NLS-1$
        fontselect.addActionListener(new ActionListener() {
 
@@ -565,10 +561,10 @@ private JTextField mencoder_ass_scale;
 			    	configuration.setMencoderFont(chooser.getSelectedFile().getAbsolutePath());
 			    }
 			}
- 		  
+
  	  });
  	  builder.add(fontselect,          cc.xyw(11,  33, 2));
- 	  
+
  	 builder.addLabel(Messages.getString("MEncoderVideo.37"), cc.xyw(1, 35, 3)); //$NON-NLS-1$
      alternateSubFolder = new JTextField(configuration.getAlternateSubsFolder());
      alternateSubFolder.addKeyListener(new KeyListener() {
@@ -581,10 +577,10 @@ private JTextField mencoder_ass_scale;
  		public void keyReleased(KeyEvent e) {
  			configuration.setAlternateSubsFolder(alternateSubFolder.getText());
  		}
-     	   
+
         });
      builder.add(alternateSubFolder, cc.xyw(3, 35, 8));
-     
+
      JButton select = new JButton("..."); //$NON-NLS-1$
      select.addActionListener(new ActionListener() {
 
@@ -603,10 +599,10 @@ private JTextField mencoder_ass_scale;
 			    	configuration.setAlternateSubsFolder(chooser.getSelectedFile().getAbsolutePath());
 			    }
 			}
-		  
+
 	  });
 	  builder.add(select,          cc.xyw(11,  35,2));
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.12"), cc.xy(1, 39, CellConstraints.RIGHT, CellConstraints.CENTER)); //$NON-NLS-1$
        mencoder_ass_scale = new JTextField(configuration.getMencoderAssScale());
        mencoder_ass_scale.addKeyListener(new KeyListener() {
@@ -619,9 +615,9 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderAssScale(mencoder_ass_scale.getText());
    		}
-       	   
+
           });
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.13"), cc.xy(5, 39)); //$NON-NLS-1$
        mencoder_ass_outline = new JTextField(configuration.getMencoderAssOutline());
        mencoder_ass_outline.addKeyListener(new KeyListener() {
@@ -634,9 +630,9 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderAssOutline(mencoder_ass_outline.getText());
    		}
-       	   
+
           });
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.14"), cc.xy(9,39)); //$NON-NLS-1$
        mencoder_ass_shadow = new JTextField(configuration.getMencoderAssShadow());
        mencoder_ass_shadow.addKeyListener(new KeyListener() {
@@ -649,9 +645,9 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderAssShadow(mencoder_ass_shadow.getText());
    		}
-       	   
+
           });
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.15"), cc.xy(13, 39)); //$NON-NLS-1$
        mencoder_ass_margin = new JTextField(configuration.getMencoderAssMargin());
        mencoder_ass_margin.addKeyListener(new KeyListener() {
@@ -664,17 +660,17 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderAssMargin(mencoder_ass_margin.getText());
    		}
-       	   
+
           });
  builder.add(mencoder_ass_scale, cc.xy(3, 39));
-       
+
        builder.add(mencoder_ass_outline, cc.xy(7, 39));
-       
+
        builder.add(mencoder_ass_shadow, cc.xy(11, 39));
-      
+
        builder.add(mencoder_ass_margin, cc.xy(15, 39));
-       
-       
+
+
        builder.addLabel(Messages.getString("MEncoderVideo.16"), cc.xy(1, 41, CellConstraints.RIGHT, CellConstraints.CENTER)); //$NON-NLS-1$
        mencoder_noass_scale = new JTextField(configuration.getMencoderNoAssScale());
        mencoder_noass_scale.addKeyListener(new KeyListener() {
@@ -687,9 +683,9 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderNoAssScale(mencoder_noass_scale.getText());
    		}
-       	   
+
           });
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.17"), cc.xy(5, 41)); //$NON-NLS-1$
        mencoder_noass_outline = new JTextField(configuration.getMencoderNoAssOutline());
        mencoder_noass_outline.addKeyListener(new KeyListener() {
@@ -702,9 +698,9 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderNoAssOutline(mencoder_noass_outline.getText());
    		}
-       	   
+
           });
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.18"), cc.xy(9, 41)); //$NON-NLS-1$
        mencoder_noass_blur = new JTextField(configuration.getMencoderNoAssBlur());
        mencoder_noass_blur.addKeyListener(new KeyListener() {
@@ -717,9 +713,9 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderNoAssBlur(mencoder_noass_blur.getText());
    		}
-       	   
+
           });
-       
+
        builder.addLabel(Messages.getString("MEncoderVideo.19"), cc.xy(13, 41)); //$NON-NLS-1$
        mencoder_noass_subpos = new JTextField(configuration.getMencoderNoAssSubPos());
        mencoder_noass_subpos.addKeyListener(new KeyListener() {
@@ -732,17 +728,17 @@ private JTextField mencoder_ass_scale;
    		public void keyReleased(KeyEvent e) {
    			configuration.setMencoderNoAssSubPos(mencoder_noass_subpos.getText());
    		}
-       	   
+
           });
  builder.add(mencoder_noass_scale, cc.xy(3, 41));
-       
+
        builder.add(mencoder_noass_outline, cc.xy(7, 41));
-       
+
        builder.add(mencoder_noass_blur, cc.xy(11, 41));
-      
+
        builder.add(mencoder_noass_subpos, cc.xy(15,41));
-       
-       
+
+
        ass = new JCheckBox(Messages.getString("MEncoderVideo.20")); //$NON-NLS-1$
        ass.setContentAreaFilled(false);
        ass.addItemListener(new ItemListener() {
@@ -751,7 +747,7 @@ private JTextField mencoder_ass_scale;
 				if (e != null) {
 					configuration.setMencoderAss(e.getStateChange() == ItemEvent.SELECTED);
 				}
-				
+
 				mencoder_ass_scale.setEnabled(configuration.isMencoderAss());
 				mencoder_ass_outline.setEnabled(configuration.isMencoderAss());
 				mencoder_ass_shadow.setEnabled(configuration.isMencoderAss());
@@ -761,13 +757,13 @@ private JTextField mencoder_ass_scale;
 				mencoder_noass_blur.setEnabled(!configuration.isMencoderAss());
 				mencoder_noass_subpos.setEnabled(!configuration.isMencoderAss());
 			}
-       	
+
        });
-       
+
        builder.add(ass,          cc.xy(1, 37));
        ass.setSelected(configuration.isMencoderAss());
       ass.getItemListeners()[0].itemStateChanged(null);
-     
+
       fc = new JCheckBox(Messages.getString("MEncoderVideo.21")); //$NON-NLS-1$
       fc.setContentAreaFilled(false);
       fc.addItemListener(new ItemListener() {
@@ -775,12 +771,12 @@ private JTextField mencoder_ass_scale;
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setMencoderFontConfig(e.getStateChange() == ItemEvent.SELECTED);
 			}
-      	
+
       });
-      
+
       builder.add(fc,          cc.xyw(3,  37, 5));
       fc.setSelected(configuration.isMencoderFontConfig());
-      
+
       assdefaultstyle = new JCheckBox(Messages.getString("MEncoderVideo.36")); //$NON-NLS-1$
       assdefaultstyle.setContentAreaFilled(false);
       assdefaultstyle.addItemListener(new ItemListener() {
@@ -788,12 +784,12 @@ private JTextField mencoder_ass_scale;
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setMencoderAssDefaultStyle(e.getStateChange() == ItemEvent.SELECTED);
 			}
-      	
+
       });
-      
+
       builder.add(assdefaultstyle,          cc.xyw(8,  37, 4));
       assdefaultstyle.setSelected(configuration.isMencoderAssDefaultStyle());
-       
+
        subs = new JCheckBox(Messages.getString("MEncoderVideo.22")); //$NON-NLS-1$
        subs.setContentAreaFilled(false);
        if (PMS.getConfiguration().getUseSubtitles())
@@ -803,7 +799,7 @@ private JTextField mencoder_ass_scale;
 			public void itemStateChanged(ItemEvent e) {
 				PMS.getConfiguration().setUseSubtitles((e.getStateChange() == ItemEvent.SELECTED));
 			}
-       	
+
        });
        builder.add(subs, cc.xyw(1, 43, 15));
 
@@ -841,7 +837,7 @@ private JTextField mencoder_ass_scale;
    		}
        });
        builder.add(subColor, cc.xyw(12,  37, 4));
-       
+
        JTextArea decodeTips = new JTextArea(Messages.getString("MEncoderVideo.23")); //$NON-NLS-1$
        decodeTips.setEditable(false);
        decodeTips.setBorder(BorderFactory.createEtchedBorder());
@@ -854,7 +850,7 @@ private JTextField mencoder_ass_scale;
 
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setMencoderDisableSubs(e.getStateChange() == ItemEvent.SELECTED);
-				
+
 				subs.setEnabled(!configuration.isMencoderDisableSubs());
 				subq.setEnabled(!configuration.isMencoderDisableSubs());
 				defaultsubs.setEnabled(!configuration.isMencoderDisableSubs());
@@ -871,17 +867,15 @@ private JTextField mencoder_ass_scale;
 				mencoder_noass_outline.setEnabled(!configuration.isMencoderDisableSubs());
 				mencoder_noass_blur.setEnabled(!configuration.isMencoderDisableSubs());
 				mencoder_noass_subpos.setEnabled(!configuration.isMencoderDisableSubs());
-				
+
 				if (!configuration.isMencoderDisableSubs())
 				 ass.getItemListeners()[0].itemStateChanged(null);
 			}
-      	
+
       });
      if (configuration.isMencoderDisableSubs())
   	   disableSubs.setSelected(true);
-     
-      
-     
+
         return builder.getPanel();
 	}
 
@@ -889,14 +883,14 @@ private JTextField mencoder_ass_scale;
 	public int purpose() {
 		return VIDEO_SIMPLEFILE_PLAYER;
 	}
-	
+
 	public static final String ID = "mencoder"; //$NON-NLS-1$
-	
+
 	@Override
 	public String id() {
 		return ID;
 	}
-	
+
 	@Override
 	public boolean avisynth() {
 		return false;
@@ -906,7 +900,7 @@ private JTextField mencoder_ass_scale;
 	public boolean isTimeSeekable() {
 		return true;
 	}
-	
+
 	protected boolean dts;
 	protected boolean pcm;
 	protected boolean mux;
@@ -918,7 +912,7 @@ private JTextField mencoder_ass_scale;
 
 	protected String overridenMainArgs [];
 	//protected String defaultSubArgs [];
-		
+
 	protected String [] getDefaultArgs() {
 		return new String [] { "-quiet", "-oac", oaccopy?"copy":(pcm?"pcm":"lavc"), "-of", (wmv||mpegts)?"lavf":(pcm&&avisynth())?"avi":(((pcm||dts||mux)?"rawvideo":"mpeg")), (wmv||mpegts)?"-lavfopts":"-quiet", wmv?"format=asf":(mpegts?"format=mpegts":"-quiet"), "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", (mux||ovccopy)?"copy":"lavc" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$
 	}
@@ -927,7 +921,7 @@ private JTextField mencoder_ass_scale;
 	public String[] args() {
 		String args [] = null;
 		String defaut [] = getDefaultArgs();
-		if (overridenMainArgs != null) { 
+		if (overridenMainArgs != null) {
 			args = new String [defaut.length + overridenMainArgs.length];
 			for(int i=0;i<defaut.length;i++)
 				args[i] = defaut[i];
@@ -943,14 +937,14 @@ private JTextField mencoder_ass_scale;
 		} else
 			args = defaut;
 		return args;
-			
+
 	}
 
 	@Override
 	public String executable() {
 		return configuration.getMencoderPath();
 	}
-	
+
 	private int [] getVideoBitrateConfig(String bitrate) {
 		int bitrates [] = new int [2];
 		if (bitrate.contains("(") && bitrate.contains(")")) { //$NON-NLS-1$ //$NON-NLS-2$
@@ -960,11 +954,11 @@ private JTextField mencoder_ass_scale;
 			bitrate = bitrate.substring(0, bitrate.indexOf("(")).trim(); //$NON-NLS-1$
 		if (StringUtils.isBlank(bitrate))
 			bitrate = "0"; //$NON-NLS-1$
-		
+
 		bitrates[0] = (int) Double.parseDouble(bitrate);
 		return bitrates;
 	}
-	
+
 	private String addMaximumBitrateConstraints(String encodeSettings, DLNAMediaInfo media, String quality,RendererConfiguration mediaRenderer) {
 		/*String m = "" + PMS.getConfiguration().getMaximumBitrate(); //$NON-NLS-1$
 		int bufs = 0;
@@ -975,7 +969,7 @@ private JTextField mencoder_ass_scale;
 			m = m.substring(0, m.indexOf("(")).trim(); //$NON-NLS-1$
 		if (StringUtils.isBlank(m))
 			m = "0"; //$NON-NLS-1$
-		
+
 		int mb = (int) Double.parseDouble(m);*/
 		int defaultMaxBitrates [] = getVideoBitrateConfig(PMS.getConfiguration().getMaximumBitrate());
 		int rendererMaxBitrates [] = new int [2];
@@ -992,13 +986,13 @@ private JTextField mencoder_ass_scale;
 				bufSize = defaultMaxBitrates[0] / 3;
 			if (bufSize > 7000)
 				bufSize = 7000;
-			
+
 			if (defaultMaxBitrates[1] > 0)
 				bufSize = defaultMaxBitrates[1] /** 1000*/;
-			
+
 			if (mediaRenderer.isDefaultVBVSize() && rendererMaxBitrates[1] == 0)
 				bufSize = 1835;
-			
+
 			//bufSize = 2000;
 			encodeSettings += ":vrc_maxrate=" + defaultMaxBitrates[0] + ":vrc_buf_size=" + bufSize; //$NON-NLS-1$ //$NON-NLS-2$
 		} /*else if (mediaRenderer != HTTPResource.PS3)
@@ -1009,25 +1003,25 @@ private JTextField mencoder_ass_scale;
 	@Override
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params)
 			throws IOException {
-		
+
 		params.manageFastStart();
-		
+
 		boolean avisynth = avisynth()/* || params.avisynth*/;
-	
+
 		setAudioAndSubs(fileName, media, params, configuration);
-		
+
 		String subString = null;
 		if (params.sid != null && params.sid.getPlayableFile() != null)
 			subString = ProcessUtil.getShortFileNameIfWideChars(params.sid.getPlayableFile().getAbsolutePath());
-		
+
 		InputFile newInput = new InputFile();
 		newInput.filename = fileName;
 		newInput.push = params.stdin;
-		
+
 		dvd = false;
 		if (media != null && media.dvdtrack > 0)
 			dvd = true;
-		
+
 		ovccopy = false;
 		if (params.sid == null && !dvd && !avisynth() && media != null && (media.isVideoPS3Compatible(newInput) || !params.mediaRenderer.isH264Level41Limited()) && media.isMuxable(params.mediaRenderer) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
 			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
@@ -1059,49 +1053,48 @@ private JTextField mencoder_ass_scale;
 				ovccopy = true;
 			}
 		}
-		
-		
+
 		String vcodec = "mpeg2video"; //$NON-NLS-1$
-		
+
 		wmv = false;
 		if (params.mediaRenderer.isTranscodeToWMV()) {
 			wmv = true;
 			vcodec = "wmv2"; // http://wiki.megaframe.org/wiki/Ubuntu_XBOX_360#MEncoder not usable in streaming //$NON-NLS-1$
 		}
-		
+
 		mpegts = false;
 		if (params.mediaRenderer.isTranscodeToMPEGTSAC3()) {
 			mpegts = true;
 		}
-		
+
 		oaccopy = false;
 		if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
 			oaccopy = true;
 		}
-		
+
 		dts = configuration.isDTSEmbedInPCM() && (!dvd || configuration.isMencoderRemuxMPEG2()) && params.aid != null && params.aid.isDTS() && !avisynth() && params.mediaRenderer.isDTSPlayable();
 		pcm = configuration.isMencoderUsePcm() && (!dvd || configuration.isMencoderRemuxMPEG2()) && (params.aid != null && (params.aid.isDTS() || params.aid.isLossless())) && params.mediaRenderer.isMuxLPCMToMpeg();
-		
+
 		if (dts || pcm) {
 			if (dts)
 				oaccopy = true;
 			params.losslessaudio = true;
 			params.forceFps = media.getValidFps(false);
 		}
-		
+
 		// mpeg2 remux still buggy with mencoder :\
 		if (!pcm && !dts && !mux && ovccopy)
 			ovccopy = false;
-		
+
 		if (pcm && avisynth()) {
 			params.avidemux = true;
 		}
-		
+
 		String add = ""; //$NON-NLS-1$
 		if (configuration.getMencoderDecode() == null || configuration.getMencoderDecode().indexOf("-lavdopts") == -1) { //$NON-NLS-1$
 			add = " -lavdopts debug=0"; //$NON-NLS-1$
 		}
-		
+
 		String alternativeCodec = "";//"-ac ffac3,ffdca, ";  //$NON-NLS-1$
 		if (dvd)
 			alternativeCodec = ""; //$NON-NLS-1$
@@ -1125,11 +1118,11 @@ private JTextField mencoder_ass_scale;
 				if (configuration.getSkipLoopFilterEnabled() && !avisynth())
 					token += ":skiploopfilter=all"; //$NON-NLS-1$
 				next = false;
-			} 
+			}
 			if (token.toLowerCase().contains("lavdopts")) { //$NON-NLS-1$
 				next = true;
 			}
-			
+
 			overridenMainArgs[i++] = token;
 		}
 		//}
@@ -1139,15 +1132,15 @@ private JTextField mencoder_ass_scale;
 				mainConfig = params.mediaRenderer.getCustomMencoderQualitySettings();
 			if (mainConfig.contains("/*")) // in case of //$NON-NLS-1$
 				mainConfig = mainConfig.substring(mainConfig.indexOf("/*")); //$NON-NLS-1$
-			
+
 			// Ditlew - org
 			//String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + (wmv?":acodec=wmav2:abitrate=256":(":acodec=ac3:abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid))) + ":threads=" + (wmv?1:configuration.getNumberOfCpuCores()) + ":" + mainConfig; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-			
+
 			// Ditlew - WDTV Live (+ other byte asking clients), CBR. This probably ought to be placed in addMaximumBitrateConstraints(..)
 			int cbr_bitrate = params.mediaRenderer.getCBRVideoBitrate();
 			String cbr_settings = (cbr_bitrate > 0) ? ":vrc_buf_size=1835:vrc_minrate="+cbr_bitrate+":vrc_maxrate="+cbr_bitrate+":vbitrate="+cbr_bitrate : "";
 			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + (wmv?":acodec=wmav2:abitrate=256":(cbr_settings + ":acodec=ac3:abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid))) + ":threads=" + (wmv?1:configuration.getNumberOfCpuCores()) + ":" + mainConfig; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-						
+
 			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, mainConfig, params.mediaRenderer);
 			st = new StringTokenizer(encodeSettings, " "); //$NON-NLS-1$
 			int oldc = overridenMainArgs.length;
@@ -1159,8 +1152,7 @@ private JTextField mencoder_ass_scale;
 		}
 
 		boolean needAssFixPTS = false;
-		
-		
+
 		StringBuffer sb = new StringBuffer();
 		if (params.sid != null && !configuration.isMencoderDisableSubs() && configuration.isMencoderAss() && !dvd && !avisynth()) {
 			sb.append("-ass -" + (configuration.isMencoderFontConfig()?"":"no") + "fontconfig "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -1213,7 +1205,7 @@ private JTextField mencoder_ass_scale;
 				sb.append(" -subpos " + (100-subpos)); //$NON-NLS-1$
 			}
 		}
-		
+
 		st = new StringTokenizer(sb.toString(), " "); //$NON-NLS-1$
 		int oldc = overridenMainArgs.length;
 		overridenMainArgs = Arrays.copyOf(overridenMainArgs, overridenMainArgs.length + st.countTokens());
@@ -1227,12 +1219,12 @@ private JTextField mencoder_ass_scale;
 			}
 			if ((!configuration.isMencoderAss() || dvd) && s.contains("-ass")) { //$NON-NLS-1$
 				s = "-quiet"; //$NON-NLS-1$
-				
+
 				next = true;
 			}
 			overridenMainArgs[i++] = s;
 		}
-		
+
 		/*sb = new StringBuffer();
 		if (!configuration.isMencoderDisableSubs() && configuration.getMencoderSubLanguages() != null && configuration.getMencoderSubLanguages().length() >  0) {
 			sb.append("-slang " +configuration.getMencoderSubLanguages() + " "); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1240,10 +1232,10 @@ private JTextField mencoder_ass_scale;
 			//sb.append("-sid " + maxid + " "); //$NON-NLS-1$ //$NON-NLS-2$
 			sb.append("-subdelay 20000"); //$NON-NLS-1$
 		}
-		
+
 		String subs = sb.toString().trim();
 		if (subs != null && subs.length() > 0) {
-			
+
 			st = new StringTokenizer(subs, " "); //$NON-NLS-1$
 			defaultSubArgs = new String [st.countTokens()];
 			i = 0;
@@ -1252,9 +1244,7 @@ private JTextField mencoder_ass_scale;
 				defaultSubArgs[i++] = s;
 			}
 		}*/
-		
-		
-		
+
 		String cmdArray [] = new String [18+args().length];
 		cmdArray[0] = executable();
 		cmdArray[1] = "-ss"; //$NON-NLS-1$
@@ -1284,14 +1274,13 @@ private JTextField mencoder_ass_scale;
 			cmdArray[6+i] = arguments[i];
 			/*if (params.timeseek > 0 && arguments[i].contains("format=mpegts")) { //$NON-NLS-1$
 				cmdArray[6+i] += ":preload=" + params.timeseek; //$NON-NLS-1$
-				params.timeseek = 0; 
+				params.timeseek = 0;
 			}*/
 			if (arguments[i].contains("format=mpeg2") && media.aspect != null && media.getValidAspect(true) != null) { //$NON-NLS-1$
 				cmdArray[6+i] += ":vaspect=" + media.getValidAspect(true); //$NON-NLS-1$
 			}
 		}
-		
-		
+
 		cmdArray[cmdArray.length-12] = "-quiet"; //$NON-NLS-1$
 		cmdArray[cmdArray.length-11] = "-quiet"; //$NON-NLS-1$
 		cmdArray[cmdArray.length-10] = "-quiet"; //$NON-NLS-1$
@@ -1301,9 +1290,8 @@ private JTextField mencoder_ass_scale;
 			boolean lavf = false; // Need to add support for LAVF demuxing
 			cmdArray[cmdArray.length-11] = "" + (lavf?params.aid.id+1:params.aid.id); //$NON-NLS-1$
 		}
-		
-		
-		if (subString == null && params.sid != null) {				
+
+		if (subString == null && params.sid != null) {
 			cmdArray[cmdArray.length-10] = "-sid"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-9] = "" + params.sid.id; //$NON-NLS-1$
 		} else if (subString != null && !avisynth()) { // Trick necessary for mencoder to skip the internal embedded track ?
@@ -1313,8 +1301,7 @@ private JTextField mencoder_ass_scale;
 			cmdArray[cmdArray.length-9] = "20000"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-10] = "-subdelay"; //$NON-NLS-1$
 		}
-		
-		
+
 		// disable ass if there are no subs (not safe ?)
 		if (params.sid == null) {
 			for(int c=0;c<cmdArray.length;c++) {
@@ -1322,10 +1309,10 @@ private JTextField mencoder_ass_scale;
 					cmdArray[c] = "-quiet"; //$NON-NLS-1$
 			}
 		}
-		
+
 		cmdArray[cmdArray.length-8] = "-quiet"; //$NON-NLS-1$
 		cmdArray[cmdArray.length-7] = "-quiet"; //$NON-NLS-1$
-		
+
 		if (configuration.isMencoderForceFps() && !configuration.isFix25FPSAvMismatch()) {
 			cmdArray[cmdArray.length-8] = "-fps"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-7] = "24000/1001"; //$NON-NLS-1$
@@ -1348,7 +1335,7 @@ private JTextField mencoder_ass_scale;
 				}
 			}
 		}
-		
+
 		if (subString != null && !configuration.isMencoderDisableSubs() && !avisynth()) {
 			if (params.sid.type == DLNAMediaSubtitle.VOBSUB) {
 				// vobsub not supported in MEncoder :\
@@ -1368,20 +1355,19 @@ private JTextField mencoder_ass_scale;
 			cmdArray[cmdArray.length-4] = "-quiet"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
 		}
-		
+
 		if (fileName.toLowerCase().endsWith("evo")) { //$NON-NLS-1$
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
 			cmdArray[cmdArray.length-4] = "-psprobe"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-3] = "10000"; //$NON-NLS-1$
 		}
-		
-		
+
 		if (needAssFixPTS) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
 			cmdArray[cmdArray.length-4] = "-vf"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-3] = "ass,fixpts"; //$NON-NLS-1$
 		}
-		
+
 		boolean deinterlace = configuration.isMencoderYadif();
 		// check if the media renderer supports this resolution
 		boolean mediaRendererScaler = params.mediaRenderer.isVideoRescale() && media != null && (media.width > params.mediaRenderer.getMaxVideoWidth()|| (media.height > params.mediaRenderer.getMaxVideoHeight()));
@@ -1395,8 +1381,7 @@ private JTextField mencoder_ass_scale;
 				scalerString = "," + scalerString; //$NON-NLS-1$
 			cmdArray[cmdArray.length-3] = (deinterlace?"yadif":"") + (scaler?scalerString:""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		}
-		
-		
+
 		if (configuration.getMencoderMT() && !avisynth) {
 			if (setCmdToMencoderMT(configuration, cmdArray, media)) {
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
@@ -1404,7 +1389,7 @@ private JTextField mencoder_ass_scale;
 				cmdArray[cmdArray.length-3] = "fast"; //$NON-NLS-1$
 			}
 		}
-		
+
 		boolean noMC0NoSkip = false;
 		if (media != null) {
 			String sArgs [] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
@@ -1509,7 +1494,7 @@ private JTextField mencoder_ass_scale;
 				}
 			}
 		}
-		
+
 		if ((pcm || dts || mux) || (PMS.getConfiguration().isMencoderNoOutOfSync() && !noMC0NoSkip)) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +3);
 			cmdArray[cmdArray.length-5] = "-mc"; //$NON-NLS-1$
@@ -1520,17 +1505,17 @@ private JTextField mencoder_ass_scale;
 				cmdArray[cmdArray.length-3] = "-quiet"; //$NON-NLS-1$
 			}
 		}
-		
+
 		if (params.timeend > 0) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
 			cmdArray[cmdArray.length-4] = "-endpos"; //$NON-NLS-1$
 			cmdArray[cmdArray.length-3] = "" + params.timeend; //$NON-NLS-1$
 		}
-		
+
 		String rate = "48000";
 		if (params.mediaRenderer.isXBOX())
 			rate = "44100";
-		
+
 		// force srate -> cause ac3's mencoder doesn't like anything other than 48khz
 		if (media != null && !pcm && !dts && !mux) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +4);
@@ -1541,13 +1526,13 @@ private JTextField mencoder_ass_scale;
 		}
 	
 		PipeProcess pipe = null;
-		
+
 		cmdArray[cmdArray.length-2] = "-o"; //$NON-NLS-1$
-		
+
 		ProcessWrapperImpl pw = null;
-		
+
 		if (pcm || dts || mux) {
-			
+
 			boolean channels_filter_present = false;
 			for(String s:cmdArray) {
 				if (StringUtils.isNotBlank(s) && s.startsWith("channels")) { //$NON-NLS-1$
@@ -1555,31 +1540,30 @@ private JTextField mencoder_ass_scale;
 					break;
 				}
 			}
-			
+
 			if (params.avidemux) {
-				
+
 				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dts || mux)?null:params); //$NON-NLS-1$
 				params.input_pipes [0] = pipe;
 				cmdArray[cmdArray.length-1] = pipe.getInputPipe();
-				
+
 				if (pcm && !channels_filter_present) {
 					cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
 					cmdArray[cmdArray.length-2] = "-af"; //$NON-NLS-1$
 					cmdArray[cmdArray.length-1] = CodecUtil.getMixerOutput(true, configuration.getAudioChannelCount());
 				}
-				
+
 				pw = new ProcessWrapperImpl(cmdArray, params);
-				
+
 				PipeProcess videoPipe = new PipeProcess("videoPipe" + System.currentTimeMillis(), "out", "reconnect"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				PipeProcess audioPipe = new PipeProcess("audioPipe" + System.currentTimeMillis(), "out", "reconnect"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				
+
 				ProcessWrapper videoPipeProcess = videoPipe.getPipeProcess();
 				ProcessWrapper audioPipeProcess = audioPipe.getPipeProcess();
-				
+
 				params.output_pipes[0] = videoPipe;
 				params.output_pipes[1] = audioPipe;
-				
-				
+
 				pw.attachProcess(videoPipeProcess);
 				pw.attachProcess(audioPipeProcess);
 				videoPipeProcess.runInNewThread();
@@ -1589,11 +1573,9 @@ private JTextField mencoder_ass_scale;
 				} catch (InterruptedException e) { }
 				videoPipe.deleteLater();
 				audioPipe.deleteLater();
-				
-				
-				
+
 			} else {
-			
+
 				// remove the -oac switch, otherwise too many video packets errors appears again
 				for(int s=0;s<cmdArray.length;s++) {
 					if (cmdArray[s].equals("-oac")) { //$NON-NLS-1$
@@ -1602,36 +1584,35 @@ private JTextField mencoder_ass_scale;
 						break;
 					}
 				}
-	
+
 				pipe = new PipeProcess(System.currentTimeMillis() + "tsmuxerout.ts"); //$NON-NLS-1$
-				
+
 				TSMuxerVideo ts = new TSMuxerVideo(configuration);
 				File f = new File(configuration.getTempFolder(), "pms-tsmuxer.meta"); //$NON-NLS-1$
 				String cmd [] = new String [] { ts.executable(), f.getAbsolutePath(), pipe.getInputPipe() };
 				pw = new ProcessWrapperImpl(cmd, params);
-				
-				
+
 				PipeIPCProcess ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegvideo", System.currentTimeMillis() + "videoout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
-				
+
 				cmdArray[cmdArray.length-1] = ffVideoPipe.getInputPipe();
-				
+
 				OutputParams ffparams = new OutputParams(configuration);
 				ffparams.maxBufferSize = 1;
 				ffparams.stdin = params.stdin;
 				ProcessWrapperImpl ffVideo = new ProcessWrapperImpl(cmdArray, ffparams);
-				
+
 				ProcessWrapper ff_video_pipe_process = ffVideoPipe.getPipeProcess();
 				pw.attachProcess(ff_video_pipe_process);
 				ff_video_pipe_process.runInNewThread();
 				ffVideoPipe.deleteLater();
-				
+
 				pw.attachProcess(ffVideo);
 				ffVideo.runInNewThread();
-				
+
 				String aid = null;
 				if (media != null && media.audioCodes.size() > 1 && params.aid != null)
 					aid = params.aid.id + "";
-				
+
 				PipeIPCProcess ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true); //$NON-NLS-1$ //$NON-NLS-2$
 				StreamModifier sm = new StreamModifier();
 				sm.setPcm(pcm);
@@ -1645,19 +1626,19 @@ private JTextField mencoder_ass_scale;
 				String ffmpegLPCMextract [] = new String [] { configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", dts?"0.1":"0", "-noskip", (aid==null)?"-quiet":"-aid", (aid==null)?"-quiet":aid, "-oac", sm.isDtsembed()?"copy":"pcm", (mixer!=null&&!channels_filter_present)?"-af":"-quiet", (mixer!=null&&!channels_filter_present)?mixer:"-quiet", "-srate", "48000", "-o", ffAudioPipe.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$
 				if (!params.mediaRenderer.isMuxDTSToMpeg()) // no need to use the PCM trick when media renderer supports DTS
 					ffAudioPipe.setModifier(sm);
-				
+
 				if (media != null && media.dvdtrack > 0) {
 					ffmpegLPCMextract[3] = "-dvd-device"; //$NON-NLS-1$
 					ffmpegLPCMextract[4] = fileName;
 					ffmpegLPCMextract[5] = "dvd://" + media.dvdtrack; //$NON-NLS-1$
 				} else if (params.stdin != null)
 					ffmpegLPCMextract[3] = "-"; //$NON-NLS-1$
-				
+
 				if (fileName.toLowerCase().endsWith(".evo")) { //$NON-NLS-1$
 					ffmpegLPCMextract[4] = "-psprobe"; //$NON-NLS-1$
 					ffmpegLPCMextract[5] = "1000000"; //$NON-NLS-1$
 				}
-				
+
 				if (params.timeseek > 0) {
 					ffmpegLPCMextract [2] = "" + params.timeseek; //$NON-NLS-1$
 				}
@@ -1665,9 +1646,9 @@ private JTextField mencoder_ass_scale;
 				ffaudioparams.maxBufferSize = 1;
 				ffaudioparams.stdin = params.stdin;
 				ProcessWrapperImpl ffAudio = new ProcessWrapperImpl(ffmpegLPCMextract, ffaudioparams);
-				
+
 				params.stdin = null;
-				
+
 				PrintWriter pwMux = new PrintWriter(f);
 				pwMux.println("MUXOPT --no-pcr-on-video-pid --no-asyncio --new-audio-pes --vbr --vbv-len=500"); //$NON-NLS-1$
 				String videoType = "V_MPEG-2"; //$NON-NLS-1$
@@ -1686,8 +1667,7 @@ private JTextField mencoder_ass_scale;
 				pwMux.println(videoType + ", \"" + ffVideoPipe.getOutputPipe() + "\", " +  fps + "level=4.1, insertSEI, contSPS, track=1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				pwMux.println(audioType + ", \"" + ffAudioPipe.getOutputPipe() + "\", track=2"); //$NON-NLS-1$ //$NON-NLS-2$
 				pwMux.close();
-				
-				
+
 				ProcessWrapper pipe_process = pipe.getPipeProcess();
 				pw.attachProcess(pipe_process);
 				pipe_process.runInNewThread();
@@ -1696,7 +1676,7 @@ private JTextField mencoder_ass_scale;
 				} catch (InterruptedException e) { }
 				pipe.deleteLater();
 				params.input_pipes[0] = pipe;
-				
+
 				ProcessWrapper ff_pipe_process = ffAudioPipe.getPipeProcess();
 				pw.attachProcess(ff_pipe_process);
 				ff_pipe_process.runInNewThread();
@@ -1706,11 +1686,11 @@ private JTextField mencoder_ass_scale;
 				ffAudioPipe.deleteLater();
 				pw.attachProcess(ffAudio);
 				ffAudio.runInNewThread();
-			
+
 			}
-			
+
 		} else {
-			
+
 			boolean directpipe = Platform.isMac() || Platform.isFreeBSD();
 			if (directpipe) {
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +3);
@@ -1724,9 +1704,7 @@ private JTextField mencoder_ass_scale;
 				params.input_pipes [0] = pipe;
 				cmdArray[cmdArray.length-1] = pipe.getInputPipe();
 			}
-			
-			
-			
+
 			pw = new ProcessWrapperImpl(cmdArray, params);
 			if (!directpipe) {
 				ProcessWrapper mkfifo_process = pipe.getPipeProcess();
@@ -1737,16 +1715,16 @@ private JTextField mencoder_ass_scale;
 				} catch (InterruptedException e) { }
 				pipe.deleteLater();
 			}
-			
+
 		}
-		
+
 		pw.runInNewThread();
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) { }
 		return pw;
 	}
-	
+
 	private boolean setCmdToMencoderMT(PmsConfiguration configuration, String cmdArray [], DLNAMediaInfo media) {
 		boolean set = configuration.getNumberOfCpuCores() > 1;
 		if (media != null && (media.width < 1280 || media.codecV == null || !media.codecV.equals("h264"))) //$NON-NLS-1$
@@ -1777,9 +1755,9 @@ private JTextField mencoder_ass_scale;
 	}
 
 	private String [] getSpecificCodecOptions(String codecParam, DLNAMediaInfo media, OutputParams params, String filename, String srtFileName, boolean enable, boolean verifyOnly) {
-		
+
 		StringBuffer sb = new StringBuffer();
-		
+
 		String codecs = enable?DEFAULT_CODEC_CONF_SCRIPT:""; //$NON-NLS-1$
 		codecs += "\n" + codecParam; //$NON-NLS-1$
 		StringTokenizer stLines = new StringTokenizer(codecs, "\n"); //$NON-NLS-1$
@@ -1812,7 +1790,7 @@ private JTextField mencoder_ass_scale;
 				}
 			} else
 				return null;
-				
+
 			interpreter.set("filename", filename); //$NON-NLS-1$
 			interpreter.set("audio", params.aid != null); //$NON-NLS-1$
 			interpreter.set("subtitles", params.sid != null); //$NON-NLS-1$
@@ -1838,7 +1816,7 @@ private JTextField mencoder_ass_scale;
 						try {
 							key = line.substring(0, separator).trim();
 							String value = line.substring(separator+2).trim();
-							
+
 							if (value.length() > 0) {
 								if (key.length() == 0)
 									key = "1 == 1"; //$NON-NLS-1$
@@ -1863,7 +1841,7 @@ private JTextField mencoder_ass_scale;
 			PMS.info("BeanShell error: " + e.getMessage()); //$NON-NLS-1$
 		}
 		String completeLine = sb.toString();
-		
+
 		ArrayList<String> args = new ArrayList<String>();
 		StringTokenizer st = new StringTokenizer(completeLine, " "); //$NON-NLS-1$
 		while (st.hasMoreTokens()) {
@@ -1871,13 +1849,13 @@ private JTextField mencoder_ass_scale;
 			if (arg.length() > 0)
 				args.add(arg);
 		}
-		
+
 		String definitiveArgs [] = new String [args.size()];
 		args.toArray(definitiveArgs);
 		return definitiveArgs;
 	}
-	
-	public static final String DEFAULT_CODEC_CONF_SCRIPT = 
+
+	public static final String DEFAULT_CODEC_CONF_SCRIPT =
 		  Messages.getString("MEncoderVideo.68")  //$NON-NLS-1$
 		+ Messages.getString("MEncoderVideo.69")  //$NON-NLS-1$
 		+ Messages.getString("MEncoderVideo.70")  //$NON-NLS-1$
