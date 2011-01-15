@@ -5,33 +5,36 @@ import java.lang.reflect.Field;
 import com.sun.jna.Platform;
 
 import net.pms.PMS;
-import net.pms.io.Gob;
 
 public class ProcessUtil {
 
 	public static void destroy(Process p) {
 		if (p != null) {
-			p.destroy();
+			/* get the PID - only used for logging i.e. not directly */
 			if (p.getClass().getName().equals("java.lang.UNIXProcess")) {
-				/* get the PID on unix/linux systems */
 				try {
 					Field f = p.getClass().getDeclaredField("pid");
 					f.setAccessible(true);
 					int pid = f.getInt(p);
 					PMS.debug("Killing the Unix process: " + pid);
-					Process process = Runtime.getRuntime().exec("kill -9 " + pid);
-					new Gob(process.getErrorStream()).start();
-					new Gob(process.getInputStream()).start();
-					int exit = process.waitFor();
-					if (exit != 0) {
-						//PMS.debug("\"kill -9 " + pid + "\" not successful... process was obviously already terminated");
-					} else {
-						PMS.debug("\"kill -9 " + pid + "\" successful !");
-					}
 				} catch (Throwable e) {
-					PMS.info("\"unexpected error: " + e.getMessage());
+				        PMS.info("Can't determine the Unix process ID: " + e.getMessage());
 				}
 			}
+
+			/*
+			 * Squashed bug - send Unix processes a TERM signal rather than KILL.
+			 *
+			 * destroy() sends the spawned process a TERM signal.
+			 * This ensures the process is given the opportunity
+			 * to shutdown cleanly. *Extremely* rare cases where this doesn't
+			 * happen are less of a problem than extremely common cases
+			 * where kill -9 (KILL) creates orphan processes. In the former
+			 * case, the stubborn processes may still be shut down when PMS
+			 * exits.
+			 */
+
+			p.destroy();
 		}
 	}
 	
