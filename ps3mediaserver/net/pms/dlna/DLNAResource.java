@@ -567,7 +567,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private void openTag(StringBuffer sb, String tag) {
 		sb.append("&lt;");
 		sb.append(tag);
-		sb.append(" ");
 	}
 	
 	/**Appends the closing symbol &gt; to the StringBuffer. This is a typical HTML/DIDL/XML tag closing.
@@ -588,10 +587,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 	
 	private void addAttribute(StringBuffer sb, String attribute, Object value) {
+		sb.append(" ");
 		sb.append(attribute);
 		sb.append("=\"");
 		sb.append(value);
-		sb.append("\" ");
+		sb.append("\"");
 	}
 	
 	private void addXMLTagAndAttribute(StringBuffer sb, String tag, Object value) {
