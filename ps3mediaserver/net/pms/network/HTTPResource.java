@@ -32,6 +32,11 @@ import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.Format;
 
+/**
+ * Implements any item that can be transfered through the HTTP pipes.
+ * In the PMS case, this item represent media files.
+ * @see DLNAResource
+ */
 public class HTTPResource {
 	
 	public static final String UNKNOWN_VIDEO_TYPEMIME = "video/mpeg";
@@ -68,6 +73,11 @@ public class HTTPResource {
 		
 	}
 	
+	/**Returns for a given item type the default MIME type associated. This is used in the HTTP transfers
+	 * as in the client might do different things for different MIME types.
+	 * @param type Type for which the default MIME type is needed.
+	 * @return Default MIME associated with the file type.
+	 */
 	public String getDefaultMimeType(int type) {
 		String mimeType = HTTPResource.UNKNOWN_VIDEO_TYPEMIME;
 		if (type == Format.VIDEO)
@@ -80,6 +90,10 @@ public class HTTPResource {
 	}
 	
 	
+	/**Returns a InputStream associated to the fileName.
+	 * @param fileName TODO Absolute or relative file path.
+	 * @return If found, an InputStream associated to the fileName. null otherwise.
+	 */
 	protected InputStream getResourceInputStream(String fileName) {
 		fileName = "/resources/" + fileName;
 		ClassLoader cll = this.getClass().getClassLoader();
@@ -91,6 +105,14 @@ public class HTTPResource {
 		return is;
 	}
 	
+	/**Creates an InputStream based on an URL. This is used while accessing external resources
+	 * like online radios.
+	 * @param u URL.
+	 * @param saveOnDisk If true, the file is first downloaded in the harddisk in the temporary folder.
+	 * @return InputStream that can be used for sending to the UPNP Media Renderer.
+	 * @throws IOException
+	 * @see downloadAndSendBinary
+	 */
 	protected InputStream downloadAndSend(String u, boolean saveOnDisk) throws IOException {
 		URL url = new URL(u);
 		File f = null;
@@ -109,10 +131,23 @@ public class HTTPResource {
 		return new ByteArrayInputStream(content);
 	}
 	
+	/**Overloaded method for {@link #downloadAndSendBinary(String, boolean, File)}, without storing any file in the harddisk.
+	 * @param u URL to retrieve.
+	 * @return byte array.
+	 * @throws IOException
+	 */
 	protected byte [] downloadAndSendBinary(String u) throws IOException {
 		return downloadAndSendBinary(u, false, null);
 	}
 	
+	/**Returns a byte array representation of a file given by an URL. File is downloaded and optionally stored in the harddisk.
+	 * @param u URL to retrieve.
+	 * @param saveOnDisk If true, store the file in the harddisk.
+	 * @param f If saveOnDisk is true, then store the contents of the file represented by u into the associated File. f needs to be opened before
+	 * calling this function.
+	 * @return
+	 * @throws IOException
+	 */
 	protected byte [] downloadAndSendBinary(String u, boolean saveOnDisk, File f) throws IOException {
 		URL url = new URL(u);
 		PMS.info("Retrieving " + url.toString());
@@ -137,6 +172,10 @@ public class HTTPResource {
 		return bytes.toByteArray();
 	}
 	
+	/**Converts an URL string to it more canonical form
+	 * @param url String to be converted
+	 * @return Converted String.
+	 */
 	protected String convertURLToFileName(String url) {
 		url = url.replace('/', '\u00b5');
 		url = url.replace('\\', '\u00b5');
@@ -149,6 +188,11 @@ public class HTTPResource {
 		return url;
 	}
 	
+	/**Returns an associated MIME type related to the Media Renderer. Some Media Renderer might need that the MIME type is not the correct one.
+	 * @param mimetype MIME type to transform.
+	 * @param mediarenderer Specific Media Renderer.
+	 * @return
+	 */
 	public String getRendererMimeType(String mimetype, RendererConfiguration mediarenderer) {
 //		if (mimetype != null && mimetype.equals(AVI_TYPEMIME)) {
 //			if (mediarenderer == PS3) {

@@ -25,6 +25,13 @@ import net.pms.PMS;
 import net.pms.dlna.DLNAResource;
 import net.pms.network.HTTPResource;
 
+/**
+ * Implements a container that when browsed, an action will be performed.
+ * The class assumes that the action to be performed is to toggle a boolean value.
+ * Because of this, the thumbnail is either a green tick mark or a red cross. Equivalent
+ * videos are shown after the value is toggled.<p> 
+ * However this is just cosmetic. Any action can be performed.
+ */
 public abstract class VirtualVideoAction extends DLNAResource {
 	
 	private boolean enabled;
@@ -38,6 +45,11 @@ public abstract class VirtualVideoAction extends DLNAResource {
 	private long timer1;
 	
 	
+	/**Constructor for this class. Recommended instantation includes overriding the {@link #enable()} function (example shown in the link).
+	 * @param name Name that is shown via the UPNP ContentBrowser service. This field cannot be changed after the instantiation.
+	 * @param enabled If true, a green tick mark is shown as thumbnail. If false, a red cross is shown. This initial value
+	 * is usually changed via the {@link #enable()} function.
+	 */
 	public VirtualVideoAction(String name, boolean enabled) {
 		this.name = name;
 		thumbnailContentType = HTTPResource.PNG_TYPEMIME;
@@ -50,6 +62,14 @@ public abstract class VirtualVideoAction extends DLNAResource {
 		this.enabled = enabled; 
 	}
 
+	/**This function is called as an action from the UPNP client when
+	 * the user tries to play this item. This function calls instead the enable()
+	 * function in order to execute an action.
+	 * As the client expects to play an item, a really short video (less than 1s) is shown with 
+	 * the results of the action. 
+	 * @see #enable()
+	 * @see net.pms.dlna.DLNAResource#getInputStream()
+	 */
 	@Override
 	public InputStream getInputStream() throws IOException {
 		if (timer1 == -1)
@@ -62,6 +82,21 @@ public abstract class VirtualVideoAction extends DLNAResource {
 		return getResourceInputStream(enabled?videoOk:videoKo);
 	}
 	
+	/**Prototype. This function is called by {@link #getInputStream()} and is the core of this class.
+	 * The main purpose of this function is toggle a boolean variable somewhere. 
+	 * The value of that boolean variable is shown then as either a green tick mark or a red cross.
+	 * However, this is just a cosmetic thing. Any Java code can be executed in this function, not only toggling a boolean variable.
+	 * Recommended way to instantiate this class is as follows (taken from {@link PMS#addVideoSettingssFolder(net.pms.configuration.RendererConfiguration)}:
+	 * <pre> VirtualFolder vf;
+	 * [...]
+	 * vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) { //$NON-NLS-1$
+	 *   public boolean enable() {
+	 *   configuration.setMencoderNoOutOfSync(!configuration.isMencoderNoOutOfSync());
+	 *   return configuration.isMencoderNoOutOfSync();
+	 *   }
+	 * }); </pre>
+	 * @return If true, a green tick mark is shown as thumbnail. If false, a red cross is shown.
+	 */
 	public abstract boolean enable();
 
 	@Override
@@ -69,11 +104,20 @@ public abstract class VirtualVideoAction extends DLNAResource {
 		return name;
 	}
 
+	/**As this item is not a container, returns false.
+	 * @return false
+	 * @see net.pms.dlna.DLNAResource#isFolder()
+	 */
 	@Override
 	public boolean isFolder() {
 		return false;
 	}
 
+	/**Returns an invalid length as this item is not 
+	 * TODO: (botijo) VirtualFolder returns 0 instead of -1.
+	 * @return -1, an invalid length for an item.
+	 * @see net.pms.dlna.DLNAResource#length()
+	 */
 	@Override
 	public long length() {
 		return -1; //DLNAMediaInfo.TRANS_SIZE;
@@ -88,16 +132,28 @@ public abstract class VirtualVideoAction extends DLNAResource {
 		return getName();
 	}
 	
+	/**Returns either a green tick mark or a red cross that represents the actual
+	 * value of this item
+	 * @see net.pms.dlna.DLNAResource#getThumbnailInputStream()
+	 */
 	@Override
 	public InputStream getThumbnailInputStream() {
 		return getResourceInputStream(enabled?thumbnailIconOK:thumbnailIconKO);
 	}
 	
+	/**@return PNG type, as the thumbnail can only be either a green tick mark or a red cross.
+	 * @see #getThumbnailInputStream()
+	 * @see net.pms.dlna.DLNAResource#getThumbnailContentType()
+	 */
 	@Override
 	public String getThumbnailContentType() {
 		return thumbnailContentType;
 	}
 
+	/**TODO: (botijo) Why is ext being set here?
+	 * @return True, as this kind of item is always valid.
+	 * @see net.pms.dlna.DLNAResource#isValid()
+	 */
 	@Override
 	public boolean isValid() {
 		ext = PMS.get().getAssociatedExtension("toto.mpg");
