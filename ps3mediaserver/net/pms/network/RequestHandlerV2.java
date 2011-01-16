@@ -62,7 +62,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 
 		InetAddress ia = ((InetSocketAddress) e.getChannel().getRemoteAddress()).getAddress();
 		RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(ia);
-		PMS.debug("Opened handler on socket " + e.getChannel().getRemoteAddress() + (renderer!=null?(" // "+renderer):""));
+		PMS.debug("Opened request handler on socket " + e.getChannel().getRemoteAddress() + (renderer!=null?(" // "+renderer):""));
 		PMS.get().getRegistry().disableGoToSleep();
 		boolean useragentfound = renderer != null;
 		String userAgentString = null;
@@ -74,7 +74,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			request = new RequestV2("HEAD", nettyRequest.getUri().substring(1));
 		else
 			request = new RequestV2(nettyRequest.getMethod().getName(), nettyRequest.getUri().substring(1));
-		PMS.debug("Handler infos: " + nettyRequest.getProtocolVersion().getText() + " : " + request.getMethod() + " : " + request.getArgument());
+		PMS.debug("Request: " + nettyRequest.getProtocolVersion().getText() + " : " + request.getMethod() + " : " + request.getArgument());
 		if (nettyRequest.getProtocolVersion().getMinorVersion() == 0)
 			request.setHttp10(true);
 		if (useragentfound) {
@@ -151,7 +151,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 					request.setTimeseek(Double.parseDouble(timeseek));
 				}
 			} catch (Exception ee) {
-				PMS.error("Error in parsing HTTP headers", ee);
+				PMS.error("Error parsing HTTP headers", ee);
 			}
 
 		}

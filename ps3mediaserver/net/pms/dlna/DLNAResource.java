@@ -250,7 +250,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			boolean forceTranscodeV2 = false;
 			boolean parserV2 = child.media != null && defaultRenderer != null && defaultRenderer.isMediaParserV2();
 			if (parserV2) {
-				// We already have useful infos, just need to layout folders
+				// We already have useful info, just need to layout folders
 				String mimeType = defaultRenderer.getFormatConfiguration().match(child.media);
 				if (mimeType != null) {
 					// This is streamable

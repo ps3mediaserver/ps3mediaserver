@@ -38,10 +38,10 @@ public class CoverUtil extends HTTPResource {
 	public static final int AUDIO_DISCOGS = 0;
 	public static final int AUDIO_AMAZON = 1;
 	
-	public synchronized byte [] getThumbnailFromArtistAlbum(int backend, String...infos) throws IOException {
-		if (infos.length >=2 && StringUtils.isNotBlank(infos[0]) && StringUtils.isNotBlank(infos[1])) {
-			String artist = URLEncoder.encode(infos[0] , "UTF-8");
-			String album = URLEncoder.encode(infos[1] , "UTF-8");
+	public synchronized byte [] getThumbnailFromArtistAlbum(int backend, String...info) throws IOException {
+		if (info.length >=2 && StringUtils.isNotBlank(info[0]) && StringUtils.isNotBlank(info[1])) {
+			String artist = URLEncoder.encode(info[0] , "UTF-8");
+			String album = URLEncoder.encode(info[1] , "UTF-8");
 			if (covers.get(artist+album) != null) {
 				byte data [] = covers.get(artist+album);
 				if (data.length == 0)

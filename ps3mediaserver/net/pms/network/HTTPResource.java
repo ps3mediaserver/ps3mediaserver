@@ -106,7 +106,7 @@ public class HTTPResource {
 	}
 	
 	/**Creates an InputStream based on an URL. This is used while accessing external resources
-	 * like online radios.
+	 * like online radio stations.
 	 * @param u URL.
 	 * @param saveOnDisk If true, the file is first downloaded in the harddisk in the temporary folder.
 	 * @return InputStream that can be used for sending to the UPNP Media Renderer.

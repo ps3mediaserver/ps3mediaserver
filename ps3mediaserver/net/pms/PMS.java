@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Pattern;
 import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.logging.LogManager;
@@ -130,7 +131,7 @@ public class PMS {
 	/**
 	 * Version showed in the UPNP XML descriptor and logs.
 	 */
-	public static final String VERSION = "1.20.433"; //$NON-NLS-1$
+	public static final String VERSION = "1.20.435"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -150,10 +151,14 @@ public class PMS {
 	 * @return {@link RootFolder} The root folder structure for a given renderer
 	 */
 	public RootFolder getRootFolder(RendererConfiguration renderer) {
+	    return getRootFolder(renderer, true);
+	}
+
+	private RootFolder getRootFolder(RendererConfiguration renderer, boolean initialize) {
 		// something to do here for multiple directories views for each renderer
 		if (renderer == null)
 			renderer = RendererConfiguration.getDefaultConf();
-		return renderer.getRootFolder();
+		return renderer.getRootFolder(initialize);
 	}
 
 	/**
@@ -194,7 +199,6 @@ public class PMS {
 		
 	}
 	
-	//private RootFolder rootFolder;
 	/**
 	 * HTTP server that serves the XML files needed by UPNP server and the media files.
 	 */
@@ -380,7 +384,7 @@ public class PMS {
 			debug = new File("debug.log"); //$NON-NLS-1$
 			pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
 		} catch (Throwable e) {
-			PMS.minimal("Error in accessing debug.log..."); //$NON-NLS-1$
+			PMS.minimal("Error accessing debug.log..."); //$NON-NLS-1$
 			pw = null;
 		} finally {
 			if (pw == null) {
@@ -395,7 +399,7 @@ public class PMS {
 			frame = new LooksFrame(autoUpdater, configuration);
 			autoUpdater.pollServer();
 		} else {
-			System.out.println("GUI environment no available"); //$NON-NLS-1$
+			System.out.println("GUI environment not available"); //$NON-NLS-1$
 			System.out.println("Switching to console mode"); //$NON-NLS-1$
 			frame = new DummyFrame();
 		}
@@ -485,8 +489,8 @@ public class PMS {
 			binding = server.start();
 		} catch (BindException b) {
 			
-			PMS.minimal("FATAL ERROR : Unable to bind on port: " + configuration.getServerPort() + " cause: " + b.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
-			PMS.minimal("Maybe another process is running or hostname is wrong..."); //$NON-NLS-1$
+			PMS.minimal("FATAL ERROR: Unable to bind on port: " + configuration.getServerPort() + " cause: " + b.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			PMS.minimal("Maybe another process is running or the hostname is wrong..."); //$NON-NLS-1$
 			
 		}
 		new Thread() {
@@ -503,7 +507,7 @@ public class PMS {
 					if (foundRenderers.size() == 0)
 						frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
 					else {
-						frame.setStatusCode(0, "Another media renderer other than PS3 has been detected... This software is tuned for PS3 but may work with your renderer", "messagebox_warning-256.png");
+						frame.setStatusCode(0, "Another media renderer than the PS3 has been detected... This software is tuned for the PS3 but may work with your renderer", "messagebox_warning-256.png");
 					}
 					
 				}
@@ -518,7 +522,7 @@ public class PMS {
 		}
 		
 		if (getDatabase() != null) {
-			minimal("A tiny media library admin interface is available at : http://" + server.getHost() + ":" + server.getPort() + "/console/home");
+			minimal("A tiny media library admin interface is available at: http://" + server.getHost() + ":" + server.getPort() + "/console/home");
 		}
 		
 		try {
@@ -586,9 +590,17 @@ public class PMS {
 		File files [] = loadFoldersConf(configuration.getFolders());
 		if (files == null || files.length == 0)
 			files = File.listRoots();
+		/*
+		 * initialize == false: make sure renderer.getRootFolder() doesn't call back into this method
+		 * if it creates a new root folder
+		 *
+		 * this avoids a redundant call to this method, and prevents loadFoldersConf()
+		 * being called twice for each renderer
+		 */
+		RootFolder rootFolder = getRootFolder(renderer, false);
 
-		getRootFolder(renderer).browse(files);
-		getRootFolder(renderer).browse(MapFileConfiguration.parse(configuration.getVirtualFolders()));
+		rootFolder.browse(files);
+		rootFolder.browse(MapFileConfiguration.parse(configuration.getVirtualFolders()));
 
 		String strAppData = System.getenv("APPDATA");
 
@@ -622,7 +634,7 @@ public class PMS {
 								DLNAResource parent = null;
 								if (keys[1] != null) {
 									StringTokenizer st = new StringTokenizer(keys[1], ","); //$NON-NLS-1$
-									DLNAResource currentRoot = getRootFolder(renderer);
+									DLNAResource currentRoot = rootFolder;
 									while (st.hasMoreTokens()) {
 										String folder = st.nextToken();
 										parent = currentRoot.searchByName(folder);
@@ -634,7 +646,7 @@ public class PMS {
 									}
 								}
 								if (parent == null)
-									parent = getRootFolder(renderer);
+									parent = rootFolder;
 								if (keys[0].equals("imagefeed")) { //$NON-NLS-1$
 									parent.addChild(new ImagesFeed(values[0]));
 								} else if (keys[0].equals("videofeed")) { //$NON-NLS-1$
@@ -678,7 +690,7 @@ public class PMS {
 	
 		addVideoSettingssFolder(renderer);
 		
-		getRootFolder(renderer).closeChildren(0, false);
+		rootFolder.closeChildren(0, false);
 	}
 
 
@@ -732,7 +744,7 @@ public class PMS {
  				}
 			} catch (Exception e) {
 				PMS.error("Something wrong with the iPhoto Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-               }
+			}
 		}
 	}
 	
@@ -940,13 +952,14 @@ public class PMS {
 	 * @see PMS#manageRoot(RendererConfiguration)
 	 */
 	private void addAdditionalFoldersAtRoot(RendererConfiguration renderer) {
+		RootFolder rootFolder = getRootFolder(renderer);
 		for(ExternalListener listener:ExternalFactory.getExternalListeners()) {
 			if (listener instanceof AdditionalFolderAtRoot)
-				getRootFolder(renderer).addChild(((AdditionalFolderAtRoot) listener).getChild());
+				rootFolder.addChild(((AdditionalFolderAtRoot) listener).getChild());
 			else if (listener instanceof AdditionalFoldersAtRoot) {
 				java.util.Iterator<DLNAResource> folders =((AdditionalFoldersAtRoot)listener).getChildren();
 				while ( folders.hasNext()) {
-					getRootFolder(renderer).addChild(folders.next());
+					rootFolder.addChild(folders.next());
 				}
 			}
 		}
@@ -1129,32 +1142,32 @@ public class PMS {
 		if (folders == null || folders.length() == 0)
 			return null;
 		ArrayList<File> directories = new ArrayList<File>();
-		StringTokenizer st = new StringTokenizer(folders, ","); //$NON-NLS-1$
-		while (st.hasMoreTokens()) {
-			String line = st.nextToken();
-			File file = new File(line);
+		Pattern splitter = Pattern.compile("(?<!\\\\),"); //$NON-NLS-1$ // split the string along unescaped commas
+		String[] foldersArray = splitter.split(folders);
+		for (String folder: foldersArray) {
+			folder = folder.replaceAll("\\\\,", ",");
+			PMS.minimal("Checking shared folder: " + folder); //$NON-NLS-1$
+			File file = new File(folder);
 			if (file.exists()) {
 				if (file.isDirectory()) {
 					directories.add(file);
 				} else
-					PMS.error("File " + line + " is not a directory!", null); //$NON-NLS-1$ //$NON-NLS-2$
+					PMS.error("File " + folder + " is not a directory!", null); //$NON-NLS-1$ //$NON-NLS-2$
 			} else {
-				PMS.error("File " + line + " does not exists!", null); //$NON-NLS-1$ //$NON-NLS-2$
+				PMS.error("Directory " + folder + " does not exist!", null); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		File f [] = new File[directories.size()];
-		for(int j=0;j<f.length;j++)
-			f[j] = directories.get(j);
+		directories.toArray(f);
 		return f;
 	}
-
 	
 	/**Restarts the servers. The trigger is either a button on the main PMS window or via
 	 * an action item added via {@link PMS#addVideoSettingssFolder(RendererConfiguration).
 	 * @throws IOException
 	 */
 	public void reset() throws IOException {
-		debug("Waiting 1 seconds..."); //$NON-NLS-1$
+		debug("Waiting 1 second..."); //$NON-NLS-1$
 		UPNPHelper.sendByeBye();
 		server.stop();
 		server = null;
@@ -1353,9 +1366,9 @@ public class PMS {
 					instance = new PMS();
 					try {
 						if (instance.init())
-							PMS.minimal("It's ready! You should see the server appears on XMB"); //$NON-NLS-1$
+							PMS.minimal("It's ready! You should see the server appear on the XMB"); //$NON-NLS-1$
 						else
-							PMS.minimal("Some serious errors occurs..."); //$NON-NLS-1$
+							PMS.minimal("A serious error occurred..."); //$NON-NLS-1$
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

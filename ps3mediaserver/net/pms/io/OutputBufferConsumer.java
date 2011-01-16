@@ -44,7 +44,7 @@ public class OutputBufferConsumer extends OutputConsumer {
  			}
  			//PMS.info("Finished to read");
  		} catch (IOException ioe) {
- 			PMS.info("Error consuming stream of spawned process:" +  ioe.getMessage());
+ 			PMS.info("Error consuming stream of spawned process: " +  ioe.getMessage());
         } finally {
         	//PMS.debug("Closing read from pipe");
             if(inputStream != null)

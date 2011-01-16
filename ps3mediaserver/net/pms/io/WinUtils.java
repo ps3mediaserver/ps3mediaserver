@@ -141,7 +141,7 @@ public class WinUtils {
 					Memory buffer = new Memory(bufferSize.longValue());
 			
 					if (Kernel32.INSTANCE.GetShortPathNameW(pathname, buffer, bufferSize).longValue() == 0) {
-					PMS.minimal("File does not exists ? " + pathname);
+					PMS.minimal("File does not exist? " + pathname);
 					return null;
 					}
 					PMS.info("Forcing short path name on " + pathname);
@@ -154,7 +154,7 @@ public class WinUtils {
 						PMS.info("Forcing short path name on " + pathname);
 						return Native.toString(test);
 					} else {
-						PMS.minimal("File does not exists ? " + pathname);
+						PMS.minimal("File does not exist? " + pathname);
 						return null;
 					}
 				

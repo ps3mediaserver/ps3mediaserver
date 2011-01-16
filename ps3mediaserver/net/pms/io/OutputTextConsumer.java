@@ -59,7 +59,7 @@ public class OutputTextConsumer extends OutputConsumer {
     	    	}
             }
         } catch (IOException ioe) {
-        	PMS.info("Error consuming stream of spawned process:" +  ioe.getMessage());
+        	PMS.info("Error consuming stream of spawned process: " +  ioe.getMessage());
         } finally {
             if(br != null)
                 try { br.close(); } catch(Exception ignore) {}

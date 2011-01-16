@@ -36,15 +36,15 @@ public class MediaInfoParser {
 		File filename = file.file;
 		if (!media.mediaparsed && filename != null && MI.isValid() && MI.Open(filename.getAbsolutePath())>0) {
 			try {
-				String infos = MI.Inform();	
+				String info = MI.Inform();	
 				MediaInfo.StreamKind step = MediaInfo.StreamKind.General;
 				DLNAMediaAudio currentAudioTrack = new DLNAMediaAudio();
 				boolean audioPrepped = false;
 				DLNAMediaSubtitle currentSubTrack = new DLNAMediaSubtitle();
 				boolean subPrepped = false;
-				if (StringUtils.isNotBlank(infos)) {
+				if (StringUtils.isNotBlank(info)) {
 					media.size = filename.length();
-					StringTokenizer st = new StringTokenizer(infos, "\n\r");
+					StringTokenizer st = new StringTokenizer(info, "\n\r");
 					while (st.hasMoreTokens()) {
 						String line = st.nextToken().trim();
 						//System.out.println(line);
@@ -164,7 +164,7 @@ public class MediaInfoParser {
 				}
 				media.finalize(type, file);
 			} catch (Exception e) {
-				PMS.error("Error in MediaInfo parsing :", e);
+				PMS.error("Error in MediaInfo parsing:", e);
 			} finally {
 				MI.Close();
 				if (media.container == null)

@@ -84,7 +84,7 @@ public class MediaInfo
         int Open(Pointer Handle, WString file);
         void Close(Pointer Handle);
 
-        //Infos
+        //Info
         WString Inform(Pointer Handle);
         WString Get(Pointer Handle, int StreamKind, int StreamNumber, WString parameter, int infoKind, int searchKind);
         WString GetI(Pointer Handle, int StreamKind, int StreamNumber, int parameterIndex, int infoKind);
@@ -158,7 +158,7 @@ public class MediaInfo
         	Handle = MediaInfoDLL_Internal.INSTANCE.New();
         } catch (Throwable e) {
         	if (e != null)
-        		PMS.minimal("Error in MediaInfo Library loading: " + e.getMessage());
+        		PMS.minimal("Error loading MediaInfo library: " + e.getMessage());
         	if (!Platform.isWindows() && !Platform.isMac()) {
         		PMS.minimal("Make sure you have libmediainfo and libzen installed");
         	}
