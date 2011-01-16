@@ -54,25 +54,59 @@ import net.pms.util.ImagesUtil;
 import net.pms.util.Iso639;
 import net.pms.util.MpegUtil;
 
+/**
+ * Represents any item that can be browsed via the UPNP ContentDirectory service.
+ *
+ */
 public abstract class DLNAResource extends HTTPResource implements Cloneable, Runnable {
 	
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
 	protected static String TRANSCODE_FOLDER = "#--TRANSCODE--#";
 	
+	/**Returns parent object, usually a folder type of resource.
+	 * @return Parent object.
+	 * @see #parent
+	 */
 	public DLNAResource getParent() {
 		return parent;
 	}
 	protected int specificType;
+	/**
+	 * String representing this resource ID. This string is used by the UPNP ContentDirectory service.
+	 * There is no hard spec on the actual numbering except for the root container that always has to be "0".
+	 * In PMS, the format used is <i>number($number)+</i>. A common client that expects a given format,
+	 * that is different that the one used here, is the XBox360. For more info, check 
+	 * {@link http://www.mperfect.net/whsUpnp360/} . PMS translates the XBox360 queries on the fly.
+	 */
 	protected String id;
+	/**
+	 * @return ID string
+	 * @see #id
+	 */
 	public String getId() {
 		return id;
 	}
+	/**
+	 * List of children objects associated with this DLNAResource. This is only valid when the DLNAResource is of the container type.
+	 */
 	protected ArrayList<DLNAResource> children;
+	/**
+	 * @return List of children objects
+	 * @see #children
+	 */
 	public ArrayList<DLNAResource> getChildren() {
 		return children;
 	}
+	/**
+	 * In the DLDI queries, the UPNP server needs to give out the parent container where the item is. <i>parent</i> represents
+	 * such a container.
+	 */
 	protected DLNAResource parent;
+	/**
+	 * @param parent Sets the parent folder.
+	 * @see #parent
+	 */
 	public void setParent(DLNAResource parent) {
 		this.parent = parent;
 	}
@@ -89,11 +123,18 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return lastmodified;
 	}
 
+	/**
+	 * Represents the transformation to be used to the file. If null, then 
+	 * @see Player
+	 */
 	protected Player player;
 	//protected DLNAResource original;
 	public Format getExt() {
 		return ext;
 	}
+	/**Any {@link DLNAResource} needs to represent the container or item with a String.
+	 * @return String to be showed in the UPNP client.
+	 */
 	public abstract String getName();
 	public abstract String getSystemName();
 	public abstract long length();
@@ -153,6 +194,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		this.specificType = specificType;
 	}
 	
+	/** Recursive function that searchs through all of the children until it finds
+	 * a {@link DLNAResource} that matches the name.<p> Only used by {@link PMS#manageRoot(RendererConfiguration)}
+	 * while parsing the web.conf file.
+	 * @param name String to be compared the name to.
+	 * @return Returns a {@link DLNAResource} whose name matches the parameter name
+	 * @see #getName()
+	 * @see PMS#manageRoot(RendererConfiguration)
+	 */
 	public DLNAResource searchByName(String name) {
 		for(DLNAResource child:children) {
 			if (child.getName().equals(name))
@@ -161,6 +210,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return null;
 	}
 	
+	/**
+	 * @param renderer Renderer for which to check if file is supported.
+	 * @return true if the given {@see RendererConfiguration} can understand type of media. Returns also true
+	 * if this DLNAResource is a container.
+	 */
 	public boolean isCompatible(RendererConfiguration renderer) {
 		return ext == null
 			|| ext.isUnknown()
@@ -172,6 +226,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public boolean skipTranscode = false;
 	protected int childrenNumber;
 	
+	/**Adds a new DLNAResource to the child list. Only useful if this object is of the container type.<P>
+	 * TODO: (botijo) check what happens with the child object. This function can and will transform the child
+	 * object. If the transcode option is set, the child item is converted to a container with the real
+	 * item and the transcode option folder. There is also a parser in order to get the right name and type,
+	 * I suppose. Is this the right place to be doing things like these? 
+	 * @param child DLNAResource to add to a container type.
+	 */
 	public void addChild(DLNAResource child) {
 		//child.expert = expert;
 		child.parent = this;
@@ -314,6 +375,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 	
+	/**Recursive function that assigns proper IDs to the items. It follows the format number($number)+.
+	 * It is used after all the root directories have been set. 
+	 * @param index Index where to start numbering. 
+	 * @param refresh If true, then the IDs are not reset to zero for each child item.
+	 * @see #id
+	 * @see #children
+	 * @see PMS#manageRoot(RendererConfiguration)
+	 */
 	public synchronized void closeChildren(int index, boolean refresh) {
 		if (id == null || id.equals("0")) {
 			if (parent != null) {
@@ -329,6 +398,19 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			}
 	}
 	
+	/**First thing it does it searches for an item matching the given objectID.
+	 * If children is false, then it returns the found object as the only object in the list.
+	 * If item or children have not been discovered already, then the {@link #closeChildren(int, boolean)} is called.<p>
+	 * TODO: (botijo) This function does a lot more than this!
+	 * @param objectId ID to search for.
+	 * @param children State if you want all the children in the returned list.
+	 * @param start
+	 * @param count
+	 * @param renderer Renderer for which to do the actions.
+	 * @return List of DLNAResource items. 
+	 * @throws IOException
+	 * @see #closeChildren(int, boolean)
+	 */
 	public synchronized ArrayList<DLNAResource> getDLNAResources(String objectId, boolean children, int start, int count, RendererConfiguration renderer) throws IOException {
 		PMS.debug("Searching for objectId: " + objectId + " with children option: " +children);
 		ArrayList<DLNAResource> resources = new ArrayList<DLNAResource>();
@@ -416,6 +498,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 	
+	/**Recursive function that searches for a given ID.
+	 * @param searchId ID to search for.
+	 * @return Item found, or null otherwise. 
+	 * @see #id
+	 * 
+	 */
 	public DLNAResource search(String searchId) {
 		DLNAResource found = null;
 		if (id != null) {
@@ -432,14 +520,25 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return found;
 	}
 	
+	/**
+	 * TODO: (botijo) What is the intention of this function? Looks like a prototype to be overloaded.
+	 */
 	public void discoverChildren() {
 		
 	}
-	
+	/**
+	 * TODO: (botijo) What is the intention of this function? Looks like a prototype to be overloaded.
+	 * @param count
+	 * @return
+	 */
 	public boolean analyzeChildren(int count) {
 		return true;
 	}
 	
+	/**
+	 * TODO: (botijo) What is the intention of this function? Looks like a prototype to be overloaded.
+	 * @return
+	 */
 	public boolean refreshChildren() {
 		return false;
 	}
@@ -453,20 +552,35 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 	
+	/**
+	 * TODO: (botijo) What is the intention of this function? Looks like a prototype to be overloaded.
+	 * 
+	 */
 	public void resolve() {
 		
 	}
 	
+	/**Appends "&lt;<u>tag</u> " to the StringBuffer. This is a typical HTML/DIDL/XML tag opening.
+	 * @param sb String to append the tag beginning to.
+	 * @param tag String that represents the tag
+	 */
 	private void openTag(StringBuffer sb, String tag) {
 		sb.append("&lt;");
 		sb.append(tag);
 		sb.append(" ");
 	}
 	
+	/**Appends the closing symbol &gt; to the StringBuffer. This is a typical HTML/DIDL/XML tag closing.
+	 * @param sb String to append the ending character of a tag.
+	 */
 	private void endTag(StringBuffer sb) {
 		sb.append("&gt;");
 	}
 	
+	/**Appends "&lt;/<u>tag</u>&gt;" to the StringBuffer. This is a typical closing HTML/DIDL/XML tag.
+	 * @param sb
+	 * @param tag
+	 */
 	private void closeTag(StringBuffer sb, String tag) {
 		sb.append("&lt;/");
 		sb.append(tag);
@@ -491,6 +605,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 	
 	// Ditlew
+	/**Returns the DisplayName for the default renderer.
+	 * @return
+	 * @see #getDisplayName(RendererConfiguration)
+	 */
 	public String getDisplayName() {
 		return getDisplayName(null);
 	}
@@ -498,6 +616,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	// Ditlew - org
 	//public String getDisplayName() {
 	// Ditlew
+	/**Returns the DisplayName that is shown to the Renderer. Depending on the settings,
+	 * extra info might be appended, like item duration.<p>
+	 * This is based on {@link #getName()}.
+	 * @param mediaRenderer Media Renderer for which to show information.
+	 * @return String representing the item.
+	 */
 	public String getDisplayName(RendererConfiguration mediaRenderer) {
 		String name = getName();
 		if (this instanceof RealFile) {
@@ -545,10 +669,17 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return name;
 	}
 	
+	/**Prototype for returning URLs.
+	 * @return
+	 */
 	protected String getFileURL() {
 		return getURL("");
 	}
 	
+	/**
+	 * @return Returns an URL pointing to a image representing the item. It none is available, "thumbnail0000.png" is used.
+	 * The idea is to use is in the UPNP ContentBrowser service.
+	 */
 	protected String getThumbnailURL() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(PMS.get().getServer().getURL());
@@ -572,6 +703,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return getURL("thumbnail0000");
 	}
 	
+	/**
+	 * @param prefix
+	 * @return Returns an URL for a given media item. Not used for container types.
+	 */
 	protected String getURL(String prefix) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(PMS.get().getServer().getURL());
@@ -583,6 +718,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return sb.toString();
 	}
 
+	/**Transforms a String to UTF-8.
+	 * @param s
+	 * @return Transformed string s in UTF-8 encoding.
+	 */
 	private static String encode(String s) {
 		try {
 			return URLEncoder.encode(s, "UTF-8");
@@ -591,6 +730,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return "";
 	}
 	
+	/**Removes any children associated to this DLNAResource.<p>Note: (botijo) this function is not called anywhere.
+	 * 
+	 * @param level This integer represents how deep the items are in the tree. For the root
+	 * container (level==0), you do want to keep the children. For the rest of the levels,
+	 * children is set to null.
+	 * @see #children
+	 */
+//	@Deprecated
 	public void reset(int level) {
 		for(DLNAResource r:children) {
 			r.reset(level++);
@@ -601,11 +748,18 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			children = null;
 	}
 	
+	/**
+	 * @return Number of children objects. This might be used in the DLDI response, as some renderers might
+	 * not have enough memory to hold the list for every children.
+	 */
 	public int childrenNumber() {
 		if (children == null)
 			return 0;
 		return children.size();
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
 	@Override
 	protected Object clone() {
 		Object o = null;
@@ -617,6 +771,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return o;
 	}
 	
+	/**Does basic transformations between characters and their HTML representation with ampersands.
+	 * @param s String to be encoded
+	 * @return Encoded String
+	 */
 	private String encodeXML(String s) {
 		
 		s = s.replace("&", "&amp;"); 
@@ -634,6 +792,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public String getFlags() {
 		return flags;
 	}
+	/**Returns a representation using DIDL response lines. It gives a complete representation of the item, with as many tags as available.
+	 * Recommendations as per UPNP specification are followed where possible.
+	 * @param mediaRenderer Media Renderer for which to represent this information. Useful for some hacks.
+	 * @return String representing the item. An example would start like this: {@code <container id="0$1" childCount=1 parentID="0" restricted="true">}
+	 */
 	public String toString(RendererConfiguration mediaRenderer) {
 		StringBuffer sb = new StringBuffer();
 		if (isFolder())
@@ -880,6 +1043,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return sb.toString();
 	}
 	
+	/**
+	 * Plugin implementation. When this item is going to play, it will notify all the StartStopListener objects available.
+	 * @see StartStopListener
+	 */
 	public void startPlaying() {
 		for(ExternalListener listener:ExternalFactory.getExternalListeners()) {
 			if (listener instanceof StartStopListener)
@@ -887,6 +1054,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 	
+	/**
+	 * Plugin implementation. When this item is going to play, it will notify all the StartStopListener objects available.
+	 * @see StartStopListener
+	 */
 	public void stopPlaying() {
 		for(ExternalListener listener:ExternalFactory.getExternalListeners()) {
 			if (listener instanceof StartStopListener)
@@ -894,6 +1065,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 	
+	/**Returns an InputStream of this DLNAResource that starts at a given time, if possible. Very useful if video chapters are being used.
+	 * @param low
+	 * @param high
+	 * @param timeseek
+	 * @param mediarenderer
+	 * @return
+	 * @throws IOException
+	 */
 	public InputStream getInputStream(long low, long high, double timeseek, RendererConfiguration mediarenderer) throws IOException {
 				
 		PMS.debug( "Asked stream chunk [" + low + "-" + high + "] timeseek: " + timeseek + " of " + getName() + " and player " + player);
@@ -1039,10 +1218,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			return getDefaultMimeType(specificType);
 	}
 	
+	/**
+	 * Prototype function. Original comment: need to override if some thumbnail works are to be done when mediaparserv2 enabled
+	 */
 	public void checkThumbnail() {
 		// need to override if some thumbnail works are to be done when mediaparserv2 enabled
 	}
 	
+	/**Checks if a thumbnail exists, and if possible, generates one.
+	 * @param input InputFile to check or generate the thumbnail that is being asked for.
+	 */
 	protected void checkThumbnail(InputFile input) {
 		if (media != null && !media.thumbready && PMS.getConfiguration().getThumbnailsEnabled()) {
 			media.thumbready = true;
@@ -1053,6 +1238,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 	
+	/**TODO: (botijo) Prototype function?
+	 * @return
+	 * @throws IOException
+	 */
 	public InputStream getThumbnailInputStream() throws IOException {
 		/*if (specificType == 0)
 			return getResourceInputStream("images/clapperboard-256x256.png");*/
@@ -1068,6 +1257,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		else
 			return Format.UNKNOWN;
 	}
+	/**Prototype function.
+	 * @return true if child can be added to other folder.
+	 * @see #addChild(DLNAResource)
+	 */
 	public abstract boolean isValid();
 	
 	public boolean allowScan() {

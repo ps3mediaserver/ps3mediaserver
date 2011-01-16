@@ -123,17 +123,32 @@ import static org.hamcrest.Matchers.notNullValue;
 
 public class PMS {
 	
+	/**
+	 * Update URL used in the {@link AutoUpdater}.
+	 */
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
-	public static final String VERSION = "1.20.422"; //$NON-NLS-1$
+	/**
+	 * Version showed in the UPNP XML descriptor and logs.
+	 */
+	public static final String VERSION = "1.20.433"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
 	private static PmsConfiguration configuration;
 
+	/**Returns a pointer to the main PMS GUI.
+	 * @return {@link IFrame} Main PMS window.
+	 */
 	public IFrame getFrame() {
 		return frame;
 	}
 
+	/**getRootFolder returns the Root Folder for a given renderer. There could be the case
+	 * where a given media renderer needs a different root structure.
+	 * @param renderer {@link RendererConfiguration} is the renderer for which to get the RootFolder structure. If <b>null</b>, then
+	 * the default renderer is used.
+	 * @return {@link RootFolder} The root folder structure for a given renderer
+	 */
 	public RootFolder getRootFolder(RendererConfiguration renderer) {
 		// something to do here for multiple directories views for each renderer
 		if (renderer == null)
@@ -141,7 +156,13 @@ public class PMS {
 		return renderer.getRootFolder();
 	}
 
+	/**
+	 * Pointer to a running PMS server.
+	 */
 	private static PMS instance = null;
+	/**
+	 * Semaphore used in order to not create two PMS at the same time.
+	 */
 	private static byte[] lock = null;
 	static {
 		lock = new byte[0];
@@ -149,8 +170,15 @@ public class PMS {
 		sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US); //$NON-NLS-1$
 	}
 	
+	/**
+	 * Array of {@link RendererConfiguration} that have been found by PMS.
+	 */
 	private ArrayList<RendererConfiguration> foundRenderers = new ArrayList<RendererConfiguration>();
 	
+	/**Adds a {@link RendererConfiguration} to the list of media renderers found. The list is being used, for
+	 * example, to give the user a graphical representation of the found media renderers.
+	 * @param mediarenderer {@link RendererConfiguration}
+	 */
 	public void setRendererfound(RendererConfiguration mediarenderer) {
 		if (!foundRenderers.contains(mediarenderer)) {
 			foundRenderers.add(mediarenderer);
@@ -167,11 +195,23 @@ public class PMS {
 	}
 	
 	//private RootFolder rootFolder;
+	/**
+	 * HTTP server that serves the XML files needed by UPNP server and the media files.
+	 */
 	private HTTPServer server;
+	/**
+	 * User friendly name for the server.
+	 */
 	private String serverName;
 	private ArrayList<Format> extensions;
+	/**
+	 * List of registered {@link Player}.
+	 */
 	private ArrayList<Player> players;
 	private ArrayList<Player> allPlayers;
+	/**
+	 * @return ArrayList of {@link Player}.
+	 */
 	public ArrayList<Player> getAllPlayers() {
 		return allPlayers;
 	}
@@ -185,31 +225,64 @@ public class PMS {
 	public static SimpleDateFormat sdfDate;
 	public static SimpleDateFormat sdfHour;
 	
+	/** Information level DEBUG. Lowest level.
+	 * @see #message(int, String)
+	 */
 	public static final int DEBUG = 0;
+	/** Information level INFO.
+	 * @see #message(int, String)
+	 */
 	public static final int INFO = 1;
+	/** Information level MINIMAL. Highest level. Messages with this level are always printed to the command line window.
+	 * @see #message(int, String)
+	 */
 	public static final int MINIMAL = 2;
 	
 	private PrintWriter pw;
 	
+	/**
+	 * ArrayList of active processes.
+	 */
 	public ArrayList<Process> currentProcesses = new ArrayList<Process>();
 	
 	private PMS() {
 	}
 	
+	/**
+	 * {@link IFrame} object that represents PMS GUI.
+	 */
 	IFrame frame;
 	
+	/**
+	 * @see Platform#isWindows()
+	 */
 	public boolean isWindows() {
 		return Platform.isWindows();
 	}
 
 	private int proxy;
 	
+	/**Interface to Windows specific functions, like Windows Registry. registry is set by {@link #init()}.
+	 * @see WinUtils
+	 */
 	private WinUtils registry;
 	
+	/**
+	 * @see WinUtils
+	 */
 	public WinUtils getRegistry() {
 		return registry;
 	}
 
+	/**Executes a new Process and creates a fork that waits for its results. 
+	 * TODO:Extend explanation on where this is being used.
+	 * @param name Symbolic name for the process to be launched, only used in the trace log
+	 * @param error (boolean) Set to true if you want PMS to add error messages to the trace pane
+	 * @param workDir (File) optional working directory to run the process in
+	 * @param params (array of Strings) array containing the command to call and its arguments
+	 * @return Returns true if the command exited as expected
+	 * @throws Exception TODO: Check which exceptions to use
+	 */
 	private boolean checkProcessExistence(String name, boolean error, File workDir, String...params) throws Exception {
 		PMS.info("launching: " + params[0]); //$NON-NLS-1$
 		
@@ -257,11 +330,22 @@ public class PMS {
 		}
 	}
 	
+	/**
+	 * @see System#err
+	 */
 	@SuppressWarnings("unused")
 	private PrintStream stderr = System.err;  
 	
+	/**Main resource database that supports search capabilities. Also known as media cache.
+	 * @see DLNAMediaDatabase
+	 */
 	private DLNAMediaDatabase database;
 	
+	/**Used to get the database. Needed in the case of the Xbox 360, that requires a database.
+	 * for its queries.
+	 * @return (DLNAMediaDatabase) If there exists a database register with the program, a pointer to it is returned.
+	 * If there is no database in memory, a new one is created. If the option to use a "cache" is deactivated, returns <b>null</b>.
+	 */
 	public synchronized DLNAMediaDatabase getDatabase() {
 		if (PMS.configuration.getUseCache()) {
 			if (database == null) {
@@ -281,6 +365,11 @@ public class PMS {
 	}
 	
 	
+	/**Initialisation procedure for PMS.
+	 * @return true if the server has been init correctly. false if the server could
+	 * not be set to listen to the UPNP port.
+	 * @throws Exception
+	 */
 	private boolean init () throws Exception {
 		
 		
@@ -318,7 +407,7 @@ public class PMS {
 		
 		
 		minimal("Starting Java PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$
-		minimal("by shagrath / 2008-2010"); //$NON-NLS-1$
+		minimal("by shagrath / 2008-2011"); //$NON-NLS-1$
 		minimal("http://ps3mediaserver.blogspot.com"); //$NON-NLS-1$
 		minimal("http://code.google.com/p/ps3mediaserver"); //$NON-NLS-1$
 		minimal(""); //$NON-NLS-1$
@@ -477,6 +566,20 @@ public class PMS {
 
 	private static final String PMSDIR = "\\PMS\\";
 
+	
+	/**Creates a new Root folder for a given configuration. It adds following folders in this order:
+	 * <ol><li>Directory folders as stated in the configuration pane
+	 * <li>Web nodes
+	 * <li>iPhoto
+	 * <li>iTunes
+	 * <li>Media Library
+	 * <li>Folders created by plugins
+	 * <li>Video settings
+	 * </ol>
+	 * @param renderer {@link RendererConfiguration} to be managed.
+	 * @throws IOException
+	 */
+
 	public void manageRoot(RendererConfiguration renderer) throws IOException {
 		String webConfPath;
 
@@ -579,6 +682,11 @@ public class PMS {
 	}
 
 
+	/**Adds iPhoto folder. Used by manageRoot, so it is usually used as a folder at the
+	 * root folder. Only works when PMS is run on MacOsX.
+	 * TODO: Requirements for iPhoto.
+	 * @param renderer
+	 */
 	@SuppressWarnings("unchecked")
 	public void addiPhotoFolder(RendererConfiguration renderer) {
 		if (Platform.isMac()) {
@@ -628,6 +736,14 @@ public class PMS {
 		}
 	}
 	
+	/**Returns the iTunes XML file. This file has all the information of the iTunes
+	 * database. The methods used in this function depends on whether PMS runs on 
+	 * MacOsX or Windows.
+	 * @param isOsx deprecated and not used
+	 * @return (String) Absolute path to the iTunes XML file.
+	 * @throws Exception
+	 * @see {@link PMS#addiTunesFolder(RendererConfiguration)}
+	 */
 	@SuppressWarnings("deprecation")
 	private String getiTunesFile(boolean isOsx) throws Exception {
 		String line = null;
@@ -668,6 +784,15 @@ public class PMS {
 		return iTunesFile;
 	}
 	
+	/**Adds iTunes folder. Used by manageRoot, so it is usually used as a folder at the
+	 * root folder. Only works when PMS is run on MacOsX or Windows.<p>
+	 * The iTunes XML is parsed fully when this method is called, so it can take some time for
+	 * larger (+1000 albums) databases. TODO: Check if only music is being added.<P>
+	 * This method does not support genius playlists and does not provide a media library.
+	 * @param renderer {@link RendererConfiguration} Which media renderer to add this folder to.
+	 * @see PMS#manageRoot(RendererConfiguration)
+	 * @see PMS#getiTunesFile(boolean)
+	 */
 	@SuppressWarnings("unchecked")
 	public void addiTunesFolder(RendererConfiguration renderer) {
 		if (Platform.isMac() || Platform.isWindows()) {
@@ -710,7 +835,12 @@ public class PMS {
 			}
 		}
 	}
-	
+	/**Adds Video Settings folder. Used by manageRoot, so it is usually used as a folder at the
+	 * root folder. Child objects are created when this folder is created.
+	 * @param renderer {@link RendererConfiguration} Which media renderer to add this folder to.
+	 * @see PMS#manageRoot(RendererConfiguration)
+	 */
+
 	public void addVideoSettingssFolder(RendererConfiguration renderer) {
 		if (!PMS.configuration.getHideVideoSettings()) {
 			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.37"), null); //$NON-NLS-1$
@@ -805,6 +935,10 @@ public class PMS {
 		}
 	}
 	
+	/**Adds as many folders as plugins providing root folders are loaded into memory (need to implement AdditionalFolderAtRoot)
+	 * @param renderer {@link RendererConfiguration} Which media renderer to add this folder to.
+	 * @see PMS#manageRoot(RendererConfiguration)
+	 */
 	private void addAdditionalFoldersAtRoot(RendererConfiguration renderer) {
 		for(ExternalListener listener:ExternalFactory.getExternalListeners()) {
 			if (listener instanceof AdditionalFolderAtRoot)
@@ -821,10 +955,19 @@ public class PMS {
 	//private boolean mediaLibraryAdded = false;
 	private MediaLibrary library;
 	
+	/**Returns the MediaLibrary used by PMS.
+	 * @return (MediaLibrary) Used library, if any. null if none is in use.
+	 */
 	public MediaLibrary getLibrary() {
 		return library;
 	}
 
+	/**Creates a new MediaLibrary object and adds the Media Library folder at root. This function
+	 * can only be run once, or the previous MediaLibrary object can be lost.<P>
+	 * @param renderer {@link RendererConfiguration} Which media renderer to add this folder to.
+	 * @return true if the settings allow to have a MediaLibrary.
+	 * @see PMS#manageRoot(RendererConfiguration)
+	 */
 	public boolean addMediaLibraryFolder(RendererConfiguration renderer) {
 		if (PMS.configuration.getUseCache() && !renderer.isMediaLibraryAdded()) {
 			library = new MediaLibrary();
@@ -836,6 +979,11 @@ public class PMS {
 		return false;
 	}
 	
+	/**Executes the needed commands in order to make PMS a Windows service that starts whenever the machine is started.
+	 * This function is called from the Network tab.
+	 * @return true if PMS could be installed as a Windows service.
+	 * @see NetworkTab#build()
+	 */
 	public boolean installWin32Service() {
 		PMS.minimal(Messages.getString("PMS.41")); //$NON-NLS-1$
 		String cmdArray [] = new String[] { "win32/service/wrapper.exe", "-r", "wrapper.conf" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -849,6 +997,12 @@ public class PMS {
 		return pwinstall.isSuccess();
 	}
 	
+	/**Splits an String using the "." character. Assumes that at least a "." character will be found.<P>
+	 * Used by {@link PMS#manageRoot(RendererConfiguration)} in the web.conf section.
+	 * @param entry (String) to be splitted
+	 * @return Array of (String) that represents the splitted entry.
+	 * @see PMS#manageRoot(RendererConfiguration)
+	 */
 	private String [] parseFeedKey(String entry) {
 		StringTokenizer st = new StringTokenizer(entry, "."); //$NON-NLS-1$
 		String results [] = new String [2];
@@ -859,6 +1013,12 @@ public class PMS {
 		return results;
 	}
 	
+	/**Splits an String using the "," character. Assumes that at least a "," character will be found.<P>
+	 * Used by {@link PMS#manageRoot(RendererConfiguration)} in the web.conf section.
+	 * @param entry (String) to be splitted
+	 * @return Array of (String) that represents the splitted entry.
+	 * @see PMS#manageRoot(RendererConfiguration)
+	 */
 	private String [] parseFeedValue(String entry) {
 		StringTokenizer st = new StringTokenizer(entry, ","); //$NON-NLS-1$
 		String results [] = new String [3];
@@ -869,6 +1029,9 @@ public class PMS {
 		return results;
 	}
 	
+	/**Add a known set of extensions to the extensions list.
+	 * @see PMS#init()
+	 */
 	private void registerExtensions() {
 		extensions.add(new WEB());
 		extensions.add(new MKV());
@@ -886,6 +1049,9 @@ public class PMS {
 		extensions.add(new RAW());
 	}
 	
+	/**Register a known set of audio/video transform tools (known as {@link Player}) . Used in PMS#init().
+	 * @see PMS#init()
+	 */
 	private void registerPlayers() {
 		assertThat(configuration, notNullValue());
 		if (Platform.isWindows())
@@ -908,6 +1074,11 @@ public class PMS {
 		frame.addEngines();
 	}
 	
+	/**Adds a single {@link Player} to the list of Players. Used by {@link PMS#registerPlayers()}.
+	 * @param p (Player) to be added to the list
+	 * @see Player
+	 * @see PMS#registerPlayers()
+	 */
 	private void registerPlayer(Player p) {
 		allPlayers.add(p);
 		boolean ok = false;
@@ -946,6 +1117,14 @@ public class PMS {
 		}
 	}
 	
+	/**Transforms a comma separated list of directory entries into an array of {@link String}.
+	 * The function checks that the directory is exists and is a valid directory. It does not check
+	 * if you can access to the files inside the given directory.
+	 * @param folders {@link String} Comma separated list of directories.
+	 * @return {@link File}[] Array of directories.
+	 * @throws IOException
+	 * @see {@link PMS#manageRoot(RendererConfiguration)}
+	 */
 	public File [] loadFoldersConf(String folders) throws IOException {
 		if (folders == null || folders.length() == 0)
 			return null;
@@ -970,6 +1149,10 @@ public class PMS {
 	}
 
 	
+	/**Restarts the servers. The trigger is either a button on the main PMS window or via
+	 * an action item added via {@link PMS#addVideoSettingssFolder(RendererConfiguration).
+	 * @throws IOException
+	 */
 	public void reset() throws IOException {
 		debug("Waiting 1 seconds..."); //$NON-NLS-1$
 		UPNPHelper.sendByeBye();
@@ -988,28 +1171,53 @@ public class PMS {
 		UPNPHelper.sendAlive();
 	}
 	
+	/**Adds a message to the debug stream, or {@link System#out} in case the
+	 * debug stream has not been set up yet.
+	 * @param msg {@link String} to be added to the debug stream.
+	 */
 	public static void debug(String msg) {
 		if (instance != null)
 			instance.message(DEBUG, msg);
 		else
 			System.out.println(msg);
 	}
-	
+	/**Adds a message to the info stream.
+	 * @param msg {@link String} to be added to the info stream.
+	 */
 	public static void info(String msg) {
 		if (instance != null)
 			instance.message(INFO, msg);
 	}
 	
+	/**Adds a message to the minimal stream. This minimal stream is also
+	 * shown in the Trace tab.
+	 * @param msg {@link String} to be added to the minimal stream.
+	 */
 	public static void minimal(String msg) {
 		if (instance != null)
 			instance.message(MINIMAL, msg);
 	}
 	
+	/**Adds a message to the error stream. This is usually called by
+	 * statements that are in a try/catch block.
+	 * @param msg {@link String} to be added to the error stream
+	 * @param t {@link Throwable} comes from an {@link Exception} 
+	 */
 	public static void error(String msg, Throwable t) {
 		if (instance != null)
 			instance.message(msg, t);
 	}
 	
+	/**Print a message in a given channel. The channels can be following:
+	 * <ul><li>{@link #MINIMAL} for informative messages that the user need to be aware of. They are always
+	 * submitted to {@link System#out}, so they are shown to the command line window if one exists.
+	 * <li>{@link #INFO} for informative messages.
+	 * <li>{@link #DEBUG} for debug messages
+	 * </ul>
+	 * The debug level setting will state which ones of the three levels are being shown.
+	 * @param l {@link int} is the output text channel to use.
+	 * @param message {@link String} is the message to output
+	 */
 	private void message(int l, String message) {
 		
 			String name = Thread.currentThread().getName();
@@ -1038,6 +1246,10 @@ public class PMS {
 		
 	}
 	
+	/**Handles the display of an error message. It is always logged and is shown in the command line window if available.
+	 * @param error {@link String} to be displayed
+	 * @param t {@link Throwable} from the {@link Exception} that has the error description.
+	 */
 	private void message(String error, Throwable t) {
 		
 			String name = Thread.currentThread().getName();
@@ -1066,8 +1278,15 @@ public class PMS {
 		
 	}
 
+	/**Universally Unique Identifier used in the UPNP server.
+	 * 
+	 */
 	private String uuid;
 	
+	/**Creates a new {@link #uuid} for the UPNP server to use. Tries to follow the RCFs for creating the UUID based on the link MAC address.
+	 * Defaults to a random one if that method is not available.
+	 * @return {@link String} with an Universally Unique Identifier.
+	 */
 	public String usn() {
 		if (uuid == null) {
 			boolean uuidBasedOnMAC = false;
@@ -1106,6 +1325,9 @@ public class PMS {
 		//return "uuid:1234567890TOTO::";
 	}
 	
+	/**Returns the user friendly name of the UPNP server. 
+	 * @return {@link String} with the user friendly name.
+	 */
 	public String getServerName() {
 		if (serverName == null) {
 			StringBuffer sb = new StringBuffer();
@@ -1121,6 +1343,9 @@ public class PMS {
 	}
 	
 	
+	/**Returns the PMS instance. New instance is created if needed.
+	 * @return {@link PMS}
+	 */
 	public static PMS get() {
 		if (instance == null) {
 			synchronized (lock) {
@@ -1140,6 +1365,10 @@ public class PMS {
 		return instance;
 	}
 	
+	/**
+	 * @param filename
+	 * @return
+	 */
 	public Format getAssociatedExtension(String filename) {
 		PMS.debug("Search extension for " + filename); //$NON-NLS-1$
 		for(Format ext:extensions) {

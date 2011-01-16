@@ -24,12 +24,22 @@ import java.io.InputStream;
 import net.pms.dlna.DLNAResource;
 import net.pms.network.HTTPResource;
 
+/**
+ * Represents a container (folder). This is widely used by the UPNP ContentBrowser service. Child objects are expected in this folder.
+ */
 public class VirtualFolder extends DLNAResource {
 	
 	protected String name;
 	protected String thumbnailIcon;
 	protected String thumbnailContentType;
 	
+	/**Constructor for this class. The constructor does not add any child to the container. This is the only
+	 * chance to set the name of this container.
+	 * @param name String to be shown in the ContentBrowser service 
+	 * @param thumbnailIcon Represents a thumbnail to be shown. The String represents an absolute
+	 *        path. Use null if none is available or desired.
+	 * @see #addChild(DLNAResource)
+	 */
 	public VirtualFolder(String name, String thumbnailIcon) {
 		this.name = name;
 		this.thumbnailIcon = thumbnailIcon;
@@ -39,26 +49,45 @@ public class VirtualFolder extends DLNAResource {
 			thumbnailContentType = HTTPResource.JPEG_TYPEMIME;
 	}
 
+	/**Because a container cannot be streamed, this function always returns null.
+	 * @return null 
+	 * @see net.pms.dlna.DLNAResource#getInputStream()
+	 */
 	@Override
 	public InputStream getInputStream() throws IOException {
 		return null;
 	}
 
+	/**Returns a string representing the container. This string is used in
+	 * the UPNP ContentBrowser service.
+	 * @see net.pms.dlna.DLNAResource#getName()
+	 */
 	@Override
 	public String getName() {
 		return name;
 	}
 
+	/**Returns true in this case, as this is a folder.
+	 * @return true
+	 * @see net.pms.dlna.DLNAResource#isFolder()
+	 */
 	@Override
 	public boolean isFolder() {
 		return true;
 	}
 
+	/**Returns zero as this is a folder (container).
+	 * @see net.pms.dlna.DLNAResource#length()
+	 */
 	@Override
 	public long length() {
 		return 0;
 	}
 
+	/**Containers are likely not to be modified, so this one returns zero.
+	 * TODO: (botijo) When is this used then? Is this a prototype?
+	 * @return Zero
+	 */
 	public long lastModified() {
 		return 0;
 	}
@@ -68,16 +97,26 @@ public class VirtualFolder extends DLNAResource {
 		return getName();
 	}
 	
+	/**Returns a {@link InputStream} that represents the thumbnail used.
+	 * @see net.pms.dlna.DLNAResource#getThumbnailInputStream()
+	 */
 	@Override
 	public InputStream getThumbnailInputStream() {
 		return getResourceInputStream(thumbnailIcon);
 	}
 	
+	/**Returns the thumbnailContentType associated to the thumbnail associated to this container.
+	 * @see net.pms.dlna.DLNAResource#getThumbnailContentType()
+	 * @see #thumbnailContentType
+	 */
 	@Override
 	public String getThumbnailContentType() {
 		return thumbnailContentType;
 	}
 
+	/**Returns true, as a container is always a valid item to add to another container.
+	 * @see net.pms.dlna.DLNAResource#isValid()
+	 */
 	@Override
 	public boolean isValid() {
 		return true;
