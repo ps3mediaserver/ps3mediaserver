@@ -44,6 +44,7 @@ import java.util.UUID;
 import java.util.logging.LogManager;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.lang.StringUtils;
 
 import com.sun.jna.Platform;
 
@@ -131,7 +132,7 @@ public class PMS {
 	/**
 	 * Version showed in the UPNP XML descriptor and logs.
 	 */
-	public static final String VERSION = "1.20.436"; //$NON-NLS-1$
+	public static final String VERSION = "1.20.437"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -1010,36 +1011,40 @@ public class PMS {
 		return pwinstall.isSuccess();
 	}
 	
-	/**Splits an String using the "." character. Assumes that at least a "." character will be found.<P>
-	 * Used by {@link PMS#manageRoot(RendererConfiguration)} in the web.conf section.
-	 * @param entry (String) to be splitted
-	 * @return Array of (String) that represents the splitted entry.
+	/**Splits the first part of a Web resource spec into a pair of Strings representing the resource type and its DLNA folder.<P>
+	 * Used by {@link PMS#manageRoot(RendererConfiguration)} in the WEB.conf section.
+	 * @param spec (String) to be split
+	 * @return Array of (String) that represents the tokenized entry.
 	 * @see PMS#manageRoot(RendererConfiguration)
 	 */
-	private String [] parseFeedKey(String entry) {
-		StringTokenizer st = new StringTokenizer(entry, "."); //$NON-NLS-1$
-		String results [] = new String [2];
-		int i = 0;
-		while (st.hasMoreTokens()) {
-			results[i++] = st.nextToken();
+	private String [] parseFeedKey(String spec) {
+		String[] pair = StringUtils.split(spec, ".", 2);
+
+		if (pair == null || pair.length < 2) {
+		    pair = new String [2];
 		}
-		return results;
+
+		if (pair[0] == null) {
+		    pair[0] = "";
+		}
+
+		return pair;
 	}
 	
-	/**Splits an String using the "," character. Assumes that at least a "," character will be found.<P>
-	 * Used by {@link PMS#manageRoot(RendererConfiguration)} in the web.conf section.
-	 * @param entry (String) to be splitted
-	 * @return Array of (String) that represents the splitted entry.
+	/**Splits a String using the "," character. Assumes that at least a "," character will be found.<P>
+	 * Used by {@link PMS#manageRoot(RendererConfiguration)} in the WEB.conf section.
+	 * @param entry (String) to be split
+	 * @return Array of (String) that represents the tokenized entry.
 	 * @see PMS#manageRoot(RendererConfiguration)
 	 */
-	private String [] parseFeedValue(String entry) {
-		StringTokenizer st = new StringTokenizer(entry, ","); //$NON-NLS-1$
-		String results [] = new String [3];
+	private String [] parseFeedValue(String spec) {
+		StringTokenizer st = new StringTokenizer(spec, ","); //$NON-NLS-1$
+		String triple [] = new String [3];
 		int i = 0;
 		while (st.hasMoreTokens()) {
-			results[i++] = st.nextToken();
+			triple[i++] = st.nextToken();
 		}
-		return results;
+		return triple;
 	}
 	
 	/**Add a known set of extensions to the extensions list.
