@@ -93,7 +93,8 @@ public class FoldTab {
 			for(int i=0;i<df.size();i++) {
 				if (i> 0)
 					sb.append(","); //$NON-NLS-1$
-				sb.append(df.getElementAt(i));
+				String entry = (String) df.getElementAt(i);
+				sb.append(entry.replace(",", "\\,"));
 			}
 			PMS.getConfiguration().setFolders(sb.toString());
 		}

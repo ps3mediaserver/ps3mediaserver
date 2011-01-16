@@ -82,12 +82,18 @@ public class RendererConfiguration {
 	}
 
 	public RootFolder getRootFolder() {
+		return getRootFolder(true);
+	}
+
+	public RootFolder getRootFolder(boolean initialize) {
 		if (rootFolder == null) {
 			rootFolder = new RootFolder();
-			try {
-				PMS.get().manageRoot(this);
-			} catch (IOException e) {
-				e.printStackTrace();
+			if (initialize) {
+				try {
+					PMS.get().manageRoot(this);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return rootFolder;
