@@ -153,6 +153,8 @@ public class HTTPResource {
 		PMS.info("Retrieving " + url.toString());
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		URLConnection conn = url.openConnection();
+		// GameTrailers blocks user-agents that identify themselves as "Java"
+		conn.setRequestProperty("User-agent", "PS3 Media Server v" + PMS.VERSION);
 		InputStream in = conn.getInputStream();
 		FileOutputStream fOUT = null;
 		if (saveOnDisk && f != null) {
