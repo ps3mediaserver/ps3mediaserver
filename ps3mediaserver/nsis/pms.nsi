@@ -22,8 +22,8 @@ VIProductVersion "1.0.0.1"
  
 ; Definitions for Java 6.0
 !define JRE_VERSION "6.0"
-!define JRE_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=27983&/jre-6u12-windows-i586-p.exe"
-!define JRE64_URL "http://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/VerifyItem-Start/jre-6u12-windows-x64-p.exe?BundledLineItemUUID=OGJIBe.l0DsAAAEgCtg0fiBA&OrderID=3eBIBe.l3qEAAAEg_dc0fiBA&ProductID=s1lIBe.pg_kAAAEerMhTwPpP&FileName=/jre-6u12-windows-x64-p.exe"
+!define JRE_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=45824"
+!define JRE64_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=43883"
 ;!define JRE_VERSION "5.0"
 ;!define JRE_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=18675&/jre-1_5_0_15-windows-i586-p.exe"
  
