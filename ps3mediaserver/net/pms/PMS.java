@@ -483,7 +483,7 @@ public class PMS {
 		registerExtensions();
 		registerPlayers();
 		
-		manageRoot(RendererConfiguration.getDefaultConf());
+		getRootFolder(RendererConfiguration.getDefaultConf());
 		
 		boolean binding = false;
 		try {
