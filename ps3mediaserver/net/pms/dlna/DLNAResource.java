@@ -225,7 +225,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	
 	public boolean skipTranscode = false;
 	protected int childrenNumber;
-	
+	private boolean allChildrenAreFolders = true;
+
 	/**Adds a new DLNAResource to the child list. Only useful if this object is of the container type.<P>
 	 * TODO: (botijo) check what happens with the child object. This function can and will transform the child
 	 * object. If the transcode option is set, the child item is converted to a container with the real
@@ -233,6 +234,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * I suppose. Is this the right place to be doing things like these? 
 	 * @param child DLNAResource to add to a container type.
 	 */
+
 	public void addChild(DLNAResource child) {
 		//child.expert = expert;
 		child.parent = this;
@@ -243,6 +245,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			PMS.info("Adding " + child.getName() + " / class: " + child.getClass().getName());
 			VirtualFolder vf = null;
 			//VirtualFolder vfCopy = null;
+
+			if (!child.isFolder())
+				allChildrenAreFolders = false;
 			
 			children.add(child);
 			childrenNumber++;
@@ -298,9 +303,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							
 						}
 					}
-					boolean allAreFolder = true;
-					for(DLNAResource r:children) allAreFolder &= r.isFolder();
-					if (pl != null && !allAreFolder) {
+
+					if (pl != null && !allChildrenAreFolders) {
 						boolean forceTranscode = false;
 						if (child.ext != null)
 							forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode(), defaultRenderer!=null?defaultRenderer.getTranscodedExtensions():null);
