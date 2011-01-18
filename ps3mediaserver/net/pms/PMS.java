@@ -132,7 +132,7 @@ public class PMS {
 	/**
 	 * Version showed in the UPNP XML descriptor and logs.
 	 */
-	public static final String VERSION = "1.20.437"; //$NON-NLS-1$
+	public static final String VERSION = "1.20.442"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -425,7 +425,7 @@ public class PMS {
 		
 		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 				
-		PMS.minimal("Checking font cache... launching simple instance of MPlayer... You may have to wait 60 seconds !");
+		PMS.minimal("Checking font cache... launching simple instance of MPlayer... You may have to wait 60 seconds!");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
 		checkProcessExistence("MPlayer", true, PMS.getConfiguration().getTempFolder(), configuration.getMplayerPath(), "dummy");
 		PMS.minimal("Done!");
@@ -529,7 +529,7 @@ public class PMS {
 		try {
 			ExternalFactory.lookup();
 		} catch (Exception e) {
-			PMS.error("Error in the plugins lookup", e);
+			PMS.error("Error loading plugins", e);
 		}
 		
 		frame.serverReady();
@@ -662,7 +662,7 @@ public class PMS {
 							}
 						// catch exception here and go with parsing
 						} catch (ArrayIndexOutOfBoundsException e) {
-							PMS.minimal("Error in line " + br.getLineNumber() + " of file WEB.conf: " + e.getMessage()); //$NON-NLS-1$
+							PMS.minimal("Error at line " + br.getLineNumber() + " of file WEB.conf: " + e.getMessage()); //$NON-NLS-1$
 						}
 					}
 				}
@@ -976,7 +976,7 @@ public class PMS {
 		return library;
 	}
 
-	/**Creates a new MediaLibrary object and adds the Media Library folder at root. This function
+	/**Creates a new MediaLibrary object and adds the Media Library folder at root. This method
 	 * can only be run once, or the previous MediaLibrary object can be lost.<P>
 	 * @param renderer {@link RendererConfiguration} Which media renderer to add this folder to.
 	 * @return true if the settings allow to have a MediaLibrary.
@@ -1011,7 +1011,7 @@ public class PMS {
 		return pwinstall.isSuccess();
 	}
 	
-	/**Splits the first part of a Web resource spec into a pair of Strings representing the resource type and its DLNA folder.<P>
+	/**Splits the first part of a WEB.conf spec into a pair of Strings representing the resource type and its DLNA folder.<P>
 	 * Used by {@link PMS#manageRoot(RendererConfiguration)} in the WEB.conf section.
 	 * @param spec (String) to be split
 	 * @return Array of (String) that represents the tokenized entry.
@@ -1031,9 +1031,9 @@ public class PMS {
 		return pair;
 	}
 	
-	/**Splits a String using the "," character. Assumes that at least a "," character will be found.<P>
+	/**Splits the second part of a WEB.conf spec into a triple of Strings representing the DLNA path, resource URI and optional thumbnail URI.<P>
 	 * Used by {@link PMS#manageRoot(RendererConfiguration)} in the WEB.conf section.
-	 * @param entry (String) to be split
+	 * @param spec (String) to be split
 	 * @return Array of (String) that represents the tokenized entry.
 	 * @see PMS#manageRoot(RendererConfiguration)
 	 */
@@ -1067,7 +1067,7 @@ public class PMS {
 		extensions.add(new RAW());
 	}
 	
-	/**Register a known set of audio/video transform tools (known as {@link Player}) . Used in PMS#init().
+	/**Register a known set of audio/video transform tools (known as {@link Player}s). Used in PMS#init().
 	 * @see PMS#init()
 	 */
 	private void registerPlayers() {
@@ -1207,7 +1207,7 @@ public class PMS {
 			instance.message(INFO, msg);
 	}
 	
-	/**Adds a message to the minimal stream. This minimal stream is also
+	/**Adds a message to the minimal stream. This stream is also
 	 * shown in the Trace tab.
 	 * @param msg {@link String} to be added to the minimal stream.
 	 */
@@ -1227,7 +1227,7 @@ public class PMS {
 	}
 	
 	/**Print a message in a given channel. The channels can be following:
-	 * <ul><li>{@link #MINIMAL} for informative messages that the user need to be aware of. They are always
+	 * <ul><li>{@link #MINIMAL} for informative messages that the user needs to be aware of. They are always
 	 * submitted to {@link System#out}, so they are shown to the command line window if one exists.
 	 * <li>{@link #INFO} for informative messages.
 	 * <li>{@link #DEBUG} for debug messages
@@ -1301,7 +1301,7 @@ public class PMS {
 	 */
 	private String uuid;
 	
-	/**Creates a new {@link #uuid} for the UPNP server to use. Tries to follow the RCFs for creating the UUID based on the link MAC address.
+	/**Creates a new {@link #uuid} for the UPNP server to use. Tries to follow the RFCs for creating the UUID based on the link MAC address.
 	 * Defaults to a random one if that method is not available.
 	 * @return {@link String} with an Universally Unique Identifier.
 	 */
@@ -1337,7 +1337,7 @@ public class PMS {
 					uuid = UUID.randomUUID().toString();
 				}
 			}
-			PMS.minimal("Using following UUID: " + uuid); //$NON-NLS-1$
+			PMS.minimal("Using the following UUID: " + uuid); //$NON-NLS-1$
 		}
 		return "uuid:" + uuid ; //$NON-NLS-1$ //$NON-NLS-2$
 		//return "uuid:1234567890TOTO::";
