@@ -792,7 +792,7 @@ public class PmsConfiguration {
 		for (String engineId : input) {
 			if (engineId.startsWith("avs")  && !registry.isAvis() && PMS.get().isWindows()) {
 				if (!avsHackLogged) {
-					PMS.minimal("AviSynth is not installed. You cannot use " + engineId + " as transcoding engine."); //$NON-NLS-1$ //$NON-NLS-2$
+					PMS.minimal("AviSynth is not installed. You cannot use " + engineId + " as a transcoding engine."); //$NON-NLS-1$ //$NON-NLS-2$
 					avsHackLogged = true;
 				}
 				toBeRemoved.add(engineId);

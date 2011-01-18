@@ -87,7 +87,7 @@ public abstract class Player {
 			while (st != null && st.hasMoreTokens()) {
 				String lang = st.nextToken();
 				lang = lang.trim();
-				PMS.debug("Searching an audio track with lang: " + lang);
+				PMS.debug("Looking for an audio track with lang: " + lang);
 				for(DLNAMediaAudio audio:media.audioCodes) {
 					if (audio.matchCode(lang)) {
 						params.aid = audio;
@@ -170,9 +170,9 @@ public abstract class Player {
 			if (configuration.getUseSubtitles()) {
 				// priority to external subtitles
 				for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
-					PMS.debug("Found subtitles track : " + sub);
+					PMS.debug("Found subtitles track: " + sub);
 					if (sub.file != null) {
-						PMS.debug("Found external file : " + sub.file.getAbsolutePath());
+						PMS.debug("Found external file: " + sub.file.getAbsolutePath());
 						params.sid = sub;
 						break;
 					}
@@ -185,11 +185,11 @@ public abstract class Player {
 				while (st != null && st.hasMoreTokens()) {
 					String lang = st.nextToken();
 					lang = lang.trim();
-					PMS.debug("Searching a subtitle track with lang: " + lang);
+					PMS.debug("Looking for a subtitle track with lang: " + lang);
 					for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
 						if (sub.matchCode(lang)) {
 							params.sid = sub;
-							PMS.debug("Matched sub track : " + params.sid);
+							PMS.debug("Matched sub track: " + params.sid);
 							st = null;
 							break;
 						}
