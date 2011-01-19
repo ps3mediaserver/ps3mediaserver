@@ -114,7 +114,8 @@ public class FoldTab {
        df = new DefaultListModel();
        if (PMS.getConfiguration().getFolders() != null && PMS.getConfiguration().getFolders().length() > 0) {
     	 try {
-			File f [] =  PMS.get().loadFoldersConf(PMS.getConfiguration().getFolders());
+			// false: don't log this call as it occurs before the PMS banner is logged/displayed
+			File f [] =  PMS.get().loadFoldersConf(PMS.getConfiguration().getFolders(), false);
 			for(File file:f) {
 				df.addElement(file.getAbsolutePath());
 			}

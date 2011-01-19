@@ -246,7 +246,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			VirtualFolder vf = null;
 			//VirtualFolder vfCopy = null;
 
-			if (!child.isFolder())
+			if (allChildrenAreFolders && !child.isFolder())
 				allChildrenAreFolders = false;
 			
 			children.add(child);
