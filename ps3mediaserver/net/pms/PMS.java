@@ -132,7 +132,7 @@ public class PMS {
 	/**
 	 * Version showed in the UPNP XML descriptor and logs.
 	 */
-	public static final String VERSION = "1.20.442"; //$NON-NLS-1$
+	public static final String VERSION = "1.20.443"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -324,7 +324,7 @@ public class PMS {
 			int exit = process.exitValue();
 			if (exit != 0) {
 				if (error)
-					PMS.minimal("[" + exit + "] Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ..."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					minimal("[" + exit + "] Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ..."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 				return false;
 			}
 			return true;
@@ -359,7 +359,7 @@ public class PMS {
 				/*try {
 					org.h2.tools.Server server = org.h2.tools.Server.createWebServer(null);
 					server.start();
-					PMS.minimal("Starting H2 console on port " + server.getPort());
+					minimal("Starting H2 console on port " + server.getPort());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}*/
@@ -385,11 +385,11 @@ public class PMS {
 			debug = new File("debug.log"); //$NON-NLS-1$
 			pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
 		} catch (Throwable e) {
-			PMS.minimal("Error accessing debug.log..."); //$NON-NLS-1$
+			minimal("Error accessing debug.log..."); //$NON-NLS-1$
 			pw = null;
 		} finally {
 			if (pw == null) {
-				PMS.minimal("Using temp folder for debug.log..."); //$NON-NLS-1$
+				minimal("Using temp folder for debug.log..."); //$NON-NLS-1$
 				debug = new File(configuration.getTempFolder(), "debug.log"); //$NON-NLS-1$
 				pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
 			}
@@ -425,10 +425,10 @@ public class PMS {
 		
 		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 				
-		PMS.minimal("Checking font cache... launching simple instance of MPlayer... You may have to wait 60 seconds!");
+		minimal("Checking font cache... launching simple instance of MPlayer... You may have to wait 60 seconds!");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
 		checkProcessExistence("MPlayer", true, PMS.getConfiguration().getTempFolder(), configuration.getMplayerPath(), "dummy");
-		PMS.minimal("Done!");
+		minimal("Done!");
 		/*
 		if (!checkProcessExistence("FFmpeg", true, configuration.getFfmpegPath(), "-h")) //$NON-NLS-1$ //$NON-NLS-2$
 			configuration.disableFfmpeg();
@@ -445,17 +445,17 @@ public class PMS {
 		
 		// check the existence of Vsfilter.dll
 		if (registry.isAvis() && registry.getAvsPluginsDir() != null) {
-			PMS.minimal("Found AviSynth plugins dir: " + registry.getAvsPluginsDir().getAbsolutePath()); //$NON-NLS-1$
+			minimal("Found AviSynth plugins dir: " + registry.getAvsPluginsDir().getAbsolutePath()); //$NON-NLS-1$
 			File vsFilterdll = new File(registry.getAvsPluginsDir(), "VSFilter.dll"); //$NON-NLS-1$
 			if (!vsFilterdll.exists()) {
-				PMS.minimal("!!! It seems VSFilter.dll is not installed into the AviSynth plugins dir ! It could be troublesome for playing subtitled videos with AviSynth !!!"); //$NON-NLS-1$
+				minimal("!!! It seems VSFilter.dll is not installed into the AviSynth plugins dir ! It could be troublesome for playing subtitled videos with AviSynth !!!"); //$NON-NLS-1$
 			}
 		}
 		
 		if (registry.getVlcv() != null && registry.getVlcp() != null) {
-			PMS.minimal("Found VideoLAN version " + registry.getVlcv() + " at: " + registry.getVlcp()); //$NON-NLS-1$ //$NON-NLS-2$
+			minimal("Found VideoLAN version " + registry.getVlcv() + " at: " + registry.getVlcp()); //$NON-NLS-1$ //$NON-NLS-2$
 			if (registry.getVlcv().startsWith("1") && Platform.isWindows()) {
-				PMS.minimal("Unfortunately, VideoLAN 1.x is not supported at this point. Last known working version is 0.98");
+				minimal("Unfortunately, VideoLAN 1.x is not supported at this point. Last known working version is 0.98");
 			}
 		}
 		
@@ -490,8 +490,8 @@ public class PMS {
 			binding = server.start();
 		} catch (BindException b) {
 			
-			PMS.minimal("FATAL ERROR: Unable to bind on port: " + configuration.getServerPort() + " cause: " + b.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
-			PMS.minimal("Maybe another process is running or the hostname is wrong..."); //$NON-NLS-1$
+			minimal("FATAL ERROR: Unable to bind on port: " + configuration.getServerPort() + " cause: " + b.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			minimal("Maybe another process is running or the hostname is wrong..."); //$NON-NLS-1$
 			
 		}
 		new Thread() {
@@ -662,14 +662,14 @@ public class PMS {
 							}
 						// catch exception here and go with parsing
 						} catch (ArrayIndexOutOfBoundsException e) {
-							PMS.minimal("Error at line " + br.getLineNumber() + " of file WEB.conf: " + e.getMessage()); //$NON-NLS-1$
+							minimal("Error at line " + br.getLineNumber() + " of file WEB.conf: " + e.getMessage()); //$NON-NLS-1$
 						}
 					}
 				}
 				br.close();
 			} catch (Exception e) {
 				e.printStackTrace();
-				PMS.minimal("Unexpected error in WEB.conf: " + e.getMessage()); //$NON-NLS-1$
+				minimal("Unexpected error in WEB.conf: " + e.getMessage()); //$NON-NLS-1$
 			}
 		}
 
@@ -741,7 +741,7 @@ public class PMS {
 		 			}
 					getRootFolder(renderer).addChild(vf);
  				} else {
- 					PMS.minimal("iPhoto folder not found !?");
+ 					minimal("iPhoto folder not found !?");
  				}
 			} catch (Exception e) {
 				PMS.error("Something wrong with the iPhoto Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -790,7 +790,7 @@ public class PMS {
 				location = location + "\\iTunes\\iTunes Music Library.xml";
 				iTunesFile = location;
 			} else {
-				PMS.minimal("Could not find the My Music folder");
+				minimal("Could not find the My Music folder");
 			}
 		}
 		
@@ -841,7 +841,7 @@ public class PMS {
 					}
 					getRootFolder(renderer).addChild(vf);
 				} else {
-					PMS.minimal("Could not find the iTunes file");
+					minimal("Could not find the iTunes file");
 				}
 			} catch (Exception e) {
 				PMS.error("Something wrong with the iTunes Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -999,7 +999,7 @@ public class PMS {
 	 * @see NetworkTab#build()
 	 */
 	public boolean installWin32Service() {
-		PMS.minimal(Messages.getString("PMS.41")); //$NON-NLS-1$
+		minimal(Messages.getString("PMS.41")); //$NON-NLS-1$
 		String cmdArray [] = new String[] { "win32/service/wrapper.exe", "-r", "wrapper.conf" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		OutputParams output = new OutputParams(PMS.configuration);
 		output.noexitcheck = true;
@@ -1144,6 +1144,14 @@ public class PMS {
 	 * @see {@link PMS#manageRoot(RendererConfiguration)}
 	 */
 	public File [] loadFoldersConf(String folders) throws IOException {
+	    return loadFoldersConf(folders, true);
+	}
+
+	// this is called *way* too often (e.g. a dozen times with 1 renderer and 1 shared folder),
+	// so log it by default so we can fix it.
+	// BUT it's also called when the GUI is initialized (to populate the list of shared folders),
+	// and we don't want this message to appear *before* the PMS banner, so allow that call to suppress logging
+	public File [] loadFoldersConf(String folders, boolean log) throws IOException {
 		if (folders == null || folders.length() == 0)
 			return null;
 		ArrayList<File> directories = new ArrayList<File>();
@@ -1151,7 +1159,9 @@ public class PMS {
 		String[] foldersArray = splitter.split(folders);
 		for (String folder: foldersArray) {
 			folder = folder.replaceAll("\\\\,", ",");
-			PMS.minimal("Checking shared folder: " + folder); //$NON-NLS-1$
+			if (log) {
+			    minimal("Checking shared folder: " + folder); //$NON-NLS-1$
+			}
 			File file = new File(folder);
 			if (file.exists()) {
 				if (file.isDirectory()) {
@@ -1324,10 +1334,10 @@ public class PMS {
 						uuid = UUID.nameUUIDFromBytes(addr).toString();
 						uuidBasedOnMAC = true;
 					} else
-						PMS.minimal("Unable to retrieve MAC address for UUID creation: using a random one..."); //$NON-NLS-1$
+						minimal("Unable to retrieve MAC address for UUID creation: using a random one..."); //$NON-NLS-1$
 				}
 			} catch (Throwable e) {
-				PMS.minimal("Switching to random UUID cause there's an error in getting UUID from MAC address: " + e.getMessage()); //$NON-NLS-1$
+				minimal("Switching to random UUID cause there's an error in getting UUID from MAC address: " + e.getMessage()); //$NON-NLS-1$
 			}
 			
 			if (!uuidBasedOnMAC) {
@@ -1337,7 +1347,7 @@ public class PMS {
 					uuid = UUID.randomUUID().toString();
 				}
 			}
-			PMS.minimal("Using the following UUID: " + uuid); //$NON-NLS-1$
+			minimal("Using the following UUID: " + uuid); //$NON-NLS-1$
 		}
 		return "uuid:" + uuid ; //$NON-NLS-1$ //$NON-NLS-2$
 		//return "uuid:1234567890TOTO::";
@@ -1371,9 +1381,9 @@ public class PMS {
 					instance = new PMS();
 					try {
 						if (instance.init())
-							PMS.minimal("It's ready! You should see the server appear on the XMB"); //$NON-NLS-1$
+							minimal("It's ready! You should see the server appear on the XMB"); //$NON-NLS-1$
 						else
-							PMS.minimal("A serious error occurred..."); //$NON-NLS-1$
+							minimal("A serious error occurred..."); //$NON-NLS-1$
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
