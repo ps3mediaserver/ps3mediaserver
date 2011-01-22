@@ -94,7 +94,10 @@ public class FoldTab {
 				if (i> 0)
 					sb.append(","); //$NON-NLS-1$
 				String entry = (String) df.getElementAt(i);
-				sb.append(entry.replace(",", "\\,"));
+				// escape embedded commas. note: backslashing isn't safe as it conflicts with
+				// Windows path separators:
+				// http://ps3mediaserver.org/forum/viewtopic.php?f=14&t=8883&start=250#p43520
+				sb.append(entry.replace(",", "&comma;"));
 			}
 			PMS.getConfiguration().setFolders(sb.toString());
 		}

@@ -132,7 +132,7 @@ public class PMS {
 	/**
 	 * Version showed in the UPNP XML descriptor and logs.
 	 */
-	public static final String VERSION = "1.20.443"; //$NON-NLS-1$
+	public static final String VERSION = "1.20.444"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -1155,10 +1155,12 @@ public class PMS {
 		if (folders == null || folders.length() == 0)
 			return null;
 		ArrayList<File> directories = new ArrayList<File>();
-		Pattern splitter = Pattern.compile("(?<!\\\\),"); //$NON-NLS-1$ // split the string along unescaped commas
-		String[] foldersArray = splitter.split(folders);
+		String[] foldersArray = folders.split(",");
 		for (String folder: foldersArray) {
-			folder = folder.replaceAll("\\\\,", ",");
+			// unescape embedded commas. note: backslashing isn't safe as it conflicts with
+			// Windows path separators:
+			// http://ps3mediaserver.org/forum/viewtopic.php?f=14&t=8883&start=250#p43520
+			folder = folder.replaceAll("&comma;", ",");
 			if (log) {
 			    minimal("Checking shared folder: " + folder); //$NON-NLS-1$
 			}
