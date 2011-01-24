@@ -14,7 +14,7 @@ import org.apache.commons.io.FileUtils;
  */
 class TempFolder {
 
-	private static final String DEFAULT_TEMP_FOLDER_NAME = "javaps3media";
+	private static final String DEFAULT_TEMP_FOLDER_NAME = "ps3mediaserver";
 
 	private final String userSpecifiedFolder;
 	
@@ -73,7 +73,7 @@ class TempFolder {
 		}
 
 		if (!folder.canWrite()) {
-			throw new IOException("Temp folder is not writeable: " + folder);
+			throw new IOException("Temp folder is not writable: " + folder);
 		}
 	}
 }
