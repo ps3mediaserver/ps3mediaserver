@@ -101,7 +101,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	 
 	 private JLabel status;
 
-	protected static final Dimension PREFERRED_SIZE = new Dimension(1060, 782);
+	protected static final Dimension PREFERRED_SIZE = new Dimension(1000, 750);
 	// https://code.google.com/p/ps3mediaserver/issues/detail?id=949
 	protected static final Dimension MINIMUM_SIZE = new Dimension(800, 480);
 
@@ -233,12 +233,11 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		/*
 		 * handle scrollbars:
 		 *
-		 * 1) if scrollbars have been forced (-Dscrollbars=true), always display them
-		 * 2) if scrollbars have been disabled (-Dscrollbars=false), never display them
-		 * 3) otherwise display them as needed
-		 *
+		 * 1) forced scrollbars (-Dscrollbars=true): always display them
+		 * 2) optional scrollbars (-Dscrollbars=optional): display them as needed
+		 * 2) otherwise: don't display them
 		 */
-		if (showScrollbars == "true") {
+		if (showScrollbars.equals("true")) {
 			setContentPane(
 				new JScrollPane(
 					jp,
@@ -246,9 +245,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS
 				)
 			);
-		} else if (showScrollbars == "false") {
-			setContentPane(jp);
-		} else {
+		} else if (showScrollbars.equals("optional")) {
 			setContentPane(
 				new JScrollPane(
 					jp,
@@ -256,6 +253,8 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
 				)
 			);
+		} else {
+			setContentPane(jp);
 		}
 
 		this.setTitle("PS3 Media Server " + PMS.VERSION); //$NON-NLS-1$
