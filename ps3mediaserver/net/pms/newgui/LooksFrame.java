@@ -101,7 +101,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	 
 	 private JLabel status;
 
-	protected static final Dimension PREFERRED_SIZE = new Dimension(1000, 750);
+	protected static final Dimension PREFERRED_SIZE = new Dimension(1060, 782);
 	// https://code.google.com/p/ps3mediaserver/issues/detail?id=949
 	protected static final Dimension MINIMUM_SIZE = new Dimension(800, 480);
 
@@ -258,7 +258,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			);
 		}
 
-		this.setTitle("Java PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$
+		this.setTitle("PS3 Media Server " + PMS.VERSION); //$NON-NLS-1$
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		Dimension screenSize = getToolkit().getScreenSize();
 
