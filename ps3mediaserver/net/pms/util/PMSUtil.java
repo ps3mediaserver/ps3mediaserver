@@ -60,7 +60,7 @@ public class PMSUtil {
 			popup.add(traceItem);
 			popup.add(defaultItem);
 
-			final TrayIcon trayIcon = new TrayIcon(image, "Java PS3 Media Server v" + PMS.VERSION, popup); //$NON-NLS-1$
+			final TrayIcon trayIcon = new TrayIcon(image, "PS3 Media Server v" + PMS.VERSION, popup); //$NON-NLS-1$
 
 			trayIcon.setImageAutoSize(true);
 			trayIcon.addActionListener(new ActionListener() {

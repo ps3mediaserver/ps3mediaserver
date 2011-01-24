@@ -38,7 +38,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.regex.Pattern;
 import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.logging.LogManager;
@@ -132,7 +131,7 @@ public class PMS {
 	/**
 	 * Version showed in the UPNP XML descriptor and logs.
 	 */
-	public static final String VERSION = "1.20.444"; //$NON-NLS-1$
+	public static final String VERSION = "1.20.447"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -210,12 +209,12 @@ public class PMS {
 	private String serverName;
 	private ArrayList<Format> extensions;
 	/**
-	 * List of registered {@link Player}.
+	 * List of registered {@link Player}s.
 	 */
 	private ArrayList<Player> players;
 	private ArrayList<Player> allPlayers;
 	/**
-	 * @return ArrayList of {@link Player}.
+	 * @return ArrayList of {@link Player}s.
 	 */
 	public ArrayList<Player> getAllPlayers() {
 		return allPlayers;
@@ -289,7 +288,7 @@ public class PMS {
 	 * @throws Exception TODO: Check which exceptions to use
 	 */
 	private boolean checkProcessExistence(String name, boolean error, File workDir, String...params) throws Exception {
-		PMS.info("launching: " + params[0]); //$NON-NLS-1$
+		info("launching: " + params[0]); //$NON-NLS-1$
 		
 		try {
 			ProcessBuilder pb = new ProcessBuilder(params);
@@ -330,7 +329,7 @@ public class PMS {
 			return true;
 		} catch (Exception e) {
 			if (error)
-				PMS.error("Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ...", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				error("Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ...", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return false;
 		}
 	}
@@ -352,7 +351,7 @@ public class PMS {
 	 * If there is no database in memory, a new one is created. If the option to use a "cache" is deactivated, returns <b>null</b>.
 	 */
 	public synchronized DLNAMediaDatabase getDatabase() {
-		if (PMS.configuration.getUseCache()) {
+		if (configuration.getUseCache()) {
 			if (database == null) {
 				database = new DLNAMediaDatabase("medias"); //$NON-NLS-1$
 				database.init(false);
@@ -395,7 +394,7 @@ public class PMS {
 			}
 		}
 		
-		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, PMS.VERSION);
+		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, VERSION);
 		if (System.getProperty("console") == null) {//$NON-NLS-1$
 			frame = new LooksFrame(autoUpdater, configuration);
 			autoUpdater.pollServer();
@@ -411,7 +410,7 @@ public class PMS {
 		
 		
 		
-		minimal("Starting Java PS3 Media Server v" + PMS.VERSION); //$NON-NLS-1$
+		minimal("Starting PS3 Media Server v" + VERSION); //$NON-NLS-1$
 		minimal("by shagrath / 2008-2011"); //$NON-NLS-1$
 		minimal("http://ps3mediaserver.blogspot.com"); //$NON-NLS-1$
 		minimal("http://code.google.com/p/ps3mediaserver"); //$NON-NLS-1$
@@ -427,7 +426,7 @@ public class PMS {
 				
 		minimal("Checking font cache... launching simple instance of MPlayer... You may have to wait 60 seconds!");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
-		checkProcessExistence("MPlayer", true, PMS.getConfiguration().getTempFolder(), configuration.getMplayerPath(), "dummy");
+		checkProcessExistence("MPlayer", true, getConfiguration().getTempFolder(), configuration.getMplayerPath(), "dummy");
 		minimal("Done!");
 		/*
 		if (!checkProcessExistence("FFmpeg", true, configuration.getFfmpegPath(), "-h")) //$NON-NLS-1$ //$NON-NLS-2$
@@ -529,7 +528,7 @@ public class PMS {
 		try {
 			ExternalFactory.lookup();
 		} catch (Exception e) {
-			PMS.error("Error loading plugins", e);
+			error("Error loading plugins", e);
 		}
 		
 		frame.serverReady();
@@ -543,16 +542,16 @@ public class PMS {
 					}
 					UPNPHelper.shutDownListener();
 					UPNPHelper.sendByeBye();
-					PMS.info("Forcing shutdown of all active processes"); //$NON-NLS-1$
+					info("Forcing shutdown of all active processes"); //$NON-NLS-1$
 					for(Process p:currentProcesses) {
 						try {
 							p.exitValue();
 						} catch (IllegalThreadStateException ise) {
-							PMS.debug("Forcing shutdown of process " + p); //$NON-NLS-1$
+							debug("Forcing shutdown of process " + p); //$NON-NLS-1$
 							ProcessUtil.destroy(p);
 						}
 					}
-					PMS.get().getServer().stop();
+					get().getServer().stop();
 					if (pw != null)
 						pw.close();
 					Thread.sleep(500);
@@ -674,13 +673,13 @@ public class PMS {
 		}
 
 		if (Platform.isMac()) {
- 			if (PMS.getConfiguration().getIphotoEnabled()) {
+ 			if (getConfiguration().getIphotoEnabled()) {
  				addiPhotoFolder(renderer);
  			}
 		} 
 		
 		if (Platform.isMac() || Platform.isWindows()) {
- 			if (PMS.getConfiguration().getItunesEnabled()) {
+ 			if (getConfiguration().getItunesEnabled()) {
  				addiTunesFolder(renderer);
  			}
 		}
@@ -744,7 +743,7 @@ public class PMS {
  					minimal("iPhoto folder not found !?");
  				}
 			} catch (Exception e) {
-				PMS.error("Something wrong with the iPhoto Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				error("Something wrong with the iPhoto Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 	}
@@ -844,7 +843,7 @@ public class PMS {
 					minimal("Could not find the iTunes file");
 				}
 			} catch (Exception e) {
-				PMS.error("Something wrong with the iTunes Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				error("Something wrong with the iTunes Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 	}
@@ -855,7 +854,7 @@ public class PMS {
 	 */
 
 	public void addVideoSettingssFolder(RendererConfiguration renderer) {
-		if (!PMS.configuration.getHideVideoSettings()) {
+		if (!configuration.getHideVideoSettings()) {
 			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.37"), null); //$NON-NLS-1$
 			VirtualFolder vfSub = new VirtualFolder(Messages.getString("PMS.8"), null); //$NON-NLS-1$
 			vf.addChild(vfSub);
@@ -875,11 +874,11 @@ public class PMS {
 				}
 			});
 			
-			vf.addChild(new VirtualVideoAction("  !!-- Fix 23.976/25fps A/V Mismatch --!!", PMS.getConfiguration().isFix25FPSAvMismatch()) { //$NON-NLS-1$
+			vf.addChild(new VirtualVideoAction("  !!-- Fix 23.976/25fps A/V Mismatch --!!", getConfiguration().isFix25FPSAvMismatch()) { //$NON-NLS-1$
 				public boolean enable() {
-					PMS.getConfiguration().setMencoderForceFps(!PMS.getConfiguration().isFix25FPSAvMismatch());
-					PMS.getConfiguration().setFix25FPSAvMismatch(!PMS.getConfiguration().isFix25FPSAvMismatch());
-					return PMS.getConfiguration().isFix25FPSAvMismatch();
+					getConfiguration().setMencoderForceFps(!getConfiguration().isFix25FPSAvMismatch());
+					getConfiguration().setFix25FPSAvMismatch(!getConfiguration().isFix25FPSAvMismatch());
+					return getConfiguration().isFix25FPSAvMismatch();
 				}              
 			});
 			
@@ -938,7 +937,7 @@ public class PMS {
 			vf.addChild(new VirtualVideoAction(Messages.getString("LooksFrame.12"), true) { //$NON-NLS-1$
 				public boolean enable() {
 					try {
-						PMS.get().reset();
+						get().reset();
 					} catch (IOException e) {}
 					return true;
 				}
@@ -983,9 +982,9 @@ public class PMS {
 	 * @see PMS#manageRoot(RendererConfiguration)
 	 */
 	public boolean addMediaLibraryFolder(RendererConfiguration renderer) {
-		if (PMS.configuration.getUseCache() && !renderer.isMediaLibraryAdded()) {
+		if (configuration.getUseCache() && !renderer.isMediaLibraryAdded()) {
 			library = new MediaLibrary();
-			if (!PMS.configuration.isHideMediaLibraryFolder())
+			if (!configuration.isHideMediaLibraryFolder())
 				getRootFolder(renderer).addChild(library);
 			renderer.setMediaLibraryAdded(true);
 			return true;
@@ -1001,12 +1000,12 @@ public class PMS {
 	public boolean installWin32Service() {
 		minimal(Messages.getString("PMS.41")); //$NON-NLS-1$
 		String cmdArray [] = new String[] { "win32/service/wrapper.exe", "-r", "wrapper.conf" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		OutputParams output = new OutputParams(PMS.configuration);
+		OutputParams output = new OutputParams(configuration);
 		output.noexitcheck = true;
 		ProcessWrapperImpl pwuninstall = new ProcessWrapperImpl(cmdArray, output);
 		pwuninstall.run();
 		cmdArray = new String[] { "win32/service/wrapper.exe", "-i", "wrapper.conf" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		ProcessWrapperImpl pwinstall = new ProcessWrapperImpl(cmdArray, new OutputParams(PMS.configuration));
+		ProcessWrapperImpl pwinstall = new ProcessWrapperImpl(cmdArray, new OutputParams(configuration));
 		pwinstall.run();
 		return pwinstall.isSuccess();
 	}
@@ -1136,8 +1135,7 @@ public class PMS {
 	}
 	
 	/**Transforms a comma separated list of directory entries into an array of {@link String}.
-	 * The function checks that the directory is exists and is a valid directory. It does not check
-	 * if you can access to the files inside the given directory.
+	 * The function checks that the directory exists and is a valid directory.
 	 * @param folders {@link String} Comma separated list of directories.
 	 * @return {@link File}[] Array of directories.
 	 * @throws IOException
@@ -1155,12 +1153,12 @@ public class PMS {
 		if (folders == null || folders.length() == 0)
 			return null;
 		ArrayList<File> directories = new ArrayList<File>();
-		String[] foldersArray = folders.split(",");
+		String[] foldersArray = folders.split(","); //$NON-NLS-1$
 		for (String folder: foldersArray) {
 			// unescape embedded commas. note: backslashing isn't safe as it conflicts with
 			// Windows path separators:
 			// http://ps3mediaserver.org/forum/viewtopic.php?f=14&t=8883&start=250#p43520
-			folder = folder.replaceAll("&comma;", ",");
+			folder = folder.replaceAll("&comma;", ","); //$NON-NLS-1$ //$NON-NLS-2$
 			if (log) {
 			    minimal("Checking shared folder: " + folder); //$NON-NLS-1$
 			}
@@ -1169,9 +1167,9 @@ public class PMS {
 				if (file.isDirectory()) {
 					directories.add(file);
 				} else
-					PMS.error("File " + folder + " is not a directory!", null); //$NON-NLS-1$ //$NON-NLS-2$
+					error("File " + folder + " is not a directory!", null); //$NON-NLS-1$ //$NON-NLS-2$
 			} else {
-				PMS.error("Directory " + folder + " does not exist!", null); //$NON-NLS-1$ //$NON-NLS-2$
+				error("Directory " + folder + " does not exist!", null); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		File f [] = new File[directories.size()];
@@ -1322,12 +1320,12 @@ public class PMS {
 			boolean uuidBasedOnMAC = false;
 			NetworkInterface ni = null;
 			try {
-				if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
+				if (getConfiguration().getServerHostname() != null && getConfiguration().getServerHostname().length() > 0) {
 					try {
-						ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
+						ni = NetworkInterface.getByInetAddress(InetAddress.getByName(getConfiguration().getServerHostname()));
 					} catch (Exception e) {}
-				} else if ( PMS.get().getServer().getNi() != null) {
-					ni = PMS.get().getServer().getNi();
+				} else if (get().getServer().getNi() != null) {
+					ni = get().getServer().getNi();
 				}
 				if (ni != null) {
 				
@@ -1400,10 +1398,10 @@ public class PMS {
 	 * @return
 	 */
 	public Format getAssociatedExtension(String filename) {
-		PMS.debug("Search extension for " + filename); //$NON-NLS-1$
+		debug("Search extension for " + filename); //$NON-NLS-1$
 		for(Format ext:extensions) {
 			if (ext.match(filename)) {
-				PMS.debug("Found 1! " + ext.getClass().getName()); //$NON-NLS-1$
+				debug("Found 1! " + ext.getClass().getName()); //$NON-NLS-1$
 				return ext.duplicate();
 			}
 		}
@@ -1450,7 +1448,7 @@ public class PMS {
 				System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		configuration = new PmsConfiguration();
-		PMS.get();
+		get();
 		try {
 			// let's allow us time to show up serious errors in the GUI before quitting
 			Thread.sleep(60000);

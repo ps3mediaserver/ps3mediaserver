@@ -262,7 +262,7 @@ public class RequestV2 extends HTTPResource {
 				}
 				if (xbox) {
 					PMS.info("DLNA changes for Xbox360");
-					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "] : Windows Media Connect");
+					s = s.replace("PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "] : Windows Media Connect");
 					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect</modelName>");				
 					s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
 							       "<serviceType>urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1</serviceType>" + CRLF +
@@ -273,7 +273,7 @@ public class RequestV2 extends HTTPResource {
 						
 							
 				} else
-					s = s.replace("Java PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "]");
+					s = s.replace("PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "]");
 				
 				if (!mediaRenderer.isPS3()) {
 					// hacky stuff. replace the png icon by a jpeg one. Like mpeg2 remux, really need a proper format compatibility list by renderer
