@@ -354,14 +354,9 @@ public class TrTab2 {
         cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
 	builder.addLabel(Messages.getString("NetworkTab.6").replaceAll("MAX_BUFFER_SIZE", configuration.getMaxMemoryBufferSizeStr()),  cc.xy(1,  3)); //$NON-NLS-1$
-        builder.add(maxbuffer,          cc.xy(3,  3)); 
+        builder.add(maxbuffer,          cc.xy(3,  3));
 
-	String corePlural = " core";
-	if(Runtime.getRuntime().availableProcessors() > 1) {
-		corePlural = " cores";
-	}
-
-	builder.addLabel(Messages.getString("NetworkTab.7") + Runtime.getRuntime().availableProcessors() + corePlural + Messages.getString("NetworkTab.8"),  cc.xy(1,  5)); //$NON-NLS-1$ //$NON-NLS-2$
+	builder.addLabel(Messages.getString("NetworkTab.7") + Runtime.getRuntime().availableProcessors() + ")",  cc.xy(1,  5)); //$NON-NLS-1$ //$NON-NLS-2$
         
         String[] guiCores = new String[MAX_CORES];
         for(int i=0;i<MAX_CORES;i++)
