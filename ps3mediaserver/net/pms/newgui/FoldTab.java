@@ -37,6 +37,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
@@ -626,7 +627,13 @@ public class FoldTab {
        
        builder.add(builderFolder.getPanel(), cc.xyw(1, 25, 10));
        
-        return builder.getPanel();
+		JPanel panel = builder.getPanel();
+		JScrollPane scrollPane = new JScrollPane(
+			panel,
+			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+		);
+		return scrollPane;
 	}
 	
 	public void setScanLibraryEnabled(boolean enabled) {

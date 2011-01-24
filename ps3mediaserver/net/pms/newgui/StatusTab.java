@@ -26,7 +26,9 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 
 import net.pms.Messages;
 
@@ -108,7 +110,13 @@ public class StatusTab {
 	        
 	        builder.add(rendererBuilder.getPanel(), cc.xy(2, 17));
 	        
-	        return builder.getPanel();
+	        JPanel panel = builder.getPanel();
+			JScrollPane scrollPane = new JScrollPane(
+				panel,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+			);
+			return scrollPane;
 	}
 	
 	public void setReadValue(long v, String msg) {

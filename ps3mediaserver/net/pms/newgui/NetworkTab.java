@@ -38,6 +38,8 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
@@ -306,7 +308,13 @@ public class NetworkTab {
     	   y+=2;
        }
       
-        return builder.getPanel();
+		JPanel panel = builder.getPanel();
+		JScrollPane scrollPane = new JScrollPane(
+			panel,
+			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+		);
+		return scrollPane;
 	}
 	
 	public void addPlugins() {

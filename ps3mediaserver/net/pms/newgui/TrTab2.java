@@ -122,8 +122,9 @@ public class TrTab2 {
 	
 	public JComponent build() {
 		FormLayout mainlayout = new FormLayout(
-				"left:pref, pref, 7dlu, pref, pref, 0:grow", //$NON-NLS-1$
-				"top:p, 3dlu" ); //$NON-NLS-1$
+			"left:pref, pref, 7dlu, pref, pref, 10:grow", //$NON-NLS-1$
+			"10:grow" //$NON-NLS-1$
+		); 
 		PanelBuilder builder = new PanelBuilder(mainlayout);
         builder.setBorder(Borders.DLU4_BORDER);
 		
@@ -138,9 +139,11 @@ public class TrTab2 {
 
 	public JComponent buildRightTabbedPane() {
 		cl = new CardLayout();
-		  tabbedPane = new JPanel (cl);
-		  tabbedPane.setBorder(BorderFactory.createEmptyBorder());
-		return tabbedPane;
+		tabbedPane = new JPanel (cl);
+		tabbedPane.setBorder(BorderFactory.createEmptyBorder());
+		JScrollPane scrollPane = new JScrollPane(tabbedPane);
+		scrollPane.setBorder(null);
+		return scrollPane;
 	}
 
 	public JComponent buildLeft() {
