@@ -123,7 +123,7 @@ public class TrTab2 {
 	public JComponent build() {
 		FormLayout mainlayout = new FormLayout(
 			"left:pref, pref, 7dlu, pref, pref, 10:grow", //$NON-NLS-1$
-			"10:grow" //$NON-NLS-1$
+			"top:10:grow" //$NON-NLS-1$
 		); 
 		PanelBuilder builder = new PanelBuilder(mainlayout);
         builder.setBorder(Borders.DLU4_BORDER);
