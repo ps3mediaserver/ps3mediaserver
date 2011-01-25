@@ -257,7 +257,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			setContentPane(jp);
 		}
 
-		this.setTitle("PS3 Media Server " + PMS.VERSION); //$NON-NLS-1$
+		this.setTitle("PS3 Media Server " + PMS.VERSION + " - FOR TESTING ONLY, POSSIBLY UNSTABLE"); //$NON-NLS-1$
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		Dimension screenSize = getToolkit().getScreenSize();
 
