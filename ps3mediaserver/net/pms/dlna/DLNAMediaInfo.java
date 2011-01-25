@@ -63,6 +63,8 @@ import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 
+import com.sun.jna.Platform;
+
 
 
 public class DLNAMediaInfo implements Cloneable {
@@ -515,6 +517,8 @@ public class DLNAMediaInfo implements Cloneable {
 										audio.bitsperSample = 32;
 									} else if (token.equals("s24")) {
 										audio.bitsperSample = 24;
+									} else if (token.equals("s16")) {
+										audio.bitsperSample = 16;
 									}
 								}
 							} else if (line.indexOf("Video:") > -1) {
@@ -550,9 +554,9 @@ public class DLNAMediaInfo implements Cloneable {
 										} catch (NumberFormatException nfe) {}
 									}
 								}
-							} else if (line.indexOf("Subtitle:") > -1 && !line.contains("tx3g") && !line.contains("dvdsub")) {
+							} else if (line.indexOf("Subtitle:") > -1 && !line.contains("tx3g")) {
 								DLNAMediaSubtitle lang = new DLNAMediaSubtitle();
-								lang.type = DLNAMediaSubtitle.EMBEDDED;
+								lang.type = (line.contains("dvdsub")&&Platform.isWindows()?DLNAMediaSubtitle.VOBSUB:DLNAMediaSubtitle.EMBEDDED);
 								int a = line.indexOf("(");
 								int b = line.indexOf("):", a);
 								if (a > -1 && b > a) {
