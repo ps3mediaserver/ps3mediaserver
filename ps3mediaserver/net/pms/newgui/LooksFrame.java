@@ -235,7 +235,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		 *
 		 * 1) forced scrollbars (-Dscrollbars=true): always display them
 		 * 2) optional scrollbars (-Dscrollbars=optional): display them as needed
-		 * 2) otherwise: don't display them
+		 * 3) otherwise (default): don't display them
 		 */
 		if (showScrollbars.equals("true")) {
 			setContentPane(
