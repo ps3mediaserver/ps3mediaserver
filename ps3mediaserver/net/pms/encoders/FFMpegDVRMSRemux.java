@@ -18,12 +18,12 @@
  */
 package net.pms.encoders;
 
-import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.Font;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JTextField;
@@ -33,17 +33,20 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import net.pms.Messages;
-import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.Messages;
+import net.pms.PMS;
+
+import org.apache.commons.lang.StringUtils;
 
 public class FFMpegDVRMSRemux extends Player {
-	
+	private JTextField altffpath;
 	public static final String ID = "ffmpegdvrmsremux"; //$NON-NLS-1$
 	
 	@Override
@@ -106,52 +109,49 @@ public class FFMpegDVRMSRemux extends Player {
 	}
 
 	protected ProcessWrapperImpl getFFMpegTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
-		
-		
-		
-		String cmdArray [] = new String [8+args().length];
-		cmdArray[0] = executable();
-		if (PMS.getConfiguration().getFfmpegAlternativePath() != null && PMS.getConfiguration().getFfmpegAlternativePath().length() > 0)
-			cmdArray[0] = PMS.getConfiguration().getFfmpegAlternativePath();
-		cmdArray[1] = "-title"; //$NON-NLS-1$
-		cmdArray[2] = "dummy"; //$NON-NLS-1$
-		
-		/*cmdArray[3] = "-f";
-		cmdArray[4] = "asf";
-		if (params.forceType != null) {
-			cmdArray[4] = params.forceType;
-		}*/
-		cmdArray[3] = "-i"; //$NON-NLS-1$
-		cmdArray[4] = fileName;
-		cmdArray[5] = "-title"; //$NON-NLS-1$
-		cmdArray[6] = "dummy"; //$NON-NLS-1$
-		if (params.timeseek > 0) {
-			cmdArray[1] = "-ss"; //$NON-NLS-1$
-			cmdArray[2] = "" + params.timeseek; //$NON-NLS-1$
-			 //params.timeseek = 0;
+		PmsConfiguration configuration = PMS.getConfiguration();
+		String ffmpegAlternativePath = configuration.getFfmpegAlternativePath();
+		List<String> cmdList = new ArrayList<String>();
+
+		if (ffmpegAlternativePath != null && ffmpegAlternativePath.length() > 0) {
+			cmdList.add(ffmpegAlternativePath);
+		} else {
+			cmdList.add(executable());
 		}
-		for(int i=0;i<args().length;i++)
-			cmdArray[7+i] = args()[i];
-		
-		StringTokenizer st = new StringTokenizer(PMS.getConfiguration().getFfmpegSettings(), " "); //$NON-NLS-1$
-		if (st.countTokens() > 0) {
-			int i=cmdArray.length-1;
-			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +st.countTokens());
-			while (st.hasMoreTokens()) {
-				cmdArray[i] = st.nextToken();
-				i++;
+
+		if (params.timeseek > 0) {
+			cmdList.add("-ss"); //$NON-NLS-1$
+			cmdList.add("" + params.timeseek); //$NON-NLS-1$
+		}
+
+		cmdList.add("-i"); //$NON-NLS-1$
+		cmdList.add(fileName);
+
+		// change this to -metadata title=dummy if this can be made to work with an official ffmpeg build
+		cmdList.add("-title"); //$NON-NLS-1$
+		cmdList.add("dummy"); //$NON-NLS-1$
+
+		for (String arg: args()) {
+			cmdList.add(arg);
+		}
+
+		String[] ffmpegSettings = StringUtils.split(configuration.getFfmpegSettings());
+
+		if (ffmpegSettings != null) {
+			for (String option: ffmpegSettings) {
+				cmdList.add(option);
 			}
 		}
-		
-		cmdArray[cmdArray.length-1] = "pipe:"; //$NON-NLS-1$
-			
+
+		cmdList.add("pipe:"); //$NON-NLS-1$
+		String[] cmdArray = new String [ cmdList.size() ];
+		cmdList.toArray(cmdArray);
+
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
-			
 		pw.runInNewThread();
+
 		return pw;
 	}
-	
-	private JTextField altffpath;
 
 	@Override
 	public JComponent config() {
