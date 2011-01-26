@@ -23,11 +23,11 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 
 import net.pms.Messages;
 import net.pms.PMS;
@@ -38,11 +38,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class LinksTab {
-	
 	private ImagePanel imagePanel;
 	private JLabel jl ;
 	private JProgressBar jpb;
-
 	
 	public JProgressBar getJpb() {
 		return jpb;
@@ -96,7 +94,9 @@ public class LinksTab {
 	        builder.addLabel(mplayerSherpiaBuildsLink.getLabel(), 
 	        		cc.xy(2, 13, "center, fill")).addMouseListener(mplayerSherpiaBuildsLink);
 	        
-	        return builder.getPanel();
+			JScrollPane scrollPane = new JScrollPane(builder.getPanel());
+			scrollPane.setBorder(null);
+			return scrollPane;
 	}
 
 	private static class LinkMouseListener implements MouseListener
