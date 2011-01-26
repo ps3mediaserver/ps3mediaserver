@@ -11,7 +11,7 @@
     
 	<property name="pms.jar" value="pms.jar" />
 
-	<taskdef name="nsis" classname="net.sf.nsisant.Task" classpath="lib/nsisant-1.2.jar" />
+	<taskdef name="nsis" classname="net.sf.nsisant.Task" classpath="lib/nsisant-1.3.jar" />
 
 	<path id="lib.path.ref">
 		<fileset id="libs.ref" dir="lib" includes="*.jar" excludes="*source*.*"/>
