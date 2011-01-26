@@ -66,7 +66,7 @@ public class LinksTab {
 	        builder.setOpaque(true);
 	        CellConstraints cc = new CellConstraints();
 
-        	final LinkMouseListener pms3Link = new LinkMouseListener("PS3 Media Server v" + PMS.VERSION,
+        	final LinkMouseListener pms3Link = new LinkMouseListener("PS3 Media Server " + PMS.VERSION,
         			"http://code.google.com/p/ps3mediaserver/");
 	        builder.addLabel(pms3Link.getLabel(), cc.xy(2, 1, "center, fill")).addMouseListener(pms3Link);
 	        
