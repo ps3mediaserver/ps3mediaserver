@@ -123,8 +123,8 @@ public class FFMpegDVRMSRemux extends Player {
 		}*/
 		cmdArray[3] = "-i"; //$NON-NLS-1$
 		cmdArray[4] = fileName;
-		cmdArray[5] = "-metadata"; //$NON-NLS-1$
-		cmdArray[6] = "title=dummy"; //$NON-NLS-1$
+		cmdArray[5] = "-title"; //$NON-NLS-1$
+		cmdArray[6] = "dummy"; //$NON-NLS-1$
 		if (params.timeseek > 0) {
 			cmdArray[1] = "-ss"; //$NON-NLS-1$
 			cmdArray[2] = "" + params.timeseek; //$NON-NLS-1$
