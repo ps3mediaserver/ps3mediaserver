@@ -410,7 +410,7 @@ public class PMS {
 		
 		
 		
-		minimal("Starting PS3 Media Server v" + VERSION); //$NON-NLS-1$
+		minimal("Starting PS3 Media Server " + VERSION); //$NON-NLS-1$
 		minimal("by shagrath / 2008-2011"); //$NON-NLS-1$
 		minimal("http://ps3mediaserver.blogspot.com"); //$NON-NLS-1$
 		minimal("http://code.google.com/p/ps3mediaserver"); //$NON-NLS-1$
