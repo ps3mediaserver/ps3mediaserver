@@ -239,9 +239,13 @@ public class RendererConfiguration {
 	public boolean isPS3() {
 		return getRendererName().toUpperCase().contains("PLAYSTATION") || getRendererName().toUpperCase().contains("PS3");
 	}
-	
+
 	public boolean isBRAVIA() {
 		return getRendererName().toUpperCase().contains("BRAVIA");
+	}
+
+	public boolean isFDSSDP() {
+		return getRendererName().toUpperCase().contains("FDSSDP");
 	}
 	
 	private static final String RENDERER_NAME="RendererName";

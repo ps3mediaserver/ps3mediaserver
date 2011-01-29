@@ -118,7 +118,6 @@ import net.pms.dlna.RealFile;
 import java.net.URI;
 import java.net.URLDecoder;
 
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -185,7 +184,7 @@ public class PMS {
 	 * @param mediarenderer {@link RendererConfiguration}
 	 */
 	public void setRendererfound(RendererConfiguration mediarenderer) {
-		if (!foundRenderers.contains(mediarenderer)) {
+		if (!foundRenderers.contains(mediarenderer) && !mediarenderer.isFDSSDP()) {
 			foundRenderers.add(mediarenderer);
 			frame.addRendererIcon(mediarenderer.getRank(), mediarenderer.getRendererNameWithAddress(), mediarenderer.getRendererIcon());
 			if (mediarenderer.isPS3())
