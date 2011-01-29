@@ -159,11 +159,9 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		// if client not recognized, take a default renderer config
 		if (request != null && request.getMediaRenderer() == null) {
 			request.setMediaRenderer(RendererConfiguration.getDefaultConf());
-			if (userAgentString != null) {
+			if (userAgentString != null && !userAgentString.equals("FDSSDP")) {
 				// we have found an unknown renderer
-				PMS
-						.minimal("Media renderer was not recognized. HTTP User agent :"
-								+ userAgentString);
+				PMS.minimal("Media renderer was not recognized. HTTP User agent: " + userAgentString);
 				PMS.get().setRendererfound(request.getMediaRenderer());
 			}
 		}
