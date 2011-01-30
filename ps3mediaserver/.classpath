@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry excluding="eclipse-classes/" including="net/|resources/" kind="src" path=""/>
 	<classpathentry kind="lib" path="lib/commons-logging-api-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/java-unrar-0.3.jar"/>
+	<classpathentry kind="lib" path="lib/java-unrar-0.5.jar"/>
 	<classpathentry kind="lib" path="lib/jgoodies-common-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jgoodies-forms-1.4.0.jar"/>
 	<classpathentry kind="lib" path="lib/jgoodies-looks-2.4.0.jar"/>
