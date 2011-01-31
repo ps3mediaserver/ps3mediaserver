@@ -49,6 +49,7 @@ public class HTTPResource {
 	public static final String AUDIO_WMA_TYPEMIME = "audio/x-ms-wma";
 	public static final String AUDIO_FLAC_TYPEMIME = "audio/x-flac";
 	public static final String AUDIO_OGG_TYPEMIME = "audio/x-ogg";
+	public static final String AUDIO_LPCM_TYPEMIME = "audio/L16";
 	
 	public static final String MPEG_TYPEMIME = "video/mpeg";
 	public static final String MP4_TYPEMIME = "video/mp4";
