@@ -116,7 +116,7 @@ public class FFMpegAudio extends FFMpegVideo {
 		/*if (overridenArgs != null)
 			return overridenArgs;
 		else*/
-			return new String [] { "-f", "wav", "-ar", "48000"}; //$NON-NLS-1$ //$NON-NLS-2$
+			return new String [] { "-f", "s16be", "-ar", "48000"}; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	@Override
@@ -137,6 +137,9 @@ public class FFMpegAudio extends FFMpegVideo {
 		String args [] = args();
 		if (params.mediaRenderer.isTranscodeToMP3()) {
 			args = new String [] { "-f", "mp3", "-ar", "48000", "-ab", "320000" };
+		}
+		if (params.mediaRenderer.isTranscodeToWAV()) {
+			args = new String [] { "-f", "wav", "-ar", "48000"};
 		}
 		if (params.mediaRenderer.isTranscodeAudioTo441())
 			args[3] = "44100";

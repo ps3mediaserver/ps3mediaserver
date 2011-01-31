@@ -265,7 +265,8 @@ public class RendererConfiguration {
 	public static final String MPEGTSAC3 = "MPEGTSAC3";
 	public static final String WMV = "WMV";
 	
-	public static final String PCM = "PCM";
+	public static final String LPCM = "LPCM";
+	public static final String WAV = "WAV";
 	public static final String MP3 = "MP3";
 	
 	private static final String TRANSCODE_AUDIO="TranscodeAudio";
@@ -424,8 +425,12 @@ public class RendererConfiguration {
 		return getAudioTranscode().startsWith(MP3);
 	}
 	
-	public boolean isTranscodeToPCM() {
-		return getAudioTranscode().startsWith(PCM);
+	public boolean isTranscodeToLPCM() {
+		return getAudioTranscode().startsWith(LPCM);
+	}
+	
+	public boolean isTranscodeToWAV() {
+		return getAudioTranscode().startsWith(WAV);
 	}
 	
 	public boolean isTranscodeAudioTo441() {
@@ -447,14 +452,20 @@ public class RendererConfiguration {
 	public String getMimeType(String mimetype) {
 		if (isMediaParserV2()) {
 			if (mimetype != null && mimetype.equals(HTTPResource.VIDEO_TRANSCODE)) {
-				if (isTranscodeToMPEGPSAC3())
-					mimetype = getFormatConfiguration().match(FormatConfiguration.MPEGPS, FormatConfiguration.MPEG2, FormatConfiguration.AC3);
-				else if (isTranscodeToMPEGTSAC3())
+				mimetype = getFormatConfiguration().match(FormatConfiguration.MPEGPS, FormatConfiguration.MPEG2, FormatConfiguration.AC3);
+				if (isTranscodeToMPEGTSAC3())
 					mimetype = getFormatConfiguration().match(FormatConfiguration.MPEGTS, FormatConfiguration.MPEG2, FormatConfiguration.AC3);
 				else if (isTranscodeToWMV())
 					mimetype = getFormatConfiguration().match(FormatConfiguration.WMV, FormatConfiguration.WMV, FormatConfiguration.WMA);
 			} else if (mimetype != null && mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
-				if (isTranscodeToPCM())
+				mimetype = getFormatConfiguration().match(FormatConfiguration.LPCM, null, null);
+				if (mimetype != null) {
+					if (isTranscodeAudioTo441())
+						mimetype += ";rate=44100;channels=2";
+					else
+						mimetype += ";rate=48000;channels=2";
+				}
+				if (isTranscodeToWAV())
 					mimetype = getFormatConfiguration().match(FormatConfiguration.WAV, null, null);
 				else if (isTranscodeToMP3())
 					mimetype = getFormatConfiguration().match(FormatConfiguration.MP3, null, null);
@@ -466,9 +477,17 @@ public class RendererConfiguration {
 			if (isTranscodeToWMV())
 				mimetype = HTTPResource.WMV_TYPEMIME;
 		} else if (mimetype != null && mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
-			mimetype = HTTPResource.AUDIO_WAV_TYPEMIME;
+			mimetype = HTTPResource.AUDIO_LPCM_TYPEMIME;
+			if (mimetype != null) {
+				if (isTranscodeAudioTo441())
+					mimetype += ";rate=44100;channels=2";
+				else
+					mimetype += ";rate=48000;channels=2";
+			}
 			if (isTranscodeToMP3())
 				mimetype = HTTPResource.AUDIO_MP3_TYPEMIME;
+			if (isTranscodeToWAV())
+				mimetype = HTTPResource.AUDIO_WAV_TYPEMIME;
 		}
 		if (mimes.containsKey(mimetype)) {
 			return mimes.get(mimetype);
@@ -583,7 +602,7 @@ public class RendererConfiguration {
 			else if (FormatConfiguration.MP3.equals(audioTranscoder))
 				return MP3;
 		}*/
-		return getString(TRANSCODE_AUDIO, PCM);
+		return getString(TRANSCODE_AUDIO, LPCM);
 	}
 	
 	public boolean isDefaultVBVSize() {
