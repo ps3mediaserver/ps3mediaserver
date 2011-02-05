@@ -128,11 +128,11 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				try {
 					success = true;
 					if (process != null && process.exitValue() != 0) {
-						PMS.minimal("Process " + cmdArray[0] + " has a return code of " + process.exitValue() + "! Maybe an error occured... check the log file");
+						PMS.minimal("Process " + cmdArray[0] + " has a return code of " + process.exitValue() + "! Maybe an error occurred... check the log file");
 						success = false;
 					}
 				} catch (IllegalThreadStateException itse) {
-					PMS.error("An error occured", itse);
+					PMS.error("An error occurred", itse);
 				}
 			}
 			if (attachedProcesses != null) {
