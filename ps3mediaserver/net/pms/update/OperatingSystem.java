@@ -2,9 +2,6 @@ package net.pms.update;
 
 import java.util.logging.Logger;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-
 public class OperatingSystem {
 	
 	private static final Logger LOG = Logger.getLogger(OperatingSystem.class.getName());
@@ -19,7 +16,7 @@ public class OperatingSystem {
 	}
 	
 	public String getPlatformName() {
-		assertThat(platformName, notNullValue());
+		assert platformName != null;
 		return platformName; 
 	}
 	

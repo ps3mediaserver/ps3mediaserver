@@ -118,9 +118,6 @@ import net.pms.dlna.RealFile;
 import java.net.URI;
 import java.net.URLDecoder;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-
 public class PMS {
 	
 	/**
@@ -1069,7 +1066,7 @@ public class PMS {
 	 * @see PMS#init()
 	 */
 	private void registerPlayers() {
-		assertThat(configuration, notNullValue());
+		assert configuration != null;
 		if (Platform.isWindows())
 			registerPlayer(new FFMpegVideo());
 		registerPlayer(new FFMpegAudio(configuration));
@@ -1475,7 +1472,7 @@ public class PMS {
 	}
 
 	public static PmsConfiguration getConfiguration() {
-		assertThat(configuration, notNullValue());
+		assert configuration != null;
 		return configuration;
 	}
 

@@ -18,9 +18,6 @@
  */
 package net.pms.newgui;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -113,8 +110,8 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	public LooksFrame(AutoUpdater autoUpdater, PmsConfiguration configuration) {
 		this.autoUpdater = autoUpdater;
 		this.configuration = configuration;
-		assertThat(this.autoUpdater, notNullValue());
-		assertThat(this.configuration, notNullValue());
+		assert this.autoUpdater != null;
+		assert this.configuration != null;
 		autoUpdater.addObserver(this);
 		update(autoUpdater, null);
 		Options.setDefaultIconSize(new Dimension(18, 18));
