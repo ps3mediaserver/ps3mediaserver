@@ -25,7 +25,7 @@
 				<width>256</width>
 				<height>256</height>
 				<depth>24</depth>
-				<url>/images/Play1Hot_256.png</url>
+				<url>/images/icon-256.png</url>
 			</icon>
 		</iconList>
 		<presentationURL>http://<host>:<port>/console/index.html</presentationURL> 

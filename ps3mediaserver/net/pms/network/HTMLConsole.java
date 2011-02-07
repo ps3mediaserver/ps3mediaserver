@@ -43,7 +43,7 @@ public class HTMLConsole {
 			sb.append( "<p align=center><b>Scan stopped!</b></p><br>" );
 		} 
 		
-		sb.append("<p align=center><img src='/images/Play1Hot_256.png'><br>PS3 Media Server HTML console<br><br>Menu:<br>");
+		sb.append("<p align=center><img src='/images/thumbnail-256.png'><br>PS3 Media Server HTML console<br><br>Menu:<br>");
 		sb.append("<a href=\"home\">Home</a><br>");
 		sb.append("<a href=\"scan\">Scan folders</a><br>");
 		sb.append("<a href=\"compact\">Shrink media library database (not recommended)</a>");

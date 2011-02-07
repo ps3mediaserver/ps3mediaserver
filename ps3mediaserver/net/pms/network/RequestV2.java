@@ -278,7 +278,7 @@ public class RequestV2 extends HTTPResource {
 				if (!mediaRenderer.isPS3()) {
 					// hacky stuff. replace the png icon by a jpeg one. Like mpeg2 remux, really need a proper format compatibility list by renderer
 					s = s.replace("<mimetype>image/png</mimetype>", "<mimetype>image/jpeg</mimetype>");
-					s = s.replace("/images/Play1Hot_256.png", "/images/Play1Hot_120.jpg");
+					s = s.replace("/images/thumbnail-256.png", "/images/thumbnail-120.jpg");
 					s = s.replace(">256<", ">120<");
 				}
 				response.append(s);

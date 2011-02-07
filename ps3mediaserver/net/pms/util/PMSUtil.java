@@ -39,7 +39,7 @@ public class PMSUtil {
 		if (SystemTray.isSupported()) {
 			SystemTray tray = SystemTray.getSystemTray();
 
-			Image image = Toolkit.getDefaultToolkit().getImage(frame.getClass().getResource("/resources/images/Play1Hot_256.png")); //$NON-NLS-1$
+			Image image = Toolkit.getDefaultToolkit().getImage(frame.getClass().getResource("/resources/images/thumbnail-256.png")); //$NON-NLS-1$
 
 			PopupMenu popup = new PopupMenu();
 			MenuItem defaultItem = new MenuItem(Messages.getString("LooksFrame.5")); //$NON-NLS-1$
