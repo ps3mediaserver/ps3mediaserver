@@ -1159,10 +1159,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			if (externalProcess == null || externalProcess.isDestroyed()) {
 				PMS.minimal("Starting transcode/remux of " + getName());
 				externalProcess = player.launchTranscode(getSystemName(), media, params);
-				try {
-					Thread.sleep(params.waitbeforestart);
-				} catch (InterruptedException e) {
-					PMS.error(null, e);
+				if (params.waitbeforestart > 0) {
+					PMS.debug("Sleeping for " + params.waitbeforestart + " milliseconds");
+					try {
+						Thread.sleep(params.waitbeforestart);
+					} catch (InterruptedException e) {
+						PMS.error(null, e);
+					}
+					PMS.debug("Finished sleeping for " + params.waitbeforestart + " milliseconds");
 				}
 			} else if (timeseek > 0 && media != null && media.mediaparsed) {
 				if (media.getDurationInSeconds() > 0) {
@@ -1195,12 +1199,27 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				is = externalProcess.getInputStream(low);
 				timer++;
 				if (is == null) {
-					PMS.debug("External inputstream instance is null... sounds not good, waiting 500ms");
+					PMS.debug("External input stream instance is null... sounds not good, waiting 500ms");
 					try {
 						Thread.sleep(500);
 					} catch (InterruptedException e) {}
 				}
 			}
+
+			// fail fast: don't leave a process running indefinitely if it's
+			// not producing output after params.waitbeforestart milliseconds + 5 seconds
+			// this cleans up lingering MEncoder web video transcode processes that hang
+			// instead of exiting
+			if (is == null && externalProcess != null && !externalProcess.isDestroyed()) {
+				Runnable r = new Runnable() {
+					public void run() {
+						PMS.debug("External input stream instance is null... stopping process");
+						externalProcess.stopProcess();
+					}
+				};
+				new Thread(r).start();
+			}
+
 			return is;
 		}
 		
