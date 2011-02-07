@@ -300,10 +300,7 @@ public class PMS {
 			
 			Runnable r = new Runnable() {
 				public void run() {
-					try {
-						process.waitFor();
-					} catch (InterruptedException e) {
-					}
+					ProcessUtil.waitFor(process);
 				}
 			};
 			Thread checkThread = new Thread(r);

@@ -112,8 +112,14 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			}
 			if (outConsumer != null) 
 				outConsumer.start();
-			process.waitFor();
-			
+
+			Integer pid = ProcessUtil.getProcessID(process);
+
+			if (pid != null)
+				PMS.info("Unix process ID (" + cmdArray[0] + "): " + pid);
+
+			ProcessUtil.waitFor(process);
+
 			try {
 				if (outConsumer != null) 
 					outConsumer.join(1000);
@@ -121,7 +127,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			if (bo != null)
 				bo.close();
 		} catch (Exception e) {
-			PMS.error("Fatal error in process starting: ", e);
+			PMS.error("Fatal error in process initialization: ", e);
 			stopProcess();
 		} finally {
 			if (!destroyed && !params.noexitcheck) {
@@ -178,27 +184,34 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 		return stderrConsumer.getResults();
 	}
 
-	public void stopProcess() {
-		PMS.info("Stopping process: " + this);
-		destroyed = true;
-		if (process != null) {
-			ProcessUtil.destroy(process);
-		}
-		/*if (params != null && params.attachedPipeName != null) {
-			File pipe = new File(params.attachedPipeName);
-			if (pipe.exists()) {
-				if (pipe.delete())
-					pipe.deleteOnExit();
+	public synchronized void stopProcess() {
+		if (!destroyed) {
+			destroyed = true;
+			if (process != null) {
+				Integer pid = ProcessUtil.getProcessID(process);
+				if (pid != null) {
+					PMS.info("Stopping Unix process " + pid + ": " + this);
+				} else {
+					PMS.info("Stopping process: " + this);
+				}
+				ProcessUtil.destroy(process);
 			}
-		}*/
-		if (attachedProcesses != null) {
-			for(ProcessWrapper pw:attachedProcesses) {
-				if (pw != null)
-					pw.stopProcess();
+			/*if (params != null && params.attachedPipeName != null) {
+				File pipe = new File(params.attachedPipeName);
+				if (pipe.exists()) {
+					if (pipe.delete())
+						pipe.deleteOnExit();
+				}
+			}*/
+			if (attachedProcesses != null) {
+				for(ProcessWrapper pw:attachedProcesses) {
+					if (pw != null)
+						pw.stopProcess();
+				}
 			}
+			if (outConsumer != null && outConsumer.getBuffer() != null)
+				outConsumer.getBuffer().reset();
 		}
-		if (outConsumer != null && outConsumer.getBuffer() != null)
-			outConsumer.getBuffer().reset();
 	}
 	
 	public boolean isDestroyed() {
