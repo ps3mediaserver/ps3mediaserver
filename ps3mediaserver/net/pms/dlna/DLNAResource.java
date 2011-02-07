@@ -1249,7 +1249,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public InputStream getThumbnailInputStream() throws IOException {
 		/*if (specificType == 0)
 			return getResourceInputStream("images/clapperboard-256x256.png");*/
-		return getResourceInputStream("images/Play1Hot_256.png");
+		return getResourceInputStream("images/thumbnail-256.png");
 	}
 	
 	public String getThumbnailContentType() {

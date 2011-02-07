@@ -153,7 +153,7 @@ public class LinksTab {
 	public ImagePanel buildImagePanel() {
 		BufferedImage bi = null;
 		try {
-			bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/Play1Hot_256.png")); //$NON-NLS-1$
+			bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/icon-256.png")); //$NON-NLS-1$
 		} catch (IOException e) {
 		}
 		return new ImagePanel(bi);

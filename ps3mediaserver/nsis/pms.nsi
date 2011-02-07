@@ -4,7 +4,7 @@
  
 Name "PMS"
 Caption "Java PS3 Media Server"
-Icon "Play1Hot.ico"
+Icon "icon.ico"
 OutFile "PMS.exe"
  
 VIAddVersionKey "ProductName" "PS3 Media Server"

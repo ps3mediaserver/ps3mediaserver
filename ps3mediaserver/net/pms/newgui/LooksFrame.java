@@ -220,7 +220,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		}
 		
 		setTitle("Test"); //$NON-NLS-1$
-		setIconImage(readImageIcon("Play1Hot_32.png").getImage()); //$NON-NLS-1$
+		setIconImage(readImageIcon("icon-32.png").getImage()); //$NON-NLS-1$
 		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
