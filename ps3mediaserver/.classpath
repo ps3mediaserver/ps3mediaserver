@@ -16,7 +16,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/ps3mediaserver/lib/commons-lang-2.6-javadoc.zip!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/hamcrest-all-1.3.0RC2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/jaudiotagger-2.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/h2-1.1.105.jar"/>
