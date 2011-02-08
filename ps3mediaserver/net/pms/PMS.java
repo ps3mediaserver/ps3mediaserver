@@ -1153,7 +1153,7 @@ public class PMS {
 			// http://ps3mediaserver.org/forum/viewtopic.php?f=14&t=8883&start=250#p43520
 			folder = folder.replaceAll("&comma;", ","); //$NON-NLS-1$ //$NON-NLS-2$
 			if (log) {
-			    minimal("Checking shared folder: " + folder); //$NON-NLS-1$
+			    debug("Checking shared folder: " + folder); //$NON-NLS-1$
 			}
 			File file = new File(folder);
 			if (file.exists()) {
