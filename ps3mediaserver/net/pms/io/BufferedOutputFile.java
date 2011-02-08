@@ -151,16 +151,19 @@ public class BufferedOutputFile extends OutputStream  {
 	}
 	
 	public WaitBufferedInputStream getCurrentInputStream() {
-		if (inputStreams.size() > 0)
-		{
-			WaitBufferedInputStream wai = null;
+		WaitBufferedInputStream wai = null;
+
+		if (inputStreams.size() > 0) {
 			try {
 				wai = forcefirst ? inputStreams.get(0) : inputStreams.get(inputStreams.size() - 1);
-			} catch (ArrayIndexOutOfBoundsException ai) {}
-			return wai;
+			} catch (IndexOutOfBoundsException e) {
+				// this should never happen unless there's a concurrency issue,
+				// so log it if it does
+				PMS.error("Unexpected input stream removal", e); 
+			}
 		}
-		else
-			return null;
+
+		return wai;
 	}
 	
 	public InputStream getInputStream(long newReadPosition) {
