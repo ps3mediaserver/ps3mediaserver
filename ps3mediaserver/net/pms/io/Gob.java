@@ -26,6 +26,8 @@ import java.io.InputStreamReader;
 import net.pms.PMS;
 
 
+// "Gob": a cryptic name for (e.g.) StreamGobbler - i.e. a stream
+// consumer that reads and discards the stream
 public class Gob extends Thread {
 	
 	BufferedReader in;

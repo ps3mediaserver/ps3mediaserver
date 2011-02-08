@@ -137,6 +137,8 @@ public class AviDemuxerInputStream extends InputStream {
 					ProcessWrapper pwi = new ProcessWrapperLiteImpl(process);
 					attachedProcesses.add(pwi);
 					//process = pb.start();
+					// "Gob": a cryptic name for (e.g.) StreamGobbler - i.e. a stream
+					// consumer that reads and discards the stream
 					new Gob(process.getErrorStream()).start();
 					new Gob(process.getInputStream()).start();
 					//Thread.sleep(150);
