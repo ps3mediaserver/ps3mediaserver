@@ -405,12 +405,18 @@ public class PMS {
 		
 		minimal("Starting PS3 Media Server " + VERSION); //$NON-NLS-1$
 		minimal("by shagrath / 2008-2011"); //$NON-NLS-1$
+		minimal("http://ps3mediaserver.org"); //$NON-NLS-1$
 		minimal("http://ps3mediaserver.blogspot.com"); //$NON-NLS-1$
 		minimal("http://code.google.com/p/ps3mediaserver"); //$NON-NLS-1$
 		minimal(""); //$NON-NLS-1$
-		minimal("Java " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		minimal("OS " + System.getProperty("os.name") + " " + System.getProperty("os.arch")  + " " + System.getProperty("os.version")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		minimal("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		minimal("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch")  + " " + System.getProperty("os.version")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 		minimal("Encoding: " + System.getProperty("file.encoding")); //$NON-NLS-1$ //$NON-NLS-2$
+
+		String pmsConfPath = configuration.getPmsConfPath(); 
+		if (pmsConfPath != null)
+			minimal("PMS.conf: " + pmsConfPath);
+
 		minimal("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
 		
 		RendererConfiguration.loadRendererConfigurations();
@@ -1440,6 +1446,7 @@ public class PMS {
 			if (System.getProperty("noconsole") == null) //$NON-NLS-1$
 				System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
+
 		configuration = new PmsConfiguration();
 		get();
 		try {

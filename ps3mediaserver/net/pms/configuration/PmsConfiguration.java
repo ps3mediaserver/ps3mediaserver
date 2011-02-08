@@ -151,19 +151,30 @@ public class PmsConfiguration {
 	private final PropertiesConfiguration configuration;
 	private final TempFolder tempFolder;
 	private final ProgramPathDisabler programPaths;
+	private String pmsConfPath = null;
 
 	public PmsConfiguration() throws ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration();
 		configuration.setListDelimiter((char)0);
 		String strAppData = System.getenv("APPDATA");
-		if (Platform.isWindows() && strAppData != null && new File(strAppData + PMSDIR + CONFIGURATION_FILENAME).exists()) {
-			configuration.load(strAppData + PMSDIR + CONFIGURATION_FILENAME);
-		} else if (Platform.isMac() && new File(CONFIGURATION_PATH_MAC + CONFIGURATION_FILENAME).exists()) {
-			configuration.load(CONFIGURATION_PATH_MAC + CONFIGURATION_FILENAME);
-		} else {
-			if (new File(CONFIGURATION_FILENAME).exists())
-				configuration.load(CONFIGURATION_FILENAME);
+		String windowsPath = PMSDIR + CONFIGURATION_FILENAME;
+		String macPath = CONFIGURATION_PATH_MAC + CONFIGURATION_FILENAME;
+		String path = null;
+		File file;
+
+		if (Platform.isWindows() && strAppData != null && (file = new File(strAppData + windowsPath)).exists()) {
+			path = strAppData + windowsPath;
+		} else if (Platform.isMac() && (file = new File(macPath)).exists()) {
+			path = macPath;
+		} else if ((file = new File(CONFIGURATION_FILENAME)).exists()) {
+			path = CONFIGURATION_FILENAME;
 		}
+
+		if (path != null) {
+			pmsConfPath = file.getAbsolutePath();
+			configuration.load(path);
+		}
+
 		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
 		Locale.setDefault(new Locale(getLanguage()));
@@ -1135,5 +1146,9 @@ public class PmsConfiguration {
 
 	public String getVirtualFolders() {
 		return getString(KEY_VIRTUAL_FOLDERS, "");
+	}
+
+	public String getPmsConfPath() {
+		return pmsConfPath;
 	}
 }
