@@ -414,8 +414,11 @@ public class PMS {
 		minimal("Encoding: " + System.getProperty("file.encoding")); //$NON-NLS-1$ //$NON-NLS-2$
 
 		String pmsConfPath = configuration.getPmsConfPath(); 
-		if (pmsConfPath != null)
+		if (pmsConfPath != null) {
 			minimal("PMS.conf: " + pmsConfPath);
+		} else {
+			minimal("PMS.conf: not found");
+		}
 
 		minimal("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
 		
