@@ -24,7 +24,7 @@ public class HTMLConsole {
 	
 	public static String servePage(String resource) {
 		StringBuffer sb = new StringBuffer();
-		sb.append("<html><title>PS3 Media Server HTML Console</title></html><body>");
+		sb.append("<html><head><title>PS3 Media Server HTML Console</title></head><body>");
 		
 		if (resource.equals("compact") && PMS.getConfiguration().getUseCache()) {
 			PMS.get().getDatabase().compact();
