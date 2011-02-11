@@ -9,6 +9,7 @@ import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 
+import org.apache.commons.lang.StringUtils;
 
 public class FileUtil {
 	
@@ -68,8 +69,8 @@ public class FileUtil {
 	
 	public static boolean doesSubtitlesExists(File file, DLNAMediaInfo media, boolean usecache) {
 		boolean found = browseFolderForSubtitles(file.getParentFile(), file, media, usecache);
-		if (PMS.getConfiguration().getAlternateSubsFolder() != null) {
-			String alternate = PMS.getConfiguration().getAlternateSubsFolder();
+		String alternate = PMS.getConfiguration().getAlternateSubsFolder();
+		if (StringUtils.isNotBlank(alternate)) { // https://code.google.com/p/ps3mediaserver/issues/detail?id=737#c5
 			File subFolder = new File(alternate);
 			if (!subFolder.isAbsolute()) {
 				subFolder = new File(file.getParent() + "/" + alternate);
