@@ -83,15 +83,18 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 			PMS.info("Error :" + e.getMessage());
 		} finally {
 			try {
-				in.close();
-				out.close();
+				// in and out may not have been initialized:
+				// http://ps3mediaserver.org/forum/viewtopic.php?f=6&t=9885&view=unread#p45142
+				if (in != null)
+					in.close();
+				if (out != null)
+					out.close();
 				if (debug != null)
 					debug.close();
 			} catch (IOException e) {
 				PMS.info("Error :" + e.getMessage());
 			}
 		}
-		
 	}
 	
 	public String getInputPipe() {
