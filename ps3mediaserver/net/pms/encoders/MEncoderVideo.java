@@ -1727,8 +1727,6 @@ private JTextField mencoder_ass_scale;
 
 	private boolean setCmdToMencoderMT(PmsConfiguration configuration, String cmdArray [], DLNAMediaInfo media) {
 		boolean set = configuration.getNumberOfCpuCores() > 1;
-		if (media != null && (media.width < 1280 || media.codecV == null || !media.codecV.equals("h264"))) //$NON-NLS-1$
-				set = false;
 		if (set) {
 			String mencoderMTPath = PMS.getConfiguration().getMencoderMTPath();
 			if (new File(mencoderMTPath).exists()) {
