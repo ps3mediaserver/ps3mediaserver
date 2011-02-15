@@ -3,7 +3,7 @@
 ;-----------------------------------------------
  
 Name "PMS"
-Caption "Java PS3 Media Server"
+Caption "PS3 Media Server"
 Icon "icon.ico"
 OutFile "PMS.exe"
  
@@ -22,10 +22,8 @@ VIProductVersion "1.21.0.0"
  
 ; Definitions for Java 6.0
 !define JRE_VERSION "6.0"
-!define JRE_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=45824"
-!define JRE64_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=43883"
-;!define JRE_VERSION "5.0"
-;!define JRE_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=18675&/jre-1_5_0_15-windows-i586-p.exe"
+!define JRE_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=47152"
+!define JRE64_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=47155"
  
 ; use javaw.exe to avoid dosbox.
 ; use java.exe to keep stdout/stderr
