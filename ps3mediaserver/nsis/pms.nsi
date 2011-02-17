@@ -13,8 +13,8 @@ VIAddVersionKey "CompanyName" "A. Brochard"
 VIAddVersionKey "LegalTrademarks" ""
 VIAddVersionKey "LegalCopyright" ""
 VIAddVersionKey "FileDescription" "PS3 Media Server"
-VIAddVersionKey "FileVersion" "1.21.0"
-VIProductVersion "1.21.0.0"
+VIAddVersionKey "FileVersion" "1.21.1"
+VIProductVersion "1.21.1.0"
  
 !define JARPATH "pms.jar"
 !define CLASS "net.pms.PMS"
@@ -47,7 +47,7 @@ Section ""
  
   ; change for your purpose (-jar etc.)
   ${GetParameters} $1
-  StrCpy $0 '"$R0" -classpath update.jar;pms.jar;plugins/;plugins/* -Xmx768M -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 ${CLASS} $1'
+  StrCpy $0 '"$R0" -classpath update.jar;pms.jar -Xmx768M -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 ${CLASS} $1'
  
   SetOutPath $EXEDIR
   Exec $0

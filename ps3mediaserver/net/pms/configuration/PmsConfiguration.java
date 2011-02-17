@@ -125,6 +125,7 @@ public class PmsConfiguration {
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final String UNLIMITED_BITRATE = "0";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
+    private static final String KEY_PLUGIN_DIRECTORY = "plugins";
 	
 	private static final String DEFAULT_AVI_SYNTH_SCRIPT = 
 		  "#AviSynth script is now fully customisable !\n" 
@@ -1150,5 +1151,13 @@ public class PmsConfiguration {
 
 	public String getPmsConfPath() {
 		return pmsConfPath;
+	}
+
+    public String getPluginDirectory() {
+		return getString(KEY_PLUGIN_DIRECTORY, "plugins");
+    }
+    
+	public void setPluginDirectory(String value) {
+		configuration.setProperty(KEY_PLUGIN_DIRECTORY, value);
 	}
 }

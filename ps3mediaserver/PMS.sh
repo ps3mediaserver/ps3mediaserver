@@ -35,7 +35,7 @@ if [ "x$JAVA" = "x" ]; then
 fi
 
 # Setup the classpath
-PMS_JARS="$PMS_HOME/update.jar:$PMS_HOME/pms.jar:$PMS_HOME/plugins/:$PMS_HOME/plugins/*"
+PMS_JARS="$PMS_HOME/update.jar:$PMS_HOME/pms.jar"
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
