@@ -1153,10 +1153,10 @@ public class PmsConfiguration {
 		return pmsConfPath;
 	}
 
-    public String getPluginDirectory() {
+	public String getPluginDirectory() {
 		return getString(KEY_PLUGIN_DIRECTORY, "plugins");
-    }
-    
+	}
+
 	public void setPluginDirectory(String value) {
 		configuration.setProperty(KEY_PLUGIN_DIRECTORY, value);
 	}
