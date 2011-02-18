@@ -34,18 +34,17 @@ import java.io.PrintWriter;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.URI;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.logging.LogManager;
-
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.lang.StringUtils;
-
-import com.sun.jna.Platform;
 
 import net.pms.configuration.MapFileConfiguration;
 import net.pms.configuration.PmsConfiguration;
@@ -54,17 +53,17 @@ import net.pms.dlna.AudiosFeed;
 import net.pms.dlna.DLNAMediaDatabase;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.ImagesFeed;
+import net.pms.dlna.RealFile;
 import net.pms.dlna.RootFolder;
 import net.pms.dlna.VideosFeed;
 import net.pms.dlna.WebAudioStream;
 import net.pms.dlna.WebVideoStream;
 import net.pms.dlna.virtual.MediaLibrary;
-import net.pms.dlna.virtual.VirtualVideoAction;
 import net.pms.dlna.virtual.VirtualFolder;
+import net.pms.dlna.virtual.VirtualVideoAction;
 import net.pms.encoders.FFMpegAudio;
-import net.pms.encoders.FFMpegVideo;
-
 import net.pms.encoders.FFMpegDVRMSRemux;
+import net.pms.encoders.FFMpegVideo;
 import net.pms.encoders.MEncoderAviSynth;
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.MEncoderWebVideo;
@@ -106,17 +105,17 @@ import net.pms.network.HTTPServer;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
 import net.pms.newgui.LooksFrame;
+import net.pms.newgui.NetworkTab;
 import net.pms.update.AutoUpdater;
 import net.pms.util.PMSUtil;
 import net.pms.util.ProcessUtil;
 import net.pms.util.SystemErrWrapper;
-
 import net.pms.xmlwise.Plist;
-import java.util.Map;
-import java.util.HashMap;
-import net.pms.dlna.RealFile;
-import java.net.URI;
-import java.net.URLDecoder;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.lang.StringUtils;
+
+import com.sun.jna.Platform;
 
 public class PMS {
 	
@@ -127,7 +126,7 @@ public class PMS {
 	/**
 	 * Version showed in the UPNP XML descriptor and logs.
 	 */
-	public static final String VERSION = "1.22.0"; //$NON-NLS-1$
+	public static final String VERSION = "1.23.0"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// TODO(tcox):  This shouldn't be static
@@ -174,7 +173,7 @@ public class PMS {
 	/**
 	 * Array of {@link RendererConfiguration} that have been found by PMS.
 	 */
-	private ArrayList<RendererConfiguration> foundRenderers = new ArrayList<RendererConfiguration>();
+	private final ArrayList<RendererConfiguration> foundRenderers = new ArrayList<RendererConfiguration>();
 	
 	/**Adds a {@link RendererConfiguration} to the list of media renderers found. The list is being used, for
 	 * example, to give the user a graphical representation of the found media renderers.
@@ -331,7 +330,7 @@ public class PMS {
 	 * @see System#err
 	 */
 	@SuppressWarnings("unused")
-	private PrintStream stderr = System.err;  
+	private final PrintStream stderr = System.err;  
 	
 	/**Main resource database that supports search capabilities. Also known as media cache.
 	 * @see DLNAMediaDatabase
@@ -482,6 +481,21 @@ public class PMS {
 		server = new HTTPServer(configuration.getServerPort());
 		
 		registerExtensions();
+
+		/*
+		 * XXX: keep this here (i.e. after registerExtensions and before registerPlayers) so that plugins
+		 * can register custom players correctly (e.g. in the GUI) and/or add/replace custom formats
+		 *
+		 * XXX: if a plugin requires initialization/notification even earlier than
+		 * this, then a new external listener implementing a new callback should be added
+		 * e.g. StartupListener.registeredExtensions()
+		 */
+		try {
+			ExternalFactory.lookup();
+		} catch (Exception e) {
+			error("Error loading plugins", e);
+		}
+
 		registerPlayers();
 		
 		getRootFolder(RendererConfiguration.getDefaultConf());
@@ -496,7 +510,8 @@ public class PMS {
 			
 		}
 		new Thread() {
-			public void run () {
+			@Override
+            public void run () {
 				try {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {}
@@ -526,18 +541,13 @@ public class PMS {
 		if (getDatabase() != null) {
 			minimal("A tiny media library admin interface is available at: http://" + server.getHost() + ":" + server.getPort() + "/console/home");
 		}
-		
-		try {
-			ExternalFactory.lookup();
-		} catch (Exception e) {
-			error("Error loading plugins", e);
-		}
-		
+	
 		frame.serverReady();
 		
 		//UPNPHelper.sendByeBye();
 		Runtime.getRuntime().addShutdownHook(new Thread() {
-			public void run() {
+			@Override
+            public void run() {
 				try {
 					for(ExternalListener l:ExternalFactory.getExternalListeners()) {
 						l.shutdown();
@@ -623,7 +633,7 @@ public class PMS {
 					if (line.length() > 0 && !line.startsWith("#") && line.indexOf("=") > -1) { //$NON-NLS-1$ //$NON-NLS-2$
 						String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
 						String value = line.substring(line.indexOf("=")+1); //$NON-NLS-1$
-						String keys [] = parseFeedKey((String) key);
+						String keys [] = parseFeedKey(key);
 						try {
 							if (
 								keys[0].equals("imagefeed") ||
@@ -632,7 +642,7 @@ public class PMS {
 								keys[0].equals("audiostream") ||
 								keys[0].equals("videostream")
 							) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-								String values [] = parseFeedValue((String) value);
+								String values [] = parseFeedValue(value);
 								DLNAResource parent = null;
 								if (keys[1] != null) {
 									StringTokenizer st = new StringTokenizer(keys[1], ","); //$NON-NLS-1$
@@ -862,14 +872,16 @@ public class PMS {
 			vf.addChild(vfSub);
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) { //$NON-NLS-1$
-				public boolean enable() {
+				@Override
+                public boolean enable() {
 					configuration.setMencoderNoOutOfSync(!configuration.isMencoderNoOutOfSync());
 					return configuration.isMencoderNoOutOfSync();
 				}
 			});
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.14"), configuration.isMencoderMuxWhenCompatible()) {  //$NON-NLS-1$
-				public boolean enable() {
+				@Override
+                public boolean enable() {
 					configuration.setMencoderMuxWhenCompatible(!configuration.isMencoderMuxWhenCompatible());
 					
 					return  configuration.isMencoderMuxWhenCompatible();
@@ -877,7 +889,8 @@ public class PMS {
 			});
 			
 			vf.addChild(new VirtualVideoAction("  !!-- Fix 23.976/25fps A/V Mismatch --!!", getConfiguration().isFix25FPSAvMismatch()) { //$NON-NLS-1$
-				public boolean enable() {
+				@Override
+                public boolean enable() {
 					getConfiguration().setMencoderForceFps(!getConfiguration().isFix25FPSAvMismatch());
 					getConfiguration().setFix25FPSAvMismatch(!getConfiguration().isFix25FPSAvMismatch());
 					return getConfiguration().isFix25FPSAvMismatch();
@@ -886,7 +899,8 @@ public class PMS {
 			
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.4"), configuration.isMencoderYadif()) { //$NON-NLS-1$
-				public boolean enable() {
+				@Override
+                public boolean enable() {
 					configuration.setMencoderYadif(!configuration.isMencoderYadif());
 					
 					return  configuration.isMencoderYadif();
@@ -894,7 +908,8 @@ public class PMS {
 			});
 			
 			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.10"), configuration.isMencoderDisableSubs()) { //$NON-NLS-1$
-				public boolean enable() {
+				@Override
+                public boolean enable() {
 					boolean oldValue = configuration.isMencoderDisableSubs();
 					boolean newValue = ! oldValue;
 					configuration.setMencoderDisableSubs( newValue );
@@ -903,7 +918,8 @@ public class PMS {
 			});
 			
 			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.6"), configuration.getUseSubtitles()) { //$NON-NLS-1$
-				public boolean enable() {
+				@Override
+                public boolean enable() {
 					boolean oldValue = configuration.getUseSubtitles();
 					boolean newValue = ! oldValue;
 					configuration.setUseSubtitles( newValue );
@@ -912,7 +928,8 @@ public class PMS {
 			});
 			
 			vfSub.addChild(new VirtualVideoAction(Messages.getString("MEncoderVideo.36"), configuration.isMencoderAssDefaultStyle()) { //$NON-NLS-1$
-				public boolean enable() {
+				@Override
+                public boolean enable() {
 					boolean oldValue = configuration.isMencoderAssDefaultStyle();
 					boolean newValue = ! oldValue;
 					configuration.setMencoderAssDefaultStyle( newValue );
@@ -921,14 +938,16 @@ public class PMS {
 			});
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.7"), configuration.getSkipLoopFilterEnabled()) { //$NON-NLS-1$
-				public boolean enable() {
+				@Override
+                public boolean enable() {
 					configuration.setSkipLoopFilterEnabled( !configuration.getSkipLoopFilterEnabled() );
 					return configuration.getSkipLoopFilterEnabled();
 				}
 			});
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.27"), true) { //$NON-NLS-1$
-				public boolean enable() {
+				@Override
+                public boolean enable() {
 					try {
 						configuration.save();
 					} catch (ConfigurationException e) {}
@@ -937,7 +956,8 @@ public class PMS {
 			});
 
 			vf.addChild(new VirtualVideoAction(Messages.getString("LooksFrame.12"), true) { //$NON-NLS-1$
-				public boolean enable() {
+				@Override
+                public boolean enable() {
 					try {
 						get().reset();
 					} catch (IOException e) {}
@@ -1098,7 +1118,7 @@ public class PMS {
 	 * @see Player
 	 * @see PMS#registerPlayers()
 	 */
-	private void registerPlayer(Player p) {
+	public void registerPlayer(Player p) {
 		allPlayers.add(p);
 		boolean ok = false;
 		if (Player.NATIVE.equals(p.executable()))

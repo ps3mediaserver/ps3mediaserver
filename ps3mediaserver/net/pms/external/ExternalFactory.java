@@ -71,7 +71,7 @@ public class ExternalFactory {
 			}
 		}
 
-		URL[] jarURLs =  new URL[jarURLList.size()];
+		URL[] jarURLs = new URL[jarURLList.size()];
 		jarURLList.toArray(jarURLs);
 
 		URLClassLoader classLoader = new URLClassLoader(jarURLs);
