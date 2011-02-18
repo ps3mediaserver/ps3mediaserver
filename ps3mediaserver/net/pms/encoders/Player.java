@@ -30,6 +30,7 @@ import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
+import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
@@ -68,15 +69,25 @@ public abstract class Player {
 	public boolean isInternalSubtitlesSupported() {
 		return true;
 	}
+
 	public boolean isExternalSubtitlesSupported() {
 		return true;
 	}
+
 	public boolean isTimeSeekable() {
 		return false;
 	}
-	public abstract ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException;
+
+	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna,
+			DLNAMediaInfo media, OutputParams params) throws IOException {
+		return launchTranscode(fileName, media, params);
+	}
+
+	public abstract ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media,
+			OutputParams params) throws IOException;
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		return name();
 	}
 	
