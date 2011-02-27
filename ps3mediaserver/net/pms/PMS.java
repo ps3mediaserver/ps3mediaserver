@@ -419,6 +419,8 @@ public class PMS {
 			minimal("PMS.conf: not found");
 		}
 
+		String cwd = new File("").getAbsolutePath();
+		minimal("Working directory: " + cwd);
 		minimal("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
 		
 		RendererConfiguration.loadRendererConfigurations();
