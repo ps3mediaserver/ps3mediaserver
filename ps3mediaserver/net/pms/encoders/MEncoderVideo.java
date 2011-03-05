@@ -1449,7 +1449,7 @@ public class MEncoderVideo extends Player {
 			cmdArray[cmdArray.length - 3] = (deinterlace ? "yadif" : "") + (scaler ? scalerString : ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		}
 
-		if (configuration.getMencoderMT() && !avisynth) {
+		if (configuration.getMencoderMT() && !avisynth && !dvd) {
 			if (setCmdToMencoderMT(configuration, cmdArray, media)) {
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 				cmdArray[cmdArray.length - 4] = "-lavdopts"; //$NON-NLS-1$
