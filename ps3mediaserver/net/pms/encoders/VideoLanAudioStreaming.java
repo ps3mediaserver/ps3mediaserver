@@ -41,7 +41,7 @@ public class VideoLanAudioStreaming extends VideoLanVideoStreaming {
 	
 	@Override
 	public String name() {
-		return "VideoLan Audio Streaming"; //$NON-NLS-1$
+		return "VLC Audio Streaming"; //$NON-NLS-1$
 	}
 
 	@Override

@@ -18,12 +18,13 @@
  */
 package net.pms.encoders;
 
+import com.sun.jna.Platform;
+
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComponent;
-
-import com.sun.jna.Platform;
 
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
@@ -32,12 +33,11 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.PMS;
 
 public class VideoLanVideoStreaming extends Player {
-
-	public static final String ID = "vlcvideo"; //$NON-NLS-1$
-	
 	private final PmsConfiguration configuration;
+	public static final String ID = "vlcvideo"; //$NON-NLS-1$
 	
 	public VideoLanVideoStreaming(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -60,7 +60,7 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public String name() {
-		return "VideoLan Video Streaming"; //$NON-NLS-1$
+		return "VLC Video Streaming"; //$NON-NLS-1$
 	}
 
 	@Override
@@ -79,7 +79,27 @@ public class VideoLanVideoStreaming extends Player {
 	}
 	
 	protected String getEncodingArgs() {
-		return "vcodec=mp2v,vb=4096,acodec=mp3,ab=128,channels=2"; //$NON-NLS-1$
+		/*
+			 VLC doesn't accept or understand MPEG-2 framerates of 23.97 or 30000/1001, so use the
+			 one remaining valid DVD framerate it accepts (i.e. PAL)
+			 https://secure.wikimedia.org/wikipedia/en/wiki/MPEG-2#DVD-Video
+
+			 FIXME (or, rather, FIXVLC): channels=2 causes various recent VLCs (from 1.1.4 to 1.1.7)
+			 to segfault on both Windows and Linux.
+
+			 Similar issue (the workaround doesn't work here):
+
+				 https://forum.videolan.org/viewtopic.php?f=13&t=83154&p=275196#p275034
+
+			  Reproduce:
+
+				  vlc -vv -I dummy --sout \
+					#transcode{vcodec=mp2v,vb=4096,fps=25,scale=1,acodec=mpga,ab=128,channels=2} \
+					:standard{access=file,mux=ts,dst="deleteme.tmp"} \
+					http://feedproxy.google.com/~r/TEDTalks_video/~5/wdul2VS10rw/BillGates_2011U.mp4 vlc://quit
+		*/
+
+		return "vcodec=mp2v,vb=4096,fps=25,scale=1,acodec=mp2a,ab=128,channels=2"; //$NON-NLS-1$
 	}
 	
 	protected String getMux() {
@@ -88,61 +108,79 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
-		
-		
-		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis()); //$NON-NLS-1$
+		boolean isWindows = Platform.isWindows();
+		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux()); //$NON-NLS-1$
+		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
+
+		// XXX it can take a long time for Windows to create a named pipe
+		// (and mkfifo can be slow if /tmp isn't memory-mapped), so start this as early as possible
+		pipe_process.runInNewThread();
+		tsPipe.deleteLater();
+
 		params.input_pipes[0] = tsPipe;
-		
-		
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		
-		String cmdArray [] = new String [6];
-		cmdArray[0] = executable();
-		cmdArray[1] = "-I"; //$NON-NLS-1$
-		cmdArray[2] = "dummy"; //$NON-NLS-1$
-		String trans = "#transcode{" + getEncodingArgs() + "}:duplicate{dst=std{access=file,mux=" + getMux() + ",dst=\"" +tsPipe.getInputPipe() + "\"}}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		if (Platform.isWindows()) {
-			cmdArray[3] = "--dummy-quiet"; //$NON-NLS-1$
-			cmdArray[4] = fileName;
-			cmdArray[5] = ":sout=" + trans; //$NON-NLS-1$
-		} else if (Platform.isMac()) {
- 			cmdArray[3] = fileName;
-			cmdArray[4] = "--sout=" + trans; //$NON-NLS-1$
-                        cmdArray[5] = "";
+		List<String> cmdList = new ArrayList<String>();
+		cmdList.add(executable());
+		cmdList.add("-I"); //$NON-NLS-1$
+		cmdList.add("dummy"); //$NON-NLS-1$
+
+		// TODO: either
+		// 1) add this automatically if enabled (probe)
+		// 2) add a GUI option to "enable GPU acceleration"
+		// 3) document it as an option the user can enable themselves in the vlc GUI (saved to a config file used by cvlc)
+		// XXX: it's still experimental (i.e. unstable), causing (consistent) segfaults on Windows and Linux,
+		// so don't even document it for now
+		// cmdList.add("--ffmpeg-hw"); //$NON-NLS-1$
+
+		String transcodeSpec = String.format(
+			"#transcode{%s}:standard{access=file,mux=%s,dst=\"%s%s\"}", //$NON-NLS-1$
+			getEncodingArgs(),
+			getMux(),
+			(isWindows ? "\\\\" : ""), //$NON-NLS-1$
+			tsPipe.getInputPipe()
+		);
+
+		// XXX there's precious little documentation on how (if at all) VLC
+		// treats colons and hyphens (and :name= and --name=) differently
+		// so we just have to test it ourselves
+		// these work fine on Windows and Linux with VLC 1.1.x
+
+		if (isWindows)
+			cmdList.add("--dummy-quiet"); //$NON-NLS-1$
+
+		if (isWindows || Platform.isMac()) {
+			cmdList.add("--sout=" + transcodeSpec); //$NON-NLS-1$
 		} else {
-			cmdArray[3] = fileName;
-			cmdArray[4] = "--sout"; //$NON-NLS-1$
-			cmdArray[5] = trans;
+			cmdList.add("--sout"); //$NON-NLS-1$
+			cmdList.add(transcodeSpec);
 		}
-		
-		if (fileName.equals("screen://")) { //$NON-NLS-1$
-			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +5);
-			cmdArray[6] = "--screen-fps"; //$NON-NLS-1$
-			cmdArray[7] = "5"; //$NON-NLS-1$
-			cmdArray[8] = "--dshow-fps"; //$NON-NLS-1$
-			cmdArray[9] = "29.950001"; //$NON-NLS-1$
-			cmdArray[10] = "--nooverlay"; //$NON-NLS-1$
-		}
-				
+
+		// FIXME: cargo-culted from here:
+		// via: https://code.google.com/p/ps3mediaserver/issues/detail?id=711
+		if (Platform.isMac())
+			cmdList.add(""); //$NON-NLS-1$
+
+		cmdList.add(fileName);
+		cmdList.add("vlc://quit"); //$NON-NLS-1$
+
+		String[] cmdArray = new String[cmdList.size()];
+		cmdList.toArray(cmdArray);
+			
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
-		
-		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 		pw.attachProcess(pipe_process);
-		pipe_process.runInNewThread();
+
 		try {
 			Thread.sleep(150);
 		} catch (InterruptedException e) { }
-		tsPipe.deleteLater();
-		
+
 		pw.runInNewThread();
 		return pw;
 	}
 
 	@Override
 	public JComponent config() {
-		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

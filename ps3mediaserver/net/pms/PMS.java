@@ -161,7 +161,7 @@ public class PMS {
 	 */
 	private static PMS instance = null;
 	/**
-	 * Semaphore used in order to not create two PMS at the same time.
+	 * Semaphore used in order to not create two PMS instances at the same time.
 	 */
 	private static byte[] lock = null;
 	static {
@@ -456,9 +456,6 @@ public class PMS {
 		
 		if (registry.getVlcv() != null && registry.getVlcp() != null) {
 			minimal("Found VideoLAN version " + registry.getVlcv() + " at: " + registry.getVlcp()); //$NON-NLS-1$ //$NON-NLS-2$
-			if (registry.getVlcv().startsWith("1") && Platform.isWindows()) {
-				minimal("Unfortunately, VideoLAN 1.x is not supported at this point. Last known working version is 0.98");
-			}
 		}
 		
 		//check if Kerio is installed
