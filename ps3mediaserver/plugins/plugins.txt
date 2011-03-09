@@ -1,7 +1,7 @@
 You can drop plugins (*.jar files) here or move them to another directory and set
 
     # Linux, Mac OS X &c.
-    plugins = \/path\/to\/plugins\/dir
+    plugins = /path/to/plugins/dir
 
 or:
 
