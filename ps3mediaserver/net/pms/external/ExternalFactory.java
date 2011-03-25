@@ -49,7 +49,7 @@ public class ExternalFactory {
 		File[] jarFiles = pluginDirectory.listFiles(
 			new FileFilter() {
 				public boolean accept(File file) {
-					return file.isFile() && file.getName().endsWith(".jar");
+					return file.isFile() && file.getName().toLowerCase().endsWith(".jar");
 				}
 			}
 		);
