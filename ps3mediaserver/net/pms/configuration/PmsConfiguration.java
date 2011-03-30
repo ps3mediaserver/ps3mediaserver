@@ -217,6 +217,14 @@ public class PmsConfiguration {
 	public String getMencoderMTPath() {
 		return programPaths.getMencoderMTPath();
 	}
+
+	public String getMencoderOlderPath() {
+		return programPaths.getMencoderOlderPath();
+	}
+
+	public String getMencoderOlderMTPath() {
+		return programPaths.getMencoderOlderMTPath();
+	}
 	
 	public String getDCRawPath() {
 		return programPaths.getDCRaw();
@@ -901,7 +909,7 @@ public class PmsConfiguration {
 	public void setForceTranscode(String value) {
 		configuration.setProperty(KEY_FORCETRANSCODE, value);
 	}
-	
+
 	public void setMencoderMT(boolean value) {
 		configuration.setProperty(KEY_MENCODER_MT, value);
 	}
@@ -1013,11 +1021,11 @@ public class PmsConfiguration {
 	public boolean isUseMplayerForVideoThumbs() {
 		return getBoolean(KEY_USE_MPLAYER_FOR_THUMBS, false);
 	}
-	
+
 	public String getIpFilter(){
 		return getString(KEY_IP_FILTER, "");
 	}
-	
+
 	public void setIpFilter(String value){
 		configuration.setProperty(KEY_IP_FILTER, value);
 	}

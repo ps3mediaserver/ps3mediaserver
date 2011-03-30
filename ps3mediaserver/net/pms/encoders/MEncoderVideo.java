@@ -1213,7 +1213,19 @@ public class MEncoderVideo extends Player {
 		boolean needAssFixPTS = false;
 
 		StringBuffer sb = new StringBuffer();
-		if (params.sid != null && !configuration.isMencoderDisableSubs() && configuration.isMencoderAss() && !dvd && !avisynth()) {
+
+		// Use ASS & Fontconfig flags (and therefore ASS font styles) for all subtitled files except vobsub, embedded, dvd and mp4 container with srt
+		// Note: The MP4 container with SRT rule is a workaround for MEncoder r30369. If there is ever a later version of MEncoder that supports external srt subs we should use that. As of r32848 that isn't the case
+		if (
+			params.sid != null &&
+			params.sid.type != DLNAMediaSubtitle.EMBEDDED &&
+			params.sid.type != DLNAMediaSubtitle.VOBSUB &&
+			!(params.sid.type == DLNAMediaSubtitle.SUBRIP && media.container.equals("mp4")) &&
+			!configuration.isMencoderDisableSubs() &&
+			configuration.isMencoderAss() &&
+			!dvd &&
+			!avisynth()
+		) {
 			sb.append("-ass -" + (configuration.isMencoderFontConfig() ? "" : "no") + "fontconfig "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			if (mpegts || wmv) {
 				needAssFixPTS = Platform.isWindows(); // don't think the fixpts filter is in the mplayer trunk
@@ -1288,28 +1300,44 @@ public class MEncoderVideo extends Player {
 			overridenMainArgs[i++] = s;
 		}
 
-		/*sb = new StringBuffer();
-		if (!configuration.isMencoderDisableSubs() && configuration.getMencoderSubLanguages() != null && configuration.getMencoderSubLanguages().length() >  0) {
-		sb.append("-slang " +configuration.getMencoderSubLanguages() + " "); //$NON-NLS-1$ //$NON-NLS-2$
-		} else {
-		//sb.append("-sid " + maxid + " "); //$NON-NLS-1$ //$NON-NLS-2$
-		sb.append("-subdelay 20000"); //$NON-NLS-1$
-		}
-
-		String subs = sb.toString().trim();
-		if (subs != null && subs.length() > 0) {
-
-		st = new StringTokenizer(subs, " "); //$NON-NLS-1$
-		defaultSubArgs = new String [st.countTokens()];
-		i = 0;
-		while (st.hasMoreTokens()) {
-		String s = st.nextToken();
-		defaultSubArgs[i++] = s;
-		}
-		}*/
-
 		String cmdArray[] = new String[18 + args().length];
+
+		// Use the normal MEncoder build by default
 		cmdArray[0] = executable();
+
+		boolean isMultiCore = configuration.getNumberOfCpuCores() > 1;
+
+		// Figure out which version of MEncoder we want to use
+		if (params.sid != null &&
+			(
+				params.sid.type == DLNAMediaSubtitle.SUBRIP ||
+				params.sid.type == DLNAMediaSubtitle.EMBEDDED ||
+				params.sid.type == DLNAMediaSubtitle.MICRODVD ||
+				(
+					params.sid.type == DLNAMediaSubtitle.ASS && configuration.isMencoderAss()
+				)
+			) &&
+			!configuration.isMencoderDisableSubs() &&
+			Platform.isWindows()
+		) {
+		// Subtitles dictate that we need the older version of MEncoder
+			if (isMultiCore && configuration.getMencoderMT()) {
+				if (new File(configuration.getMencoderOlderMTPath()).exists()) {
+					cmdArray[0] = configuration.getMencoderOlderMTPath();
+				}
+			} else {
+				if (new File(configuration.getMencoderOlderPath()).exists()) {
+					cmdArray[0] = configuration.getMencoderOlderPath();
+				}
+			}
+		} else if (isMultiCore && configuration.getMencoderMT()) {
+		// Non-ASS, SRT, SUBRIP, MicroDVD or embedded subtitles with MT
+			if (new File(configuration.getMencoderMTPath()).exists()) {
+				cmdArray[0] = configuration.getMencoderMTPath();
+			}
+		}
+
+		// Choose which time to seek to
 		cmdArray[1] = "-ss"; //$NON-NLS-1$
 		if (params.timeseek > 0) {
 			cmdArray[2] = "" + params.timeseek; //$NON-NLS-1$
@@ -1404,11 +1432,8 @@ public class MEncoderVideo extends Player {
 
 		if (subString != null && !configuration.isMencoderDisableSubs() && !avisynth()) {
 			if (params.sid.type == DLNAMediaSubtitle.VOBSUB) {
-				// vobsub not supported in MEncoder :\
-				//cmdArray[cmdArray.length-4] = "-vobsub";
-				//cmdArray[cmdArray.length-3] = subString.substring(0, subString.length()-4);
-				cmdArray[cmdArray.length - 4] = "-quiet"; //$NON-NLS-1$
-				cmdArray[cmdArray.length - 3] = "-quiet"; //$NON-NLS-1$
+				cmdArray[cmdArray.length - 4] = "-vobsub";
+				cmdArray[cmdArray.length - 3] = subString.substring(0, subString.length() - 4);
 			} else {
 				cmdArray[cmdArray.length - 4] = "-sub"; //$NON-NLS-1$
 				cmdArray[cmdArray.length - 3] = subString.replace(",", "\\,"); // commas in mencoder separates multiple subtitles files //$NON-NLS-1$ //$NON-NLS-2$
@@ -1450,11 +1475,9 @@ public class MEncoderVideo extends Player {
 		}
 
 		if (configuration.getMencoderMT() && !avisynth && !dvd) {
-			if (setCmdToMencoderMT(configuration, cmdArray, media)) {
-				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
-				cmdArray[cmdArray.length - 4] = "-lavdopts"; //$NON-NLS-1$
-				cmdArray[cmdArray.length - 3] = "fast"; //$NON-NLS-1$
-			}
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
+			cmdArray[cmdArray.length - 4] = "-lavdopts"; //$NON-NLS-1$
+			cmdArray[cmdArray.length - 3] = "fast"; //$NON-NLS-1$
 		}
 
 		boolean noMC0NoSkip = false;
@@ -1550,8 +1573,6 @@ public class MEncoderVideo extends Player {
 						noMC0NoSkip = true;
 					} else if (sArgs[s].equals("-mc")) { //$NON-NLS-1$
 						noMC0NoSkip = true;
-					} else if (sArgs[s].equals("-mt") && !avisynth) { //$NON-NLS-1$
-						setCmdToMencoderMT(configuration, cmdArray, null);
 					}
 				}
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + sArgs.length);
@@ -1803,18 +1824,6 @@ public class MEncoderVideo extends Player {
 		} catch (InterruptedException e) {
 		}
 		return pw;
-	}
-
-	private boolean setCmdToMencoderMT(PmsConfiguration configuration, String cmdArray[], DLNAMediaInfo media) {
-		boolean set = configuration.getNumberOfCpuCores() > 1;
-		if (set) {
-			String mencoderMTPath = PMS.getConfiguration().getMencoderMTPath();
-			if (new File(mencoderMTPath).exists()) {
-				cmdArray[0] = mencoderMTPath;
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override
