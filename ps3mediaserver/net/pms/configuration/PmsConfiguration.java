@@ -125,7 +125,7 @@ public class PmsConfiguration {
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final String UNLIMITED_BITRATE = "0";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
-    private static final String KEY_PLUGIN_DIRECTORY = "plugins";
+	private static final String KEY_PLUGIN_DIRECTORY = "plugins";
 	
 	private static final String DEFAULT_AVI_SYNTH_SCRIPT = 
 		  "#AviSynth script is now fully customisable !\n" 
@@ -764,7 +764,7 @@ public class PmsConfiguration {
 	}
 
 	public String getMencoderMainSettings() {
-		return getString(KEY_MENCODER_MAIN_SETTINGS, "keyint=1:vqscale=1:vqmin=2");
+		return getString(KEY_MENCODER_MAIN_SETTINGS, "keyint=5:vqscale=1:vqmin=2");
 	}
 
 	public void setMencoderMainSettings(String value) {
