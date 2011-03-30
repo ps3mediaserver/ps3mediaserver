@@ -90,7 +90,7 @@ public class TreeNodeSettings extends DefaultMutableTreeNode {
 		if (warningPanel == null) {
 			BufferedImage bi = null;
 			try {
-				bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/messagebox_warning-256.png")); //$NON-NLS-1$
+				bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/messagebox_warning-220.png")); //$NON-NLS-1$
 			} catch (IOException e) {
 			}
 			ImagePanel ip = new ImagePanel(bi);
