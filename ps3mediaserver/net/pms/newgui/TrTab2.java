@@ -561,9 +561,9 @@ public class TrTab2 {
        builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 29, 3)); //$NON-NLS-1$
        
         Object data [] = new Object [] { PMS.getConfiguration().getMencoderMainSettings(),
-    		   "keyint=1:vqscale=1:vqmin=2  /* Great Quality */", //$NON-NLS-1$
-    		   "keyint=1:vqscale=1:vqmin=1  /* Lossless Quality */", //$NON-NLS-1$
-    		   "keyint=3:vqscale=2:vqmin=3  /* Good quality */", //$NON-NLS-1$
+    		   "keyint=5:vqscale=1:vqmin=2  /* Great Quality */", //$NON-NLS-1$
+    		   "keyint=5:vqscale=1:vqmin=1  /* Lossless Quality */", //$NON-NLS-1$
+    		   "keyint=5:vqscale=2:vqmin=3  /* Good quality */", //$NON-NLS-1$
         	   "keyint=25:vqmax=5:vqmin=2  /* Good quality for HD Wifi Transcoding */", //$NON-NLS-1$
     		   "keyint=25:vqmax=7:vqmin=2  /* Medium quality for HD Wifi Transcoding */", //$NON-NLS-1$
         	   "keyint=25:vqmax=8:vqmin=3  /* Low quality, Low-end CPU or HD Wifi Transcoding */"}; //$NON-NLS-1$
