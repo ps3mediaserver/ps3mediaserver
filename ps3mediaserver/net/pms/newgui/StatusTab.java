@@ -78,7 +78,7 @@ public class StatusTab {
 		jl = new JLabel(Messages.getString("StatusTab.3")); //$NON-NLS-1$
 
 		builder.add(jl, cc.xy(2, 3));
-		imagePanel = buildImagePanel("/resources/images/connect_no-256.png");
+		imagePanel = buildImagePanel("/resources/images/connect_no-220.png");
 		builder.add(imagePanel, cc.xy(2, 5, "center, fill")); //$NON-NLS-1$
 
 		jpb = new JProgressBar(0, 100);

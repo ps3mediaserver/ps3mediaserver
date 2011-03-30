@@ -184,7 +184,7 @@ public class PMS {
 			foundRenderers.add(mediarenderer);
 			frame.addRendererIcon(mediarenderer.getRank(), mediarenderer.getRendererNameWithAddress(), mediarenderer.getRendererIcon());
 			if (mediarenderer.isPS3())
-				frame.setStatusCode(0, Messages.getString("PMS.5"), "clients/ps3slim_243.png"); //$NON-NLS-1$ //$NON-NLS-2$
+				frame.setStatusCode(0, Messages.getString("PMS.5"), "clients/ps3slim_220.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		/*if (mediarenderer == HTTPResource.PS3) {
 			frame.setStatusCode(0, Messages.getString("PMS.5"), "PS3_2.png"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -396,7 +396,7 @@ public class PMS {
 			frame = new DummyFrame();
 		}
 		
-		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
+		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-220.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		proxy = -1;
 		
@@ -424,26 +424,11 @@ public class PMS {
 		minimal("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
 		
 		RendererConfiguration.loadRendererConfigurations();
-		
-		//System.out.println(System.getProperties().toString().replace(',', '\n'));
 				
 		minimal("Checking font cache... launching simple instance of MPlayer... You may have to wait 60 seconds!");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
 		checkProcessExistence("MPlayer", true, getConfiguration().getTempFolder(), configuration.getMplayerPath(), "dummy");
 		minimal("Done!");
-		/*
-		if (!checkProcessExistence("FFmpeg", true, configuration.getFfmpegPath(), "-h")) //$NON-NLS-1$ //$NON-NLS-2$
-			configuration.disableFfmpeg();
-		//if (forceMPlayer) {
-			if (!checkProcessExistence("MPlayer", true, configuration.getMplayerPath())) //$NON-NLS-1$
-				configuration.disableMplayer();
-			if (!checkProcessExistence("MEncoder", true, configuration.getMencoderPath(), "-oac", "help")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				configuration.disableMEncoder();
-			}
-		//}
-		if (!checkProcessExistence("VLC", false, configuration.getVlcPath(), "-I", "dummy", isWindows()?"--dummy-quiet":"-Z", "vlc://quit")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-			configuration.disableVlc();
-		}*/
 		
 		// check the existence of Vsfilter.dll
 		if (registry.isAvis() && registry.getAvsPluginsDir() != null) {
@@ -521,9 +506,9 @@ public class PMS {
 				}
 				if (!ps3found) {
 					if (foundRenderers.size() == 0)
-						frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-256.png"); //$NON-NLS-1$ //$NON-NLS-2$
+						frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-220.png"); //$NON-NLS-1$ //$NON-NLS-2$
 					else {
-						frame.setStatusCode(0, "Another media renderer than the PS3 has been detected... This software is tuned for the PS3 but may work with your renderer", "messagebox_warning-256.png");
+						frame.setStatusCode(0, "Another media renderer than the PS3 has been detected... This software is tuned for the PS3 but may work with your renderer", "messagebox_warning-220.png");
 					}
 					
 				}
