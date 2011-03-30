@@ -23,6 +23,21 @@ class WindowsDefaultPaths implements ProgramPaths {
 	}
 
 	@Override
+	public String getMencoderMTPath() {
+		return "win32/mencoder_mt.exe";
+	}
+
+	@Override
+	public String getMencoderOlderPath() {
+		return "win32/mencoder-older.exe";
+	}
+
+	@Override
+	public String getMencoderOlderMTPath() {
+		return "win32/mencoder-older_mt.exe";
+	}
+
+	@Override
 	public String getMplayerPath() {
 		return "win32/mplayer.exe";
 	}
@@ -35,11 +50,6 @@ class WindowsDefaultPaths implements ProgramPaths {
 	@Override
 	public String getVlcPath() {
 		return "videolan/vlc.exe";
-	}
-
-	@Override
-	public String getMencoderMTPath() {
-		return "win32/mencoder_mt.exe";
 	}
 
 	@Override

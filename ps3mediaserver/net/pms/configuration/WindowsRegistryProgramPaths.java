@@ -34,6 +34,21 @@ class WindowsRegistryProgramPaths implements ProgramPaths {
 	}
 
 	@Override
+	public String getMencoderMTPath() {
+		return defaults.getMencoderMTPath();
+	}
+
+	@Override
+	public String getMencoderOlderPath() {
+		return defaults.getMencoderOlderPath();
+	}
+
+	@Override
+	public String getMencoderOlderMTPath() {
+		return defaults.getMencoderOlderMTPath();
+	}
+
+	@Override
 	public String getMplayerPath() {
 		return defaults.getMplayerPath();
 	}
@@ -55,11 +70,6 @@ class WindowsRegistryProgramPaths implements ProgramPaths {
 			}
 		}
 		return defaults.getVlcPath();
-	}
-
-	@Override
-	public String getMencoderMTPath() {
-		return defaults.getMencoderMTPath();
 	}
 
 	@Override
