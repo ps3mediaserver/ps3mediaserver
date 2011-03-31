@@ -28,6 +28,16 @@ class MacDefaultPaths implements ProgramPaths {
 	}
 
 	@Override
+	public String getMencoderOlderPath() {
+		return "osx/mencoder";
+	}
+
+	@Override
+	public String getMencoderOlderMTPath() {
+		return "osx/mencoder_mt";
+	}
+
+	@Override
 	public String getMplayerPath() {
 		return "osx/mplayer";
 	}

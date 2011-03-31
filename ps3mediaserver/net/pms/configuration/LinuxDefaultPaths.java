@@ -28,6 +28,16 @@ class LinuxDefaultPaths implements ProgramPaths {
 	}
 
 	@Override
+	public String getMencoderOlderPath() {
+		return "mencoder";
+	}
+
+	@Override
+	public String getMencoderOlderMTPath() {
+		return "mencoder_mt";
+	}
+
+	@Override
 	public String getMplayerPath() {
 		return "mplayer";
 	}
