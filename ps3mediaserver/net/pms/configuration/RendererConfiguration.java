@@ -117,7 +117,7 @@ public class RendererConfiguration {
 		op.maxBufferSize = 1;
 		String count = Platform.isWindows()?"-n":"-c";
 		String size= Platform.isWindows()?"-l":"-s";
-		final ProcessWrapperImpl pw = new ProcessWrapperImpl(new String[] {"ping", count, "3", size, "64000", sa.getHostAddress()}, op);
+		final ProcessWrapperImpl pw = new ProcessWrapperImpl(new String[] {"ping", count, "3", size, "64000", sa.getHostAddress()}, op, true, false);
 		Runnable r = new Runnable() {
 			public void run() {
 				try {

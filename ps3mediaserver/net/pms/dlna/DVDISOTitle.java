@@ -56,7 +56,7 @@ public class DVDISOTitle extends DLNAResource {
 			cmd [10] = "jpeg:outdir=" + frameName;
 		}
 		params.log = true;
-		final ProcessWrapperImpl pw = new ProcessWrapperImpl(cmd, params);
+		final ProcessWrapperImpl pw = new ProcessWrapperImpl(cmd, params, true, false);
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
