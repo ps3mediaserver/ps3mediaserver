@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -93,6 +94,8 @@ public class BufferedOutputFile extends OutputStream  {
 	private Timer timer;
 	private boolean shiftScr;
 	private FileOutputStream debugOutput = null;
+	private boolean buffered = false;
+	private DecimalFormat formatter = new DecimalFormat("#,###");
 	
 	public BufferedOutputFile(OutputParams params) {
 		this.minMemorySize = (int) (1048576 * params.minBufferSize);
@@ -130,8 +133,8 @@ public class BufferedOutputFile extends OutputStream  {
 					PMS.get().getFrame().setReadValue(rc, "");
 				}
 				long space = (writeCount - rc);
-				PMS.debug("Buffered Space: " + space + " bytes / inputs: " + inputStreams.size());
-				PMS.get().getFrame().setValue( (int) (100*space/maxMemorySize), space + " bytes");
+				PMS.debug("buffered: " + formatter.format(space) + " bytes / inputs: " + inputStreams.size());
+				PMS.get().getFrame().setValue( (int) (100*space/maxMemorySize), formatter.format(space) + " bytes");
 
 			}
 			
@@ -266,10 +269,9 @@ public class BufferedOutputFile extends OutputStream  {
 				   buffer[modulo(mb+i)] = b[off+i];
 				}
 			 } else {
-				 
 				 System.arraycopy(b, off, buffer,mb  , (len - off));
-				 
-	
+				 if ((len - off) > 0)
+				     buffered = true;
 			 }
 			
 			// Ditlew - WDTV Live
@@ -339,6 +341,7 @@ public class BufferedOutputFile extends OutputStream  {
 		int mb = (int) (writeCount++ % maxMemorySize);
 		if (buffer != null) {
 			buffer[mb] = (byte) b;
+			buffered = true;
 			if (writeCount == TEMP_SIZE) {
 				PMS.debug("freeMemory: " + Runtime.getRuntime().freeMemory());
 				PMS.debug("totalMemory: " + Runtime.getRuntime().totalMemory());
@@ -622,7 +625,7 @@ public class BufferedOutputFile extends OutputStream  {
 		if (c > 0)
 			PMS.debug("Resume Read: readCount=" + readCount + " / writeCount=" + writeCount);
 
-		if (buffer == null)
+		if (buffer == null || !buffered)
 			return -1;
 		
 		int mb = (int) (readCount % maxMemorySize);
@@ -672,7 +675,7 @@ public class BufferedOutputFile extends OutputStream  {
 		if (c > 0)
 			PMS.debug("Resume Read: readCount=" + readCount + " / writeCount=" + writeCount);
 
-		if (buffer == null)
+		if (buffer == null || !buffered)
 			return -1;
 		return 0xff & buffer[(int) (readCount % maxMemorySize)];
 	}
@@ -715,6 +718,7 @@ public class BufferedOutputFile extends OutputStream  {
 		PMS.info("Destroying buffer");
 		timer.cancel();
 		buffer = null;
+		buffered = false;
 		System.gc();
 		System.gc();
 		System.gc();
