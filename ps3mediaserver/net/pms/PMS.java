@@ -376,11 +376,11 @@ public class PMS {
 			debug = new File("debug.log"); //$NON-NLS-1$
 			pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
 		} catch (Throwable e) {
-			minimal("Error accessing debug.log..."); //$NON-NLS-1$
+			minimal("Error accessing debug.log"); //$NON-NLS-1$
 			pw = null;
 		} finally {
 			if (pw == null) {
-				minimal("Using temp folder for debug.log..."); //$NON-NLS-1$
+				minimal("Using temp folder for debug.log"); //$NON-NLS-1$
 				debug = new File(configuration.getTempFolder(), "debug.log"); //$NON-NLS-1$
 				pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
 			}
@@ -425,7 +425,7 @@ public class PMS {
 		
 		RendererConfiguration.loadRendererConfigurations();
 				
-		minimal("Checking font cache... launching simple instance of MPlayer... You may have to wait 60 seconds!");
+		minimal("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
 		checkProcessExistence("MPlayer", true, getConfiguration().getTempFolder(), configuration.getMplayerPath(), "dummy");
 		minimal("Done!");
@@ -435,7 +435,7 @@ public class PMS {
 			minimal("Found AviSynth plugins dir: " + registry.getAvsPluginsDir().getAbsolutePath()); //$NON-NLS-1$
 			File vsFilterdll = new File(registry.getAvsPluginsDir(), "VSFilter.dll"); //$NON-NLS-1$
 			if (!vsFilterdll.exists()) {
-				minimal("!!! It seems VSFilter.dll is not installed into the AviSynth plugins dir ! It could be troublesome for playing subtitled videos with AviSynth !!!"); //$NON-NLS-1$
+				minimal("VSFilter.dll is not in the AviSynth plugins directory. This can cause problems when trying to play subtitled videos with AviSynth"); //$NON-NLS-1$
 			}
 		}
 		
@@ -488,14 +488,12 @@ public class PMS {
 		try {
 			binding = server.start();
 		} catch (BindException b) {
-			
-			minimal("FATAL ERROR: Unable to bind on port: " + configuration.getServerPort() + " cause: " + b.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
-			minimal("Maybe another process is running or the hostname is wrong..."); //$NON-NLS-1$
-			
+			minimal("FATAL ERROR: Unable to bind on port: " + configuration.getServerPort() + ", because: " + b.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			minimal("Maybe another process is running or the hostname is wrong."); //$NON-NLS-1$
 		}
 		new Thread() {
 			@Override
-            public void run () {
+			public void run () {
 				try {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {}
@@ -508,9 +506,8 @@ public class PMS {
 					if (foundRenderers.size() == 0)
 						frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-220.png"); //$NON-NLS-1$ //$NON-NLS-2$
 					else {
-						frame.setStatusCode(0, "Another media renderer than the PS3 has been detected... This software is tuned for the PS3 but may work with your renderer", "messagebox_warning-220.png");
+						frame.setStatusCode(0, "A media renderer other than the PS3 has been detected. This software is tuned for the PS3 but may work with your renderer", "messagebox_warning-220.png");
 					}
-					
 				}
 			}
 		}.start();
@@ -543,7 +540,7 @@ public class PMS {
 						try {
 							p.exitValue();
 						} catch (IllegalThreadStateException ise) {
-							debug("Forcing shutdown of process " + p); //$NON-NLS-1$
+							debug("Forcing shutdown of process: " + p); //$NON-NLS-1$
 							ProcessUtil.destroy(p);
 						}
 					}
@@ -554,8 +551,7 @@ public class PMS {
 				} catch (Exception e) { }
 			}
 		});
-		//debug("Waiting 500 milliseconds...");
-		//Thread.sleep(500);
+
 		UPNPHelper.sendAlive();
 		debug("Waiting 250 milliseconds..."); //$NON-NLS-1$
 		Thread.sleep(250);
@@ -657,7 +653,7 @@ public class PMS {
 							}
 						// catch exception here and go with parsing
 						} catch (ArrayIndexOutOfBoundsException e) {
-							minimal("Error at line " + br.getLineNumber() + " of file WEB.conf: " + e.getMessage()); //$NON-NLS-1$
+							minimal("Error at line " + br.getLineNumber() + " of WEB.conf: " + e.getMessage()); //$NON-NLS-1$
 						}
 					}
 				}
@@ -739,7 +735,7 @@ public class PMS {
  					minimal("iPhoto folder not found !?");
  				}
 			} catch (Exception e) {
-				error("Something wrong with the iPhoto Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				error("Something went wrong with the iPhoto Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 	}
@@ -839,7 +835,7 @@ public class PMS {
 					minimal("Could not find the iTunes file");
 				}
 			} catch (Exception e) {
-				error("Something wrong with the iTunes Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				error("Something went wrong with the iTunes Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 	}
@@ -1110,7 +1106,7 @@ public class PMS {
 		else {
 			if (isWindows()) {
 				if (p.executable() == null) {
-					minimal("Executable of transcoder profile " + p + " not found!"); //$NON-NLS-1$ //$NON-NLS-2$
+					minimal("Executable of transcoder profile " + p + " not found"); //$NON-NLS-1$ //$NON-NLS-2$
 					return;
 				}
 				File executable = new File(p.executable());
@@ -1119,7 +1115,7 @@ public class PMS {
 				if (executable.exists() || executable2.exists())
 					ok = true;
 				else {
-					minimal("Executable of transcoder profile " + p + " not found!"); //$NON-NLS-1$ //$NON-NLS-2$
+					minimal("Executable of transcoder profile " + p + " not found"); //$NON-NLS-1$ //$NON-NLS-2$
 					return;
 				}
 				if (p.avisynth()) {
@@ -1127,7 +1123,7 @@ public class PMS {
 					if (registry.isAvis()) {
 						ok = true;
 					} else {
-						minimal("AVISynth not found! Transcoder profile " + p + " will not be used!"); //$NON-NLS-1$ //$NON-NLS-2$
+						minimal("Transcoder profile " + p + " will not be used because AviSynth was not found"); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			} else if (!p.avisynth()) {
@@ -1135,7 +1131,7 @@ public class PMS {
 			}
 		}
 		if (ok) {
-			minimal("Registering transcoding engine " + p /*+ (p.avisynth()?(" with " + (forceMPlayer?"MPlayer":"AviSynth")):"")*/); //$NON-NLS-1$
+			minimal("Registering transcoding engine: " + p /*+ (p.avisynth()?(" with " + (forceMPlayer?"MPlayer":"AviSynth")):"")*/); //$NON-NLS-1$
 			players.add(p);
 		}
 	}
@@ -1175,7 +1171,7 @@ public class PMS {
 				} else
 					error("File " + folder + " is not a directory!", null); //$NON-NLS-1$ //$NON-NLS-2$
 			} else {
-				error("Directory " + folder + " does not exist!", null); //$NON-NLS-1$ //$NON-NLS-2$
+				error("The directory " + folder + " does not exist. Please remove it from your Shared folders list on the Navigation/Share Settings tab", null); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		File f [] = new File[directories.size()];
@@ -1387,9 +1383,9 @@ public class PMS {
 					instance = new PMS();
 					try {
 						if (instance.init())
-							minimal("It's ready! You should see the server appear on the XMB"); //$NON-NLS-1$
+							minimal("The server should now appear on your renderer"); //$NON-NLS-1$
 						else
-							minimal("A serious error occurred..."); //$NON-NLS-1$
+							minimal("A serious error occurred"); //$NON-NLS-1$
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
