@@ -43,15 +43,25 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	private String cmdLine;
 	private Process process;
 	private OutputConsumer outConsumer;
-	private OutputTextConsumer stderrConsumer;
+	private OutputConsumer stderrConsumer;
 	private OutputParams params;
 	private boolean destroyed;
 	private String [] cmdArray;
 	private boolean nullable;
 	private ArrayList<ProcessWrapper> attachedProcesses;
 	private BufferedOutputFile bo = null;
+	private boolean keepStdout;
+	private boolean keepStderr;
 	
 	public ProcessWrapperImpl(String cmdArray [], OutputParams params) {
+		this(cmdArray, params, false, false);
+	}
+
+	public ProcessWrapperImpl(String cmdArray [], OutputParams params, boolean keepOutput) {
+		this(cmdArray, params, keepOutput, keepOutput);
+	}
+
+	public ProcessWrapperImpl(String cmdArray [], OutputParams params, boolean keepStdout, boolean keepStderr) {
 		super(cmdArray[0]);
 		File exec = new File(cmdArray[0]);
 		if (exec.exists() && exec.isFile())
@@ -65,6 +75,8 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 		}
 		cmdLine = sb.toString();
 		this.params = params;
+		this.keepStdout = keepStdout;
+		this.keepStderr = keepStderr;
 		attachedProcesses = new ArrayList<ProcessWrapper>();
 	}
 	
@@ -83,25 +95,31 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			process = pb.start();
 			//process = Runtime.getRuntime().exec(cmdArray);
 			PMS.get().currentProcesses.add(process);
-			stderrConsumer = new OutputTextConsumer(process.getErrorStream(), true);
+			stderrConsumer = keepStderr ?
+				new OutputTextConsumer(process.getErrorStream(), true) :
+				new OutputTextLogger(process.getErrorStream());
 			stderrConsumer.start();
 			outConsumer = null;
 			if (params.outputFile != null) {
 				PMS.info("Writing in " + params.outputFile.getAbsolutePath());
-				outConsumer = new OutputTextConsumer(process.getInputStream(), false);
+				outConsumer = keepStdout ?
+					new OutputTextConsumer(process.getInputStream(), false) :
+					new OutputTextLogger(process.getInputStream());
 			} else if (params.input_pipes[0] != null) {
 				PMS.info("Reading pipe: " + params.input_pipes[0].getInputPipe());
 				//Thread.sleep(150);
 				bo = params.input_pipes[0].getDirectBuffer();
-				if (bo == null || params.losslessaudio || params.lossyaudio||params.no_videoencode) {
+				if (bo == null || params.losslessaudio || params.lossyaudio || params.no_videoencode) {
 					InputStream is = params.input_pipes[0].getInputStream();
 					outConsumer = new OutputBufferConsumer((params.avidemux)?new AviDemuxerInputStream(is, params, attachedProcesses):is, params);
 					bo = (BufferedOutputFile) outConsumer.getBuffer();
 				}
 				bo.attachThread(this);
-				new OutputTextConsumer(process.getInputStream(), true).start();
+				new OutputTextLogger(process.getInputStream()).start();
 			} else if (params.log) {
-				outConsumer = new OutputTextConsumer(process.getInputStream(), true);
+				outConsumer = keepStdout ?
+					new OutputTextConsumer(process.getInputStream(), true) :
+					new OutputTextLogger(process.getInputStream());
 			} else {
 				outConsumer = new OutputBufferConsumer(process.getInputStream(), params);
 				bo = (BufferedOutputFile) outConsumer.getBuffer();

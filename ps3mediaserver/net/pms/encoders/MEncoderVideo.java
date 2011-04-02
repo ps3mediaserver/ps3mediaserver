@@ -1717,7 +1717,7 @@ public class MEncoderVideo extends Player {
 				String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());
 				// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
 				// -mc 0.1 make the DTS-HD extraction works better with latest mencoder builds, and makes no impact on the regular DTS one
-				String ffmpegLPCMextract[] = new String[]{configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=-1:mencoder=-1", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", dts ? "0.1" : "0", "-noskip", (aid == null) ? "-quiet" : "-aid", (aid == null) ? "-quiet" : aid, "-oac", sm.isDtsembed() ? "copy" : "pcm", (mixer != null && !channels_filter_present) ? "-af" : "-quiet", (mixer != null && !channels_filter_present) ? mixer : "-quiet", "-srate", "48000", "-o", ffAudioPipe.getInputPipe()}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$
+				String ffmpegLPCMextract[] = new String[]{configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=2", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", dts ? "0.1" : "0", "-noskip", (aid == null) ? "-quiet" : "-aid", (aid == null) ? "-quiet" : aid, "-oac", sm.isDtsembed() ? "copy" : "pcm", (mixer != null && !channels_filter_present) ? "-af" : "-quiet", (mixer != null && !channels_filter_present) ? mixer : "-quiet", "-srate", "48000", "-o", ffAudioPipe.getInputPipe()}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$
 				if (!params.mediaRenderer.isMuxDTSToMpeg()) // no need to use the PCM trick when media renderer supports DTS
 				{
 					ffAudioPipe.setModifier(sm);
@@ -1795,7 +1795,7 @@ public class MEncoderVideo extends Player {
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 3);
 				cmdArray[cmdArray.length - 3] = "-really-quiet"; //$NON-NLS-1$
 				cmdArray[cmdArray.length - 2] = "-msglevel"; //$NON-NLS-1$
-				cmdArray[cmdArray.length - 1] = "all=-1"; //$NON-NLS-1$
+				cmdArray[cmdArray.length - 1] = "statusline=2"; //$NON-NLS-1$
 				cmdArray[cmdArray.length - 4] = "-"; //$NON-NLS-1$
 				params.input_pipes = new PipeProcess[2];
 			} else {

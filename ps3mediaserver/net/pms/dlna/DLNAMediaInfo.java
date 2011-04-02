@@ -195,7 +195,8 @@ public class DLNAMediaInfo implements Cloneable {
 		params.maxBufferSize = 1;
 		params.stdin = media.push;
 		params.noexitcheck = true; // not serious if anything happens during the thumbnailer
-		final ProcessWrapperImpl pw = new ProcessWrapperImpl(args, params);
+		// true: consume stderr on behalf of the caller i.e. parse()
+		final ProcessWrapperImpl pw = new ProcessWrapperImpl(args, params, false, true);
 		// FAILSAFE
 		parsing = true;
 		Runnable r = new Runnable() {

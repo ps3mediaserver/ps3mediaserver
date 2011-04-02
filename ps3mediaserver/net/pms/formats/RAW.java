@@ -58,7 +58,7 @@ public class RAW extends JPG {
 				cmdArray[3] = file.file.getAbsolutePath();
 			
 			params.log = true;
-			ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
+			ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params, true, false);
 			pw.run();
 			
 			List<String> list = pw.getOtherResults();
