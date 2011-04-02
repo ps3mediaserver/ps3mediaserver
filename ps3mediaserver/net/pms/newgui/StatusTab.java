@@ -22,6 +22,7 @@ import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -48,6 +49,7 @@ public class StatusTab {
 	private JLabel jio;
 	private long rc = 0;
 	private long peak;
+	private DecimalFormat formatter = new DecimalFormat("#,###");
 
 	public JProgressBar getJpb() {
 		return jpb;
@@ -125,7 +127,7 @@ public class StatusTab {
 			if (sizeinKb > peak) {
 				peak = sizeinKb;
 			}
-			jio.setText(Messages.getString("StatusTab.8") + sizeinKb + Messages.getString("StatusTab.10") + peak + Messages.getString("StatusTab.11")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			jio.setText(Messages.getString("StatusTab.8") + formatter.format(sizeinKb) + Messages.getString("StatusTab.10") + formatter.format(peak) + Messages.getString("StatusTab.11")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			rc = v;
 		}
 	}
