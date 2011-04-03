@@ -1,0 +1,471 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- 
+   PS3 Media Server, for streaming any medias to your PS3.
+   Copyright (C) 2008  A.Brochard
+ 
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; version 2
+   of the License only.
+ 
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+ 
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+<html>
+<head>
+<title>Frequently Asked Questions</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<h1>Frequently Asked Questions</h1>
+
+	<!-- TODO incorporate the answers instead of linking the forums -->
+
+	<dl class="faq">
+		<dt>I do not see PMS from my DLNA client?</dt>
+		<dd>
+			Consult the <a href="installation.html#troubleshooting">Troubleshooting</a>
+			section of the installation page.
+		</dd>
+
+		<dt>I get "Data corrupted" or a black screen when streaming web
+			content?</dt>
+		<dd>
+			<p>Install the plugin PMSEncoder for improved web content
+				support.</p>
+			<ul>
+				<li>Download the latest version of PMSEncoder from <a
+					href="https://github.com/chocolateboy/pmsencoder">https://github.com/chocolateboy/pmsencoder</a>
+				</li>
+				<li>Place it in the PMS plugins directory</li>
+				<li>Shut down PMS</li>
+				<li>Open the file "PMS.conf" in a text editor</li>
+				<li>Add pmsencoder to the front of the list of engines e.g.
+					<blockquote>
+						<pre>engines = pmsencoder,mencoder,tsmuxer,mplayeraudio</pre>
+					</blockquote></li>
+				<li>Restart PMS</li>
+			</ul>
+		</dd>
+
+		<dt>Where are the PMS configuration, log and web-temp files
+			located?</dt>
+		<dd>
+			<p>There are a few possible default locations, some only at the
+				install directory or inside the application.</p>
+
+			<p>
+				<strong>Linux</strong>
+			</p>
+			<ul>
+				<li>Install directory</li>
+			</ul>
+
+			<p>
+				<strong>OSX</strong><br /> Note: open a Terminal and use "cd" and
+				"ls" to view invisible directories
+			</p>
+			<ul>
+				<li>/Applications/PS3\ Media\
+					Server.app/Contents/Resources/Java/</li>
+				<li>~/Library/Application\ Support/PS3\ Media\ Server/</li>
+			</ul>
+
+			<p>
+				<strong>Windows 7, Windows Vista</strong>
+			</p>
+			<ul>
+				<li>Install directory</li>
+				<li>[System Drive]\Users\%User%\AppData\Roaming\PMS</li>
+				<li>[System Drive]\Users\%User%\AppData\Local\Temp\javaps3media</li>
+			</ul>
+
+			<p>
+				<strong>Windows XP</strong>
+			</p>
+			<ul>
+				<li>Install directory</li>
+			</ul>
+
+
+		</dd>
+
+		<dt>How do I install the Movie Info plugin?</dt>
+		<dd>
+			<ul>
+				<li>Read the latest <a
+					href=http://ps3mediaserver.org/forum/viewtopic.php?f=2&t=2126">Movie
+						Info Plugin release notes</a>.</li>
+				<li>Download the Movie Info jar-file from <a
+					href="http://jaqb.servehttp.com/">http://jaqb.servehttp.com/</a>.</li>
+				<li>Uncompress the zip-file and copy content (MOVIEINFO.conf
+					and MovieInfo.jar) to the PMS plugin directory (C:\Program
+					Files\PS3 Media Server\plugins).</li>
+				<li>Customize MOVIEINFO.conf with a text editor. For example,
+					if you do not want thumbnail downloads but also German movie
+					information, see the code below.
+					<blockquote>
+						<pre>...
+###Which plugins to use and in which order, Plugins available: IMDB , FILMWEB, CSFD,
+###  MOVIEMETER, ALLOCINE, MYMOVIES, OFDB, FILMDELTA, SENSACINE, ONFILM, KINOPOISK
+#Plugins=IMDB,FILMWEB,CSFD,MOVIEMETER,ALLOCINE,MYMOVIES,OFDB,FILMDELTA,SENSACINE,ONFILM,KINOPOISK
+#Plugins=IMDB
+Plugins=OFDB,IMDB
+###Number of how many cast to display
+NumberOfActors=99
+###Cover Downloading, Enable = 1 Disable = 0
+#Cover=1
+Cover=0
+###Which info to use and in which order
+###default setting is: title,rating,tagline,genre,plot,cast,director,agerating
+DisplayInfo=title,rating,tagline,genre,plot,cast,director
+...</pre>
+					</blockquote></li>
+			</ul>
+
+			<p>Usage in XMB</p>
+			<p>Read plot: enter virtual folder #-- movie-info --# in XMB &gt;
+				movie title &gt; IMDB INFO</p>
+			<p>Watch trailers (English): enter virtual folder #-- movie-info
+				--# in XMB &gt; movie title &gt; IMDB INFO &gt; title: movie title
+				&gt; [HD] movie title trailer or [SD] movie title trailer</p>
+		</dd>
+		<dt>I receive the error message &quot;No images&quot;, &quot;No
+			tracks&quot;, or &quot;No titles&quot; when trying to view a folder
+			that does contain valid media.</dt>
+		<dd>
+			<p>
+				<strong>Solution 1:</strong> You are in the wrong section of the <a
+					href="http://en.wikipedia.org/wiki/XrossMediaBar">XMB</a>. You have
+				to be in "Photos" to view pictures, in "Music" to listen to music
+				and in "Video" to watch videos. For example "Photos &gt; Web videos"
+				will be empty, but "Video &gt; Web videos" will show files.
+			</p>
+			<p>
+				<strong>Solution 2:</strong> You have hit the folder-depth limit (8
+				folders) and cannot browse any further in the folder tree. You have
+				to share a different folder that is within the folder limit to the
+				media you're trying to access (includes virtual folders like the
+				#Transcode# folder). Note: this is a PS3 limitation.
+			</p>
+		</dd>
+
+		<dt>Playback of video file stops at end of file and does not
+			continue with next video file.</dt>
+		<dd>
+			<p>
+				<strong>Solution:</strong> PlayStation 3 XMB: Settings - Video
+				Settings - Sequential Playback. Set the PS3 system to sequentially
+				play multiple videos that are saved on the hard disk or storage
+				media. See <a
+					href="http://manuals.playstation.net/document/en/ps3/current/settings/bdsettings.html#3616">http://manuals.playstation.net/document/en/ps3/current/settings/bdsettings.html#3616</a>.
+			</p>
+		</dd>
+
+		<dt>I receive two &quot;Media Server Error: A DLNA protocol error
+			(2006) has occurred&quot; followed by &quot;There are no titles&quot;
+			on the PS3 when trying to view the video folder that does contain
+			valid video media.</dt>
+		<dd>
+			<p>
+				<strong>Cause:</strong> There is a timing bug with PMS (as of the
+				latest PMS beta 356 version) where the Media Library data is not
+				being sent in a timely matter (ideally within the first 30 seconds,
+				up to 1 minute) to the PS3. The results is the above error and the
+				PS3 timing out. If you restart PMS or the PS3, the process will
+				start all over again. This error can not be avoided by using the
+				Magnifying Glass in the Shared folders tab and section. Previous
+				Media Library processed data is always checked and re-checked,
+				making it impossible to be avoided.
+			</p>
+
+			<p>
+				<strong>Solution 1:</strong> For unattended results; reduce the
+				amount of files contained in the shared directory. You will need to
+				find your own balance between your processor speed, the amount of
+				files contained in the shared directory and the timeout of the PS3.
+			</p>
+			<p>
+				<strong>Solution 2:</strong> For attended results; after entering
+				the Video PMS directory on the PS3, exit up one level. On the PMS
+				installed machine, watch and wait for the JavaW.exe process to
+				finish (measure the length of time between entering the directory
+				and JavaW.exe finishing, you will need this information for later).
+				Re-enter the Video PMS directory and shortly the names will now
+				begin to be displayed regardless of the amount of files. Later, when
+				this happens again, like before go up one level, but you will now
+				know how long to wait before re-entering the PS3's Video PMS
+				directory.
+			</p>
+		</dd>
+
+		<dt>How do I play DTS Music with PS3 fw 3.0?</dt>
+		<dd>
+			<p>Music settings:</p>
+			<ul>
+				<li>Output Frequency: 44.1/88.2/176.4 kHz</li>
+				<li>Bitmapping: Off or Type2</li>
+				<li>Dynamic Normalizer: Off</li>
+			</ul>
+			<p>Sound settings:</p>
+			<ul>
+				<li>Audio Output Settings: untick Linear PCM 2 Ch. 88.2 and
+					176.4 kHz</li>
+				<li>Audio Multi-Output: Off</li>
+			</ul>
+			<p>Audio volume on PS3 has to be in the middle = Normal.</p>
+		</dd>
+
+		<dt>How do I change settings when PMS is running as a service?</dt>
+		<dd>
+			<p>You cannot change settings when PMS is running as a service.
+				So you will have to stop the service and start the program to change
+				settings as follows:</p>
+			<ul>
+				<li>Stop the PMS service.</li>
+				<li>Start PMS manually.</li>
+				<li>Change the desired settings in the PMS interface and press
+					the Save button.</li>
+				<li>Quit PMS.</li>
+				<li>Start the PMS service. Make sure that service is running
+					with the same user account you are currently logged in.</li>
+			</ul>
+		</dd>
+
+		<dt>I receive errors or frozen playback when trying to Fast
+			Forward, Rewind, or &quot;Scene Search&quot; through a video.</dt>
+		<dd>
+			This is to be expected on slower LAN connections or for any media
+			that is being transcoded or remuxed. Use the PS3's "Go To" feature
+			instead: <a
+				href="http://manuals.playstation.net/document/en/ps3/current/video/panel.html#9">http://manuals.playstation.net/document/en/ps3/current/video/panel.html#9</a>
+		</dd>
+
+		<dt>Why are the native subtitles missing for the non-native parts
+			of a native audio movie?</dt>
+		<dd>
+			<p>
+				Play the movie with the <a
+					href=http://www.loc.gov/standards/iso639-2/php/code_list.php">UND
+					language subtitles</a>, either directly from the #Transcode# folder or
+				add UND to the "subtitle priority" setting under the MEncoder
+				settings.
+			</p>
+
+			<p>If there is no UND language subtitle track, you'll have to
+				either:</p>
+			<ul>
+				<li>Manually select the proper language subtitle track from the
+					#Transcode# folder.</li>
+				<li>Edit the subtitle tracks in the file (change language code,
+					remove other tracks, reorder, etc.). Note: this is not available
+					through PMS.</li>
+			</ul>
+		</dd>
+
+		<dt>Is there a list of supported media renderers (streaming
+			clients) for PS3 Media Server?</dt>
+		<dd>
+			<p>At the moment the PS3, Xbox 360, and Philips (networked) TVs
+				are well supported. There is experimental support for Sony Bravia
+				and Samsung Wiselink TVs, XBMC (e.g. on Xbox), PopcornHour,
+				FreeboxHD, and Realtek chip based media renderers. Other media
+				renderers may work. You have to create a conf-file in renderers
+				subdirectory of PMS installation directory.</p>
+
+			<p>If you need assistance getting a new renderer working you
+				should do the following:</p>
+
+			<blockquote>
+				<ul>
+					<li>Download and install Intel UPnP tools: <a
+						href="http://softwarecommunity.intel.com/isn/downloads/zips/IntelToolsForUPnPTechnology_v2.zip">http://softwarecommunity.intel.com/isn/downloads/zips/IntelToolsForUPnPTechnology_v2.zip</a>
+					</li>
+					<li>Run Device Spy</li>
+					<li>Expand: Device name &gt; ...ConnectionManager...</li>
+					<li>Doubleclick GetProtocolInfo</li>
+					<li>Click Invoke</li>
+					<li>copy Sink response and post to <a
+						href="http://ps3mediaserver.org/forum/viewforum.php?f=15">http://ps3mediaserver.org/forum/viewforum.php?f=15</a>
+					</li>
+				</ul>
+
+				<p>You may also need to provide the Get Device XML (right click
+					on device)</p>
+			</blockquote>
+
+		</dd>
+
+		<dt>I want to run more than one PMS instance in my home network
+			and identify them easily.</dt>
+		<dd>There is no option to rename PMS in the interface. One has to
+			change sourcecode and compile PMS in order to get a renamed version
+			of it.</dd>
+
+		<dt>I installed PMS, started it and PMS found PS3 immediately.
+			Next time I started PMS and PS3 could not be found.</dt>
+		<dd>
+			PMS is programmed in Java. Sometimes the Java Runtime environment
+			(JRE) does not shut down all Java processes properly after stopping
+			PMS. If this happens stop all other Java based applications, start
+			Windows task manager and kill all javaw.exe processes. After that
+			start PMS once again and PS3 will be found. If that happens regularly
+			update to the <a href="http://java.com/en/download/">latest
+				version of Java</a>.
+		</dd>
+
+		<dt>How do I manually set up the Windows firewall</dt>
+		<dd>
+			PMS needs incoming port 5001 TCP/UDP to run properly. Instead of that
+			you can also set up a firewall exception for the Java program
+			"javaw.exe" (JRE/JDK) and "wrapper.exe" if PMS is running as a
+			service. Windows firewall settings can be changed by GUI or command
+			line. For detailed commandline instructions see <a
+				href="http://ps3mediaserver.org/forum/viewtopic.php?f=6&amp;t=3507&amp;start=30#p18802">http://ps3mediaserver.org/forum/viewtopic.php?f=6&amp;t=3507&amp;start=30#p18802</a>.
+		</dd>
+
+		<dt>I enabled and scanned the media library on Windows 7, but I
+			cannot use it on the XMB?</dt>
+		<dd>
+			<p>
+				<strong>Solution 1:</strong> Start PMS as Administrator or change
+				properties of pms.exe to run as Administrator
+			</p>
+			<p>
+				<strong>Solution 2:</strong> Change NTFS permissions on folder
+				C:\Program Files (x86)\PS3 Media Server\database\. To do this, start
+				a commandline as Administrator.
+			</p>
+			<blockquote>
+				<pre>C:\&gt; cd C:\Program Files (x86)\PS3 Media Server
+C:\Program Files (x86)\PS3 Media Server&gt; cacls database
+C:\Program Files (x86)\PS3 Media Server\database NT SERVICE\TrustedInstaller:(ID)F
+                                                 NT SERVICE\TrustedInstaller:(CI)(IO)(ID)F
+                                                 NT AUTHORITY\SYSTEM:(ID)F
+                                                 NT AUTHORITY\SYSTEM:(OI)(CI)(IO)(ID)F
+                                                 BUILTIN\Administrators:(ID)F
+                                                 BUILTIN\Administrators:(OI)(CI)(IO)(ID)F
+                                                 BUILTIN\Users:(ID)R
+                                                 BUILTIN\Users:(OI)(CI)(IO)(ID)(Beschränkter Zugriff:)
+                                                                               GENERIC_READ
+                                                                               GENERIC_EXECUTE
+                                                 CREATOR OWNER:(OI)(CI)(IO)(ID)F
+
+C:\Program Files (x86)\PS3 Media Server&gt; cacls database /T /G Otmanix:C /E
+Bearbeitetes Verzeichnis: C:\Program Files (x86)\PS3 Media Server\database
+Bearbeitete Datei: C:\Program Files (x86)\PS3 Media Server\database\medias.8.log.db
+Bearbeitete Datei: C:\Program Files (x86)\PS3 Media Server\database\medias.data.db
+Bearbeitete Datei: C:\Program Files (x86)\PS3 Media Server\database\medias.index.db
+Bearbeitete Datei: C:\Program Files (x86)\PS3 Media Server\database\medias.trace.db
+
+C:\Program Files (x86)\PS3 Media Server&gt; cacls database
+C:\Program Files (x86)\PS3 Media Server\database og1\otmanix:(OI)(CI)C
+                                                 NT SERVICE\TrustedInstaller:(ID)F
+                                                 NT SERVICE\TrustedInstaller:(CI)(IO)(ID)F
+                                                 NT AUTHORITY\SYSTEM:(ID)F
+                                                 NT AUTHORITY\SYSTEM:(OI)(CI)(IO)(ID)F
+                                                 BUILTIN\Administrators:(ID)F
+                                                 BUILTIN\Administrators:(OI)(CI)(IO)(ID)F
+                                                 BUILTIN\Users:(ID)R
+                                                 BUILTIN\Users:(OI)(CI)(IO)(ID)(Beschränkter Zugriff:)
+                                     GENERIC_READ
+                                     GENERIC_EXECUTE
+                                                 CREATOR OWNER:(OI)(CI)(IO)(ID)F</pre>
+			</blockquote>
+			<p>After that the PMS startup and loading of the media database
+				is fine.</p>
+		</dd>
+
+		<dt>Data corrupted at playback of CD / DVD ISOs or rips</dt>
+		<dd>If you have problems with CD/DVD ISOs or rips you probably
+			use a later version of the MPlayer tool. Streaming will encounter a
+			timeout during building of the MPlayer font cache. You can create the
+			font cache manually by playing a video directly without usage of PMS.
+			In order to do that drag and drop a video file to MPlayer.exe
+			(located in win32 subdirectory). Restart PMS after doing that.</dd>
+
+		<dt>Streaming SiriusXM</dt>
+		<dd>
+			<p>
+				Requirements of course PS3, PS3 Media Server, Windows, LAN and
+				SiriusXMStreamer. (<a href="http://www.permanence.com/sirius/">http://www.permanence.com/sirius/</a>)
+			</p>
+			<p>Once SiriusXMStreamer is set up, run the program and go to
+				"Configuration". Enter your account info for either Siriux/XM (or
+				both). Under "Default Stream Format", set it to "HTTP - M3U".
+				"SiriusXMStreamer Server" is already prefilled so leave it alone.
+				You will notice "TVersity Media Server", but leave that alone since
+				that is not what you are using. Apply the settings and start the
+				Server. Now you will need to make two entries in the "WEB.CONF" file
+				of PMS. Below is an example:</p>
+			<blockquote>
+				<pre>#audio podcasts
+audiofeed.Web,Podcasts=http://podcasts.engadget.com/rss.xml
+audiofeed.Web,Sirius=http://192.168.1.101:51710/sirius/feed?category=&amp;genre=&amp;format=m3u
+audiofeed.Web,XM=http://192.168.1.101:51710/xm/feed?category=&amp;genre=&amp;format=m3u</pre>
+			</blockquote>
+			<p>The IP address will be different depending on how your LAN is
+				configured.</p>
+			<p>To get the correct addresses for your feeds you can either
+				just substitute the static IP of your PC running PS3 Media Server or
+				go to SiriusXMStreamer and click on the "Sirius Channels" and "XM
+				Channels", select "Feeds" then directly to the right using the drop
+				down arrow, choose "Copy URL M3U" and paste the info into your
+				"WEB.CONF.</p>
+			<p>Restart the PS3 Media Server and both feeds should appear
+				under "WEB - Sirius / XM". Somehow the feed shows a total run time
+				of 1:45:32. When it reaches this time lapse, it will automatically
+				move to the next feed.</p>
+
+		</dd>
+
+		<dt>Sometimes Java is causing trouble</dt>
+		<dd>
+			<p>The Java Runtime Environment (JRE) or management of memory for
+				JRE is causing trouble in some systems:</p>
+			<ul>
+				<li>High memory usage</li>
+				<li>Settings are not saved after pressing the save button</li>
+				<li>Java 6 update 18 is reported very often to cause problems</li>
+			</ul>
+			<p>You may change memory usage in "pms.bat" (Windows) or "pms.sh"
+				(Linux). Open file named before with text editor and change value
+				for memory "-Xmx768M" (standard is 768M = 768 Megabyte), save file
+				and start PMS by using the file.</p>
+			<p>Have a look at hanging Java processes ("javaw.exe"). Maybe you
+				have to kill not responding Java processes or restart your computer.</p>
+			<p>Also have a look at the value for transcode buffer. If it is
+				very high (e.g. 600 MB) you only have 168MB left for PMS itself and
+				its database. You may have to increase the -Xmx value. This is also
+				valid if you use plugins like PS3radio which load a lot of radio
+				stations in web.conf. Enabling iTunes in PMS may also cause this
+				problem.</p>
+		</dd>
+
+
+
+	</dl>
+
+
+
+
+
+	<!--  Navigation -->
+	<hr />
+	<ul>
+		<li>Next: <a href="links.html">Useful links</a>
+		</li>
+		<li>Previous: <a href="plugins.html">Plugins</a>
+		</li>
+		<li>Top: <a href="index.html">Help</a>
+		</li>
+	</ul>
+
+</body>
+</html>
