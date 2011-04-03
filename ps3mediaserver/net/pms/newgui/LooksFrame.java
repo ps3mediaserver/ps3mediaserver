@@ -339,26 +339,24 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	}
 	
 	public JComponent buildMain() {
-		 JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
+		JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
 		//tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
-		 st = new StatusTab();
-		 tt = new TracesTab();
-		 tr = new TrTab2(configuration);
-		 nt = new NetworkTab(configuration);
-		 ft = new FoldTab(configuration);
+		st = new StatusTab();
+		tt = new TracesTab();
+		tr = new TrTab2(configuration);
+		nt = new NetworkTab(configuration);
+		ft = new FoldTab(configuration);
 		 
-		 tabbedPane.addTab(Messages.getString("LooksFrame.18"),/* readImageIcon("server-16.png"),*/ st.build()); //$NON-NLS-1$
-		 tabbedPane.addTab(Messages.getString("LooksFrame.19"),/* readImageIcon("mail_new-16.png"),*/ tt.build()); //$NON-NLS-1$
-		 
-		 tabbedPane.addTab(Messages.getString("LooksFrame.20"),/* readImageIcon("advanced-16.png"),*/ nt.build()); //$NON-NLS-1$
-		 tabbedPane.addTab(Messages.getString("LooksFrame.22"), /*readImageIcon("bookmark-16.png"),*/ ft.build()); //$NON-NLS-1$
-		 tabbedPane.addTab(Messages.getString("LooksFrame.21"),/* readImageIcon("player_play-16.png"),*/tr.build()); //$NON-NLS-1$
-		 tabbedPane.addTab(Messages.getString("LooksFrame.23"),/*  readImageIcon("mail_new-16.png"), */new AboutTab().build()); //$NON-NLS-1$
-		 tabbedPane.addTab(Messages.getString("LooksFrame.24"), /* readImageIcon("mail_new-16.png"), */new FAQTab().build()); //$NON-NLS-1$
-		 tabbedPane.addTab(Messages.getString("LooksFrame.25"), /*readImageIcon("documentinfo-16.png"),*/ new LinksTab().build()); //$NON-NLS-1$
+		tabbedPane.addTab(Messages.getString("LooksFrame.18"),/* readImageIcon("server-16.png"),*/ st.build()); //$NON-NLS-1$
+		tabbedPane.addTab(Messages.getString("LooksFrame.19"),/* readImageIcon("mail_new-16.png"),*/ tt.build()); //$NON-NLS-1$
+		tabbedPane.addTab(Messages.getString("LooksFrame.20"),/* readImageIcon("advanced-16.png"),*/ nt.build()); //$NON-NLS-1$
+		tabbedPane.addTab(Messages.getString("LooksFrame.22"), /*readImageIcon("bookmark-16.png"),*/ ft.build()); //$NON-NLS-1$
+		tabbedPane.addTab(Messages.getString("LooksFrame.21"),/* readImageIcon("player_play-16.png"),*/tr.build()); //$NON-NLS-1$
+		tabbedPane.addTab(Messages.getString("LooksFrame.24"), /* readImageIcon("mail_new-16.png"), */new HelpTab().build()); //$NON-NLS-1$
+		tabbedPane.addTab(Messages.getString("LooksFrame.25"), /*readImageIcon("documentinfo-16.png"),*/ new LinksTab().build()); //$NON-NLS-1$
 
-			tabbedPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		tabbedPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		return tabbedPane;
 	}
 	
