@@ -164,20 +164,28 @@ public class MapFile extends DLNAResource {
             return;
         }
         List<File> files = getFileList();
-        if (PMS.getConfiguration().getSortMethod() > 0) {
-            Collections.sort(files, new Comparator<File>() {
-
-                public int compare(File o1, File o2) {
-                    return new Long(o2.lastModified()).compareTo(new Long(o1.lastModified()));
-                }
-            });
-        } else {
-            Collections.sort(files, new Comparator<File>() {
-
-                public int compare(File o1, File o2) {
-                    return o1.getName().compareToIgnoreCase(o2.getName());
-                }
-            });
+        switch (PMS.getConfiguration().getSortMethod()) {
+            case 2: // Sort by modified date, oldest first
+                Collections.sort( files, new Comparator<File>() {
+                    public int compare(File o1, File o2) {
+                        return new Long(o1.lastModified()).compareTo(new Long(o2.lastModified()));
+                    }
+                });
+                break;
+            case 1: // Sort by modified date, newest first
+                Collections.sort( files, new Comparator<File>() {
+                    public int compare(File o1, File o2) {
+                        return new Long(o2.lastModified()).compareTo(new Long(o1.lastModified()));
+                    }
+                });
+                break;
+            default: // sort A-Z
+                Collections.sort(files, new Comparator<File>() {
+                    public int compare(File o1, File o2) {
+                        return o1.getName().compareToIgnoreCase(o2.getName());
+                    }
+                });
+                break;
         }
         for (File f : files) {
             if (f.isDirectory()) {
