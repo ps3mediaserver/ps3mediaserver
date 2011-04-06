@@ -289,26 +289,29 @@ public class PMS {
 					ProcessUtil.waitFor(process);
 				}
 			};
+
 			Thread checkThread = new Thread(r);
 			checkThread.start();
 			checkThread.join(60000);
 			checkThread.interrupt();
 			checkThread = null;
 			
+			// XXX no longer used
 			if (params[0].equals("vlc") && stderrConsumer.getResults().get(0).startsWith("VLC")) //$NON-NLS-1$ //$NON-NLS-2$
 				return true;
+			// XXX no longer used
 			if (params[0].equals("ffmpeg") && stderrConsumer.getResults().get(0).startsWith("FF")) //$NON-NLS-1$ //$NON-NLS-2$
 				return true;
 			int exit = process.exitValue();
 			if (exit != 0) {
 				if (error)
-					minimal("[" + exit + "] Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ..."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					minimal("[" + exit + "] Cannot launch " + name + " / Check the presence of " + params[0] + " ..."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 				return false;
 			}
 			return true;
 		} catch (Exception e) {
 			if (error)
-				error("Cannot launch " + name + " / Check the presence of " + new File(params[0]).getAbsolutePath() + " ...", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				error("Cannot launch " + name + " / Check the presence of " + params[0] + " ...", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return false;
 		}
 	}
