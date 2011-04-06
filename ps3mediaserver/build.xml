@@ -38,12 +38,12 @@
 	    	<zipgroupfileset refid="libs.ref" />
 			
 			<fileset dir="net" includes="**/*.class" excludes="**/*.java" />
-			<fileset dir="." includes="resources/**,net/pms/*.properties" />
+			<fileset dir="." includes="resources/**,net/pms/*.properties,logback.xml" />
 		</jar>
 		
     	<mkdir dir="dist" />
     	<tar destfile="dist/pms-generic-linux-unix-${version}.tgz" compression="gzip">
-    		<tarfileset dir="." mode="777" prefix="pms-linux-${version}" includes="LICENSE.txt,README,CHANGELOG,pms.jar,FAQ,PMS.sh,WEB.conf,documentation/**,renderers/**,plugins/*.txt,linux/**"/>
+    		<tarfileset dir="." mode="777" prefix="pms-linux-${version}" includes="LICENSE.txt,README,CHANGELOG,pms.jar,FAQ,PMS.sh,WEB.conf,documentation/**,renderers/**,plugins/*.txt,linux/**,logback*.xml"/>
     	</tar>
     		
     	<delete dir="classes" />

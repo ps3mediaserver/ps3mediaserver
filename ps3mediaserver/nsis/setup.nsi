@@ -46,6 +46,7 @@ Section "Program Files"
   File "README"
   File "FAQ"
   File "LICENSE.txt"
+  File "logback.xml"
   
   ;Store install folder
   WriteRegStr HKCU "${REG_KEY_SOFTWARE}" "" $INSTDIR
@@ -93,6 +94,7 @@ Section "Uninstall"
   Delete /REBOOTOK "$INSTDIR\FAQ"
   Delete /REBOOTOK "$INSTDIR\LICENSE.txt"
   Delete /REBOOTOK "$INSTDIR\debug.log"
+  Delete /REBOOTOK "$INSTDIR\logback.xml"
   RMDir /REBOOTOK "$INSTDIR"
   
  

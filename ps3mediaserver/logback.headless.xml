@@ -1,0 +1,29 @@
+<configuration debug="true" >
+
+  <!-- This is more of a sample. Tweak as required. -->
+  <!-- See http://logback.qos.ch/manual/index.html for more information -->
+  <!-- on how to configure the Logback logging engine. -->
+
+  <appender name="debug.log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>debug.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>debug.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <!-- keep 7 days' worth of history -->
+      <maxHistory>7</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <!-- This pattern mimics the original PMS debug.log format -->
+      <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} -- %msg%n</pattern>
+    </encoder>
+    <!-- Log all events to debug.log -->
+    <!-- Change the level if the constant logging activity is undesirable -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>ALL</level>
+    </filter>
+  </appender>
+
+  <root level="ALL">
+    <appender-ref ref="debug.log" />
+  </root>
+</configuration>
