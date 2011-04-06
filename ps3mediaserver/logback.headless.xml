@@ -1,4 +1,4 @@
-<configuration debug="true" >
+<configuration debug="true">
 
   <!-- This is more of a sample. Tweak as required. -->
   <!-- See http://logback.qos.ch/manual/index.html for more information -->
@@ -14,7 +14,7 @@
     </rollingPolicy>
     <encoder>
       <!-- This pattern mimics the original PMS debug.log format -->
-      <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} -- %msg%n</pattern>
+      <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
     </encoder>
     <!-- Log all events to debug.log -->
     <!-- Change the level if the constant logging activity is undesirable -->

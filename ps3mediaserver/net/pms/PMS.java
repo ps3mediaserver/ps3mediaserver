@@ -395,6 +395,7 @@ public class PMS {
 		minimal("Working directory: " + cwd);
 		minimal("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
 		minimal("Logging config file: " + LoggingConfigFileLoader.getConfigFilePath()); //$NON-NLS-1$
+		minimal(""); //$NON-NLS-1$
 		
 		RendererConfiguration.loadRendererConfigurations();
 		
@@ -493,7 +494,7 @@ public class PMS {
 		}
 		
 		if (getDatabase() != null) {
-			minimal("A tiny media library admin interface is available at : http://" + server.getHost() + ":" + server.getPort() + "/console/home");
+			minimal("A tiny media library admin interface is available at: http://" + server.getHost() + ":" + server.getPort() + "/console/home");
 		}
 		
 		frame.serverReady();
