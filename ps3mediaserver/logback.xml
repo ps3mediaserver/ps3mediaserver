@@ -1,4 +1,4 @@
-<configuration debug="true" >
+<configuration debug="true">
 
   <!-- See http://logback.qos.ch/manual/index.html for more information -->
   <!-- on how to configure the Logback logging engine. -->
@@ -10,9 +10,9 @@
     <!-- only show event of the user selected level on the gui -->
     <filter class="net.pms.logging.PMSThresholdFilter" />
   
-    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder" >
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
       <!-- This pattern mimics the original PMS debug.log format -->
-          <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} -- %msg%n</pattern>
+          <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
     </encoder>
   </appender>
 
@@ -23,18 +23,18 @@
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>INFO</level>
     </filter>
-    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder" >
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
       <!-- This pattern mimics the original PMS debug.log format -->
-          <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} -- %msg%n</pattern>
+          <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
     </encoder>
   </appender>
 
   <appender name="debug.log" class="ch.qos.logback.core.FileAppender">
     <file>${debugLogPath}debug.log</file>
     <append>false</append>  <!-- Start new debug.log on each application start -->
-    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder" >
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
       <!-- This pattern mimics the original PMS debug.log format -->
-        <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} -- %msg%n</pattern>
+        <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
     </encoder>
   </appender>
 
@@ -52,8 +52,8 @@
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
       <maxFileSize>10MB</maxFileSize>
     </triggeringPolicy>
-    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder" >
-        <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} -- %msg%n</pattern>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+        <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
     </encoder>
   </appender>
 
