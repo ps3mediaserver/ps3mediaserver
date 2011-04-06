@@ -25,12 +25,10 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -101,6 +99,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.OutputTextConsumer;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.io.WinUtils;
+import net.pms.logging.LoggingConfigFileLoader;
 import net.pms.network.HTTPServer;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
@@ -111,6 +110,9 @@ import net.pms.util.PMSUtil;
 import net.pms.util.ProcessUtil;
 import net.pms.util.SystemErrWrapper;
 import net.pms.xmlwise.Plist;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
@@ -128,6 +130,9 @@ public class PMS {
 	 */
 	public static final String VERSION = "1.21.0"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
+	
+	// (innot): The logger used for all logging.
+	public static final Logger logger = LoggerFactory.getLogger(PMS.class);
 
 	// TODO(tcox):  This shouldn't be static
 	private static PmsConfiguration configuration;
@@ -224,24 +229,6 @@ public class PMS {
 	public static SimpleDateFormat sdfDate;
 	public static SimpleDateFormat sdfHour;
 	
-	/** Information level DEBUG. Lowest level.
-	 * @see #message(int, String)
-	 */
-	public static final int DEBUG = 0;
-	/** Information level INFO.
-	 * @see #message(int, String)
-	 */
-	public static final int INFO = 1;
-	/** Information level MINIMAL. Highest level. Messages with this level are always printed to the command line window.
-	 * @see #message(int, String)
-	 */
-	public static final int MINIMAL = 2;
-	
-	private PrintWriter pw;
-	
-	/**
-	 * ArrayList of active processes.
-	 */
 	public ArrayList<Process> currentProcesses = new ArrayList<Process>();
 	
 	private PMS() {
@@ -371,21 +358,6 @@ public class PMS {
 		
 		registry = new WinUtils();
 					
-		File debug = null;
-		try {
-			debug = new File("debug.log"); //$NON-NLS-1$
-			pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
-		} catch (Throwable e) {
-			minimal("Error accessing debug.log"); //$NON-NLS-1$
-			pw = null;
-		} finally {
-			if (pw == null) {
-				minimal("Using temp folder for debug.log"); //$NON-NLS-1$
-				debug = new File(configuration.getTempFolder(), "debug.log"); //$NON-NLS-1$
-				pw = new PrintWriter(new FileWriter(debug)); //$NON-NLS-1$
-			}
-		}
-		
 		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, VERSION);
 		if (System.getProperty("console") == null) {//$NON-NLS-1$
 			frame = new LooksFrame(autoUpdater, configuration);
@@ -422,9 +394,10 @@ public class PMS {
 		String cwd = new File("").getAbsolutePath();
 		minimal("Working directory: " + cwd);
 		minimal("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
+		minimal("Logging config file: " + LoggingConfigFileLoader.getConfigFilePath()); //$NON-NLS-1$
 		
 		RendererConfiguration.loadRendererConfigurations();
-				
+		
 		minimal("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
 		checkProcessExistence("MPlayer", true, getConfiguration().getTempFolder(), configuration.getMplayerPath(), "dummy");
@@ -520,15 +493,15 @@ public class PMS {
 		}
 		
 		if (getDatabase() != null) {
-			minimal("A tiny media library admin interface is available at: http://" + server.getHost() + ":" + server.getPort() + "/console/home");
+			minimal("A tiny media library admin interface is available at : http://" + server.getHost() + ":" + server.getPort() + "/console/home");
 		}
-	
+		
 		frame.serverReady();
 		
 		//UPNPHelper.sendByeBye();
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
-            public void run() {
+			public void run() {
 				try {
 					for(ExternalListener l:ExternalFactory.getExternalListeners()) {
 						l.shutdown();
@@ -545,8 +518,6 @@ public class PMS {
 						}
 					}
 					get().getServer().stop();
-					if (pw != null)
-						pw.close();
 					Thread.sleep(500);
 				} catch (Exception e) { }
 			}
@@ -559,7 +530,7 @@ public class PMS {
 		
 		return true;
 	}
-
+	
 	private static final String PMSDIR = "\\PMS\\";
 
 	
@@ -593,7 +564,7 @@ public class PMS {
 
 		rootFolder.browse(files);
 		rootFolder.browse(MapFileConfiguration.parse(configuration.getVirtualFolders()));
-
+			
 		String strAppData = System.getenv("APPDATA");
 
 		if (Platform.isWindows() && strAppData != null) {
@@ -601,9 +572,9 @@ public class PMS {
 		} else {
 			webConfPath = "WEB.conf";
 		}
-
+		
 		File webConf = new File(webConfPath); //$NON-NLS-1$
-
+		
 		if (webConf.exists()) {
 			try {
 				LineNumberReader br = new LineNumberReader(new InputStreamReader(new FileInputStream(webConf), "UTF-8")); //$NON-NLS-1$
@@ -623,38 +594,38 @@ public class PMS {
 								keys[0].equals("videostream")
 							) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 								String values [] = parseFeedValue(value);
-								DLNAResource parent = null;
-								if (keys[1] != null) {
-									StringTokenizer st = new StringTokenizer(keys[1], ","); //$NON-NLS-1$
+							DLNAResource parent = null;
+							if (keys[1] != null) {
+								StringTokenizer st = new StringTokenizer(keys[1], ","); //$NON-NLS-1$
 									DLNAResource currentRoot = rootFolder;
-									while (st.hasMoreTokens()) {
-										String folder = st.nextToken();
-										parent = currentRoot.searchByName(folder);
-										if (parent == null) {
-											parent = new VirtualFolder(folder, ""); //$NON-NLS-1$
-											currentRoot.addChild(parent);
-										}
-										currentRoot = parent;
+								while (st.hasMoreTokens()) {
+									String folder = st.nextToken();
+									parent = currentRoot.searchByName(folder);
+									if (parent == null) {
+										parent = new VirtualFolder(folder, ""); //$NON-NLS-1$
+										currentRoot.addChild(parent);
 									}
-								}
-								if (parent == null)
-									parent = rootFolder;
-								if (keys[0].equals("imagefeed")) { //$NON-NLS-1$
-									parent.addChild(new ImagesFeed(values[0]));
-								} else if (keys[0].equals("videofeed")) { //$NON-NLS-1$
-									parent.addChild(new VideosFeed(values[0]));
-								} else if (keys[0].equals("audiofeed")) { //$NON-NLS-1$
-									parent.addChild(new AudiosFeed(values[0]));
-								} else if (keys[0].equals("audiostream")) { //$NON-NLS-1$
-									parent.addChild(new WebAudioStream(values[0], values[1], values[2]));
-								} else if (keys[0].equals("videostream")) { //$NON-NLS-1$
-									parent.addChild(new WebVideoStream(values[0], values[1], values[2]));
+									currentRoot = parent;
 								}
 							}
-						// catch exception here and go with parsing
-						} catch (ArrayIndexOutOfBoundsException e) {
-							minimal("Error at line " + br.getLineNumber() + " of WEB.conf: " + e.getMessage()); //$NON-NLS-1$
+							if (parent == null)
+									parent = rootFolder;
+							if (keys[0].equals("imagefeed")) { //$NON-NLS-1$
+								parent.addChild(new ImagesFeed(values[0]));
+							} else if (keys[0].equals("videofeed")) { //$NON-NLS-1$
+								parent.addChild(new VideosFeed(values[0]));
+							} else if (keys[0].equals("audiofeed")) { //$NON-NLS-1$
+								parent.addChild(new AudiosFeed(values[0]));
+							} else if (keys[0].equals("audiostream")) { //$NON-NLS-1$
+								parent.addChild(new WebAudioStream(values[0], values[1], values[2]));
+							} else if (keys[0].equals("videostream")) { //$NON-NLS-1$
+								parent.addChild(new WebVideoStream(values[0], values[1], values[2]));
+							}
 						}
+						// catch exception here and go with parsing
+	                  } catch (ArrayIndexOutOfBoundsException e) {
+							minimal("Error at line " + br.getLineNumber() + " of WEB.conf: " + e.getMessage()); //$NON-NLS-1$
+	                  }
 					}
 				}
 				br.close();
@@ -736,7 +707,7 @@ public class PMS {
  				}
 			} catch (Exception e) {
 				error("Something went wrong with the iPhoto Library scan: ",e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			}
+               }
 		}
 	}
 	
@@ -844,7 +815,7 @@ public class PMS {
 	 * @param renderer {@link RendererConfiguration} Which media renderer to add this folder to.
 	 * @see PMS#manageRoot(RendererConfiguration)
 	 */
-
+	
 	public void addVideoSettingssFolder(RendererConfiguration renderer) {
 		if (!configuration.getHideVideoSettings()) {
 			VirtualFolder vf = new VirtualFolder(Messages.getString("PMS.37"), null); //$NON-NLS-1$
@@ -853,7 +824,7 @@ public class PMS {
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) { //$NON-NLS-1$
 				@Override
-                public boolean enable() {
+				public boolean enable() {
 					configuration.setMencoderNoOutOfSync(!configuration.isMencoderNoOutOfSync());
 					return configuration.isMencoderNoOutOfSync();
 				}
@@ -861,7 +832,7 @@ public class PMS {
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.14"), configuration.isMencoderMuxWhenCompatible()) {  //$NON-NLS-1$
 				@Override
-                public boolean enable() {
+				public boolean enable() {
 					configuration.setMencoderMuxWhenCompatible(!configuration.isMencoderMuxWhenCompatible());
 					
 					return  configuration.isMencoderMuxWhenCompatible();
@@ -870,7 +841,7 @@ public class PMS {
 			
 			vf.addChild(new VirtualVideoAction("  !!-- Fix 23.976/25fps A/V Mismatch --!!", getConfiguration().isFix25FPSAvMismatch()) { //$NON-NLS-1$
 				@Override
-                public boolean enable() {
+				public boolean enable() {
 					getConfiguration().setMencoderForceFps(!getConfiguration().isFix25FPSAvMismatch());
 					getConfiguration().setFix25FPSAvMismatch(!getConfiguration().isFix25FPSAvMismatch());
 					return getConfiguration().isFix25FPSAvMismatch();
@@ -880,7 +851,7 @@ public class PMS {
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.4"), configuration.isMencoderYadif()) { //$NON-NLS-1$
 				@Override
-                public boolean enable() {
+				public boolean enable() {
 					configuration.setMencoderYadif(!configuration.isMencoderYadif());
 					
 					return  configuration.isMencoderYadif();
@@ -889,7 +860,7 @@ public class PMS {
 			
 			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.10"), configuration.isMencoderDisableSubs()) { //$NON-NLS-1$
 				@Override
-                public boolean enable() {
+				public boolean enable() {
 					boolean oldValue = configuration.isMencoderDisableSubs();
 					boolean newValue = ! oldValue;
 					configuration.setMencoderDisableSubs( newValue );
@@ -899,7 +870,7 @@ public class PMS {
 			
 			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.6"), configuration.getUseSubtitles()) { //$NON-NLS-1$
 				@Override
-                public boolean enable() {
+				public boolean enable() {
 					boolean oldValue = configuration.getUseSubtitles();
 					boolean newValue = ! oldValue;
 					configuration.setUseSubtitles( newValue );
@@ -909,7 +880,7 @@ public class PMS {
 			
 			vfSub.addChild(new VirtualVideoAction(Messages.getString("MEncoderVideo.36"), configuration.isMencoderAssDefaultStyle()) { //$NON-NLS-1$
 				@Override
-                public boolean enable() {
+				public boolean enable() {
 					boolean oldValue = configuration.isMencoderAssDefaultStyle();
 					boolean newValue = ! oldValue;
 					configuration.setMencoderAssDefaultStyle( newValue );
@@ -919,7 +890,7 @@ public class PMS {
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.7"), configuration.getSkipLoopFilterEnabled()) { //$NON-NLS-1$
 				@Override
-                public boolean enable() {
+				public boolean enable() {
 					configuration.setSkipLoopFilterEnabled( !configuration.getSkipLoopFilterEnabled() );
 					return configuration.getSkipLoopFilterEnabled();
 				}
@@ -927,7 +898,7 @@ public class PMS {
 			
 			vf.addChild(new VirtualVideoAction(Messages.getString("PMS.27"), true) { //$NON-NLS-1$
 				@Override
-                public boolean enable() {
+				public boolean enable() {
 					try {
 						configuration.save();
 					} catch (ConfigurationException e) {}
@@ -937,7 +908,7 @@ public class PMS {
 
 			vf.addChild(new VirtualVideoAction(Messages.getString("LooksFrame.12"), true) { //$NON-NLS-1$
 				@Override
-                public boolean enable() {
+				public boolean enable() {
 					try {
 						get().reset();
 					} catch (IOException e) {}
@@ -1178,7 +1149,7 @@ public class PMS {
 		directories.toArray(f);
 		return f;
 	}
-	
+
 	/**Restarts the servers. The trigger is either a button on the main PMS window or via
 	 * an action item added via {@link PMS#addVideoSettingssFolder(RendererConfiguration).
 	 * @throws IOException
@@ -1201,31 +1172,36 @@ public class PMS {
 		UPNPHelper.sendAlive();
 	}
 	
+	// (innot): A note on Level names: PMS uses the following logging levels
+	// in ascending order: DEBUG, INFO, TRACE/minimal, ERROR
+	// The SLF4J logging API uses TRACE, DEBUG, INFO, WARN and ERROR
+	// So the levels get remapped in the following convenience methods.
+	// TODO: remove these methods and replace their callers with direct 
+	// calls to the SLF4J API. 
 	/**Adds a message to the debug stream, or {@link System#out} in case the
 	 * debug stream has not been set up yet.
 	 * @param msg {@link String} to be added to the debug stream.
 	 */
 	public static void debug(String msg) {
-		if (instance != null)
-			instance.message(DEBUG, msg);
-		else
-			System.out.println(msg);
+		if (logger != null)
+			logger.trace(msg);
 	}
+
 	/**Adds a message to the info stream.
 	 * @param msg {@link String} to be added to the info stream.
 	 */
 	public static void info(String msg) {
-		if (instance != null)
-			instance.message(INFO, msg);
+		if (logger != null)
+			logger.debug(msg);
 	}
-	
+
 	/**Adds a message to the minimal stream. This stream is also
 	 * shown in the Trace tab.
 	 * @param msg {@link String} to be added to the minimal stream.
 	 */
 	public static void minimal(String msg) {
-		if (instance != null)
-			instance.message(MINIMAL, msg);
+		if (logger != null)
+			logger.info(msg);
 	}
 	
 	/**Adds a message to the error stream. This is usually called by
@@ -1234,78 +1210,8 @@ public class PMS {
 	 * @param t {@link Throwable} comes from an {@link Exception} 
 	 */
 	public static void error(String msg, Throwable t) {
-		if (instance != null)
-			instance.message(msg, t);
-	}
-	
-	/**Print a message in a given channel. The channels can be following:
-	 * <ul><li>{@link #MINIMAL} for informative messages that the user needs to be aware of. They are always
-	 * submitted to {@link System#out}, so they are shown to the command line window if one exists.
-	 * <li>{@link #INFO} for informative messages.
-	 * <li>{@link #DEBUG} for debug messages
-	 * </ul>
-	 * The debug level setting will state which ones of the three levels are being shown.
-	 * @param l {@link int} is the output text channel to use.
-	 * @param message {@link String} is the message to output
-	 */
-	private void message(int l, String message) {
-		
-			String name = Thread.currentThread().getName();
-			if (name != null && message != null) {
-				String lev = "DEBUG "; //$NON-NLS-1$
-				if (l == 1)
-					lev = "INFO  "; //$NON-NLS-1$
-				if (l == 2)
-					lev = "TRACE "; //$NON-NLS-1$
-				
-				
-				message = "[" + name + "] " + lev + sdfHour.format(new Date(System.currentTimeMillis())) + " " + message;  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				if (l == 2)
-					System.out.println(message);
-				if (l >= configuration.getLoggingLevel()) {
-					
-					if (frame != null) {
-						frame.append(message.trim() + "\n"); //$NON-NLS-1$
-					}
-				}
-				if (pw != null) {
-					pw.println(message);
-					pw.flush();
-				}
-			}
-		
-	}
-	
-	/**Handles the display of an error message. It is always logged and is shown in the command line window if available.
-	 * @param error {@link String} to be displayed
-	 * @param t {@link Throwable} from the {@link Exception} that has the error description.
-	 */
-	private void message(String error, Throwable t) {
-		
-			String name = Thread.currentThread().getName();
-			if (error != null) {
-				String throwableMsg = ""; //$NON-NLS-1$
-				if (t != null)
-					throwableMsg = ": " + t.getMessage(); //$NON-NLS-1$
-				error = "[" + name + "] " + sdfHour.format(new Date(System.currentTimeMillis())) + " " + error + throwableMsg; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			}
-			if (error != null) {
-				if (pw != null)
-					pw.println(error);
-				if (frame != null) {
-					frame.append(error.trim() + "\n"); //$NON-NLS-1$
-				}
-			}
-			if (t != null && pw != null) {
-				t.printStackTrace(pw);
-				t.printStackTrace();
-			}
-			if (pw != null)
-				pw.flush();
-			
-			if (error != null)
-				System.err.println(error);
-		
+		if (logger != null)
+			logger.error(msg,t);
 	}
 
 	/**Universally Unique Identifier used in the UPNP server.
@@ -1449,9 +1355,15 @@ public class PMS {
 			if (System.getProperty("noconsole") == null) //$NON-NLS-1$
 				System.setProperty("console", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-
+		
 		configuration = new PmsConfiguration();
+
+		// Load the (optional) logback config file. This has to be called after 'new PmsConfiguration'
+		// as the logging starts immediately and some filters need the PmsConfiguration.
+		LoggingConfigFileLoader.load();	
+
 		get();
+
 		try {
 			// let's allow us time to show up serious errors in the GUI before quitting
 			Thread.sleep(60000);
