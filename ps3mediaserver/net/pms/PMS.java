@@ -126,7 +126,7 @@ public class PMS {
 	 */
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
 	/**
-	 * Version showed in the UPNP XML descriptor and logs.
+	 * Version showed in the UPnP XML descriptor and logs.
 	 */
 	public static final String VERSION = "1.21.0"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
@@ -196,11 +196,10 @@ public class PMS {
 		} else if (mediarenderer == HTTPResource.XBOX && !foundRenderers.contains(HTTPResource.PS3)) {
 			frame.setStatusCode(0, "Xbox found", "xbox360.png"); //$NON-NLS-1$ //$NON-NLS-2$
 		}*/
-		
 	}
-	
+
 	/**
-	 * HTTP server that serves the XML files needed by UPNP server and the media files.
+	 * HTTP server that serves the XML files needed by UPnP server and the media files.
 	 */
 	private HTTPServer server;
 	/**
@@ -352,13 +351,11 @@ public class PMS {
 	
 	
 	/**Initialisation procedure for PMS.
-	 * @return true if the server has been init correctly. false if the server could
-	 * not be set to listen to the UPNP port.
+	 * @return true if the server has been initialized correctly. false if the server could
+	 * not be set to listen on the UPnP port.
 	 * @throws Exception
 	 */
 	private boolean init () throws Exception {
-		
-		
 		registry = new WinUtils();
 					
 		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, VERSION);
@@ -475,7 +472,7 @@ public class PMS {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {}
 				boolean ps3found = false;
-				for(RendererConfiguration r:foundRenderers) {
+				for (RendererConfiguration r:foundRenderers) {
 					if (r.isPS3())
 						ps3found = true;
 				}
@@ -536,7 +533,6 @@ public class PMS {
 	}
 	
 	private static final String PMSDIR = "\\PMS\\";
-
 	
 	/**Creates a new Root folder for a given configuration. It adds following folders in this order:
 	 * <ol><li>Directory folders as stated in the configuration pane
@@ -1158,6 +1154,8 @@ public class PMS {
 	 * an action item added via {@link PMS#addVideoSettingssFolder(RendererConfiguration).
 	 * @throws IOException
 	 */
+	// XXX: don't try to optimize this by reusing the same server instance.
+	// see the comment above HTTPServer.stop()
 	public void reset() throws IOException {
 		debug("Waiting 1 second..."); //$NON-NLS-1$
 		UPNPHelper.sendByeBye();
@@ -1218,12 +1216,12 @@ public class PMS {
 			logger.error(msg,t);
 	}
 
-	/**Universally Unique Identifier used in the UPNP server.
+	/**Universally Unique Identifier used in the UPnP server.
 	 * 
 	 */
 	private String uuid;
 	
-	/**Creates a new {@link #uuid} for the UPNP server to use. Tries to follow the RFCs for creating the UUID based on the link MAC address.
+	/**Creates a new {@link #uuid} for the UPnP server to use. Tries to follow the RFCs for creating the UUID based on the link MAC address.
 	 * Defaults to a random one if that method is not available.
 	 * @return {@link String} with an Universally Unique Identifier.
 	 */
@@ -1265,7 +1263,7 @@ public class PMS {
 		//return "uuid:1234567890TOTO::";
 	}
 	
-	/**Returns the user friendly name of the UPNP server. 
+	/**Returns the user friendly name of the UPnP server. 
 	 * @return {@link String} with the user friendly name.
 	 */
 	public String getServerName() {
