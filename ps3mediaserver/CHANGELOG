@@ -3,7 +3,7 @@ Changelog:
 
 15/04/2011 - 1.21.1
 
-	Rollback MEncoder for Windows to fix critical subtitle bug
+	Rollback MPlayer for Windows to fix critical subtitle bug
 	Add extra information to Windows uninstaller
 	Fix NPE when toggling HTTP Engine V2
 
