@@ -1,6 +1,12 @@
 Changelog:
 ==========
 
+15/04/2011 - 1.21.1
+
+	Rollback MEncoder for Windows to fix critical subtitle bug
+	Add extra information to Windows uninstaller
+	Fix NPE when toggling HTTP Engine V2
+
 12/04/2011 - 1.21.0
 
 	Support new devices: Android, Nokia N900
