@@ -33,7 +33,6 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
-import net.pms.PMS;
 
 public class VideoLanVideoStreaming extends Player {
 	private final PmsConfiguration configuration;

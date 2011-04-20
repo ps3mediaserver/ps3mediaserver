@@ -73,7 +73,7 @@ public final class Plist
 			= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	private static final char[] BASE64_CHARS = BASE64_STRING.toCharArray();
 	private final DateFormat m_dateFormat;
-	private final Map<Class, ElementType> m_simpleTypes;
+	private final Map<Class<?>, ElementType> m_simpleTypes;
 
 	/**
 	 * Convert a nested {@code map<String, Object>} as a plist xml string
@@ -188,7 +188,7 @@ public final class Plist
 	{
 		m_dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		m_dateFormat.setTimeZone(TimeZone.getTimeZone("Z"));
-		m_simpleTypes = new HashMap<Class, ElementType>();
+		m_simpleTypes = new HashMap<Class<?>, ElementType>();
 		m_simpleTypes.put(Integer.class, ElementType.INTEGER);
 		m_simpleTypes.put(Byte.class, ElementType.INTEGER);
 		m_simpleTypes.put(Short.class, ElementType.INTEGER);
@@ -232,11 +232,11 @@ public final class Plist
 		}
 		if (o instanceof Map)
 		{
-			return toXmlDict((Map) o);
+			return toXmlDict((Map<String, Object>) o);
 		}
 		else if (o instanceof List)
 		{
-			return toXmlArray((List) o);
+			return toXmlArray((List<?>) o);
 		}
 		else throw new RuntimeException("Cannot use " + o.getClass() + " in plist.");
 	}
@@ -247,7 +247,7 @@ public final class Plist
 	 * @param list the list to convert.
 	 * @return an <tt>XmlElement</tt> representing the list.
 	 */
-	private XmlElement toXmlArray(List list)
+	private XmlElement toXmlArray(List<?> list)
 	{
 		XmlElement array = new XmlElement("array");
 		for (Object o : list)

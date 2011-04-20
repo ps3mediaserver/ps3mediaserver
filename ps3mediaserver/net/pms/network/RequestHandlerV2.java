@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
+import java.nio.charset.Charset;
 import java.util.StringTokenizer;
 
 import net.pms.PMS;
@@ -233,7 +234,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		 response.setHeader(
 		      HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
 		      response.setContent(ChannelBuffers.copiedBuffer(
-	                "Failure: " + status.toString() + "\r\n", "UTF-8"));
+	                "Failure: " + status.toString() + "\r\n",  Charset.forName("UTF-8")));
 		
 	     // Close the connection as soon as the error message is sent.
 		        ctx.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);

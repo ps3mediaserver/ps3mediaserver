@@ -36,7 +36,6 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -662,16 +661,15 @@ public class PMS {
 	 * TODO: Requirements for iPhoto.
 	 * @param renderer
 	 */
-	@SuppressWarnings("unchecked")
 	public void addiPhotoFolder(RendererConfiguration renderer) {
 		if (Platform.isMac()) {
 
 			Map<String, Object> iPhotoLib;
-			ArrayList ListofRolls;
-			HashMap Roll;
-			HashMap PhotoList;
-			HashMap Photo;
-			ArrayList RollPhotos;
+			ArrayList<?> ListofRolls;
+			HashMap<?, ?> Roll;
+			HashMap<?, ?> PhotoList;
+			HashMap<?, ?> Photo;
+			ArrayList<?> RollPhotos;
 
 			try {
  				Process prc = Runtime.getRuntime().exec("defaults read com.apple.iApps iPhotoRecentDatabases");  
@@ -687,15 +685,15 @@ public class PMS {
  				if (line != null) {
 	 				URI tURI = new URI(line);
 	 				iPhotoLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile(), System.getProperty("file.encoding")));    // loads the (nested) properties.
-					PhotoList = (HashMap) iPhotoLib.get("Master Image List");	// the list of photos
-					ListofRolls = (ArrayList) iPhotoLib.get("List of Rolls");	// the list of events (rolls)
+					PhotoList = (HashMap<?, ?>) iPhotoLib.get("Master Image List");	// the list of photos
+					ListofRolls = (ArrayList<?>) iPhotoLib.get("List of Rolls");	// the list of events (rolls)
 					VirtualFolder vf = new VirtualFolder("iPhoto Library",null); //$NON-NLS-1$
 					for (Object item : ListofRolls) {
-						Roll = (HashMap) item;
+						Roll = (HashMap<?, ?>) item;
 						VirtualFolder rf = new VirtualFolder(Roll.get("RollName").toString(),null); //$NON-NLS-1$
-						RollPhotos = (ArrayList) Roll.get("KeyList");	// list of photos in an event (roll)
+						RollPhotos = (ArrayList<?>) Roll.get("KeyList");	// list of photos in an event (roll)
 						for (Object p : RollPhotos) {
-							Photo = (HashMap) PhotoList.get(p);
+							Photo = (HashMap<?, ?>) PhotoList.get(p);
 							RealFile file = new RealFile(new File(Photo.get("ImagePath").toString()));
 		       	                         	rf.addChild(file);
 						}
@@ -768,31 +766,30 @@ public class PMS {
 	 * @see PMS#manageRoot(RendererConfiguration)
 	 * @see PMS#getiTunesFile(boolean)
 	 */
-	@SuppressWarnings("unchecked")
 	public void addiTunesFolder(RendererConfiguration renderer) {
 		if (Platform.isMac() || Platform.isWindows()) {
 			Map<String, Object> iTunesLib;
-			ArrayList Playlists;
-			HashMap Playlist;
-			HashMap Tracks;
-			HashMap Track;
-			ArrayList PlaylistTracks;
+			ArrayList<?> Playlists;
+			HashMap<?, ?> Playlist;
+			HashMap<?, ?> Tracks;
+			HashMap<?, ?> Track;
+			ArrayList<?> PlaylistTracks;
 	
 			try {
 				String iTunesFile = getiTunesFile(Platform.isMac());
 				if(iTunesFile != null && (new File(iTunesFile)).exists()) {
 					iTunesLib = Plist.load(URLDecoder.decode(iTunesFile, System.getProperty("file.encoding")));     // loads the (nested) properties.
-					Tracks = (HashMap) iTunesLib.get("Tracks");       // the list of tracks
-					Playlists = (ArrayList) iTunesLib.get("Playlists");       // the list of Playlists
+					Tracks = (HashMap<?, ?>) iTunesLib.get("Tracks");       // the list of tracks
+					Playlists = (ArrayList<?>) iTunesLib.get("Playlists");       // the list of Playlists
 					VirtualFolder vf = new VirtualFolder("iTunes Library",null); //$NON-NLS-1$
 					for (Object item : Playlists) {
-						Playlist = (HashMap) item;
+						Playlist = (HashMap<?, ?>) item;
 						VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(),null); //$NON-NLS-1$
-						PlaylistTracks = (ArrayList) Playlist.get("Playlist Items");   // list of tracks in a playlist
+						PlaylistTracks = (ArrayList<?>) Playlist.get("Playlist Items");   // list of tracks in a playlist
 						if (PlaylistTracks != null) {
 							for (Object t : PlaylistTracks) {
-								HashMap td = (HashMap) t;
-								Track = (HashMap) Tracks.get(td.get("Track ID").toString());
+								HashMap<?, ?> td = (HashMap<?, ?>) t;
+								Track = (HashMap<?, ?>) Tracks.get(td.get("Track ID").toString());
 								if (Track.get("Location").toString().startsWith("file://")) {
 									URI tURI2 = new URI(Track.get("Location").toString());
 									RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
