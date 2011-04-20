@@ -284,8 +284,7 @@ public class FormatConfiguration {
         return null;
     }
     
-    @SuppressWarnings("unchecked")
-	public FormatConfiguration(List supported) {
+	public FormatConfiguration(List<?> supported) {
     	list = new ArrayList<Supports>();
         for(Object line:supported) {
         	if (line != null) {
