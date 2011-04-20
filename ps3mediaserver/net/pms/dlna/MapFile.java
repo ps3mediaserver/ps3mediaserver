@@ -21,6 +21,7 @@ package net.pms.dlna;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +35,12 @@ import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.network.HTTPResource;
 
 public class MapFile extends DLNAResource {
+    private static final Collator collator;
+
+    static {
+        collator = Collator.getInstance();
+        collator.setStrength(Collator.PRIMARY);
+    }
 
     // <editor-fold desc="Private Fields">
     private List<File> discoverable;
@@ -47,7 +54,6 @@ public class MapFile extends DLNAResource {
     public MapFile() {
         this.conf = new MapFileConfiguration();
         lastmodified = 0;
-
     }
 
     public MapFile(MapFileConfiguration conf) {
@@ -182,7 +188,7 @@ public class MapFile extends DLNAResource {
             default: // sort A-Z
                 Collections.sort(files, new Comparator<File>() {
                     public int compare(File o1, File o2) {
-                        return o1.getName().compareToIgnoreCase(o2.getName());
+                        return collator.compare(o1.getName(), o2.getName());
                     }
                 });
                 break;
@@ -257,6 +263,7 @@ public class MapFile extends DLNAResource {
                 }
             }
         }
+
         for (File f : addedFiles) {
             manageFile(f);
         }
@@ -264,7 +271,7 @@ public class MapFile extends DLNAResource {
         for (MapFileConfiguration f : this.conf.getChildren()) {
             addChild(new MapFile(f));
         }
-        
+
         return !removedFiles.isEmpty() || !addedFiles.isEmpty();
     }
 
@@ -302,14 +309,11 @@ public class MapFile extends DLNAResource {
     @Override
     public boolean isFolder() {
         return true;
-
-
     }
 
     @Override
     public InputStream getInputStream() throws IOException {
         return null;
-
     }
 
     @Override
