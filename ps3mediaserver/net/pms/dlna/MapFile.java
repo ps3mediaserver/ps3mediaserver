@@ -171,21 +171,28 @@ public class MapFile extends DLNAResource {
         }
         List<File> files = getFileList();
         switch (PMS.getConfiguration().getSortMethod()) {
+            case 3: // Case-insensitive ASCIIbetical sort
+                Collections.sort(files, new Comparator<File>() {
+                    public int compare(File o1, File o2) {
+                        return o1.getName().compareToIgnoreCase(o2.getName());
+                    }
+                });
+                break;
             case 2: // Sort by modified date, oldest first
-                Collections.sort( files, new Comparator<File>() {
+                Collections.sort(files, new Comparator<File>() {
                     public int compare(File o1, File o2) {
                         return new Long(o1.lastModified()).compareTo(new Long(o2.lastModified()));
                     }
                 });
                 break;
             case 1: // Sort by modified date, newest first
-                Collections.sort( files, new Comparator<File>() {
+                Collections.sort(files, new Comparator<File>() {
                     public int compare(File o1, File o2) {
                         return new Long(o2.lastModified()).compareTo(new Long(o1.lastModified()));
                     }
                 });
                 break;
-            default: // sort A-Z
+            default: // locale-sensitive A-Z
                 Collections.sort(files, new Comparator<File>() {
                     public int compare(File o1, File o2) {
                         return collator.compare(o1.getName(), o2.getName());

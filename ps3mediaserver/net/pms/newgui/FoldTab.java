@@ -467,7 +467,7 @@ public class FoldTab {
         });
         builder.add(iphoto,          cc.xyw(4,  17, 3));
        
-        final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "0", "1", "2" }, new Object[] { Messages.getString("FoldTab.15"), Messages.getString("FoldTab.16"), Messages.getString("FoldTab.17") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] { "0", "3", "1", "2" }, new Object[] { Messages.getString("FoldTab.15"), Messages.getString("FoldTab.20"), Messages.getString("FoldTab.16"), Messages.getString("FoldTab.17") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
         sortmethod = new JComboBox(kcbm);
         sortmethod.setEditable(false);
 
