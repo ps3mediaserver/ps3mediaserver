@@ -20,8 +20,10 @@ package net.pms.newgui;
 
 import java.awt.Font;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
@@ -145,21 +147,52 @@ public class StatusTab {
 
 	public void addRendererIcon(int code, String msg, String icon) {
 		BufferedImage bi = null;
+
 		if (icon != null) {
 			try {
-				InputStream is = LooksFrame.class.getResourceAsStream("/resources/images/clients/" + icon);
+				InputStream is = null;
+
+				/*
+					check for a custom icon file first
+
+					the file can be a) the name of a file in the renderers directory b) a path relative
+					to the PMS working directory or c) an absolute path. If no file is found,
+					the built-in resource (if any) is used instead.
+
+					The File constructor does the right thing for the relative and absolute path cases,
+					so we only need to detect the bare filename case.
+
+					RendererIcon = foo.png // e.g. $PMS/renderers/foo.png
+					RendererIcon = images/foo.png // e.g. $PMS/images/foo.png
+					RendererIcon = /path/to/foo.png
+				*/
+
+				File f = new File(icon);
+
+				if (!f.isAbsolute() && f.getParent() == null) // filename
+					f = new File("renderers", icon);
+
+				if (f.exists() && f.isFile())
+					is = new FileInputStream(f);
+
+				if (is == null) {
+					is = LooksFrame.class.getResourceAsStream("/resources/images/clients/" + icon);
+				}
+
 				if (is == null) {
 					is = LooksFrame.class.getResourceAsStream("/renderers/" + icon);
 				}
+
 				if (is != null) {
 					bi = ImageIO.read(is); //$NON-NLS-1$
 				}
-			} catch (IOException e) {
-			}
+			} catch (IOException e) { }
 		}
+
 		if (bi != null) {
 			renderers[numRenderers].set(bi);
 		}
+
 		rendererLabels[numRenderers].setText(msg);
 		numRenderers++;
 	}
