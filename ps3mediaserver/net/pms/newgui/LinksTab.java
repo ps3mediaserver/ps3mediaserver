@@ -74,7 +74,7 @@ public class LinksTab {
 	       
 	        builder.addLabel(Messages.getString("LinksTab.5"),  cc.xy(2,  5, "center, fill")); //$NON-NLS-1$ //$NON-NLS-2$
 	        
-        	final LinkMouseListener tsMuxerLink = new LinkMouseListener("tsMuxer (c) SMartlabs", 
+        	final LinkMouseListener tsMuxerLink = new LinkMouseListener("tsMuxeR (c) Smartlabs", 
         			"http://www.smlabs.net/tsmuxer_en.html");
 	        builder.addLabel(tsMuxerLink.getLabel(),  
 	        		cc.xy(2, 7, "center, fill")).addMouseListener(tsMuxerLink);

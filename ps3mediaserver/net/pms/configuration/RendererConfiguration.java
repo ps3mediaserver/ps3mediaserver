@@ -551,7 +551,7 @@ public class RendererConfiguration {
 		if (isMediaParserV2())
 			muxCompatible = getFormatConfiguration().match(FormatConfiguration.MPEGTS, FormatConfiguration.H264, null) != null;
 		if (Platform.isMac() && System.getProperty("os.version") != null && System.getProperty("os.version").contains("10.4."))
-			muxCompatible = false; // no tsMuxer for 10.4 (yet?)
+			muxCompatible = false; // no tsMuxeR for 10.4 (yet?)
 		return muxCompatible;
 	}
 	
