@@ -144,7 +144,7 @@ public class AviDemuxerInputStream extends InputStream {
 					//Thread.sleep(150);
 					realIS = tsPipe.getInputStream();
 					ProcessUtil.waitFor(process);
-					PMS.debug("tsMuxer Muxing finished"); //$NON-NLS-1$
+					PMS.debug("tsMuxeR muxing finished"); //$NON-NLS-1$
 				} catch (Exception e) {
 					PMS.error(null, e);
 				}
@@ -161,7 +161,7 @@ public class AviDemuxerInputStream extends InputStream {
 				}
 			}
 		};
-		PMS.debug("Launching tsMuxer muxing"); //$NON-NLS-1$
+		PMS.debug("Launching tsMuxeR muxing"); //$NON-NLS-1$
 		new Thread(r).start();
 		parsing = new Thread(r2);
 		PMS.debug("Ready to mux"); //$NON-NLS-1$
