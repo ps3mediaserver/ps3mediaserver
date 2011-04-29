@@ -424,7 +424,7 @@ public class TrTab2 {
         cmp = (JComponent) cmp.getComponent(0);
         cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
         
-        channels = new JComboBox(new Object [] {"2 channels Stereo", "6 channels 5.1" /*, "8 channels 7.1" */ }); // 7.1 not supported by Mplayer :\ //$NON-NLS-1$ //$NON-NLS-2$
+        channels = new JComboBox(new Object [] {"2 channels (Stereo)", "6 channels (5.1)" /*, "8 channels 7.1" */ }); // 7.1 not supported by Mplayer :\ //$NON-NLS-1$ //$NON-NLS-2$
         channels.setEditable(false);
         if (PMS.getConfiguration().getAudioChannelCount() == 2)
      	   channels.setSelectedIndex(0);
