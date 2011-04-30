@@ -249,6 +249,7 @@ public class Request extends HTTPResource {
 			output(output, "Expires: " + getFUTUREDATE() + " GMT");
 			inputStream = getResourceInputStream(argument);
 		} else if ((method.equals("GET") || method.equals("HEAD")) && (argument.equals("description/fetch") || argument.endsWith("1.0.xml"))) {
+			String profileName = PMS.getConfiguration().getProfileName();
 			output(output, CONTENT_TYPE);
 			output(output, "Cache-Control: no-cache");
 			output(output, "Expires: 0");
@@ -264,7 +265,7 @@ public class Request extends HTTPResource {
 				s = s.replace("<port>", "" +PMS.get().getServer().getPort());
 				if (xbox) {
 					PMS.info("DLNA changes for Xbox360");
-					s = s.replace("PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "] : Windows Media Connect");
+					s = s.replace("PS3 Media Server", "PS3 Media Server [" + profileName + "] : Windows Media Connect");
 					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect</modelName>");				
 					s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
 							       "<serviceType>urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1</serviceType>" + CRLF +
@@ -275,7 +276,7 @@ public class Request extends HTTPResource {
 						
 							
 				} else
-					s = s.replace("PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "]");
+					s = s.replace("PS3 Media Server", "PS3 Media Server [" + profileName + "]");
 				inputStream = new ByteArrayInputStream(s.getBytes());
 			}
 		} else if (method.equals("POST") && (argument.contains("MS_MediaReceiverRegistrar_control") || argument.contains("mrr/control"))) {
