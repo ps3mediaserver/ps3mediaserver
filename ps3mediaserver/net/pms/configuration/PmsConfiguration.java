@@ -231,7 +231,7 @@ public class PmsConfiguration {
 			File f = new File(profile);
 
 			// if it exists, we know whether it's a file or directory
-			// otherwise, if must be a file because we don't autovivify directories
+			// otherwise, it must be a file since we don't autovivify directories
 
 			if (f.exists() && f.isDirectory()) {
 				PROFILE_DIRECTORY = FilenameUtils.normalize(f.getAbsolutePath());
@@ -421,7 +421,6 @@ public class PmsConfiguration {
 	public int getProxyServerPort() {
 		return getInt(KEY_PROXY_SERVER_PORT, DEFAULT_PROXY_SERVER_PORT);
 	}
-
 
 	public String getLanguage() {
 		String def = Locale.getDefault().getLanguage();
@@ -659,7 +658,6 @@ public class PmsConfiguration {
 	public void setArchiveBrowsing(boolean value) {
 		configuration.setProperty(KEY_OPEN_ARCHIVES, value);
 	}
-	
 	
 	public boolean isMencoderYadif() {
 		return getBoolean(KEY_MENCODER_YADIF, false);
@@ -935,12 +933,7 @@ public class PmsConfiguration {
 	}
 	
 	public void save() throws ConfigurationException {
-		try {
-			configuration.save();
-		} catch (ConfigurationException ce) {
-			throw ce;
-		}
-
+		configuration.save();
 		PMS.minimal("Configuration saved to: " + PROFILE_PATH);
 	}
 
@@ -1264,19 +1257,19 @@ public class PmsConfiguration {
 	}
 
 	public String getProfileName() {
-		String deflt;
+		String hostname;
 
 		if (HOSTNAME == null) {
 			try {
-				deflt = HOSTNAME = InetAddress.getLocalHost().getHostName();
+				hostname = HOSTNAME = InetAddress.getLocalHost().getHostName();
 			} catch (UnknownHostException e) {
 				PMS.minimal("Can't determine hostname");
-				deflt = "unknown host";
+				hostname = "unknown host";
 			}
 		} else {
-			deflt = HOSTNAME;
+			hostname = HOSTNAME;
 		}
 
-		return getString(KEY_PROFILE_NAME, deflt);
+		return getString(KEY_PROFILE_NAME, hostname);
 	}
 }
