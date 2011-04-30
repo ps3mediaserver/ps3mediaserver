@@ -256,13 +256,14 @@ public class RequestV2 extends HTTPResource {
 				inputStream.read(b);
 				String s = new String(b);
 				s = s.replace("uuid:1234567890TOTO", PMS.get().usn());//.substring(0, PMS.get().usn().length()-2));
+				String profileName = PMS.getConfiguration().getProfileName();
 				if (PMS.get().getServer().getHost() != null) {
 					s = s.replace("<host>", PMS.get().getServer().getHost());
 					s = s.replace("<port>", "" +PMS.get().getServer().getPort());
 				}
 				if (xbox) {
 					PMS.info("DLNA changes for Xbox360");
-					s = s.replace("PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "] : Windows Media Connect");
+					s = s.replace("PS3 Media Server", "PS3 Media Server [" + profileName + "] : Windows Media Connect");
 					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect</modelName>");				
 					s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
 							       "<serviceType>urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1</serviceType>" + CRLF +
@@ -273,7 +274,7 @@ public class RequestV2 extends HTTPResource {
 						
 							
 				} else
-					s = s.replace("PS3 Media Server", "PS3 Media Server [" + InetAddress.getLocalHost().getHostName() + "]");
+					s = s.replace("PS3 Media Server", "PS3 Media Server [" + profileName + "]");
 				
 				if (!mediaRenderer.isPS3()) {
 					// hacky stuff. replace the png icon by a jpeg one. Like mpeg2 remux, really need a proper format compatibility list by renderer

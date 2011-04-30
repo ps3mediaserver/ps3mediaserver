@@ -65,10 +65,10 @@ public class DLNAMediaDatabase implements Runnable {
 					defaultLocation = checkDir.delete();
 			}
 		}
-		String strAppData = System.getenv("APPDATA"); //$NON-NLS-1$
-		if (Platform.isWindows() && !defaultLocation && strAppData != null) {
-			url = "jdbc:h2:" + strAppData + "\\PMS\\" + dir + "/" + name; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			fileDir = new File(strAppData + "\\PMS\\" + dir); //$NON-NLS-1$
+		if (Platform.isWindows() && !defaultLocation) {
+			String profileDir = PMS.getConfiguration().getProfileDir();
+			url = String.format("jdbc:h2:%s\\%s/%s", profileDir, dir, name); //$NON-NLS-1$
+			fileDir = new File(profileDir, dir);
 		} else {
 			url = "jdbc:h2:" + dir + "/" + name; //$NON-NLS-1$ //$NON-NLS-2$
 		}

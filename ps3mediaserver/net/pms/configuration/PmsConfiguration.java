@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,15 +18,15 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.sun.jna.Platform;
 
 public class PmsConfiguration {
-
 	private static final String KEY_TEMP_FOLDER_PATH = "temp";
 	private static final String KEY_TSMUXER_FORCEFPS = "tsmuxer_forcefps";
-	//private static final String KEY_TSMUXER_PREREMUX_PCM = "tsmuxer_preremux_pcm";
+	// private static final String KEY_TSMUXER_PREREMUX_PCM = "tsmuxer_preremux_pcm";
 	private static final String KEY_AUDIO_BITRATE = "audiobitrate";
 	private static final String KEY_TSMUXER_PREREMIX_AC3 = "tsmuxer_preremix_ac3";
 	private static final String KEY_SERVER_PORT = "port";
@@ -126,7 +128,38 @@ public class PmsConfiguration {
 	private static final String UNLIMITED_BITRATE = "0";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
 	private static final String KEY_PLUGIN_DIRECTORY = "plugins";
-	
+	private static final String KEY_PROFILE_NAME = "name";
+
+	/*
+	 * the name of the subdirectory under which PMS config files are stored for this build.
+	 * the default value is "PMS" e.g.
+	 *
+	 *     Windows:
+	 *
+	 *         %APPDATA%\PMS
+	 *
+	 *     Mac OS X:
+	 *
+	 *         /home/<username>/Library/Application Support/PMS 
+	 *
+     *     Linux &c.
+	 *
+	 *         /home/<username>/.config/PMS
+	 *
+	 * a custom build can change this to avoid interfering with the config files of other
+	 * builds e.g.:
+	 *
+	 *     BUILD = "PMS Rendr Edition";
+	 *     BUILD = "pms-mlx";
+	 *
+	 * Note: custom Windows builds that change this value should change the corresponding "$APPDATA\PMS"
+	 * value in nsis/setup.nsi
+	 */
+	private static final String BUILD = "PMS";
+
+	// the default profile name displayed on the renderer
+	private static String HOSTNAME;
+
 	private static final String DEFAULT_AVI_SYNTH_SCRIPT = 
 		  "#AviSynth script is now fully customisable !\n" 
 		+ "#You must use the following variables (\"clip\" being the avisynth variable of the movie):\n"
@@ -138,48 +171,125 @@ public class PmsConfiguration {
 		+ "<sub>\n" 
 		+ "return clip";
 	
-	
-	
 	private static final String BUFFER_TYPE_FILE = "file";
 	
 	private static final int MAX_MAX_MEMORY_BUFFER_SIZE = 600;
 	
-	private static final String CONFIGURATION_FILENAME = "PMS.conf";
-	private static final String CONFIGURATION_PATH_MAC = System.getProperty("user.home") + "/Library/Application Support/PS3 Media Server/";
 	private static final char LIST_SEPARATOR = ',';
 	private static final String KEY_FOLDERS = "folders";
 
 	private final PropertiesConfiguration configuration;
 	private final TempFolder tempFolder;
 	private final ProgramPathDisabler programPaths;
-	private String pmsConfPath = null;
+
+	/*
+		The following code enables a single environment variable - PMS_PROFILE - to be used to
+		initialize PROFILE_PATH i.e. the path to the current session's profile (AKA PMS.conf).
+		It also initializes PROFILE_DIRECTORY - i.e. the directory the profile is located in -
+		which is needed for configuration-by-convention detection of WEB.conf (anything else?).
+
+		While this convention - and therefore PROFILE_DIRECTORY - will remain,
+		adding more configurables - e.g. web_conf = ... - is on the TODO list.
+
+		1) if PMS_PROFILE is not set, PMS.conf is located in: 
+		 
+			Windows:             %APPDATA%\$build
+			Mac OS X:            $HOME/Library/Application Support/$build
+			Everything else:     $HOME/.config/$build
+
+		- where $build is a subdirectory that ensures incompatible PMS builds don't target/clobber
+		the same configuration files. The default value for $build is "PMS". Other builds might use e.g.
+		"PMS Rendr Edition" or "pms-mlx".
+		 
+		2) if a relative or absolute *directory path* is supplied (the directory must exist),
+		it is used as the profile directory and the profile is located there under the default profile name (PMS.conf):
+
+			PMS_PROFILE = /absolute/path/to/dir
+			PMS_PROFILE = relative/path/to/dir # relative to the working directory
+
+		Amongst other things, this can be used to restore the legacy behaviour of locating PMS.conf in the current
+		working directory e.g.:
+
+			PMS_PROFILE=. ./PMS.sh
+
+		3) if a relative or absolute *file path* is supplied (the file doesn't have to exist),
+		it is taken to be the profile, and its parent dir is taken to be the profile (i.e. config file) dir: 
+
+			PMS_PROFILE = PMS.conf            # profile dir = .
+			PMS_PROFILE = folder/dev.conf     # profile dir = folder
+			PMS_PROFILE = /path/to/some.file  # profile dir = /path/to/
+    */
+
+	private static final String DEFAULT_PROFILE_FILENAME = "PMS.conf";
+	private static final String PROFILE_DIRECTORY; // path to directory containing PMS config files
+	private static final String PROFILE_PATH; // abs path to profile file e.g. /path/to/PMS.conf
+
+	static {
+		String profile = System.getenv("PMS_PROFILE"); //$NON-NLS-1$
+
+		if (profile != null) {
+			File f = new File(profile);
+
+			// if it exists, we know whether it's a file or directory
+			// otherwise, if must be a file because we don't autovivify directories
+
+			if (f.exists() && f.isDirectory()) {
+				PROFILE_DIRECTORY = FilenameUtils.normalize(f.getAbsolutePath());
+				PROFILE_PATH = FilenameUtils.normalize(new File(f, DEFAULT_PROFILE_FILENAME).getAbsolutePath());
+			} else { // doesn't exist or is a file (i.e. not a directory)
+				PROFILE_PATH = FilenameUtils.normalize(f.getAbsolutePath());
+				PROFILE_DIRECTORY = FilenameUtils.normalize(f.getParentFile().getAbsolutePath());
+			}
+		} else {
+			String profileDir = null;
+
+			if (Platform.isWindows()) {
+				String appData = System.getenv("APPDATA");
+				if (appData != null)
+					profileDir = String.format("%s\\%s", appData, BUILD);
+			} else if (Platform.isMac()) {
+				profileDir = String.format(
+					"%s/%s/%s",
+					System.getProperty("user.home"),
+					"/Library/Application Support",
+					BUILD
+				);
+			} else {
+				String xdgConfigHome = System.getenv("XDG_CONFIG_HOME");
+
+				if (xdgConfigHome == null) {
+					profileDir = String.format("%s/.config/%s", System.getProperty("user.home"), BUILD);
+				} else {
+					profileDir = String.format("%s/%s", xdgConfigHome, BUILD);
+				}
+			}
+
+			File f = new File(profileDir);
+
+			if ((f.exists() || f.mkdir()) && f.isDirectory()) {
+				PROFILE_DIRECTORY = FilenameUtils.normalize(f.getAbsolutePath());
+			} else {
+				PROFILE_DIRECTORY = FilenameUtils.normalize(new File("").getAbsolutePath());
+			}
+
+			PROFILE_PATH = FilenameUtils.normalize(new File(PROFILE_DIRECTORY, DEFAULT_PROFILE_FILENAME).getAbsolutePath());
+		}
+	}
 
 	public PmsConfiguration() throws ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration();
 		configuration.setListDelimiter((char)0);
-		String strAppData = System.getenv("APPDATA");
-		String windowsPath = PMSDIR + CONFIGURATION_FILENAME;
-		String macPath = CONFIGURATION_PATH_MAC + CONFIGURATION_FILENAME;
-		String path = null;
-		File file;
+		configuration.setFileName(PROFILE_PATH);
 
-		if (Platform.isWindows() && strAppData != null && (file = new File(strAppData + windowsPath)).exists()) {
-			path = strAppData + windowsPath;
-		} else if (Platform.isMac() && (file = new File(macPath)).exists()) {
-			path = macPath;
-		} else if ((file = new File(CONFIGURATION_FILENAME)).exists()) {
-			path = CONFIGURATION_FILENAME;
-		}
+		File pmsConfFile = new File(PROFILE_PATH);
 
-		if (path != null) {
-			pmsConfPath = file.getAbsolutePath();
-			configuration.load(path);
+		if (pmsConfFile.exists() && pmsConfFile.isFile()) {
+			configuration.load(PROFILE_PATH);
 		}
 
 		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
 		Locale.setDefault(new Locale(getLanguage()));
-		
 	}
 
 	/**
@@ -824,34 +934,14 @@ public class PmsConfiguration {
 		return output;
 	}
 	
-	private static final String PMSDIR = "\\PMS\\";
-
 	public void save() throws ConfigurationException {
-		String strAppData = System.getenv("APPDATA");
-
-		if(Platform.isMac()) {
-			configuration.setFileName(CONFIGURATION_PATH_MAC + CONFIGURATION_FILENAME);
-		// Else if it is Windows with AppData
-		} else if (Platform.isWindows() && strAppData != null) {
-			// If config file already exists in AppData
-			if (new File(strAppData + PMSDIR + CONFIGURATION_FILENAME).exists()) {
-				configuration.setFileName(strAppData+PMSDIR+CONFIGURATION_FILENAME);
-			// Else create the file and directory if needed
-			} else {
-				File pmsDir = new File(strAppData+PMSDIR);
-				if (!pmsDir.exists())
-					pmsDir.mkdir();
-				configuration.setFileName(strAppData+PMSDIR+CONFIGURATION_FILENAME);
-			}
-		} else {
-			configuration.setFileName(CONFIGURATION_FILENAME);
-		}
 		try {
 			configuration.save();
 		} catch (ConfigurationException ce) {
 			throw ce;
 		}
-		PMS.minimal("Configuration saved.");
+
+		PMS.minimal("Configuration saved to: " + PROFILE_PATH);
 	}
 
 	public String getFolders() {
@@ -1157,8 +1247,12 @@ public class PmsConfiguration {
 		return getString(KEY_VIRTUAL_FOLDERS, "");
 	}
 
-	public String getPmsConfPath() {
-		return pmsConfPath;
+	public String getProfilePath() {
+		return PROFILE_PATH;
+	}
+
+	public String getProfileDir() {
+		return PROFILE_DIRECTORY;
 	}
 
 	public String getPluginDirectory() {
@@ -1167,5 +1261,22 @@ public class PmsConfiguration {
 
 	public void setPluginDirectory(String value) {
 		configuration.setProperty(KEY_PLUGIN_DIRECTORY, value);
+	}
+
+	public String getProfileName() {
+		String deflt;
+
+		if (HOSTNAME == null) {
+			try {
+				deflt = HOSTNAME = InetAddress.getLocalHost().getHostName();
+			} catch (UnknownHostException e) {
+				PMS.minimal("Can't determine hostname");
+				deflt = "unknown host";
+			}
+		} else {
+			deflt = HOSTNAME;
+		}
+
+		return getString(KEY_PROFILE_NAME, deflt);
 	}
 }

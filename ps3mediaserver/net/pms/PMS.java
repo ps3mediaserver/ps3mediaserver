@@ -374,24 +374,37 @@ public class PMS {
 		minimal("Starting PS3 Media Server " + VERSION); //$NON-NLS-1$
 		minimal("by shagrath / 2008-2011"); //$NON-NLS-1$
 		minimal("http://ps3mediaserver.org"); //$NON-NLS-1$
-		minimal("http://ps3mediaserver.blogspot.com"); //$NON-NLS-1$
 		minimal("http://code.google.com/p/ps3mediaserver"); //$NON-NLS-1$
+		minimal("http://ps3mediaserver.blogspot.com"); //$NON-NLS-1$
 		minimal(""); //$NON-NLS-1$
 		minimal("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		minimal("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 		minimal("Encoding: " + System.getProperty("file.encoding")); //$NON-NLS-1$ //$NON-NLS-2$
 
-		String pmsConfPath = configuration.getPmsConfPath();
-		if (pmsConfPath != null) {
-			minimal("PMS.conf: " + pmsConfPath);
-		} else {
-			minimal("PMS.conf: not found");
-		}
-
 		String cwd = new File("").getAbsolutePath();
 		minimal("Working directory: " + cwd);
+
 		minimal("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
 		minimal("Logging config file: " + LoggingConfigFileLoader.getConfigFilePath()); //$NON-NLS-1$
+		minimal(""); //$NON-NLS-1$
+
+		minimal("Profile directory: " + configuration.getProfileDir());
+		String profilePath = configuration.getProfilePath();
+		minimal("Profile path: " + profilePath);
+
+		File profileFile =  new File(profilePath);
+
+		if (profileFile.exists()) {
+			String status = String.format("%s%s",
+				profileFile.canRead()    ? "r" : "-",
+				profileFile.canWrite()   ? "w" : "-"
+			);
+			minimal("Profile status: " + status);
+		} else {
+			minimal("Profile status: no such file");
+		}
+
+		minimal("Profile name: " + configuration.getProfileName()); //$NON-NLS-1$
 		minimal(""); //$NON-NLS-1$
 
 		RendererConfiguration.loadRendererConfigurations();
@@ -567,15 +580,8 @@ public class PMS {
 		rootFolder.browse(files);
 		rootFolder.browse(MapFileConfiguration.parse(configuration.getVirtualFolders()));
 
-		String strAppData = System.getenv("APPDATA");
-
-		if (Platform.isWindows() && strAppData != null) {
-			webConfPath = strAppData + PMSDIR + "WEB.conf";
-		} else {
-			webConfPath = "WEB.conf";
-		}
-
-		File webConf = new File(webConfPath); //$NON-NLS-1$
+		// FIXME: this (the WEB.conf path) should be fully configurable
+		File webConf = new File(PMS.getConfiguration().getProfileDir(), "WEB.conf"); //$NON-NLS-1$
 
 		if (webConf.exists()) {
 			try {
