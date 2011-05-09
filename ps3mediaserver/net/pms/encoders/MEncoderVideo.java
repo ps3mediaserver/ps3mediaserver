@@ -1233,7 +1233,7 @@ public class MEncoderVideo extends Player {
 		}
 
 		// Apply DVD/VOBsub subtitle quality
-		if (configuration.getMencoderVobsubSubtitleQuality() != null) {
+		if (params.sid != null && params.sid.type == DLNAMediaSubtitle.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
 			String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
 
 			sb.append("-spuaa " + subtitleQuality + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -1245,8 +1245,7 @@ public class MEncoderVideo extends Player {
 				sb.append("-fribidi-charset " + configuration.getMencoderSubCp() + " "); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
-		/*if (configuration.getMencoderAudioLanguages() != null && configuration.getMencoderAudioLanguages().length() >  0)
-		sb.append("-alang " +configuration.getMencoderAudioLanguages() + " "); //$NON-NLS-1$ //$NON-NLS-2$*/
+
 		if (!configuration.isMencoderDisableSubs() && !avisynth()) {
 			if (configuration.getMencoderFont() != null && configuration.getMencoderFont().length() > 0) {
 				sb.append("-subfont " + configuration.getMencoderFont() + " "); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1344,6 +1343,7 @@ public class MEncoderVideo extends Player {
 		} else {
 			cmdArray[2] = "0"; //$NON-NLS-1$
 		}
+
 		cmdArray[3] = "-quiet"; //$NON-NLS-1$
 		if (media != null && media.dvdtrack > 0) {
 			cmdArray[3] = "-dvd-device"; //$NON-NLS-1$
@@ -1364,10 +1364,6 @@ public class MEncoderVideo extends Player {
 		String arguments[] = args();
 		for (i = 0; i < arguments.length; i++) {
 			cmdArray[6 + i] = arguments[i];
-			/*if (params.timeseek > 0 && arguments[i].contains("format=mpegts")) { //$NON-NLS-1$
-			cmdArray[6+i] += ":preload=" + params.timeseek; //$NON-NLS-1$
-			params.timeseek = 0;
-			}*/
 			if (arguments[i].contains("format=mpeg2") && media.aspect != null && media.getValidAspect(true) != null) { //$NON-NLS-1$
 				cmdArray[6 + i] += ":vaspect=" + media.getValidAspect(true); //$NON-NLS-1$
 			}
@@ -1474,7 +1470,7 @@ public class MEncoderVideo extends Player {
 			cmdArray[cmdArray.length - 3] = (deinterlace ? "yadif" : "") + (scaler ? scalerString : ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		}
 
-		if (configuration.getMencoderMT() && !avisynth && !dvd) {
+		if (configuration.getMencoderMT() && !avisynth && !dvd && !(media.codecV != null && (media.codecV.equals("mpeg2video")))) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-lavdopts"; //$NON-NLS-1$
 			cmdArray[cmdArray.length - 3] = "fast"; //$NON-NLS-1$
