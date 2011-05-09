@@ -122,6 +122,7 @@ public class HTTPServer implements Runnable {
 			
 			serverSocket = serverSocketChannel.socket();
 			serverSocket.setReuseAddress(true);
+			serverSocket.setPerformancePreferences(0, 1, 2);
 			serverSocket.bind(address);
 			
 			if (hostName == null && iafinal !=null)
@@ -141,12 +142,20 @@ public class HTTPServer implements Runnable {
 			ServerBootstrap bootstrap = new ServerBootstrap(factory);
 			HttpServerPipelineFactory pipeline = new HttpServerPipelineFactory();
 			bootstrap.setPipelineFactory(pipeline);
+			bootstrap.setOption("tcpNoDelay", true);
 			bootstrap.setOption("child.tcpNoDelay", true);
+			bootstrap.setOption("keepAlive", true);
 			bootstrap.setOption("child.keepAlive", true);
 			bootstrap.setOption("reuseAddress", true);
 			bootstrap.setOption("child.reuseAddress", true);
 			bootstrap.setOption("child.sendBufferSize", 65536);
 			bootstrap.setOption("child.receiveBufferSize", 65536);
+			bootstrap.setOption("trafficClass", 160); // DSCP class 5, AC_VID has 6 bit MSB 40 decimal value, concatenated with 2bit ECN value 00
+			bootstrap.setOption("child.trafficClass", 160);
+
+			PMS.debug("Bootstrap Channel Traffic class: " + bootstrap.getOption("trafficClass"));
+			PMS.debug("Bootstrap Child Traffic class: " + bootstrap.getOption("child.trafficClass"));
+
 			channel = bootstrap.bind(address);
 			group.add(channel);
 			if (hostName == null && iafinal !=null)
