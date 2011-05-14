@@ -167,6 +167,7 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append(", EXPOSURE          INT"); //$NON-NLS-1$
 				sb.append(", ORIENTATION       INT"); //$NON-NLS-1$
 				sb.append(", ISO               INT"); //$NON-NLS-1$
+				sb.append(", MUXINGMODE        VARCHAR2(32)"); //$NON-NLS-1$
 				sb.append(", constraint PK1 primary key (FILENAME, MODIFIED, ID))"); //$NON-NLS-1$
 				executeUpdate(conn, sb.toString());
 				sb = new StringBuffer();
@@ -185,6 +186,7 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append(", YEAR              INT"); //$NON-NLS-1$
 				sb.append(", TRACK             INT"); //$NON-NLS-1$
 				sb.append(", DELAY             INT"); //$NON-NLS-1$
+				sb.append(", MUXINGMODE        VARCHAR2(32)"); //$NON-NLS-1$
 				sb.append(", constraint PKAUDIO primary key (FILEID, ID))"); //$NON-NLS-1$
 				executeUpdate(conn, sb.toString());
 				sb = new StringBuffer();
@@ -294,6 +296,7 @@ public class DLNAMediaDatabase implements Runnable {
 				media.exposure = rs.getInt("EXPOSURE"); //$NON-NLS-1$
 				media.orientation = rs.getInt("ORIENTATION"); //$NON-NLS-1$
 				media.iso = rs.getInt("ISO"); //$NON-NLS-1$
+				media.muxingMode = rs.getString("MUXINGMODE"); //$NON-NLS-1$
 				media.mediaparsed = true;
 				PreparedStatement audios = conn.prepareStatement("SELECT * FROM AUDIOTRACKS WHERE FILEID = ?") ; //$NON-NLS-1$
 				audios.setInt(1, id);
@@ -313,6 +316,7 @@ public class DLNAMediaDatabase implements Runnable {
 					audio.year = subrs.getInt("YEAR"); //$NON-NLS-1$
 					audio.track = subrs.getInt("TRACK"); //$NON-NLS-1$
 					audio.delay = subrs.getInt("DELAY"); //$NON-NLS-1$
+					audio.muxingModeAudio = subrs.getString("MUXINGMODE"); //$NON-NLS-1$
 					media.audioCodes.add(audio);
 				}
 				subrs.close();
@@ -354,7 +358,7 @@ public class DLNAMediaDatabase implements Runnable {
 		PreparedStatement ps = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("INSERT INTO FILES(FILENAME, MODIFIED, TYPE, DURATION, BITRATE, WIDTH, HEIGHT, SIZE, CODECV, FRAMERATE, ASPECT, BITSPERPIXEL, THUMB, CONTAINER, MODEL, EXPOSURE, ORIENTATION, ISO) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); //$NON-NLS-1$
+			ps = conn.prepareStatement("INSERT INTO FILES(FILENAME, MODIFIED, TYPE, DURATION, BITRATE, WIDTH, HEIGHT, SIZE, CODECV, FRAMERATE, ASPECT, BITSPERPIXEL, THUMB, CONTAINER, MODEL, EXPOSURE, ORIENTATION, ISO, MUXINGMODE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); //$NON-NLS-1$
 			ps.setString(1, name);
 			ps.setTimestamp(2, new Timestamp(modified));
 			ps.setInt(3, type);
@@ -377,6 +381,7 @@ public class DLNAMediaDatabase implements Runnable {
 				ps.setInt(16, media.exposure);
 				ps.setInt(17, media.orientation);
 				ps.setInt(18, media.iso);
+				ps.setString(19, media.muxingModeAudio);
 				
 			} else {
 				ps.setString(4, null);
@@ -394,6 +399,7 @@ public class DLNAMediaDatabase implements Runnable {
 				ps.setInt(16, 0);
 				ps.setInt(17, 0);
 				ps.setInt(18, 0);
+				ps.setString(19, null);
 			}
 			ps.executeUpdate();
 			ResultSet rs = ps.getGeneratedKeys();
@@ -405,7 +411,7 @@ public class DLNAMediaDatabase implements Runnable {
 			if (media != null && id > -1) {
 				PreparedStatement insert = null;
 				if (media.audioCodes.size() > 0)
-					insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); //$NON-NLS-1$
+					insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); //$NON-NLS-1$
 				for(DLNAMediaAudio audio:media.audioCodes) {
 					insert.clearParameters();
 					insert.setInt(1, id);
@@ -422,6 +428,7 @@ public class DLNAMediaDatabase implements Runnable {
 					insert.setInt(12, audio.year);
 					insert.setInt(13, audio.track);
 					insert.setInt(14, audio.delay);
+					insert.setString(15, StringUtils.trimToEmpty(audio.muxingModeAudio));
 					insert.executeUpdate();
 				}
 				

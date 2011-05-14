@@ -85,6 +85,8 @@ public class MediaInfoParser {
 								media.putExtra(FormatConfiguration.MI_QPEL, value);
 							} else if (key.equals("Codec_Settings_GMC") && step == MediaInfo.StreamKind.Video) {
 								media.putExtra(FormatConfiguration.MI_GMC, value);
+							} else if (key.equals("MuxingMode") && step == MediaInfo.StreamKind.Video) {
+								media.muxingMode = ovalue;
 							} else if (key.equals("CodecID")) {
 								if (step == MediaInfo.StreamKind.Text)
 									getSubCodec(currentSubTrack, value);
@@ -359,14 +361,14 @@ public class MediaInfoParser {
 		value = value.trim();
 		return value;
 	}
-	
+
 	public static String getFPSValue(String value) {
 		if (value.indexOf("fps") > -1)
 			value = value.substring(0, value.indexOf("fps"));
 		value = value.trim();
 		return value;
 	}
-	
+
 	public static String getLang(String value) {
 		if (value.indexOf("(") > -1)
 			value = value.substring(0, value.indexOf("("));

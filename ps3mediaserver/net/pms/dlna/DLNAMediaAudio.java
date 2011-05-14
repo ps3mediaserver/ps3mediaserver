@@ -13,18 +13,19 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	public int year;
 	public int track;
 	public int delay;
-	
+	public String muxingModeAudio;
+
 	public DLNAMediaAudio() {
 		bitsperSample = 16;
 	}
-	
+
 	public int getSampleRate() {
 		int sr = 0;
 		if (sampleFrequency != null && sampleFrequency.length() > 0) {
 			try {
 				sr = Integer.parseInt(sampleFrequency);
 			} catch (NumberFormatException e) {}
-			
+
 		}
 		return sr;
 	}

@@ -6,8 +6,8 @@ interface ProgramPaths {
 	String getVlcPath();
 	String getMencoderPath();
 	String getMencoderMTPath();
-	String getMencoderOlderPath();
-	String getMencoderOlderMTPath();
+	String getMencoderAlternatePath();
+	String getMencoderAlternateMTPath();
 	String getTsmuxerPath();
 	String getFlacPath();
 	String getEac3toPath(); 

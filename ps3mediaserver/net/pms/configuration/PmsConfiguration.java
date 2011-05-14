@@ -328,12 +328,12 @@ public class PmsConfiguration {
 		return programPaths.getMencoderMTPath();
 	}
 
-	public String getMencoderOlderPath() {
-		return programPaths.getMencoderOlderPath();
+	public String getMencoderAlternatePath() {
+		return programPaths.getMencoderAlternatePath();
 	}
 
-	public String getMencoderOlderMTPath() {
-		return programPaths.getMencoderOlderMTPath();
+	public String getMencoderAlternateMTPath() {
+		return programPaths.getMencoderAlternateMTPath();
 	}
 	
 	public String getDCRawPath() {
