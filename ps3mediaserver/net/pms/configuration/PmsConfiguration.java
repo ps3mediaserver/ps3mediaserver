@@ -1264,7 +1264,7 @@ public class PmsConfiguration {
 				hostname = HOSTNAME = InetAddress.getLocalHost().getHostName();
 			} catch (UnknownHostException e) {
 				PMS.minimal("Can't determine hostname");
-				hostname = "unknown host";
+				hostname = HOSTNAME = "unknown host";
 			}
 		} else {
 			hostname = HOSTNAME;
