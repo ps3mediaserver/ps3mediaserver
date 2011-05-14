@@ -1,6 +1,18 @@
 Changelog:
 ==========
 
+15/05/2011 - 1.22.0
+
+	Many file compatibility bugs fixed (particularly MKV, MP4 and DVD ISO)
+	Help tab improved
+	Improved alphabetical file sorting (old method is still there for those who liked it)
+	Language fixes and updates
+	Added custom profiles
+	Added new renderers: Sony HX7, Bravia NX8, Panasonic Viera range
+	Network traffic prioritised properly (thanks to bgm)
+	48fps videos are now supported
+	Various other fixes
+
 15/04/2011 - 1.21.1
 
 	Rollback MPlayer for Windows to fix critical subtitle bug
