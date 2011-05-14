@@ -159,7 +159,7 @@ public class TSMuxerVideo extends Player {
 			// Figure out which version of MEncoder we want to use
 			if (
 				(media.muxingMode != null && media.muxingMode.equals("Header stripping")) ||
-				(media.getFirstAudioTrack().muxingModeAudio != null && media.getFirstAudioTrack().muxingModeAudio.equals("Header stripping"))
+				(media.getFirstAudioTrack() != null && media.getFirstAudioTrack().muxingModeAudio != null && media.getFirstAudioTrack().muxingModeAudio.equals("Header stripping"))
 			) {
 			// Use the newer version of MEncoder
 				if (isMultiCore && configuration.getMencoderMT()) {
