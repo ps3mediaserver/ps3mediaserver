@@ -1257,19 +1257,15 @@ public class PmsConfiguration {
 	}
 
 	public String getProfileName() {
-		String hostname;
-
-		if (HOSTNAME == null) {
+		if (HOSTNAME == null) { // calculate this lazily
 			try {
-				hostname = HOSTNAME = InetAddress.getLocalHost().getHostName();
+				HOSTNAME = InetAddress.getLocalHost().getHostName();
 			} catch (UnknownHostException e) {
 				PMS.minimal("Can't determine hostname");
-				hostname = HOSTNAME = "unknown host";
+				HOSTNAME = "unknown host";
 			}
-		} else {
-			hostname = HOSTNAME;
 		}
 
-		return getString(KEY_PROFILE_NAME, hostname);
+		return getString(KEY_PROFILE_NAME, HOSTNAME);
 	}
 }
