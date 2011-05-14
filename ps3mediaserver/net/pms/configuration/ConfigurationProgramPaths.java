@@ -9,8 +9,8 @@ class ConfigurationProgramPaths implements ProgramPaths {
 	private static final String KEY_EAC3TO_PATH = "eac3to_path";
 	private static final String KEY_MENCODER_PATH = "mencoder_path";
 	private static final String KEY_MENCODERMT_PATH = "mencodermt_path";
-	private static final String KEY_MENCODEROLDER_PATH = "mencoderolder_path";
-	private static final String KEY_MENCODEROLDERMT_PATH = "mencoderoldermt_path";
+	private static final String KEY_MENCODERALTERNATE_PATH = "mencoderalternate_path";
+	private static final String KEY_MENCODERALTERNATEMT_PATH = "mencoderalternatemt_path";
 	private static final String KEY_FFMPEG_PATH = "ffmpeg_path";
 	private static final String KEY_MPLAYER_PATH = "mplayer_path";
 	private static final String KEY_TSMUXER_PATH = "tsmuxer_path";
@@ -51,13 +51,13 @@ class ConfigurationProgramPaths implements ProgramPaths {
 	}
 
 	@Override
-	public String getMencoderOlderPath() {
-		return stringFromConfigFile(KEY_MENCODEROLDER_PATH, defaults.getMencoderOlderPath());
+	public String getMencoderAlternatePath() {
+		return stringFromConfigFile(KEY_MENCODERALTERNATE_PATH, defaults.getMencoderAlternatePath());
 	}
 
 	@Override
-	public String getMencoderOlderMTPath() {
-		return stringFromConfigFile(KEY_MENCODEROLDERMT_PATH, defaults.getMencoderOlderMTPath());
+	public String getMencoderAlternateMTPath() {
+		return stringFromConfigFile(KEY_MENCODERALTERNATEMT_PATH, defaults.getMencoderAlternateMTPath());
 	}
 
 	@Override

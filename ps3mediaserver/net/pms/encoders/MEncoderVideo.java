@@ -467,19 +467,6 @@ public class MEncoderVideo extends Player {
 		builder.add(defaultaudiosubs, cc.xyw(3, 29, 8));
 
 		builder.addLabel(Messages.getString("MEncoderVideo.11"), cc.xy(1, 31)); //$NON-NLS-1$
-       /*subcp = new JTextField(configuration.getMencoderSubCp());
-		subcp.addKeyListener(new KeyListener() {
-
-		@Override
-		public void keyPressed(KeyEvent e) {}
-		@Override
-		public void keyTyped(KeyEvent e) {}
-		@Override
-		public void keyReleased(KeyEvent e) {
-		configuration.setMencoder_subcp(subcp.getText());
-		}
-
-		});*/
 		Object data[] = new Object[]{configuration.getMencoderSubCp(),
 			"cp1250  /* Windows - Eastern Europe */", //$NON-NLS-1$
 			"cp1251  /* Windows - Cyrillic */", //$NON-NLS-1$
@@ -999,17 +986,6 @@ public class MEncoderVideo extends Player {
 	}
 
 	private String addMaximumBitrateConstraints(String encodeSettings, DLNAMediaInfo media, String quality, RendererConfiguration mediaRenderer) {
-		/*String m = "" + PMS.getConfiguration().getMaximumBitrate(); //$NON-NLS-1$
-		int bufs = 0;
-		if (m.contains("(") && m.contains(")")) { //$NON-NLS-1$ //$NON-NLS-2$
-		bufs = Integer.parseInt(m.substring(m.indexOf("(")+1, m.indexOf(")"))); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		if (m.contains("(")) //$NON-NLS-1$
-		m = m.substring(0, m.indexOf("(")).trim(); //$NON-NLS-1$
-		if (StringUtils.isBlank(m))
-		m = "0"; //$NON-NLS-1$
-
-		int mb = (int) Double.parseDouble(m);*/
 		int defaultMaxBitrates[] = getVideoBitrateConfig(PMS.getConfiguration().getMaximumBitrate());
 		int rendererMaxBitrates[] = new int[2];
 		if (mediaRenderer.getMaxVideoBitrate() != null) {
@@ -1307,30 +1283,22 @@ public class MEncoderVideo extends Player {
 		boolean isMultiCore = configuration.getNumberOfCpuCores() > 1;
 
 		// Figure out which version of MEncoder we want to use
-		if (params.sid != null &&
-			(
-				params.sid.type == DLNAMediaSubtitle.SUBRIP ||
-				params.sid.type == DLNAMediaSubtitle.EMBEDDED ||
-				params.sid.type == DLNAMediaSubtitle.MICRODVD ||
-				(
-					params.sid.type == DLNAMediaSubtitle.ASS && configuration.isMencoderAss()
-				)
-			) &&
-			!configuration.isMencoderDisableSubs() &&
-			Platform.isWindows()
+		if (
+			(media.muxingMode != null && media.muxingMode.equals("Header stripping")) ||
+			(params.sid != null && params.sid.type == DLNAMediaSubtitle.VOBSUB)
 		) {
-		// Subtitles dictate that we need the older version of MEncoder
+		// Use the newer version of MEncoder
 			if (isMultiCore && configuration.getMencoderMT()) {
-				if (new File(configuration.getMencoderOlderMTPath()).exists()) {
-					cmdArray[0] = configuration.getMencoderOlderMTPath();
+				if (new File(configuration.getMencoderAlternateMTPath()).exists()) {
+					cmdArray[0] = configuration.getMencoderAlternateMTPath();
 				}
 			} else {
-				if (new File(configuration.getMencoderOlderPath()).exists()) {
-					cmdArray[0] = configuration.getMencoderOlderPath();
+				if (new File(configuration.getMencoderAlternatePath()).exists()) {
+					cmdArray[0] = configuration.getMencoderAlternatePath();
 				}
 			}
 		} else if (isMultiCore && configuration.getMencoderMT()) {
-		// Non-ASS, SRT, SUBRIP, MicroDVD or embedded subtitles with MT
+		// Use the older MEncoder with multithreading
 			if (new File(configuration.getMencoderMTPath()).exists()) {
 				cmdArray[0] = configuration.getMencoderMTPath();
 			}
