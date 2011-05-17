@@ -44,6 +44,8 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 public class HTTPServer implements Runnable {
+	
+	//private boolean newHTTP = false;
 	private ArrayList<String> ips;
 	private int port;
 	private String hostName;
@@ -52,15 +54,12 @@ public class HTTPServer implements Runnable {
 	private boolean stop;
 	private Thread runnable;
 	private InetAddress iafinal = null;
-	private ChannelFactory factory;
-	private Channel channel;
-	public static ChannelGroup group;
-	private NetworkInterface ni = null;
-	
 	public InetAddress getIafinal() {
 		return iafinal;
 	}
 
+	private NetworkInterface ni = null;
+	
 	public NetworkInterface getNi() {
 		return ni;
 	}
@@ -71,6 +70,7 @@ public class HTTPServer implements Runnable {
 	}
 	
 	public boolean start() throws IOException {
+		
 		Enumeration<NetworkInterface> enm = NetworkInterface.getNetworkInterfaces();
 		InetAddress ia = null;
 		boolean found = false;
@@ -95,6 +95,7 @@ public class HTTPServer implements Runnable {
 						break;
 					}
 				}
+				
 			}
 			if (found || fixedNI != null)
 				break;
@@ -122,7 +123,6 @@ public class HTTPServer implements Runnable {
 			
 			serverSocket = serverSocketChannel.socket();
 			serverSocket.setReuseAddress(true);
-			serverSocket.setPerformancePreferences(0, 1, 2);
 			serverSocket.bind(address);
 			
 			if (hostName == null && iafinal !=null)
@@ -130,59 +130,54 @@ public class HTTPServer implements Runnable {
 			else if (hostName == null)
 				hostName = InetAddress.getLocalHost().getHostAddress();
 			
+			
 			runnable = new Thread(this);
 			runnable.setDaemon(false);
 			runnable.start();
+			
 		} else {
 			group = new DefaultChannelGroup("myServer");
 			factory = new NioServerSocketChannelFactory(
 				Executors.newCachedThreadPool(),
-				Executors.newCachedThreadPool()
-			);
+				Executors.newCachedThreadPool());
 			ServerBootstrap bootstrap = new ServerBootstrap(factory);
 			HttpServerPipelineFactory pipeline = new HttpServerPipelineFactory();
 			bootstrap.setPipelineFactory(pipeline);
-			bootstrap.setOption("tcpNoDelay", true);
 			bootstrap.setOption("child.tcpNoDelay", true);
-			bootstrap.setOption("keepAlive", true);
 			bootstrap.setOption("child.keepAlive", true);
 			bootstrap.setOption("reuseAddress", true);
 			bootstrap.setOption("child.reuseAddress", true);
 			bootstrap.setOption("child.sendBufferSize", 65536);
 			bootstrap.setOption("child.receiveBufferSize", 65536);
-			bootstrap.setOption("trafficClass", 160); // DSCP class 5, AC_VID has 6 bit MSB 40 decimal value, concatenated with 2bit ECN value 00
-			bootstrap.setOption("child.trafficClass", 160);
-
-			PMS.debug("Bootstrap Channel Traffic class: " + bootstrap.getOption("trafficClass"));
-			PMS.debug("Bootstrap Child Traffic class: " + bootstrap.getOption("child.trafficClass"));
-
 			channel = bootstrap.bind(address);
 			group.add(channel);
 			if (hostName == null && iafinal !=null)
 				hostName = iafinal.getHostAddress();
 			else if (hostName == null)
 				hostName = InetAddress.getLocalHost().getHostAddress();
+			
 		}
 		
 		return true;
 	}
 	
-	// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=10689&p=48811#p48811
-	// avoid NPE when a) switching HTTP Engine versions and b) restarting the HTTP server
-	// XXX: in theory, we should null various fields here when the server is shut down, but
-	// in practice PMS.reset() discards the old server and creates a new one
+	private ChannelFactory factory;
+	private Channel channel;
+	public static ChannelGroup group ;
+	
 	public void stop() {
 		PMS.info( "Stopping server on host " + hostName + " and port " + port + "...");
-
-		if (runnable != null) // HTTP Engine V1
+		if (!PMS.getConfiguration().isHTTPEngineV2()) {
 			runnable.interrupt();
-
-		if (serverSocket != null) { // HTTP Engine V1
+			runnable = null;
 			try {
 				serverSocket.close();
 				serverSocketChannel.close();
-			} catch (IOException e) { }
-		} else if (channel != null) { // HTTP Engine V2
+			} catch (IOException e) {}
+		} else if (channel != null) {
+			/*channel.disconnect().awaitUninterruptibly();
+			channel.close().awaitUninterruptibly();
+		    channel.unbind().awaitUninterruptibly();*/
 			if (group != null)
 				group.close().awaitUninterruptibly();
 			if (factory != null)
@@ -190,8 +185,8 @@ public class HTTPServer implements Runnable {
 		}
 	}
 	
-	// only called for HTTPEngine V1, so serverSocket should be initialized
 	public void run() {
+
 		PMS.minimal( "Starting DLNA Server on host " + hostName + " and port " + port + "...");
 		while (!stop) {
 			try {
@@ -200,16 +195,16 @@ public class HTTPServer implements Runnable {
 				// basic ipfilter solntcev@gmail.com
 				boolean ignore = false;
 				if (!ips.contains(ip)) {
-					if (PMS.getConfiguration().getIpFilter().length() > 0 && !PMS.getConfiguration().getIpFilter().equals(ip)){
+					if(PMS.getConfiguration().getIpFilter().length() > 0 && !PMS.getConfiguration().getIpFilter().equals(ip)){
 						ignore = true;
 						socket.close();
 						PMS.minimal("Ignoring request from: " + ip);
-					} else {
+					}else{
 						ips.add(ip);
 						PMS.minimal("Receiving a request from: " + ip);
 					}
 				}
-				if (!ignore) {
+				if(!ignore){
 					RequestHandler request = new RequestHandler(socket);
 					Thread thread = new Thread(request);
 					thread.start();
@@ -229,6 +224,7 @@ public class HTTPServer implements Runnable {
 				}
 			}
 		}
+		
 	}
 	
 	public String getURL() {
@@ -246,4 +242,5 @@ public class HTTPServer implements Runnable {
 	public int getPort() {
 		return port;
 	}
+
 }

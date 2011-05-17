@@ -77,9 +77,6 @@ public class UPNPHelper {
 		{
 			DatagramSocket ssdpUniSock = new DatagramSocket();
 
-			ssdpUniSock.setTrafficClass(160); //DSCP class 5:  0x28, ECN: 0x00
-			PMS.debug("Reply Traffic class " + ssdpUniSock.getTrafficClass());
-
 			PMS.debug( "Sending this reply [" + host + ":" + port + "]: " + StringUtils.replace(msg, CRLF, "<CRLF>"));
 			InetAddress inetAddr = InetAddress.getByName(host);
 			DatagramPacket dgmPacket = new DatagramPacket(msg.getBytes(), msg.length(), inetAddr, port);
@@ -136,11 +133,10 @@ public class UPNPHelper {
 		PMS.debug("Sending message from multicast socket on network interface: " + ssdpSocket.getNetworkInterface());
 		PMS.debug("Multicast socket is on interface: " + ssdpSocket.getInterface());
 		ssdpSocket.setTimeToLive(32);
-		ssdpSocket.setTrafficClass(160); //DSCP class 5:  0x28, ECN: 0x00
+		//ssdpSocket.setLoopbackMode(true);
 		ssdpSocket.joinGroup(getUPNPAddress());
 		PMS.debug("Socket Timeout: " + ssdpSocket.getSoTimeout());
 		PMS.debug("Socket TTL: " + ssdpSocket.getTimeToLive());
-		PMS.debug("Socket Traffic Class: " + ssdpSocket.getTrafficClass());
 		return ssdpSocket;
 	}
 	
@@ -217,9 +213,7 @@ public class UPNPHelper {
 							socket.setNetworkInterface( PMS.get().getServer().getNi());
 						}
 						socket.setTimeToLive(4);
-						socket.setTrafficClass(160); //DSCP class 5:  0x28, ECN: 0x00
 						socket.setReuseAddress(true);
-						PMS.debug("Multicast Traffic class: " + socket.getTrafficClass());
 						socket.joinGroup(getUPNPAddress());
 						while(true)
 						{
