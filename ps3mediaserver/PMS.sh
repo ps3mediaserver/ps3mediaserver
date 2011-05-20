@@ -21,9 +21,12 @@ fi
 
 # Setup PMS_HOME
 if [ "x$PMS_HOME" = "x" ]; then
-	PMS_HOME=`cd $DIRNAME/; pwd`
+	PMS_HOME=$DIRNAME
 fi
+
 export PMS_HOME
+# XXX: always cd to the working dir: https://code.google.com/p/ps3mediaserver/issues/detail?id=730
+cd $PMS_HOME
 
 # Setup the JVM
 if [ "x$JAVA" = "x" ]; then
@@ -41,9 +44,7 @@ PMS_JARS="$PMS_HOME/update.jar:$PMS_HOME/pms.jar"
 if $cygwin; then
 	PMS_HOME=`cygpath --path --windows "$PMS_HOME"`
 	JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
-	PMS_CLASSPATH=`cygpath --path --windows "$PMS_CLASSPATH"`
 fi
 
 # Execute the JVM
 exec "$JAVA" $JAVA_OPTS -Xmx768M -Xss16M -Dfile.encoding=UTF-8 -Djava.net.preferIPv4Stack=true -classpath "$PMS_JARS" net.pms.PMS "$@"
-
