@@ -25,7 +25,7 @@ public class MKV extends MPG {
 	}
 
 	public String [] getId() {
-		return new String [] { "mkv", "dv", "ty", "mov", "ogm", "ogv", "hdmov", "hdm", "rmv", "rmvb", "rm", "asf", "evo", "asx", "flv", "m2v" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+		return new String [] { "mkv", "dv", "ty", "mov", "ogm", "ogv", "hdmov", "hdm", "rmv", "rmvb", "rm", "asf", "evo", "asx", "flv", "m2v", "3gp", "3g2" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
 	}
 
 }
