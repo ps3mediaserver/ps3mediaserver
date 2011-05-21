@@ -245,8 +245,11 @@ public class PmsConfiguration {
 
 			if (Platform.isWindows()) {
 				String appData = System.getenv("APPDATA");
-				if (appData != null)
+				if (appData != null) {
 					profileDir = String.format("%s\\%s", appData, BUILD);
+				} else {
+					profileDir = ""; // i.e. current (working) directory
+				}
 			} else if (Platform.isMac()) {
 				profileDir = String.format(
 					"%s/%s/%s",
