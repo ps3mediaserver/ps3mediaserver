@@ -244,9 +244,9 @@ public class PmsConfiguration {
 			String profileDir = null;
 
 			if (Platform.isWindows()) {
-				String appData = System.getenv("APPDATA");
-				if (appData != null) {
-					profileDir = String.format("%s\\%s", appData, BUILD);
+				String programData = System.getenv("ALLUSERSPROFILE");
+				if (programData != null) {
+					profileDir = String.format("%s\\%s", programData, BUILD);
 				} else {
 					profileDir = ""; // i.e. current (working) directory
 				}
