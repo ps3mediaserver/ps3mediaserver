@@ -106,13 +106,15 @@ Section "Uninstall"
   Delete /REBOOTOK "$INSTDIR\logback.xml"
   Delete /REBOOTOK "$INSTDIR\icon.ico"
   RMDir /REBOOTOK "$INSTDIR"
-  
- 
+
   Delete /REBOOTOK "$DESKTOP\PS3 Media Server.lnk"
   RMDir /REBOOTOK "$SMPROGRAMS\PS3 Media Server"
   Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server\PS3 Media Server.lnk"
-   Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server\Uninstall.lnk"
+  Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server\Uninstall.lnk"
  
   DeleteRegKey HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}"
   DeleteRegKey HKCU "${REG_KEY_SOFTWARE}"
+
+  nsSCM::Stop "PS3 Media Server"
+  nsSCM::Remove "PS3 Media Server"
 SectionEnd
