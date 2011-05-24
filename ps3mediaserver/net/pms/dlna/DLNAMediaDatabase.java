@@ -73,7 +73,7 @@ public class DLNAMediaDatabase implements Runnable {
 			url = "jdbc:h2:" + dir + "/" + name; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		PMS.info("Using database URL: " + url); //$NON-NLS-1$
-		PMS.minimal("Using database located at : " + fileDir.getAbsolutePath()); //$NON-NLS-1$
+		PMS.minimal("Using database located at: " + fileDir.getAbsolutePath()); //$NON-NLS-1$
 		
 		try {
 			Class.forName("org.h2.Driver"); //$NON-NLS-1$

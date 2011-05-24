@@ -95,7 +95,7 @@ public class ProcessUtil {
 				PMS.info("Successfully sent kill -" + signal + " to the Unix process: " + pid);
 			}
 		} catch (IOException e) {
-			PMS.error("Error calling: kill -9 " + pid, e);
+			PMS.error("Error calling: kill -" + signal + " " + pid, e);
 		}
 
 		return killed;
