@@ -127,7 +127,7 @@ public class PMS {
 	/**
 	 * Version showed in the UPnP XML descriptor and logs.
 	 */
-	public static final String VERSION = "1.22.0"; //$NON-NLS-1$
+	public static final String VERSION = "1.23.0"; //$NON-NLS-1$
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 	// (innot): The logger used for all logging.
 	public static final Logger logger = LoggerFactory.getLogger(PMS.class);

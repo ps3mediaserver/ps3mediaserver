@@ -1,6 +1,17 @@
 Changelog:
 ==========
 
+26/05/2011 - 1.23.0
+
+	Fixed Windows service
+	Windows service now starts automatically with the computer
+	Sony Bravia Z5500 (and possibly others) work again
+	Fixed PS3 not being detected for some users
+	Support cellphone/smartphone (3gp) videos
+	Windows service is uninstalled with program
+	Detect Popcorn Hour and WDTV live more reliably
+	English, Russian and Dutch language updates
+
 15/05/2011 - 1.22.0
 
 	Many file compatibility bugs fixed (particularly MKV, MP4 and DVD ISO)
