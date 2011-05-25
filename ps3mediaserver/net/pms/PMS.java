@@ -494,7 +494,7 @@ public class PMS {
 					if (foundRenderers.size() == 0) {
 						frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-220.png"); //$NON-NLS-1$ //$NON-NLS-2$
 					} else {
-						frame.setStatusCode(0, "A media renderer other than the PS3 has been detected. This software is tuned for the PS3 but may work with your renderer", "messagebox_warning-220.png");
+						frame.setStatusCode(0, Messages.getString("PMS.15"), "messagebox_warning-220.png"); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			}
