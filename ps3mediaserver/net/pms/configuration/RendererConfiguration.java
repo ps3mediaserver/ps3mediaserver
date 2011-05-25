@@ -16,6 +16,7 @@ import net.pms.dlna.RootFolder;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.Messages;
 import net.pms.network.HTTPResource;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -508,11 +509,11 @@ public class RendererConfiguration {
 	}
 	
 	public String getRendererName() {
-		return getString(RENDERER_NAME, "Unknown Renderer");
+		return getString(RENDERER_NAME, Messages.getString("PMS.17"));
 	}
 	
 	public String getRendererNameWithAddress() {
-		String s = getString(RENDERER_NAME, "Unknown Renderer");
+		String s = getString(RENDERER_NAME, Messages.getString("PMS.17"));
 		if (currentRendererAddress != null)
 			s = s + " [" + currentRendererAddress.getHostAddress() + "]";
 		if (speedInMbits > 0) {
