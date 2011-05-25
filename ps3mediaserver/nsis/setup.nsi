@@ -68,7 +68,8 @@ Section "Program Files"
 
   WriteUnInstaller "uninst.exe"
 
-  SetOutPath "$APPDATA\PMS"
+  ReadENVStr $R0 ALLUSERSPROFILE
+  SetOutPath "$R0\PMS"
   SetOverwrite off
   File "WEB.conf"
 SectionEnd
