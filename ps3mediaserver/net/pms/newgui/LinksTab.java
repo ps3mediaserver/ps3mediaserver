@@ -65,7 +65,7 @@ public class LinksTab {
 	        CellConstraints cc = new CellConstraints();
 
         	final LinkMouseListener pms3Link = new LinkMouseListener("PS3 Media Server " + PMS.VERSION,
-        			"http://code.google.com/p/ps3mediaserver/");
+        			"http://www.ps3mediaserver.org/");
 	        builder.addLabel(pms3Link.getLabel(), cc.xy(2, 1, "center, fill")).addMouseListener(pms3Link);
 	        
 	        imagePanel = buildImagePanel();
@@ -75,7 +75,7 @@ public class LinksTab {
 	        builder.addLabel(Messages.getString("LinksTab.5"),  cc.xy(2,  5, "center, fill")); //$NON-NLS-1$ //$NON-NLS-2$
 	        
         	final LinkMouseListener tsMuxerLink = new LinkMouseListener("tsMuxeR (c) Smartlabs", 
-        			"http://www.smlabs.net/tsmuxer_en.html");
+        			"http://www.smlabs.net/en/products/tsmuxer/");
 	        builder.addLabel(tsMuxerLink.getLabel(),  
 	        		cc.xy(2, 7, "center, fill")).addMouseListener(tsMuxerLink);
 	        			       
