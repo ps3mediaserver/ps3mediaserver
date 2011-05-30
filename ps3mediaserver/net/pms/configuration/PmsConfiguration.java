@@ -302,8 +302,8 @@ public class PmsConfiguration {
 	 */
 	private static ProgramPathDisabler createProgramPathsChain(Configuration configuration) {
 		return  new ProgramPathDisabler(
-				new WindowsRegistryProgramPaths(
 				new ConfigurationProgramPaths(configuration, 
+				new WindowsRegistryProgramPaths(
 				new PlatformSpecificDefaultPathsFactory().get())));
 	}
 
