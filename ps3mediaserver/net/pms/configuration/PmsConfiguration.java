@@ -136,13 +136,13 @@ public class PmsConfiguration {
 	 *
 	 *     Windows:
 	 *
-	 *         %APPDATA%\PMS
+	 *         %ALLUSERSPROFILE%\PMS
 	 *
 	 *     Mac OS X:
 	 *
 	 *         /home/<username>/Library/Application Support/PMS 
 	 *
-     *     Linux &c.
+         *     Linux &c.
 	 *
 	 *         /home/<username>/.config/PMS
 	 *
@@ -152,7 +152,7 @@ public class PmsConfiguration {
 	 *     BUILD = "PMS Rendr Edition";
 	 *     BUILD = "pms-mlx";
 	 *
-	 * Note: custom Windows builds that change this value should change the corresponding "$APPDATA\PMS"
+	 * Note: custom Windows builds that change this value should change the corresponding "$ALLUSERSPROFILE\PMS"
 	 * value in nsis/setup.nsi
 	 */
 	private static final String BUILD = "PMS";
@@ -193,7 +193,7 @@ public class PmsConfiguration {
 
 		1) if PMS_PROFILE is not set, PMS.conf is located in: 
 		 
-			Windows:             %APPDATA%\$build
+			Windows:             %ALLUSERSPROFILE%\$build
 			Mac OS X:            $HOME/Library/Application Support/$build
 			Everything else:     $HOME/.config/$build
 

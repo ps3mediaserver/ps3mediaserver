@@ -465,8 +465,11 @@ public class PMS {
 			error("Error loading plugins", e);
 		}
 
+		// a static block in Player doesn't work (i.e. is called too late).
+		// this must always be called *after* the plugins have loaded.
+		// here's as good a place as any
+		Player.initializeFinalizeTranscoderArgsListeners();
 		registerPlayers();
-
 		getRootFolder(RendererConfiguration.getDefaultConf());
 
 		boolean binding = false;

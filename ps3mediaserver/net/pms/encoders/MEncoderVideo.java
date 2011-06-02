@@ -51,13 +51,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import net.pms.Messages;
-import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
+import net.pms.dlna.DLNAResource;
 import net.pms.dlna.InputFile;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
@@ -66,11 +65,13 @@ import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.io.StreamModifier;
+import net.pms.Messages;
 import net.pms.network.HTTPResource;
 import net.pms.newgui.FontFileFilter;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.MyComboBoxModel;
 import net.pms.newgui.RestrictedFileSystemView;
+import net.pms.PMS;
 import net.pms.util.CodecUtil;
 import net.pms.util.ProcessUtil;
 
@@ -1024,7 +1025,11 @@ public class MEncoderVideo extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params)
+	public ProcessWrapper launchTranscode(
+		String fileName,
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params)
 		throws IOException {
 
 		params.manageFastStart();
@@ -1768,7 +1773,17 @@ public class MEncoderVideo extends Player {
 				cmdArray[cmdArray.length - 1] = pipe.getInputPipe();
 			}
 
+			cmdArray = finalizeTranscoderArgs(
+			    id(),
+			    fileName,
+			    dlna,
+			    media,
+			    params,
+			    cmdArray
+			);
+
 			pw = new ProcessWrapperImpl(cmdArray, params);
+
 			if (!directpipe) {
 				ProcessWrapper mkfifo_process = pipe.getPipeProcess();
 				pw.attachProcess(mkfifo_process);
