@@ -1093,17 +1093,15 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		// Ditlew - WDTV Live
 		// Ditlew - We convert byteoffset to timeoffset here. This needs the stream to be CBR!
 		int cbr_video_bitrate = mediarenderer.getCBRVideoBitrate();
-		if (player != null && low > 0 && cbr_video_bitrate > 0)
-		{
+		if (player != null && low > 0 && cbr_video_bitrate > 0) {
 			int used_bit_rated = (int)((cbr_video_bitrate + 256) * 1024 / 8 * 1.04); // 1.04 = container overhead
-			if (low > used_bit_rated)
-			{
+			if (low > used_bit_rated) {
 				timeseek = low / (used_bit_rated);
 				low = 0;
 
-				// WDTV Live - if set to TS it ask multible times and ends by asking for a vild offset which kills mencoder
-				if (timeseek > media.getDurationInSeconds())
-				{
+				// WDTV Live - if set to TS it asks multiple times and ends by
+				// asking for an invalid offset which kills mencoder
+				if (timeseek > media.getDurationInSeconds()) {
 					return null;
 				}   
 					
@@ -1115,13 +1113,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				timeseek_auto = true;
 				
 				//PMS.debug( "Ditlew - calculated timeseek: " + timeseek);			
-			}				
+			}
 		}
 
 		if (player == null) {
-			
 			if (this instanceof IPushOutput) {
-				
 				PipedOutputStream out = new PipedOutputStream();
 				PipedInputStream fis = new PipedInputStream(out);
 				((IPushOutput) this).push(out);
@@ -1136,8 +1132,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				fis = ImagesUtil.getAutoRotateInputStreamImage(getInputStream(), media.orientation);
 				if (fis == null) // error, let's return the original one
 					fis = getInputStream();
-			} else
+			} else {
 				fis = getInputStream();
+			}
 			if (low > 0 && fis != null)
 				fis.skip(low);
 			if (timeseek != 0 && this instanceof RealFile)
@@ -1165,7 +1162,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				
 			if (externalProcess == null || externalProcess.isDestroyed()) {
 				PMS.minimal("Starting transcode/remux of " + getName());
-				externalProcess = player.launchTranscode(getSystemName(), this, media, params);
+				externalProcess = player.launchTranscode(
+				    getSystemName(),
+				    this,
+				    media,
+				    params
+				);
 				if (params.waitbeforestart > 0) {
 					PMS.debug("Sleeping for " + params.waitbeforestart + " milliseconds");
 					try {
@@ -1177,8 +1179,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				}
 			} else if (timeseek > 0 && media != null && media.mediaparsed) {
 				if (media.getDurationInSeconds() > 0) {
-					
-					PMS.info("Requesting Time Seeking: " + timeseek + " seconds");
+					PMS.info("Requesting time seek: " + timeseek + " seconds");
 					params.timeseek = timeseek;
 					params.minBufferSize = 1;
 					Runnable r = new Runnable() {
@@ -1187,7 +1188,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						}
 					};
 					new Thread(r).start();
-					ProcessWrapper newExternalProcess = player.launchTranscode(getSystemName(), this, media, params);
+					ProcessWrapper newExternalProcess = player.launchTranscode(
+					    getSystemName(),
+					    this,
+					    media,
+					    params
+					);
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
@@ -1229,8 +1235,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 			return is;
 		}
-		
-	
 	}
 	
 	public Player getPlayer() {
