@@ -65,7 +65,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
 	protected static String TRANSCODE_FOLDER = "#--TRANSCODE--#";
 	private Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
-	private final int STOP_PLAYING_DELAY = 3000;
+	private final int STOP_PLAYING_DELAY = 4000;
 	
 	/**Returns parent object, usually a folder type of resource.
 	 * @return Parent object.
@@ -1066,30 +1066,30 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @see StartStopListener
 	 */
 	public void startPlaying(final String rendererId) {
-	    final String requestId = getRequestId(rendererId);
-	    synchronized (requestIdToRefcount) {
-		Integer temp = (Integer)requestIdToRefcount.get(requestId);
-		if (temp == null)
-		    temp = 0;
-		final Integer refCount = temp;
-		requestIdToRefcount.put(requestId, refCount + 1);
-		if (refCount == 0) {
-		    final DLNAResource self = this;
-		    Runnable r = new Runnable() {
-			public void run() {
-			    PMS.debug("StartStopListener: event:    start");
-			    PMS.debug("StartStopListener: renderer: " + rendererId);
-			    PMS.debug("StartStopListener: file:     " + getSystemName());
-			    PMS.debug("StartStopListener:");
-			    for (ExternalListener listener:ExternalFactory.getExternalListeners()) {
-				if (listener instanceof StartStopListener)
-				    ((StartStopListener) listener).nowPlaying(media, self);
-			    }
+		final String requestId = getRequestId(rendererId);
+		synchronized (requestIdToRefcount) {
+			Integer temp = (Integer)requestIdToRefcount.get(requestId);
+			if (temp == null)
+				temp = 0;
+			final Integer refCount = temp;
+			requestIdToRefcount.put(requestId, refCount + 1);
+			if (refCount == 0) {
+				final DLNAResource self = this;
+				Runnable r = new Runnable() {
+					public void run() {
+						PMS.debug("StartStopListener: event:    start");
+						PMS.debug("StartStopListener: renderer: " + rendererId);
+						PMS.debug("StartStopListener: file:     " + getSystemName());
+						PMS.debug("StartStopListener:");
+						for (ExternalListener listener:ExternalFactory.getExternalListeners()) {
+							if (listener instanceof StartStopListener)
+								((StartStopListener) listener).nowPlaying(media, self);
+						}
+					}
+				};
+				new Thread(r).start();
 			}
-		    };
-		    new Thread(r).start();
 		}
-	    }
 	}
 	
 	/**
@@ -1097,42 +1097,42 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @see StartStopListener
 	 */
 	public void stopPlaying(final String rendererId) {
-	    final DLNAResource self = this;
-	    final String requestId = getRequestId(rendererId);
-	    Runnable defer = new Runnable() {
-		public void run() {
-		    try {
-			Thread.sleep(STOP_PLAYING_DELAY);
-		    } catch (InterruptedException e) {
-			PMS.error("stopPlaying sleep interrupted", e);
-		    }
-
-		    synchronized (requestIdToRefcount) {
-			final Integer refCount = (Integer)requestIdToRefcount.get(requestId);
-			assert refCount != null;
-			assert refCount > 0;
-			requestIdToRefcount.put(requestId, refCount - 1);
-
-			Runnable r = new Runnable() {
-			    public void run() {
-				if (refCount == 1) {
-				    PMS.debug("StartStopListener: event:    stop");
-				    PMS.debug("StartStopListener: renderer: " + rendererId);
-				    PMS.debug("StartStopListener: file:     " + getSystemName());
-				    PMS.debug("StartStopListener:");
-				    for (ExternalListener listener:ExternalFactory.getExternalListeners()) {
-					if (listener instanceof StartStopListener)
-					    ((StartStopListener) listener).donePlaying(media, self);
-				    }
+		final DLNAResource self = this;
+		final String requestId = getRequestId(rendererId);
+		Runnable defer = new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(STOP_PLAYING_DELAY);
+				} catch (InterruptedException e) {
+					PMS.error("stopPlaying sleep interrupted", e);
 				}
-			    }
-			};
-			new Thread(r).start();
-		    }
-		}
-	    };
 
-	    new Thread(defer).start();
+				synchronized (requestIdToRefcount) {
+					final Integer refCount = (Integer)requestIdToRefcount.get(requestId);
+					assert refCount != null;
+					assert refCount > 0;
+					requestIdToRefcount.put(requestId, refCount - 1);
+
+					Runnable r = new Runnable() {
+						public void run() {
+							if (refCount == 1) {
+								PMS.debug("StartStopListener: event:    stop");
+								PMS.debug("StartStopListener: renderer: " + rendererId);
+								PMS.debug("StartStopListener: file:     " + getSystemName());
+								PMS.debug("StartStopListener:");
+								for (ExternalListener listener:ExternalFactory.getExternalListeners()) {
+									if (listener instanceof StartStopListener)
+										((StartStopListener) listener).donePlaying(media, self);
+								}
+							}
+						}
+					};
+					new Thread(r).start();
+				}
+			}
+		};
+
+		new Thread(defer).start();
 	}
 	
 	/**Returns an InputStream of this DLNAResource that starts at a given time, if possible. Very useful if video chapters are being used.
