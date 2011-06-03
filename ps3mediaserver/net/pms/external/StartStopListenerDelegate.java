@@ -1,4 +1,4 @@
-// a utility class, implementations of which fire start/stop hooks before/after a resource has finished streaming
+// a utility class, instances of which trigger start/stop callbacks before/after streaming a resource
 
 package net.pms.external;
 
