@@ -26,6 +26,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -59,10 +61,11 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public abstract class DLNAResource extends HTTPResource implements Cloneable, Runnable {
-	
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
 	protected static String TRANSCODE_FOLDER = "#--TRANSCODE--#";
+	private Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
+	private final int STOP_PLAYING_DELAY = 3000;
 	
 	/**Returns parent object, usually a folder type of resource.
 	 * @return Parent object.
@@ -643,7 +646,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			if (noName)
 				name = "[" + player.name() + "]";
 			else {
-				// Ditlew - WDTV Live don't show durations otherwize, and this is usefull for finding the main title
+				// Ditlew - WDTV Live don't show durations otherwise, and this is useful for finding the main title
 				if (mediaRenderer != null && mediaRenderer.isShowDVDTitleDuration() && media.dvdtrack > 0)
 				{
 					name += " - " + media.duration;
@@ -1053,27 +1056,83 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		
 		return sb.toString();
 	}
-	
-	/**
-	 * Plugin implementation. When this item is going to play, it will notify all the StartStopListener objects available.
-	 * @see StartStopListener
-	 */
-	public void startPlaying() {
-		for(ExternalListener listener:ExternalFactory.getExternalListeners()) {
-			if (listener instanceof StartStopListener)
-				((StartStopListener) listener).nowPlaying(media, this);
-		}
+
+	private String getRequestId(String rendererId) {
+	    return String.format("%s|%x|%s", rendererId, hashCode(), getSystemName());
 	}
 	
 	/**
 	 * Plugin implementation. When this item is going to play, it will notify all the StartStopListener objects available.
 	 * @see StartStopListener
 	 */
-	public void stopPlaying() {
-		for(ExternalListener listener:ExternalFactory.getExternalListeners()) {
-			if (listener instanceof StartStopListener)
-				((StartStopListener) listener).donePlaying(media, this);
+	public void startPlaying(final String rendererId) {
+	    final String requestId = getRequestId(rendererId);
+	    synchronized (requestIdToRefcount) {
+		Integer temp = (Integer)requestIdToRefcount.get(requestId);
+		if (temp == null)
+		    temp = 0;
+		final Integer refCount = temp;
+		requestIdToRefcount.put(requestId, refCount + 1);
+		if (refCount == 0) {
+		    final DLNAResource self = this;
+		    Runnable r = new Runnable() {
+			public void run() {
+			    PMS.debug("StartStopListener: event:    start");
+			    PMS.debug("StartStopListener: renderer: " + rendererId);
+			    PMS.debug("StartStopListener: file:     " + getSystemName());
+			    PMS.debug("StartStopListener:");
+			    for (ExternalListener listener:ExternalFactory.getExternalListeners()) {
+				if (listener instanceof StartStopListener)
+				    ((StartStopListener) listener).nowPlaying(media, self);
+			    }
+			}
+		    };
+		    new Thread(r).start();
 		}
+	    }
+	}
+	
+	/**
+	 * Plugin implementation. When this item is going to play, it will notify all the StartStopListener objects available.
+	 * @see StartStopListener
+	 */
+	public void stopPlaying(final String rendererId) {
+	    final DLNAResource self = this;
+	    final String requestId = getRequestId(rendererId);
+	    Runnable defer = new Runnable() {
+		public void run() {
+		    try {
+			Thread.sleep(STOP_PLAYING_DELAY);
+		    } catch (InterruptedException e) {
+			PMS.error("stopPlaying sleep interrupted", e);
+		    }
+
+		    synchronized (requestIdToRefcount) {
+			final Integer refCount = (Integer)requestIdToRefcount.get(requestId);
+			assert refCount != null;
+			assert refCount > 0;
+			requestIdToRefcount.put(requestId, refCount - 1);
+
+			Runnable r = new Runnable() {
+			    public void run() {
+				if (refCount == 1) {
+				    PMS.debug("StartStopListener: event:    stop");
+				    PMS.debug("StartStopListener: renderer: " + rendererId);
+				    PMS.debug("StartStopListener: file:     " + getSystemName());
+				    PMS.debug("StartStopListener:");
+				    for (ExternalListener listener:ExternalFactory.getExternalListeners()) {
+					if (listener instanceof StartStopListener)
+					    ((StartStopListener) listener).donePlaying(media, self);
+				    }
+				}
+			    }
+			};
+			new Thread(r).start();
+		    }
+		}
+	    };
+
+	    new Thread(defer).start();
 	}
 	
 	/**Returns an InputStream of this DLNAResource that starts at a given time, if possible. Very useful if video chapters are being used.
@@ -1113,7 +1172,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				timeseek_auto = true;
 				
 				//PMS.debug( "Ditlew - calculated timeseek: " + timeseek);			
-			}
+			}				
 		}
 
 		if (player == null) {

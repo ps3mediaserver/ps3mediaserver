@@ -25,9 +25,10 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.charset.Charset;
 import java.util.StringTokenizer;
 
-import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.external.StartStopListenerDelegate;
+import net.pms.PMS;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -177,11 +178,10 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			PMS.info("HTTP: " + request.getArgument() + " / "
 					+ request.getLowRange() + "-" + request.getHighRange());
 
-		writeResponse(e, request);
-
+		writeResponse(e, request, ia);
 	}
 
-	private void writeResponse(MessageEvent e, RequestV2 request) {
+	private void writeResponse(MessageEvent e, RequestV2 request, InetAddress ia) {
 
 		// Decide whether to close the connection or not.
 		boolean close = HttpHeaders.Values.CLOSE.equalsIgnoreCase(nettyRequest
@@ -203,12 +203,18 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 					/*request.isHttp10() ? HttpVersion.HTTP_1_0
 							: */HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 
-		try {
-			request.answer(response, e, close);
-		} catch (IOException e1) {
-			PMS.debug("Error IO 02: " + e1.getMessage());
-		}
+		StartStopListenerDelegate startStopListenerDelegate = new StartStopListenerDelegate(ia.getHostAddress());
 
+		try {
+			request.answer(response, e, close, startStopListenerDelegate);
+		} catch (IOException e1) {
+			PMS.debug("HTTP request V2 IO error: " + e1.getMessage());
+			// note: we don't call stop() here in a finally block as
+			// answer() is non-blocking. we only (may) need to call it
+			// here in the case of an exception. it's a no-op if it's
+			// already been called
+			startStopListenerDelegate.stop();
+		}
 	}
 
 	@Override
