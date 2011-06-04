@@ -140,9 +140,9 @@ public class PmsConfiguration {
 	 *
 	 *     Mac OS X:
 	 *
-	 *         /home/<username>/Library/Application Support/PMS 
+	 *         /home/<username>/Library/Application Support/PMS
 	 *
-         *     Linux &c.
+	 *     Linux &c.
 	 *
 	 *         /home/<username>/.config/PMS
 	 *
