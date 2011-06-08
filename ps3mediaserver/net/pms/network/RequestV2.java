@@ -432,7 +432,7 @@ public class RequestV2 extends HTTPResource {
 				DLNAResource parentFolder = null;
 				if (files != null && filessize > 0)
 					parentFolder = files.get(0).getParent();
-				if (browseFlag!=null&&browseFlag.equals("BrowseDirectChildren") && mediaRenderer.isMediaParserV2()) {
+				if (browseFlag!=null&&browseFlag.equals("BrowseDirectChildren") && mediaRenderer.isMediaParserV2() && !mediaRenderer.isAnalyzeFolderAllFiles()) {
 					// with the new parser, files are parsed and analyzed *before* creating the DLNA tree,
 					// every 10 items (the ps3 asks 10 by 10),
 					// so we do not know exactly the total number of items in the DLNA folder to send
@@ -443,8 +443,10 @@ public class RequestV2 extends HTTPResource {
 					if (filessize - minus <= 0) // if no more elements, send the startingIndex
 						totalCount = startingIndex;
 					response.append("<TotalMatches>" + totalCount + "</TotalMatches>");
-				} else {
+				} else if(browseFlag!=null && browseFlag.equals("BrowseDirectChildren")) {
 					response.append("<TotalMatches>" + (((parentFolder!=null)?parentFolder.childrenNumber():filessize) - minus) + "</TotalMatches>");
+				} else { //from upnp spec: If BrowseMetadata is specified in the BrowseFlags then TotalMatches = 1
+					response.append("<TotalMatches>1</TotalMatches>");
 				}
 				response.append(CRLF);
 				response.append("<UpdateID>");
