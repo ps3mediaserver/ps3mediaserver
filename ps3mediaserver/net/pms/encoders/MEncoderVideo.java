@@ -58,6 +58,7 @@ import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.InputFile;
+import net.pms.dlna.FileTranscodeVirtualFolder;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeIPCProcess;
@@ -1052,8 +1053,13 @@ public class MEncoderVideo extends Player {
 			dvd = true;
 		}
 
+		// don't honour "Switch to tsMuxeR..." if the resource is being streamed via an MEncoder entry in
+		// the #--TRANSCODE--# folder
+		boolean forceMencoder = !PMS.getConfiguration().getHideTranscodeEnabled()
+			&& dlna.noName 
+			&& (dlna.getParent() instanceof FileTranscodeVirtualFolder);
 		ovccopy = false;
-		if (params.sid == null && !dvd && !avisynth() && media != null && (media.isVideoPS3Compatible(newInput) || !params.mediaRenderer.isH264Level41Limited()) && media.isMuxable(params.mediaRenderer) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
+		if (!forceMencoder && params.sid == null && !dvd && !avisynth() && media != null && (media.isVideoPS3Compatible(newInput) || !params.mediaRenderer.isH264Level41Limited()) && media.isMuxable(params.mediaRenderer) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
 			String sArgs[] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
 			boolean nomux = false;
 			for (String s : sArgs) {
