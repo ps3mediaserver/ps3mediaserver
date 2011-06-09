@@ -57,8 +57,8 @@ import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
-import net.pms.dlna.InputFile;
 import net.pms.dlna.FileTranscodeVirtualFolder;
+import net.pms.dlna.InputFile;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeIPCProcess;
@@ -1422,7 +1422,7 @@ public class MEncoderVideo extends Player {
 			cmdArray[cmdArray.length - 3] = "-quiet"; //$NON-NLS-1$
 		}
 
-		if (fileName.toLowerCase().endsWith("evo")) { //$NON-NLS-1$
+		if (fileName.toLowerCase().endsWith(".evo")) { //$NON-NLS-1$
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-psprobe"; //$NON-NLS-1$
 			cmdArray[cmdArray.length - 3] = "10000"; //$NON-NLS-1$
@@ -1590,6 +1590,14 @@ public class MEncoderVideo extends Player {
 			cmdArray[cmdArray.length - 5] = "lavcresample=" + rate; //$NON-NLS-1$
 			cmdArray[cmdArray.length - 4] = "-srate"; //$NON-NLS-1$
 			cmdArray[cmdArray.length - 3] = rate; //$NON-NLS-1$
+		}
+
+		// add a -cache option for piped media (e.g. rar/zip file entries):
+		// https://code.google.com/p/ps3mediaserver/issues/detail?id=911
+		if (params.stdin != null) {
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
+			cmdArray[cmdArray.length - 4] = "-cache"; //$NON-NLS-1$
+			cmdArray[cmdArray.length - 3] = "8192"; //$NON-NLS-1$
 		}
 
 		PipeProcess pipe = null;
