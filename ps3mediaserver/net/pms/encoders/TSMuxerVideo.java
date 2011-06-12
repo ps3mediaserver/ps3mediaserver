@@ -238,9 +238,24 @@ public class TSMuxerVideo extends Player {
 						ffmpegLPCMextract = new String [] { mencoderPath, "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=2", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", sm.isDtsembed()?"0.1":"0", "-noskip", "-oac", sm.isDtsembed()?"copy":"pcm", mixer!=null?"-af":"-quiet", mixer!=null?mixer:"-quiet", singleMediaAudio?"-quiet":"-aid", singleMediaAudio?"-quiet":("" + params.aid.id), "-srate", "48000", "-o", ffAudioPipe[0].getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$ //$NON-NLS-27$ //$NON-NLS-28$ //$NON-NLS-29$
 						if (!params.mediaRenderer.isMuxDTSToMpeg())
 							ffAudioPipe[0].setModifier(sm);
-					} else
-						ffmpegLPCMextract = new String [] { mencoderPath, "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=2", "-channels", "" + CodecUtil.getAC3ChannelCount(configuration, params.aid), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", "-oac", (params.aid.isAC3() && configuration.isRemuxAC3())?"copy":"lavc", params.aid.isAC3()?"-fafmttag":"-quiet", params.aid.isAC3()?"0x2000":"-quiet", "-lavcopts", "acodec=ac3:abitrate="+CodecUtil.getAC3Bitrate(configuration, params.aid), "-af", "lavcresample=48000", "-srate", "48000", singleMediaAudio?"-quiet":"-aid", singleMediaAudio?"-quiet":("" + params.aid.id), "-o", ffAudioPipe[0].getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$ //$NON-NLS-27$ //$NON-NLS-28$ //$NON-NLS-29$ //$NON-NLS-30$ //$NON-NLS-31$ //$NON-NLS-32$ //$NON-NLS-33$ //$NON-NLS-34$
-
+					} else {
+						ffmpegLPCMextract = new String [] {
+							mencoderPath, "-ss", "0", fileName, //$NON-NLS-1$ //$NON-NLS-2$
+							"-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=2", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+							"-channels", "" + CodecUtil.getAC3ChannelCount(configuration, params.aid), //$NON-NLS-1$ //$NON-NLS-2$
+							"-ovc", "copy", "-of", "rawaudio", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+							"-mc", "0",	"-noskip", "-oac", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+							(params.aid.isAC3() && configuration.isRemuxAC3()) ? "copy" : "lavc", //$NON-NLS-1$ //$NON-NLS-2$
+							params.aid.isAC3() ? "-fafmttag" : "-quiet", //$NON-NLS-1$ //$NON-NLS-2$
+							params.aid.isAC3() ? "0x2000" : "-quiet", "-lavcopts", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							"acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + ":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+							"-af", "lavcresample=48000", "-srate", "48000", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+							singleMediaAudio ? "-quiet" : "-aid", //$NON-NLS-1$ //$NON-NLS-2$
+							singleMediaAudio ? "-quiet" : ("" + params.aid.id), //$NON-NLS-1$
+							"-o", ffAudioPipe[0].getInputPipe() //$NON-NLS-1$
+						};
+					}
+					
 					if (fileName.toLowerCase().endsWith(".evo")) { //$NON-NLS-1$
 						ffmpegLPCMextract[4] = "-psprobe"; //$NON-NLS-1$
 						ffmpegLPCMextract[5] = "1000000"; //$NON-NLS-1$
@@ -275,7 +290,23 @@ public class TSMuxerVideo extends Player {
 							String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());
 							ffmpegLPCMextract = new String [] { mencoderPath, "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=2", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", sm.isDtsembed()?"0.1":"0", "-noskip", "-oac", sm.isDtsembed()?"copy":"pcm", mixer!=null?"-af":"-quiet", mixer!=null?mixer:"-quiet", singleMediaAudio?"-quiet":"-aid", singleMediaAudio?"-quiet":("" + audio.id), "-srate", "48000", "-o", ffAudioPipe[i].getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$ //$NON-NLS-27$ //$NON-NLS-28$ //$NON-NLS-29$
 						} else {
-							ffmpegLPCMextract = new String [] { mencoderPath, "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=2", "-channels", "" + CodecUtil.getAC3ChannelCount(configuration, audio), "-ovc", "copy", "-of", "rawaudio", "-mc", "0", "-noskip", "-oac", (audio.isAC3() && configuration.isRemuxAC3())?"copy":"lavc", audio.isAC3()?"-fafmttag":"-quiet", audio.isAC3()?"0x2000":"-quiet", "-lavcopts", "acodec=ac3:abitrate="+CodecUtil.getAC3Bitrate(configuration, audio), "-af", "lavcresample=48000", "-srate", "48000", singleMediaAudio?"-quiet":"-aid", singleMediaAudio?"-quiet":("" + audio.id), "-o", ffAudioPipe[i].getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$ //$NON-NLS-27$ //$NON-NLS-28$ //$NON-NLS-29$ //$NON-NLS-30$ //$NON-NLS-31$ //$NON-NLS-32$ //$NON-NLS-33$ //$NON-NLS-34$
+							ffmpegLPCMextract = new String [] {
+								mencoderPath, "-ss", "0", fileName, //$NON-NLS-1$ //$NON-NLS-2$
+								"-quiet", "-quiet", "-really-quiet", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+								"-msglevel", "statusline=2", "-channels", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+								"" + CodecUtil.getAC3ChannelCount(configuration, audio), //$NON-NLS-1$
+								"-ovc", "copy", "-of", "rawaudio", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+								"-mc", "0", "-noskip", "-oac", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+								(audio.isAC3() && configuration.isRemuxAC3()) ? "copy" : "lavc", //$NON-NLS-1$ //$NON-NLS-2$
+								audio.isAC3() ? "-fafmttag" : "-quiet", //$NON-NLS-1$ //$NON-NLS-2$
+								audio.isAC3() ? "0x2000" : "-quiet", //$NON-NLS-1$ //$NON-NLS-2$
+								"-lavcopts", //$NON-NLS-1$ //$NON-NLS-2$
+								"acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + ":abitrate=" + CodecUtil.getAC3Bitrate(configuration, audio), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+								"-af", "lavcresample=48000", "-srate", "48000", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+								singleMediaAudio ? "-quiet" : "-aid", //$NON-NLS-1$ //$NON-NLS-2$
+								singleMediaAudio ? "-quiet" : ("" + audio.id), //$NON-NLS-1$ //$NON-NLS-2$
+								"-o", ffAudioPipe[i].getInputPipe() //$NON-NLS-1$
+							};
 						}
 
 						if (fileName.toLowerCase().endsWith(".evo")) { //$NON-NLS-1$

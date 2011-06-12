@@ -183,10 +183,10 @@ public class MediaInfo {
 	}
 
 	@Override
-		protected void finalize() throws Throwable {
-			if (Handle != null)
-				dispose();
-		}
+	protected void finalize() throws Throwable {
+		if (Handle != null)
+			dispose();
+	}
 
 	// File
 	/**

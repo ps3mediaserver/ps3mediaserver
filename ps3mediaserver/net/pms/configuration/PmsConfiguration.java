@@ -35,6 +35,7 @@ public class PmsConfiguration {
 	private static final String KEY_LANGUAGE = "language";
 	private static final String KEY_MIN_MEMORY_BUFFER_SIZE = "minvideobuffer";
 	private static final String KEY_MAX_MEMORY_BUFFER_SIZE = "maxvideobuffer";
+	private static final String KEY_MENCODER_AC3_FIXED = "mencoder_ac3_fixed";
 	private static final String KEY_MENCODER_ASS_MARGIN = "mencoder_ass_margin";
 	private static final String KEY_MENCODER_ASS_OUTLINE = "mencoder_ass_outline";
 	private static final String KEY_MENCODER_ASS_SCALE = "mencoder_ass_scale";
@@ -477,6 +478,11 @@ public class PmsConfiguration {
 		return getString(KEY_MENCODER_ASS_SCALE, "1.0");
 	}
 
+	// http://www.ps3mediaserver.org/forum/viewtopic.php?f=7&t=10809&p=51325#p51325
+	public boolean isMencoderAc3Fixed() {
+		return configuration.getBoolean(KEY_MENCODER_AC3_FIXED, Platform.isMac());
+	}
+	
 	public String getMencoderAssMargin() {
 		return getString(KEY_MENCODER_ASS_MARGIN, "10");
 	}
@@ -507,6 +513,10 @@ public class PmsConfiguration {
 
 	public void setMencoderNoAssOutline(String value) {
 		configuration.setProperty(KEY_MENCODER_NOASS_OUTLINE, value);
+	}
+
+	public void setMencoderAc3Fixed(boolean value) {
+		configuration.setProperty(KEY_MENCODER_AC3_FIXED, value);
 	}
 
 	public void setMencoderAssMargin(String value) {
