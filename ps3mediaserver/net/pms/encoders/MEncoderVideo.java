@@ -943,11 +943,11 @@ public class MEncoderVideo extends Player {
 	@Override
 	public String[] args() {
 		String args[] = null;
-		String defaut[] = getDefaultArgs();
+		String defaultArgs[] = getDefaultArgs();
 		if (overridenMainArgs != null) {
-			args = new String[defaut.length + overridenMainArgs.length];
-			for (int i = 0; i < defaut.length; i++) {
-				args[i] = defaut[i];
+			args = new String[defaultArgs.length + overridenMainArgs.length];
+			for (int i = 0; i < defaultArgs.length; i++) {
+				args[i] = defaultArgs[i];
 			}
 			for (int i = 0; i < overridenMainArgs.length; i++) {
 				if (overridenMainArgs[i].equals("-of") || overridenMainArgs[i].equals("-oac") || overridenMainArgs[i].equals("-ovc") || overridenMainArgs[i].equals("-mpegopts")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -957,10 +957,10 @@ public class MEncoderVideo extends Player {
 						overridenMainArgs[i + 1] = "-quiet"; //$NON-NLS-1$
 					}
 				}
-				args[i + defaut.length] = overridenMainArgs[i];
+				args[i + defaultArgs.length] = overridenMainArgs[i];
 			}
 		} else {
-			args = defaut;
+			args = defaultArgs;
 		}
 		return args;
 

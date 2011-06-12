@@ -103,11 +103,11 @@ public class FFMpegVideo extends Player {
 	@Override
 	public String[] args() {
 		String args [] = null;
-		String defaut [] = getDefaultArgs();
+		String defaultArgs [] = getDefaultArgs();
 		if (overridenArgs != null) { 
-			args = new String [defaut.length + overridenArgs.length];
-			for(int i=0;i<defaut.length;i++)
-				args[i] = defaut[i];
+			args = new String [defaultArgs.length + overridenArgs.length];
+			for(int i=0;i<defaultArgs.length;i++)
+				args[i] = defaultArgs[i];
 			for(int i=0;i<overridenArgs.length;i++) {
 				if (overridenArgs[i].equals("-f") || overridenArgs[i].equals("-acodec") || overridenArgs[i].equals("-vcodec")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					PMS.minimal("FFmpeg encoder settings: You cannot change Muxer, Video Codec or Audio Codec"); //$NON-NLS-1$
@@ -115,10 +115,10 @@ public class FFMpegVideo extends Player {
 					if (i + 1 < overridenArgs.length)
 						overridenArgs[i+1] = "NewTitle"; //$NON-NLS-1$
 				}
-				args[i+defaut.length] = overridenArgs[i];
+				args[i+defaultArgs.length] = overridenArgs[i];
 			}
 		} else
-			args = defaut;
+			args = defaultArgs;
 		return args;
 			
 	}
