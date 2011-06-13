@@ -1414,6 +1414,9 @@ public class MEncoderVideo extends Player {
 			if (params.sid.type == DLNAMediaSubtitle.VOBSUB) {
 				cmdArray[cmdArray.length - 4] = "-vobsub";
 				cmdArray[cmdArray.length - 3] = subString.substring(0, subString.length() - 4);
+				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length +2);
+				cmdArray[cmdArray.length-4] = "-slang"; //$NON-NLS-1$
+				cmdArray[cmdArray.length-3] = "" + params.sid.lang; //$NON-NLS-1$
 			} else {
 				cmdArray[cmdArray.length - 4] = "-sub"; //$NON-NLS-1$
 				cmdArray[cmdArray.length - 3] = subString.replace(",", "\\,"); // commas in mencoder separates multiple subtitles files //$NON-NLS-1$ //$NON-NLS-2$
