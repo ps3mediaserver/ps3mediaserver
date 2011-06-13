@@ -35,7 +35,6 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
@@ -49,7 +48,6 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
-@ChannelPipelineCoverage("one")
 public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 
 	private volatile HttpRequest nettyRequest;
@@ -167,8 +165,8 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 				PMS.get().setRendererfound(request.getMediaRenderer());
 			}
 		}
-		if (nettyRequest.getContentLength() > 0) {
-			byte data[] = new byte[(int) nettyRequest.getContentLength()];
+		if (HttpHeaders.getContentLength(nettyRequest) > 0) {
+			byte data[] = new byte[(int) HttpHeaders.getContentLength(nettyRequest)];
 			ChannelBuffer content = nettyRequest.getContent();
 			content.readBytes(data);
 			request.setTextContent(new String(data, "UTF-8"));

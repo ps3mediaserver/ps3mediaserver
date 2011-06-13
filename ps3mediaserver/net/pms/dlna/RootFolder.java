@@ -170,7 +170,7 @@ public class RootFolder extends DLNAResource {
 		boolean refreshed = false;
 		File files[] = null;
 		try {
-			files = PMS.get().loadFoldersConf(PMS.getConfiguration().getFolders());
+			files = PMS.get().loadFoldersConf(PMS.getConfiguration().getFolders(), true);
 			if (files == null || files.length == 0)
 				files = File.listRoots();
 			int i = 0;
