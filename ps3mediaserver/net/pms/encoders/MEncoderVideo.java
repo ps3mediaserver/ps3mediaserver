@@ -1058,8 +1058,22 @@ public class MEncoderVideo extends Player {
 		boolean forceMencoder = !PMS.getConfiguration().getHideTranscodeEnabled()
 			&& dlna.noName 
 			&& (dlna.getParent() instanceof FileTranscodeVirtualFolder);
+
 		ovccopy = false;
-		if (!forceMencoder && params.sid == null && !dvd && !avisynth() && media != null && (media.isVideoPS3Compatible(newInput) || !params.mediaRenderer.isH264Level41Limited()) && media.isMuxable(params.mediaRenderer) && configuration.isMencoderMuxWhenCompatible() && params.mediaRenderer.isMuxH264MpegTS()) {
+
+		if (
+			!forceMencoder &&
+			params.sid == null &&
+			!dvd &&
+			!avisynth() &&
+			media != null && (
+				media.isVideoPS3Compatible(newInput) ||
+				!params.mediaRenderer.isH264Level41Limited()
+			) &&
+			media.isMuxable(params.mediaRenderer) &&
+			configuration.isMencoderMuxWhenCompatible() &&
+			params.mediaRenderer.isMuxH264MpegTS()
+		) {
 			String sArgs[] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
 			boolean nomux = false;
 			for (String s : sArgs) {
@@ -1200,7 +1214,7 @@ public class MEncoderVideo extends Player {
 
 		boolean needAssFixPTS = false;
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		// Use ASS & Fontconfig flags (and therefore ASS font styles) for all subtitled files except vobsub, embedded, dvd and mp4 container with srt
 		// Note: The MP4 container with SRT rule is a workaround for MEncoder r30369. If there is ever a later version of MEncoder that supports external srt subs we should use that. As of r32848 that isn't the case
@@ -1214,7 +1228,7 @@ public class MEncoderVideo extends Player {
 			!dvd &&
 			!avisynth()
 		) {
-			sb.append("-ass -" + (configuration.isMencoderFontConfig() ? "" : "no") + "fontconfig "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			sb.append("-ass -").append(configuration.isMencoderFontConfig() ? "" : "no").append("fontconfig "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			if (mpegts || wmv) {
 				needAssFixPTS = Platform.isWindows(); // don't think the fixpts filter is in the mplayer trunk
 			}
@@ -1224,23 +1238,23 @@ public class MEncoderVideo extends Player {
 		if (params.sid != null && params.sid.type == DLNAMediaSubtitle.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
 			String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
 
-			sb.append("-spuaa " + subtitleQuality + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			sb.append("-spuaa ").append(subtitleQuality).append(" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 
 		if (params.sid != null && !params.sid.is_file_utf8 && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
-			sb.append("-subcp " + configuration.getMencoderSubCp() + " "); //$NON-NLS-1$ //$NON-NLS-2$
+			sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" "); //$NON-NLS-1$ //$NON-NLS-2$
 			if (configuration.isMencoderSubFribidi()) {
-				sb.append("-fribidi-charset " + configuration.getMencoderSubCp() + " "); //$NON-NLS-1$ //$NON-NLS-2$
+				sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" "); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 
 		if (!configuration.isMencoderDisableSubs() && !avisynth()) {
 			if (configuration.getMencoderFont() != null && configuration.getMencoderFont().length() > 0) {
-				sb.append("-subfont " + configuration.getMencoderFont() + " "); //$NON-NLS-1$ //$NON-NLS-2$
+				sb.append("-subfont ").append(configuration.getMencoderFont()).append(" "); //$NON-NLS-1$ //$NON-NLS-2$
 			} else {
 				String font = CodecUtil.getDefaultFontPath();
 				if (StringUtils.isNotBlank(font)) {
-					sb.append("-subfont " + font + " "); //$NON-NLS-1$ //$NON-NLS-2$
+					sb.append("-subfont ").append(font).append(" "); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 			if (configuration.isMencoderAss()) {
@@ -1252,19 +1266,19 @@ public class MEncoderVideo extends Player {
 							assSubColor = assSubColor.substring(2) + "00";
 						}
 					}
-					sb.append("-ass-color " + assSubColor + " -ass-border-color 00000000 -ass-font-scale " + configuration.getMencoderAssScale()); //$NON-NLS-1$
-					sb.append(" -ass-force-style FontName=Arial,Outline=" + configuration.getMencoderAssOutline() + ",Shadow=" + configuration.getMencoderAssShadow() + ",MarginV=" + configuration.getMencoderAssMargin() + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+					sb.append("-ass-color ").append(assSubColor).append(" -ass-border-color 00000000 -ass-font-scale ").append(configuration.getMencoderAssScale()); //$NON-NLS-1$
+					sb.append(" -ass-force-style FontName=Arial,Outline=").append(configuration.getMencoderAssOutline()).append(",Shadow=").append(configuration.getMencoderAssShadow()).append(",MarginV=").append(configuration.getMencoderAssMargin()).append(" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 				}
 			} else {
-				sb.append("-subfont-text-scale " + configuration.getMencoderNoAssScale()); //$NON-NLS-1$
-				sb.append(" -subfont-outline " + configuration.getMencoderNoAssOutline()); //$NON-NLS-1$
-				sb.append(" -subfont-blur " + configuration.getMencoderNoAssBlur()); //$NON-NLS-1$
+				sb.append("-subfont-text-scale ").append(configuration.getMencoderNoAssScale()); //$NON-NLS-1$
+				sb.append(" -subfont-outline ").append(configuration.getMencoderNoAssOutline()); //$NON-NLS-1$
+				sb.append(" -subfont-blur ").append(configuration.getMencoderNoAssBlur()); //$NON-NLS-1$
 				int subpos = 1;
 				try {
 					subpos = Integer.parseInt(configuration.getMencoderNoAssSubPos());
 				} catch (NumberFormatException n) {
 				}
-				sb.append(" -subpos " + (100 - subpos)); //$NON-NLS-1$
+				sb.append(" -subpos ").append(100 - subpos); //$NON-NLS-1$
 			}
 		}
 
@@ -1370,16 +1384,6 @@ public class MEncoderVideo extends Player {
 			cmdArray[cmdArray.length - 10] = "-subdelay"; //$NON-NLS-1$
 		}
 
-		// disable ass if there are no subs (not safe ?)
-		if (params.sid == null) {
-			for (int c = 0; c < cmdArray.length; c++) {
-				if (cmdArray[c] != null && cmdArray[c].equals("-ass")) //$NON-NLS-1$
-				{
-					cmdArray[c] = "-quiet"; //$NON-NLS-1$
-				}
-			}
-		}
-
 		cmdArray[cmdArray.length - 8] = "-quiet"; //$NON-NLS-1$
 		cmdArray[cmdArray.length - 7] = "-quiet"; //$NON-NLS-1$
 
@@ -1439,15 +1443,15 @@ public class MEncoderVideo extends Player {
 		// check if the media renderer supports this resolution
 		boolean mediaRendererScaler = params.mediaRenderer.isVideoRescale() && media != null && (media.width > params.mediaRenderer.getMaxVideoWidth() || (media.height > params.mediaRenderer.getMaxVideoHeight()));
 		// use scaler?
-		boolean scaler = mediaRendererScaler || (configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0));
-		if ((deinterlace || scaler) && !avisynth()) {
+		boolean scaleBool = mediaRendererScaler || (configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0));
+		if ((deinterlace || scaleBool) && !avisynth()) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-vf"; //$NON-NLS-1$
 			String scalerString = "scale=" + (params.mediaRenderer.getMaxVideoWidth() > 0 ? params.mediaRenderer.getMaxVideoWidth() : configuration.getMencoderScaleX()) + ":" + (params.mediaRenderer.getMaxVideoHeight() > 0 ? params.mediaRenderer.getMaxVideoHeight() : configuration.getMencoderScaleY()); //$NON-NLS-1$ //$NON-NLS-2$
 			if (deinterlace) {
 				scalerString = "," + scalerString; //$NON-NLS-1$
 			}
-			cmdArray[cmdArray.length - 3] = (deinterlace ? "yadif" : "") + (scaler ? scalerString : ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+			cmdArray[cmdArray.length - 3] = (deinterlace ? "yadif" : "") + (scaleBool ? scalerString : ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		}
 
 		if (configuration.getMencoderMT() && !avisynth && !dvd && !(media.codecV != null && (media.codecV.equals("mpeg2video")))) {
