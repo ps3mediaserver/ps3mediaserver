@@ -476,6 +476,7 @@ public class PMS {
 		// here's as good a place as any
 		Player.initializeFinalizeTranscoderArgsListeners();
 		registerPlayers();
+
 		getRootFolder(RendererConfiguration.getDefaultConf());
 
 		boolean binding = false;
@@ -500,7 +501,7 @@ public class PMS {
 					}
 				}
 				if (!ps3found) {
-					if (foundRenderers.size() == 0) {
+					if (foundRenderers.isEmpty()) {
 						frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-220.png"); //$NON-NLS-1$ //$NON-NLS-2$
 					} else {
 						frame.setStatusCode(0, Messages.getString("PMS.15"), "messagebox_warning-220.png"); //$NON-NLS-1$ //$NON-NLS-2$
