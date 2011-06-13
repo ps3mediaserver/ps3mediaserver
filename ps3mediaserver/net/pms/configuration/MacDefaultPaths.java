@@ -54,7 +54,7 @@ class MacDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getDCRaw() {
-		return "osx/dcrawU";
+		return "osx/dcraw";
 	}
 
 }
