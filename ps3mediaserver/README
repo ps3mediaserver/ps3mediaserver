@@ -18,7 +18,7 @@ Current features
 ================
 
 Ready to launch and play without codec packs; no folder configuration, pre-parsing, etc. All your folders are directly browsed by the PS3, there's an automatic refresh also.
-Real-time video transcoding via MEncoder, tsMuxer or Avisynth
+Real-time video transcoding via MEncoder, tsMuxeR or Avisynth
 DVD ISOs images / VIDEO_TS Folder transcoder
 OGG/FLAC/MPC/APE audio transcoding
 Thumbnail generation for Videos
@@ -30,7 +30,7 @@ Support for pictures based feeds, such as Flickr and Picasaweb
 Internet TV / Web Radio support with VLC, MEncoder or MPlayer
 Podcasts audio/ Video feeds support
 Lossless 5.1 PCM transcoding with DTS movies
-Remux video and remux/reencode all audio tracks to AC3/PCM in real time with tsMuxer
+Remux video and remux/reencode all audio tracks to AC3/PCM in real time with tsMuxeR
 FLAC 96kHz/24bits/5.1 support
 
 
@@ -111,7 +111,7 @@ In order to apply the same image to all videos, just drop a folder.jpg file in t
 Transcoding engine prioritization by folder
 -------------------------------------------
 
-If you have some movies who plays well with the tsMuxer engine, and nonetheless want
+If you have some movies who plays well with the tsMuxeR engine, and nonetheless want
 mencoder as your default engine, you can add [tsmuxer] at the end of this folder.
 The tsmuxer engine will be the first suggested, either as a replacement for your non ps3 compatible video,
 or on the top of the list proposed in the #Transcoded# folder. 
@@ -121,7 +121,7 @@ Available engine names:
 Mencoder = [mencoder]
 AviSynth/Mencoder = [avsmencoder]
 AviSynth/FFmpeg = [avsffmpeg]
-tsMuxer= [tsmuxer]
+tsMuxeR= [tsmuxer]
 
 It's also working the same way for virtual based folders, such as web folders names (see WEB.CONF)
 See the following web streaming engines:

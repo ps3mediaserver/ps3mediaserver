@@ -151,7 +151,7 @@ Changelog:
 	- Changes / Features : Windows/Linux
 
 	DTS / DTS-HD core audio tracks are now streamable without reencoding (DVD ISOs not supported yet)
-	New Option: unification of Mencoder/tsMuxer engines, including:
+	New Option: unification of Mencoder/tsMuxeR engines, including:
 	. Automatic choice between H264 muxing or transcoding, based on AVC Level 4.1 compatibility and subtitles configuration
 	. Remux on the fly any H264 content from MOV, MP4, and AVI containers (ex: Apple HD Trailers)
 	. This option is enabled by default and can be disabled via the #Video Settings# virtual menu if anything goes wrong
@@ -179,7 +179,7 @@ Changelog:
 	Better stability in LPCM and DTS handling
 	Fixed LPCM channel ordering
 	Wrong font detection on some systems: subtitles weren't loaded
-	Fixed tsMuxer crash at the end of file
+	Fixed tsMuxeR crash at the end of file
 	Modified UPNP discovery [work in progress]
 
 04/02/2009 - 1.04
@@ -190,17 +190,17 @@ Changelog:
 	RAW images thumbnail support: CR2/CRW/PEF/NEF/ORF/SRF/MRW/DNG/ARW/RAF
 	New translations: Spanish (thanks to Jose from www.playstationhoy.com), Dutch (thanks to Vincent Meylof), German (thanks to Jeuki), Russian (thanks to Peter Klassen), Polish (thanks to Maciej Bocian), Greek (thanks to Alexander Polichroniadis), Portuguese (thanks to Hugo Sousa), Finnish (thanks to Ove Sentlig), Norwegian (thanks to Ball80 and Topguy), Swedish (thanks to Dusan Ilic) and Japanese (thanks to Yu)
 	New extensions supported: SHN/M2V/M2P
-	tsMuxer engine can now mux or reencode in AC3/PCM all audio tracks in real time
+	tsMuxeR engine can now mux or reencode in AC3/PCM all audio tracks in real time
 	Add the experimental mencoder build for multicore on OSX
 	DVR-MS windows remuxer now included by default
 
 	- Fixes
 
-	tsMuxer's AC3/LPCM encode/muxing + Mencoder's LPCM remuxing now working on Linux
+	tsMuxeR's AC3/LPCM encode/muxing + Mencoder's LPCM remuxing now working on Linux
 	Fixed LPCM seeking issue
 	Fixed regression with PicasaWeb images feed
 	Changes in subtitles loading / Fonts support (Default/ASS/Embedded Fonts)
-	Fixed channels order with tsMuxer engine's DTS->AC3 option
+	Fixed channels order with tsMuxeR engine's DTS->AC3 option
 	Transcode buffer wasn't fully released after end of video
 	Fixed bug with shared folders selection on Windows
 	Fixed periodic alive messages sent to ps3
@@ -289,7 +289,7 @@ Changelog:
 	- Fixes:
 
 	m4a and aac are now transcoded by default (iTunes Apple Lossless compatibility)
-	seeking issues with dvr-ms and tsMuxer with AC3/PCM mode
+	seeking issues with dvr-ms and tsMuxeR with AC3/PCM mode
 	Displayed aspect ratio preserved
 
 14/12/2008 - 1.00
@@ -299,7 +299,7 @@ Changelog:
 	GPL licensing :)
 	IDX/SUB support for AviSynth ONLY
 	Revamped some UI, especially transcoding settings
-	First attempt to make an LPCM or AC3 automatic conversion with tsMuxer (seeking isn't working well and demuxed audio delays are not managed)
+	First attempt to make an LPCM or AC3 automatic conversion with tsMuxeR (seeking isn't working well and demuxed audio delays are not managed)
 	AviSynth script is now really fully customizable
 
 	- Fixes
@@ -326,7 +326,7 @@ Changelog:
 	Network/Transcode optimization: Wifi/Homeplug streaming should be smoother
 	A/V out of sync correction
 	Unsupported data error on almost SD videos when maximum bitrate was fixed
-	tsMuxer broken on Linux
+	tsMuxeR broken on Linux
 	Videos with FLAC audio tracks are now muxable to LPCM, along with DTS
 	Videos paused due to seeking bug
 	Audio files parsing method changes (Hope this will solve issues with some flac files)
@@ -340,7 +340,7 @@ Changelog:
 	Lossless 5.1 PCM transcoding with DTS movies (Disabled by default, check the previous paragraph first)
 	Customizable AviSynth script
 	Audio podcasts, just tested the one from Engadget
-	tsMuxer now working on Linux for basic muxing (don't forget to give it execution rights)
+	tsMuxeR now working on Linux for basic muxing (don't forget to give it execution rights)
 	Web video streamdump engine (Useful for streams natively supported by ps3, such as mpeg on rtsp)
 	Maximum bitrate management
 	Small things: Runnable in console mode under Linux ("PMS.sh console"), Folder prioritization of a specific streaming/transcoding engine, Custom cover art, additional infos on thumbnails
@@ -353,13 +353,13 @@ Changelog:
 	Faster start of audio transcoded files
 
 	- Changes:
-	Revamped inter process communication on Windows between Java/Mencoder/tsMuxer (much more elegant now).
+	Revamped inter process communication on Windows between Java/Mencoder/tsMuxeR (much more elegant now).
 
 0.97
 
 	- Added:   GUI Configuration (at last!) / Transcoding options, encoding presets, etc.
 	- Added:   Ability to choose the default transcoding engine (mencoder only, avisynth+mencoder, avisynth+ffmpeg, tsmuxer, or none)
-	- Added:   tsMuxer as a real time muxer (Kinda experimental)
+	- Added:   tsMuxeR as a real time muxer (Kinda experimental)
 	- Added:   A good audio tag reader library (http://entagged.sourceforge.net/)
 	- Fixed:   Bugs in UPNP advertising.
 	- Fixed:   Mencoder font cache bug which prevents transcode to start
