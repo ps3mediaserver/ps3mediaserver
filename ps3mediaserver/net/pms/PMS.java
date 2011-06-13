@@ -417,7 +417,9 @@ public class PMS {
 
 		minimal("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
-		checkProcessExistence("MPlayer", true, getConfiguration().getTempFolder(), configuration.getMplayerPath(), "dummy");
+      		if(isWindows()) {
+			checkProcessExistence("MPlayer", true, getConfiguration().getTempFolder(), configuration.getMplayerPath(), "dummy");
+		}
 		minimal("Done!");
 
 		// check the existence of Vsfilter.dll
