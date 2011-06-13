@@ -29,12 +29,12 @@ class MacDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getMencoderAlternatePath() {
-		return "osx/mencoder";
+		return "osx/mencoder-alternate";
 	}
 
 	@Override
 	public String getMencoderAlternateMTPath() {
-		return "osx/mencoder_mt";
+		return "osx/mencoder-alternate_mt";
 	}
 
 	@Override
