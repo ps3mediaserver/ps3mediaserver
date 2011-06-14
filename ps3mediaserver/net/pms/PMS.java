@@ -372,10 +372,7 @@ public class PMS {
 		}
 
 		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-220.png"); //$NON-NLS-1$ //$NON-NLS-2$
-
 		proxy = -1;
-
-
 
 		minimal("Starting PS3 Media Server " + VERSION); //$NON-NLS-1$
 		minimal("by shagrath / 2008-2011"); //$NON-NLS-1$
@@ -418,7 +415,7 @@ public class PMS {
 		minimal("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
       		if(isWindows()) {
-			checkProcessExistence("MPlayer", true, getConfiguration().getTempFolder(), configuration.getMplayerPath(), "dummy");
+			checkProcessExistence("MPlayer", true, configuration.getTempFolder(), configuration.getMplayerPath(), "dummy");
 		}
 		minimal("Done!");
 
@@ -590,7 +587,7 @@ public class PMS {
 		rootFolder.browse(MapFileConfiguration.parse(configuration.getVirtualFolders()));
 
 		// FIXME: this (the WEB.conf path) should be fully configurable
-		File webConf = new File(PMS.getConfiguration().getProfileDir(), "WEB.conf"); //$NON-NLS-1$
+		File webConf = new File(configuration.getProfileDir(), "WEB.conf"); //$NON-NLS-1$
 
 		if (webConf.exists()) {
 			try {
@@ -652,13 +649,13 @@ public class PMS {
 		}
 
 		if (Platform.isMac()) {
-			if (getConfiguration().getIphotoEnabled()) {
+			if (configuration.getIphotoEnabled()) {
 				addiPhotoFolder(renderer);
 			}
 		}
 
 		if (Platform.isMac() || Platform.isWindows()) {
-			if (getConfiguration().getItunesEnabled()) {
+			if (configuration.getItunesEnabled()) {
 				addiTunesFolder(renderer);
 			}
 		}
@@ -857,13 +854,13 @@ public class PMS {
 				}
 			});
 
-			vf.addChild(new VirtualVideoAction("  !!-- Fix 23.976/25fps A/V Mismatch --!!", getConfiguration().isFix25FPSAvMismatch()) { //$NON-NLS-1$
+			vf.addChild(new VirtualVideoAction("  !!-- Fix 23.976/25fps A/V Mismatch --!!", configuration.isFix25FPSAvMismatch()) { //$NON-NLS-1$
 
 				@Override
 				public boolean enable() {
-					getConfiguration().setMencoderForceFps(!getConfiguration().isFix25FPSAvMismatch());
-					getConfiguration().setFix25FPSAvMismatch(!getConfiguration().isFix25FPSAvMismatch());
-					return getConfiguration().isFix25FPSAvMismatch();
+					configuration.setMencoderForceFps(!configuration.isFix25FPSAvMismatch());
+					configuration.setFix25FPSAvMismatch(!configuration.isFix25FPSAvMismatch());
+					return configuration.isFix25FPSAvMismatch();
 				}
 			});
 
@@ -1067,11 +1064,10 @@ public class PMS {
 		extensions.add(new RAW());
 	}
 
-	/**Register a known set of audio/video transform tools (known as {@link Player}s). Used in PMS#init().
+	/**Register a known set of audio/video transcoders (known as {@link Player}s). Used in PMS#init().
 	 * @see PMS#init()
 	 */
 	private void registerPlayers() {
-		assert configuration != null;
 		if (Platform.isWindows()) {
 			registerPlayer(new FFMpegVideo());
 		}
@@ -1258,9 +1254,9 @@ public class PMS {
 			boolean uuidBasedOnMAC = false;
 			NetworkInterface ni = null;
 			try {
-				if (getConfiguration().getServerHostname() != null && getConfiguration().getServerHostname().length() > 0) {
+				if (configuration.getServerHostname() != null && configuration.getServerHostname().length() > 0) {
 					try {
-						ni = NetworkInterface.getByInetAddress(InetAddress.getByName(getConfiguration().getServerHostname()));
+						ni = NetworkInterface.getByInetAddress(InetAddress.getByName(configuration.getServerHostname()));
 					} catch (Exception e) {
 					}
 				} else if (get().getServer().getNi() != null) {
@@ -1381,6 +1377,7 @@ public class PMS {
 				}
 			}
 		}
+
 		try {
 			Toolkit.getDefaultToolkit();
 			if (GraphicsEnvironment.isHeadless() && System.getProperty(NOCONSOLE) == null) {
@@ -1393,7 +1390,13 @@ public class PMS {
 			}
 		}
 
-		configuration = new PmsConfiguration();
+		try {
+			configuration = new PmsConfiguration();
+		} catch (Throwable t) {
+			System.err.println("Configuration error: " + t.getMessage());
+		}
+
+		assert configuration != null;
 
 		// Load the (optional) logback config file. This has to be called after 'new PmsConfiguration'
 		// as the logging starts immediately and some filters need the PmsConfiguration.
@@ -1404,8 +1407,7 @@ public class PMS {
 		try {
 			// let's allow us time to show up serious errors in the GUI before quitting
 			Thread.sleep(60000);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) {}
 	}
 
 	public HTTPServer getServer() {
@@ -1429,7 +1431,6 @@ public class PMS {
 	}
 
 	public static PmsConfiguration getConfiguration() {
-		assert configuration != null;
 		return configuration;
 	}
 }
