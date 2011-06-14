@@ -301,8 +301,8 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Check if we have disabled something first, then check the Windows
-	 * registry, then the config file, then check for a platform-specific
+	 * Check if we have disabled something first, then check the config file,
+	 * then the Windows registry, then check for a platform-specific
 	 * default.
 	 */
 	private static ProgramPathDisabler createProgramPathsChain(Configuration configuration) {
@@ -344,7 +344,7 @@ public class PmsConfiguration {
 		return programPaths.getMencoderAlternateMTPath();
 	}
 
-	public int getMaxMencoderThreads() {
+	public int getMencoderMaxThreads() {
 		return Math.min(getInt(KEY_MENCODER_MAX_THREADS, getNumberOfCpuCores()), MENCODER_MAX_THREADS);
 	}
 
@@ -557,7 +557,7 @@ public class PmsConfiguration {
 	}
 
 	// FIXME currently unused
-	public void setMaxMencoderThreads(int value) {
+	public void setMencoderMaxThreads(int value) {
 		configuration.setProperty(KEY_MENCODER_MAX_THREADS, value);
 	}
 

@@ -29,16 +29,15 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
-import net.pms.PMS;
 
 public class MEncoderWebVideo extends Player {
-
+	public static final String ID = "mencoderwebvideo"; //$NON-NLS-1$
+	private final PmsConfiguration configuration;
+	
 	@Override
 	public JComponent config() {
 		return null;
 	}
-	
-	public static final String ID = "mencoderwebvideo"; //$NON-NLS-1$
 	
 	@Override
 	public String id() {
@@ -61,23 +60,33 @@ public class MEncoderWebVideo extends Player {
 	}
 
 	protected String[] getDefaultArgs() {
-		int nThreads = PMS.getConfiguration().getMaxMencoderThreads();
-		return new String [] { "-prefer-ipv4", "-nocache", "-quiet", "-oac", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				"lavc", "-of", "lavf", "-lavfopts", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				"format=dvd", "-ovc", "lavc", "-lavcopts", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				"vcodec=mpeg2video:vbitrate=4096:threads=" + nThreads + ":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + ":abitrate=128", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-				"-vf", "harddup", "-ofps", "24000/1001" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		int nThreads = configuration.getMencoderMaxThreads();
+		String acodec = configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3";
+		return new String [] {
+			"-msglevel", "all=2", //$NON-NLS-1$ //$NON-NLS-2$
+			"-quiet", //$NON-NLS-1$
+			"-prefer-ipv4", //$NON-NLS-1$
+			"-cache", "16384", //$NON-NLS-1$ //$NON-NLS-2$
+		   	"-oac", "lavc", //$NON-NLS-1$ //$NON-NLS-2$
+			"-of", "lavf", //$NON-NLS-1$ //$NON-NLS-2$
+			"-lavfopts", "format=dvd", //$NON-NLS-1$ //$NON-NLS-2$
+			"-ovc", "lavc", //$NON-NLS-1$ //$NON-NLS-2$
+			"-lavcopts", "vcodec=mpeg2video:vbitrate=4096:threads=" + nThreads + ":acodec=" + acodec + ":abitrate=128", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			"-vf", "harddup", //$NON-NLS-1$ //$NON-NLS-2$
+			"-ofps", "25" //$NON-NLS-1$ //$NON-NLS-2$
+		};
 	}
-	
-	private final PmsConfiguration configuration;
 	
 	public MEncoderWebVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media,
-			OutputParams params) throws IOException {
+	public ProcessWrapper launchTranscode(
+		String fileName,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		//return super.launchTranscode(fileName, media, params);
@@ -135,5 +144,4 @@ public class MEncoderWebVideo extends Player {
 	public int type() {
 		return Format.VIDEO;
 	}
-
 }
