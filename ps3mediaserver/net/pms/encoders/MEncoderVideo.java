@@ -1190,7 +1190,7 @@ public class MEncoderVideo extends Player {
 		int i = 0;
 		boolean processToken = false;
 		int nThreads = (dvd || fileName.toLowerCase().endsWith("dvr-ms")) ? //$NON-NLS-1$
-			1 : configuration.getMaxMencoderThreads();
+			1 : configuration.getMencoderMaxThreads();
  
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken().trim();
@@ -1224,7 +1224,7 @@ public class MEncoderVideo extends Player {
 			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + //$NON-NLS-1$
 				(wmv ? ":acodec=wmav2:abitrate=256" : (cbr_settings + ":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 				":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid))) + //$NON-NLS-1$
-				":threads=" + (wmv ? 1 : configuration.getMaxMencoderThreads()) + ":" + mainConfig; //$NON-NLS-1$ //$NON-NLS-2$
+				":threads=" + (wmv ? 1 : configuration.getMencoderMaxThreads()) + ":" + mainConfig; //$NON-NLS-1$ //$NON-NLS-2$
 
 			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, mainConfig, params.mediaRenderer);
 			st = new StringTokenizer(encodeSettings, " "); //$NON-NLS-1$
@@ -1546,7 +1546,7 @@ public class MEncoderVideo extends Player {
 								cmdArray[c + 1] = "autoaspect=1:vcodec=" + vcodec + //$NON-NLS-1$
 									":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 									":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid) + //$NON-NLS-1$
-									":threads=" + configuration.getMaxMencoderThreads() + ":" + sArgs[s + 1]; //$NON-NLS-1$ //$NON-NLS-2$
+									":threads=" + configuration.getMencoderMaxThreads() + ":" + sArgs[s + 1]; //$NON-NLS-1$ //$NON-NLS-2$
 								addMaximumBitrateConstraints(cmdArray[c + 1], media, cmdArray[c + 1], params.mediaRenderer);
 								sArgs[s + 1] = "-quality"; //$NON-NLS-1$
 								s++;
