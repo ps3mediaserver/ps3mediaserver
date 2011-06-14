@@ -29,6 +29,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.PMS;
 
 public class MEncoderWebVideo extends Player {
 
@@ -60,10 +61,11 @@ public class MEncoderWebVideo extends Player {
 	}
 
 	protected String[] getDefaultArgs() {
+		int nThreads = PMS.getConfiguration().getMaxMencoderThreads();
 		return new String [] { "-prefer-ipv4", "-nocache", "-quiet", "-oac", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 				"lavc", "-of", "lavf", "-lavfopts", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 				"format=dvd", "-ovc", "lavc", "-lavcopts", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				"vcodec=mpeg2video:vbitrate=4096:threads=2:acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + ":abitrate=128", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				"vcodec=mpeg2video:vbitrate=4096:threads=" + nThreads + ":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + ":abitrate=128", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 				"-vf", "harddup", "-ofps", "24000/1001" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}
 	

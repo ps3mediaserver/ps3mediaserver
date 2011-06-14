@@ -88,10 +88,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
 public class MEncoderVideo extends Player {
-
-	public JCheckBox getCheckBox() {
-		return checkBox;
-	}
 	private JTextField mencoder_ass_scale;
 	private JTextField mencoder_ass_margin;
 	private JTextField mencoder_ass_outline;
@@ -122,17 +118,59 @@ public class MEncoderVideo extends Player {
 	private JCheckBox intelligentsync;
 	private JTextField alternateSubFolder;
 	private JButton subColor;
+	private JCheckBox subs;
+	private JCheckBox fribidi;
+	private final PmsConfiguration configuration;
+	public static final int MENCODER_MAX_THREADS = 8;
+	protected boolean dts;
+	public static final String ID = "mencoder"; //$NON-NLS-1$
+	protected boolean pcm;
+	protected boolean mux;
+	protected boolean ovccopy;
+	protected boolean dvd;
+	protected boolean oaccopy;
+	protected boolean mpegts;
+	protected boolean wmv;
+	protected String overridenMainArgs[];
+	//protected String defaultSubArgs [];
+
+	public static final String DEFAULT_CODEC_CONF_SCRIPT =
+		Messages.getString("MEncoderVideo.68") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.69") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.70") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.71") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.72") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.73") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.75") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.76") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.77") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.78") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.79") //$NON-NLS-1$
+		+ "#\n" //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.80") //$NON-NLS-1$
+		+ "container == iso :: -nosync\n" //$NON-NLS-1$
+		+ "(container == avi || container == matroska) && vcodec == mpeg4 && acodec == mp3 :: -mc 0.1\n" //$NON-NLS-1$
+		+ "container == flv :: -mc 0.1\n" //$NON-NLS-1$
+		+ "container == mov :: -mc 0.1 -noass\n" //$NON-NLS-1$
+		+ "container == rm  :: -mc 0.1\n" //$NON-NLS-1$
+		+ "container == matroska && framerate == 29.97  :: -nomux -mc 0\n" //$NON-NLS-1$
+		+ "\n" //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.87") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.88") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.89") //$NON-NLS-1$
+		+ Messages.getString("MEncoderVideo.91"); //$NON-NLS-1$
+
+	public JCheckBox getCheckBox() {
+		return checkBox;
+	}
 
 	public JCheckBox getNoskip() {
 		return noskip;
 	}
-	private JCheckBox subs;
 
 	public JCheckBox getSubs() {
 		return subs;
 	}
-	private JCheckBox fribidi;
-	private final PmsConfiguration configuration;
 
 	public MEncoderVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -151,13 +189,13 @@ public class MEncoderVideo extends Player {
 
 		checkBox = new JCheckBox(Messages.getString("MEncoderVideo.0")); //$NON-NLS-1$
 		checkBox.setContentAreaFilled(false);
-		if (PMS.getConfiguration().getSkipLoopFilterEnabled()) {
+		if (configuration.getSkipLoopFilterEnabled()) {
 			checkBox.setSelected(true);
 		}
 		checkBox.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setSkipLoopFilterEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setSkipLoopFilterEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 
@@ -168,14 +206,14 @@ public class MEncoderVideo extends Player {
 		mencodermt = new JCheckBox(Messages.getString("MEncoderVideo.35")); //$NON-NLS-1$
 		mencodermt.setFont(mencodermt.getFont().deriveFont(Font.BOLD));
 		mencodermt.setContentAreaFilled(false);
-		if (PMS.getConfiguration().getMencoderMT()) {
+		if (configuration.getMencoderMT()) {
 			mencodermt.setSelected(true);
 		}
 		mencodermt.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PMS.getConfiguration().setMencoderMT(mencodermt.isSelected());
-				if (PMS.getConfiguration().getMencoderMT()) {
+				configuration.setMencoderMT(mencodermt.isSelected());
+				if (configuration.getMencoderMT()) {
 					JOptionPane.showMessageDialog(
 						(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
 						Messages.getString("MEncoderVideo.31"), //$NON-NLS-1$
@@ -191,13 +229,13 @@ public class MEncoderVideo extends Player {
 
 		noskip = new JCheckBox(Messages.getString("MEncoderVideo.2")); //$NON-NLS-1$
 		noskip.setContentAreaFilled(false);
-		if (PMS.getConfiguration().isMencoderNoOutOfSync()) {
+		if (configuration.isMencoderNoOutOfSync()) {
 			noskip.setSelected(true);
 		}
 		noskip.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setMencoderNoOutOfSync((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setMencoderNoOutOfSync((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 
@@ -209,7 +247,7 @@ public class MEncoderVideo extends Player {
 			public void actionPerformed(ActionEvent e) {
 				JPanel codecPanel = new JPanel(new BorderLayout());
 				final JTextArea textArea = new JTextArea();
-				textArea.setText(PMS.getConfiguration().getCodecSpecificConfig());
+				textArea.setText(configuration.getCodecSpecificConfig());
 				textArea.setFont(new Font("Courier", Font.PLAIN, 12)); //$NON-NLS-1$
 				JScrollPane scrollPane = new JScrollPane(textArea);
 				scrollPane.setPreferredSize(new java.awt.Dimension(900, 100));
@@ -219,21 +257,21 @@ public class MEncoderVideo extends Player {
 				textAreaDefault.setBackground(Color.WHITE);
 				textAreaDefault.setFont(new Font("Courier", Font.PLAIN, 12)); //$NON-NLS-1$
 				textAreaDefault.setEditable(false);
-				textAreaDefault.setEnabled(PMS.getConfiguration().isMencoderIntelligentSync());
+				textAreaDefault.setEnabled(configuration.isMencoderIntelligentSync());
 				JScrollPane scrollPaneDefault = new JScrollPane(textAreaDefault);
 				scrollPaneDefault.setPreferredSize(new java.awt.Dimension(900, 450));
 
 				JPanel customPanel = new JPanel(new BorderLayout());
 				intelligentsync = new JCheckBox(Messages.getString("MEncoderVideo.3")); //$NON-NLS-1$
 				intelligentsync.setContentAreaFilled(false);
-				if (PMS.getConfiguration().isMencoderIntelligentSync()) {
+				if (configuration.isMencoderIntelligentSync()) {
 					intelligentsync.setSelected(true);
 				}
 				intelligentsync.addItemListener(new ItemListener() {
 
 					public void itemStateChanged(ItemEvent e) {
-						PMS.getConfiguration().setMencoderIntelligentSync((e.getStateChange() == ItemEvent.SELECTED));
-						textAreaDefault.setEnabled(PMS.getConfiguration().isMencoderIntelligentSync());
+						configuration.setMencoderIntelligentSync((e.getStateChange() == ItemEvent.SELECTED));
+						textAreaDefault.setEnabled(configuration.isMencoderIntelligentSync());
 
 					}
 				});
@@ -372,13 +410,13 @@ public class MEncoderVideo extends Player {
 		videoremux = new JCheckBox("<html>" + Messages.getString("MEncoderVideo.38") + "</html>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		videoremux.setContentAreaFilled(false);
 		videoremux.setFont(videoremux.getFont().deriveFont(Font.BOLD));
-		if (PMS.getConfiguration().isMencoderMuxWhenCompatible()) {
+		if (configuration.isMencoderMuxWhenCompatible()) {
 			videoremux.setSelected(true);
 		}
 		videoremux.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setMencoderMuxWhenCompatible((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setMencoderMuxWhenCompatible((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 
@@ -814,13 +852,13 @@ public class MEncoderVideo extends Player {
 
 		subs = new JCheckBox(Messages.getString("MEncoderVideo.22")); //$NON-NLS-1$
 		subs.setContentAreaFilled(false);
-		if (PMS.getConfiguration().getUseSubtitles()) {
+		if (configuration.getUseSubtitles()) {
 			subs.setSelected(true);
 		}
 		subs.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setUseSubtitles((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setUseSubtitles((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 		builder.add(subs, cc.xyw(1, 43, 15));
@@ -909,7 +947,6 @@ public class MEncoderVideo extends Player {
 	public int purpose() {
 		return VIDEO_SIMPLEFILE_PLAYER;
 	}
-	public static final String ID = "mencoder"; //$NON-NLS-1$
 
 	@Override
 	public String id() {
@@ -925,17 +962,6 @@ public class MEncoderVideo extends Player {
 	public boolean isTimeSeekable() {
 		return true;
 	}
-	protected boolean dts;
-	protected boolean pcm;
-	protected boolean mux;
-	protected boolean ovccopy;
-	protected boolean dvd;
-	protected boolean oaccopy;
-	protected boolean mpegts;
-	protected boolean wmv;
-	protected String overridenMainArgs[];
-	//protected String defaultSubArgs [];
-
 	protected String[] getDefaultArgs() {
 		return new String[]{"-quiet", "-oac", oaccopy ? "copy" : (pcm ? "pcm" : "lavc"), "-of", (wmv || mpegts) ? "lavf" : (pcm && avisynth()) ? "avi" : (((pcm || dts || mux) ? "rawvideo" : "mpeg")), (wmv || mpegts) ? "-lavfopts" : "-quiet", wmv ? "format=asf" : (mpegts ? "format=mpegts" : "-quiet"), "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", (mux || ovccopy) ? "copy" : "lavc"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$
 	}
@@ -988,7 +1014,7 @@ public class MEncoderVideo extends Player {
 	}
 
 	private String addMaximumBitrateConstraints(String encodeSettings, DLNAMediaInfo media, String quality, RendererConfiguration mediaRenderer) {
-		int defaultMaxBitrates[] = getVideoBitrateConfig(PMS.getConfiguration().getMaximumBitrate());
+		int defaultMaxBitrates[] = getVideoBitrateConfig(configuration.getMaximumBitrate());
 		int rendererMaxBitrates[] = new int[2];
 		if (mediaRenderer.getMaxVideoBitrate() != null) {
 			rendererMaxBitrates = getVideoBitrateConfig(mediaRenderer.getMaxVideoBitrate());
@@ -1055,7 +1081,7 @@ public class MEncoderVideo extends Player {
 
 		// don't honour "Switch to tsMuxeR..." if the resource is being streamed via an MEncoder entry in
 		// the #--TRANSCODE--# folder
-		boolean forceMencoder = !PMS.getConfiguration().getHideTranscodeEnabled()
+		boolean forceMencoder = !configuration.getHideTranscodeEnabled()
 			&& dlna.noName 
 			&& (dlna.getParent() instanceof FileTranscodeVirtualFolder);
 
@@ -1074,7 +1100,7 @@ public class MEncoderVideo extends Player {
 			configuration.isMencoderMuxWhenCompatible() &&
 			params.mediaRenderer.isMuxH264MpegTS()
 		) {
-			String sArgs[] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
+			String sArgs[] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, subString, configuration.isMencoderIntelligentSync(), false);
 			boolean nomux = false;
 			for (String s : sArgs) {
 				if (s.equals("-nomux")) {
@@ -1094,7 +1120,7 @@ public class MEncoderVideo extends Player {
 				return tv.launchTranscode(fileName, media, params);
 			}
 		} else if (params.sid == null && dvd && configuration.isMencoderRemuxMPEG2() && params.mediaRenderer.isMpeg2Supported()) {
-			String sArgs[] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
+			String sArgs[] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, subString, configuration.isMencoderIntelligentSync(), false);
 			boolean nomux = false;
 			for (String s : sArgs) {
 				if (s.equals("-nomux")) {
@@ -1153,7 +1179,7 @@ public class MEncoderVideo extends Player {
 		if (dvd) {
 			alternativeCodec = ""; //$NON-NLS-1$
 		}
-		int channels = wmv ? 2 : PMS.getConfiguration().getAudioChannelCount();
+		int channels = wmv ? 2 : configuration.getAudioChannelCount();
 		if (media != null && params.aid != null) {
 			channels = wmv ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid);
 		}
@@ -1162,28 +1188,26 @@ public class MEncoderVideo extends Player {
 		StringTokenizer st = new StringTokenizer(alternativeCodec + "-channels " + channels + " " + configuration.getMencoderDecode() + add, " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		overridenMainArgs = new String[st.countTokens()];
 		int i = 0;
-		boolean next = false;
+		boolean processToken = false;
+		int nThreads = (dvd || fileName.toLowerCase().endsWith("dvr-ms")) ? //$NON-NLS-1$
+			1 : configuration.getMaxMencoderThreads();
+ 
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken().trim();
-			if (next) {
-				int nbcores = configuration.getNumberOfCpuCores();
-				if (dvd || fileName.toLowerCase().endsWith("dvr-ms")) //$NON-NLS-1$
-				{
-					nbcores = 1;
-				}
-				token += ":threads=" + nbcores; //$NON-NLS-1$
+			if (processToken) {
+				token += ":threads=" + nThreads; //$NON-NLS-1$
 				if (configuration.getSkipLoopFilterEnabled() && !avisynth()) {
 					token += ":skiploopfilter=all"; //$NON-NLS-1$
 				}
-				next = false;
+				processToken = false;
 			}
 			if (token.toLowerCase().contains("lavdopts")) { //$NON-NLS-1$
-				next = true;
+				processToken = true;
 			}
 
 			overridenMainArgs[i++] = token;
 		}
-		//}
+
 		if (configuration.getMencoderMainSettings() != null) {
 			String mainConfig = configuration.getMencoderMainSettings();
 			if (params.mediaRenderer.getCustomMencoderQualitySettings() != null) {
@@ -1200,7 +1224,7 @@ public class MEncoderVideo extends Player {
 			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + //$NON-NLS-1$
 				(wmv ? ":acodec=wmav2:abitrate=256" : (cbr_settings + ":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 				":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid))) + //$NON-NLS-1$
-				":threads=" + (wmv ? 1 : configuration.getNumberOfCpuCores()) + ":" + mainConfig; //$NON-NLS-1$ //$NON-NLS-2$
+				":threads=" + (wmv ? 1 : configuration.getMaxMencoderThreads()) + ":" + mainConfig; //$NON-NLS-1$ //$NON-NLS-2$
 
 			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, mainConfig, params.mediaRenderer);
 			st = new StringTokenizer(encodeSettings, " "); //$NON-NLS-1$
@@ -1286,17 +1310,16 @@ public class MEncoderVideo extends Player {
 		int oldc = overridenMainArgs.length;
 		overridenMainArgs = Arrays.copyOf(overridenMainArgs, overridenMainArgs.length + st.countTokens());
 		i = oldc;
-		next = false;
+		processToken = false;
 		while (st.hasMoreTokens()) {
 			String s = st.nextToken();
-			if (next) {
+			if (processToken) {
 				s = "-quiet"; //$NON-NLS-1$
-				next = false;
+				processToken = false;
 			}
 			if ((!configuration.isMencoderAss() || dvd) && s.contains("-ass")) { //$NON-NLS-1$
 				s = "-quiet"; //$NON-NLS-1$
-
-				next = true;
+				processToken = true;
 			}
 			overridenMainArgs[i++] = s;
 		}
@@ -1313,7 +1336,7 @@ public class MEncoderVideo extends Player {
 			(media.muxingMode != null && media.muxingMode.equals("Header stripping")) ||
 			(params.sid != null && params.sid.type == DLNAMediaSubtitle.VOBSUB)
 		) {
-		// Use the newer version of MEncoder
+			// Use the newer version of MEncoder
 			if (isMultiCore && configuration.getMencoderMT()) {
 				if (new File(configuration.getMencoderAlternateMTPath()).exists()) {
 					cmdArray[0] = configuration.getMencoderAlternateMTPath();
@@ -1324,7 +1347,7 @@ public class MEncoderVideo extends Player {
 				}
 			}
 		} else if (isMultiCore && configuration.getMencoderMT()) {
-		// Use the older MEncoder with multithreading
+			// Use the older MEncoder with multithreading
 			if (new File(configuration.getMencoderMTPath()).exists()) {
 				cmdArray[0] = configuration.getMencoderMTPath();
 			}
@@ -1465,7 +1488,7 @@ public class MEncoderVideo extends Player {
 
 		boolean noMC0NoSkip = false;
 		if (media != null) {
-			String sArgs[] = getSpecificCodecOptions(PMS.getConfiguration().getCodecSpecificConfig(), media, params, fileName, subString, PMS.getConfiguration().isMencoderIntelligentSync(), false);
+			String sArgs[] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, subString, configuration.isMencoderIntelligentSync(), false);
 			if (sArgs != null && sArgs.length > 0) {
 				boolean vfConsumed = false;
 				boolean afConsumed = false;
@@ -1523,7 +1546,7 @@ public class MEncoderVideo extends Player {
 								cmdArray[c + 1] = "autoaspect=1:vcodec=" + vcodec + //$NON-NLS-1$
 									":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 									":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid) + //$NON-NLS-1$
-									":threads=" + configuration.getNumberOfCpuCores() + ":" + sArgs[s + 1]; //$NON-NLS-1$ //$NON-NLS-2$
+									":threads=" + configuration.getMaxMencoderThreads() + ":" + sArgs[s + 1]; //$NON-NLS-1$ //$NON-NLS-2$
 								addMaximumBitrateConstraints(cmdArray[c + 1], media, cmdArray[c + 1], params.mediaRenderer);
 								sArgs[s + 1] = "-quality"; //$NON-NLS-1$
 								s++;
@@ -1572,7 +1595,7 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
-		if ((pcm || dts || mux) || (PMS.getConfiguration().isMencoderNoOutOfSync() && !noMC0NoSkip)) {
+		if ((pcm || dts || mux) || (configuration.isMencoderNoOutOfSync() && !noMC0NoSkip)) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 3);
 			cmdArray[cmdArray.length - 5] = "-mc"; //$NON-NLS-1$
 			cmdArray[cmdArray.length - 4] = "0"; //$NON-NLS-1$
@@ -1956,29 +1979,4 @@ public class MEncoderVideo extends Player {
 		args.toArray(definitiveArgs);
 		return definitiveArgs;
 	}
-	public static final String DEFAULT_CODEC_CONF_SCRIPT =
-		Messages.getString("MEncoderVideo.68") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.69") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.70") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.71") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.72") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.73") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.75") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.76") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.77") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.78") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.79") //$NON-NLS-1$
-		+ "#\n" //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.80") //$NON-NLS-1$
-		+ "container == iso :: -nosync\n" //$NON-NLS-1$
-		+ "(container == avi || container == matroska) && vcodec == mpeg4 && acodec == mp3 :: -mc 0.1\n" //$NON-NLS-1$
-		+ "container == flv :: -mc 0.1\n" //$NON-NLS-1$
-		+ "container == mov :: -mc 0.1 -noass\n" //$NON-NLS-1$
-		+ "container == rm  :: -mc 0.1\n" //$NON-NLS-1$
-		+ "container == matroska && framerate == 29.97  :: -nomux -mc 0\n" //$NON-NLS-1$
-		+ "\n" //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.87") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.88") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.89") //$NON-NLS-1$
-		+ Messages.getString("MEncoderVideo.91"); //$NON-NLS-1$
 }
