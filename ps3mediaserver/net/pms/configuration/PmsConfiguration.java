@@ -89,6 +89,8 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_NOASS_SCALE = "mencoder_noass_scale";
 	private static final String KEY_MENCODER_NOASS_SUBPOS = "mencoder_noass_subpos";
 	private static final String KEY_MENCODER_NO_OUT_OF_SYNC  = "mencoder_nooutofsync";
+	private static final String KEY_MENCODER_OVERSCAN_COMPENSATION_WIDTH = "mencoder_overscan_compensation_width";
+	private static final String KEY_MENCODER_OVERSCAN_COMPENSATION_HEIGHT = "mencoder_overscan_compensation_height";
 	private static final String KEY_MENCODER_REMUX_AC3 = "mencoder_remux_ac3";
 	private static final String KEY_MENCODER_REMUX_MPEG2 = "mencoder_remux_mpeg2";
 	private static final String KEY_MENCODER_SCALER = "mencoder_scaler";
@@ -912,6 +914,28 @@ public class PmsConfiguration {
 
 	public void setMencoderVobsubSubtitleQuality(String value) {
 		configuration.setProperty(KEY_MENCODER_VOBSUB_SUBTITLE_QUALITY, value);
+	}
+
+	public String getMencoderOverscanCompensationWidth() {
+		return getString(KEY_MENCODER_OVERSCAN_COMPENSATION_WIDTH, "0");
+	}
+
+	public void setMencoderOverscanCompensationWidth(String value) {
+		if (value.trim().length() == 0) {
+			value = "0";
+		}
+		configuration.setProperty(KEY_MENCODER_OVERSCAN_COMPENSATION_WIDTH, value);
+	}
+
+	public String getMencoderOverscanCompensationHeight() {
+		return getString(KEY_MENCODER_OVERSCAN_COMPENSATION_HEIGHT, "0");
+	}
+
+	public void setMencoderOverscanCompensationHeight(String value) {
+		if (value.trim().length() == 0) {
+			value = "0";
+		}
+		configuration.setProperty(KEY_MENCODER_OVERSCAN_COMPENSATION_HEIGHT, value);
 	}
 
 	public int getLoggingLevel() {
