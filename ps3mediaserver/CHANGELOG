@@ -1,6 +1,13 @@
 Changelog:
 ==========
 
+??/??/???? - 1.25.0
+        
+        Return of the official OS X build, thanks for your patience!
+        MEncoder no longer crashes when using more then 8 cores
+        New build script for OS X that builds all dependencies (big thanks to Raptor399)
+        French translation fixed
+
 14/06/2011 - 1.24.0
 
 	New icon on OS X
