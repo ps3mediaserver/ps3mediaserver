@@ -118,6 +118,8 @@ public class MEncoderVideo extends Player {
 	private JCheckBox intelligentsync;
 	private JTextField alternateSubFolder;
 	private JButton subColor;
+	private JTextField ocw;
+	private JTextField och;
 	private JCheckBox subs;
 	private JCheckBox fribidi;
 	private final PmsConfiguration configuration;
@@ -882,6 +884,46 @@ public class MEncoderVideo extends Player {
 		});
 		builder.add(subq, cc.xyw(3, 45, 1));
 
+		builder.addLabel(Messages.getString("MEncoderVideo.93"), cc.xyw(1, 47, 6)); //$NON-NLS-1$
+
+		builder.addLabel(Messages.getString("MEncoderVideo.28"), cc.xy(1, 49, CellConstraints.RIGHT, CellConstraints.CENTER)); //$NON-NLS-1$
+		ocw = new JTextField(configuration.getMencoderOverscanCompensationWidth());
+		ocw.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderOverscanCompensationWidth(ocw.getText());
+			}
+		});
+		builder.add(ocw, cc.xyw(3, 49, 1));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.30"), cc.xy(5, 49)); //$NON-NLS-1$
+		och = new JTextField(configuration.getMencoderOverscanCompensationHeight());
+		och.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderOverscanCompensationHeight(och.getText());
+			}
+		});
+		builder.add(och, cc.xyw(7, 49, 1));
+
 		subColor = new JButton();
 		subColor.setText("Subs color");
 		subColor.setBackground(new Color(configuration.getSubsColor()));
@@ -900,13 +942,6 @@ public class MEncoderVideo extends Player {
 			}
 		});
 		builder.add(subColor, cc.xyw(12, 37, 4));
-
-		JTextArea decodeTips = new JTextArea(Messages.getString("MEncoderVideo.23")); //$NON-NLS-1$
-		decodeTips.setEditable(false);
-		decodeTips.setBorder(BorderFactory.createEtchedBorder());
-		decodeTips.setBackground(new Color(255, 255, 192));
-		builder.add(decodeTips, cc.xyw(1, 49, 15));
-
 
 		JCheckBox disableSubs = ((LooksFrame) PMS.get().getFrame()).getTr().getDisableSubs();
 		disableSubs.addItemListener(new ItemListener() {
@@ -1087,6 +1122,9 @@ public class MEncoderVideo extends Player {
 
 		ovccopy = false;
 
+		int intOCW = Integer.parseInt(configuration.getMencoderOverscanCompensationWidth());
+		int intOCH = Integer.parseInt(configuration.getMencoderOverscanCompensationHeight());
+
 		if (
 			!forceMencoder &&
 			params.sid == null &&
@@ -1098,7 +1136,10 @@ public class MEncoderVideo extends Player {
 			) &&
 			media.isMuxable(params.mediaRenderer) &&
 			configuration.isMencoderMuxWhenCompatible() &&
-			params.mediaRenderer.isMuxH264MpegTS()
+			params.mediaRenderer.isMuxH264MpegTS() && (
+				intOCW == 0 &&
+				intOCH == 0
+			)
 		) {
 			String sArgs[] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, subString, configuration.isMencoderIntelligentSync(), false);
 			boolean nomux = false;
@@ -1263,6 +1304,17 @@ public class MEncoderVideo extends Player {
 			String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
 
 			sb.append("-spuaa ").append(subtitleQuality).append(" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		}
+
+		// Apply overscan compensation
+		if (intOCW > 0 || intOCH > 0) {
+			String scaleAppend = "";
+
+			if (media != null && media.width > 0 && media.height > 0) {
+				scaleAppend = ",scale="+media.width+":"+media.height;
+			}
+
+			sb.append("-vf expand=-").append(intOCW).append(":-").append(intOCH).append(scaleAppend).append(" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 
 		if (params.sid != null && !params.sid.is_file_utf8 && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
