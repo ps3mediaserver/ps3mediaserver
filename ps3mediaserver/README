@@ -1,7 +1,6 @@
 PS3 Media Server
 ================
-by shagrath, Redlum, chocolateboy & SubJunk
-
+by shagrath
 
 Links
 =====
@@ -9,10 +8,10 @@ Links
 Website:       http://www.ps3mediaserver.org
 Issue tracker: https://code.google.com/p/ps3mediaserver/issues/list
 
-
 Thanks
 ======
 
+- Redlum, SubJunk, Ditlew, and chocolateboy for major code contributions
 - boblinds and snoots for the network test cases :)
 - sarraken, bleuecinephile, bd.azerty, fabounnet for the support and feedback
 - See changelog for more thanks
