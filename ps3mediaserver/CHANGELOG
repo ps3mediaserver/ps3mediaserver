@@ -81,6 +81,7 @@ Changelog:
 	Improved support for VLC Media Player
 	Fixed many minor bugs
 
+
 04/10/2010 - 1.20.412 Beta
 
 	Fixed DTSWAV support on PS3 and FLAC 24bits/96kHz with Video
@@ -90,6 +91,7 @@ Changelog:
 	Some hack stuff for mpeg2 remux on Bravia TVs
 	RAW generation fixed
 	Custom mencoder quality settings for a given renderer
+
 
 27/03/2010 - 1.20.409 Beta
 
@@ -145,6 +147,7 @@ Changelog:
 	Linux: Included PMS.conf and fixed the permissions on executables
 	FreeBSD: Fixed transcoding
 
+
 08/03/2009 - 1.10.5
 
 	- Fixes:
@@ -155,6 +158,7 @@ Changelog:
 	Cache bug when streaming web medias
 	Duplicate items issue on Linux
 	Upnp alive message sent sooner at the start of the server
+
 
 02/03/2009 - 1.10
 
@@ -192,6 +196,7 @@ Changelog:
 	Fixed tsMuxeR crash at the end of file
 	Modified UPNP discovery [work in progress]
 
+
 04/02/2009 - 1.04
 
 	- Changes / Features
@@ -218,6 +223,7 @@ Changelog:
 	Updated ffmpeg/mplayer/mencoder/mt builds on Windows and OSX (slight H264 speedup for singlecore)
 	Buffer issues with transcoded audio files lasting more than 10 minutes
 	Fixed RSS parsing with some feeds
+
 
 18/01/2009 - 1.03
 
@@ -249,6 +255,7 @@ Changelog:
 	Unavailable engines exclusion on OSX/Linux
 	Fixed console mode on Linux
 
+
 05/01/2009 - 1.02.1
 
 	- New features
@@ -261,6 +268,7 @@ Changelog:
 	PMS do not start after activating the archive browsing option
 	Media library small fixes
 	Subtitles now work by default on OSX
+
 
 04/01/2009 - 1.02
 
@@ -286,6 +294,7 @@ Changelog:
 	Newest builds of ffmpeg/mplayer/mencoder for win32
 	Usual bunch of fixes
 
+
 18/12/2008 - 1.01
 
 	- New features
@@ -301,6 +310,7 @@ Changelog:
 	m4a and aac are now transcoded by default (iTunes Apple Lossless compatibility)
 	seeking issues with dvr-ms and tsMuxeR with AC3/PCM mode
 	Displayed aspect ratio preserved
+
 
 14/12/2008 - 1.00
 
@@ -321,6 +331,7 @@ Changelog:
 	UUID random generation, it's now possible to launch multiple servers on one network.
 	Added wmv binary codecs in Windows package for smooth WMV-HD transcoding  
 	Rare and random video glitch due to another seeking bug
+
 
 12/12/2008 - 0.99
 
@@ -344,6 +355,7 @@ Changelog:
 	Better support for audio low sample rates (<= 22kHz) based files
 	Subtitle files: .sub support was broken
 
+
 0.98
 
 	- New features:
@@ -365,6 +377,7 @@ Changelog:
 	- Changes:
 	Revamped inter process communication on Windows between Java/Mencoder/tsMuxeR (much more elegant now).
 
+
 0.97
 
 	- Added:   GUI Configuration (at last!) / Transcoding options, encoding presets, etc.
@@ -377,6 +390,7 @@ Changelog:
 	- Fixed:   New folders were not refreshed/rescanned automatically
 	- Fixed:   (maybe) Network streaming (no transcode) performance issue (need feedback on this)
 
+
 0.96
 
 	- Added:   Interactive way of choosing your audio language, subtitles and transcoder mode (see #Transcoded# Folder)
@@ -386,26 +400,32 @@ Changelog:
 	- Fixed:   Several network errors fixes with 2.52 firmware
 	- Fixed:   A lot of small things
 
+
 0.95
 
 	MEncoder now included as it's used for the transcoding part (Avisynth or not), Fixes with the 2.50 firmware,
 	Better transcoding performance (but greater bitrates !), Lighter configuration file
 
+
 0.94
 
 	Fixes: 2.50 Firmware problem, better pipes and sub processes management 
+
 
 0.93
 
 	Fixed bug in the server IP adress binding
 
+
 0.92
 
 	Linux compatible version / Many bugs fixes / No more A/V temp files created (full use of pipes)
 
+
 0.91
 
 	Better memory handling / automatic detection of VLC and AviSynth
+
 
 0.90
 
