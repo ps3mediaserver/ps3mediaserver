@@ -30,54 +30,6 @@ import java.util.TimerTask;
 import net.pms.PMS;
 
 public class BufferedOutputFile extends OutputStream  {
-	
-	class WaitBufferedInputStream extends InputStream {
-		
-		
-
-		
-		private BufferedOutputFile outputStream;
-		private long readCount;
-		private boolean firstRead;
-		
-		WaitBufferedInputStream(BufferedOutputFile outputStream) {
-			this.outputStream = outputStream;
-			firstRead = true;
-		}
-
-		public int read() throws IOException {
-			int r = outputStream.read(firstRead, readCount);
-			if (r != -1)
-				readCount ++;
-			firstRead = false;
-			return r;
-		}
-		
-		@Override
-		public int read(byte[] b, int off, int len) throws IOException {
-			int returned = outputStream.read(firstRead, readCount, b, off, len);
-			if (returned != -1)
-				readCount += returned;
-			firstRead = false;
-			return returned;
-		}
-		
-		@Override
-		public int read(byte[] b) throws IOException {
-			return read(b, 0, b.length);
-		}
-
-		
-		public int available() throws IOException {
-			return (int) outputStream.writeCount;
-		}
-		
-		public void close() throws IOException {
-			inputStreams.remove(this);
-			outputStream.detachInputStream();
-		}
-	}
-	
 	private static final int TEMP_SIZE = 50000000;
 	private static final int CHECK_INTERVAL = 500;
 	private static final int CHECK_END_OF_PROCESS = 2500; // must be superior to CHECK_INTERVAL
@@ -96,7 +48,53 @@ public class BufferedOutputFile extends OutputStream  {
 	private FileOutputStream debugOutput = null;
 	private boolean buffered = false;
 	private DecimalFormat formatter = new DecimalFormat("#,###");
+	private double timeseek;
+	private double timeend;
+	// private int scr;
+	private long packetpos = 0;
 	
+	class WaitBufferedInputStream extends InputStream {
+		private BufferedOutputFile outputStream;
+		private long readCount;
+		private boolean firstRead;
+		
+		WaitBufferedInputStream(BufferedOutputFile outputStream) {
+			this.outputStream = outputStream;
+			firstRead = true;
+		}
+
+		public int read() throws IOException {
+			int r = outputStream.read(firstRead, readCount);
+			if (r != -1)
+				readCount++;
+			firstRead = false;
+			return r;
+		}
+		
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			int returned = outputStream.read(firstRead, readCount, b, off, len);
+			if (returned != -1)
+				readCount += returned;
+			firstRead = false;
+			return returned;
+		}
+		
+		@Override
+		public int read(byte[] b) throws IOException {
+			return read(b, 0, b.length);
+		}
+
+		public int available() throws IOException {
+			return (int) outputStream.writeCount;
+		}
+		
+		public void close() throws IOException {
+			inputStreams.remove(this);
+			outputStream.detachInputStream();
+		}
+	}
+
 	public BufferedOutputFile(OutputParams params) {
 		this.minMemorySize = (int) (1048576 * params.minBufferSize);
 		this.maxMemorySize = (int) (1048576 * params.maxBufferSize);
@@ -124,28 +122,19 @@ public class BufferedOutputFile extends OutputStream  {
 		inputStreams = new ArrayList<WaitBufferedInputStream>();
 		timer = new Timer();
 		if (params.maxBufferSize > 15 && !params.hidebuffer) {
-		timer.schedule(new TimerTask() {
-
-			public void run() {
-				long rc = 0;
-				if (getCurrentInputStream() != null) {
-					rc = getCurrentInputStream().readCount;
-					PMS.get().getFrame().setReadValue(rc, "");
+			timer.schedule(new TimerTask() {
+				public void run() {
+					long rc = 0;
+					if (getCurrentInputStream() != null) {
+						rc = getCurrentInputStream().readCount;
+						PMS.get().getFrame().setReadValue(rc, "");
+					}
+					long space = (writeCount - rc);
+					PMS.debug("buffered: " + formatter.format(space) + " bytes / inputs: " + inputStreams.size());
+					PMS.get().getFrame().setValue( (int) (100*space/maxMemorySize), formatter.format(space) + " bytes");
 				}
-				long space = (writeCount - rc);
-				PMS.debug("buffered: " + formatter.format(space) + " bytes / inputs: " + inputStreams.size());
-				PMS.get().getFrame().setValue( (int) (100*space/maxMemorySize), formatter.format(space) + " bytes");
-
-			}
-			
-		}, 0, 2000);
+			}, 0, 2000);
 		}
-		
-		/*
-		try {
-			debugOutput = new FileOutputStream("debug.mpg");
-		} catch (Exception e) {}
-		*/
 	}
 
 	public void close() throws IOException {
@@ -207,13 +196,7 @@ public class BufferedOutputFile extends OutputStream  {
 	public long getWriteCount() {
 		return writeCount;
 	}
-	
-	private double timeseek;
-	private double timeend;
-	//private int scr;
-	
-	private long packetpos = 0;
-	
+
 	public void write(byte b[], int off, int len) throws IOException {
 		if (debugOutput != null) {
 			debugOutput.write(b, off, len);
@@ -223,8 +206,7 @@ public class BufferedOutputFile extends OutputStream  {
 		 while ((input !=null && (writeCount - input.readCount > bufferOverflowWarning)) || (input == null && writeCount > bufferOverflowWarning)) {
 				try {
 					Thread.sleep(CHECK_INTERVAL);
-				} catch (InterruptedException e) {
-				}
+				} catch (InterruptedException e) {}
 				input = getCurrentInputStream();
 			}
 		 int mb = (int) (writeCount % maxMemorySize);
@@ -238,7 +220,7 @@ public class BufferedOutputFile extends OutputStream  {
 						
 						try {
 							//buffer = Arrays.copyOf(buffer, maxMemorySize);
-							byte[] copy = new byte[maxMemorySize];
+							byte [] copy = new byte[maxMemorySize];
 					       try {
 					    	   System.arraycopy(buffer, 0, copy, 0, Math.min(buffer!=null?buffer.length:0, maxMemorySize));
 					    	   buffer = copy;
@@ -254,7 +236,7 @@ public class BufferedOutputFile extends OutputStream  {
 							//System.exit(1);
 							PMS.minimal("Not enough memory to allocate " + maxMemorySize + " bytes... Using half of it");
 							maxMemorySize = maxMemorySize/2;
-							byte[] copy = new byte[maxMemorySize];
+							byte [] copy = new byte[maxMemorySize];
 					       try {
 					    	   System.arraycopy(buffer, 0, copy, 0, Math.min(buffer!=null?buffer.length:0, maxMemorySize));
 					    	   buffer = copy;
@@ -275,10 +257,8 @@ public class BufferedOutputFile extends OutputStream  {
 			 }
 			
 			// Ditlew - WDTV Live
-			if (timeseek > 0 && writeCount > 10)
-			{
-				for (int i=0;i<len;i++)
-				{
+			if (timeseek > 0 && writeCount > 10) {
+				for (int i = 0; i < len; i++) {
 					if (buffer != null && shiftScr)
 						shiftSCRByTimeSeek(mb+i, (int)timeseek); // Ditlew - update any SCR headers
 					//shiftGOPByTimeSeek(mb+i, (int)timeseek); // Ditlew - update any GOP headers - Not needed for WDTV Live
@@ -330,12 +310,11 @@ public class BufferedOutputFile extends OutputStream  {
 	public void write(int b) throws IOException {
 		boolean bb = b % 100000 == 0;
 		WaitBufferedInputStream input = getCurrentInputStream() ;
-		while (bb && ((input !=null && (writeCount - input.readCount > bufferOverflowWarning)) || (input == null && writeCount == bufferOverflowWarning))) {
+		while (bb && ((input != null && (writeCount - input.readCount > bufferOverflowWarning)) || (input == null && writeCount == bufferOverflowWarning))) {
 			try {
 				Thread.sleep(CHECK_INTERVAL);
 				//PMS.debug("BufferedOutputFile Full");
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) {}
 			input = getCurrentInputStream();
 		}
 		int mb = (int) (writeCount++ % maxMemorySize);
@@ -377,8 +356,7 @@ public class BufferedOutputFile extends OutputStream  {
 	}
 
 	// Ditlew - Modify SCR
-	private void shiftSCRByTimeSeek(int buffer_index, int offset_sec)
-	{
+	private void shiftSCRByTimeSeek(int buffer_index, int offset_sec) {
 		int m9 = modulo(buffer_index - 9);
 		int m8 = modulo(buffer_index - 8);
 		int m7 = modulo(buffer_index - 7);
@@ -436,8 +414,7 @@ public class BufferedOutputFile extends OutputStream  {
 
 	// Ditlew - Modify GOP
 	@SuppressWarnings("unused")
-	private void shiftGOPByTimeSeek(int buffer_index, int offset_sec)
-	{
+	private void shiftGOPByTimeSeek(int buffer_index, int offset_sec) {
 		int m7 = modulo(buffer_index - 7);
 		int m6 = modulo(buffer_index - 6);
 		int m5 = modulo(buffer_index - 5);
@@ -616,8 +593,7 @@ public class BufferedOutputFile extends OutputStream  {
 			c++;
 			try {
 				Thread.sleep(CHECK_INTERVAL);
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) {}
 		}
 		if (attachedThread != null) {
 			attachedThread.setReadyToStop(false);
@@ -645,7 +621,6 @@ public class BufferedOutputFile extends OutputStream  {
 			System.arraycopy(buffer, mb, buf, off, len-cut);
 			return len;
 		}
-		
 	}
 	
 	private int read(boolean firstRead, long readCount) {
@@ -665,8 +640,7 @@ public class BufferedOutputFile extends OutputStream  {
 			c++;
 			try {
 				Thread.sleep(CHECK_INTERVAL);
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) {}
 		}
 		if (attachedThread != null) {
 			attachedThread.setReadyToStop(false);
@@ -710,21 +684,20 @@ public class BufferedOutputFile extends OutputStream  {
 		new Thread(checkEnd).start();
 	}
 
-	public void reset() {
+	public synchronized void reset() {
 		if (debugOutput != null)
 			try {
 				debugOutput.close();
 			} catch (IOException e) {}
-		PMS.info("Destroying buffer");
 		timer.cancel();
-		buffer = null;
+		if (buffer != null) {
+			PMS.info("Destroying buffer");
+			buffer = null;
+		}
 		buffered = false;
-		System.gc();
-		System.gc();
-		System.gc();
+		// System.gc();
 		if (maxMemorySize != 1048576) {
 			PMS.get().getFrame().setValue(0, "Empty");
 		}
 	}
-	
 }

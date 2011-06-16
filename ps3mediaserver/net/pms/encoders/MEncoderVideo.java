@@ -1466,8 +1466,8 @@ public class MEncoderVideo extends Player {
 			cmdArray[cmdArray.length - 10] = "-sid"; //$NON-NLS-1$
 			cmdArray[cmdArray.length - 9] = "100"; //$NON-NLS-1$
 		} else if (subString == null) { // Trick necessary for mencoder to not display the internal embedded track
-			cmdArray[cmdArray.length - 9] = "20000"; //$NON-NLS-1$
 			cmdArray[cmdArray.length - 10] = "-subdelay"; //$NON-NLS-1$
+			cmdArray[cmdArray.length - 9] = "20000"; //$NON-NLS-1$
 		}
 
 		cmdArray[cmdArray.length - 8] = "-quiet"; //$NON-NLS-1$

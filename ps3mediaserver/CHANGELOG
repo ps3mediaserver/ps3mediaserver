@@ -7,7 +7,6 @@ Changelog:
 	Return of the official OS X build, thanks for your patience!
 	MEncoder no longer crashes when using more then 8 cores
 	New build script for OS X that builds all dependencies (big thanks to Raptor399)
-	Overscan compensation support for MEncoder
 	French translation fixed
 
 2011-06-14 - 1.24.0
