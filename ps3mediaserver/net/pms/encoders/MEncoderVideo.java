@@ -1307,21 +1307,12 @@ public class MEncoderVideo extends Player {
 		}
 
 		// Apply overscan compensation
+		// -vf scale to original resolution seems to fix most cases of video warping
 		// TODO: Integrate with Video Scaler option
 		if (intOCW > 0 || intOCH > 0) {
 			String scaleAppend = "";
-			int maxWidth       = 1920;
-			int maxHeight      = 1080;
 
-			if (params.mediaRenderer.getMaxVideoWidth() > 0) {
-				maxWidth = params.mediaRenderer.getMaxVideoWidth();
-			}
-
-			if (params.mediaRenderer.getMaxVideoHeight() > 0) {
-				maxHeight = params.mediaRenderer.getMaxVideoHeight();
-			}
-
-			if (media != null && (intOCW + media.width > maxWidth || intOCH + media.height > maxHeight)) {
+			if (media != null && media.width > 0 && media.height > 0) {
 				scaleAppend = ",scale="+media.width+":"+media.height;
 			}
 
