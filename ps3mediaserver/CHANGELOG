@@ -1,6 +1,10 @@
 Changelog:
 ==========
 
+2011-06-17 - 1.25.1
+
+	Overscan compensation bug fixed
+
 2011-06-16 - 1.25.0
 
 	Overscan compensation feature added for MEncoder
