@@ -30,7 +30,7 @@
   </appender>
 
   <appender name="debug.log" class="ch.qos.logback.core.FileAppender">
-    <file>${debugLogPath}debug.log</file>
+    <file>${debugLogPath}${file.separator}debug.log</file>
     <append>false</append>  <!-- Start new debug.log on each application start -->
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
       <!-- This pattern mimics the original PMS debug.log format -->
@@ -42,8 +42,8 @@
   <!-- appender instead of the "debug.log" appender. This appender will -->
   <!-- roll the debug.log file after 10 MBytes and will keep a maximum -->
   <!-- of 5 old and compressed logs. -->
-    <appender name="debug.log.10MB" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${debugLogPath}debug.log</file>
+  <appender name="debug.log.10MB" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${debugLogPath}${file.separator}debug.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <fileNamePattern>${debugLogPath}debug.log.%i.zip</fileNamePattern>
       <minIndex>1</minIndex>
