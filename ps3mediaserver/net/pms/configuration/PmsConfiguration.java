@@ -577,7 +577,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean isMencoderAss() {
-		return getBoolean(KEY_MENCODER_ASS, true);
+		return getBoolean(KEY_MENCODER_ASS, Platform.isWindows());
 	}
 
 	public boolean isMencoderDisableSubs() {
