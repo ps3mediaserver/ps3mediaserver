@@ -22,15 +22,16 @@ import java.io.IOException;
 
 import javax.swing.JComponent;
 
-import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
+import net.pms.PMS;
 
 public class MPlayerWebVideoDump extends MPlayerAudio {
 
@@ -56,7 +57,7 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 	}
 	
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media,
+	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media,
 			OutputParams params) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
@@ -65,10 +66,19 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 		PipeProcess audioP = new PipeProcess("mplayer_webvid" + System.currentTimeMillis()); //$NON-NLS-1$
 			
 		String mPlayerdefaultAudioArgs [] = new String [] { PMS.getConfiguration().getMplayerPath(), fileName, "-nocache", "-dumpstream", "-quiet", "-dumpfile", audioP.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		params.input_pipes [0]= audioP;
+		params.input_pipes [0] = audioP;
 			
 		ProcessWrapper mkfifo_process = audioP.getPipeProcess();
 		
+		mPlayerdefaultAudioArgs = finalizeTranscoderArgs(
+            this,
+            fileName,
+            dlna,
+            media,
+            params,
+            mPlayerdefaultAudioArgs
+        );
+
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(mPlayerdefaultAudioArgs, params);
 		pw.attachProcess(mkfifo_process);
 		mkfifo_process.runInNewThread();

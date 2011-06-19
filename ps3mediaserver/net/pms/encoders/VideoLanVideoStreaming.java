@@ -28,6 +28,7 @@ import javax.swing.JComponent;
 
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
@@ -106,7 +107,12 @@ public class VideoLanVideoStreaming extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
+	public ProcessWrapper launchTranscode(
+		String fileName,
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		boolean isWindows = Platform.isWindows();
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux()); //$NON-NLS-1$
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
@@ -166,6 +172,15 @@ public class VideoLanVideoStreaming extends Player {
 
 		String[] cmdArray = new String[cmdList.size()];
 		cmdList.toArray(cmdArray);
+
+		cmdArray = finalizeTranscoderArgs(
+			this,
+			fileName,
+			dlna,
+			media,
+			params,
+			cmdArray
+		);
 			
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.attachProcess(pipe_process);

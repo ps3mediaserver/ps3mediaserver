@@ -31,13 +31,14 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.network.HTTPResource;
+import net.pms.PMS;
 
 public class FFMpegAudio extends FFMpegVideo {
 	
@@ -130,7 +131,12 @@ public class FFMpegAudio extends FFMpegVideo {
 	}*/
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
+	public ProcessWrapper launchTranscode(
+		String fileName,
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
 		params.waitbeforestart = 2000;
 		params.manageFastStart();
@@ -149,7 +155,6 @@ public class FFMpegAudio extends FFMpegVideo {
 		}
 		if (params.mediaRenderer.isTranscodeAudioTo441())
 			args[3] = "44100";
-		return getFFMpegTranscode(fileName, media, params,args);
+		return getFFMpegTranscode(fileName, dlna, media, params, args);
 	}
-
 }

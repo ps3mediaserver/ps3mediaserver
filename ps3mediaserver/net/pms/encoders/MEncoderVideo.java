@@ -85,6 +85,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
 import com.sun.jna.Platform;
 
 public class MEncoderVideo extends Player {
@@ -1091,9 +1092,8 @@ public class MEncoderVideo extends Player {
 		String fileName,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
-		OutputParams params)
-		throws IOException {
-
+		OutputParams params
+	) throws IOException {
 		params.manageFastStart();
 
 		boolean avisynth = avisynth()/* || params.avisynth*/;
@@ -1158,7 +1158,7 @@ public class MEncoderVideo extends Player {
 				} else if (media.codecV.equals("vc1")) { //$NON-NLS-1$
 					params.forceType = "V_MS/VFW/WVC1"; //$NON-NLS-1$
 				}
-				return tv.launchTranscode(fileName, media, params);
+				return tv.launchTranscode(fileName, dlna, media, params);
 			}
 		} else if (params.sid == null && dvd && configuration.isMencoderRemuxMPEG2() && params.mediaRenderer.isMpeg2Supported()) {
 			String sArgs[] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, subString, configuration.isMencoderIntelligentSync(), false);
@@ -1876,7 +1876,7 @@ public class MEncoderVideo extends Player {
 			}
 
 			cmdArray = finalizeTranscoderArgs(
-			    id(),
+			    this,
 			    fileName,
 			    dlna,
 			    media,

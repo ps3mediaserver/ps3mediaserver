@@ -36,6 +36,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
@@ -74,9 +75,12 @@ public class MPlayerAudio extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media,
-			OutputParams params) throws IOException {
-		
+	public ProcessWrapper launchTranscode(
+		String fileName,
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		if (!(this instanceof MPlayerWebAudio) && !(this instanceof MPlayerWebVideoDump))
 			params.waitbeforestart = 2000;
 		
@@ -84,7 +88,7 @@ public class MPlayerAudio extends Player {
 		
 		if (params.mediaRenderer.isTranscodeToMP3()) {
 			FFMpegAudio audio = new FFMpegAudio(configuration);
-			return audio.launchTranscode(fileName, media, params);
+			return audio.launchTranscode(fileName, dlna, media, params);
 		}
 		
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
@@ -117,6 +121,14 @@ public class MPlayerAudio extends Player {
 			
 		ProcessWrapper mkfifo_process = audioP.getPipeProcess();
 		
+		mPlayerdefaultAudioArgs = finalizeTranscoderArgs(
+			this,
+			fileName,
+			dlna,
+			media,
+			params,
+			mPlayerdefaultAudioArgs
+		);
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(mPlayerdefaultAudioArgs, params);
 		pw.attachProcess(mkfifo_process);
 		mkfifo_process.runInNewThread();
