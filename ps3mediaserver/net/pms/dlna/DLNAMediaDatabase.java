@@ -66,7 +66,7 @@ public class DLNAMediaDatabase implements Runnable {
 			}
 		}
 		if (Platform.isWindows() && !defaultLocation) {
-			String profileDir = PMS.getConfiguration().getProfileDir();
+			String profileDir = PMS.getConfiguration().getProfileDirectory();
 			url = String.format("jdbc:h2:%s\\%s/%s", profileDir, dir, name); //$NON-NLS-1$
 			fileDir = new File(profileDir, dir);
 		} else {

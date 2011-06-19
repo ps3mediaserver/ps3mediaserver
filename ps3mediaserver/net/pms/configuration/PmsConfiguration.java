@@ -1295,7 +1295,7 @@ public class PmsConfiguration {
 		return PROFILE_PATH;
 	}
 
-	public String getProfileDir() {
+	public String getProfileDirectory() {
 		return PROFILE_DIRECTORY;
 	}
 
