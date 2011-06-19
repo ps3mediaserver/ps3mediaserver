@@ -391,7 +391,7 @@ public class PMS {
 		minimal("Logging config file: " + LoggingConfigFileLoader.getConfigFilePath()); //$NON-NLS-1$
 		minimal(""); //$NON-NLS-1$
 
-		minimal("Profile directory: " + configuration.getProfileDir());
+		minimal("Profile directory: " + configuration.getProfileDirectory());
 		String profilePath = configuration.getProfilePath();
 		minimal("Profile path: " + profilePath);
 
@@ -587,7 +587,7 @@ public class PMS {
 		rootFolder.browse(MapFileConfiguration.parse(configuration.getVirtualFolders()));
 
 		// FIXME: this (the WEB.conf path) should be fully configurable
-		File webConf = new File(configuration.getProfileDir(), "WEB.conf"); //$NON-NLS-1$
+		File webConf = new File(configuration.getProfileDirectory(), "WEB.conf"); //$NON-NLS-1$
 
 		if (webConf.exists()) {
 			try {
