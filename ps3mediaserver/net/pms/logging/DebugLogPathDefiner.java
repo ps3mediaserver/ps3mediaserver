@@ -52,7 +52,7 @@ public class DebugLogPathDefiner extends PropertyDefinerBase {
 			file.createNewFile();
 			if (file.canWrite()) {
 				file.delete();
-				return "";
+				return new File("").getAbsolutePath();
 			}
 		} catch (Exception e) {
 			// Could not create / write the file
