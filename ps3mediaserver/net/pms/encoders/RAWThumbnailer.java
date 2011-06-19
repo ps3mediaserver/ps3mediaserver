@@ -7,13 +7,14 @@ import java.io.InputStream;
 
 import javax.swing.JComponent;
 
-import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.InternalJavaProcessImpl;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.PMS;
 
 public class RAWThumbnailer extends Player {
 	
@@ -45,7 +46,7 @@ public class RAWThumbnailer extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media,
+	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media,
 			OutputParams params) throws IOException {
 		
 		params.waitbeforestart = 1;

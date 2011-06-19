@@ -36,6 +36,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
@@ -104,11 +105,21 @@ public class FFMpegDVRMSRemux extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
-		return getFFMpegTranscode(fileName, media, params);
+	public ProcessWrapper launchTranscode(
+		String fileName,
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
+		return getFFMpegTranscode(fileName, dlna, media, params);
 	}
 
-	protected ProcessWrapperImpl getFFMpegTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
+	protected ProcessWrapperImpl getFFMpegTranscode(
+		String fileName,
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		PmsConfiguration configuration = PMS.getConfiguration();
 		String ffmpegAlternativePath = configuration.getFfmpegAlternativePath();
 		List<String> cmdList = new ArrayList<String>();
@@ -146,6 +157,15 @@ public class FFMpegDVRMSRemux extends Player {
 		cmdList.add("pipe:"); //$NON-NLS-1$
 		String[] cmdArray = new String [ cmdList.size() ];
 		cmdList.toArray(cmdArray);
+
+		cmdArray = finalizeTranscoderArgs(
+			this,
+			fileName,
+			dlna,
+			media,
+			params,
+			cmdArray
+		);
 
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.runInNewThread();

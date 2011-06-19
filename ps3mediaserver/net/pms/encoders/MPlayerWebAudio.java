@@ -24,6 +24,7 @@ import javax.swing.JComponent;
 
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAResource;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 
@@ -51,12 +52,12 @@ public class MPlayerWebAudio extends MPlayerAudio {
 	}
 	
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media,
+	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media,
 			OutputParams params) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		params.waitbeforestart = 8000;
-		return super.launchTranscode(fileName, media, params);
+		return super.launchTranscode(fileName, dlna, media, params);
 	}
 
 	@Override

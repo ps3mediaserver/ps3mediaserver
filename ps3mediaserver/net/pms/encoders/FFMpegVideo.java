@@ -31,17 +31,18 @@ import java.util.StringTokenizer;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
-import net.pms.Messages;
-import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
+import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeIPCProcess;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.Messages;
 import net.pms.network.HTTPResource;
+import net.pms.PMS;
 import net.pms.util.ProcessUtil;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -138,12 +139,22 @@ public class FFMpegVideo extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
-		return getFFMpegTranscode(fileName, media, params, args());
+	public ProcessWrapper launchTranscode(
+		String fileName,
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
+		return getFFMpegTranscode(fileName, dlna, media, params, args());
 	}
 
-	protected ProcessWrapperImpl getFFMpegTranscode(String fileName, DLNAMediaInfo media, OutputParams params, String args[]) throws IOException {
-		
+	protected ProcessWrapperImpl getFFMpegTranscode(
+		String fileName,
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params,
+		String args[]
+	) throws IOException {
 		setAudioAndSubs(fileName, media, params, PMS.getConfiguration());
 		
 		PipeIPCProcess videoP = null;
@@ -266,6 +277,15 @@ public class FFMpegVideo extends Player {
 			//cmdArray[cmdArray.length-1] = ffPipe.getInputPipe();
 		}
 		
+		cmdArray = finalizeTranscoderArgs(
+			this,
+			fileName,
+			dlna,
+			media,
+			params,
+			cmdArray
+		);
+
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		
 		if (type() != Format.AUDIO && (mplayer())) {

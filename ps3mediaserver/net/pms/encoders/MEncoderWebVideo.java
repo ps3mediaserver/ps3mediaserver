@@ -24,6 +24,7 @@ import javax.swing.JComponent;
 
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
@@ -84,6 +85,7 @@ public class MEncoderWebVideo extends Player {
 	@Override
 	public ProcessWrapper launchTranscode(
 		String fileName,
+		DLNAResource dlna,
 		DLNAMediaInfo media,
 		OutputParams params
 	) throws IOException {
@@ -105,6 +107,15 @@ public class MEncoderWebVideo extends Player {
 		
 		ProcessWrapper mkfifo_process = pipe.getPipeProcess();
 		
+		cmdArray = finalizeTranscoderArgs(
+			this,
+			fileName,
+			dlna,
+			media,
+			params,
+			cmdArray
+		);
+
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.attachProcess(mkfifo_process);
 		mkfifo_process.runInNewThread();
