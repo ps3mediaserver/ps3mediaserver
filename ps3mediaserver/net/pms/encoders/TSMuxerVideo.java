@@ -252,7 +252,7 @@ public class TSMuxerVideo extends Player {
 							(params.aid.isAC3() && configuration.isRemuxAC3()) ? "copy" : "lavc", //$NON-NLS-1$ //$NON-NLS-2$
 							params.aid.isAC3() ? "-fafmttag" : "-quiet", //$NON-NLS-1$ //$NON-NLS-2$
 							params.aid.isAC3() ? "0x2000" : "-quiet", "-lavcopts", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-							"acodec=ac3:abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid), //$NON-NLS-1$
+							"acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + ":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 							"-af", "lavcresample=48000", "-srate", "48000", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 							singleMediaAudio ? "-quiet" : "-aid", //$NON-NLS-1$ //$NON-NLS-2$
 							singleMediaAudio ? "-quiet" : ("" + params.aid.id), //$NON-NLS-1$
@@ -305,7 +305,7 @@ public class TSMuxerVideo extends Player {
 								audio.isAC3() ? "-fafmttag" : "-quiet", //$NON-NLS-1$ //$NON-NLS-2$
 								audio.isAC3() ? "0x2000" : "-quiet", //$NON-NLS-1$ //$NON-NLS-2$
 								"-lavcopts", //$NON-NLS-1$ //$NON-NLS-2$
-								"acodec=ac3:abitrate=" + CodecUtil.getAC3Bitrate(configuration, audio), //$NON-NLS-1$
+								"acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + ":abitrate=" + CodecUtil.getAC3Bitrate(configuration, audio), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 								"-af", "lavcresample=48000", "-srate", "48000", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 								singleMediaAudio ? "-quiet" : "-aid", //$NON-NLS-1$ //$NON-NLS-2$
 								singleMediaAudio ? "-quiet" : ("" + audio.id), //$NON-NLS-1$ //$NON-NLS-2$
