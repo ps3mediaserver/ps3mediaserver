@@ -62,7 +62,7 @@ public class MEncoderWebVideo extends Player {
 
 	protected String[] getDefaultArgs() {
 		int nThreads = configuration.getMencoderMaxThreads();
-		String acodec = configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3";
+		String acodec = "ac3";
 		return new String [] {
 			"-msglevel", "all=2", //$NON-NLS-1$ //$NON-NLS-2$
 			"-quiet", //$NON-NLS-1$
