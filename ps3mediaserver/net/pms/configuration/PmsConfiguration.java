@@ -1049,7 +1049,8 @@ public class PmsConfiguration {
 	}
 
 	public boolean getMencoderMT() {
-		return getBoolean(KEY_MENCODER_MT, false);
+		boolean isMultiCore = getNumberOfCpuCores() > 1;
+		return getBoolean(KEY_MENCODER_MT, isMultiCore);
 	}
 	
 	public void setRemuxAC3(boolean value) {
