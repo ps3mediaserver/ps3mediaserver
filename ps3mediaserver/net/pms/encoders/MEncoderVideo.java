@@ -1263,8 +1263,8 @@ public class MEncoderVideo extends Player {
 			int cbr_bitrate = params.mediaRenderer.getCBRVideoBitrate();
 			String cbr_settings = (cbr_bitrate > 0) ? ":vrc_buf_size=1835:vrc_minrate=" + cbr_bitrate + ":vrc_maxrate=" + cbr_bitrate + ":vbitrate=" + cbr_bitrate : "";
 			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec + //$NON-NLS-1$
-				(wmv ? ":acodec=wmav2:abitrate=256" : (cbr_settings + ":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid))) + //$NON-NLS-1$
+				(wmv ? ":acodec=wmav2:abitrate=256" : (cbr_settings + ":acodec=ac3") + //$NON-NLS-1$ //$NON-NLS-2$
+				":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid)) + //$NON-NLS-1$
 				":threads=" + (wmv ? 1 : configuration.getMencoderMaxThreads()) + ":" + mainConfig; //$NON-NLS-1$ //$NON-NLS-2$
 
 			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, mainConfig, params.mediaRenderer);
@@ -1598,7 +1598,7 @@ public class MEncoderVideo extends Player {
 						for (int c = 0; c < cmdArray.length; c++) {
 							if (cmdArray[c] != null && cmdArray[c].equals("-lavcopts")) {//$NON-NLS-1$
 								cmdArray[c + 1] = "autoaspect=1:vcodec=" + vcodec + //$NON-NLS-1$
-									":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+									":acodec=ac3" + //$NON-NLS-1$
 									":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid) + //$NON-NLS-1$
 									":threads=" + configuration.getMencoderMaxThreads() + ":" + sArgs[s + 1]; //$NON-NLS-1$ //$NON-NLS-2$
 								addMaximumBitrateConstraints(cmdArray[c + 1], media, cmdArray[c + 1], params.mediaRenderer);
