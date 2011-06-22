@@ -3,12 +3,8 @@ Changelog:
 
 2011-??-?? - 1.30.0
 
-	Backwards-incompatible API changes - see SVN changelog for more details
-	Updated binaries to revisions with fixes for ac3_fixed sound problems
-	Updated binaries to revisions with VOBsub support
-	Updated OSX FFmpeg from r30739 to r30919
-	Updated OSX Mencoder from r33606 to r33685
-	Updated OSX MPlayer from r33606 to r33685
+	Backwards-incompatible API changes (for plugin developers) - see SVN changelog for more details
+	Updated OS X binaries (FFmpeg, MEncoder and MPlayer) to fix an AC3 bug and improve internal VOBsub display quality
 
 2011-06-17 - 1.25.1
 
