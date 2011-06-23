@@ -1309,7 +1309,7 @@ public class MEncoderVideo extends Player {
 				scaleAppend = ",scale="+media.width+":"+media.height;
 			}
 
-			sb.append("-vf softskip,expand=-").append(intOCW).append(":-").append(intOCH).append(scaleAppend).append(" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			sb.append("-vf softskip,expand=-").append(intOCW).append(":-").append(intOCH).append(scaleAppend).append(",harddup "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 
 		if (params.sid != null && !params.sid.is_file_utf8 && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
