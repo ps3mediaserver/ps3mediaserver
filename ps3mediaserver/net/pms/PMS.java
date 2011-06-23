@@ -395,14 +395,14 @@ public class PMS {
 		if(lfps != null && lfps.size() > 0) {
 			if(lfps.size() == 1) {
 				Entry<String, String> entry = lfps.entrySet().iterator().next();
-				minimal(String.format("%s logs to file: %s", entry.getKey(), entry.getValue()));
+				minimal(String.format("%s: %s", entry.getKey(), entry.getValue()));
 			} else {
 				minimal("Logging to multiple files:");
 				Iterator<Entry<String, String>> logsIterator = lfps.entrySet().iterator();
 				Entry<String, String> entry;
 				while(logsIterator.hasNext()) {
 					entry = logsIterator.next();
-					minimal(String.format("%s logs to file: %s", entry.getKey(), entry.getValue()));
+					minimal(String.format("%s: %s", entry.getKey(), entry.getValue()));
 				}
 			}
 		}
