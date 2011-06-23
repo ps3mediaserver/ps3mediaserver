@@ -37,8 +37,10 @@ import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.logging.LogManager;
@@ -389,6 +391,21 @@ public class PMS {
 
 		minimal("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
 		minimal("Logging config file: " + LoggingConfigFileLoader.getConfigFilePath()); //$NON-NLS-1$
+		HashMap<String, String> lfps = LoggingConfigFileLoader.getLogFilePaths();
+		if(lfps != null && lfps.size() > 0) {
+			if(lfps.size() == 1) {
+				Entry<String, String> entry = lfps.entrySet().iterator().next();
+				minimal(String.format("%s logs to file: %s", entry.getKey(), entry.getValue()));
+			} else {
+				minimal("Logging to multiple files:");
+				Iterator<Entry<String, String>> logsIterator = lfps.entrySet().iterator();
+				Entry<String, String> entry;
+				while(logsIterator.hasNext()) {
+					entry = logsIterator.next();
+					minimal(String.format("%s logs to file: %s", entry.getKey(), entry.getValue()));
+				}
+			}
+		}
 		minimal(""); //$NON-NLS-1$
 
 		minimal("Profile directory: " + configuration.getProfileDirectory());

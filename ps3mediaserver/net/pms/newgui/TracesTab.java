@@ -19,19 +19,26 @@
 package net.pms.newgui;
 
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import net.pms.Messages;
+import net.pms.PMS;
+import net.pms.logging.LoggingConfigFileLoader;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -86,14 +93,15 @@ public class TracesTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 0:grow", //$NON-NLS-1$
-                "pref, fill:default:grow"); //$NON-NLS-1$
+                "left:pref, 10:grow", //$NON-NLS-1$
+                "fill:10:grow, p"); //$NON-NLS-1$
          PanelBuilder builder = new PanelBuilder(layout);
       //  builder.setBorder(Borders.DLU14_BORDER);
         builder.setOpaque(true);
 
         CellConstraints cc = new CellConstraints();
         
+        //create trace text box
         jList = new JTextArea();
 		jList.setEditable(false);
 		jList.setBackground(Color.WHITE);
@@ -115,14 +123,31 @@ public class TracesTab {
 		           )
 		        );
        
-        JScrollPane pane = new JScrollPane(jList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pane.setPreferredSize(new Dimension(500,400));
-      //  pane.setBorder(BorderFactory.createEtchedBorder());
-        
-       builder.add(pane,          cc.xy(2,  2));
+       JScrollPane pane = new JScrollPane(jList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+       builder.add(pane,          cc.xyw(1,  1, 2));       
        
-       
-        return builder.getPanel();
+       //Add buttons opening log files
+		JPanel pLogFileButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		HashMap<String, String> logFiles = LoggingConfigFileLoader.getLogFilePaths();
+		for (String loggerName : logFiles.keySet()) {
+			JButton b = new JButton(loggerName);
+			b.setToolTipText(logFiles.get(loggerName));
+			b.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					File logFile = new File(((JButton) e.getSource()).getToolTipText());
+					try {
+						java.awt.Desktop.getDesktop().open(logFile);
+					} catch (IOException e1) {
+						PMS.error(String.format("Failed to open file %s in default editor", logFile), e1);
+					}
+				}
+			});
+			pLogFileButtons.add(b);
+		}
+		builder.add(pLogFileButtons, cc.xy(2, 2));
+
+		return builder.getPanel();
 	}
 	
 	

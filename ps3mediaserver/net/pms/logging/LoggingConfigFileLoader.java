@@ -20,12 +20,18 @@
 package net.pms.logging;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 
@@ -40,6 +46,7 @@ public class LoggingConfigFileLoader {
 	private static final String HEADLESS_CONFIGFILENAME = "logback.headless.xml";
 
 	private static String filepath = null;
+	private static HashMap<String, String> logFilePaths = new HashMap<String, String>(); // key=appender name, value, log file path
 
 	/**
 	 * Gets the full path of a successfully loaded Logback configuration file.
@@ -108,7 +115,7 @@ public class LoggingConfigFileLoader {
 		}
 
 		LoggerContext lc = (LoggerContext) ilf;
-
+		
 		try {
 			JoranConfigurator configurator = new JoranConfigurator();
 			configurator.setContext(lc);
@@ -123,6 +130,22 @@ public class LoggingConfigFileLoader {
 		} catch (JoranException je) {
 			// StatusPrinter will handle this
 		}
+		
+		for(Logger logger : lc.getLoggerList()) {
+			Iterator<Appender<ILoggingEvent>> it = logger.iteratorForAppenders();
+			while (it.hasNext()) {
+				Appender<ILoggingEvent> ap = it.next();
+				if(ap instanceof FileAppender) {
+					FileAppender<ILoggingEvent> fa = (FileAppender<ILoggingEvent>)ap;
+					logFilePaths.put(fa.getName(), fa.getFile());
+				}
+			}
+		}
+		
 		StatusPrinter.printInCaseOfErrorsOrWarnings(lc);
+	}
+	
+	public static HashMap<String, String> getLogFilePaths() {
+		return logFilePaths;
 	}
 }
