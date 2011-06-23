@@ -24,6 +24,8 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -119,11 +121,16 @@ public class TrTab2 {
 		PMS.get().getFrame().setReloadable(true);
 		PMS.getConfiguration().setEnginesAsList(engines);
 	}
+
+	private void handleCardComponentChange(Component component) {
+		tabbedPane.setPreferredSize(component.getPreferredSize());
+		SwingUtilities.updateComponentTreeUI(tabbedPane);
+	}
 	
 	public JComponent build() {
 		FormLayout mainlayout = new FormLayout(
-			"left:pref, pref, 7dlu, pref, pref, 10:grow", //$NON-NLS-1$
-			"top:10:grow" //$NON-NLS-1$
+			"left:pref, pref, 7dlu, pref, pref, fill:10:grow", //$NON-NLS-1$
+			"fill:10:grow" //$NON-NLS-1$
 		); 
 		PanelBuilder builder = new PanelBuilder(mainlayout);
         builder.setBorder(Borders.DLU4_BORDER);
@@ -149,7 +156,7 @@ public class TrTab2 {
 	public JComponent buildLeft() {
 		FormLayout layout = new FormLayout(
 			"left:pref, pref, pref, pref, 0:grow", //$NON-NLS-1$
-			"p, 3dlu, p, 3dlu, p, 3dlu, p, 30dlu, 0:grow"
+			"fill:10:grow, 3dlu, p, 3dlu, p, 3dlu, p"
 		); //$NON-NLS-1$
 
 		PanelBuilder builder = new PanelBuilder(layout);
@@ -226,6 +233,12 @@ public class TrTab2 {
 
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(Messages.getString("TrTab2.11")); //$NON-NLS-1$
 		TreeNodeSettings commonEnc = new TreeNodeSettings(Messages.getString("TrTab2.5"), null, buildCommon()); //$NON-NLS-1$
+		commonEnc.getConfigPanel().addComponentListener(new ComponentAdapter() {
+			@Override
+		   	public void componentShown(ComponentEvent e) {
+		  		  handleCardComponentChange(e.getComponent());
+		   	}
+	    });
 		tabbedPane.add(commonEnc.id(), commonEnc.getConfigPanel());
 		root.add(commonEnc);
 
@@ -257,8 +270,8 @@ public class TrTab2 {
 		});
 
 		tree.setCellRenderer(new TreeRenderer());
-		JScrollPane pane = new JScrollPane(tree);
-
+		JScrollPane pane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		
 		builder.add(pane,          cc.xyw(2,  1, 4));
 
 		builder.addLabel(Messages.getString("TrTab2.19"), cc.xyw(2, 5, 4)); //$NON-NLS-1$
@@ -295,6 +308,12 @@ public class TrTab2 {
 			JComponent jc = en.getConfigPanel();
 			if (jc == null)
 				jc = buildEmpty();
+			jc.addComponentListener(new ComponentAdapter() {
+				@Override
+				public void componentShown(ComponentEvent e) {
+					handleCardComponentChange(e.getComponent());
+				}
+			});
 			tabbedPane.add(en.id(), jc);
 			parent[p.purpose()].add(en);
 			
