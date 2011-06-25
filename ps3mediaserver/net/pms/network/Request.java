@@ -252,7 +252,7 @@ public class Request extends HTTPResource {
 				s = s.replace("<host>", PMS.get().getServer().getHost());
 				s = s.replace("<port>", "" +PMS.get().getServer().getPort());
 				if (xbox) {
-					PMS.info("DLNA changes for Xbox360");
+					logger.debug("DLNA changes for Xbox360");
 					s = s.replace("PS3 Media Server", "PS3 Media Server [" + profileName + "] : Windows Media Connect");
 					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect</modelName>");				
 					s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
@@ -329,7 +329,7 @@ public class Request extends HTTPResource {
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
 			} else if (soapaction.contains("ContentDirectory:1#Browse") || soapaction.contains("ContentDirectory:1#Search")) {
-				//PMS.debug(content);
+				//logger.trace(content);
 				objectID = getEnclosingValue(content, "<ObjectID>", "</ObjectID>");
 				String containerID = null;
 				if ((objectID == null || objectID.length() == 0) && xbox) {
@@ -452,7 +452,7 @@ public class Request extends HTTPResource {
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
-				//PMS.debug(response.toString());
+				//logger.trace(response.toString());
 			}
 		}
 
@@ -466,7 +466,7 @@ public class Request extends HTTPResource {
 			output(output, "");
 			if (!method.equals("HEAD")) {
 				output.write(responseData);
-				//PMS.debug(response.toString());
+				//logger.trace(response.toString());
 			}
 		} else if (inputStream != null) {
 			if (CLoverride > -1) {
@@ -479,7 +479,7 @@ public class Request extends HTTPResource {
 					output(output, "Content-Length: " + CLoverride);
 			} else {
 				int cl = inputStream.available();
-				PMS.debug("Available Content-Length: " + cl);
+				logger.trace("Available Content-Length: " + cl);
 				output(output, "Content-Length: " + cl);
 			}
 
@@ -494,7 +494,7 @@ public class Request extends HTTPResource {
 			int sendB = 0;
 			if (lowRange != DLNAMediaInfo.ENDFILE_POS && !method.equals("HEAD"))
 				sendB = sendBytes(inputStream); //, ((lowRange > 0 && highRange > 0)?(highRange-lowRange):-1)
-			PMS.debug( "Sending stream: " + sendB + " bytes of " + argument);
+			logger.trace( "Sending stream: " + sendB + " bytes of " + argument);
 			PMS.get().getFrame().setStatusLine(null);
 		} else {
 			if (lowRange > 0 && highRange > 0) {
@@ -508,7 +508,7 @@ public class Request extends HTTPResource {
 
 	private void output(OutputStream output, String line) throws IOException {
 		output.write((line + CRLF).getBytes("UTF-8"));
-		PMS.debug( "Wrote on socket: " + line);
+		logger.trace( "Wrote on socket: " + line);
 	}
 
 	private String getFUTUREDATE() {
@@ -527,7 +527,7 @@ public class Request extends HTTPResource {
 				sendBytes += bytes;
 			}
 		} catch (IOException e) {
-			PMS.debug("Sending stream with premature end : " + sendBytes + " bytes of " + argument + ". Reason: " + e.getMessage());
+			logger.trace("Sending stream with premature end : " + sendBytes + " bytes of " + argument + ". Reason: " + e.getMessage());
 		} finally {
 			fis.close();
 		}

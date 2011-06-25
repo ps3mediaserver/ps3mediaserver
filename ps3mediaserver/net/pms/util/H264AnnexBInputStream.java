@@ -5,11 +5,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.InputFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class H264AnnexBInputStream extends InputStream {
+	public static final Logger logger = LoggerFactory.getLogger(H264AnnexBInputStream.class);
 
 	private InputStream source;
 	private int nextTarget;
@@ -50,7 +53,7 @@ public class H264AnnexBInputStream extends InputStream {
 			//insertHeader = (h[0] == 101 && h[1] == -120/* && (h[2] == -128 || h[2] == -127)*/);
 			insertHeader = ((h[0] & 37) == 37 && (h[1] & -120) == -120);
 			/*if (insertHeader)
-				PMS.minimal("Must insert a header / nextTarget: " + nextTarget);*/
+				logger.info("Must insert a header / nextTarget: " + nextTarget);*/
 			if (!insertHeader) {
 				System.arraycopy(new  byte [] { 0, 0, 0, 1 }, 0, b, off, 4);
 				off += 4;
@@ -78,14 +81,14 @@ public class H264AnnexBInputStream extends InputStream {
 				System.arraycopy(defHeader, 0, b, off, (len - off));
 				off = len;
 			}
-			//PMS.minimal("header inserted / nextTarget: " + nextTarget);
+			//logger.info("header inserted / nextTarget: " + nextTarget);
 			firstHeader = false;
 		}
 		
 		if (h != null) {
 			System.arraycopy(h, 0, b, off, 3);
 			off += 3;
-			//PMS.minimal("frame start inserted");
+			//logger.info("frame start inserted");
 		}
 		
 		if (nextTarget < (len - off)) {
@@ -94,7 +97,7 @@ public class H264AnnexBInputStream extends InputStream {
 			if (h == null)
 				return -1;
 			System.arraycopy(h, 0, b, off, nextTarget);
-			//PMS.minimal("Frame copied: " + nextTarget);
+			//logger.info("Frame copied: " + nextTarget);
 			off += nextTarget;
 			
 			nextTarget = -1;
@@ -105,7 +108,7 @@ public class H264AnnexBInputStream extends InputStream {
 			if (h == null)
 				return -1;
 			System.arraycopy(h, 0, b, off, (len - off));
-			//PMS.minimal("Frame copied: " + (len - off));
+			//logger.info("Frame copied: " + (len - off));
 			nextTarget = nextTarget - (len - off);
 			off = len;
 			
@@ -116,7 +119,7 @@ public class H264AnnexBInputStream extends InputStream {
 
 	private byte[] getArray(int length) throws IOException {
 		if (length < 0) {
-			PMS.debug("Negative array ?");
+			logger.trace("Negative array ?");
 			return null;
 		}
 		byte bb [] = new  byte [length];

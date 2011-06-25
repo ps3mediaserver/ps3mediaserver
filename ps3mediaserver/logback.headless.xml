@@ -19,7 +19,7 @@
     <!-- Log all events to debug.log -->
     <!-- Change the level if the constant logging activity is undesirable -->
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-      <level>ALL</level>
+      <level>DEBUG</level>
     </filter>
   </appender>
 

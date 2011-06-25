@@ -55,12 +55,16 @@ import net.pms.util.Iso639;
 import net.pms.util.MpegUtil;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents any item that can be browsed via the UPNP ContentDirectory service.
  *
  */
 public abstract class DLNAResource extends HTTPResource implements Cloneable, Runnable {
+	public static final Logger logger = LoggerFactory.getLogger(DLNAResource.class);
+	
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
 	protected static String TRANSCODE_FOLDER = "#--TRANSCODE--#";
@@ -242,7 +246,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		// child may be null (spotted - via rootFolder.addChild() - in a misbehaving plugin
 
 	    if (child == null) {
-			PMS.error("Attempt to add a null child to " + getName(), new NullPointerException("Invalid DLNA resource"));
+			logger.error("Attempt to add a null child to " + getName(), new NullPointerException("Invalid DLNA resource"));
 			return;
 		}
 	    
@@ -252,7 +256,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			defaultRenderer = parent.defaultRenderer;
 		if (child.isValid()) {
 			
-			PMS.info("Adding " + child.getName() + " / class: " + child.getClass().getName());
+			logger.debug("Adding " + child.getName() + " / class: " + child.getClass().getName());
 			VirtualFolder vf = null;
 			//VirtualFolder vfCopy = null;
 
@@ -326,7 +330,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						// or 4- There's some sub files to deal with
 						if ((forceTranscodeV2 && !skipTranscode) || forceTranscode || (!parserV2 && !child.ext.ps3compatible() && !skipTranscode) || (PMS.getConfiguration().getUseSubtitles() && child.srtFile)) {
 							child.player = pl;
-							PMS.info("Switching " + child.getName() + " to player: " + pl.toString());
+							logger.debug("Switching " + child.getName() + " to player: " + pl.toString());
 						}
 							
 						if (child.ext.isVideo() && (!child.notranscodefolder) && (!PMS.getConfiguration().getHideTranscodeEnabled())) {
@@ -354,7 +358,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							fileFolder.children.add(newChild);
 							fileFolder.childrenNumber++;
 							newChild.parent = fileFolder;
-							PMS.info("Duplicate " + child.getName() + " with player: " + pl.toString());
+							logger.debug("Duplicate " + child.getName() + " with player: " + pl.toString());
 							
 							
 							
@@ -401,7 +405,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		if (id == null || id.equals("0")) {
 			if (parent != null) {
 				id = parent.id + "$" + index;
-				PMS.debug("Setting DLNA id " + id + " to " + getName());
+				logger.trace("Setting DLNA id " + id + " to " + getName());
 			}
 		}
 		if (!refresh)
@@ -426,7 +430,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @see #closeChildren(int, boolean)
 	 */
 	public synchronized ArrayList<DLNAResource> getDLNAResources(String objectId, boolean children, int start, int count, RendererConfiguration renderer) throws IOException {
-		PMS.debug("Searching for objectId: " + objectId + " with children option: " +children);
+		logger.trace("Searching for objectId: " + objectId + " with children option: " +children);
 		ArrayList<DLNAResource> resources = new ArrayList<DLNAResource>();
 		DLNAResource resource = search(objectId);
 		
@@ -495,7 +499,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							tpe.shutdown();
 							tpe.awaitTermination(20, TimeUnit.SECONDS);
 						} catch (InterruptedException e) {}
-						PMS.debug("End of analysis");
+						logger.trace("End of analysis");
 					}
 				}
 			//}
@@ -780,7 +784,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		try {
 			o = super.clone();
 		} catch (CloneNotSupportedException e) {
-			PMS.error(null, e);
+			logger.error(null, e);
 		}
 		return o;
 	}
@@ -976,7 +980,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							if (na > 2) // no 5.1 dump in mplayer
 								na = 2;
 							int finalsize=(int) media.getDurationInSeconds() *defaultFrequency* 2*na;
-							PMS.info("Calculated size: " + finalsize);
+							logger.debug("Calculated size: " + finalsize);
 							addAttribute(sb, "size", finalsize);
 						}
 					}
@@ -1077,10 +1081,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				final DLNAResource self = this;
 				Runnable r = new Runnable() {
 					public void run() {
-						PMS.debug("StartStopListener: event:    start");
-						PMS.debug("StartStopListener: renderer: " + rendererId);
-						PMS.debug("StartStopListener: file:     " + getSystemName());
-						PMS.debug("StartStopListener:");
+						logger.trace("StartStopListener: event:    start");
+						logger.trace("StartStopListener: renderer: " + rendererId);
+						logger.trace("StartStopListener: file:     " + getSystemName());
+						logger.trace("StartStopListener:");
 						for (ExternalListener listener:ExternalFactory.getExternalListeners()) {
 							if (listener instanceof StartStopListener)
 								((StartStopListener) listener).nowPlaying(media, self);
@@ -1104,7 +1108,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				try {
 					Thread.sleep(STOP_PLAYING_DELAY);
 				} catch (InterruptedException e) {
-					PMS.error("stopPlaying sleep interrupted", e);
+					logger.error("stopPlaying sleep interrupted", e);
 				}
 
 				synchronized (requestIdToRefcount) {
@@ -1116,10 +1120,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					Runnable r = new Runnable() {
 						public void run() {
 							if (refCount == 1) {
-								PMS.debug("StartStopListener: event:    stop");
-								PMS.debug("StartStopListener: renderer: " + rendererId);
-								PMS.debug("StartStopListener: file:     " + getSystemName());
-								PMS.debug("StartStopListener:");
+								logger.trace("StartStopListener: event:    stop");
+								logger.trace("StartStopListener: renderer: " + rendererId);
+								logger.trace("StartStopListener: file:     " + getSystemName());
+								logger.trace("StartStopListener:");
 								for (ExternalListener listener:ExternalFactory.getExternalListeners()) {
 									if (listener instanceof StartStopListener)
 										((StartStopListener) listener).donePlaying(media, self);
@@ -1145,7 +1149,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	public InputStream getInputStream(long low, long high, double timeseek, RendererConfiguration mediarenderer) throws IOException {
 				
-		PMS.debug( "Asked stream chunk [" + low + "-" + high + "] timeseek: " + timeseek + " of " + getName() + " and player " + player);
+		logger.trace( "Asked stream chunk [" + low + "-" + high + "] timeseek: " + timeseek + " of " + getName() + " and player " + player);
 		
 		// shagrath: small fix, regression on chapters
 		boolean timeseek_auto = false;
@@ -1171,7 +1175,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				//shagrath:
 				timeseek_auto = true;
 				
-				//PMS.debug( "Ditlew - calculated timeseek: " + timeseek);			
+				//logger.trace( "Ditlew - calculated timeseek: " + timeseek);			
 			}				
 		}
 
@@ -1220,7 +1224,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				params.stdin = (IPushOutput) this;
 				
 			if (externalProcess == null || externalProcess.isDestroyed()) {
-				PMS.minimal("Starting transcode/remux of " + getName());
+				logger.info("Starting transcode/remux of " + getName());
 				externalProcess = player.launchTranscode(
 				    getSystemName(),
 				    this,
@@ -1228,17 +1232,17 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				    params
 				);
 				if (params.waitbeforestart > 0) {
-					PMS.debug("Sleeping for " + params.waitbeforestart + " milliseconds");
+					logger.trace("Sleeping for " + params.waitbeforestart + " milliseconds");
 					try {
 						Thread.sleep(params.waitbeforestart);
 					} catch (InterruptedException e) {
-						PMS.error(null, e);
+						logger.error(null, e);
 					}
-					PMS.debug("Finished sleeping for " + params.waitbeforestart + " milliseconds");
+					logger.trace("Finished sleeping for " + params.waitbeforestart + " milliseconds");
 				}
 			} else if (timeseek > 0 && media != null && media.mediaparsed) {
 				if (media.getDurationInSeconds() > 0) {
-					PMS.info("Requesting time seek: " + timeseek + " seconds");
+					logger.debug("Requesting time seek: " + timeseek + " seconds");
 					params.timeseek = timeseek;
 					params.minBufferSize = 1;
 					Runnable r = new Runnable() {
@@ -1256,10 +1260,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
-						PMS.error(null, e);
+						logger.error(null, e);
 					}
 					if (newExternalProcess == null)
-						PMS.debug("External process instance is null... sounds not good");
+						logger.trace("External process instance is null... sounds not good");
 					externalProcess = newExternalProcess;
 				}
 			}
@@ -1271,7 +1275,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				is = externalProcess.getInputStream(low);
 				timer++;
 				if (is == null) {
-					PMS.debug("External input stream instance is null... sounds not good, waiting 500ms");
+					logger.trace("External input stream instance is null... sounds not good, waiting 500ms");
 					try {
 						Thread.sleep(500);
 					} catch (InterruptedException e) {}
@@ -1285,7 +1289,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			if (is == null && externalProcess != null && !externalProcess.isDestroyed()) {
 				Runnable r = new Runnable() {
 					public void run() {
-						PMS.debug("External input stream instance is null... stopping process");
+						logger.trace("External input stream instance is null... stopping process");
 						externalProcess.stopProcess();
 					}
 				};

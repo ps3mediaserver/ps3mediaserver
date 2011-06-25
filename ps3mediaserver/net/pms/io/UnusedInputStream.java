@@ -21,10 +21,12 @@ package net.pms.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.pms.PMS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class UnusedInputStream extends InputStream {
-	
+	public static final Logger logger = LoggerFactory.getLogger(UnusedInputStream.class);
+
 	private InputStream inputStream;
 	private UnusedProcess processToTerminate;
 	private int timeout;
@@ -49,10 +51,10 @@ public abstract class UnusedInputStream extends InputStream {
 				try {
 					Thread.sleep(timeout);
 				} catch (InterruptedException e) {
-					PMS.error(null, e);
+					logger.error(null, e);
 				}
 				if (processToTerminate != null && processToTerminate.isReadyToStop()) {
-					PMS.info("Destroying / Stopping attached process: " + processToTerminate);
+					logger.debug("Destroying / Stopping attached process: " + processToTerminate);
 					if (processToTerminate != null)
 						processToTerminate.stopProcess();
 					processToTerminate = null;

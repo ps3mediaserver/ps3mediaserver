@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -51,6 +50,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import net.pms.Messages;
+import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
@@ -66,17 +67,17 @@ import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.io.StreamModifier;
-import net.pms.Messages;
 import net.pms.network.HTTPResource;
 import net.pms.newgui.FontFileFilter;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.MyComboBoxModel;
 import net.pms.newgui.RestrictedFileSystemView;
-import net.pms.PMS;
 import net.pms.util.CodecUtil;
 import net.pms.util.ProcessUtil;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -85,10 +86,11 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
 import com.sun.jna.Platform;
 
 public class MEncoderVideo extends Player {
+	public static final Logger logger = LoggerFactory.getLogger(MEncoderVideo.class);
+
 	private JTextField mencoder_ass_scale;
 	private JTextField mencoder_ass_margin;
 	private JTextField mencoder_ass_outline;
@@ -1006,7 +1008,7 @@ public class MEncoderVideo extends Player {
 			}
 			for (int i = 0; i < overridenMainArgs.length; i++) {
 				if (overridenMainArgs[i].equals("-of") || overridenMainArgs[i].equals("-oac") || overridenMainArgs[i].equals("-ovc") || overridenMainArgs[i].equals("-mpegopts")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-					PMS.minimal("MEncoder encoder settings: You cannot change Muxer, Muxer options, Video Codec or Audio Codec"); //$NON-NLS-1$
+					logger.info("MEncoder encoder settings: You cannot change Muxer, Muxer options, Video Codec or Audio Codec"); //$NON-NLS-1$
 					overridenMainArgs[i] = "-quiet"; //$NON-NLS-1$
 					if (i + 1 < overridenMainArgs.length) {
 						overridenMainArgs[i + 1] = "-quiet"; //$NON-NLS-1$
@@ -1217,7 +1219,7 @@ public class MEncoderVideo extends Player {
 		if (media != null && params.aid != null) {
 			channels = wmv ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid);
 		}
-		PMS.debug("channels=" + channels);
+		logger.trace("channels=" + channels);
 
 		StringTokenizer st = new StringTokenizer(alternativeCodec + "-channels " + channels + " " + configuration.getMencoderDecode() + add, " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		overridenMainArgs = new String[st.countTokens()];
@@ -1998,7 +2000,7 @@ public class MEncoderVideo extends Player {
 								}
 							}
 						} catch (Throwable e) {
-							PMS.info("Error while executing: " + key + " : " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+							logger.debug("Error while executing: " + key + " : " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 							if (verifyOnly) {
 								return new String[]{"@@Error while parsing: " + e.getMessage()}; //$NON-NLS-1$
 							}
@@ -2009,7 +2011,7 @@ public class MEncoderVideo extends Player {
 				}
 			}
 		} catch (EvalError e) {
-			PMS.info("BeanShell error: " + e.getMessage()); //$NON-NLS-1$
+			logger.debug("BeanShell error: " + e.getMessage()); //$NON-NLS-1$
 		}
 		String completeLine = sb.toString();
 

@@ -7,20 +7,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import net.pms.PMS;
-
 import mediautil.gen.Log;
 import mediautil.image.jpeg.LLJTran;
 import mediautil.image.jpeg.LLJTranException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ImagesUtil {
-	
+	public static final Logger logger = LoggerFactory.getLogger(ImagesUtil.class);
+
 	public static InputStream getAutoRotateInputStreamImage(InputStream input, int exifOrientation) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			auto(input, baos, exifOrientation);
 		} catch (Exception e) {
-			PMS.error("Error in auto rotate", e);
+			logger.error("Error in auto rotate", e);
 			return null;
 		}
 		return new ByteArrayInputStream(baos.toByteArray());

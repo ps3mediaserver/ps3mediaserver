@@ -3,13 +3,15 @@ package net.pms.dlna;
 import java.io.File;
 import java.util.StringTokenizer;
 
-import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MediaInfoParser {
+	public static final Logger logger = LoggerFactory.getLogger(MediaInfoParser.class);
 	
 	private static MediaInfo MI;
 	private static Base64 base64;
@@ -166,7 +168,7 @@ public class MediaInfoParser {
 				}
 				media.finalize(type, file);
 			} catch (Exception e) {
-				PMS.error("Error in MediaInfo parsing:", e);
+				logger.error("Error in MediaInfo parsing:", e);
 			} finally {
 				MI.Close();
 				if (media.container == null)
@@ -408,7 +410,7 @@ public class MediaInfoParser {
 			if (base64 != null)
 				return base64.decode(based64Value.getBytes());
 		} catch (Exception e) {
-			PMS.error("Error in decoding thumbnail data", e);
+			logger.error("Error in decoding thumbnail data", e);
 		}
 		return null;
 	}

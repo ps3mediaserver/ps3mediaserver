@@ -50,9 +50,9 @@ public class ZippedFile extends DLNAResource {
 			}
 			zip.close();
 		} catch (ZipException e) {
-			PMS.error(null, e);
+			logger.error(null, e);
 		} catch (IOException e) {
-			PMS.error(null, e);
+			logger.error(null, e);
 		}
 	}
 	

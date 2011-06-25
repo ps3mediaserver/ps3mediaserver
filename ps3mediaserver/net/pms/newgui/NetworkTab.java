@@ -43,14 +43,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.lang.StringUtils;
-
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.util.KeyedComboBoxModel;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
@@ -59,6 +61,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
 public class NetworkTab {
+	public static final Logger logger = LoggerFactory.getLogger(NetworkTab.class);
 
 	private JCheckBox smcheckBox;
 	private JCheckBox newHTTPEngine;
@@ -235,7 +238,7 @@ public class NetworkTab {
 				}
 			}
 		} catch (SocketException e1) {
-			PMS.error(null, e1);
+			logger.error(null, e1);
 		}
 
 

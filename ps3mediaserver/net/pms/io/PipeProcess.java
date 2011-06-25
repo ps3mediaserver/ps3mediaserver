@@ -27,12 +27,16 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 
-import com.sun.jna.Platform;
-
 import net.pms.PMS;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sun.jna.Platform;
+
 public class PipeProcess {
-	
+	public static final Logger logger = LoggerFactory.getLogger(PipeProcess.class);
+
 	private String linuxPipeName;
 	private WindowsNamedPipe mk;
 	private boolean forcereconnect;
@@ -62,7 +66,7 @@ public class PipeProcess {
 		try {
 			return PMS.getConfiguration().getTempFolder() + "/" + pipeName;
 		} catch (IOException e) {
-			PMS.error("Pipe may not be in temporary directory", e);
+			logger.error("Pipe may not be in temporary directory", e);
 			return pipeName;
 		}
 	}
@@ -113,7 +117,7 @@ public class PipeProcess {
 	
 	public InputStream getInputStream() throws IOException {
 		if (!PMS.get().isWindows()) {
-			PMS.debug("Opening file " + linuxPipeName + " for reading...");
+			logger.trace("Opening file " + linuxPipeName + " for reading...");
 			RandomAccessFile raf = new RandomAccessFile ( linuxPipeName, "r" ) ;
 			return new FileInputStream(raf.getFD());
 		}
@@ -122,7 +126,7 @@ public class PipeProcess {
 	
 	public OutputStream getOutputStream() throws IOException {
 		if (!PMS.get().isWindows()) {
-			PMS.debug("Opening file " + linuxPipeName + " for writing...");
+			logger.trace("Opening file " + linuxPipeName + " for writing...");
 			RandomAccessFile raf = new RandomAccessFile ( linuxPipeName, "rw" ) ;
 			FileOutputStream fout = new FileOutputStream(raf.getFD());
 			if (forcereconnect) {

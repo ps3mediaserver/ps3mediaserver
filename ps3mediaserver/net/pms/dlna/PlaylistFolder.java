@@ -69,11 +69,11 @@ public class PlaylistFolder extends DLNAResource {
 					line = line.trim();
 					if (line.startsWith("#EXTM3U")) {
 						m3u = true;
-						PMS.info("Reading m3u playlist: " + playlistfile.getName());
+						logger.debug("Reading m3u playlist: " + playlistfile.getName());
 					} else if (line.length() > 0) {
 						if (line.equals("[playlist]")) {
 							pls = true;
-							PMS.info("Reading PLS playlist: " + playlistfile.getName());
+							logger.debug("Reading PLS playlist: " + playlistfile.getName());
 						} else if (!line.startsWith("#")) {
 							// not that bad
 							// throw new IOException(playlistfile.getName() + ":" + lineno + ": Bad playlist format");
@@ -135,15 +135,15 @@ public class PlaylistFolder extends DLNAResource {
 				}
 				br.close();
 			} catch (NumberFormatException e) {
-				PMS.error(null, e);
+				logger.error(null, e);
 			} catch (IOException e) {
-				PMS.error(null, e);
+				logger.error(null, e);
 			}
 			for(Entry entry:entries) {
 				if (entry == null)
 					continue;
 				String fileName = entry.fileName;
-				PMS.info("Adding " + (pls? "PLS ": (m3u? "M3U ": "")) + "entry: " + entry);
+				logger.debug("Adding " + (pls? "PLS ": (m3u? "M3U ": "")) + "entry: " + entry);
 				if (!fileName.toLowerCase().startsWith("http://") && !fileName.toLowerCase().startsWith("mms://")) {
 					File en1= new File(playlistfile.getParentFile(), fileName);
 					File en2= new File(fileName);

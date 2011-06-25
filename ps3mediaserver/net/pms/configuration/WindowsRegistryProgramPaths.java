@@ -2,10 +2,14 @@ package net.pms.configuration;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.pms.PMS;
 import net.pms.io.WinUtils;
 
 class WindowsRegistryProgramPaths implements ProgramPaths {
+	public static final Logger logger = LoggerFactory.getLogger(WindowsRegistryProgramPaths.class);
 
 	private final ProgramPaths defaults;
 	
@@ -65,7 +69,7 @@ class WindowsRegistryProgramPaths implements ProgramPaths {
 			String vlc = registry.getVlcp();
 			String version = registry.getVlcv();
 			if (new File(vlc).exists() && version != null) {
-				PMS.info("Found VLC version " + version + " in Windows Registry: " + vlc); //$NON-NLS-1$ //$NON-NLS-2$
+				logger.debug("Found VLC version " + version + " in Windows Registry: " + vlc); //$NON-NLS-1$ //$NON-NLS-2$
 				return vlc;
 			}
 		}

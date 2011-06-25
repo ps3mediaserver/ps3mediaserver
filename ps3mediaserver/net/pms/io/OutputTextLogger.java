@@ -24,10 +24,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import net.pms.PMS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // a version of OutputTextConsumer that a) logs all output and b) doesn't store the output
 public class OutputTextLogger extends OutputConsumer {
+	public static final Logger logger = LoggerFactory.getLogger(OutputTextLogger.class);
+
 	public OutputTextLogger(InputStream inputStream) {
 		super(inputStream);
 	}
@@ -40,10 +43,10 @@ public class OutputTextLogger extends OutputConsumer {
 			String line = null;
 
 			while ((line = br.readLine()) != null) {
-				PMS.debug(line);
+				logger.trace(line);
 			}
 		} catch (IOException ioe) {
-			PMS.info("Error consuming stream of spawned process: " +  ioe.getMessage());
+			logger.debug("Error consuming stream of spawned process: " +  ioe.getMessage());
 		} finally {
 			if (br != null) {
 				try {

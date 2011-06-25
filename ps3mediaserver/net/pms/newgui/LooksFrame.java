@@ -61,12 +61,16 @@ import net.pms.newgui.update.AutoUpdateDialog;
 import net.pms.update.AutoUpdater;
 import net.pms.util.PMSUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.sun.jna.Platform;
 
 public class LooksFrame extends JFrame implements IFrame, Observer {
-	
+	public static final Logger logger = LoggerFactory.getLogger(LooksFrame.class);
+
 	private final AutoUpdater autoUpdater;
 	private final PmsConfiguration configuration;
 	public static final String START_SERVICE = "start.service"; //$NON-NLS-1$
@@ -145,11 +149,11 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 						systemClassName = gtkLAF;
 				} catch (ClassNotFoundException ce) {}
 				
-				PMS.info("Choosing java look and feel: " + systemClassName); //$NON-NLS-1$
+				logger.debug("Choosing java look and feel: " + systemClassName); //$NON-NLS-1$
 				UIManager.setLookAndFeel(systemClassName);
 			} catch (Exception e1) {
 				selectedLaf = new PlasticLookAndFeel();
-				PMS.error("Error while setting native look and feel: ", e1); //$NON-NLS-1$
+				logger.error("Error while setting native look and feel: ", e1); //$NON-NLS-1$
 			}
 		}
 		
@@ -311,7 +315,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 				try {
 					PMS.get().reset();
 				} catch (IOException e1) {
-				PMS.error(null, e1);
+				logger.error(null, e1);
 				}
 			}
 			
@@ -392,7 +396,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		try {
 			st.getImagePanel().set(ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/" + icon))); //$NON-NLS-1$
 		} catch (IOException e) {
-			PMS.error(null, e);
+			logger.error(null, e);
 		}
 	}
 
@@ -417,7 +421,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			try {
 				AutoUpdateDialog.showIfNecessary(this, autoUpdater);
 			} catch (NoClassDefFoundError ncdf) {
-				PMS.minimal("Class not found: " + ncdf.getMessage()); //$NON-NLS-1$
+				logger.info("Class not found: " + ncdf.getMessage()); //$NON-NLS-1$
 			}
 		}
 	}

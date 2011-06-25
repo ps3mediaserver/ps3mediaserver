@@ -70,7 +70,7 @@ public class RarredEntry extends DLNAResource implements IPushOutput {
 				}
 				rarFile.close();
 			} catch (RarException e) {
-				PMS.error("Error in unpacking of " + name, e);
+				logger.error("Error in unpacking of " + name, e);
 			} finally {
 				try {
 					baos.close();
@@ -83,7 +83,7 @@ public class RarredEntry extends DLNAResource implements IPushOutput {
 		return new UnusedInputStream(bytes, this, 10000) {
 			@Override
 			public void unusedStreamSignal() {
-				PMS.info("RarEntry Data not asked since 10 seconds... Nullify buffer");
+				logger.debug("RarEntry Data not asked since 10 seconds... Nullify buffer");
 				data = null;
 			}
 		};*/
@@ -140,11 +140,11 @@ public class RarredEntry extends DLNAResource implements IPushOutput {
 						}
 					}
 					if (header != null) {
-						PMS.debug("Starting the extraction of " + header.getFileNameString());
+						logger.trace("Starting the extraction of " + header.getFileNameString());
 						rarFile.extractFile(header, out);
 					}
 				} catch (Exception e) {
-					PMS.info("Unpack error, maybe it's normal, as backend can be terminated: " + e.getMessage());
+					logger.debug("Unpack error, maybe it's normal, as backend can be terminated: " + e.getMessage());
 				} finally {
 					try {
 						rarFile.close();

@@ -5,6 +5,7 @@ Changelog:
 
 	Backwards-incompatible API changes (for plugin developers) - see SVN changelog for more details
 	Updated OS X binaries (FFmpeg, MEncoder and MPlayer) to fix an AC3 bug and improve internal VOBsub display quality
+	Consistent use of logging framework
 
 2011-06-17 - 1.25.1
 

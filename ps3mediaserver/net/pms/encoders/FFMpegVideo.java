@@ -31,6 +31,8 @@ import java.util.StringTokenizer;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
+import net.pms.Messages;
+import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
@@ -40,10 +42,11 @@ import net.pms.io.PipeIPCProcess;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
-import net.pms.Messages;
 import net.pms.network.HTTPResource;
-import net.pms.PMS;
 import net.pms.util.ProcessUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
@@ -51,7 +54,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class FFMpegVideo extends Player {
-	
+	public static final Logger logger = LoggerFactory.getLogger(FFMpegVideo.class);
+
 	public static final String ID = "avsffmpeg"; //$NON-NLS-1$
 	
 	@Override
@@ -111,7 +115,7 @@ public class FFMpegVideo extends Player {
 				args[i] = defaultArgs[i];
 			for(int i=0;i<overridenArgs.length;i++) {
 				if (overridenArgs[i].equals("-f") || overridenArgs[i].equals("-acodec") || overridenArgs[i].equals("-vcodec")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					PMS.minimal("FFmpeg encoder settings: You cannot change Muxer, Video Codec or Audio Codec"); //$NON-NLS-1$
+					logger.info("FFmpeg encoder settings: You cannot change Muxer, Video Codec or Audio Codec"); //$NON-NLS-1$
 					overridenArgs[i] = "-title"; //$NON-NLS-1$
 					if (i + 1 < overridenArgs.length)
 						overridenArgs[i+1] = "NewTitle"; //$NON-NLS-1$
@@ -258,12 +262,12 @@ public class FFMpegVideo extends Player {
 		if (PMS.getConfiguration().isFileBuffer()) {
 			File m = new File(PMS.getConfiguration().getTempFolder(), "pms-transcode.tmp"); //$NON-NLS-1$
 			if (m.exists() && !m.delete()) {
-				PMS.minimal("Temp file currently used.. Waiting 3 seconds"); //$NON-NLS-1$
+				logger.info("Temp file currently used.. Waiting 3 seconds"); //$NON-NLS-1$
 				try {
 					Thread.sleep(3000);
 				} catch (InterruptedException e) { }
 				if (m.exists() && !m.delete()) {
-					PMS.minimal("Temp file cannot be deleted... Serious ERROR"); //$NON-NLS-1$
+					logger.info("Temp file cannot be deleted... Serious ERROR"); //$NON-NLS-1$
 				}
 			}
 			params.outputFile = m;
@@ -405,7 +409,7 @@ public class FFMpegVideo extends Player {
 		String movieLine = "clip=DirectShowSource(\"" + fileName + "\"" + convertfps + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String subLine = null;
 		if (subTrack != null && PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
-			PMS.debug("Avisynth script: Using sub track: " + subTrack);
+			logger.trace("Avisynth script: Using sub track: " + subTrack);
 			if (subTrack.file != null) {
 				String function = "TextSub"; //$NON-NLS-1$
 				if (subTrack.type == DLNAMediaSubtitle.VOBSUB)

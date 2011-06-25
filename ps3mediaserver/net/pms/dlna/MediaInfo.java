@@ -31,7 +31,8 @@ import static java.util.Collections.singletonMap;
 
 import java.lang.reflect.Method;
 
-import net.pms.PMS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jna.FunctionMapper;
 import com.sun.jna.Library;
@@ -42,6 +43,8 @@ import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 
 public class MediaInfo {
+	public static final Logger logger = LoggerFactory.getLogger(MediaInfo.class);
+
 	static String libraryName;
 
 	static {
@@ -59,7 +62,7 @@ public class MediaInfo {
 				NativeLibrary.getInstance("zen");
 			} catch (LinkageError e) {
 				// FIXME: should be a warning
-				PMS.minimal("Error loading libzen: " + e.getMessage());
+				logger.info("Error loading libzen: " + e.getMessage());
 			}
 		}
 	}
@@ -157,16 +160,16 @@ public class MediaInfo {
 	// Constructor/Destructor
 	public MediaInfo() {
 		try {
-			PMS.minimal("Loading MediaInfo library");
+			logger.info("Loading MediaInfo library");
 			Handle = MediaInfoDLL_Internal.INSTANCE.New();
-			PMS.minimal("Loaded " + Option_Static("Info_Version"));
+			logger.info("Loaded " + Option_Static("Info_Version"));
 		} catch (Throwable e) {
 			if (e != null)
-				PMS.minimal("Error loading MediaInfo library: " + e.getMessage());
+				logger.info("Error loading MediaInfo library: " + e.getMessage());
 			if (!Platform.isWindows() && !Platform.isMac()) {
-				PMS.minimal("Make sure you have libmediainfo and libzen installed");
+				logger.info("Make sure you have libmediainfo and libzen installed");
 			}
-			PMS.minimal("The server will now use the less accurate ffmpeg parsing method");
+			logger.info("The server will now use the less accurate ffmpeg parsing method");
 		}
 	}
 

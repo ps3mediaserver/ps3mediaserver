@@ -20,10 +20,14 @@ import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jna.Platform;
 
 public class PmsConfiguration {
+	public static final Logger logger = LoggerFactory.getLogger(PmsConfiguration.class);
+	
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final int DEFAULT_SERVER_PORT = 5001;
 	// MEncoder has a hardwired maximum of 8 threads for -lavcopts and -lavdopts:
@@ -971,7 +975,7 @@ public class PmsConfiguration {
 		for (String engineId : input) {
 			if (engineId.startsWith("avs")  && !registry.isAvis() && PMS.get().isWindows()) {
 				if (!avsHackLogged) {
-					PMS.minimal("AviSynth is not installed. You cannot use " + engineId + " as a transcoding engine."); //$NON-NLS-1$ //$NON-NLS-2$
+					logger.info("AviSynth is not installed. You cannot use " + engineId + " as a transcoding engine."); //$NON-NLS-1$ //$NON-NLS-2$
 					avsHackLogged = true;
 				}
 				toBeRemoved.add(engineId);
@@ -985,7 +989,8 @@ public class PmsConfiguration {
 	
 	public void save() throws ConfigurationException {
 		configuration.save();
-		PMS.minimal("Configuration saved to: " + PROFILE_PATH);
+		logger.info("(X) Configuration saved to: " + PROFILE_PATH);
+		logger.info("(Y) Configuration saved to: " + PROFILE_PATH);
 	}
 
 	public String getFolders() {
@@ -1313,7 +1318,7 @@ public class PmsConfiguration {
 			try {
 				HOSTNAME = InetAddress.getLocalHost().getHostName();
 			} catch (UnknownHostException e) {
-				PMS.minimal("Can't determine hostname");
+				logger.info("Can't determine hostname");
 				HOSTNAME = "unknown host";
 			}
 		}

@@ -7,13 +7,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
+import net.pms.io.BufferedOutputFile;
 
 import com.sun.jna.Platform;
 
 public class CodecUtil {
+	public static final Logger logger = LoggerFactory.getLogger(CodecUtil.class);
 	
 	private static ArrayList<String> codecs;
 	
@@ -33,7 +38,7 @@ public class CodecUtil {
 				br.close();
 				codecs.add("iso");
 			} catch (IOException e) {
-				PMS.error("Error while retrieving codec list", e);
+				logger.error("Error while retrieving codec list", e);
 			}
 		}
 		return codecs;

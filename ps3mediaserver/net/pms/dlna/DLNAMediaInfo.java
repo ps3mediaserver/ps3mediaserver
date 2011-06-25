@@ -62,13 +62,16 @@ import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jna.Platform;
 
 
 
 public class DLNAMediaInfo implements Cloneable {
-		
+	public static final Logger logger = LoggerFactory.getLogger(DLNAMediaInfo.class);
+	
 	public static final long ENDFILE_POS = 99999475712L;
 	public static final long TRANS_SIZE = 100000000000L;
 	//private static SimpleDateFormat sdfExif = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
@@ -272,7 +275,7 @@ public class DLNAMediaInfo implements Cloneable {
 	private String getFfmpegPath() {
 		String value = PMS.getConfiguration().getFfmpegPath();
 		if (value == null) {
-			PMS.minimal("No ffmpeg - unable to thumbnail");
+			logger.info("No ffmpeg - unable to thumbnail");
 			throw new RuntimeException("No ffmpeg - unable to thumbnail");
 		} else {
 			return value;
@@ -357,12 +360,12 @@ public class DLNAMediaInfo implements Cloneable {
 									audio.track = Integer.parseInt(((y != null && y.length() > 0)?y:"1"));
 									audio.genre = t.getFirst(FieldKey.GENRE);
 								} catch (Throwable e) {
-									PMS.info("error in parsing unimportant metadata: " + e.getMessage());
+									logger.debug("error in parsing unimportant metadata: " + e.getMessage());
 								}
 							}
 						}
 					} catch (Throwable e) {
-						PMS.info("Error in parsing audio file: " + e.getMessage() + " - " + (e.getCause()!=null?e.getCause().getMessage():""));
+						logger.debug("Error in parsing audio file: " + e.getMessage() + " - " + (e.getCause()!=null?e.getCause().getMessage():""));
 						ffmpeg_parsing = false;
 					}
 					if (audio.songname == null || audio.songname.length() == 0)
@@ -411,7 +414,7 @@ public class DLNAMediaInfo implements Cloneable {
 						container = codecV;
 					} catch (Throwable e) {
 						//ffmpeg_parsing = true;
-						PMS.minimal("Error during the parsing of image with Sanselan... switching to Ffmpeg: " + e.getMessage());
+						logger.info("Error during the parsing of image with Sanselan... switching to Ffmpeg: " + e.getMessage());
 					}
 				}
 			}
@@ -492,7 +495,7 @@ public class DLNAMediaInfo implements Cloneable {
 									try {
 										audio.id = Integer.parseInt(idString, 16);
 									} catch (NumberFormatException nfe) {
-										PMS.info("Error in parsing Stream ID: " + idString);
+										logger.debug("Error in parsing Stream ID: " + idString);
 									}
 								}
 								//
@@ -582,7 +585,7 @@ public class DLNAMediaInfo implements Cloneable {
 						if (length > 0)
 							setDurationString(length);
 					} catch (IOException e) {
-						PMS.debug("Error in retrieving length: " + e.getMessage());
+						logger.trace("Error in retrieving length: " + e.getMessage());
 					}
 				}
 				
@@ -644,7 +647,7 @@ public class DLNAMediaInfo implements Cloneable {
 							}
 						}
 					} catch (IOException e) {
-						PMS.info("Error while decoding thumbnail : " + e.getMessage());
+						logger.debug("Error while decoding thumbnail : " + e.getMessage());
 					}
 				}
 			}
@@ -733,7 +736,7 @@ public class DLNAMediaInfo implements Cloneable {
 			FileUtil.doesSubtitlesExists(f.file, this);
 		
 		
-		//PMS.debug("Media info of : " + f.file + " / mimeType: " + mimeType + " / " + toString());
+		//logger.trace("Media info of : " + f.file + " / mimeType: " + mimeType + " / " + toString());
 	}
 	
 	private boolean h264_parsed;
@@ -745,7 +748,7 @@ public class DLNAMediaInfo implements Cloneable {
 				if (codecV.equals("h264") && container != null && (container.equals("matroska") || container.equals("mkv") || container.equals("mov") || container.equals("mp4"))) { // containers without h264_annexB
 					byte headers [][] = getAnnexBFrameHeader(f);
 					if (ffmpeg_annexb_failure) {
-						PMS.minimal("Fatal error when retrieving AVC informations !");
+						logger.info("Fatal error when retrieving AVC informations !");
 					}
 					if (headers != null) {
 						h264_annexB = headers[1];
@@ -756,7 +759,7 @@ public class DLNAMediaInfo implements Cloneable {
 							System.arraycopy(h264_annexB, skip, header, 0, header.length);
 							AVCHeader avcHeader = new AVCHeader(header);
 							avcHeader.parse();
-							PMS.debug("H264 file: " + f.filename + ": Profile: " + avcHeader.getProfile() + " / level: " + avcHeader.getLevel() + " / ref frames: " + avcHeader.getRef_frames());
+							logger.trace("H264 file: " + f.filename + ": Profile: " + avcHeader.getProfile() + " / level: " + avcHeader.getLevel() + " / ref frames: " + avcHeader.getRef_frames());
 							muxable = true;
 							if (avcHeader.getLevel() >= 41) { // Check if file is compliant with Level4.1
 								if (width > 0 && height > 0) {
@@ -766,7 +769,7 @@ public class DLNAMediaInfo implements Cloneable {
 								}
 							}
 							if (!muxable) {
-								PMS.info("H264 file: " + f.filename + " is not ps3 compatible !");
+								logger.debug("H264 file: " + f.filename + " is not ps3 compatible !");
 							}
 						} else
 							muxable = false;
@@ -829,7 +832,7 @@ public class DLNAMediaInfo implements Cloneable {
 					validFrameRate = "60";
 				}
 			} catch (NumberFormatException nfe) {
-				PMS.error(null, nfe);
+				logger.error(null, nfe);
 			}
 			
 		}

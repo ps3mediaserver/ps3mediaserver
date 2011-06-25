@@ -25,10 +25,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.pms.PMS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OutputTextConsumer extends OutputConsumer {
-	
+	public static final Logger logger = LoggerFactory.getLogger(OutputTextConsumer.class);
+
 	private List<String> lines = new ArrayList<String>();
 	private Object linesLock = new Object();
 	private boolean log;
@@ -49,17 +51,17 @@ public class OutputTextConsumer extends OutputConsumer {
     	    	if (line.length() > 0 && line.startsWith("[") && authorized > 0) {
     	    		addLine(line);
     	    		if (log)
-    	    			PMS.debug(line);
+    	    			logger.trace(line);
     	    		authorized--;
     	    	} else if (line.length() > 0  && !line.startsWith("[") && !line.startsWith("100") && !line.startsWith("size") && !line.startsWith("frame") && !line.startsWith("Pos") && !line.startsWith("ERROR:") && !line.startsWith("BUFFER") && !line.startsWith("INITV")) {
     	    		addLine(line);
     	    		if (log) {
-    	    			PMS.debug(line);
+    	    			logger.trace(line);
     	    		}
     	    	}
             }
         } catch (IOException ioe) {
-        	PMS.info("Error consuming stream of spawned process: " +  ioe.getMessage());
+        	logger.debug("Error consuming stream of spawned process: " +  ioe.getMessage());
         } finally {
             if(br != null)
                 try { br.close(); } catch(Exception ignore) {}
