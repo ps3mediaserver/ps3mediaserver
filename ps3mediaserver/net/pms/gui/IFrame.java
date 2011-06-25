@@ -19,7 +19,6 @@
 package net.pms.gui;
 
 public interface IFrame {
-	
 	public void append(String msg);
 	public void setValue(int v, String msg);
 	public void setReadValue(long v, String msg);
@@ -29,5 +28,4 @@ public interface IFrame {
 	public void addEngines();
 	public void setStatusLine(String line);
 	public void serverReady();
-
 }
