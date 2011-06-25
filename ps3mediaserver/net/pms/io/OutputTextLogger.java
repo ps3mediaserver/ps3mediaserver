@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 // a version of OutputTextConsumer that a) logs all output and b) doesn't store the output
 public class OutputTextLogger extends OutputConsumer {
-	public static final Logger logger = LoggerFactory.getLogger(OutputTextLogger.class);
+	private static final Logger logger = LoggerFactory.getLogger(OutputTextLogger.class);
 
 	public OutputTextLogger(InputStream inputStream) {
 		super(inputStream);

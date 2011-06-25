@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.jna.Platform;
 
 public class PipeProcess {
-	public static final Logger logger = LoggerFactory.getLogger(PipeProcess.class);
+	private static final Logger logger = LoggerFactory.getLogger(PipeProcess.class);
 
 	private String linuxPipeName;
 	private WindowsNamedPipe mk;

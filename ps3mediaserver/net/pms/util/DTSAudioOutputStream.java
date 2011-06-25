@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DTSAudioOutputStream extends FlowParserOutputStream {
-	public static final Logger logger = LoggerFactory.getLogger(DTSAudioOutputStream.class);
+	private static final Logger logger = LoggerFactory.getLogger(DTSAudioOutputStream.class);
 	
 	private static int bits [] = new int [] { 16, 16, 20, 20, 0, 24, 24 };
 	private boolean dts = false;

@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MediaInfoParser {
-	public static final Logger logger = LoggerFactory.getLogger(MediaInfoParser.class);
+	private static final Logger logger = LoggerFactory.getLogger(MediaInfoParser.class);
 	private static MediaInfo MI;
 	private static Base64 base64;
 

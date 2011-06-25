@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Format implements Cloneable {
-	public static final Logger logger = LoggerFactory.getLogger(Format.class);
+	private static final Logger logger = LoggerFactory.getLogger(Format.class);
 
 	public int getType() {
 		return type;

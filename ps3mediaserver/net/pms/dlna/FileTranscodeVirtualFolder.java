@@ -24,7 +24,11 @@ import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
 import net.pms.encoders.TSMuxerVideo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FileTranscodeVirtualFolder extends VirtualFolder {
+	private static final Logger logger = LoggerFactory.getLogger(FileTranscodeVirtualFolder.class);
 	private boolean resolved;
 
 	public FileTranscodeVirtualFolder(String name, String thumbnailIcon, boolean copy) {

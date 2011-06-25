@@ -10,13 +10,17 @@ import java.util.ArrayList;
 import net.pms.PMS;
 import net.pms.formats.Format;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PlaylistFolder extends DLNAResource {
+	private static final Logger logger = LoggerFactory.getLogger(PlaylistFolder.class);
 	private File playlistfile;
+	private boolean valid = true;
 
 	public File getPlaylistfile() {
 		return playlistfile;
 	}
-	private boolean valid = true;
 
 	public PlaylistFolder(File f) {
 		playlistfile = f;

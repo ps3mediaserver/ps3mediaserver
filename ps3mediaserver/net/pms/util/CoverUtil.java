@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CoverUtil extends HTTPResource {
-	public static final Logger logger = LoggerFactory.getLogger(CoverUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(CoverUtil.class);
 	
 	private static CoverUtil instance;
 	

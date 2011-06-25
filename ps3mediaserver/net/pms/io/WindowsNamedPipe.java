@@ -39,7 +39,7 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
 
 public class WindowsNamedPipe extends Thread implements ProcessWrapper {
-	public static final Logger logger = LoggerFactory.getLogger(WindowsNamedPipe.class);
+	private static final Logger logger = LoggerFactory.getLogger(WindowsNamedPipe.class);
 
 	private static final int BUFSIZE = 500000;
 

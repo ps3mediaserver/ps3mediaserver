@@ -56,7 +56,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
 public class FoldTab {
-	public static final Logger logger = LoggerFactory.getLogger(FoldTab.class);
+	private static final Logger logger = LoggerFactory.getLogger(FoldTab.class);
 
 	public static final String ALL_DRIVES = Messages.getString("FoldTab.0"); //$NON-NLS-1$
 	private JList FList;

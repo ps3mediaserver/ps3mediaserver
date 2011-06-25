@@ -35,7 +35,15 @@ import net.pms.util.ProcessUtil;
 // Ditlew
 import net.pms.configuration.RendererConfiguration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DVDISOTitle extends DLNAResource {
+	private static final Logger logger = LoggerFactory.getLogger(DVDISOTitle.class);
+	private File f;
+	private int title;
+	private long length;
+
 	@Override
 	public void resolve() {
 		String cmd[] = new String[]{PMS.getConfiguration().getMplayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()), "dvd://" + title};
@@ -191,9 +199,6 @@ public class DVDISOTitle extends DLNAResource {
 
 		super.resolve();
 	}
-	private File f;
-	private int title;
-	private long length;
 
 	public long getLength() {
 		return length;

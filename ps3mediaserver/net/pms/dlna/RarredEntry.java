@@ -29,7 +29,16 @@ import net.pms.util.FileUtil;
 import de.innosystec.unrar.Archive;
 import de.innosystec.unrar.rarfile.FileHeader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class RarredEntry extends DLNAResource implements IPushOutput {
+	private static final Logger logger = LoggerFactory.getLogger(RarredEntry.class);
+	private String name;
+	private File pere;
+	private String fileheadername;
+	private long length;
+
 	@Override
 	protected String getThumbnailURL() {
 		if (getType() == Format.IMAGE || getType() == Format.AUDIO) // no thumbnail support for now for real based disk images
@@ -38,10 +47,6 @@ public class RarredEntry extends DLNAResource implements IPushOutput {
 		}
 		return super.getThumbnailURL();
 	}
-	private String name;
-	private File pere;
-	private String fileheadername;
-	private long length;
 
 	public RarredEntry(String name, File pere, String fileheadername, long length) {
 		this.fileheadername = fileheadername;

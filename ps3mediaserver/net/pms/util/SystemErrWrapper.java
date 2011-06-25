@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SystemErrWrapper extends OutputStream {
-	public static final Logger logger = LoggerFactory.getLogger(SystemErrWrapper.class);
+	private static final Logger logger = LoggerFactory.getLogger(SystemErrWrapper.class);
 
 	private int pos = 0;
 	private byte line [] = new byte [5000];

@@ -15,7 +15,7 @@ import com.sun.jna.Platform;
 // for background/issues/discussion related to this class
 
 public class ProcessUtil {
-	public static final Logger logger = LoggerFactory.getLogger(ProcessUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(ProcessUtil.class);
 
 	// how long to wait in milliseconds until a kill -TERM on Unix has been deemed to fail
 	private static final int TERM_TIMEOUT = 10000;

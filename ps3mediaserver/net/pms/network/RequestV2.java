@@ -43,7 +43,11 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.stream.ChunkedStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class RequestV2 extends HTTPResource {
+	private static final Logger logger = LoggerFactory.getLogger(RequestV2.class);
 	private final static String CRLF = "\r\n";
 	private static SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
 	private static int BUFFER_SIZE = 8*1024;

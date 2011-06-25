@@ -32,7 +32,12 @@ import net.pms.util.ProcessUtil;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class RealFile extends MapFile {
+	private static final Logger logger = LoggerFactory.getLogger(RealFile.class);
+
 	public RealFile(File file) {
 		conf.getFiles().add(file);
 		lastmodified = file.lastModified();

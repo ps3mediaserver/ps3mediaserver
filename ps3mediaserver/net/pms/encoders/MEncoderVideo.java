@@ -89,7 +89,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
 public class MEncoderVideo extends Player {
-	public static final Logger logger = LoggerFactory.getLogger(MEncoderVideo.class);
+	private static final Logger logger = LoggerFactory.getLogger(MEncoderVideo.class);
 
 	private JTextField mencoder_ass_scale;
 	private JTextField mencoder_ass_margin;

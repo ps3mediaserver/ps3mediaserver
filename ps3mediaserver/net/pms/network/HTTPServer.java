@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 public class HTTPServer implements Runnable {
 	
-	public static final Logger logger = LoggerFactory.getLogger(HTTPServer.class);
+	private static final Logger logger = LoggerFactory.getLogger(HTTPServer.class);
 	
 	//private boolean newHTTP = false;
 	private ArrayList<String> ips;

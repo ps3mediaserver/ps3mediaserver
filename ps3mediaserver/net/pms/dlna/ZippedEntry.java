@@ -29,7 +29,15 @@ import net.pms.PMS;
 import net.pms.formats.Format;
 import net.pms.util.FileUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ZippedEntry extends DLNAResource implements IPushOutput {
+	private static final Logger logger = LoggerFactory.getLogger(ZippedEntry.class);
+	private File z;
+	private String zeName;
+	private long length;
+	private ZipFile zipFile;
 
 	@Override
 	protected String getThumbnailURL() {
@@ -39,10 +47,6 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 		}
 		return super.getThumbnailURL();
 	}
-	private File z;
-	private String zeName;
-	private long length;
-	private ZipFile zipFile;
 
 	public ZippedEntry(File z, String zeName, long length) {
 		this.zeName = zeName;
@@ -93,7 +97,6 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 	@Override
 	public void push(final OutputStream out) throws IOException {
 		Runnable r = new Runnable() {
-
 			public void run() {
 				try {
 					zipFile = new ZipFile(z);

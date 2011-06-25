@@ -54,7 +54,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class FFMpegVideo extends Player {
-	public static final Logger logger = LoggerFactory.getLogger(FFMpegVideo.class);
+	private static final Logger logger = LoggerFactory.getLogger(FFMpegVideo.class);
 
 	public static final String ID = "avsffmpeg"; //$NON-NLS-1$
 	

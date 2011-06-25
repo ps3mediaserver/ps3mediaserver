@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.jna.Platform;
 
 public class PipeIPCProcess extends Thread implements ProcessWrapper {
-	public static final Logger logger = LoggerFactory.getLogger(PipeIPCProcess.class);
+	private static final Logger logger = LoggerFactory.getLogger(PipeIPCProcess.class);
 
 	private PipeProcess mkin;
 	private PipeProcess mkout;

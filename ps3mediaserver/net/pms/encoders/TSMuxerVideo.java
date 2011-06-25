@@ -50,8 +50,11 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-public class TSMuxerVideo extends Player {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class TSMuxerVideo extends Player {
+	private static final Logger logger = LoggerFactory.getLogger(TSMuxerVideo.class);
 	public static final String ID = "tsmuxer"; //$NON-NLS-1$
 	private PmsConfiguration configuration;
 	

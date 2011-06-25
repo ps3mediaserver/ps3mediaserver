@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class H264AnnexBInputStream extends InputStream {
-	public static final Logger logger = LoggerFactory.getLogger(H264AnnexBInputStream.class);
+	private static final Logger logger = LoggerFactory.getLogger(H264AnnexBInputStream.class);
 
 	private InputStream source;
 	private int nextTarget;

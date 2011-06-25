@@ -32,7 +32,11 @@ import java.util.zip.ZipInputStream;
 import net.pms.PMS;
 import net.pms.formats.Format;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ZippedFile extends DLNAResource {
+	private static final Logger logger = LoggerFactory.getLogger(ZippedFile.class);
 	private File z;
 	private ZipFile zip;
 

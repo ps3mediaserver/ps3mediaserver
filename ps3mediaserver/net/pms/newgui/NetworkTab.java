@@ -61,7 +61,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
 public class NetworkTab {
-	public static final Logger logger = LoggerFactory.getLogger(NetworkTab.class);
+	private static final Logger logger = LoggerFactory.getLogger(NetworkTab.class);
 
 	private JCheckBox smcheckBox;
 	private JCheckBox newHTTPEngine;

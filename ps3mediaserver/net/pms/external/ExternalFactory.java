@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExternalFactory {
-	public static final Logger logger = LoggerFactory.getLogger(ExternalFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(ExternalFactory.class);
 
 	private static List<ExternalListener> externalListeners;
 	

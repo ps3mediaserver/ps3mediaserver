@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class FormatConfiguration {
-	public static final Logger logger = LoggerFactory.getLogger(FormatConfiguration.class);
+	private static final Logger logger = LoggerFactory.getLogger(FormatConfiguration.class);
 
     
 	public static final String MPEGPS = "mpegps";

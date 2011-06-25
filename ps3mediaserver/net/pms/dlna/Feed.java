@@ -37,7 +37,19 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Feed extends DLNAResource {
+	private static final Logger logger = LoggerFactory.getLogger(Feed.class);
+	protected String name;
+	protected String url;
+	protected String tempItemTitle;
+	protected String tempItemLink;
+	protected String tempFeedLink;
+	protected String tempCategory;
+	protected String tempItemThumbURL;
+
 	@Override
 	public void resolve() {
 		super.resolve();
@@ -47,13 +59,6 @@ public class Feed extends DLNAResource {
 			logger.error("Error in parsing stream: " + url, e);
 		}
 	}
-	protected String name;
-	protected String url;
-	protected String tempItemTitle;
-	protected String tempItemLink;
-	protected String tempFeedLink;
-	protected String tempCategory;
-	protected String tempItemThumbURL;
 
 	public Feed(String name, String url, int type) {
 		super(type);
@@ -177,7 +182,6 @@ public class Feed extends DLNAResource {
 			return true;
 		}
 		return false;
-
 	}
 
 	/**

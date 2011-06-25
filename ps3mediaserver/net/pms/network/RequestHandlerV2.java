@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
-	public static final Logger logger = LoggerFactory.getLogger(RequestHandlerV2.class);
+	private static final Logger logger = LoggerFactory.getLogger(RequestHandlerV2.class);
 
 	private volatile HttpRequest nettyRequest;
 

@@ -43,7 +43,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 
 public class MediaInfo {
-	public static final Logger logger = LoggerFactory.getLogger(MediaInfo.class);
+	private static final Logger logger = LoggerFactory.getLogger(MediaInfo.class);
 	static String libraryName;
 
 	static {

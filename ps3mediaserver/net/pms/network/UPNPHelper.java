@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class UPNPHelper {
-	public static final Logger logger = LoggerFactory.getLogger(UPNPHelper.class);
+	private static final Logger logger = LoggerFactory.getLogger(UPNPHelper.class);
 
 	private final static String CRLF = "\r\n";
 	private final static String ALIVE = "ssdp:alive";
