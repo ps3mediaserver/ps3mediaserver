@@ -1,7 +1,6 @@
 package net.pms.configuration;
 
 class MacDefaultPaths implements ProgramPaths {
-
 	@Override
 	public String getEac3toPath() {
 		return null;
@@ -56,5 +55,4 @@ class MacDefaultPaths implements ProgramPaths {
 	public String getDCRaw() {
 		return "osx/dcraw";
 	}
-
 }

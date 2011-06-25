@@ -14,11 +14,8 @@ import org.slf4j.LoggerFactory;
  */
 class TempFolder {
 	private static final Logger logger = LoggerFactory.getLogger(TempFolder.class);
-
 	private static final String DEFAULT_TEMP_FOLDER_NAME = "ps3mediaserver";
-
 	private final String userSpecifiedFolder;
-	
 	private File tempFolder;
 
 	/**
@@ -32,7 +29,7 @@ class TempFolder {
 		if (tempFolder == null) {
 			tempFolder = getTempFolder(userSpecifiedFolder);
 		}
-		
+
 		return tempFolder;
 	}
 
@@ -40,7 +37,7 @@ class TempFolder {
 		if (userSpecifiedFolder == null) {
 			return getSystemTempFolder();
 		}
-		
+
 		try {
 			return getUserSpecifiedTempFolder(userSpecifiedFolder);
 		} catch (IOException e) {
@@ -53,7 +50,7 @@ class TempFolder {
 		if (userSpecifiedFolder != null && userSpecifiedFolder.length() == 0) {
 			throw new IOException("temporary folder path must not be empty if specified");
 		}
-		
+
 		File folderFile = new File(userSpecifiedFolder);
 		FileUtils.forceMkdir(folderFile);
 		assertFolderIsValid(folderFile);

@@ -8,7 +8,6 @@ import com.sun.jna.Platform;
  * @author Tim Cox (mail@tcox.org)
  */
 class PlatformSpecificDefaultPathsFactory {
-
 	ProgramPaths get() {
 		if (Platform.isWindows()) {
 			return new WindowsDefaultPaths();
@@ -18,5 +17,4 @@ class PlatformSpecificDefaultPathsFactory {
 			return new LinuxDefaultPaths();
 		}
 	}
-	
 }

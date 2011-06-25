@@ -10,13 +10,12 @@ import net.pms.io.WinUtils;
 
 class WindowsRegistryProgramPaths implements ProgramPaths {
 	private static final Logger logger = LoggerFactory.getLogger(WindowsRegistryProgramPaths.class);
-
 	private final ProgramPaths defaults;
-	
+
 	WindowsRegistryProgramPaths(ProgramPaths defaults) {
 		this.defaults = defaults;
 	}
-	
+
 	@Override
 	public String getEac3toPath() {
 		return defaults.getEac3toPath();
@@ -80,5 +79,4 @@ class WindowsRegistryProgramPaths implements ProgramPaths {
 	public String getDCRaw() {
 		return defaults.getDCRaw();
 	}
-
 }

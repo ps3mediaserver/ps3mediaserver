@@ -1,7 +1,6 @@
 package net.pms.configuration;
 
 class WindowsDefaultPaths implements ProgramPaths {
-
 	@Override
 	public String getEac3toPath() {
 		return "win32/eac3to/eac3to.exe";
@@ -56,5 +55,4 @@ class WindowsDefaultPaths implements ProgramPaths {
 	public String getDCRaw() {
 		return "win32/dcrawMS.exe";
 	}
-
 }
