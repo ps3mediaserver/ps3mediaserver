@@ -21,18 +21,17 @@ package net.pms.dlna;
 import net.pms.formats.Format;
 
 public class ImagesFeed extends Feed {
-
 	@Override
 	protected void manageItem() {
 		// Picasa Web Albums Support
 		if (tempFeedLink != null && tempCategory != null && tempCategory.endsWith("user") && url.toLowerCase().indexOf("picasaweb.google") > -1) {
 			addChild(new ImagesFeed(tempFeedLink.replace("data/entry/base", "data/feed/base")));
-		} else
+		} else {
 			super.manageItem();
+		}
 	}
 
 	public ImagesFeed(String url) {
 		super("" + System.currentTimeMillis(), url, Format.IMAGE);
 	}
-
 }

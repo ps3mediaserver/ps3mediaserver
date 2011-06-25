@@ -19,9 +19,7 @@
 package net.pms.dlna.virtual;
 
 public class TranscodeVirtualFolder extends VirtualFolder {
-
 	public TranscodeVirtualFolder(String thumbnailIcon) {
 		super(TRANSCODE_FOLDER, thumbnailIcon);
 	}
-
 }

@@ -29,14 +29,11 @@ import net.pms.io.ProcessWrapperImpl;
 import net.pms.util.ProcessUtil;
 
 public class DVDISOFile extends VirtualFolder {
-	
 	public static final String PREFIX = "[DVD ISO] ";
-	
+
 	public void resolve() {
-		
-	
-		double titles [] = new double [100];
-		String cmd [] = new String [] { PMS.getConfiguration().getMplayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()), "dvd://1" };
+		double titles[] = new double[100];
+		String cmd[] = new String[]{PMS.getConfiguration().getMplayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()), "dvd://1"};
 		OutputParams params = new OutputParams(PMS.getConfiguration());
 		params.maxBufferSize = 1;
 		params.log = true;
@@ -45,7 +42,8 @@ public class DVDISOFile extends VirtualFolder {
 			public void run() {
 				try {
 					Thread.sleep(10000);
-				} catch (InterruptedException e) {}
+				} catch (InterruptedException e) {
+				}
 				pw.stopProcess();
 			}
 		};
@@ -53,18 +51,19 @@ public class DVDISOFile extends VirtualFolder {
 		failsafe.start();
 		pw.run();
 		List<String> lines = pw.getOtherResults();
-		if (lines != null)
-		for(String line:lines) {
-			if (line.startsWith("ID_DVD_TITLE_") && line.contains("_LENGTH")) {
-				int rank = Integer.parseInt(line.substring(13, line.indexOf("_LENGT")));
-				double duration = Double.parseDouble(line.substring(line.lastIndexOf("LENGTH=")+7));
-				titles[rank] = duration;
+		if (lines != null) {
+			for (String line : lines) {
+				if (line.startsWith("ID_DVD_TITLE_") && line.contains("_LENGTH")) {
+					int rank = Integer.parseInt(line.substring(13, line.indexOf("_LENGT")));
+					double duration = Double.parseDouble(line.substring(line.lastIndexOf("LENGTH=") + 7));
+					titles[rank] = duration;
+				}
 			}
 		}
-		
+
 		double oldduration = -1;
-		
-		for(int i=1;i<99;i++) {
+
+		for (int i = 1; i < 99; i++) {
 			// don't take into account titles less than 10 seconds
 			// also, workaround for the mplayer bug which reports several times an unique title with the same length
 			// The "maybe wrong" title is taken into account only if his length is smaller than 1 hour.
@@ -75,7 +74,7 @@ public class DVDISOFile extends VirtualFolder {
 				oldduration = titles[i];
 			}
 		}
-		
+
 		if (childrenNumber() > 0) {
 			if (PMS.getConfiguration().getUseCache()) {
 				if (!PMS.get().getDatabase().isDataExists(f.getAbsolutePath(), f.lastModified())) {
@@ -83,24 +82,22 @@ public class DVDISOFile extends VirtualFolder {
 				}
 			}
 		}
-		
-	}
 
+	}
 	private File f;
-	
+
 	public DVDISOFile(File f) {
-		super(PREFIX + (f.isFile()?f.getName():"VIDEO_TS"), null);
+		super(PREFIX + (f.isFile() ? f.getName() : "VIDEO_TS"), null);
 		this.f = f;
 		lastmodified = f.lastModified();
-		//init();
 	}
 
 	@Override
 	public String getDisplayName() {
 		String s = super.getDisplayName();
-		if (f.getName().toUpperCase().equals("VIDEO_TS"))
+		if (f.getName().toUpperCase().equals("VIDEO_TS")) {
 			s += " {" + f.getParentFile().getName() + "}";
+		}
 		return s;
 	}
-
 }

@@ -33,9 +33,7 @@ import net.pms.network.HTTPResource;
  * However this is just cosmetic. Any action can be performed.
  */
 public abstract class VirtualVideoAction extends DLNAResource {
-	
 	private boolean enabled;
-
 	protected String name;
 	private String thumbnailIconOK;
 	private String thumbnailIconKO;
@@ -43,8 +41,7 @@ public abstract class VirtualVideoAction extends DLNAResource {
 	private String videoOk;
 	private String videoKo;
 	private long timer1;
-	
-	
+
 	/**Constructor for this class. Recommended instantation includes overriding the {@link #enable()} function (example shown in the link).
 	 * @param name Name that is shown via the UPNP ContentBrowser service. This field cannot be changed after the instantiation.
 	 * @param enabled If true, a green tick mark is shown as thumbnail. If false, a red cross is shown. This initial value
@@ -59,7 +56,7 @@ public abstract class VirtualVideoAction extends DLNAResource {
 		this.videoKo = "videos/button_cancel-512.mpg";
 		timer1 = -1;
 		notranscodefolder = true;
-		this.enabled = enabled; 
+		this.enabled = enabled;
 	}
 
 	/**This function is called as an action from the UPNP client when
@@ -72,16 +69,17 @@ public abstract class VirtualVideoAction extends DLNAResource {
 	 */
 	@Override
 	public InputStream getInputStream() throws IOException {
-		if (timer1 == -1)
+		if (timer1 == -1) {
 			timer1 = System.currentTimeMillis();
-		else if (System.currentTimeMillis() - timer1 < 2000){
+		} else if (System.currentTimeMillis() - timer1 < 2000) {
 			timer1 = -1;
 		}
-		if (timer1 != -1)
+		if (timer1 != -1) {
 			enabled = enable();
-		return getResourceInputStream(enabled?videoOk:videoKo);
+		}
+		return getResourceInputStream(enabled ? videoOk : videoKo);
 	}
-	
+
 	/**Prototype. This function is called by {@link #getInputStream()} and is the core of this class.
 	 * The main purpose of this function is toggle a boolean variable somewhere. 
 	 * The value of that boolean variable is shown then as either a green tick mark or a red cross.
@@ -131,16 +129,16 @@ public abstract class VirtualVideoAction extends DLNAResource {
 	public String getSystemName() {
 		return getName();
 	}
-	
+
 	/**Returns either a green tick mark or a red cross that represents the actual
 	 * value of this item
 	 * @see net.pms.dlna.DLNAResource#getThumbnailInputStream()
 	 */
 	@Override
 	public InputStream getThumbnailInputStream() {
-		return getResourceInputStream(enabled?thumbnailIconOK:thumbnailIconKO);
+		return getResourceInputStream(enabled ? thumbnailIconOK : thumbnailIconKO);
 	}
-	
+
 	/**@return PNG type, as the thumbnail can only be either a green tick mark or a red cross.
 	 * @see #getThumbnailInputStream()
 	 * @see net.pms.dlna.DLNAResource#getThumbnailContentType()
@@ -159,5 +157,4 @@ public abstract class VirtualVideoAction extends DLNAResource {
 		ext = PMS.get().getAssociatedExtension("toto.mpg");
 		return true;
 	}
-	
 }

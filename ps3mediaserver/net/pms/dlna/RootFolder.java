@@ -23,9 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.concurrent.ArrayBlockingQueue;
-//import java.util.concurrent.ThreadPoolExecutor;
-//import java.util.concurrent.TimeUnit;
 
 import net.pms.PMS;
 import net.pms.configuration.MapFileConfiguration;
@@ -34,18 +31,15 @@ import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.gui.IFrame;
 import net.pms.newgui.LooksFrame;
 
-
-
 public class RootFolder extends DLNAResource {
-	
 	private boolean running;
-	
+
 	public RootFolder() {
 		id = "0";
 	}
-	
-	public void browse(File startFolders []) {
-		for(File f:startFolders) {
+
+	public void browse(File startFolders[]) {
+		for (File f : startFolders) {
 			addChild(new RealFile(f));
 		}
 	}
@@ -79,7 +73,7 @@ public class RootFolder extends DLNAResource {
 	public boolean isValid() {
 		return true;
 	}
-	
+
 	public void scan() {
 		running = true;
 		refreshChildren();
@@ -87,33 +81,35 @@ public class RootFolder extends DLNAResource {
 		scan(this);
 		IFrame frame = PMS.get().getFrame();
 		if (frame instanceof LooksFrame) {
-			LooksFrame looksframe = (LooksFrame)frame;
+			LooksFrame looksframe = (LooksFrame) frame;
 			looksframe.getFt().setScanLibraryEnabled(true);
 		}
 		PMS.get().getDatabase().cleanup();
 		PMS.get().getFrame().setStatusLine(null);
 	}
-	
+
 	public void stopscan() {
 		running = false;
 	}
-	
+
 	public void browse(List<MapFileConfiguration> startVirtualFolders) {
-		if (startVirtualFolders==null)
+		if (startVirtualFolders == null) {
 			return;
+		}
 		for (MapFileConfiguration f : startVirtualFolders) {
 			addChild(new MapFile(f));
 		}
 	}
-	
+
 	private synchronized void scan(DLNAResource resource) {
 		if (running) {
-			for(DLNAResource child:resource.children) {
+			for (DLNAResource child : resource.children) {
 				if (running && child.allowScan()) {
 					child.defaultRenderer = resource.defaultRenderer;
 					String trace = null;
-					if (child instanceof RealFile)
+					if (child instanceof RealFile) {
 						trace = "Scanning Folder: " + child.getName();
+					}
 					if (trace != null) {
 						logger.debug(trace);
 						PMS.get().getFrame().setStatusLine(trace);
@@ -123,45 +119,22 @@ public class RootFolder extends DLNAResource {
 						child.closeChildren(child.childrenNumber(), true);
 					} else {
 						if (child instanceof DVDISOFile || child instanceof DVDISOTitle) // ugly hack
+						{
 							child.resolve();
+						}
 						child.discoverChildren();
 						child.analyzeChildren(-1);
 						child.closeChildren(0, false);
 						child.discovered = true;
 					}
 					int count = child.children.size();
-					if (count == 0)
+					if (count == 0) {
 						continue;
+					}
 					scan(child);
 					child.children.clear();
 				}
 			}
-			
-			// Sequential version, not used right now
-			/*ArrayList<DLNAResource> toScan = new ArrayList<DLNAResource>();
-			toScan.addAll(resource.children);
-			while ( running && toScan.size() > 0) {
-				DLNAResource child = toScan.remove(0);
-				if (running && child instanceof RealFile && child.isFolder()) {
-					child.defaultRenderer = resource.defaultRenderer;
-					String trace = "Scanning Folder: " + ((RealFile) child).file.getAbsolutePath();
-					logger.debug(trace);
-					PMS.get().getFrame().setStatusLine(trace);
-					if (child.discovered) {
-						child.refreshChildren();
-						child.closeChildren(child.childrenNumber(), true);
-					} else {
-						child.discoverChildren();
-						child.analyzeChildren(-1);
-						child.closeChildren(0, false);
-						child.discovered = true;
-					}
-					int count = child.children.size();
-					if (count == 0)
-						continue;
-					toScan.addAll(0, child.children);
-				}
-			}*/
 		}
 	}
 
@@ -171,38 +144,38 @@ public class RootFolder extends DLNAResource {
 		File files[] = null;
 		try {
 			files = PMS.get().loadFoldersConf(PMS.getConfiguration().getFolders(), true);
-			if (files == null || files.length == 0)
+			if (files == null || files.length == 0) {
 				files = File.listRoots();
+			}
 			int i = 0;
 			ArrayList<DLNAResource> removedFiles = new ArrayList<DLNAResource>();
 			ArrayList<File> addedFiles = new ArrayList<File>();
-			
-			for(File f:files) {
+
+			for (File f : files) {
 				boolean present = false;
-				for(DLNAResource d:children) {
-					if (i == 0 && !(d instanceof VirtualFolder)  && !(d instanceof MapFile)) {
+				for (DLNAResource d : children) {
+					if (i == 0 && !(d instanceof VirtualFolder) && !(d instanceof MapFile)) {
 						removedFiles.add(d);
 					}
-					if (d instanceof RealFile && f.exists() && ((RealFile)d).getFile().getAbsolutePath().equals(f.getAbsolutePath())) {
+					if (d instanceof RealFile && f.exists() && ((RealFile) d).getFile().getAbsolutePath().equals(f.getAbsolutePath())) {
 						removedFiles.remove(d);
 						present = true;
 					}
 				}
-				if (!present)
+				if (!present) {
 					addedFiles.add(f);
+				}
 				i++;
 			}
-			for(DLNAResource f:removedFiles) {
+			for (DLNAResource f : removedFiles) {
 				children.remove(f);
 			}
-			for(File f:addedFiles) {
+			for (File f : addedFiles) {
 				addChild(new RealFile(f));
 			}
 			refreshed = !removedFiles.isEmpty() || addedFiles.isEmpty();
-		} catch (IOException e) {}
-		
-		
+		} catch (IOException e) {
+		}
 		return refreshed;
 	}
-
 }

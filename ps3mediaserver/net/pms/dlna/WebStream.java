@@ -21,32 +21,30 @@ package net.pms.dlna;
 import java.io.IOException;
 import java.io.InputStream;
 
-
 public class WebStream extends DLNAResource {
-
 	@Override
 	public boolean isValid() {
 		checktype();
 		return ext != null;
 	}
-
 	protected String URL;
 	protected String fluxName;
 	protected String thumbURL;
-	
+
 	public WebStream(String fluxName, String URL, String thumbURL, int type) {
 		super(type);
 		this.URL = URL;
 		this.thumbURL = thumbURL;
 		this.fluxName = fluxName;
 	}
-	
+
 	@Override
 	public InputStream getThumbnailInputStream() throws IOException {
-		if (thumbURL != null)
+		if (thumbURL != null) {
 			return downloadAndSend(thumbURL, true);
-		else
+		} else {
 			return super.getThumbnailInputStream();
+		}
 	}
 
 	public InputStream getInputStream() {
@@ -73,6 +71,4 @@ public class WebStream extends DLNAResource {
 	public String getSystemName() {
 		return URL;
 	}
-
-	
 }
