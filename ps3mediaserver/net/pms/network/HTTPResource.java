@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @see DLNAResource
  */
 public class HTTPResource {
-	public static final Logger logger = LoggerFactory.getLogger(HTTPResource.class);
+	private static final Logger logger = LoggerFactory.getLogger(HTTPResource.class);
 
 	public static final String UNKNOWN_VIDEO_TYPEMIME = "video/mpeg";
 	public static final String UNKNOWN_IMAGE_TYPEMIME = "image/jpeg";

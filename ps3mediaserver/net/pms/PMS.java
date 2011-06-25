@@ -138,7 +138,7 @@ public class PMS {
 	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
 
 	// (innot): The logger used for all logging.
-	public static final Logger logger = LoggerFactory.getLogger(PMS.class);
+	private static final Logger logger = LoggerFactory.getLogger(PMS.class);
 	// TODO(tcox):  This shouldn't be static
 	private static PmsConfiguration configuration;
 

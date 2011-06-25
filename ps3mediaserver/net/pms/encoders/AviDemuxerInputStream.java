@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class AviDemuxerInputStream extends InputStream {
-	public static final Logger logger = LoggerFactory.getLogger(AviDemuxerInputStream.class);
+	private static final Logger logger = LoggerFactory.getLogger(AviDemuxerInputStream.class);
 	
 	@Override
 	public void close() throws IOException {

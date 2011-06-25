@@ -31,7 +31,11 @@ import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.gui.IFrame;
 import net.pms.newgui.LooksFrame;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class RootFolder extends DLNAResource {
+	private static final Logger logger = LoggerFactory.getLogger(RootFolder.class);
 	private boolean running;
 
 	public RootFolder() {

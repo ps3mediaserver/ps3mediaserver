@@ -35,7 +35,7 @@ import com.sun.jna.WString;
 import com.sun.jna.ptr.LongByReference;
 
 public class WinUtils {
-	public static final Logger logger = LoggerFactory.getLogger(WinUtils.class);
+	private static final Logger logger = LoggerFactory.getLogger(WinUtils.class);
 
 	public interface Kernel32 extends Library {
 		Kernel32 INSTANCE = (Kernel32) Native.loadLibrary("kernel32",

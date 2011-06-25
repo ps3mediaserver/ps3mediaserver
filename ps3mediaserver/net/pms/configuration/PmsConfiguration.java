@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.jna.Platform;
 
 public class PmsConfiguration {
-	public static final Logger logger = LoggerFactory.getLogger(PmsConfiguration.class);
+	private static final Logger logger = LoggerFactory.getLogger(PmsConfiguration.class);
 	
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final int DEFAULT_SERVER_PORT = 5001;

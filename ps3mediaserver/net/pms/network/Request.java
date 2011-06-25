@@ -36,7 +36,11 @@ import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.external.StartStopListenerDelegate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Request extends HTTPResource {
+	private static final Logger logger = LoggerFactory.getLogger(Request.class);
 	private final static String CRLF = "\r\n";
 	private final static String HTTP_200_OK = "HTTP/1.1 200 OK";
 	private final static String HTTP_206_OK = "HTTP/1.1 206 Partial Content" ;
@@ -527,7 +531,7 @@ public class Request extends HTTPResource {
 				sendBytes += bytes;
 			}
 		} catch (IOException e) {
-			logger.trace("Sending stream with premature end : " + sendBytes + " bytes of " + argument + ". Reason: " + e.getMessage());
+			logger.trace("Sending stream with premature end: " + sendBytes + " bytes of " + argument + ". Reason: " + e.getMessage());
 		} finally {
 			fis.close();
 		}

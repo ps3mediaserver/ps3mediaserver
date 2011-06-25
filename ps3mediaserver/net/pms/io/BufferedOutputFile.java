@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BufferedOutputFile extends OutputStream  {
-	public static final Logger logger = LoggerFactory.getLogger(BufferedOutputFile.class);
+	private static final Logger logger = LoggerFactory.getLogger(BufferedOutputFile.class);
 
 	private static final int TEMP_SIZE = 50000000;
 	private static final int CHECK_INTERVAL = 500;

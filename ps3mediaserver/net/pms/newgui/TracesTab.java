@@ -47,7 +47,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class TracesTab {
-	public static final Logger logger = LoggerFactory.getLogger(TracesTab.class);
+	private static final Logger logger = LoggerFactory.getLogger(TracesTab.class);
 
 	
 	class PopupTriggerMouseListener extends MouseAdapter

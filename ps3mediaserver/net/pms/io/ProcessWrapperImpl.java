@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
-	public static final Logger logger = LoggerFactory.getLogger(ProcessWrapperImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(ProcessWrapperImpl.class);
 
 	@Override
 	public String toString() {

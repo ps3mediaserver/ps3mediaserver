@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.jna.Platform;
 
 public class DLNAMediaDatabase implements Runnable {
-	public static final Logger logger = LoggerFactory.getLogger(DLNAMediaDatabase.class);
+	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaDatabase.class);
 	private String url;
 	private String dir;
 	public static String NONAME = "###"; //$NON-NLS-1$

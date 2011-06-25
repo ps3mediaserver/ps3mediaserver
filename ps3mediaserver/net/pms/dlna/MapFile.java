@@ -34,16 +34,21 @@ import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.network.HTTPResource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MapFile extends DLNAResource {
+	private static final Logger logger = LoggerFactory.getLogger(MapFile.class);
+	private List<File> discoverable;
+	public File potentialCover;
+	protected MapFileConfiguration conf;
 	private static final Collator collator;
 
 	static {
 		collator = Collator.getInstance();
 		collator.setStrength(Collator.PRIMARY);
 	}
-	private List<File> discoverable;
-	public File potentialCover;
-	protected MapFileConfiguration conf;
+
 	public MapFile() {
 		this.conf = new MapFileConfiguration();
 		lastmodified = 0;
@@ -63,7 +68,6 @@ public class MapFile extends DLNAResource {
 	}
 
 	private boolean isFolderRelevant(File f) {
-
 		boolean excludeNonRelevantFolder = true;
 		if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders()) {
 			File children[] = f.listFiles();
@@ -98,7 +102,6 @@ public class MapFile extends DLNAResource {
 			} else if (f.getName().toLowerCase().endsWith(".cue")) {
 				addChild(new CueFolder(f));
 			} else {
-
 				/* Optionally ignore empty directories */
 				if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders() && !isFolderRelevant(f)) {
 					logger.debug("Ignoring empty/non relevant directory: " + f.getName());

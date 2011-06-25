@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.jna.Platform;
 
 public class DLNAMediaInfo implements Cloneable {
-	public static final Logger logger = LoggerFactory.getLogger(DLNAMediaInfo.class);
+	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaInfo.class);
 	public static final long ENDFILE_POS = 99999475712L;
 	public static final long TRANS_SIZE = 100000000000L;
 

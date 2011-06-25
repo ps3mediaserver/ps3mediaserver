@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CueFolder extends DLNAResource {
-	public static final Logger logger = LoggerFactory.getLogger(CueFolder.class);
+	private static final Logger logger = LoggerFactory.getLogger(CueFolder.class);
 	private File playlistfile;
 
 	public File getPlaylistfile() {

@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Proxy extends Thread {
-	public static final Logger logger = LoggerFactory.getLogger(Proxy.class);
+	private static final Logger logger = LoggerFactory.getLogger(Proxy.class);
 
 	
 	private Socket socket, socketToWeb;

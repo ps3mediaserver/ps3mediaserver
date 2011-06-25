@@ -9,7 +9,7 @@ import net.pms.PMS;
 import net.pms.io.WinUtils;
 
 class WindowsRegistryProgramPaths implements ProgramPaths {
-	public static final Logger logger = LoggerFactory.getLogger(WindowsRegistryProgramPaths.class);
+	private static final Logger logger = LoggerFactory.getLogger(WindowsRegistryProgramPaths.class);
 
 	private final ProgramPaths defaults;
 	

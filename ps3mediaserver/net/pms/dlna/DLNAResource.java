@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class DLNAResource extends HTTPResource implements Cloneable, Runnable {
-	public static final Logger logger = LoggerFactory.getLogger(DLNAResource.class);
+	private static final Logger logger = LoggerFactory.getLogger(DLNAResource.class);
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
 	protected static String TRANSCODE_FOLDER = "#--TRANSCODE--#";

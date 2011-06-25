@@ -69,7 +69,7 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.sun.jna.Platform;
 
 public class LooksFrame extends JFrame implements IFrame, Observer {
-	public static final Logger logger = LoggerFactory.getLogger(LooksFrame.class);
+	private static final Logger logger = LoggerFactory.getLogger(LooksFrame.class);
 
 	private final AutoUpdater autoUpdater;
 	private final PmsConfiguration configuration;

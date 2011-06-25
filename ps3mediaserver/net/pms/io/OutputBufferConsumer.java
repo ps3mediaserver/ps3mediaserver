@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OutputBufferConsumer extends OutputConsumer {
-	public static final Logger logger = LoggerFactory.getLogger(OutputBufferConsumer.class);
+	private static final Logger logger = LoggerFactory.getLogger(OutputBufferConsumer.class);
 
 	private BufferedOutputFile outputBuffer;
 	

@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Player {
-	public static final Logger logger = LoggerFactory.getLogger(Player.class);
+	private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
 	public static final int VIDEO_SIMPLEFILE_PLAYER = 0;
 	public static final int AUDIO_SIMPLEFILE_PLAYER = 1;

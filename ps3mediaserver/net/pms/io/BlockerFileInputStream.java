@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BlockerFileInputStream extends UnusedInputStream {
-	public static final Logger logger = LoggerFactory.getLogger(BlockerFileInputStream.class);
+	private static final Logger logger = LoggerFactory.getLogger(BlockerFileInputStream.class);
 	
 	private static final int CHECK_INTERVAL = 1000;
 	private long readCount;

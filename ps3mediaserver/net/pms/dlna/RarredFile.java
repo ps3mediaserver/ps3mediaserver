@@ -30,8 +30,11 @@ import de.innosystec.unrar.Archive;
 import de.innosystec.unrar.exception.RarException;
 import de.innosystec.unrar.rarfile.FileHeader;
 
-public class RarredFile extends DLNAResource {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class RarredFile extends DLNAResource {
+	private static final Logger logger = LoggerFactory.getLogger(RarredFile.class);
 	private File f;
 	private Archive rarFile;
 

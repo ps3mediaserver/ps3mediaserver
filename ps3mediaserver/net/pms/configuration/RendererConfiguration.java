@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.jna.Platform;
 
 public class RendererConfiguration {
-	public static final Logger logger = LoggerFactory.getLogger(RendererConfiguration.class);
+	private static final Logger logger = LoggerFactory.getLogger(RendererConfiguration.class);
 
 	
 	/*

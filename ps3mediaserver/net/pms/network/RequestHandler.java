@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
-	public static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
 	public final static int SOCKET_BUF_SIZE = 32768;
 	private Socket socket;

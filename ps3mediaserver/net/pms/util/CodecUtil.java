@@ -18,7 +18,7 @@ import net.pms.io.BufferedOutputFile;
 import com.sun.jna.Platform;
 
 public class CodecUtil {
-	public static final Logger logger = LoggerFactory.getLogger(CodecUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(CodecUtil.class);
 	
 	private static ArrayList<String> codecs;
 	

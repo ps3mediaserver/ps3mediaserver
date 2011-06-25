@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ImagesUtil {
-	public static final Logger logger = LoggerFactory.getLogger(ImagesUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(ImagesUtil.class);
 
 	public static InputStream getAutoRotateInputStreamImage(InputStream input, int exifOrientation) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

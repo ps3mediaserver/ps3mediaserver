@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OutputTextConsumer extends OutputConsumer {
-	public static final Logger logger = LoggerFactory.getLogger(OutputTextConsumer.class);
+	private static final Logger logger = LoggerFactory.getLogger(OutputTextConsumer.class);
 
 	private List<String> lines = new ArrayList<String>();
 	private Object linesLock = new Object();

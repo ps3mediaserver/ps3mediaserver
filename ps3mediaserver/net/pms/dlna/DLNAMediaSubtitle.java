@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
-	public static final Logger logger = LoggerFactory.getLogger(DLNAMediaSubtitle.class);
+	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaSubtitle.class);
 	public static final int SUBRIP = 1;
 	public static final int TEXT = 2;
 	public static final int MICRODVD = 3;
