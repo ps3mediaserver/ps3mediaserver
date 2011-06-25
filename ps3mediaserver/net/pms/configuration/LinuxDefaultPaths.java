@@ -1,7 +1,6 @@
 package net.pms.configuration;
 
 class LinuxDefaultPaths implements ProgramPaths {
-
 	@Override
 	public String getEac3toPath() {
 		return "eac3to";
@@ -56,5 +55,4 @@ class LinuxDefaultPaths implements ProgramPaths {
 	public String getDCRaw() {
 		return "dcraw";
 	}
-
 }
