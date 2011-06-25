@@ -26,33 +26,32 @@ import net.pms.encoders.MPlayerAudio;
 import net.pms.encoders.Player;
 
 public class OGG extends MP3 {
-	
 	@Override
 	public boolean transcodable() {
 		return true;
 	}
-	
+
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		PMS r = PMS.get();
-		for(String engine:PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
-			if (engine.equals(MPlayerAudio.ID))
+		for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
+			if (engine.equals(MPlayerAudio.ID)) {
 				a.add(MPlayerAudio.class);
-			else if (engine.equals(FFMpegAudio.ID))
+			} else if (engine.equals(FFMpegAudio.ID)) {
 				a.add(FFMpegAudio.class);
+			}
 		}
 		return a;
 	}
 
 	@Override
 	public String[] getId() {
-		return new String [] { "dts", "mka", "ape", "ogg", "shn", "mpc", "ra", "mp2", "wv" ,"oma", "aa3", "at3", "aif", "aiff" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+		return new String[]{"dts", "mka", "ape", "ogg", "shn", "mpc", "ra", "mp2", "wv", "oma", "aa3", "at3", "aif", "aiff"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 	}
 
 	@Override
 	public boolean ps3compatible() {
 		return false;
 	}
-
 }

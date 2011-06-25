@@ -13,12 +13,11 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 
 public class RAW extends JPG {
-	
 	@Override
-	public String [] getId() {
-		return new String [] { "arw", "cr2", "crw", "dng", "raf", "mrw", "nef", "pef", "srf", "orf" }; //$NON-NLS-1$
+	public String[] getId() {
+		return new String[]{"arw", "cr2", "crw", "dng", "raf", "mrw", "nef", "pef", "srf", "orf"}; //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public boolean ps3compatible() {
 		return false;
@@ -27,9 +26,11 @@ public class RAW extends JPG {
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> profiles = new ArrayList<Class<? extends Player>>();
-		for(String engine:PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry()))
-			if (engine.equals(RAWThumbnailer.ID))
+		for (String engine : PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry())) {
+			if (engine.equals(RAWThumbnailer.ID)) {
 				profiles.add(RAWThumbnailer.class);
+			}
+		}
 		return profiles;
 	}
 
@@ -40,57 +41,51 @@ public class RAW extends JPG {
 
 	@Override
 	public void parse(DLNAMediaInfo media, InputFile file, int type, RendererConfiguration renderer) {
-		
 		try {
-			
 			OutputParams params = new OutputParams(PMS.getConfiguration());
 			params.waitbeforestart = 1;
 			params.minBufferSize = 1;
 			params.maxBufferSize = 5;
 			params.hidebuffer = true;
-			
-			
-			String cmdArray [] = new String [4];
+
+
+			String cmdArray[] = new String[4];
 			cmdArray[0] = PMS.getConfiguration().getDCRawPath();
 			cmdArray[1] = "-i";
 			cmdArray[2] = "-v";
-			if (file.file != null)
+			if (file.file != null) {
 				cmdArray[3] = file.file.getAbsolutePath();
-			
+			}
+
 			params.log = true;
 			ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params, true, false);
 			pw.run();
-			
+
 			List<String> list = pw.getOtherResults();
-			for(String s:list) {
+			for (String s : list) {
 				if (s.startsWith("Thumb size:  ")) {
 					String sz = s.substring(13);
 					media.width = Integer.parseInt(sz.substring(0, sz.indexOf("x")).trim());
-					media.height = Integer.parseInt(sz.substring(sz.indexOf("x")+1).trim());
+					media.height = Integer.parseInt(sz.substring(sz.indexOf("x") + 1).trim());
 				}
 			}
-			
-		
-			
+
 			if (media.width > 0) {
-				
+
 				media.thumb = RAWThumbnailer.getThumbnail(params, file.file.getAbsolutePath());
-				if (media.thumb != null)
+				if (media.thumb != null) {
 					media.size = media.thumb.length;
-				
+				}
+
 				media.codecV = "jpg";
 				media.container = "jpg";
 			}
-			
+
 			media.finalize(type, file);
 			media.mediaparsed = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
-		
-		
 	}
 
 	/* 
@@ -101,5 +96,4 @@ public class RAW extends JPG {
 	public boolean skip(String extensions, String anotherSetOfExtensions) {
 		return true;
 	}
-	
 }

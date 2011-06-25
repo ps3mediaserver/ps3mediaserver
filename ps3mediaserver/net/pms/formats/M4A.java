@@ -13,28 +13,21 @@
  */
 package net.pms.formats;
 
-public class M4A extends OGG
-{
+public class M4A extends OGG {
+	@Override
+	public boolean transcodable() {
+		return true;
+	}
 
-   @Override
-   public boolean transcodable()
-   {
-      return true;
-   }
+	@Override
+	public String[] getId() {
+		return new String[]{
+				"wma", "m4a", "aac" //$NON-NLS-1$ //$NON-NLS-2$
+			};
+	}
 
-   @Override
-   public String[] getId()
-   {
-      return new String[]
-      {
-         "wma", "m4a", "aac" //$NON-NLS-1$ //$NON-NLS-2$
-      };
-   }
-
-   @Override
-   public boolean ps3compatible()
-   {
-      return false;
-   }
-
+	@Override
+	public boolean ps3compatible() {
+		return false;
+	}
 }
