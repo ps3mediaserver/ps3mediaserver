@@ -19,15 +19,13 @@
 package net.pms.formats;
 
 public class GIF extends JPG {
-
 	@Override
 	public String[] getId() {
-		return new String [] { "gif" }; //$NON-NLS-1$
+		return new String[]{"gif"}; //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public String mimeType() {
 		return "image/gif"; //$NON-NLS-1$
 	}
-
 }

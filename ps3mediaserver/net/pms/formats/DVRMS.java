@@ -25,19 +25,17 @@ import net.pms.PMS;
 import net.pms.encoders.FFMpegDVRMSRemux;
 import net.pms.encoders.Player;
 
-
 public class DVRMS extends Format {
-	
-	
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		PMS r = PMS.get();
-		for(String engine:PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
+		for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
 			/*if (engine.equals(MEncoderVideo.ID))
-				a.add(MEncoderVideo.class);*/
-			if (engine.equals(FFMpegDVRMSRemux.ID))
+			a.add(MEncoderVideo.class);*/
+			if (engine.equals(FFMpegDVRMSRemux.ID)) {
 				a.add(FFMpegDVRMSRemux.class);
+			}
 		}
 		return a;
 	}
@@ -53,12 +51,11 @@ public class DVRMS extends Format {
 
 	@Override
 	public String[] getId() {
-		return new String [] { "dvr-ms", "dvr" }; //$NON-NLS-1$
+		return new String[]{"dvr-ms", "dvr"}; //$NON-NLS-1$
 	}
 
 	@Override
 	public boolean ps3compatible() {
 		return false;
 	}
-
 }

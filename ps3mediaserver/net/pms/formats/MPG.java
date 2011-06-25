@@ -27,27 +27,28 @@ import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
 import net.pms.encoders.TSMuxerVideo;
 
-
 public class MPG extends Format {
-	
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		PMS r = PMS.get();
 		PMS r1 = PMS.get();
 		PMS r2 = PMS.get();
-		if (PMS.getConfiguration().getEnginesAsList(r.getRegistry()) == null || PMS.getConfiguration().getEnginesAsList(r1.getRegistry()).size() == 0 || PMS.getConfiguration().getEnginesAsList(r2.getRegistry()).contains("none")) //$NON-NLS-1$
+		if (PMS.getConfiguration().getEnginesAsList(r.getRegistry()) == null || PMS.getConfiguration().getEnginesAsList(r1.getRegistry()).isEmpty() || PMS.getConfiguration().getEnginesAsList(r2.getRegistry()).contains("none")) //$NON-NLS-1$
+		{
 			return null;
+		}
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		PMS r3 = PMS.get();
-		for(String engine:PMS.getConfiguration().getEnginesAsList(r3.getRegistry())) {
-			if (engine.equals(MEncoderVideo.ID))
+		for (String engine : PMS.getConfiguration().getEnginesAsList(r3.getRegistry())) {
+			if (engine.equals(MEncoderVideo.ID)) {
 				a.add(MEncoderVideo.class);
-			else if (engine.equals(MEncoderAviSynth.ID) && PMS.get().getRegistry().isAvis())
+			} else if (engine.equals(MEncoderAviSynth.ID) && PMS.get().getRegistry().isAvis()) {
 				a.add(MEncoderAviSynth.class);
-			else if (engine.equals(FFMpegVideo.ID) && PMS.get().getRegistry().isAvis())
+			} else if (engine.equals(FFMpegVideo.ID) && PMS.get().getRegistry().isAvis()) {
 				a.add(FFMpegVideo.class);
-			else if (engine.equals(TSMuxerVideo.ID)/* && PMS.get().isWindows()*/)
+			} else if (engine.equals(TSMuxerVideo.ID)/* && PMS.get().isWindows()*/) {
 				a.add(TSMuxerVideo.class);
+			}
 		}
 		return a;
 	}
@@ -63,13 +64,11 @@ public class MPG extends Format {
 
 	@Override
 	public String[] getId() {
-		return new String [] { "mpg", "mpeg", "mpe", "mod", "tivo", "ty", "tmf", "ts", "tp", "m2t", "m2ts", "m2p", "mts", "mp4", "m4v", "avi", "wmv", "wm", "vob", "divx", "div" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$
+		return new String[]{"mpg", "mpeg", "mpe", "mod", "tivo", "ty", "tmf", "ts", "tp", "m2t", "m2ts", "m2p", "mts", "mp4", "m4v", "avi", "wmv", "wm", "vob", "divx", "div"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$
 	}
 
 	@Override
 	public boolean ps3compatible() {
 		return true;
 	}
-	
-
 }

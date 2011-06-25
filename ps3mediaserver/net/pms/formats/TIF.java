@@ -19,15 +19,13 @@
 package net.pms.formats;
 
 public class TIF extends JPG {
-
 	@Override
 	public String[] getId() {
-		return new String [] { "tif", "tiff" }; //$NON-NLS-1$ //$NON-NLS-2$
+		return new String[]{"tif", "tiff"}; //$NON-NLS-1$ //$NON-NLS-2$
 	}
-	
+
 	@Override
 	public String mimeType() {
 		return "image/tiff"; //$NON-NLS-1$
 	}
-
 }

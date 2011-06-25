@@ -36,44 +36,52 @@ public abstract class Format implements Cloneable {
 	public int getType() {
 		return type;
 	}
+
 	public static final int ISO = 32;
 	public static final int PLAYLIST = 16;
 	public static final int UNKNOWN = 8;
 	public static final int VIDEO = 4;
 	public static final int AUDIO = 1;
 	public static final int IMAGE = 2;
-	
+
 	protected String matchedId;
+
 	public String getMatchedId() {
 		return matchedId;
 	}
 	protected int type = UNKNOWN;
 	protected Format secondaryFormat;
+
 	public Format getSecondaryFormat() {
 		return secondaryFormat;
 	}
+
 	public void setSecondaryFormat(Format secondaryFormat) {
 		this.secondaryFormat = secondaryFormat;
 	}
+
 	public void setType(int type) {
-		if (isUnknown())
+		if (isUnknown()) {
 			this.type = type;
+		}
 	}
-	public abstract String [] getId();
+
+	public abstract String[] getId();
 	public abstract boolean ps3compatible();
 	public abstract boolean transcodable();
 	public abstract ArrayList<Class<? extends Player>> getProfiles();
-	
+
 	public String mimeType() {
 		return new HTTPResource().getDefaultMimeType(type);
 	}
-	
+
 	public boolean match(String filename) {
 		boolean match = false;
-		if (filename == null)
+		if (filename == null) {
 			return match;
+		}
 		filename = filename.toLowerCase();
-		for(String singleid:getId()) {
+		for (String singleid : getId()) {
 			String id = singleid.toLowerCase();
 			match = filename.endsWith("." + id) || filename.startsWith(id + "://"); //$NON-NLS-1$ //$NON-NLS-2$
 			if (match) {
@@ -83,19 +91,23 @@ public abstract class Format implements Cloneable {
 		}
 		return match;
 	}
-	
+
 	public boolean isVideo() {
-		return (type&VIDEO) == VIDEO;
+		return (type & VIDEO) == VIDEO;
 	}
+
 	public boolean isAudio() {
-		return (type&AUDIO) == AUDIO;
+		return (type & AUDIO) == AUDIO;
 	}
+
 	public boolean isImage() {
-		return (type&IMAGE) == IMAGE;
+		return (type & IMAGE) == IMAGE;
 	}
+
 	public boolean isUnknown() {
-		return (type&UNKNOWN) == UNKNOWN;
+		return (type & UNKNOWN) == UNKNOWN;
 	}
+
 	@Override
 	protected Object clone() {
 		Object o = null;
@@ -106,24 +118,26 @@ public abstract class Format implements Cloneable {
 		}
 		return o;
 	}
+
 	public Format duplicate() {
 		return (Format) this.clone();
 	}
+
 	// method which allow us the fine tuning of parsing with different formats in the future
 	public void parse(DLNAMediaInfo media, InputFile file, int type) {
 		parse(media, file, type, null);
 	}
-	
+
 	// 10/02/03 now this is useful :p
 	public void parse(DLNAMediaInfo media, InputFile file, int type, RendererConfiguration renderer) {
 		if (renderer != null && renderer.isMediaParserV2()) {
 			renderer.getFormatConfiguration().parse(media, file, this, type);
 		} else {
-			media.parse(file, this, type, false);	
+			media.parse(file, this, type, false);
 		}
 		logger.trace("Parsing results: " + file + " / " + media);
 	}
-	
+
 	public boolean skip(String extensions, String another_set_of_extensions) {
 		if (extensions != null && extensions.length() > 0) {
 			StringTokenizer st = new StringTokenizer(extensions, ",");
@@ -134,6 +148,7 @@ public abstract class Format implements Cloneable {
 				}
 			}
 		}
+
 		if (another_set_of_extensions != null && another_set_of_extensions.length() > 0) {
 			StringTokenizer st = new StringTokenizer(another_set_of_extensions, ",");
 			while (st.hasMoreTokens()) {
@@ -143,7 +158,6 @@ public abstract class Format implements Cloneable {
 				}
 			}
 		}
-		
 		return false;
 	}
 }

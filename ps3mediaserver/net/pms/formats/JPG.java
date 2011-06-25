@@ -22,16 +22,14 @@ import java.util.ArrayList;
 
 import net.pms.encoders.Player;
 
-
 public class JPG extends Format {
-	
 	public JPG() {
 		type = IMAGE;
 	}
 
 	@Override
-	public String [] getId() {
-		return new String [] { "jpeg", "jpg", "jpe" }; //$NON-NLS-1$ //$NON-NLS-2$
+	public String[] getId() {
+		return new String[]{"jpeg", "jpg", "jpe"}; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	@Override
@@ -48,5 +46,4 @@ public class JPG extends Format {
 	public boolean transcodable() {
 		return false;
 	}
-
 }

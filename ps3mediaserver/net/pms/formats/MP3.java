@@ -22,16 +22,14 @@ import java.util.ArrayList;
 
 import net.pms.encoders.Player;
 
-
 public class MP3 extends Format {
-	
 	public MP3() {
-		type= AUDIO;
+		type = AUDIO;
 	}
 
 	@Override
-	public String [] getId() {
-		return new String [] { "mp3", "wav"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	public String[] getId() {
+		return new String[]{"mp3", "wav"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}
 
 	@Override
@@ -48,5 +46,4 @@ public class MP3 extends Format {
 	public boolean transcodable() {
 		return false;
 	}
-
 }

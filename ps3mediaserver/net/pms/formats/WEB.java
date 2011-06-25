@@ -29,46 +29,45 @@ import net.pms.encoders.VideoLanAudioStreaming;
 import net.pms.encoders.VideoLanVideoStreaming;
 
 public class WEB extends Format {
-
 	@Override
 	public boolean ps3compatible() {
 		return type == IMAGE;
 	}
-	
+
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		if (type == AUDIO) {
 			PMS r = PMS.get();
-			for(String engine:PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
-				if (engine.equals(MPlayerWebAudio.ID))
+			for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
+				if (engine.equals(MPlayerWebAudio.ID)) {
 					a.add(MPlayerWebAudio.class);
-				else if (engine.equals(VideoLanAudioStreaming.ID))
+				} else if (engine.equals(VideoLanAudioStreaming.ID)) {
 					a.add(VideoLanAudioStreaming.class);
+				}
 			}
 		} else {
 			PMS r = PMS.get();
-			for(String engine:PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
-				if (engine.equals(MEncoderWebVideo.ID))
+			for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
+				if (engine.equals(MEncoderWebVideo.ID)) {
 					a.add(MEncoderWebVideo.class);
-				else if (engine.equals(VideoLanVideoStreaming.ID))
+				} else if (engine.equals(VideoLanVideoStreaming.ID)) {
 					a.add(VideoLanVideoStreaming.class);
-				else if (engine.equals(MPlayerWebVideoDump.ID))
+				} else if (engine.equals(MPlayerWebVideoDump.ID)) {
 					a.add(MPlayerWebVideoDump.class);
+				}
 			}
 		}
 		return a;
 	}
 
 	@Override
-	public String [] getId() {
-		return new String[] { "http", "mms", "rtsp", "rtp", "udp", "screen" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+	public String[] getId() {
+		return new String[]{"http", "mms", "rtsp", "rtp", "udp", "screen"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	}
 
 	@Override
 	public boolean transcodable() {
 		return true;
 	}
-
-
 }
