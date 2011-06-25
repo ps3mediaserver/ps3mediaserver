@@ -25,9 +25,8 @@ import java.util.ArrayList;
 import net.pms.util.ProcessUtil;
 
 public class ProcessWrapperLiteImpl implements ProcessWrapper {
-	
 	private Process p;
-	
+
 	public ProcessWrapperLiteImpl(Process p) {
 		this.p = p;
 	}
@@ -53,7 +52,6 @@ public class ProcessWrapperLiteImpl implements ProcessWrapper {
 	@Override
 	public void runInNewThread() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -65,12 +63,10 @@ public class ProcessWrapperLiteImpl implements ProcessWrapper {
 	@Override
 	public void setReadyToStop(boolean nullable) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void stopProcess() {
 		ProcessUtil.destroy(p);
 	}
-
 }

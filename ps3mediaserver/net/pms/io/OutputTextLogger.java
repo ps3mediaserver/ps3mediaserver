@@ -27,7 +27,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// a version of OutputTextConsumer that a) logs all output and b) doesn't store the output
+// A version of OutputTextConsumer that a) logs all output and b) doesn't store the output
 public class OutputTextLogger extends OutputConsumer {
 	private static final Logger logger = LoggerFactory.getLogger(OutputTextLogger.class);
 
@@ -46,12 +46,13 @@ public class OutputTextLogger extends OutputConsumer {
 				logger.trace(line);
 			}
 		} catch (IOException ioe) {
-			logger.debug("Error consuming stream of spawned process: " +  ioe.getMessage());
+			logger.debug("Error consuming stream of spawned process: " + ioe.getMessage());
 		} finally {
 			if (br != null) {
 				try {
 					br.close();
-				} catch(Exception ignore) {}
+				} catch (Exception ignore) {
+				}
 			}
 		}
 	}

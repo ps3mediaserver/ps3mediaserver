@@ -19,9 +19,7 @@
 package net.pms.io;
 
 public interface UnusedProcess {
-	
 	public void stopProcess();
 	public boolean isReadyToStop();
 	public void setReadyToStop(boolean nullable);
-
 }

@@ -36,29 +36,34 @@ import com.sun.jna.Platform;
 
 public class PipeProcess {
 	private static final Logger logger = LoggerFactory.getLogger(PipeProcess.class);
-
 	private String linuxPipeName;
 	private WindowsNamedPipe mk;
 	private boolean forcereconnect;
-	
-	public PipeProcess(String pipeName, OutputParams params, String...extras) {
+
+	public PipeProcess(String pipeName, OutputParams params, String... extras) {
 		forcereconnect = false;
 		boolean in = true;
-		if (extras != null && extras.length > 0 && extras[0].equals("out"))
+
+		if (extras != null && extras.length > 0 && extras[0].equals("out")) {
 			in = false;
+		}
+
 		if (extras != null) {
-			for(int i=0;i<extras.length;i++) {
-				if (extras[i].equals("reconnect"))
+			for (int i = 0; i < extras.length; i++) {
+				if (extras[i].equals("reconnect")) {
 					forcereconnect = true;
+				}
 			}
 		}
-		if (PMS.get().isWindows())
+
+		if (PMS.get().isWindows()) {
 			mk = new WindowsNamedPipe(pipeName, forcereconnect, in, params);
-		else
+		} else {
 			linuxPipeName = getPipeName(pipeName);
+		}
 	}
-	
-	public PipeProcess(String pipeName, String...extras) {
+
+	public PipeProcess(String pipeName, String... extras) {
 		this(pipeName, null, extras);
 	}
 
@@ -70,72 +75,71 @@ public class PipeProcess {
 			return pipeName;
 		}
 	}
-	
+
 	public String getInputPipe() {
-		if (!PMS.get().isWindows())
+		if (!PMS.get().isWindows()) {
 			return linuxPipeName;
+		}
 		return mk.getPipeName();
 	}
 
 	public String getOutputPipe() {
-		if (!PMS.get().isWindows())
+		if (!PMS.get().isWindows()) {
 			return linuxPipeName;
+		}
 		return mk.getPipeName();
 	}
-	
+
 	public ProcessWrapper getPipeProcess() {
 		if (!PMS.get().isWindows()) {
 			OutputParams mkfifo_vid_params = new OutputParams(PMS.getConfiguration());
 			mkfifo_vid_params.maxBufferSize = 0.1;
 			mkfifo_vid_params.log = true;
-			String cmdArray [] = new String[] { "mkfifo", PMS.get().isWindows()?"":"--mode=777", linuxPipeName };
+			String cmdArray[] = new String[]{"mkfifo", PMS.get().isWindows() ? "" : "--mode=777", linuxPipeName};
+
 			if (Platform.isMac() || Platform.isFreeBSD() || Platform.isSolaris()) {
-				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length+1);
+				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 1);
 				cmdArray[1] = "-m";
 				cmdArray[3] = cmdArray[2];
 				cmdArray[2] = "777";
 			}
+
 			ProcessWrapperImpl mkfifo_vid_process = new ProcessWrapperImpl(cmdArray, mkfifo_vid_params);
 			return mkfifo_vid_process;
 		}
 		return mk;
 	}
-	
+
 	public void deleteLater() {
 		if (!PMS.get().isWindows()) {
 			File f = new File(linuxPipeName);
 			f.deleteOnExit();
 		}
 	}
-	
+
 	public BufferedOutputFile getDirectBuffer() throws IOException {
 		if (!PMS.get().isWindows()) {
 			return null;
 		}
 		return mk.getDirectBuffer();
 	}
-	
+
 	public InputStream getInputStream() throws IOException {
 		if (!PMS.get().isWindows()) {
 			logger.trace("Opening file " + linuxPipeName + " for reading...");
-			RandomAccessFile raf = new RandomAccessFile ( linuxPipeName, "r" ) ;
+			RandomAccessFile raf = new RandomAccessFile(linuxPipeName, "r");
 			return new FileInputStream(raf.getFD());
 		}
 		return mk.getReadable();
 	}
-	
+
 	public OutputStream getOutputStream() throws IOException {
 		if (!PMS.get().isWindows()) {
 			logger.trace("Opening file " + linuxPipeName + " for writing...");
-			RandomAccessFile raf = new RandomAccessFile ( linuxPipeName, "rw" ) ;
+			RandomAccessFile raf = new RandomAccessFile(linuxPipeName, "rw");
 			FileOutputStream fout = new FileOutputStream(raf.getFD());
-			if (forcereconnect) {
-				//raf = new RandomAccessFile ( linuxPipeName, "rw" ) ;
-				//fout = new FileOutputStream(raf.getFD());
-			}
 			return fout;
 		}
 		return mk.getWritable();
 	}
 }
- 

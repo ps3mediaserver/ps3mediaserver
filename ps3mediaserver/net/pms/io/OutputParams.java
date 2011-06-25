@@ -28,7 +28,6 @@ import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.IPushOutput;
 
 public class OutputParams {
-	
 	public File outputFile;
 	public File workDir;
 	public double minFileSize;
@@ -39,8 +38,8 @@ public class OutputParams {
 	public int fromFrame;
 	public int toFrame;
 	public int waitbeforestart;
-	public PipeProcess input_pipes [] = new PipeProcess [2];
-	public PipeProcess output_pipes [] = new PipeProcess [2];
+	public PipeProcess input_pipes[] = new PipeProcess[2];
+	public PipeProcess output_pipes[] = new PipeProcess[2];
 	public DLNAMediaAudio aid;
 	public DLNAMediaSubtitle sid;
 	public int secondread_minsize;
@@ -53,16 +52,17 @@ public class OutputParams {
 	public String forceType;
 	public RendererConfiguration mediaRenderer;
 	public boolean hidebuffer;
-	public byte header [];
+	public byte header[];
 	public IPushOutput stdin;
 	public boolean avidemux;
 	public boolean shift_scr;
-	
+
 	public OutputParams(PmsConfiguration configuration) {
-		if (configuration != null)
+		if (configuration != null) {
 			waitbeforestart = configuration.getVideoTranscodeStartDelay() * 1000;
-		else
+		} else {
 			waitbeforestart = 6000;
+		}
 		fromFrame = -1;
 		toFrame = -1;
 		secondread_minsize = 1000000;
@@ -71,12 +71,13 @@ public class OutputParams {
 			minBufferSize = configuration.getMinMemoryBufferSize();
 			maxBufferSize = configuration.getMaxMemoryBufferSize();
 		}
-		if (maxBufferSize < 100)
+		if (maxBufferSize < 100) {
 			maxBufferSize = 100;
+		}
 		timeseek = 0;
 		outputFile = null;
 	}
-	
+
 	/**
 	 * Set some values to allow fast streaming start of transcoded videos
 	 */

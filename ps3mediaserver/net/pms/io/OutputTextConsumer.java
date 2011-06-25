@@ -30,42 +30,46 @@ import org.slf4j.LoggerFactory;
 
 public class OutputTextConsumer extends OutputConsumer {
 	private static final Logger logger = LoggerFactory.getLogger(OutputTextConsumer.class);
-
 	private List<String> lines = new ArrayList<String>();
 	private Object linesLock = new Object();
 	private boolean log;
-	
+
 	public OutputTextConsumer(InputStream inputStream, boolean log) {
 		super(inputStream);
 		linesLock = new Object();
 		this.log = log;
 	}
-	
+
 	public void run() {
 		BufferedReader br = null;
 		try {
-    		br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-    	    String line = null;
-    	    int authorized = 10;
-    	    while ((line = br.readLine()) != null) {
-    	    	if (line.length() > 0 && line.startsWith("[") && authorized > 0) {
-    	    		addLine(line);
-    	    		if (log)
-    	    			logger.trace(line);
-    	    		authorized--;
-    	    	} else if (line.length() > 0  && !line.startsWith("[") && !line.startsWith("100") && !line.startsWith("size") && !line.startsWith("frame") && !line.startsWith("Pos") && !line.startsWith("ERROR:") && !line.startsWith("BUFFER") && !line.startsWith("INITV")) {
-    	    		addLine(line);
-    	    		if (log) {
-    	    			logger.trace(line);
-    	    		}
-    	    	}
-            }
-        } catch (IOException ioe) {
-        	logger.debug("Error consuming stream of spawned process: " +  ioe.getMessage());
-        } finally {
-            if(br != null)
-                try { br.close(); } catch(Exception ignore) {}
-        }
+			br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+			String line = null;
+			int authorized = 10;
+			while ((line = br.readLine()) != null) {
+				if (line.length() > 0 && line.startsWith("[") && authorized > 0) {
+					addLine(line);
+					if (log) {
+						logger.trace(line);
+					}
+					authorized--;
+				} else if (line.length() > 0 && !line.startsWith("[") && !line.startsWith("100") && !line.startsWith("size") && !line.startsWith("frame") && !line.startsWith("Pos") && !line.startsWith("ERROR:") && !line.startsWith("BUFFER") && !line.startsWith("INITV")) {
+					addLine(line);
+					if (log) {
+						logger.trace(line);
+					}
+				}
+			}
+		} catch (IOException ioe) {
+			logger.debug("Error consuming stream of spawned process: " + ioe.getMessage());
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (Exception ignore) {
+				}
+			}
+		}
 	}
 
 	private void addLine(String line) {
@@ -85,5 +89,4 @@ public class OutputTextConsumer extends OutputConsumer {
 		}
 		return clonedResults;
 	}
-	
 }

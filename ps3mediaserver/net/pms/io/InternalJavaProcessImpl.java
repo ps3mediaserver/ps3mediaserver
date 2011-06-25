@@ -5,9 +5,8 @@ import java.io.InputStream;
 import java.util.List;
 
 public class InternalJavaProcessImpl implements ProcessWrapper {
-	
 	private InputStream input;
-	
+
 	public InternalJavaProcessImpl(InputStream input) {
 		this.input = input;
 	}
@@ -29,7 +28,6 @@ public class InternalJavaProcessImpl implements ProcessWrapper {
 
 	@Override
 	public void runInNewThread() {
-		
 	}
 
 	@Override
@@ -39,12 +37,9 @@ public class InternalJavaProcessImpl implements ProcessWrapper {
 
 	@Override
 	public void setReadyToStop(boolean nullable) {
-		
 	}
 
 	@Override
 	public void stopProcess() {
-		
 	}
-
 }
