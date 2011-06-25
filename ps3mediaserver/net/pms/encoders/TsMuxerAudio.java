@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */package net.pms.encoders;
+ */
+package net.pms.encoders;
 
 import java.io.IOException;
 
@@ -29,13 +30,12 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 
 public class TsMuxerAudio extends TSMuxerVideo {
-	
 	public static final String ID = "tsmuxeraudio"; //$NON-NLS-1$
 
 	public TsMuxerAudio(PmsConfiguration configuration) {
 		super(configuration);
 	}
-	
+
 	@Override
 	public JComponent config() {
 		return null;
@@ -56,8 +56,7 @@ public class TsMuxerAudio extends TSMuxerVideo {
 		String fileName,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
-		OutputParams params
-	) throws IOException {
+		OutputParams params) throws IOException {
 		params.timeend = media.getDurationInSeconds();
 		params.waitbeforestart = 2500;
 		return super.launchTranscode(fileName, dlna, media, params);
@@ -77,5 +76,4 @@ public class TsMuxerAudio extends TSMuxerVideo {
 	public int type() {
 		return Format.VIDEO;
 	}
-
 }

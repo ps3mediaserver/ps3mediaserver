@@ -29,7 +29,6 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 
 public class MPlayerWebAudio extends MPlayerAudio {
-	
 	public static final String ID = "mplayerwebaudio"; //$NON-NLS-1$
 
 	public MPlayerWebAudio(PmsConfiguration configuration) {
@@ -40,20 +39,20 @@ public class MPlayerWebAudio extends MPlayerAudio {
 	public JComponent config() {
 		return null;
 	}
-	
+
 	@Override
 	public int purpose() {
 		return AUDIO_WEBSTREAM_PLAYER;
 	}
-	
+
 	@Override
 	public String id() {
 		return "mplayerwebaudio"; //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media,
-			OutputParams params) throws IOException {
+		OutputParams params) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		params.waitbeforestart = 8000;
@@ -64,7 +63,7 @@ public class MPlayerWebAudio extends MPlayerAudio {
 	public String name() {
 		return "MPlayer Web"; //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public boolean isTimeSeekable() {
 		return false;

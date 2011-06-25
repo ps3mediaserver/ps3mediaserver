@@ -38,24 +38,24 @@ import net.pms.io.ProcessWrapperImpl;
 public class VideoLanVideoStreaming extends Player {
 	private final PmsConfiguration configuration;
 	public static final String ID = "vlcvideo"; //$NON-NLS-1$
-	
+
 	public VideoLanVideoStreaming(PmsConfiguration configuration) {
 		this.configuration = configuration;
 	}
-	
+
 	@Override
 	public int purpose() {
 		return VIDEO_WEBSTREAM_PLAYER;
 	}
-	
+
 	@Override
 	public String id() {
 		return ID;
 	}
-	
+
 	@Override
 	public String[] args() {
-		return new String[] { };
+		return new String[]{};
 	}
 
 	@Override
@@ -77,31 +77,31 @@ public class VideoLanVideoStreaming extends Player {
 	public String executable() {
 		return configuration.getVlcPath();
 	}
-	
+
 	protected String getEncodingArgs() {
 		/*
-			 VLC doesn't accept or understand MPEG-2 framerates of 23.97 or 30000/1001, so use the
-			 one remaining valid DVD framerate it accepts (i.e. PAL)
-			 https://secure.wikimedia.org/wikipedia/en/wiki/MPEG-2#DVD-Video
+			VLC doesn't accept or understand MPEG-2 framerates of 23.97 or 30000/1001, so use the
+			one remaining valid DVD framerate it accepts (i.e. PAL)
+			https://secure.wikimedia.org/wikipedia/en/wiki/MPEG-2#DVD-Video
 
-			 FIXME (or, rather, FIXVLC): channels=2 causes various recent VLCs (from 1.1.4 to 1.1.7)
-			 to segfault on both Windows and Linux.
+			FIXME (or, rather, FIXVLC): channels=2 causes various recent VLCs (from 1.1.4 to 1.1.7)
+			to segfault on both Windows and Linux.
 
-			 Similar issue (the workaround doesn't work here):
+			Similar issue (the workaround doesn't work here):
 
-				 https://forum.videolan.org/viewtopic.php?f=13&t=83154&p=275196#p275034
+			https://forum.videolan.org/viewtopic.php?f=13&t=83154&p=275196#p275034
 
-			  Reproduce:
+			Reproduce:
 
-				  vlc -vv -I dummy --sout \
-					#transcode{vcodec=mp2v,vb=4096,fps=25,scale=1,acodec=mpga,ab=128,channels=2} \
-					:standard{access=file,mux=ts,dst="deleteme.tmp"} \
-					http://feedproxy.google.com/~r/TEDTalks_video/~5/wdul2VS10rw/BillGates_2011U.mp4 vlc://quit
-		*/
+			vlc -vv -I dummy --sout \
+			#transcode{vcodec=mp2v,vb=4096,fps=25,scale=1,acodec=mpga,ab=128,channels=2} \
+			:standard{access=file,mux=ts,dst="deleteme.tmp"} \
+			http://feedproxy.google.com/~r/TEDTalks_video/~5/wdul2VS10rw/BillGates_2011U.mp4 vlc://quit
+		 */
 
 		return "vcodec=mp2v,vb=4096,fps=25,scale=1,acodec=mp2a,ab=128,channels=2"; //$NON-NLS-1$
 	}
-	
+
 	protected String getMux() {
 		return "ts"; //$NON-NLS-1$
 	}
@@ -111,8 +111,7 @@ public class VideoLanVideoStreaming extends Player {
 		String fileName,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
-		OutputParams params
-	) throws IOException {
+		OutputParams params) throws IOException {
 		boolean isWindows = Platform.isWindows();
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux()); //$NON-NLS-1$
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
@@ -125,7 +124,7 @@ public class VideoLanVideoStreaming extends Player {
 		params.input_pipes[0] = tsPipe;
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
-		
+
 		List<String> cmdList = new ArrayList<String>();
 		cmdList.add(executable());
 		cmdList.add("-I"); //$NON-NLS-1$
@@ -144,17 +143,16 @@ public class VideoLanVideoStreaming extends Player {
 			getEncodingArgs(),
 			getMux(),
 			(isWindows ? "\\\\" : ""), //$NON-NLS-1$
-			tsPipe.getInputPipe()
-		);
+			tsPipe.getInputPipe());
 
 		// XXX there's precious little documentation on how (if at all) VLC
 		// treats colons and hyphens (and :name= and --name=) differently
 		// so we just have to test it ourselves
 		// these work fine on Windows and Linux with VLC 1.1.x
 
-		if (isWindows)
+		if (isWindows) {
 			cmdList.add("--dummy-quiet"); //$NON-NLS-1$
-
+		}
 		if (isWindows || Platform.isMac()) {
 			cmdList.add("--sout=" + transcodeSpec); //$NON-NLS-1$
 		} else {
@@ -164,9 +162,9 @@ public class VideoLanVideoStreaming extends Player {
 
 		// FIXME: cargo-culted from here:
 		// via: https://code.google.com/p/ps3mediaserver/issues/detail?id=711
-		if (Platform.isMac())
+		if (Platform.isMac()) {
 			cmdList.add(""); //$NON-NLS-1$
-
+		}
 		cmdList.add(fileName);
 		cmdList.add("vlc://quit"); //$NON-NLS-1$
 
@@ -179,15 +177,15 @@ public class VideoLanVideoStreaming extends Player {
 			dlna,
 			media,
 			params,
-			cmdArray
-		);
-			
+			cmdArray);
+
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.attachProcess(pipe_process);
 
 		try {
 			Thread.sleep(150);
-		} catch (InterruptedException e) { }
+		} catch (InterruptedException e) {
+		}
 
 		pw.runInNewThread();
 		return pw;

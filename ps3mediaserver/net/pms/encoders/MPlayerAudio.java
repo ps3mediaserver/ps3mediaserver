@@ -45,28 +45,26 @@ import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
 
 public class MPlayerAudio extends Player {
-
 	public static final String ID = "mplayeraudio"; //$NON-NLS-1$
-	
 	private final PmsConfiguration configuration;
-	
+
 	public MPlayerAudio(PmsConfiguration configuration) {
 		this.configuration = configuration;
 	}
-	
+
 	@Override
 	public String id() {
 		return ID;
 	}
-	
+
 	@Override
 	public int purpose() {
 		return AUDIO_SIMPLEFILE_PLAYER;
 	}
-	
+
 	@Override
 	public String[] args() {
-		return new String [] {};
+		return new String[]{};
 	}
 
 	@Override
@@ -79,68 +77,70 @@ public class MPlayerAudio extends Player {
 		String fileName,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
-		OutputParams params
-	) throws IOException {
-		if (!(this instanceof MPlayerWebAudio) && !(this instanceof MPlayerWebVideoDump))
+		OutputParams params) throws IOException {
+		if (!(this instanceof MPlayerWebAudio) && !(this instanceof MPlayerWebVideoDump)) {
 			params.waitbeforestart = 2000;
-		
+		}
+
 		params.manageFastStart();
-		
+
 		if (params.mediaRenderer.isTranscodeToMP3()) {
 			FFMpegAudio audio = new FFMpegAudio(configuration);
 			return audio.launchTranscode(fileName, dlna, media, params);
 		}
-		
+
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
 		PipeProcess audioP = new PipeProcess("mplayer_aud" + System.currentTimeMillis()); //$NON-NLS-1$
-			
-		String mPlayerdefaultAudioArgs [] = new String [] { PMS.getConfiguration().getMplayerPath(), fileName, "-prefer-ipv4", "-nocache", "-af", "channels=2", "-srate", "48000", "-vo", "null", "-ao", "pcm:nowaveheader:fast:file=" + audioP.getInputPipe(), "-quiet" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+
+		String mPlayerdefaultAudioArgs[] = new String[]{PMS.getConfiguration().getMplayerPath(), fileName, "-prefer-ipv4", "-nocache", "-af", "channels=2", "-srate", "48000", "-vo", "null", "-ao", "pcm:nowaveheader:fast:file=" + audioP.getInputPipe(), "-quiet"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 		if (params.mediaRenderer.isTranscodeToWAV()) {
 			mPlayerdefaultAudioArgs[11] = "pcm:waveheader:fast:file=" + audioP.getInputPipe();
 		}
-		if (params.mediaRenderer.isTranscodeAudioTo441())
+		if (params.mediaRenderer.isTranscodeAudioTo441()) {
 			mPlayerdefaultAudioArgs[7] = "44100";
+		}
 		if (!configuration.isAudioResample()) {
 			mPlayerdefaultAudioArgs[6] = "-quiet";
 			mPlayerdefaultAudioArgs[7] = "-quiet";
 		}
-		params.input_pipes [0]= audioP;
-		
+		params.input_pipes[0] = audioP;
+
 		if (params.timeseek > 0 || params.timeend > 0) {
-			mPlayerdefaultAudioArgs = Arrays.copyOf(mPlayerdefaultAudioArgs, mPlayerdefaultAudioArgs.length +4);
-			mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-4] = "-ss";
-			mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-3] = "" + params.timeseek;
+			mPlayerdefaultAudioArgs = Arrays.copyOf(mPlayerdefaultAudioArgs, mPlayerdefaultAudioArgs.length + 4);
+			mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length - 4] = "-ss";
+			mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length - 3] = "" + params.timeseek;
 			if (params.timeend > 0) {
-				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-2] = "-endpos";
-				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-1] = "" + params.timeend;
+				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length - 2] = "-endpos";
+				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length - 1] = "" + params.timeend;
 			} else {
-				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-2] = "-quiet";
-				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length-1] = "-quiet";
+				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length - 2] = "-quiet";
+				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length - 1] = "-quiet";
 			}
 		}
-			
+
 		ProcessWrapper mkfifo_process = audioP.getPipeProcess();
-		
+
 		mPlayerdefaultAudioArgs = finalizeTranscoderArgs(
 			this,
 			fileName,
 			dlna,
 			media,
 			params,
-			mPlayerdefaultAudioArgs
-		);
+			mPlayerdefaultAudioArgs);
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(mPlayerdefaultAudioArgs, params);
 		pw.attachProcess(mkfifo_process);
 		mkfifo_process.runInNewThread();
 		try {
 			Thread.sleep(100);
-		} catch (InterruptedException e) { }
-		
+		} catch (InterruptedException e) {
+		}
+
 		audioP.deleteLater();
 		pw.runInNewThread();
 		try {
 			Thread.sleep(100);
-		} catch (InterruptedException e) { }
+		} catch (InterruptedException e) {
+		}
 		return pw;
 	}
 
@@ -158,38 +158,33 @@ public class MPlayerAudio extends Player {
 	public int type() {
 		return Format.AUDIO;
 	}
-
 	JCheckBox noresample;
-	
+
 	@Override
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 0:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow"); //$NON-NLS-1$
-         PanelBuilder builder = new PanelBuilder(layout);
-        builder.setBorder(Borders.EMPTY_BORDER);
-        builder.setOpaque(false);
+			"left:pref, 0:grow", //$NON-NLS-1$
+			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow"); //$NON-NLS-1$
+		PanelBuilder builder = new PanelBuilder(layout);
+		builder.setBorder(Borders.EMPTY_BORDER);
+		builder.setOpaque(false);
 
-        CellConstraints cc = new CellConstraints();
-        
-        
-        JComponent cmp = builder.addSeparator("Audio settings",  cc.xyw(2, 1, 1));
-        cmp = (JComponent) cmp.getComponent(0);
-        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-        
-        noresample = new JCheckBox("Automatic audio resampling to 44.1 or 48 kHz");
-        noresample.setContentAreaFilled(false);
-        noresample.setSelected(configuration.isAudioResample());
-        noresample.addItemListener(new ItemListener() {
+		CellConstraints cc = new CellConstraints();
 
- 			public void itemStateChanged(ItemEvent e) {
- 				configuration.setAudioResample(e.getStateChange() == ItemEvent.SELECTED);
- 			}
-        	
-        });
-        builder.add(noresample, cc.xy(2, 3));
-        
-        return builder.getPanel();
+		JComponent cmp = builder.addSeparator("Audio settings", cc.xyw(2, 1, 1));
+		cmp = (JComponent) cmp.getComponent(0);
+		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+
+		noresample = new JCheckBox("Automatic audio resampling to 44.1 or 48 kHz");
+		noresample.setContentAreaFilled(false);
+		noresample.setSelected(configuration.isAudioResample());
+		noresample.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setAudioResample(e.getStateChange() == ItemEvent.SELECTED);
+			}
+		});
+		builder.add(noresample, cc.xy(2, 3));
+
+		return builder.getPanel();
 	}
-	
 }
