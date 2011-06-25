@@ -19,39 +19,32 @@
 package net.pms.gui;
 
 public class DummyFrame implements IFrame {
-
 	@Override
 	public void append(String msg) {
-		
 	}
 
 	@Override
 	public void setValue(int v, String msg) {
-		
 	}
 
 	@Override
 	public void setReadValue(long v, String msg) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void setStatusCode(int code, String msg, String icon) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void setReloadable(boolean reload) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void addEngines() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -62,13 +55,10 @@ public class DummyFrame implements IFrame {
 	@Override
 	public void addRendererIcon(int code, String msg, String icon) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void serverReady() {
 		// TODO Auto-generated method stub
-		
 	}
-
 }
