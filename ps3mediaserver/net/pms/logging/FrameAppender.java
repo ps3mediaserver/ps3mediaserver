@@ -16,7 +16,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package net.pms.logging;
 
 import java.io.ByteArrayOutputStream;
@@ -36,14 +35,10 @@ import ch.qos.logback.core.status.ErrorStatus;
  * 
  */
 public class FrameAppender<E> extends UnsynchronizedAppenderBase<E> {
-
 	private IFrame frame;
-
 	private Encoder<E> encoder;
-
 	private final ByteArrayOutputStream outputstream = new ByteArrayOutputStream(
-			256);
-
+		256);
 	private final Object lock = new Object();
 
 	/**
@@ -55,16 +50,16 @@ public class FrameAppender<E> extends UnsynchronizedAppenderBase<E> {
 		int error = 0;
 		if (this.encoder == null) {
 			addStatus(new ErrorStatus(
-					"No encoder set for the appender named \"" + name + "\".",
-					this));
+				"No encoder set for the appender named \"" + name + "\".",
+				this));
 			error++;
 		} else {
 			try {
 				encoder.init(outputstream);
 			} catch (IOException ioe) {
 				addStatus(new ErrorStatus(
-						"Failed to initialize encoder for appender named ["
-								+ name + "].", this, ioe));
+					"Failed to initialize encoder for appender named ["
+					+ name + "].", this, ioe));
 				error++;
 			}
 		}

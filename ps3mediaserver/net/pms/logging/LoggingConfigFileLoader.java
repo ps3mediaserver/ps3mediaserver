@@ -16,7 +16,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package net.pms.logging;
 
 import java.io.File;
@@ -41,10 +40,8 @@ import ch.qos.logback.core.util.StatusPrinter;
  * @author thomas@innot.de
  */
 public class LoggingConfigFileLoader {
-
 	private static final String DEFAULT_CONFIGFILENAME = "logback.xml";
 	private static final String HEADLESS_CONFIGFILENAME = "logback.headless.xml";
-
 	private static String filepath = null;
 	private static HashMap<String, String> logFilePaths = new HashMap<String, String>(); // key=appender name, value, log file path
 
@@ -115,7 +112,7 @@ public class LoggingConfigFileLoader {
 		}
 
 		LoggerContext lc = (LoggerContext) ilf;
-		
+
 		try {
 			JoranConfigurator configurator = new JoranConfigurator();
 			configurator.setContext(lc);
@@ -130,21 +127,21 @@ public class LoggingConfigFileLoader {
 		} catch (JoranException je) {
 			// StatusPrinter will handle this
 		}
-		
-		for(Logger logger : lc.getLoggerList()) {
+
+		for (Logger logger : lc.getLoggerList()) {
 			Iterator<Appender<ILoggingEvent>> it = logger.iteratorForAppenders();
 			while (it.hasNext()) {
 				Appender<ILoggingEvent> ap = it.next();
-				if(ap instanceof FileAppender) {
-					FileAppender<ILoggingEvent> fa = (FileAppender<ILoggingEvent>)ap;
+				if (ap instanceof FileAppender) {
+					FileAppender<ILoggingEvent> fa = (FileAppender<ILoggingEvent>) ap;
 					logFilePaths.put(fa.getName(), fa.getFile());
 				}
 			}
 		}
-		
+
 		StatusPrinter.printInCaseOfErrorsOrWarnings(lc);
 	}
-	
+
 	public static HashMap<String, String> getLogFilePaths() {
 		return logFilePaths;
 	}

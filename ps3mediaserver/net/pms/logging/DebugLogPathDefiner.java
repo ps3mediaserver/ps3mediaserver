@@ -37,7 +37,6 @@ import ch.qos.logback.core.PropertyDefinerBase;
  * 
  */
 public class DebugLogPathDefiner extends PropertyDefinerBase {
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -61,5 +60,4 @@ public class DebugLogPathDefiner extends PropertyDefinerBase {
 		// Return path to temp folder, which should be writeable
 		return System.getProperty("java.io.tmpdir");
 	}
-
 }
