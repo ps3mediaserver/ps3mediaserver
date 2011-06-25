@@ -26,11 +26,10 @@ import org.slf4j.LoggerFactory;
 
 public abstract class UnusedInputStream extends InputStream {
 	private static final Logger logger = LoggerFactory.getLogger(UnusedInputStream.class);
-
 	private InputStream inputStream;
 	private UnusedProcess processToTerminate;
 	private int timeout;
-	
+
 	public UnusedInputStream(InputStream inputStream, UnusedProcess processToTerminate, int timeout) {
 		this.inputStream = inputStream;
 		this.processToTerminate = processToTerminate;
@@ -44,8 +43,9 @@ public abstract class UnusedInputStream extends InputStream {
 
 	public void close() throws IOException {
 		inputStream.close();
-		if (processToTerminate != null)
+		if (processToTerminate != null) {
 			processToTerminate.setReadyToStop(true);
+		}
 		Runnable checkEnd = new Runnable() {
 			public void run() {
 				try {
@@ -55,8 +55,9 @@ public abstract class UnusedInputStream extends InputStream {
 				}
 				if (processToTerminate != null && processToTerminate.isReadyToStop()) {
 					logger.debug("Destroying / Stopping attached process: " + processToTerminate);
-					if (processToTerminate != null)
+					if (processToTerminate != null) {
 						processToTerminate.stopProcess();
+					}
 					processToTerminate = null;
 					unusedStreamSignal();
 				}
@@ -80,7 +81,6 @@ public abstract class UnusedInputStream extends InputStream {
 	public String toString() {
 		return inputStream.toString();
 	}
-	
+
 	public abstract void unusedStreamSignal();
-	
 }

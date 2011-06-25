@@ -22,15 +22,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-
 public abstract class OutputConsumer extends Thread {
-	
 	protected InputStream inputStream;
-	
+
 	public OutputConsumer(InputStream inputStream) {
 		this.inputStream = inputStream;
 	}
-	
+
 	@Deprecated
 	public void destroy() {
 		try {
@@ -39,9 +37,8 @@ public abstract class OutputConsumer extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
-	public abstract BufferedOutputFile getBuffer();
-	
-	public abstract List<String> getResults();
 
+	public abstract BufferedOutputFile getBuffer();
+
+	public abstract List<String> getResults();
 }

@@ -39,41 +39,38 @@ public class WinUtils {
 
 	public interface Kernel32 extends Library {
 		Kernel32 INSTANCE = (Kernel32) Native.loadLibrary("kernel32",
-				Kernel32.class);
-		Kernel32 SYNC_INSTANCE = (Kernel32) Native
-				.synchronizedLibrary(INSTANCE);
-		
+			Kernel32.class);
+		Kernel32 SYNC_INSTANCE = (Kernel32) Native.synchronizedLibrary(INSTANCE);
+
 		int GetShortPathNameW(WString lpszLongPath, char[] lpdzShortPath, int cchBuffer);
-		//NativeLong GetShortPathNameW(WString inPath, Memory outPathBuffer, NativeLong outPathBufferSize);
+
 		int GetWindowsDirectoryW(char[] lpdzShortPath, int uSize);
+
 		boolean GetVolumeInformationW(
-				char[] lpRootPathName,
-				CharBuffer lpVolumeNameBuffer,
-				int nVolumeNameSize,
-				LongByReference lpVolumeSerialNumber,
-				LongByReference lpMaximumComponentLength,
-				LongByReference lpFileSystemFlags,
-				CharBuffer lpFileSystemNameBuffer,
-				int nFileSystemNameSize
-				);	
-		
+			char[] lpRootPathName,
+			CharBuffer lpVolumeNameBuffer,
+			int nVolumeNameSize,
+			LongByReference lpVolumeSerialNumber,
+			LongByReference lpMaximumComponentLength,
+			LongByReference lpFileSystemFlags,
+			CharBuffer lpFileSystemNameBuffer,
+			int nFileSystemNameSize
+		);
+
 		int SetThreadExecutionState(int EXECUTION_STATE);
-		    
 		int ES_DISPLAY_REQUIRED = 0x00000002;
 		int ES_SYSTEM_REQUIRED = 0x00000001;
 		int ES_CONTINUOUS = 0x80000000;
 	}
-
 	private static final int KEY_READ = 0x20019;
 	private String vlcp;
 	private String vlcv;
 	private boolean avis;
 	private boolean kerio;
 	private String avsPluginsDir;
-	
 	public long lastDontSleepCall = 0;
 	public long lastGoToSleepCall = 0;
-	
+
 	public void disableGoToSleep() {
 		if (PMS.getConfiguration().isPreventsSleep()) {
 			if (Platform.isWindows()) {
@@ -86,7 +83,7 @@ public class WinUtils {
 			}
 		}
 	}
-	
+
 	public void reenableGoToSleep() {
 		if (PMS.getConfiguration().isPreventsSleep()) {
 			if (Platform.isWindows()) {
@@ -101,11 +98,13 @@ public class WinUtils {
 	}
 
 	public File getAvsPluginsDir() {
-		if (avsPluginsDir == null)
+		if (avsPluginsDir == null) {
 			return null;
+		}
 		File pluginsDir = new File(avsPluginsDir);
-		if (!pluginsDir.exists())
+		if (!pluginsDir.exists()) {
 			pluginsDir = null;
+		}
 		return pluginsDir;
 	}
 
@@ -114,45 +113,32 @@ public class WinUtils {
 		System.out.println(rb.getVlcp());
 		System.out.println(rb.getVlcv());
 		System.out.println(rb.isAvis());
-		WinUtils w =	new WinUtils();
+		WinUtils w = new WinUtils();
 		System.out.println(w.getWindowsDirectory());
 		File dir = new File("D:\\Tests\\wma");
 		File wma = dir.listFiles()[0];
-		for(int i=0;i<10000;i++) {
+		for (int i = 0; i < 10000; i++) {
 			w.getShortPathNameW(wma.getAbsolutePath());
 			w.getWindowsDirectory();
 		}
 	}
-	
-	public String getShortPathNameW(String longPathName) {
 
+	public String getShortPathNameW(String longPathName) {
 		if (Platform.isWindows()) {
 			boolean unicodeChars = false;
 			try {
-				byte b1 [] = longPathName.getBytes("UTF-8");
-				byte b2 [] = longPathName.getBytes("cp1252");
-			unicodeChars = b1.length != b2.length;
+				byte b1[] = longPathName.getBytes("UTF-8");
+				byte b2[] = longPathName.getBytes("cp1252");
+				unicodeChars = b1.length != b2.length;
 			} catch (Exception e) {
 				return longPathName;
 			}
-	
+
 			if (unicodeChars && Platform.isWindows()) {
 				try {
 					WString pathname = new WString(longPathName);
-				
-					// ISSUE 90: crash when used too many times
-					/*NativeLong bufferSize = new NativeLong((pathname.length()*2)+2);
-					Memory buffer = new Memory(bufferSize.longValue());
-			
-					if (Kernel32.INSTANCE.GetShortPathNameW(pathname, buffer, bufferSize).longValue() == 0) {
-					logger.info("File does not exist? " + pathname);
-					return null;
-					}
-					logger.debug("Forcing short path name on " + pathname);
-					String str= buffer.getString(0, true);
-					return str;*/
-					
-					char test [] = new char [2+pathname.length()*2];
+
+					char test[] = new char[2 + pathname.length() * 2];
 					int r = Kernel32.INSTANCE.GetShortPathNameW(pathname, test, test.length);
 					if (r > 0) {
 						logger.debug("Forcing short path name on " + pathname);
@@ -161,7 +147,7 @@ public class WinUtils {
 						logger.info("File does not exist? " + pathname);
 						return null;
 					}
-				
+
 				} catch (Exception e) {
 					return longPathName;
 				}
@@ -170,10 +156,10 @@ public class WinUtils {
 		}
 		return null;
 	}
-	
+
 	public String getWindowsDirectory() {
 		if (Platform.isWindows()) {
-			char test [] = new char [2+256*2];
+			char test[] = new char[2 + 256 * 2];
 			int r = Kernel32.INSTANCE.GetWindowsDirectoryW(test, 256);
 			if (r > 0) {
 				return Native.toString(test);
@@ -181,15 +167,15 @@ public class WinUtils {
 		}
 		return null;
 	}
-	
+
 	public String getDiskLabel(File f) {
 		if (Platform.isWindows()) {
 			String driveName;
 			try {
 				driveName = f.getCanonicalPath().substring(0, 2) + "\\";
-				
+
 				char[] lpRootPathName_chars = new char[4];
-				for (int i=0; i<3; i++) {
+				for (int i = 0; i < 3; i++) {
 					lpRootPathName_chars[i] = driveName.charAt(i);
 				}
 				lpRootPathName_chars[3] = '\0';
@@ -200,7 +186,7 @@ public class WinUtils {
 				LongByReference lpFileSystemFlags = new LongByReference();
 				int nFileSystemNameSize = 256;
 				CharBuffer lpFileSystemNameBuffer_char = CharBuffer.allocate(nFileSystemNameSize);
-		
+
 				boolean result2 = Kernel32.INSTANCE.GetVolumeInformationW(
 					lpRootPathName_chars,
 					lpVolumeNameBuffer_char,
@@ -215,20 +201,22 @@ public class WinUtils {
 				}
 				String diskLabel = charString2String(lpVolumeNameBuffer_char);
 				return diskLabel;
-			} catch(Exception e) {
+			} catch (Exception e) {
 				return null;
 			}
 		}
 		return null;
 	}
-	
+
 	private String charString2String(CharBuffer buf) {
 		char[] chars = buf.array();
 		int i;
-		for (i=0; i<chars.length; i++) {
-			if (chars[i]=='\0') break;
+		for (i = 0; i < chars.length; i++) {
+			if (chars[i] == '\0') {
+				break;
+			}
 		}
-		return new String(chars,0,i);
+		return new String(chars, 0, i);
 	}
 
 	public WinUtils() {
@@ -243,57 +231,56 @@ public class WinUtils {
 		final Class<? extends Preferences> clz = userRoot.getClass();
 		try {
 			if (clz.getName().endsWith("WindowsPreferences")) {
-				final Method openKey = clz
-						.getDeclaredMethod("WindowsRegOpenKey", int.class,
-								byte[].class, int.class);
+				final Method openKey = clz.getDeclaredMethod("WindowsRegOpenKey", int.class,
+					byte[].class, int.class);
 				openKey.setAccessible(true);
 				final Method closeKey = clz.getDeclaredMethod(
-						"WindowsRegCloseKey", int.class);
+					"WindowsRegCloseKey", int.class);
 				closeKey.setAccessible(true);
 				final Method winRegQueryValue = clz.getDeclaredMethod(
-						"WindowsRegQueryValueEx", int.class, byte[].class);
+					"WindowsRegQueryValueEx", int.class, byte[].class);
 				winRegQueryValue.setAccessible(true);
 				byte[] valb = null;
 				String key = null;
 				key = "SOFTWARE\\VideoLAN\\VLC";
 				int handles[] = (int[]) openKey.invoke(systemRoot, -2147483646,
-						toCstr(key), KEY_READ);
+					toCstr(key), KEY_READ);
 				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
 					// do nothing
 				} else {
 					key = "SOFTWARE\\Wow6432Node\\VideoLAN\\VLC";
 					handles = (int[]) openKey.invoke(systemRoot, -2147483646,
-							toCstr(key), KEY_READ);
+						toCstr(key), KEY_READ);
 				}
 				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
 					valb = (byte[]) winRegQueryValue.invoke(systemRoot,
-							handles[0], toCstr(""));
+						handles[0], toCstr(""));
 					vlcp = (valb != null ? new String(valb).trim() : null);
 					valb = (byte[]) winRegQueryValue.invoke(systemRoot,
-							handles[0], toCstr("Version"));
+						handles[0], toCstr("Version"));
 					vlcv = (valb != null ? new String(valb).trim() : null);
 					closeKey.invoke(systemRoot, handles[0]);
 				}
 				key = "SOFTWARE\\AviSynth";
 				handles = (int[]) openKey.invoke(systemRoot, -2147483646,
-						toCstr(key), KEY_READ);
+					toCstr(key), KEY_READ);
 				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
 					// do nothing
 				} else {
 					key = "SOFTWARE\\Wow6432Node\\AviSynth";
 					handles = (int[]) openKey.invoke(systemRoot, -2147483646,
-							toCstr(key), KEY_READ);
+						toCstr(key), KEY_READ);
 				}
 				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
 					avis = true;
 					valb = (byte[]) winRegQueryValue.invoke(systemRoot,
-							handles[0], toCstr("plugindir2_5"));
+						handles[0], toCstr("plugindir2_5"));
 					avsPluginsDir = (valb != null ? new String(valb).trim() : null);
 					closeKey.invoke(systemRoot, handles[0]);
 				}
 				key = "SOFTWARE\\Kerio";
 				handles = (int[]) openKey.invoke(systemRoot, -2147483646,
-						toCstr(key), KEY_READ);
+					toCstr(key), KEY_READ);
 				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
 					kerio = true;
 				}
@@ -302,7 +289,7 @@ public class WinUtils {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public boolean isKerioFirewall() {
 		return kerio;
 	}
@@ -327,5 +314,4 @@ public class WinUtils {
 	public boolean isAvis() {
 		return avis;
 	}
-
 }

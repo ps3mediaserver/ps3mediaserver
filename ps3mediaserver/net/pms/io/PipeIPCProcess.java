@@ -34,7 +34,6 @@ import com.sun.jna.Platform;
 
 public class PipeIPCProcess extends Thread implements ProcessWrapper {
 	private static final Logger logger = LoggerFactory.getLogger(PipeIPCProcess.class);
-
 	private PipeProcess mkin;
 	private PipeProcess mkout;
 	private StreamModifier modifier;
@@ -48,23 +47,21 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 	}
 
 	public PipeIPCProcess(String pipeName, String pipeNameOut, boolean forcereconnect1, boolean forcereconnect2) {
-		mkin = new PipeProcess(pipeName, forcereconnect1?"reconnect":"dummy");
-		mkout = new PipeProcess(pipeNameOut, "out", forcereconnect2?"reconnect":"dummy");
+		mkin = new PipeProcess(pipeName, forcereconnect1 ? "reconnect" : "dummy");
+		mkout = new PipeProcess(pipeNameOut, "out", forcereconnect2 ? "reconnect" : "dummy");
 	}
-	
+
 	public void run() {
-		byte b [] = new byte [512*1024];
+		byte b[] = new byte[512 * 1024];
 		int n = -1;
 		InputStream in = null;
 		OutputStream out = null;
 		OutputStream debug = null;
-		/*try {
-			debug = new FileOutputStream(System.currentTimeMillis() + "debug");
-		} catch (Exception e1) {}*/
+
 		try {
 			in = mkin.getInputStream();
 			out = mkout.getOutputStream();
-			
+
 			if (modifier != null && modifier.isH264_annexb()) {
 				in = new H264AnnexBInputStream(in, modifier.getHeader());
 			} else if (modifier != null && modifier.isDtsembed()) {
@@ -72,15 +69,18 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 			} else if (modifier != null && modifier.isPcm()) {
 				out = new PCMAudioOutputStream(out, modifier.getNbchannels(), modifier.getSampleFrequency(), modifier.getBitspersample());
 			}
-			
-			if (modifier != null && modifier.getHeader() != null && !modifier.isH264_annexb())
+
+			if (modifier != null && modifier.getHeader() != null && !modifier.isH264_annexb()) {
 				out.write(modifier.getHeader());
-			if (debug != null && modifier != null && modifier.getHeader() != null && !modifier.isH264_annexb())
+			}
+			if (debug != null && modifier != null && modifier.getHeader() != null && !modifier.isH264_annexb()) {
 				debug.write(modifier.getHeader());
-			while ((n=in.read(b)) > -1) {
+			}
+			while ((n = in.read(b)) > -1) {
 				out.write(b, 0, n);
-				if (debug != null)
+				if (debug != null) {
 					debug.write(b, 0, n);
+				}
 			}
 		} catch (IOException e) {
 			logger.debug("Error :" + e.getMessage());
@@ -88,18 +88,21 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 			try {
 				// in and out may not have been initialized:
 				// http://ps3mediaserver.org/forum/viewtopic.php?f=6&t=9885&view=unread#p45142
-				if (in != null)
+				if (in != null) {
 					in.close();
-				if (out != null)
+				}
+				if (out != null) {
 					out.close();
-				if (debug != null)
+				}
+				if (debug != null) {
 					debug.close();
+				}
 			} catch (IOException e) {
 				logger.debug("Error :" + e.getMessage());
 			}
 		}
 	}
-	
+
 	public String getInputPipe() {
 		return mkin.getInputPipe();
 	}
@@ -107,20 +110,20 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 	public String getOutputPipe() {
 		return mkout.getOutputPipe();
 	}
-	
+
 	public ProcessWrapper getPipeProcess() {
 		return this;
 	}
-	
+
 	public void deleteLater() {
 		mkin.deleteLater();
 		mkout.deleteLater();
 	}
-	
+
 	public InputStream getInputStream() throws IOException {
 		return mkin.getInputStream();
 	}
-	
+
 	public OutputStream getOutputStream() throws IOException {
 		return mkout.getOutputStream();
 	}
@@ -147,7 +150,8 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 			mkout.getPipeProcess().runInNewThread();
 			try {
 				Thread.sleep(150);
-			} catch (InterruptedException e) {}
+			} catch (InterruptedException e) {
+			}
 		}
 		start();
 	}
@@ -159,7 +163,6 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 
 	@Override
 	public void setReadyToStop(boolean nullable) {
-		
 	}
 
 	@Override
