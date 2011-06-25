@@ -40,14 +40,12 @@ public class ExternalFactory {
 		logger.info("Loading plugins from " + pluginDirectory.getAbsolutePath());
 
 		if (!pluginDirectory.exists()) {
-			// FIXME: should be a warning or error
-			logger.info("Plugin directory doesn't exist: " + pluginDirectory);
+			logger.warn("Plugin directory doesn't exist: " + pluginDirectory);
 			return;
 		}
 
 		if (!pluginDirectory.isDirectory()) {
-			// FIXME: should be a warning or error
-			logger.info("Plugin directory is not a directory: " + pluginDirectory);
+			logger.warn("Plugin directory is not a directory: " + pluginDirectory);
 			return;
 		}
 		   
