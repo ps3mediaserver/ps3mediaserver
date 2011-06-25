@@ -60,8 +60,7 @@ public class MediaInfo {
 				// If we do not, the system will look for dependencies, but only in the library path.
 				NativeLibrary.getInstance("zen");
 			} catch (LinkageError e) {
-				// FIXME: should be a warning
-				logger.info("Error loading libzen: " + e.getMessage());
+				logger.warn("Error loading libzen: " + e.getMessage());
 			}
 		}
 	}

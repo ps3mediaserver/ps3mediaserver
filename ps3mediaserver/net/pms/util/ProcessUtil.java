@@ -86,8 +86,7 @@ public class ProcessUtil {
 	// send a Unix process the specified signal
 	public static boolean kill(Integer pid, int signal) {
 		boolean killed = false;
-		// FIXME: this should really be a warning
-		logger.debug("Sending kill -" + signal + " to the Unix process: " + pid);
+		logger.warn("Sending kill -" + signal + " to the Unix process: " + pid);
 		try {
 			Process process = Runtime.getRuntime().exec("kill -" + signal + " " + pid);
 			// "Gob": a cryptic name for (e.g.) StreamGobbler - i.e. a stream
