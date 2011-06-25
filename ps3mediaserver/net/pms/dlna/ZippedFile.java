@@ -33,10 +33,9 @@ import net.pms.PMS;
 import net.pms.formats.Format;
 
 public class ZippedFile extends DLNAResource {
-	
 	private File z;
 	private ZipFile zip;
-	
+
 	public ZippedFile(File z) {
 		this.z = z;
 		lastmodified = z.lastModified();
@@ -45,8 +44,7 @@ public class ZippedFile extends DLNAResource {
 			Enumeration<? extends ZipEntry> enm = zip.entries();
 			while (enm.hasMoreElements()) {
 				ZipEntry ze = enm.nextElement();
-				//if (ze.getSize() > -1 && ze.getSize() < MAX_ARCHIVE_ENTRY_SIZE)
-					addChild(new ZippedEntry(z, ze.getName(), ze.getSize()));
+				addChild(new ZippedEntry(z, ze.getName(), ze.getSize()));
 			}
 			zip.close();
 		} catch (ZipException e) {
@@ -55,11 +53,13 @@ public class ZippedFile extends DLNAResource {
 			logger.error(null, e);
 		}
 	}
-	
+
 	@Override
 	protected String getThumbnailURL() {
-		if (getType() == Format.IMAGE) // no thumbnail support for now for real based disk images
+		if (getType() == Format.IMAGE) {
+			// no thumbnail support for now for real based disk images
 			return null;
+		}
 		return super.getThumbnailURL();
 	}
 
@@ -82,7 +82,7 @@ public class ZippedFile extends DLNAResource {
 	public boolean isFolder() {
 		return true;
 	}
-	
+
 	public long lastModified() {
 		return 0;
 	}
@@ -96,5 +96,4 @@ public class ZippedFile extends DLNAResource {
 	public boolean isValid() {
 		return z.exists();
 	}
-
 }

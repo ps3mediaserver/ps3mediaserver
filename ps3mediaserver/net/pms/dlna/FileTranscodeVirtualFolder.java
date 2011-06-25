@@ -25,13 +25,12 @@ import net.pms.encoders.Player;
 import net.pms.encoders.TSMuxerVideo;
 
 public class FileTranscodeVirtualFolder extends VirtualFolder {
-
 	private boolean resolved;
-	
+
 	public FileTranscodeVirtualFolder(String name, String thumbnailIcon, boolean copy) {
 		super(name, thumbnailIcon);
 	}
-	
+
 	@Override
 	public void resolve() {
 		super.resolve();
@@ -41,9 +40,9 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 			if (child.ext.getProfiles() != null) {
 				DLNAResource ref = child;
 				Player tsMuxer = null;
-				for(int i=0;i<child.ext.getProfiles().size();i++) {
+				for (int i = 0; i < child.ext.getProfiles().size(); i++) {
 					Player pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
-					if (pl !=null && !child.player.equals(pl)) {
+					if (pl != null && !child.player.equals(pl)) {
 						DLNAResource avisnewChild = (DLNAResource) child.clone();
 						avisnewChild.player = pl;
 						avisnewChild.noName = true;
@@ -51,14 +50,16 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 						avisnewChild.media = child.media;
 						children.add(avisnewChild);
 						avisnewChild.parent = this;
-						if (avisnewChild.player.id().equals(MEncoderVideo.ID))
+						if (avisnewChild.player.id().equals(MEncoderVideo.ID)) {
 							ref = avisnewChild;
-						if (avisnewChild.player.id().equals(TSMuxerVideo.ID))
+						}
+						if (avisnewChild.player.id().equals(TSMuxerVideo.ID)) {
 							tsMuxer = pl;
+						}
 						addChapterFile(avisnewChild);
 					}
 				}
-				for(int i=0;i<child.media.audioCodes.size();i++) {
+				for (int i = 0; i < child.media.audioCodes.size(); i++) {
 					DLNAResource newChildNoSub = (DLNAResource) ref.clone();
 					newChildNoSub.player = ref.player;
 					newChildNoSub.id = newChildNoSub.parent.id + "$" + children.size();
@@ -69,11 +70,10 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					newChildNoSub.media_audio = ref.media.audioCodes.get(i);
 					newChildNoSub.media_subtitle = new DLNAMediaSubtitle();
 					newChildNoSub.media_subtitle.id = -1;
-					
+
 					addChapterFile(newChildNoSub);
-					
-					
-					for(int j=0;j<child.media.subtitlesCodes.size();j++) {
+
+					for (int j = 0; j < child.media.subtitlesCodes.size(); j++) {
 						DLNAResource newChild = (DLNAResource) ref.clone();
 						newChild.player = ref.player;
 						newChild.id = newChild.parent.id + "$" + children.size();
@@ -84,13 +84,13 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 						newChild.media_audio = ref.media.audioCodes.get(i);
 						newChild.media_subtitle = ref.media.subtitlesCodes.get(j);
 						addChapterFile(newChild);
-						
+
 						logger.debug("Duplicate " + ref.getName() + " with player: " + ref.player.toString() + " and aid: " + newChild.media_audio.id + " and sid: " + newChild.media_subtitle);
 					}
 				}
-				
+
 				if (tsMuxer != null) {
-					for(int i=0;i<child.media.audioCodes.size();i++) {
+					for (int i = 0; i < child.media.audioCodes.size(); i++) {
 						DLNAResource newChildNoSub = (DLNAResource) ref.clone();
 						newChildNoSub.player = tsMuxer;
 						newChildNoSub.id = newChildNoSub.parent.id + "$" + children.size();
@@ -100,10 +100,10 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 						newChildNoSub.parent = this;
 						newChildNoSub.media_audio = ref.media.audioCodes.get(i);
 						addChapterFile(newChildNoSub);
-						
+
 					}
 				}
-				
+
 				// meskibob: I think it'd be a good idea to add a "Stream" option (for PS3 compatible containers) to the #Transcode# folder in addition to the current options already in there.
 				DLNAResource justStreamed = (DLNAResource) ref.clone();
 				if (justStreamed.ext != null && (justStreamed.ext.ps3compatible() || justStreamed.skipTranscode)) {
@@ -119,7 +119,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 		}
 		resolved = true;
 	}
-	
+
 	private void addChapterFile(DLNAResource source) {
 		if (PMS.getConfiguration().getChapterInterval() > 0 && PMS.getConfiguration().isChapterSupport()) {
 			ChapterFileTranscodeVirtualFolder chapterFolder = new ChapterFileTranscodeVirtualFolder("Chapters:" + source.getDisplayName(), null, PMS.getConfiguration().getChapterInterval());
@@ -142,5 +142,4 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 	public FileTranscodeVirtualFolder(String name, String thumbnailIcon) {
 		super(name, thumbnailIcon);
 	}
-
 }

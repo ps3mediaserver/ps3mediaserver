@@ -21,15 +21,14 @@ package net.pms.dlna;
 import net.pms.dlna.virtual.VirtualFolder;
 
 public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
-
 	private boolean resolved;
 	private int interval;
-	
+
 	public ChapterFileTranscodeVirtualFolder(String name, String thumbnailIcon, int interval) {
 		super(name, thumbnailIcon);
 		this.interval = interval;
 	}
-	
+
 	@Override
 	public void resolve() {
 		super.resolve();
@@ -38,7 +37,7 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 			child.resolve();
 			int nbMinutes = (int) (child.media.getDurationInSeconds() / 60);
 			int nbIntervals = nbMinutes / interval;
-			for(int i=1;i<=nbIntervals;i++) {
+			for (int i = 1; i <= nbIntervals; i++) {
 				DLNAResource newChildNoSub = (DLNAResource) child.clone();
 				newChildNoSub.player = child.player;
 				newChildNoSub.id = newChildNoSub.parent.id + "$" + children.size();
@@ -51,7 +50,6 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 				newChildNoSub.splitStart = 60 * i * interval;
 				newChildNoSub.splitLength = newChildNoSub.media.getDurationInSeconds() - newChildNoSub.splitStart;
 			}
-			
 		}
 		resolved = true;
 	}
@@ -60,6 +58,4 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 	public void discoverChildren() {
 		super.discoverChildren();
 	}
-
-
 }

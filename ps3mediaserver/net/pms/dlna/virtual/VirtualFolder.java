@@ -28,11 +28,10 @@ import net.pms.network.HTTPResource;
  * Represents a container (folder). This is widely used by the UPNP ContentBrowser service. Child objects are expected in this folder.
  */
 public class VirtualFolder extends DLNAResource {
-	
 	protected String name;
 	protected String thumbnailIcon;
 	protected String thumbnailContentType;
-	
+
 	/**Constructor for this class. The constructor does not add any child to the container. This is the only
 	 * chance to set the name of this container.
 	 * @param name String to be shown in the ContentBrowser service 
@@ -43,10 +42,11 @@ public class VirtualFolder extends DLNAResource {
 	public VirtualFolder(String name, String thumbnailIcon) {
 		this.name = name;
 		this.thumbnailIcon = thumbnailIcon;
-		if (thumbnailIcon != null && thumbnailIcon.toLowerCase().endsWith(".png"))
+		if (thumbnailIcon != null && thumbnailIcon.toLowerCase().endsWith(".png")) {
 			thumbnailContentType = HTTPResource.PNG_TYPEMIME;
-		else
+		} else {
 			thumbnailContentType = HTTPResource.JPEG_TYPEMIME;
+		}
 	}
 
 	/**Because a container cannot be streamed, this function always returns null.
@@ -96,7 +96,7 @@ public class VirtualFolder extends DLNAResource {
 	public String getSystemName() {
 		return getName();
 	}
-	
+
 	/**Returns a {@link InputStream} that represents the thumbnail used.
 	 * @see net.pms.dlna.DLNAResource#getThumbnailInputStream()
 	 */
@@ -104,7 +104,7 @@ public class VirtualFolder extends DLNAResource {
 	public InputStream getThumbnailInputStream() {
 		return getResourceInputStream(thumbnailIcon);
 	}
-	
+
 	/**Returns the thumbnailContentType associated to the thumbnail associated to this container.
 	 * @see net.pms.dlna.DLNAResource#getThumbnailContentType()
 	 * @see #thumbnailContentType
@@ -121,9 +121,4 @@ public class VirtualFolder extends DLNAResource {
 	public boolean isValid() {
 		return true;
 	}
-	
-	/*public void setExpertMode() {
-		expert = true;
-	}*/
-	
 }

@@ -21,7 +21,6 @@ package net.pms.dlna;
 import net.pms.formats.Format;
 
 public class VideosFeed extends Feed {
-
 	@Override
 	protected void manageItem() {
 		WebVideoStream fi = new WebVideoStream(tempItemTitle, tempItemLink, tempItemThumbURL);
@@ -31,5 +30,4 @@ public class VideosFeed extends Feed {
 	public VideosFeed(String url) {
 		super("" + System.currentTimeMillis(), url, Format.VIDEO);
 	}
-	
 }

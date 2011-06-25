@@ -38,7 +38,6 @@ import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
 public class Feed extends DLNAResource {
-	
 	@Override
 	public void resolve() {
 		super.resolve();
@@ -48,8 +47,6 @@ public class Feed extends DLNAResource {
 			logger.error("Error in parsing stream: " + url, e);
 		}
 	}
-	
-	
 	protected String name;
 	protected String url;
 	protected String tempItemTitle;
@@ -57,18 +54,17 @@ public class Feed extends DLNAResource {
 	protected String tempFeedLink;
 	protected String tempCategory;
 	protected String tempItemThumbURL;
-	
-	
+
 	public Feed(String name, String url, int type) {
 		super(type);
 		this.url = url;
 		this.name = name;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void parse() throws Exception {
 		SyndFeedInput input = new SyndFeedInput();
-		byte b [] = downloadAndSendBinary(url);
+		byte b[] = downloadAndSendBinary(url);
 		if (b != null) {
 			String content = new String(b, "UTF-8");
 			content = stripNonValidXMLCharacters(content);
@@ -79,53 +75,58 @@ public class Feed extends DLNAResource {
 				tempCategory = category.getName();
 			}
 			List<SyndEntry> entries = feed.getEntries();
-			for(SyndEntry entry:entries) {
+			for (SyndEntry entry : entries) {
 				tempItemTitle = entry.getTitle();
 				tempItemLink = entry.getLink();
 				tempFeedLink = entry.getUri();
 				tempItemThumbURL = null;
-				
+
 				ArrayList<Element> elements = (ArrayList<Element>) entry.getForeignMarkup();
-				for(Element elt:elements) {
+				for (Element elt : elements) {
 					if ("group".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())) {
 						List<Content> subElts = elt.getContent();
-						for(Content subelt:subElts) {
-							if (subelt instanceof Element)
-								parseElement( (Element)subelt, false);
+						for (Content subelt : subElts) {
+							if (subelt instanceof Element) {
+								parseElement((Element) subelt, false);
+							}
 						}
 					}
 					parseElement(elt, true);
 				}
 				List<SyndEnclosure> enclosures = entry.getEnclosures();
-				for(SyndEnclosure enc:enclosures) {
-					if (StringUtils.isNotBlank(enc.getUrl()))
+				for (SyndEnclosure enc : enclosures) {
+					if (StringUtils.isNotBlank(enc.getUrl())) {
 						tempItemLink = enc.getUrl();
+					}
 				}
 				manageItem();
 			}
 		}
 		lastmodified = System.currentTimeMillis();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void parseElement(Element elt, boolean parseLink) {
 		if ("content".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())) {
-			if (parseLink)
+			if (parseLink) {
 				tempItemLink = elt.getAttribute("url").getValue();
+			}
 			List<Content> subElts = elt.getContent();
-			for(Content subelt:subElts) {
-				if (subelt instanceof Element)
-					parseElement( (Element)subelt, false);
+			for (Content subelt : subElts) {
+				if (subelt instanceof Element) {
+					parseElement((Element) subelt, false);
+				}
 			}
 		}
 		if ("thumbnail".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())) {
-			if (tempItemThumbURL == null)
+			if (tempItemThumbURL == null) {
 				tempItemThumbURL = elt.getAttribute("url").getValue();
+			}
 		}
 		if ("image".equals(elt.getName()) && "exInfo".equals(elt.getNamespacePrefix())) {
-			if (tempItemThumbURL == null)
+			if (tempItemThumbURL == null) {
 				tempItemThumbURL = elt.getValue();
-			
+			}
 		}
 	}
 
@@ -158,7 +159,7 @@ public class Feed extends DLNAResource {
 	public boolean isValid() {
 		return true;
 	}
-	
+
 	protected void manageItem() {
 		FeedItem fi = new FeedItem(tempItemTitle, tempItemLink, tempItemThumbURL, null, specificType);
 		addChild(fi);
@@ -176,35 +177,38 @@ public class Feed extends DLNAResource {
 			return true;
 		}
 		return false;
-		
-	}
-	
-	/**
-     * This method ensures that the output String has only
-     * valid XML unicode characters as specified by the
-     * XML 1.0 standard. For reference, please see
-     * <a href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-Char">the
-     * standard</a>. This method will return an empty
-     * String if the input is null or empty.
-     *
-     * @param in The String whose non-valid characters we want to remove.
-     * @return The in String, stripped of non-valid characters.
-     */
-    private String stripNonValidXMLCharacters(String in) {
-        StringBuffer out = new StringBuffer(); // Used to hold the output.
-        char current; // Used to reference the current character.
 
-        if (in == null || ("".equals(in))) return ""; // vacancy test.
-        for (int i = 0; i < in.length(); i++) {
-            current = in.charAt(i); // NOTE: No IndexOutOfBoundsException caught here; it should not happen.
-            if ((current == 0x9) ||
-                (current == 0xA) ||
-                (current == 0xD) ||
-                ((current >= 0x20) && (current <= 0xD7FF)) ||
-                ((current >= 0xE000) && (current <= 0xFFFD)) ||
-                ((current >= 0x10000) && (current <= 0x10FFFF)))
-                out.append(current);
-        }
-        return out.toString();
-    }    
+	}
+
+	/**
+	 * This method ensures that the output String has only
+	 * valid XML unicode characters as specified by the
+	 * XML 1.0 standard. For reference, please see
+	 * <a href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-Char">the
+	 * standard</a>. This method will return an empty
+	 * String if the input is null or empty.
+	 *
+	 * @param in The String whose non-valid characters we want to remove.
+	 * @return The in String, stripped of non-valid characters.
+	 */
+	private String stripNonValidXMLCharacters(String in) {
+		StringBuffer out = new StringBuffer(); // Used to hold the output.
+		char current; // Used to reference the current character.
+
+		if (in == null || ("".equals(in))) {
+			return ""; // vacancy test.
+		}
+		for (int i = 0; i < in.length(); i++) {
+			current = in.charAt(i); // NOTE: No IndexOutOfBoundsException caught here; it should not happen.
+			if ((current == 0x9)
+				|| (current == 0xA)
+				|| (current == 0xD)
+				|| ((current >= 0x20) && (current <= 0xD7FF))
+				|| ((current >= 0xE000) && (current <= 0xFFFD))
+				|| ((current >= 0x10000) && (current <= 0x10FFFF))) {
+				out.append(current);
+			}
+		}
+		return out.toString();
+	}
 }

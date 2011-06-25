@@ -21,34 +21,33 @@ package net.pms.dlna;
 import java.io.IOException;
 import java.io.InputStream;
 
-
 public class FeedItem extends DLNAResource {
-	
 	@Override
 	protected String getThumbnailURL() {
-		if (thumbURL == null)
+		if (thumbURL == null) {
 			return null;
+		}
 		return super.getThumbnailURL();
 	}
 
 	@Override
 	public String getThumbnailContentType() {
-		if (thumbURL != null && thumbURL.toLowerCase().endsWith(".jpg"))
+		if (thumbURL != null && thumbURL.toLowerCase().endsWith(".jpg")) {
 			return JPEG_TYPEMIME;
-		else
+		} else {
 			return super.getThumbnailContentType();
+		}
 	}
 
 	@Override
 	public InputStream getThumbnailInputStream() throws IOException {
 		return downloadAndSend(thumbURL, true);
 	}
-
 	private String title;
 	private String itemURL;
 	private String thumbURL;
 	private long length;
-	
+
 	public FeedItem(String title, String itemURL, String thumbURL, DLNAMediaInfo media, int type) {
 		super(type);
 		this.title = title;
@@ -59,8 +58,9 @@ public class FeedItem extends DLNAResource {
 
 	public InputStream getInputStream() throws IOException {
 		InputStream i = downloadAndSend(itemURL, true);
-		if (i != null)
+		if (i != null) {
 			length = i.available();
+		}
 		return i;
 	}
 
@@ -82,16 +82,14 @@ public class FeedItem extends DLNAResource {
 
 	@Override
 	public void discoverChildren() {
-		
 	}
 
 	@Override
 	public String getSystemName() {
 		return itemURL;
 	}
-	
+
 	public void parse(String content) {
-		
 	}
 
 	@Override
@@ -99,5 +97,4 @@ public class FeedItem extends DLNAResource {
 		checktype();
 		return ext != null;
 	}
-
 }
