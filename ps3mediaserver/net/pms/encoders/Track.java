@@ -19,22 +19,21 @@
 package net.pms.encoders;
 
 public class Track {
-	
 	private String compressor;
 	private int scale;
 	private int rate;
 	private int sampleSize;
 	private int bitspersample;
 	private int nbaudio;
-	
+
 	public Track(String compressor, int scale, int rate, int sampleSize) {
 		this.compressor = compressor;
 		this.scale = scale;
 		this.rate = rate;
 		this.sampleSize = sampleSize;
 	}
-	
-	private byte bih [];
+
+	private byte bih[];
 
 	public byte[] getBih() {
 		return bih;
@@ -75,5 +74,4 @@ public class Track {
 	public void setNbaudio(int nbaudio) {
 		this.nbaudio = nbaudio;
 	}
-
 }

@@ -34,63 +34,63 @@ import net.pms.network.HTTPResource;
 import net.pms.PMS;
 
 public class MPlayerWebVideoDump extends MPlayerAudio {
-
 	public MPlayerWebVideoDump(PmsConfiguration configuration) {
 		super(configuration);
 	}
-
 	public static final String ID = "mplayervideodump"; //$NON-NLS-1$
-	
+
 	@Override
 	public JComponent config() {
 		return null;
 	}
-	
+
 	@Override
 	public int purpose() {
 		return VIDEO_WEBSTREAM_PLAYER;
 	}
-	
+
 	@Override
 	public String id() {
 		return ID;
 	}
-	
+
 	@Override
 	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media,
-			OutputParams params) throws IOException {
+		OutputParams params) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		params.waitbeforestart = 6000;
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
 		PipeProcess audioP = new PipeProcess("mplayer_webvid" + System.currentTimeMillis()); //$NON-NLS-1$
-			
-		String mPlayerdefaultAudioArgs [] = new String [] { PMS.getConfiguration().getMplayerPath(), fileName, "-nocache", "-dumpstream", "-quiet", "-dumpfile", audioP.getInputPipe() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		params.input_pipes [0] = audioP;
-			
+
+		String mPlayerdefaultAudioArgs[] = new String[]{PMS.getConfiguration().getMplayerPath(), fileName, "-nocache", "-dumpstream", "-quiet", "-dumpfile", audioP.getInputPipe()}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		params.input_pipes[0] = audioP;
+
 		ProcessWrapper mkfifo_process = audioP.getPipeProcess();
-		
+
 		mPlayerdefaultAudioArgs = finalizeTranscoderArgs(
-            this,
-            fileName,
-            dlna,
-            media,
-            params,
-            mPlayerdefaultAudioArgs
-        );
+			this,
+			fileName,
+			dlna,
+			media,
+			params,
+			mPlayerdefaultAudioArgs
+		);
 
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(mPlayerdefaultAudioArgs, params);
 		pw.attachProcess(mkfifo_process);
 		mkfifo_process.runInNewThread();
 		try {
 			Thread.sleep(300);
-		} catch (InterruptedException e) { }
-		
+		} catch (InterruptedException e) {
+		}
+
 		audioP.deleteLater();
 		pw.runInNewThread();
 		try {
 			Thread.sleep(300);
-		} catch (InterruptedException e) { }
+		} catch (InterruptedException e) {
+		}
 		return pw;
 	}
 
@@ -108,7 +108,7 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 	public int type() {
 		return Format.VIDEO;
 	}
-	
+
 	@Override
 	public boolean isTimeSeekable() {
 		return false;

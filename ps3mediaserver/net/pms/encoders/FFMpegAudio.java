@@ -41,48 +41,43 @@ import net.pms.network.HTTPResource;
 import net.pms.PMS;
 
 public class FFMpegAudio extends FFMpegVideo {
-	
 	public static final String ID = "ffmpegaudio"; //$NON-NLS-1$
-	
 	private final PmsConfiguration configuration;
-	
+
 	public FFMpegAudio(PmsConfiguration configuration) {
 		this.configuration = configuration;
 	}
-	
 	JCheckBox noresample;
-	
+
 	@Override
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 0:grow", //$NON-NLS-1$
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow"); //$NON-NLS-1$
-         PanelBuilder builder = new PanelBuilder(layout);
-        builder.setBorder(Borders.EMPTY_BORDER);
-        builder.setOpaque(false);
+			"left:pref, 0:grow", //$NON-NLS-1$
+			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow"); //$NON-NLS-1$
+		PanelBuilder builder = new PanelBuilder(layout);
+		builder.setBorder(Borders.EMPTY_BORDER);
+		builder.setOpaque(false);
 
-        CellConstraints cc = new CellConstraints();
-        
-        
-        JComponent cmp = builder.addSeparator("Audio settings",  cc.xyw(2, 1, 1));
-        cmp = (JComponent) cmp.getComponent(0);
-        cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-        
-        noresample = new JCheckBox("Automatic audio resampling to 44.1 or 48 kHz");
-        noresample.setContentAreaFilled(false);
-        noresample.setSelected(configuration.isAudioResample());
-        noresample.addItemListener(new ItemListener() {
+		CellConstraints cc = new CellConstraints();
 
- 			public void itemStateChanged(ItemEvent e) {
- 				configuration.setAudioResample(e.getStateChange() == ItemEvent.SELECTED);
- 			}
-        	
-        });
-        builder.add(noresample, cc.xy(2, 3));
-        
-        return builder.getPanel();
+
+		JComponent cmp = builder.addSeparator("Audio settings", cc.xyw(2, 1, 1));
+		cmp = (JComponent) cmp.getComponent(0);
+		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+
+		noresample = new JCheckBox("Automatic audio resampling to 44.1 or 48 kHz");
+		noresample.setContentAreaFilled(false);
+		noresample.setSelected(configuration.isAudioResample());
+		noresample.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setAudioResample(e.getStateChange() == ItemEvent.SELECTED);
+			}
+		});
+		builder.add(noresample, cc.xy(2, 3));
+
+		return builder.getPanel();
 	}
-	
+
 	@Override
 	public int purpose() {
 		return AUDIO_SIMPLEFILE_PLAYER;
@@ -92,12 +87,12 @@ public class FFMpegAudio extends FFMpegVideo {
 	public String id() {
 		return ID;
 	}
-	
+
 	@Override
 	public boolean isTimeSeekable() {
 		return false;
 	}
-	
+
 	public boolean avisynth() {
 		return false;
 	}
@@ -114,10 +109,7 @@ public class FFMpegAudio extends FFMpegVideo {
 
 	@Override
 	public String[] args() {
-		/*if (overridenArgs != null)
-			return overridenArgs;
-		else*/
-			return new String [] { "-f", "s16be", "-ar", "48000"}; //$NON-NLS-1$ //$NON-NLS-2$
+		return new String[]{"-f", "s16be", "-ar", "48000"}; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	@Override
@@ -125,36 +117,32 @@ public class FFMpegAudio extends FFMpegVideo {
 		return HTTPResource.AUDIO_TRANSCODE; //$NON-NLS-1$
 	}
 
-	/*@Override
-	public String executable() {
-		return PMS.get().getFFmpegPath();
-	}*/
-
 	@Override
 	public ProcessWrapper launchTranscode(
 		String fileName,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
-		OutputParams params
-	) throws IOException {
+		OutputParams params) throws IOException {
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
 		params.waitbeforestart = 2000;
 		params.manageFastStart();
-		String args [] = args();
+		String args[] = args();
 		if (params.mediaRenderer.isTranscodeToMP3()) {
-			args = new String [] { "-f", "mp3", "-ar", "48000", "-ab", "320000" };
+			args = new String[]{"-f", "mp3", "-ar", "48000", "-ab", "320000"};
 		}
 		if (params.mediaRenderer.isTranscodeToWAV()) {
-			args = new String [] { "-f", "wav", "-ar", "48000"};
+			args = new String[]{"-f", "wav", "-ar", "48000"};
 		}
-		if (params.mediaRenderer.isTranscodeAudioTo441())
+		if (params.mediaRenderer.isTranscodeAudioTo441()) {
 			args[3] = "44100";
+		}
 		if (!configuration.isAudioResample()) {
 			args[2] = "-vn";
 			args[3] = "-vn";
 		}
-		if (params.mediaRenderer.isTranscodeAudioTo441())
+		if (params.mediaRenderer.isTranscodeAudioTo441()) {
 			args[3] = "44100";
+		}
 		return getFFMpegTranscode(fileName, dlna, media, params, args);
 	}
 }
