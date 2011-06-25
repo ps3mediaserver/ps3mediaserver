@@ -47,8 +47,12 @@ public class RendererConfiguration {
 		try {
 			defaultConf = new RendererConfiguration();
 		} catch (ConfigurationException e) {}
+
 		File renderersDir = new File("renderers");
+		
 		if (renderersDir.exists()) {
+			logger.info("Loading renderer configurations from " + renderersDir.getAbsolutePath());
+
 			File confs [] = renderersDir.listFiles();
 			int rank = 1;
 			for(File f:confs) {
