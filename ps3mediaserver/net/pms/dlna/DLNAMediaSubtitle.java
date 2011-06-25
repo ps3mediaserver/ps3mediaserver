@@ -9,8 +9,12 @@ import java.io.OutputStreamWriter;
 
 import net.pms.PMS;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class DLNAMediaSubtitle  extends DLNAMediaLang implements Cloneable{
+	public static final Logger logger = LoggerFactory.getLogger(DLNAMediaSubtitle.class);
 	
 	public static final int SUBRIP = 1;
 	public static final int TEXT = 2;
@@ -85,7 +89,7 @@ public class DLNAMediaSubtitle  extends DLNAMediaLang implements Cloneable{
 					}
 				}
 			} catch (IOException e) {
-				PMS.error(null, e);
+				logger.error(null, e);
 			} finally {
 				if (fis != null)
 					try {

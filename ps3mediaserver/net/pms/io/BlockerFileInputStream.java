@@ -22,10 +22,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-
-import net.pms.PMS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BlockerFileInputStream extends UnusedInputStream {
+	public static final Logger logger = LoggerFactory.getLogger(BlockerFileInputStream.class);
 	
 	private static final int CHECK_INTERVAL = 1000;
 	private long readCount;
@@ -55,7 +56,7 @@ public class BlockerFileInputStream extends UnusedInputStream {
 	
 	private boolean checkAvailability() throws IOException {
 		if (readCount > file.length()) {
-			PMS.info("File " + file.getAbsolutePath() + " is not that long!: " + readCount);
+			logger.debug("File " + file.getAbsolutePath() + " is not that long!: " + readCount);
 			return false;
 		}
 		int c = 0;
@@ -63,7 +64,7 @@ public class BlockerFileInputStream extends UnusedInputStream {
 		long wait = firstRead?waitSize:100000;
 		while (writeCount - readCount <= wait && c < 15) {
 			if (c == 0)
-				PMS.debug("Suspend File Read: readCount=" + readCount + " / writeCount=" + writeCount);
+				logger.trace("Suspend File Read: readCount=" + readCount + " / writeCount=" + writeCount);
 			c++;
 			try {
 				Thread.sleep(CHECK_INTERVAL);
@@ -73,7 +74,7 @@ public class BlockerFileInputStream extends UnusedInputStream {
 		}
 
 		if (c > 0)
-			PMS.debug("Resume Read: readCount=" + readCount + " / writeCount=" + file.length());
+			logger.trace("Resume Read: readCount=" + readCount + " / writeCount=" + file.length());
 		return true; 
 	}
 

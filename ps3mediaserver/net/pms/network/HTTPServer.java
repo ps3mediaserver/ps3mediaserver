@@ -42,8 +42,12 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HTTPServer implements Runnable {
+	
+	public static final Logger logger = LoggerFactory.getLogger(HTTPServer.class);
 	
 	//private boolean newHTTP = false;
 	private ArrayList<String> ips;
@@ -80,7 +84,7 @@ public class HTTPServer implements Runnable {
 			ni = enm.nextElement();
 			if (fixedNI != null)
 				ni = fixedNI;
-			PMS.minimal("Scanning network interface " + ni.getName() + " / " + ni.getDisplayName());
+			logger.info("Scanning network interface " + ni.getName() + " / " + ni.getDisplayName());
 			if (!PMSUtil.isNetworkInterfaceLoopback(ni) && ni.getName() != null && (ni.getDisplayName() == null || !ni.getDisplayName().toLowerCase().contains("vmnet")) && !ni.getName().toLowerCase().contains("vmnet")) {
 				
 				Enumeration<InetAddress> addrs = ni.getInetAddresses();
@@ -103,20 +107,20 @@ public class HTTPServer implements Runnable {
 		hostName = PMS.getConfiguration().getServerHostname();
 		SocketAddress address = null;
 		if (hostName != null && hostName.length() > 0) {
-			PMS.minimal("Using forced address " + hostName);
+			logger.info("Using forced address " + hostName);
 			InetAddress tempIA = InetAddress.getByName(hostName);
 			if (tempIA != null && ni != null && ni.equals(NetworkInterface.getByInetAddress(tempIA))) {
 				address = new InetSocketAddress(tempIA, port);
 			} else
 				address = new InetSocketAddress(hostName, port);
 		} else if (iafinal != null) {
-			PMS.minimal("Using address " + iafinal + " found on network interface: " + ni.toString().trim().replace('\n', ' '));
+			logger.info("Using address " + iafinal + " found on network interface: " + ni.toString().trim().replace('\n', ' '));
 			address = new InetSocketAddress(iafinal, port);
 		} else {
-			PMS.minimal("Using localhost address");
+			logger.info("Using localhost address");
 			address = new InetSocketAddress(port);
 		}
-		PMS.minimal("Created socket: " + address);
+		logger.info("Created socket: " + address);
 		
 		if (!PMS.getConfiguration().isHTTPEngineV2()) {
 			serverSocketChannel = ServerSocketChannel.open();
@@ -166,7 +170,7 @@ public class HTTPServer implements Runnable {
 	public static ChannelGroup group ;
 	
 	public void stop() {
-		PMS.info( "Stopping server on host " + hostName + " and port " + port + "...");
+		logger.info("Stopping server on host " + hostName + " and port " + port + "...");
 		if (!PMS.getConfiguration().isHTTPEngineV2()) {
 			runnable.interrupt();
 			runnable = null;
@@ -187,7 +191,8 @@ public class HTTPServer implements Runnable {
 	
 	public void run() {
 
-		PMS.minimal( "Starting DLNA Server on host " + hostName + " and port " + port + "...");
+		logger.info("Starting DLNA Server on host " + hostName + " and port " + port + "...");
+		
 		while (!stop) {
 			try {
 				Socket socket = serverSocket.accept();
@@ -198,10 +203,10 @@ public class HTTPServer implements Runnable {
 					if(PMS.getConfiguration().getIpFilter().length() > 0 && !PMS.getConfiguration().getIpFilter().equals(ip)){
 						ignore = true;
 						socket.close();
-						PMS.minimal("Ignoring request from: " + ip);
+						logger.info("Ignoring request from: " + ip);
 					}else{
 						ips.add(ip);
-						PMS.minimal("Receiving a request from: " + ip);
+						logger.info("Receiving a request from: " + ip);
 					}
 				}
 				if(!ignore){

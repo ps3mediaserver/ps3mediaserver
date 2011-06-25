@@ -39,8 +39,12 @@ import net.pms.util.H264AnnexBInputStream;
 import net.pms.util.PCMAudioOutputStream;
 import net.pms.util.ProcessUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class AviDemuxerInputStream extends InputStream {
+	public static final Logger logger = LoggerFactory.getLogger(AviDemuxerInputStream.class);
 	
 	@Override
 	public void close() throws IOException {
@@ -68,7 +72,7 @@ public class AviDemuxerInputStream extends InputStream {
 	
 	public AviDemuxerInputStream(InputStream fin, final OutputParams params, ArrayList<ProcessWrapper> at) throws IOException {
 		stream = fin;
-		PMS.debug("Opening AVI Stream"); //$NON-NLS-1$
+		logger.trace("Opening AVI Stream"); //$NON-NLS-1$
 		this.attachedProcesses = at;
 		this.params = params;
 		
@@ -88,7 +92,7 @@ public class AviDemuxerInputStream extends InputStream {
 								out.write(b, 0, n);
 							}
 						} catch (Exception e) {
-							PMS.error(null, e);
+							logger.error(null, e);
 						}
 						
 					}
@@ -144,9 +148,9 @@ public class AviDemuxerInputStream extends InputStream {
 					//Thread.sleep(150);
 					realIS = tsPipe.getInputStream();
 					ProcessUtil.waitFor(process);
-					PMS.debug("tsMuxeR muxing finished"); //$NON-NLS-1$
+					logger.trace("tsMuxeR muxing finished"); //$NON-NLS-1$
 				} catch (Exception e) {
-					PMS.error(null, e);
+					logger.error(null, e);
 				}
 	        }
 		};
@@ -157,14 +161,14 @@ public class AviDemuxerInputStream extends InputStream {
 					parseHeader();
 				} catch (Exception e) {
 					//e.printStackTrace();
-					PMS.info("Parsing error: " + e.getMessage()); //$NON-NLS-1$
+					logger.debug("Parsing error: " + e.getMessage()); //$NON-NLS-1$
 				}
 			}
 		};
-		PMS.debug("Launching tsMuxeR muxing"); //$NON-NLS-1$
+		logger.trace("Launching tsMuxeR muxing"); //$NON-NLS-1$
 		new Thread(r).start();
 		parsing = new Thread(r2);
-		PMS.debug("Ready to mux"); //$NON-NLS-1$
+		logger.trace("Ready to mux"); //$NON-NLS-1$
 	}
 	
 	public static void main(String args []) {
@@ -180,7 +184,7 @@ public class AviDemuxerInputStream extends InputStream {
 	}
 	
 	private void parseHeader() throws IOException {
-		PMS.debug("Parsing AVI Stream"); //$NON-NLS-1$
+		logger.trace("Parsing AVI Stream"); //$NON-NLS-1$
 		String id = getString(stream, 4);
 		getBytes(stream, 4);
 		String type = getString(stream, 4);
@@ -288,7 +292,7 @@ public class AviDemuxerInputStream extends InputStream {
 			i += size + 8;
 		}
 		
-		PMS.debug("Found " + streamNumber + " stream(s)"); //$NON-NLS-1$ //$NON-NLS-2$
+		logger.trace("Found " + streamNumber + " stream(s)"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		boolean init = false;
 		while (true) {
@@ -297,7 +301,7 @@ public class AviDemuxerInputStream extends InputStream {
 			try {
 				command = getString(stream, 4);
 			 } catch (Exception e) {
-				 PMS.debug("Error attendue: " + e.getMessage()); //$NON-NLS-1$
+				 logger.trace("Error attendue: " + e.getMessage()); //$NON-NLS-1$
 				 break;
 			 }
 			 if (command == null)
@@ -357,7 +361,7 @@ public class AviDemuxerInputStream extends InputStream {
 		        	readByte(stream);
 			
 		}
-		PMS.debug("output pipes closed"); //$NON-NLS-1$
+		logger.trace("output pipes closed"); //$NON-NLS-1$
 		aOut.close();
 		vOut.close();
 		

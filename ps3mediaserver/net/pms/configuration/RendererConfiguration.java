@@ -10,23 +10,27 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.dlna.MediaInfoParser;
 import net.pms.dlna.RootFolder;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
-import net.pms.Messages;
 import net.pms.network.HTTPResource;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jna.Platform;
 
 public class RendererConfiguration {
+	public static final Logger logger = LoggerFactory.getLogger(RendererConfiguration.class);
+
 	
 	/*
 	 * Static section
@@ -50,12 +54,12 @@ public class RendererConfiguration {
 			for(File f:confs) {
 				if (f.getName().endsWith(".conf")) {
 					try {
-						PMS.minimal("Loading configuration file: " + f.getName());
+						logger.info("Loading configuration file: " + f.getName());
 						RendererConfiguration r = new RendererConfiguration(f);
 						r.rank = rank++;
 						renderersConfs.add(r);
 					} catch (ConfigurationException ce) {
-						PMS.minimal("Error in loading configuration of: " + f.getAbsolutePath());
+						logger.info("Error in loading configuration of: " + f.getAbsolutePath());
 					}
 					
 				}
@@ -110,7 +114,7 @@ public class RendererConfiguration {
 
 	public void associateIP(InetAddress sa) {
 		currentRendererAddress = sa;
-		PMS.minimal("Renderer " + this + " found on this address: " + sa);
+		logger.info("Renderer " + this + " found on this address: " + sa);
 		
 		// let's get that speed
 		OutputParams op = new OutputParams(null);
@@ -149,7 +153,7 @@ public class RendererConfiguration {
 			time = (int) (time / c);
 		if (time > 0) {
 			speedInMbits = (int) (1024 / time);
-			PMS.minimal("Renderer " + this + " has an estimated network speed of: " + speedInMbits + " Mb/s");
+			logger.info("Renderer " + this + " has an estimated network speed of: " + speedInMbits + " Mb/s");
 		}
 	}
 	
@@ -187,13 +191,13 @@ public class RendererConfiguration {
 			return r; // no other clients with the same renderer on this network (yet)
 		else {
 			// seems there's another same machine on the network
-			PMS.minimal("Another renderer like " + r.getRendererName() + " was found!");
+			logger.info("Another renderer like " + r.getRendererName() + " was found!");
 			try {
 				RendererConfiguration duplicated = new RendererConfiguration(r.configurationFile);
 				renderersConfs.add(duplicated);
 				return duplicated;
 			} catch (ConfigurationException e) {
-				PMS.minimal("Serious error in adding a duplicated renderer: " + e.getMessage());
+				logger.info("Serious error in adding a duplicated renderer: " + e.getMessage());
 			}
 		}
 		return r;
@@ -350,7 +354,7 @@ public class RendererConfiguration {
 		DLNAPN = new HashMap<String, String>();
 		String DLNAPNchanges = configuration.getString(DLNA_PN_CHANGES, null);
 		if (DLNAPNchanges != null)
-			PMS.debug("Config DLNAPNchanges: " + DLNAPNchanges);
+			logger.trace("Config DLNAPNchanges: " + DLNAPNchanges);
 		if (StringUtils.isNotBlank(DLNAPNchanges)) {
 			StringTokenizer st = new StringTokenizer(DLNAPNchanges, "|");
 			while (st.hasMoreTokens()) {

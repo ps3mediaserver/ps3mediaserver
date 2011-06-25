@@ -151,7 +151,7 @@ public class DVDISOTitle extends DLNAResource {
 						jpg.getParentFile().delete();
 				}
 			} catch (IOException e) {
-				PMS.debug("Error in DVD ISO thumbnail retrieval: " + e.getMessage());
+				logger.trace("Error in DVD ISO thumbnail retrieval: " + e.getMessage());
 			}
 		}
 		

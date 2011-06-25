@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import jwbroek.cuelib.CueParser;
 import jwbroek.cuelib.CueSheet;
 import jwbroek.cuelib.FileData;
@@ -19,7 +17,12 @@ import net.pms.encoders.MPlayerAudio;
 import net.pms.encoders.Player;
 import net.pms.formats.Format;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CueFolder extends DLNAResource {
+	public static final Logger logger = LoggerFactory.getLogger(CueFolder.class);
 	
 	private File playlistfile;
 	public File getPlaylistfile() {
@@ -70,7 +73,7 @@ public class CueFolder extends DLNAResource {
 			try {
 				sheet = CueParser.parse(playlistfile);
 			} catch (IOException e) {
-				PMS.minimal("Error in parsing cue: " + e.getMessage());
+				logger.info("Error in parsing cue: " + e.getMessage());
 				return;
 			}
 			if (sheet != null) {
@@ -99,7 +102,7 @@ public class CueFolder extends DLNAResource {
 							}
 							prec.splitLength = end - prec.splitStart;
 							prec.media.setDurationString(prec.splitLength);
-							PMS.info("Track #" + i + " split range: " + prec.splitStart + " - " + prec.splitLength);
+							logger.debug("Track #" + i + " split range: " + prec.splitStart + " - " + prec.splitLength);
 						}
 						Position start = track.getIndices().get(0).getPosition();
 						RealFile r = new RealFile(new File(playlistfile.getParentFile(), f.getFile()));
@@ -127,7 +130,7 @@ public class CueFolder extends DLNAResource {
 							try {
 								r.media = (DLNAMediaInfo) originalMedia.clone();
 							} catch (CloneNotSupportedException e) {
-								PMS.minimal("Error in cloning media info: " + e.getMessage());
+								logger.info("Error in cloning media info: " + e.getMessage());
 							}
 							if (r.media != null && r.media.getFirstAudioTrack() != null) {
 								if (r.ext.isAudio())
@@ -155,7 +158,7 @@ public class CueFolder extends DLNAResource {
 						DLNAResource prec = addedResources.get(addedResources.size()-1);
 						prec.splitLength = prec.media.getDurationInSeconds() - prec.splitStart;
 						prec.media.setDurationString(prec.splitLength);
-						PMS.info("Track #" + childrenNumber() + " split range: " + prec.splitStart + " - " + prec.splitLength);
+						logger.debug("Track #" + childrenNumber() + " split range: " + prec.splitStart + " - " + prec.splitLength);
 					}
 				
 					if (PMS.getConfiguration().getUseCache()) {

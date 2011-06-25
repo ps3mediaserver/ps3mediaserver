@@ -2,6 +2,8 @@
 
   <!-- See http://logback.qos.ch/manual/index.html for more information -->
   <!-- on how to configure the Logback logging engine. -->
+  
+  <!-- Available levels: TRACE < DEBUG < INFO <  WARN < ERROR -->
 
 
   <define name="debugLogPath" class="net.pms.logging.DebugLogPathDefiner" />
@@ -19,7 +21,6 @@
  
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <!-- only show event INFO and higher on the Console. -->
-    <!-- This is equivalent to the old behaviour -->
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>INFO</level>
     </filter>
@@ -30,6 +31,10 @@
   </appender>
 
   <appender name="debug.log" class="ch.qos.logback.core.FileAppender">
+    <!-- only show event DEBUG and higher on the Console. -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>DEBUG</level>
+    </filter>
     <file>${debugLogPath}${file.separator}debug.log</file>
     <append>false</append>  <!-- Start new debug.log on each application start -->
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -43,6 +48,10 @@
   <!-- roll the debug.log file after 10 MBytes and will keep a maximum -->
   <!-- of 5 old and compressed logs. -->
   <appender name="debug.log.10MB" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- only show event DEBUG and higher on the Console. -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>DEBUG</level>
+    </filter>
     <file>${debugLogPath}${file.separator}debug.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <fileNamePattern>${debugLogPath}debug.log.%i.zip</fileNamePattern>

@@ -20,7 +20,6 @@ package net.pms.encoders;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.UnsupportedOperationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,11 +39,15 @@ import net.pms.external.FinalizeTranscoderArgsListener;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
-import net.pms.PMS;
 import net.pms.util.FileUtil;
 import net.pms.util.Iso639;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class Player {
+	public static final Logger logger = LoggerFactory.getLogger(Player.class);
+
 	public static final int VIDEO_SIMPLEFILE_PLAYER = 0;
 	public static final int AUDIO_SIMPLEFILE_PLAYER = 1;
 	public static final int VIDEO_WEBSTREAM_PLAYER = 2;
@@ -145,11 +148,11 @@ public abstract class Player {
 			while (st != null && st.hasMoreTokens()) {
 				String lang = st.nextToken();
 				lang = lang.trim();
-				PMS.debug("Looking for an audio track with lang: " + lang);
+				logger.trace("Looking for an audio track with lang: " + lang);
 				for (DLNAMediaAudio audio:media.audioCodes) {
 					if (audio.matchCode(lang)) {
 						params.aid = audio;
-						PMS.debug("Matched audio track: " + audio);
+						logger.trace("Matched audio track: " + audio);
 						st = null;
 						break;
 					}
@@ -162,14 +165,14 @@ public abstract class Player {
 			for (DLNAMediaAudio audio:media.audioCodes) {
 				if (audio.isDTS()) {
 					params.aid = audio;
-					PMS.debug("Found priority audio track with DTS: " + audio);
+					logger.trace("Found priority audio track with DTS: " + audio);
 					break;
 				}
 			}
 
 			if (params.aid == null) {
 				params.aid = media.audioCodes.get(0);
-				PMS.debug("Choosed a default audio track: " + params.aid);
+				logger.trace("Choosed a default audio track: " + params.aid);
 			}
 		}
 
@@ -180,7 +183,7 @@ public abstract class Player {
 			currentLang = params.aid.lang;
 
 		if (params.sid != null && params.sid.id == -1) {
-			PMS.debug("Don't want subtitles!");
+			logger.trace("Don't want subtitles!");
 			params.sid = null;
 			return;
 		}
@@ -194,7 +197,7 @@ public abstract class Player {
 				String sub = pair.substring(pair.indexOf(",")+1); //$NON-NLS-1$
 				audio = audio.trim();
 				sub = sub.trim();
-				PMS.debug("Search a match for: " + currentLang + " with " + audio + " and " + sub);
+				logger.trace("Search a match for: " + currentLang + " with " + audio + " and " + sub);
 
 				if (Iso639.isCodesMatching(audio, currentLang) || (currentLang != null && audio.equals("*"))) {
 					if (sub.equals("off")) {
@@ -204,7 +207,7 @@ public abstract class Player {
 						for(DLNAMediaSubtitle present_sub:media.subtitlesCodes) {
 							if (present_sub.matchCode(sub) || sub.equals("*")) {
 								matchedSub = present_sub;
-								PMS.debug(" Found a match: " + matchedSub);
+								logger.trace(" Found a match: " + matchedSub);
 								break;
 							}
 						}
@@ -218,7 +221,7 @@ public abstract class Player {
 
 		if (matchedSub != null && params.sid == null) {
 			if (matchedSub.lang != null && matchedSub.lang.equals("off")) {
-				PMS.debug(" Disabled the subtitles: " + matchedSub);
+				logger.trace(" Disabled the subtitles: " + matchedSub);
 				return;
 			} else {
 				params.sid = matchedSub;
@@ -233,9 +236,9 @@ public abstract class Player {
 			if (configuration.getUseSubtitles()) {
 				// priority to external subtitles
 				for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
-					PMS.debug("Found subtitles track: " + sub);
+					logger.trace("Found subtitles track: " + sub);
 					if (sub.file != null) {
-						PMS.debug("Found external file: " + sub.file.getAbsolutePath());
+						logger.trace("Found external file: " + sub.file.getAbsolutePath());
 						params.sid = sub;
 						break;
 					}
@@ -247,11 +250,11 @@ public abstract class Player {
 				while (st != null && st.hasMoreTokens()) {
 					String lang = st.nextToken();
 					lang = lang.trim();
-					PMS.debug("Looking for a subtitle track with lang: " + lang);
+					logger.trace("Looking for a subtitle track with lang: " + lang);
 					for(DLNAMediaSubtitle sub:media.subtitlesCodes) {
 						if (sub.matchCode(lang)) {
 							params.sid = sub;
-							PMS.debug("Matched sub track: " + params.sid);
+							logger.trace("Matched sub track: " + params.sid);
 							st = null;
 							break;
 						}

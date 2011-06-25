@@ -5,10 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import net.pms.PMS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DTSAudioOutputStream extends FlowParserOutputStream {
-
+	public static final Logger logger = LoggerFactory.getLogger(DTSAudioOutputStream.class);
+	
 	private static int bits [] = new int [] { 16, 16, 20, 20, 0, 24, 24 };
 	private boolean dts = false;
 	private boolean dtsHD = false;
@@ -56,8 +58,8 @@ public class DTSAudioOutputStream extends FlowParserOutputStream {
 				}
 				padding = pcm_wrapped_frame_size - framesize;
 				if (bitspersample < 7)
-					PMS.debug("DTS bits per sample: " + bits[bitspersample]);
-				PMS.debug("DTS framesize: " + framesize);
+					logger.trace("DTS bits per sample: " + bits[bitspersample]);
+				logger.trace("DTS framesize: " + framesize);
 			}
 		} else {
 			// DTS wrongly extracted ?... searching for start of the frame

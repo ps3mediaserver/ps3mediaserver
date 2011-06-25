@@ -110,7 +110,7 @@ public class MapFile extends DLNAResource {
 
                 /* Optionally ignore empty directories */
                 if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders() && !isFolderRelevant(f)) {
-                    PMS.info("Ignoring empty/non relevant directory: " + f.getName());
+                    logger.debug("Ignoring empty/non relevant directory: " + f.getName());
                 } /* Otherwise add the file */ else {
                     RealFile file = new RealFile(f);
                     addChild(file);
@@ -242,11 +242,11 @@ public class MapFile extends DLNAResource {
         }
 
         for (DLNAResource f : removedFiles) {
-            PMS.info("File automatically removed: " + f.getName());
+            logger.debug("File automatically removed: " + f.getName());
         }
 
         for (File f : addedFiles) {
-            PMS.info("File automatically added: " + f.getName());
+            logger.debug("File automatically added: " + f.getName());
         }
 
 

@@ -25,6 +25,9 @@ import java.util.prefs.Preferences;
 
 import net.pms.PMS;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
@@ -32,7 +35,8 @@ import com.sun.jna.WString;
 import com.sun.jna.ptr.LongByReference;
 
 public class WinUtils {
-	
+	public static final Logger logger = LoggerFactory.getLogger(WinUtils.class);
+
 	public interface Kernel32 extends Library {
 		Kernel32 INSTANCE = (Kernel32) Native.loadLibrary("kernel32",
 				Kernel32.class);
@@ -75,7 +79,7 @@ public class WinUtils {
 			if (Platform.isWindows()) {
 				// Disable go to sleep (every 40s)
 				if (System.currentTimeMillis() - lastDontSleepCall > 40000) {
-					PMS.info("Calling SetThreadExecutionState ES_SYSTEM_REQUIRED");
+					logger.debug("Calling SetThreadExecutionState ES_SYSTEM_REQUIRED");
 					Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_SYSTEM_REQUIRED | Kernel32.ES_CONTINUOUS);
 					lastDontSleepCall = System.currentTimeMillis();
 				}
@@ -88,7 +92,7 @@ public class WinUtils {
 			if (Platform.isWindows()) {
 				// Reenable go to sleep
 				if (System.currentTimeMillis() - lastGoToSleepCall > 40000) {
-					PMS.info("Calling SetThreadExecutionState ES_CONTINUOUS");
+					logger.debug("Calling SetThreadExecutionState ES_CONTINUOUS");
 					Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_CONTINUOUS);
 					lastGoToSleepCall = System.currentTimeMillis();
 				}
@@ -141,20 +145,20 @@ public class WinUtils {
 					Memory buffer = new Memory(bufferSize.longValue());
 			
 					if (Kernel32.INSTANCE.GetShortPathNameW(pathname, buffer, bufferSize).longValue() == 0) {
-					PMS.minimal("File does not exist? " + pathname);
+					logger.info("File does not exist? " + pathname);
 					return null;
 					}
-					PMS.info("Forcing short path name on " + pathname);
+					logger.debug("Forcing short path name on " + pathname);
 					String str= buffer.getString(0, true);
 					return str;*/
 					
 					char test [] = new char [2+pathname.length()*2];
 					int r = Kernel32.INSTANCE.GetShortPathNameW(pathname, test, test.length);
 					if (r > 0) {
-						PMS.info("Forcing short path name on " + pathname);
+						logger.debug("Forcing short path name on " + pathname);
 						return Native.toString(test);
 					} else {
-						PMS.minimal("File does not exist? " + pathname);
+						logger.info("File does not exist? " + pathname);
 						return null;
 					}
 				

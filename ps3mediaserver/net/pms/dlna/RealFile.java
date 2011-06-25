@@ -65,9 +65,9 @@ public class RealFile extends MapFile {
                 // fine tuning: bad parsing = no file !
                 valid = false;
                 if (media.encrypted) {
-                    PMS.minimal("The file " + file.getAbsolutePath() + " is encrypted. It will be hidden");
+                    logger.info("The file " + file.getAbsolutePath() + " is encrypted. It will be hidden");
                 } else {
-                    PMS.minimal("The file " + file.getAbsolutePath() + " was badly parsed. It will be hidden");
+                    logger.info("The file " + file.getAbsolutePath() + " was badly parsed. It will be hidden");
                 }
             }
             if (parent.defaultRenderer.isMediaParserV2ThumbnailGeneration()) {

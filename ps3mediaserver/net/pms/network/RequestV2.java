@@ -252,7 +252,7 @@ public class RequestV2 extends HTTPResource {
 					s = s.replace("<port>", "" +PMS.get().getServer().getPort());
 				}
 				if (xbox) {
-					PMS.info("DLNA changes for Xbox360");
+					logger.debug("DLNA changes for Xbox360");
 					s = s.replace("PS3 Media Server", "PS3 Media Server [" + profileName + "] : Windows Media Connect");
 					s = s.replace("<modelName>PMS</modelName>", "<modelName>Windows Media Connect</modelName>");
 					s = s.replace("<serviceList>", "<serviceList>" + CRLF + "<service>" + CRLF +
@@ -464,7 +464,7 @@ public class RequestV2 extends HTTPResource {
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
-				// PMS.debug(response.toString());
+				// logger.trace(response.toString());
 			}
 		} else if(method.equals("SUBSCRIBE")) {
 			output.setHeader("SID", PMS.get().usn());
@@ -499,7 +499,7 @@ public class RequestV2 extends HTTPResource {
 			if (!method.equals("HEAD")) {
 				ChannelBuffer buf = ChannelBuffers.copiedBuffer(responseData);
 				output.setContent(buf);
-				// PMS.debug(response.toString());
+				// logger.trace(response.toString());
 			}
 			future = e.getChannel().write(output);
 			if (close) {
@@ -517,7 +517,7 @@ public class RequestV2 extends HTTPResource {
 				}
 			} else {
 				int cl = inputStream.available();
-				PMS.debug("Available Content-Length: " + cl);
+				logger.trace("Available Content-Length: " + cl);
 				output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + cl);
 			}
 
@@ -555,7 +555,7 @@ public class RequestV2 extends HTTPResource {
 				}
 				startStopListenerDelegate.stop();
 			}
-			// PMS.debug( "Sending stream: " + sendB + " bytes of " + argument);
+			// logger.trace( "Sending stream: " + sendB + " bytes of " + argument);
 			// PMS.get().getFrame().setStatusLine(null);
 		} else {
 			if (lowRange > 0 && highRange > 0) {
@@ -574,7 +574,7 @@ public class RequestV2 extends HTTPResource {
 
 		while (it.hasNext()) {
 			String headerName = it.next();
-			PMS.debug("Sent to socket: " + headerName + ": " + output.getHeader(headerName));
+			logger.trace("Sent to socket: " + headerName + ": " + output.getHeader(headerName));
 		}
 
 		return future;

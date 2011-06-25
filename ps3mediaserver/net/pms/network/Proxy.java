@@ -35,9 +35,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
-import net.pms.PMS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Proxy extends Thread {
+	public static final Logger logger = LoggerFactory.getLogger(Proxy.class);
 
 	
 	private Socket socket, socketToWeb;
@@ -51,7 +53,7 @@ public class Proxy extends Thread {
 		fromBrowser = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		toBrowser = socket.getOutputStream();
 		this.writeCache = writeCache;
-		PMS.debug("Got connection from " + socket);
+		logger.trace("Got connection from " + socket);
 		start();
 	}
 
@@ -102,7 +104,7 @@ public class Proxy extends Thread {
 				} catch (NumberFormatException nfe) {}
 				target = targetHost.substring(0, targetHost.indexOf(":"));
 			}
-			PMS.debug("[PROXY] Connect to: " + target + " and port: " + targetPort);
+			logger.trace("[PROXY] Connect to: " + target + " and port: " + targetPort);
 			socketToWeb = new Socket(InetAddress.getByName(target), targetPort);
 			InputStream sockWebInputStream = socketToWeb.getInputStream();
 			toWeb = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socketToWeb.getOutputStream())), true);
@@ -112,7 +114,7 @@ public class Proxy extends Thread {
 			st.nextToken();
 			String askedResource = st.nextToken();
 			askedResource = askedResource.substring(askedResource.indexOf(targetHost)+targetHost.length());
-			PMS.debug("[PROXY] Asked resource: " + askedResource);
+			logger.trace("[PROXY] Asked resource: " + askedResource);
 			
 			String directoryResource = askedResource.substring(0, askedResource.lastIndexOf("/"));
 			directoryResource = getWritableFileName(directoryResource);
@@ -132,14 +134,14 @@ public class Proxy extends Thread {
 		
 			FileOutputStream fOUT = null;
 			if (resourceExists) {
-				PMS.debug("[PROXY] File is cached: " + cachedResource.getAbsolutePath());
+				logger.trace("[PROXY] File is cached: " + cachedResource.getAbsolutePath());
 				sockWebInputStream.close();
 				if (cachedResource.exists())
 					sockWebInputStream = new FileInputStream(cachedResource);
 				else
 					sockWebInputStream = this.getClass().getResourceAsStream("/" + fileN);
 			} else if (writeCache) {
-				PMS.debug("[PROXY] File is not cached / Writing in it: " + cachedResource.getAbsolutePath());
+				logger.trace("[PROXY] File is not cached / Writing in it: " + cachedResource.getAbsolutePath());
 				fOUT = new FileOutputStream(cachedResource, false);
 			}
 			
@@ -161,7 +163,7 @@ public class Proxy extends Thread {
 				    	  int clPos = s.indexOf("Content-Length: ");
 				    	  if (clPos > -1) {
 				    		  CL = Integer.parseInt(s.substring(clPos+16, s.indexOf("\n", clPos)).trim());
-				    		  PMS.debug("Found Content Length: " + CL);
+				    		  logger.trace("Found Content Length: " + CL);
 				    	  }
 			    	  }
 			    	  if (bytes_read >= 7) {

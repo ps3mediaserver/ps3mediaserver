@@ -115,7 +115,7 @@ public class RootFolder extends DLNAResource {
 					if (child instanceof RealFile)
 						trace = "Scanning Folder: " + child.getName();
 					if (trace != null) {
-						PMS.info(trace);
+						logger.debug(trace);
 						PMS.get().getFrame().setStatusLine(trace);
 					}
 					if (child.discovered) {
@@ -145,7 +145,7 @@ public class RootFolder extends DLNAResource {
 				if (running && child instanceof RealFile && child.isFolder()) {
 					child.defaultRenderer = resource.defaultRenderer;
 					String trace = "Scanning Folder: " + ((RealFile) child).file.getAbsolutePath();
-					PMS.info(trace);
+					logger.debug(trace);
 					PMS.get().getFrame().setStatusLine(trace);
 					if (child.discovered) {
 						child.refreshChildren();

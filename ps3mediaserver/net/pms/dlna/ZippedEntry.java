@@ -70,7 +70,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput{
 			return new UnusedInputStream(new ByteArrayInputStream(data), this, 5000) {
 				@Override
 				public void unusedStreamSignal() {
-					PMS.info("ZipEntry Data not asked since 5 seconds... Nullify buffer");
+					logger.debug("ZipEntry Data not asked since 5 seconds... Nullify buffer");
 					data = null;
 				}
 			};
@@ -130,7 +130,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput{
 					}
 					in.close();
 				} catch (Exception e) {
-					PMS.info("Unpack error, maybe it's normal, as backend can be terminated: " + e.getMessage());
+					logger.debug("Unpack error, maybe it's normal, as backend can be terminated: " + e.getMessage());
 				} finally {
 					try {
 						zipFile.close();

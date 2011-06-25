@@ -25,12 +25,17 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
+import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.external.StartStopListenerDelegate;
-import net.pms.PMS;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
+	public static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+
 	public final static int SOCKET_BUF_SIZE = 32768;
 	private Socket socket;
 	private OutputStream output;
@@ -49,7 +54,7 @@ public class RequestHandler implements Runnable {
 		);
 
 		try {
-			PMS.debug("Opened handler on socket " + socket);
+			logger.trace("Opened handler on socket " + socket);
 			PMS.get().getRegistry().disableGoToSleep();
 			int receivedContentLength = -1;
 			String headerLine = br.readLine();
@@ -57,7 +62,7 @@ public class RequestHandler implements Runnable {
 			String userAgentString = null;
 
 			while (headerLine != null && headerLine.length() > 0) {
-				PMS.debug( "Received on socket: " + headerLine);
+				logger.trace( "Received on socket: " + headerLine);
 				if (!useragentfound && headerLine != null && headerLine.toUpperCase().startsWith("USER-AGENT") && request != null) {
 					userAgentString = headerLine.substring(headerLine.indexOf(":")+1).trim();
 					RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationByUA(userAgentString);
@@ -115,7 +120,7 @@ public class RequestHandler implements Runnable {
 						request.setTimeseek(Double.parseDouble(timeseek));
 					}
 				} catch (Exception e) {
-					PMS.error("Error in parsing HTTP headers", e);
+					logger.error("Error in parsing HTTP headers", e);
 				}
 
 				headerLine = br.readLine();
@@ -126,7 +131,7 @@ public class RequestHandler implements Runnable {
 				request.setMediaRenderer(RendererConfiguration.getDefaultConf());
 				if (userAgentString != null && !userAgentString.equals("FDSSDP")) {
 					// we have found an unknown renderer
-					PMS.minimal("Media renderer was not recognized. HTTP User agent: " + userAgentString);
+					logger.info("Media renderer was not recognized. HTTP User agent: " + userAgentString);
 					PMS.get().setRendererfound(request.getMediaRenderer());
 				}
 			}
@@ -139,7 +144,7 @@ public class RequestHandler implements Runnable {
 			}
 
 			if (request != null)
-				PMS.info( "HTTP: " + request.getArgument() + " / " + request.getLowRange() + "-" + request.getHighRange());
+				logger.debug( "HTTP: " + request.getArgument() + " / " + request.getLowRange() + "-" + request.getHighRange());
 
 			if (request != null)
 				request.answer(output, startStopListenerDelegate);
@@ -148,13 +153,13 @@ public class RequestHandler implements Runnable {
 				request.getInputStream().close();
 
 		} catch (IOException e) {
-			PMS.debug("Unexpected IO error: " + e.getClass() + ": " +  e.getMessage());
+			logger.trace("Unexpected IO error: " + e.getClass() + ": " +  e.getMessage());
 			if (request != null && request.getInputStream() != null) {
 				try {
-					PMS.debug("Closing input stream: " + request.getInputStream());
+					logger.trace("Closing input stream: " + request.getInputStream());
 					request.getInputStream().close();
 				} catch (IOException e1) {
-					PMS.error("Error closing input stream", e);
+					logger.error("Error closing input stream", e);
 				}
 			}
 		} finally {
@@ -164,11 +169,11 @@ public class RequestHandler implements Runnable {
 				br.close();
 				socket.close();
 			} catch (IOException e) {
-				PMS.error("Error closing connection: ", e);
+				logger.error("Error closing connection: ", e);
 			}
 
 			startStopListenerDelegate.stop();
-			PMS.debug("Close connection");
+			logger.trace("Close connection");
 		}
 	}
 }

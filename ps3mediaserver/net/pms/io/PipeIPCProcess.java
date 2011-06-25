@@ -23,15 +23,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import com.sun.jna.Platform;
-
-import net.pms.PMS;
 import net.pms.util.DTSAudioOutputStream;
 import net.pms.util.H264AnnexBInputStream;
 import net.pms.util.PCMAudioOutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sun.jna.Platform;
+
 public class PipeIPCProcess extends Thread implements ProcessWrapper {
-	
+	public static final Logger logger = LoggerFactory.getLogger(PipeIPCProcess.class);
+
 	private PipeProcess mkin;
 	private PipeProcess mkout;
 	private StreamModifier modifier;
@@ -80,7 +83,7 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 					debug.write(b, 0, n);
 			}
 		} catch (IOException e) {
-			PMS.info("Error :" + e.getMessage());
+			logger.debug("Error :" + e.getMessage());
 		} finally {
 			try {
 				// in and out may not have been initialized:
@@ -92,7 +95,7 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 				if (debug != null)
 					debug.close();
 			} catch (IOException e) {
-				PMS.info("Error :" + e.getMessage());
+				logger.debug("Error :" + e.getMessage());
 			}
 		}
 	}

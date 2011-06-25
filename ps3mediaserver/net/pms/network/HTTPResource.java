@@ -30,7 +30,11 @@ import java.net.URLConnection;
 
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
+import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements any item that can be transfered through the HTTP pipes.
@@ -38,7 +42,8 @@ import net.pms.formats.Format;
  * @see DLNAResource
  */
 public class HTTPResource {
-	
+	public static final Logger logger = LoggerFactory.getLogger(HTTPResource.class);
+
 	public static final String UNKNOWN_VIDEO_TYPEMIME = "video/mpeg";
 	public static final String UNKNOWN_IMAGE_TYPEMIME = "image/jpeg";
 	public static final String UNKNOWN_AUDIO_TYPEMIME = "audio/mpeg";
@@ -151,7 +156,7 @@ public class HTTPResource {
 	 */
 	protected byte [] downloadAndSendBinary(String u, boolean saveOnDisk, File f) throws IOException {
 		URL url = new URL(u);
-		PMS.info("Retrieving " + url.toString());
+		logger.debug("Retrieving " + url.toString());
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		URLConnection conn = url.openConnection();
 		// GameTrailers blocks user-agents that identify themselves as "Java"

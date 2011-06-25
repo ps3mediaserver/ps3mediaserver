@@ -25,10 +25,10 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.charset.Charset;
 import java.util.StringTokenizer;
 
+import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.external.StartStopListenerDelegate;
-import net.pms.PMS;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -47,8 +47,11 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
+	public static final Logger logger = LoggerFactory.getLogger(RequestHandlerV2.class);
 
 	private volatile HttpRequest nettyRequest;
 
@@ -62,7 +65,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 
 		InetAddress ia = ((InetSocketAddress) e.getChannel().getRemoteAddress()).getAddress();
 		RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(ia);
-		PMS.debug("Opened request handler on socket " + e.getChannel().getRemoteAddress() + (renderer!=null?(" // "+renderer):""));
+		logger.trace("Opened request handler on socket " + e.getChannel().getRemoteAddress() + (renderer!=null?(" // "+renderer):""));
 		PMS.get().getRegistry().disableGoToSleep();
 		boolean useragentfound = renderer != null;
 		String userAgentString = null;
@@ -74,7 +77,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			request = new RequestV2("HEAD", nettyRequest.getUri().substring(1));
 		else
 			request = new RequestV2(nettyRequest.getMethod().getName(), nettyRequest.getUri().substring(1));
-		PMS.debug("Request: " + nettyRequest.getProtocolVersion().getText() + " : " + request.getMethod() + " : " + request.getArgument());
+		logger.trace("Request: " + nettyRequest.getProtocolVersion().getText() + " : " + request.getMethod() + " : " + request.getArgument());
 		if (nettyRequest.getProtocolVersion().getMinorVersion() == 0)
 			request.setHttp10(true);
 		if (useragentfound) {
@@ -83,7 +86,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		}
 		for (String name : nettyRequest.getHeaderNames()) {
 			String headerLine = name + ": " + nettyRequest.getHeader(name);
-			PMS.debug("Received on socket: " + headerLine);
+			logger.trace("Received on socket: " + headerLine);
 			if (!useragentfound && headerLine != null
 					&& headerLine.toUpperCase().startsWith("USER-AGENT")
 					&& request != null) {
@@ -151,7 +154,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 					request.setTimeseek(Double.parseDouble(timeseek));
 				}
 			} catch (Exception ee) {
-				PMS.error("Error parsing HTTP headers", ee);
+				logger.error("Error parsing HTTP headers", ee);
 			}
 
 		}
@@ -161,7 +164,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			request.setMediaRenderer(RendererConfiguration.getDefaultConf());
 			if (userAgentString != null && !userAgentString.equals("FDSSDP")) {
 				// we have found an unknown renderer
-				PMS.minimal("Media renderer was not recognized. HTTP User agent: " + userAgentString);
+				logger.info("Media renderer was not recognized. HTTP User agent: " + userAgentString);
 				PMS.get().setRendererfound(request.getMediaRenderer());
 			}
 		}
@@ -173,7 +176,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		}
 
 		if (request != null)
-			PMS.info("HTTP: " + request.getArgument() + " / "
+			logger.debug("HTTP: " + request.getArgument() + " / "
 					+ request.getLowRange() + "-" + request.getHighRange());
 
 		writeResponse(e, request, ia);
@@ -206,7 +209,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		try {
 			request.answer(response, e, close, startStopListenerDelegate);
 		} catch (IOException e1) {
-			PMS.debug("HTTP request V2 IO error: " + e1.getMessage());
+			logger.trace("HTTP request V2 IO error: " + e1.getMessage());
 			// note: we don't call stop() here in a finally block as
 			// answer() is non-blocking. we only (may) need to call it
 			// here in the case of an exception. it's a no-op if it's

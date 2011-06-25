@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
-import org.apache.commons.lang.StringUtils;
-
-import net.pms.PMS;
 import net.pms.network.HTTPResource;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CoverUtil extends HTTPResource {
+	public static final Logger logger = LoggerFactory.getLogger(CoverUtil.class);
 	
 	private static CoverUtil instance;
 	
@@ -71,7 +73,7 @@ public class CoverUtil extends HTTPResource {
 							}
 						}
 					} catch (Exception e) {
-						PMS.error("Error while retrieving cover for " + artist+album, e);
+						logger.error("Error while retrieving cover for " + artist+album, e);
 					}
 				}
 			} else if (backend == AUDIO_AMAZON) {
@@ -92,7 +94,7 @@ public class CoverUtil extends HTTPResource {
 							return data;
 						}
 					} catch (Exception e) {
-						PMS.error("Error while retrieving cover for " + artist+album, e);
+						logger.error("Error while retrieving cover for " + artist+album, e);
 					}
 				}
 			}

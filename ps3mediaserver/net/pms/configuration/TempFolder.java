@@ -3,9 +3,9 @@ package net.pms.configuration;
 import java.io.File;
 import java.io.IOException;
 
-import net.pms.PMS;
-
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles finding a temporary folder.
@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
  * @author Tim Cox (mail@tcox.org)
  */
 class TempFolder {
+	public static final Logger logger = LoggerFactory.getLogger(TempFolder.class);
 
 	private static final String DEFAULT_TEMP_FOLDER_NAME = "ps3mediaserver";
 
@@ -43,7 +44,7 @@ class TempFolder {
 		try {
 			return getUserSpecifiedTempFolder(userSpecifiedFolder);
 		} catch (IOException e) {
-			PMS.error("Problem with user specified temp directory - using system", e);
+			logger.error("Problem with user specified temp directory - using system", e);
 			return getSystemTempFolder();
 		}
 	}

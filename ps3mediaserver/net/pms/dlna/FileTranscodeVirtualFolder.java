@@ -85,7 +85,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 						newChild.media_subtitle = ref.media.subtitlesCodes.get(j);
 						addChapterFile(newChild);
 						
-						PMS.info("Duplicate " + ref.getName() + " with player: " + ref.player.toString() + " and aid: " + newChild.media_audio.id + " and sid: " + newChild.media_subtitle);
+						logger.debug("Duplicate " + ref.getName() + " with player: " + ref.player.toString() + " and aid: " + newChild.media_audio.id + " and sid: " + newChild.media_subtitle);
 					}
 				}
 				

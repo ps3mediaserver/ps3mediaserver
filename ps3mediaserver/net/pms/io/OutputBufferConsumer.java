@@ -22,10 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import net.pms.PMS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OutputBufferConsumer extends OutputConsumer {
-	
+	public static final Logger logger = LoggerFactory.getLogger(OutputBufferConsumer.class);
+
 	private BufferedOutputFile outputBuffer;
 	
 	public OutputBufferConsumer(InputStream inputStream, OutputParams params) {
@@ -35,18 +37,18 @@ public class OutputBufferConsumer extends OutputConsumer {
 	
 	 public void run() {
 		try {
-			//PMS.debug("Starting read from pipe");
+			//logger.trace("Starting read from pipe");
  			byte buf [] = new byte [500000];
  			int n = 0;
  			while ( (n=inputStream.read(buf)) > 0) {
- 				//PMS.debug("Fetched " + n + " from pipe");
+ 				//logger.trace("Fetched " + n + " from pipe");
  				outputBuffer.write(buf, 0, n);
  			}
- 			//PMS.info("Finished to read");
+ 			//logger.debug("Finished to read");
  		} catch (IOException ioe) {
- 			PMS.info("Error consuming stream of spawned process: " +  ioe.getMessage());
+ 			logger.debug("Error consuming stream of spawned process: " +  ioe.getMessage());
         } finally {
-        	//PMS.debug("Closing read from pipe");
+        	//logger.trace("Closing read from pipe");
             if(inputStream != null)
                 try { inputStream.close(); } catch(Exception ignore) {}
         }

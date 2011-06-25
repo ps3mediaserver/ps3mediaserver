@@ -37,14 +37,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import net.pms.Messages;
-import net.pms.PMS;
 import net.pms.logging.LoggingConfigFileLoader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class TracesTab {
+	public static final Logger logger = LoggerFactory.getLogger(TracesTab.class);
 
 	
 	class PopupTriggerMouseListener extends MouseAdapter
@@ -139,7 +142,7 @@ public class TracesTab {
 					try {
 						java.awt.Desktop.getDesktop().open(logFile);
 					} catch (IOException e1) {
-						PMS.error(String.format("Failed to open file %s in default editor", logFile), e1);
+						logger.error(String.format("Failed to open file %s in default editor", logFile), e1);
 					}
 				}
 			});

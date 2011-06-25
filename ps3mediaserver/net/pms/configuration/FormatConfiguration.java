@@ -9,16 +9,19 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import net.pms.PMS;
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.InputFile;
 import net.pms.dlna.MediaInfoParser;
 import net.pms.formats.Format;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class FormatConfiguration {
-    
+	public static final Logger logger = LoggerFactory.getLogger(FormatConfiguration.class);
+
     
 	public static final String MPEGPS = "mpegps";
     public static final String MPEGTS = "mpegts";
@@ -125,14 +128,14 @@ public class FormatConfiguration {
                 try {
                     pformat = Pattern.compile(format);
                 } catch (PatternSyntaxException pe) {
-                	PMS.minimal("Couldn't resolve this pattern: " + format + " / " + pe.getMessage());
+                	logger.info("Couldn't resolve this pattern: " + format + " / " + pe.getMessage());
                     v = false;
                 }
                 if (videocodec != null) {
                     try {
                         pvideocodec = Pattern.compile(videocodec);
                     } catch (PatternSyntaxException pe) {
-                    	PMS.minimal("Couldn't resolve this pattern: " + videocodec + " / " + pe.getMessage());
+                    	logger.info("Couldn't resolve this pattern: " + videocodec + " / " + pe.getMessage());
                         v = false;
                     }
                 }
@@ -140,7 +143,7 @@ public class FormatConfiguration {
                     try {
                         paudiocodec = Pattern.compile(audiocodec);
                     } catch (PatternSyntaxException pe) {
-                    	PMS.minimal("Couldn't resolve this pattern: " + audiocodec + " / " + pe.getMessage());
+                    	logger.info("Couldn't resolve this pattern: " + audiocodec + " / " + pe.getMessage());
                         v = false;
                     }
                 }
@@ -148,35 +151,35 @@ public class FormatConfiguration {
                     if (maxnbchannels != null)
                         imaxnbchannels = Integer.parseInt(maxnbchannels);
                 } catch (Exception e) {
-                	PMS.minimal("Error in parsing number: " + maxnbchannels);
+                	logger.info("Error in parsing number: " + maxnbchannels);
                     v = false;
                 }
                 try {
                     if (maxfrequency != null)
                         imaxfrequency = Integer.parseInt(maxfrequency);
                 } catch (Exception e) {
-                	PMS.minimal("Error in parsing number: " + maxfrequency);
+                	logger.info("Error in parsing number: " + maxfrequency);
                     v = false;
                 }
                 try {
                     if (maxbitrate != null)
                         imaxbitrate = Integer.parseInt(maxbitrate);
                 } catch (Exception e) {
-                	PMS.minimal("Error in parsing number: " + maxbitrate);
+                	logger.info("Error in parsing number: " + maxbitrate);
                     v = false;
                 }
                 try {
                     if (maxvideowidth != null)
                         imaxvideowidth = Integer.parseInt(maxvideowidth);
                 } catch (Exception e) {
-                	PMS.minimal("Error in parsing number: " + maxvideowidth);
+                	logger.info("Error in parsing number: " + maxvideowidth);
                     v = false;
                 }
                 try {
                     if (maxvideoheight != null)
                         imaxvideoheight = Integer.parseInt(maxvideoheight);
                 } catch (Exception e) {
-                	PMS.minimal("Error in parsing number: " + maxvideoheight);
+                	logger.info("Error in parsing number: " + maxvideoheight);
                     v = false;
                 }
             }
@@ -292,7 +295,7 @@ public class FormatConfiguration {
 	           if (conf.isValid())
 	        	   list.add(conf);
 	           else {
-	        	   PMS.minimal("Invalid configuration line: " + line);
+	        	   logger.info("Invalid configuration line: " + line);
 	           }
             }
         }

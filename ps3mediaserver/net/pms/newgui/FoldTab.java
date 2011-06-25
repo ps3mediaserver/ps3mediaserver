@@ -46,6 +46,9 @@ import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.util.KeyedComboBoxModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -53,7 +56,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
 public class FoldTab {
-	
+	public static final Logger logger = LoggerFactory.getLogger(FoldTab.class);
+
 	public static final String ALL_DRIVES = Messages.getString("FoldTab.0"); //$NON-NLS-1$
 	private JList FList;
 	private  DefaultListModel df;
@@ -127,7 +131,7 @@ public class FoldTab {
 				df.addElement(ALL_DRIVES);
 			}
 		} catch (IOException e1) {
-			PMS.error(null, e1);
+			logger.error(null, e1);
 		}
        } else
 		df.addElement(ALL_DRIVES);

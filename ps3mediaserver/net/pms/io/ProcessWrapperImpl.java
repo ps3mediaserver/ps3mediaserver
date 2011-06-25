@@ -28,8 +28,12 @@ import net.pms.PMS;
 import net.pms.encoders.AviDemuxerInputStream;
 import net.pms.util.ProcessUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
-	
+	public static final Logger logger = LoggerFactory.getLogger(ProcessWrapperImpl.class);
+
 	@Override
 	public String toString() {
 		return super.getName();
@@ -87,7 +91,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	public void run() {
 		ProcessBuilder pb = new ProcessBuilder(cmdArray);
 		try {
-			PMS.info("Starting " + cmdLine);
+			logger.debug("Starting " + cmdLine);
 			if (params.outputFile != null && params.outputFile.getParentFile().isDirectory())
 				pb.directory(params.outputFile.getParentFile());
 			if (params.workDir != null && params.workDir.isDirectory())
@@ -101,12 +105,12 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			stderrConsumer.start();
 			outConsumer = null;
 			if (params.outputFile != null) {
-				PMS.info("Writing in " + params.outputFile.getAbsolutePath());
+				logger.debug("Writing in " + params.outputFile.getAbsolutePath());
 				outConsumer = keepStdout ?
 					new OutputTextConsumer(process.getInputStream(), false) :
 					new OutputTextLogger(process.getInputStream());
 			} else if (params.input_pipes[0] != null) {
-				PMS.info("Reading pipe: " + params.input_pipes[0].getInputPipe());
+				logger.debug("Reading pipe: " + params.input_pipes[0].getInputPipe());
 				//Thread.sleep(150);
 				bo = params.input_pipes[0].getDirectBuffer();
 				if (bo == null || params.losslessaudio || params.lossyaudio || params.no_videoencode) {
@@ -134,7 +138,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			Integer pid = ProcessUtil.getProcessID(process);
 
 			if (pid != null)
-				PMS.info("Unix process ID (" + cmdArray[0] + "): " + pid);
+				logger.debug("Unix process ID (" + cmdArray[0] + "): " + pid);
 
 			ProcessUtil.waitFor(process);
 
@@ -145,18 +149,18 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			if (bo != null)
 				bo.close();
 		} catch (Exception e) {
-			PMS.error("Fatal error in process initialization: ", e);
+			logger.error("Fatal error in process initialization: ", e);
 			stopProcess();
 		} finally {
 			if (!destroyed && !params.noexitcheck) {
 				try {
 					success = true;
 					if (process != null && process.exitValue() != 0) {
-						PMS.minimal("Process " + cmdArray[0] + " has a return code of " + process.exitValue() + "! Maybe an error occurred... check the log file");
+						logger.info("Process " + cmdArray[0] + " has a return code of " + process.exitValue() + "! Maybe an error occurred... check the log file");
 						success = false;
 					}
 				} catch (IllegalThreadStateException itse) {
-					PMS.error("An error occurred", itse);
+					logger.error("An error occurred", itse);
 				}
 			}
 			if (attachedProcesses != null) {
@@ -208,9 +212,9 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			if (process != null) {
 				Integer pid = ProcessUtil.getProcessID(process);
 				if (pid != null) {
-					PMS.info("Stopping Unix process " + pid + ": " + this);
+					logger.debug("Stopping Unix process " + pid + ": " + this);
 				} else {
-					PMS.info("Stopping process: " + this);
+					logger.debug("Stopping process: " + this);
 				}
 				ProcessUtil.destroy(process);
 			}
@@ -242,7 +246,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 
 	public void setReadyToStop(boolean nullable) {
 		if (nullable != this.nullable)
-			PMS.debug("Ready to Stop: " + nullable);
+			logger.trace("Ready to Stop: " + nullable);
 		this.nullable = nullable;
 	}
 

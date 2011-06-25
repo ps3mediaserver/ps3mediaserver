@@ -25,23 +25,24 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
-import java.util.Enumeration;
-
-import java.util.Random;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Random;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
-
 import net.pms.PMS;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
 public class UPNPHelper {
-	
+	public static final Logger logger = LoggerFactory.getLogger(UPNPHelper.class);
+
 	private final static String CRLF = "\r\n";
 	private final static String ALIVE = "ssdp:alive";
 	private final static String UPNP_HOST = "239.255.255.250";
@@ -77,7 +78,7 @@ public class UPNPHelper {
 		{
 			DatagramSocket ssdpUniSock = new DatagramSocket();
 
-			PMS.debug( "Sending this reply [" + host + ":" + port + "]: " + StringUtils.replace(msg, CRLF, "<CRLF>"));
+			logger.trace( "Sending this reply [" + host + ":" + port + "]: " + StringUtils.replace(msg, CRLF, "<CRLF>"));
 			InetAddress inetAddr = InetAddress.getByName(host);
 			DatagramPacket dgmPacket = new DatagramPacket(msg.getBytes(), msg.length(), inetAddr, port);
 			ssdpUniSock.send(dgmPacket);
@@ -86,13 +87,13 @@ public class UPNPHelper {
 		}
 		catch (Exception ex)
 		{
-			PMS.minimal(ex.getMessage());
+			logger.info(ex.getMessage());
 		}
 	}
 	
 	public static void sendAlive() throws IOException {
 		
-		PMS.info( "Sending ALIVE...");
+		logger.debug( "Sending ALIVE...");
 		
 		MulticastSocket ssdpSocket = getNewMulticastSocket();
 		sendMessage(ssdpSocket,  "upnp:rootdevice", ALIVE);
@@ -111,7 +112,7 @@ public class UPNPHelper {
 		MulticastSocket ssdpSocket = new MulticastSocket();
 		ssdpSocket.setReuseAddress(true);
 		if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
-			PMS.debug("Searching network interface for " + PMS.getConfiguration().getServerHostname());
+			logger.trace("Searching network interface for " + PMS.getConfiguration().getServerHostname());
 			NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
 			if (ni != null) {
 				ssdpSocket.setNetworkInterface(ni);
@@ -127,22 +128,22 @@ public class UPNPHelper {
 				
 			}
 		} else if ( PMS.get().getServer().getNi() != null) {
-			PMS.debug("Setting multicast network interface: " +  PMS.get().getServer().getNi());
+			logger.trace("Setting multicast network interface: " +  PMS.get().getServer().getNi());
 			ssdpSocket.setNetworkInterface( PMS.get().getServer().getNi());
 		}
-		PMS.debug("Sending message from multicast socket on network interface: " + ssdpSocket.getNetworkInterface());
-		PMS.debug("Multicast socket is on interface: " + ssdpSocket.getInterface());
+		logger.trace("Sending message from multicast socket on network interface: " + ssdpSocket.getNetworkInterface());
+		logger.trace("Multicast socket is on interface: " + ssdpSocket.getInterface());
 		ssdpSocket.setTimeToLive(32);
 		//ssdpSocket.setLoopbackMode(true);
 		ssdpSocket.joinGroup(getUPNPAddress());
-		PMS.debug("Socket Timeout: " + ssdpSocket.getSoTimeout());
-		PMS.debug("Socket TTL: " + ssdpSocket.getTimeToLive());
+		logger.trace("Socket Timeout: " + ssdpSocket.getSoTimeout());
+		logger.trace("Socket TTL: " + ssdpSocket.getTimeToLive());
 		return ssdpSocket;
 	}
 	
 	public static void sendByeBye() throws IOException {
 		
-		PMS.minimal( "Sending BYEBYE...");
+		logger.info( "Sending BYEBYE...");
 		MulticastSocket ssdpSocket = getNewMulticastSocket();
 		
 		sendMessage(ssdpSocket,  "upnp:rootdevice", BYEBYE);
@@ -162,7 +163,7 @@ public class UPNPHelper {
 	private static void sendMessage(DatagramSocket socket, String nt, String message) throws IOException {
 		String msg = buildMsg(nt, message);
 		Random rand = new Random();
-		//PMS.debug( "Sending this SSDP packet: " + CRLF + msg);// StringUtils.replace(msg, CRLF, "<CRLF>"));
+		//logger.trace( "Sending this SSDP packet: " + CRLF + msg);// StringUtils.replace(msg, CRLF, "<CRLF>"));
 		DatagramPacket ssdpPacket = new DatagramPacket(msg.getBytes(), msg.length(), getUPNPAddress(), UPNP_PORT);
 		socket.send(ssdpPacket);
 		try {
@@ -189,7 +190,7 @@ public class UPNPHelper {
 						if (delay == 10000) // after 10, and 30s
 							delay = 20000;
 					} catch (Exception e) {
-						PMS.info("Error while sending periodic alive message: " + e.getMessage());
+						logger.debug("Error while sending periodic alive message: " + e.getMessage());
 					}
 				}
 			}
@@ -204,12 +205,12 @@ public class UPNPHelper {
 					try { 
 						MulticastSocket socket = new MulticastSocket(1900);
 						if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
-							PMS.debug("Searching network interface for " + PMS.getConfiguration().getServerHostname());
+							logger.trace("Searching network interface for " + PMS.getConfiguration().getServerHostname());
 							NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
 							if (ni != null)
 								socket.setNetworkInterface(ni);
 						} else if ( PMS.get().getServer().getNi() != null) {
-							PMS.debug("Setting multicast network interface: " +  PMS.get().getServer().getNi());
+							logger.trace("Setting multicast network interface: " +  PMS.get().getServer().getNi());
 							socket.setNetworkInterface( PMS.get().getServer().getNi());
 						}
 						socket.setTimeToLive(4);
@@ -230,10 +231,10 @@ public class UPNPHelper {
 							int remotePort = packet_r.getPort();
 							
 							if(!(PMS.getConfiguration().getIpFilter().length() > 0 && !PMS.getConfiguration().getIpFilter().equals(remoteAddr))){
-								PMS.debug("Receiving a M-SEARCH from [" + remoteAddr + ":" + remotePort + "]");
-								//PMS.debug("Data: " + s);
+								logger.trace("Receiving a M-SEARCH from [" + remoteAddr + ":" + remotePort + "]");
+								//logger.trace("Data: " + s);
 								
-								/*PMS.minimal( "Receiving search request from " + packet_r.getAddress().getHostAddress() + "! Sending DISCOVER message...");*/
+								/*logger.info( "Receiving search request from " + packet_r.getAddress().getHostAddress() + "! Sending DISCOVER message...");*/
 								if (StringUtils.indexOf(s, "urn:schemas-upnp-org:service:ContentDirectory:1") > 0)
 									sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:service:ContentDirectory:1");
 			
@@ -252,13 +253,13 @@ public class UPNPHelper {
 							String remoteAddr = packet_r.getAddress().getHostAddress();
 							int remotePort = packet_r.getPort();
 							
-							PMS.debug("Receiving a NOTIFY from [" + remoteAddr + ":" + remotePort + "]");
-							//PMS.debug("Data: " + s);
+							logger.trace("Receiving a NOTIFY from [" + remoteAddr + ":" + remotePort + "]");
+							//logger.trace("Data: " + s);
 						}
 						
 						}
 					} catch (IOException e) {
-						PMS.error("UPNP network exception", e);
+						logger.error("UPNP network exception", e);
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e1) {}

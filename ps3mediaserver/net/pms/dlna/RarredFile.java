@@ -48,9 +48,9 @@ public class RarredFile extends DLNAResource {
 			}
 			rarFile.close();
 		} catch (RarException e) {
-			PMS.error(null, e);
+			logger.error(null, e);
 		} catch (IOException e) {
-			PMS.error(null, e);
+			logger.error(null, e);
 		}
 	}
 
