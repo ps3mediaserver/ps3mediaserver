@@ -8,86 +8,94 @@ import java.util.Map.Entry;
 import net.pms.dlna.DLNAMediaLang;
 
 public class Iso639 {
-
 	private static HashMap<String, String[]> links;
 	private static ArrayList<String> languages;
 	private static ArrayList<String> codes;
-	
+
 	public static String getLanguage(String code) {
-		if (code == null)
+		if (code == null) {
 			return null;
+		}
 		String lang = null;
 		Iterator<Entry<String, String[]>> iterator = links.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, String[]> entry = iterator.next();
-			for(String c:entry.getValue()) {
-				if (code.equalsIgnoreCase(c))
+			for (String c : entry.getValue()) {
+				if (code.equalsIgnoreCase(c)) {
 					return entry.getKey();
+				}
 			}
 		}
 		return lang;
 	}
-	
+
 	public static String getISO639_2Code(String code) {
-		if (code == null)
+		if (code == null) {
 			return null;
+		}
 		String lang = null;
 		Iterator<Entry<String, String[]>> iterator = links.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, String[]> entry = iterator.next();
-			for(String c:entry.getValue()) {
-				if (code.equalsIgnoreCase(c))
-					return entry.getValue()[entry.getValue().length-1].toLowerCase();
+			for (String c : entry.getValue()) {
+				if (code.equalsIgnoreCase(c)) {
+					return entry.getValue()[entry.getValue().length - 1].toLowerCase();
+				}
 			}
 		}
 		return lang;
 	}
-	
+
 	public static boolean isCodeMatching(String language, String code) {
-		if (language == null || code == null)
+		if (language == null || code == null) {
 			return false;
-		String codes [] = links.get(language);
-		for(String c:codes) {
-			if (c.equalsIgnoreCase(code))
+		}
+		String codes[] = links.get(language);
+		for (String c : codes) {
+			if (c.equalsIgnoreCase(code)) {
 				return true;
+			}
 		}
 		return false;
 	}
-	
+
 	public static boolean isCodesMatching(String code1, String code2) {
-		if (code1 == null || code2 == null)
+		if (code1 == null || code2 == null) {
 			return false;
+		}
 		Iterator<Entry<String, String[]>> iterator = links.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, String[]> entry = iterator.next();
-			for(String c:entry.getValue()) {
+			for (String c : entry.getValue()) {
 				if (code1.equalsIgnoreCase(c)) {
-					for(String c2:entry.getValue()) {
-						if (code2.equalsIgnoreCase(c2))
+					for (String c2 : entry.getValue()) {
+						if (code2.equalsIgnoreCase(c2)) {
 							return true;
+						}
 					}
 				}
 			}
 		}
 		return false;
 	}
-	
+
 	public static ArrayList<String> getLanguageList() {
 		if (languages == null) {
 			languages = new ArrayList<String>();
 			Iterator<String> iterator = links.keySet().iterator();
-			while (iterator.hasNext())
+			while (iterator.hasNext()) {
 				languages.add(iterator.next());
+			}
 		}
 		return languages;
 	}
-	
+
 	public static ArrayList<String> getCodeList() {
 		if (codes == null) {
 			codes = new ArrayList<String>();
 			Iterator<String[]> iterator = links.values().iterator();
 			while (iterator.hasNext()) {
-				for(String s:iterator.next()) {
+				for (String s : iterator.next()) {
 					codes.add(s);
 				}
 			}
@@ -96,17 +104,20 @@ public class Iso639 {
 	}
 
 	private static void putCode(String language, String iso6391,
-			String iso6392, String iso6392bis) {
+		String iso6392, String iso6392bis) {
 		if (links == null) {
 			links = new HashMap<String, String[]>();
 		}
 		ArrayList<String> codeArray = new ArrayList<String>();
-		if (iso6391 != null)
+		if (iso6391 != null) {
 			codeArray.add(iso6391);
-		if (iso6392 != null)
+		}
+		if (iso6392 != null) {
 			codeArray.add(iso6392);
-		if (iso6392bis != null)
+		}
+		if (iso6392bis != null) {
 			codeArray.add(iso6392bis);
+		}
 		String newCodes[] = new String[codeArray.size()];
 		codeArray.toArray(newCodes);
 		links.put(language, newCodes);
@@ -202,10 +213,10 @@ public class Iso639 {
 		putCode("Creek", null, "mus", "mus");
 		putCode("Creoles and pidgins (Other)", null, "crp", "crp");
 		putCode("Creoles and pidgins, English-based (Other)", null, "cpe",
-				"cpe");
+			"cpe");
 		putCode("Creoles and pidgins, French-based (Other)", null, "cpf", "cpf");
 		putCode("Creoles and pidgins, Portuguese-based (Other)", null, "cpp",
-				"cpp");
+			"cpp");
 		putCode("Croatian", "hr", "hrv", "scr");
 		putCode("Cushitic (Other)", null, "cus", "cus");
 		putCode("Czech", "cs", "ces", "cze");
@@ -257,7 +268,7 @@ public class Iso639 {
 		putCode("Georgian", "ka", "kat", "geo");
 		putCode("German", "de", "deu", "ger");
 		putCode("German, Low; Saxon, Low; Low German; Low Saxon", null, "nds",
-				"nds");
+			"nds");
 		putCode("German, Middle High (ca.1050-1500)", null, "gmh", "gmh");
 		putCode("German, Old High (ca.750-1050)", null, "goh", "goh");
 		putCode("Germanic (Other)", null, "gem", "gem");
@@ -293,7 +304,7 @@ public class Iso639 {
 		putCode("Indo-European (Other)", null, "ine", "ine");
 		putCode("Indonesian", "id", "ind", "ind");
 		putCode("Interlingua (International Auxiliary Language Association)",
-				"ia", "ina", "ina");
+			"ia", "ina", "ina");
 		putCode("Interlingue", "ie", "ile", "ile");
 		putCode("Inuktitut", "iu", "iku", "iku");
 		putCode("Inupiaq", "ik", "ipk", "ipk");
@@ -349,9 +360,9 @@ public class Iso639 {
 		putCode("Lingala", "ln", "lin", "lin");
 		putCode("Lithuanian", "lt", "lit", "lit");
 		putCode("Low German; Low Saxon; German, Low; Saxon, Low", null, "nds",
-				"nds");
+			"nds");
 		putCode("Low Saxon; Low German; Saxon, Low; German, Low", null, "nds",
-				"nds");
+			"nds");
 		putCode("Lozi", null, "loz", "loz");
 		putCode("Luba-Katanga", null, "lub", "lub");
 		putCode("Luba-Lulua", null, "lua", "lua");
@@ -462,7 +473,7 @@ public class Iso639 {
 		putCode("Santali", null, "sat", "sat");
 		putCode("Sardinian", "sc", "srd", "srd");
 		putCode("Sasak", null, "sas", "sas");
-		putCode("Saxon, Low; German, Low; Low Saxon; Low German",null,"nds","nds");
+		putCode("Saxon, Low; German, Low; Low Saxon; Low German", null, "nds", "nds");
 		putCode("Scots", null, "sco", "sco");
 		putCode("Selkup", null, "sel", "sel");
 		putCode("Semitic (Other)", null, "sem", "sem");
@@ -561,5 +572,4 @@ public class Iso639 {
 		putCode("Zulu", "zu", "zul", "zul");
 		putCode("Zuni", null, "zun", "zun");
 	}
-
 }

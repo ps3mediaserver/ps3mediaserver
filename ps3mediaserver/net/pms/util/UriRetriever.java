@@ -17,7 +17,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
  * @author Tim Cox (mail@tcox.org)
  */
 public class UriRetriever {
-
 	private static final String HTTP_HEADER_CONTENT_LENGTH = "Content-Length";
 	private static final int BUFFER_SIZE = 1024;
 	private HttpClient client = new HttpClient();
@@ -111,5 +110,4 @@ public class UriRetriever {
 			return 0;
 		}
 	}
-
 }

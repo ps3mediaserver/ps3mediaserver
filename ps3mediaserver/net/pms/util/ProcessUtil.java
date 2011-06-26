@@ -13,10 +13,8 @@ import com.sun.jna.Platform;
 
 // see https://code.google.com/p/ps3mediaserver/issues/detail?id=680
 // for background/issues/discussion related to this class
-
 public class ProcessUtil {
 	private static final Logger logger = LoggerFactory.getLogger(ProcessUtil.class);
-
 	// how long to wait in milliseconds until a kill -TERM on Unix has been deemed to fail
 	private static final int TERM_TIMEOUT = 10000;
 	// how long to wait in milliseconds until a kill -ALRM on Unix has been deemed to fail
@@ -75,14 +73,13 @@ public class ProcessUtil {
 	 *
 	 *     The Java 6 API clearly states that failure to promptly
 	 *     “read the output stream of the subprocess may cause the subprocess
-	 *     to block, and even deadlock.”
+	 *     to block, and even deadlock.�?
 	 *
 	 * This is corroborated by the fact that destroy() works fine if the
 	 * process is allowed to run to completion:
 	 *
 	 *     https://code.google.com/p/ps3mediaserver/issues/detail?id=680#c11
 	 */
-
 	// send a Unix process the specified signal
 	public static boolean kill(Integer pid, int signal) {
 		boolean killed = false;
@@ -116,7 +113,8 @@ public class ProcessUtil {
 					public void run() {
 						try {
 							Thread.sleep(TERM_TIMEOUT);
-						} catch (InterruptedException e) {}
+						} catch (InterruptedException e) {
+						}
 
 						try {
 							p.exitValue();
@@ -127,7 +125,8 @@ public class ProcessUtil {
 								try {
 									// This is a last resort, so let's not be too eager
 									Thread.sleep(ALRM_TIMEOUT);
-								} catch (InterruptedException ie) {}
+								} catch (InterruptedException ie) {
+								}
 
 								kill(pid, 9);
 							}

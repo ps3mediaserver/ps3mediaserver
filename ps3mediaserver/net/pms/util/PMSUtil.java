@@ -20,21 +20,21 @@ import net.pms.PMS;
 import net.pms.newgui.LooksFrame;
 
 public class PMSUtil {
-	
 	public static <T> T[] copyOf(T[] original, int newLength) {
 		return Arrays.copyOf(original, newLength);
 	}
-	
+
 	public static boolean isNetworkInterfaceLoopback(NetworkInterface ni) throws SocketException {
 		return ni.isLoopback();
 	}
-	
+
 	public static void browseURI(String uri) {
 		try {
 			Desktop.getDesktop().browse(new URI(uri)); //$NON-NLS-1$
-		} catch (Exception e1) {}
+		} catch (Exception e1) {
+		}
 	}
-	
+
 	public static void addSystemTray(final LooksFrame frame) {
 		if (SystemTray.isSupported()) {
 			SystemTray tray = SystemTray.getSystemTray();
@@ -46,15 +46,15 @@ public class PMSUtil {
 			MenuItem traceItem = new MenuItem(Messages.getString("LooksFrame.6")); //$NON-NLS-1$
 
 			defaultItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				frame.quit();
-			}
+				public void actionPerformed(ActionEvent e) {
+					frame.quit();
+				}
 			});
 
 			traceItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(true);
-			}
+				public void actionPerformed(ActionEvent e) {
+					frame.setVisible(true);
+				}
 			});
 
 			popup.add(traceItem);
@@ -64,22 +64,20 @@ public class PMSUtil {
 
 			trayIcon.setImageAutoSize(true);
 			trayIcon.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(true);
-				frame.setFocusable(true);
-			}
-
+				public void actionPerformed(ActionEvent e) {
+					frame.setVisible(true);
+					frame.setFocusable(true);
+				}
 			});
 			try {
-			tray.add(trayIcon);
+				tray.add(trayIcon);
 			} catch (AWTException e) {
-			e.printStackTrace();
+				e.printStackTrace();
 			}
-			}
-	}
-	
-	public static byte [] getHardwareAddress(NetworkInterface ni) throws SocketException {
-		return ni.getHardwareAddress();
+		}
 	}
 
+	public static byte[] getHardwareAddress(NetworkInterface ni) throws SocketException {
+		return ni.getHardwareAddress();
+	}
 }
