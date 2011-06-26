@@ -15,9 +15,9 @@ import java.io.File;
  *
  * @author Christoffer Lerno
  */
-public class Xmlwise
-{
-	private Xmlwise() {}
+public class Xmlwise {
+	private Xmlwise() {
+	}
 
 	/**
 	 * Loads an XML document ignoring DTD-validation.
@@ -27,8 +27,7 @@ public class Xmlwise
 	 * @throws IOException if we fail to load the file.
 	 * @throws XmlParseException if there is a problem parsing the xml in the file.
 	 */
-	public static Document loadDocument(File file) throws IOException, XmlParseException
-	{
+	public static Document loadDocument(File file) throws IOException, XmlParseException {
 		return loadDocument(file, false, false);
 	}
 
@@ -42,23 +41,17 @@ public class Xmlwise
 	 * @throws IOException if we fail to load the file.
 	 * @throws XmlParseException if there is a problem parsing the xml in the file.
 	 */
-	public static Document loadDocument(File file, boolean validate, boolean loadExternalDTD) throws IOException, XmlParseException
-	{
-		try
-		{
+	public static Document loadDocument(File file, boolean validate, boolean loadExternalDTD) throws IOException, XmlParseException {
+		try {
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			documentBuilderFactory.setAttribute("http://apache.org/xml/features/nonvalidating/load-external-dtd",
-			                                    loadExternalDTD);
+				loadExternalDTD);
 			documentBuilderFactory.setValidating(validate);
 			DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
 			return builder.parse(file);
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			throw e;
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			throw new XmlParseException(e);
 		}
 	}
@@ -72,19 +65,15 @@ public class Xmlwise
 	 * @return the <code>Document</code> object for the specified string.
 	 * @throws XmlParseException if we fail to parse the XML.
 	 */
-	public static Document createDocument(String xml, boolean validate, boolean loadExternalDTD) throws XmlParseException
-	{
-		try
-		{
+	public static Document createDocument(String xml, boolean validate, boolean loadExternalDTD) throws XmlParseException {
+		try {
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			documentBuilderFactory.setAttribute("http://apache.org/xml/features/nonvalidating/load-external-dtd",
-			                                    loadExternalDTD);
+				loadExternalDTD);
 			documentBuilderFactory.setValidating(validate);
 			DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
 			return builder.parse(new InputSource(new StringReader(xml)));
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			throw new XmlParseException(e);
 		}
 	}
@@ -96,8 +85,7 @@ public class Xmlwise
 	 * @return the <code>Document</code> object for the specified string.
 	 * @throws XmlParseException if we fail to parse the XML.
 	 */
-	public static Document createDocument(String xml) throws XmlParseException
-	{
+	public static Document createDocument(String xml) throws XmlParseException {
 		return createDocument(xml, false, false);
 	}
 
@@ -117,16 +105,15 @@ public class Xmlwise
 	 * @param stringToEscape the string to escape.
 	 * @return an escaped string suitable for use in an xml document.
 	 */
-	public static String escapeXML(String stringToEscape)
-	{
+	public static String escapeXML(String stringToEscape) {
 		int size = stringToEscape.length();
-		if (size == 0) return "";
+		if (size == 0) {
+			return "";
+		}
 		StringBuilder s = new StringBuilder(size);
-		for (int i = 0; i < size; i++)
-		{
+		for (int i = 0; i < size; i++) {
 			char c = stringToEscape.charAt(i);
-			switch (c)
-			{
+			switch (c) {
 				case '<':
 					s.append("&lt;");
 					break;
@@ -142,7 +129,8 @@ public class Xmlwise
 				case '\'':
 					s.append("&apos;");
 					break;
-				default: s.append(c);
+				default:
+					s.append(c);
 			}
 		}
 		return s.toString();
@@ -156,8 +144,7 @@ public class Xmlwise
 	 * @throws XmlParseException if parsing the file failed for some reason.
 	 * @throws IOException if there were any problems reading from the file.
 	 */
-	public static XmlElement loadXml(File file) throws XmlParseException, IOException
-	{
+	public static XmlElement loadXml(File file) throws XmlParseException, IOException {
 		return new XmlElement(loadDocument(file).getDocumentElement());
 	}
 
@@ -169,8 +156,7 @@ public class Xmlwise
 	 * @throws XmlParseException if parsing the file failed for some reason.
 	 * @throws IOException if there were any problems reading from the file.
 	 */
-	public static XmlElement loadXml(String filename) throws XmlParseException, IOException
-	{
+	public static XmlElement loadXml(String filename) throws XmlParseException, IOException {
 		return loadXml(new File(filename));
 	}
 
@@ -181,9 +167,7 @@ public class Xmlwise
 	 * @return an XmlElement tree rendered from the file.
 	 * @throws XmlParseException if parsing the xml failed to validate for some reason.
 	 */
-	public static XmlElement createXml(String xml) throws XmlParseException
-	{
+	public static XmlElement createXml(String xml) throws XmlParseException {
 		return new XmlElement(createDocument(xml).getDocumentElement());
 	}
-
 }
