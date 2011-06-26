@@ -303,7 +303,7 @@ public class RendererConfiguration {
 	private static final String MEDIAPARSERV2_THUMB = "MediaParserV2_ThumbnailGeneration";
 	private static final String SUPPORTED = "Supported";
 	private static final String CUSTOM_MENCODER_QUALITYSETTINGS = "CustomMencoderQualitySettings";
-	private static final String ANALYZE_ALL_FILES = "AnalyzeAllBeforeFolderShown";
+	private static final String DLNA_TREE_HACK = "CreateDLNATreeFaster";
 
 	// Ditlew
 	private static final String SHOW_DVD_TITLE_DURATION = "ShowDVDTitleDuration";
@@ -701,7 +701,8 @@ public class RendererConfiguration {
 		return getBoolean(MEDIAPARSERV2_THUMB, false) && MediaInfoParser.isValid();
 	}
 
-	public boolean isAnalyzeFolderAllFiles() {
-		return getBoolean(ANALYZE_ALL_FILES, false) && MediaInfoParser.isValid();
+	public boolean isDLNATreeHack() {
+		
+		return getBoolean(DLNA_TREE_HACK, false) && MediaInfoParser.isValid();
 	}
 }

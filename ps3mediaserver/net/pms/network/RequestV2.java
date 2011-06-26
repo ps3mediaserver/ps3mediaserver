@@ -447,7 +447,7 @@ public class RequestV2 extends HTTPResource {
 				if (files != null && filessize > 0) {
 					parentFolder = files.get(0).getParent();
 				}
-				if (browseFlag != null && browseFlag.equals("BrowseDirectChildren") && mediaRenderer.isMediaParserV2() && !mediaRenderer.isAnalyzeFolderAllFiles()) {
+				if (browseFlag != null && browseFlag.equals("BrowseDirectChildren") && mediaRenderer.isMediaParserV2() && mediaRenderer.isDLNATreeHack()) {
 					// with the new parser, files are parsed and analyzed *before* creating the DLNA tree,
 					// every 10 items (the ps3 asks 10 by 10),
 					// so we do not know exactly the total number of items in the DLNA folder to send

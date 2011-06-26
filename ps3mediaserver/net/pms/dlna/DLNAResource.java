@@ -467,7 +467,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				if (!resource.discovered) {
 					resource.discoverChildren();
 					boolean ready = true;
-					if (renderer.isMediaParserV2() && !renderer.isAnalyzeFolderAllFiles()) {
+					if (renderer.isMediaParserV2() && renderer.isDLNATreeHack()) {
 						ready = resource.analyzeChildren(count);
 					} else {
 						ready = resource.analyzeChildren(-1);
