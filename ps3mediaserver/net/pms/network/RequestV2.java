@@ -441,7 +441,7 @@ public class RequestV2 extends HTTPResource {
 				if (files != null) {
 					filessize = files.size();
 				}
-				response.append("<NumberReturned>" + (filessize - minus) + "</NumberReturned>");
+				response.append("<NumberReturned>").append(filessize - minus).append("</NumberReturned>");
 				response.append(CRLF);
 				DLNAResource parentFolder = null;
 				if (files != null && filessize > 0) {
@@ -459,9 +459,9 @@ public class RequestV2 extends HTTPResource {
 					{
 						totalCount = startingIndex;
 					}
-					response.append("<TotalMatches>" + totalCount + "</TotalMatches>");
+					response.append("<TotalMatches>").append(totalCount).append("</TotalMatches>");
 				} else if (browseFlag != null && browseFlag.equals("BrowseDirectChildren")) {
-					response.append("<TotalMatches>" + (((parentFolder != null) ? parentFolder.childrenNumber() : filessize) - minus) + "</TotalMatches>");
+					response.append("<TotalMatches>").append(((parentFolder != null) ? parentFolder.childrenNumber() : filessize) - minus).append("</TotalMatches>");
 				} else { //from upnp spec: If BrowseMetadata is specified in the BrowseFlags then TotalMatches = 1
 					response.append("<TotalMatches>1</TotalMatches>");
 				}
@@ -501,7 +501,7 @@ public class RequestV2 extends HTTPResource {
 			response.append("<ContainerUpdateIDs></ContainerUpdateIDs>");
 			response.append("</e:property>");
 			response.append("<e:property>");
-			response.append("<SystemUpdateID>" + DLNAResource.systemUpdateId + "</SystemUpdateID>");
+			response.append("<SystemUpdateID>").append(DLNAResource.systemUpdateId).append("</SystemUpdateID>");
 			response.append("</e:property>");
 			response.append("</e:propertyset>");
 		}
