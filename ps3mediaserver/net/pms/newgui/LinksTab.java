@@ -39,9 +39,9 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class LinksTab {
 	private ImagePanel imagePanel;
-	private JLabel jl ;
+	private JLabel jl;
 	private JProgressBar jpb;
-	
+
 	public JProgressBar getJpb() {
 		return jpb;
 	}
@@ -55,63 +55,60 @@ public class LinksTab {
 	}
 
 	public JComponent build() {
-		 FormLayout layout = new FormLayout(
-	                "0:grow, pref, 0:grow", //$NON-NLS-1$
-	                "pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
+		FormLayout layout = new FormLayout(
+			"0:grow, pref, 0:grow", //$NON-NLS-1$
+			"pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
 
-	        PanelBuilder builder = new PanelBuilder(layout);
-	        builder.setDefaultDialogBorder();
-	        builder.setOpaque(true);
-	        CellConstraints cc = new CellConstraints();
+		PanelBuilder builder = new PanelBuilder(layout);
+		builder.setDefaultDialogBorder();
+		builder.setOpaque(true);
+		CellConstraints cc = new CellConstraints();
 
-        	final LinkMouseListener pms3Link = new LinkMouseListener("PS3 Media Server " + PMS.VERSION,
-        			"http://www.ps3mediaserver.org/");
-	        builder.addLabel(pms3Link.getLabel(), cc.xy(2, 1, "center, fill")).addMouseListener(pms3Link);
-	        
-	        imagePanel = buildImagePanel();
-	        builder.add(imagePanel, cc.xy(2, 3, "center, fill"));
-	        
-	       
-	        builder.addLabel(Messages.getString("LinksTab.5"),  cc.xy(2,  5, "center, fill")); //$NON-NLS-1$ //$NON-NLS-2$
-	        
-        	final LinkMouseListener tsMuxerLink = new LinkMouseListener("tsMuxeR (c) Smartlabs", 
-        			"http://www.smlabs.net/en/products/tsmuxer/");
-	        builder.addLabel(tsMuxerLink.getLabel(),  
-	        		cc.xy(2, 7, "center, fill")).addMouseListener(tsMuxerLink);
-	        			       
-        	final LinkMouseListener ffmpegLink = new LinkMouseListener("FFmpeg", 
-        			"http://ffmpeg.mplayerhq.hu");
-	        builder.addLabel(ffmpegLink.getLabel(), 
-	        		cc.xy(2, 9, "center, fill")).addMouseListener(ffmpegLink);
-	       
-        	final LinkMouseListener mplayerLink = new LinkMouseListener("MPlayer", 
-        			"http://www.mplayerhq.hu");
-	        builder.addLabel(mplayerLink.getLabel(), 
-	        		cc.xy(2, 11, "center, fill")).addMouseListener(mplayerLink);
-	       
-        	final LinkMouseListener mplayerSherpiaBuildsLink = new LinkMouseListener("MPlayer's Sherpya Builds", 
-        			"http://oss.netfarm.it/mplayer-win32.php");
-	        builder.addLabel(mplayerSherpiaBuildsLink.getLabel(), 
-	        		cc.xy(2, 13, "center, fill")).addMouseListener(mplayerSherpiaBuildsLink);
-	        
-			JScrollPane scrollPane = new JScrollPane(builder.getPanel());
-			scrollPane.setBorder(null);
-			return scrollPane;
+		final LinkMouseListener pms3Link = new LinkMouseListener("PS3 Media Server " + PMS.VERSION,
+			"http://www.ps3mediaserver.org/");
+		builder.addLabel(pms3Link.getLabel(), cc.xy(2, 1, "center, fill")).addMouseListener(pms3Link);
+
+		imagePanel = buildImagePanel();
+		builder.add(imagePanel, cc.xy(2, 3, "center, fill"));
+
+
+		builder.addLabel(Messages.getString("LinksTab.5"), cc.xy(2, 5, "center, fill")); //$NON-NLS-1$ //$NON-NLS-2$
+
+		final LinkMouseListener tsMuxerLink = new LinkMouseListener("tsMuxeR (c) Smartlabs",
+			"http://www.smlabs.net/en/products/tsmuxer/");
+		builder.addLabel(tsMuxerLink.getLabel(),
+			cc.xy(2, 7, "center, fill")).addMouseListener(tsMuxerLink);
+
+		final LinkMouseListener ffmpegLink = new LinkMouseListener("FFmpeg",
+			"http://ffmpeg.mplayerhq.hu");
+		builder.addLabel(ffmpegLink.getLabel(),
+			cc.xy(2, 9, "center, fill")).addMouseListener(ffmpegLink);
+
+		final LinkMouseListener mplayerLink = new LinkMouseListener("MPlayer",
+			"http://www.mplayerhq.hu");
+		builder.addLabel(mplayerLink.getLabel(),
+			cc.xy(2, 11, "center, fill")).addMouseListener(mplayerLink);
+
+		final LinkMouseListener mplayerSherpiaBuildsLink = new LinkMouseListener("MPlayer's Sherpya Builds",
+			"http://oss.netfarm.it/mplayer-win32.php");
+		builder.addLabel(mplayerSherpiaBuildsLink.getLabel(),
+			cc.xy(2, 13, "center, fill")).addMouseListener(mplayerSherpiaBuildsLink);
+
+		JScrollPane scrollPane = new JScrollPane(builder.getPanel());
+		scrollPane.setBorder(null);
+		return scrollPane;
 	}
 
-	private static class LinkMouseListener implements MouseListener
-	{
+	private static class LinkMouseListener implements MouseListener {
 		private String name;
 		private String link;
-		
-		public LinkMouseListener(String n, String l)
-		{
+
+		public LinkMouseListener(String n, String l) {
 			name = n;
 			link = l;
 		}
 
-		public String getLabel()
-		{
+		public String getLabel() {
 			final StringBuffer sb = new StringBuffer();
 			sb.append("<html>");
 			sb.append("<a href=\"");
@@ -146,10 +143,8 @@ public class LinksTab {
 		@Override
 		public void mouseReleased(MouseEvent e) {
 		}
-
 	}
-	
-	
+
 	public ImagePanel buildImagePanel() {
 		BufferedImage bi = null;
 		try {

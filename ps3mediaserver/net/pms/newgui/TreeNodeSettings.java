@@ -37,13 +37,12 @@ import net.pms.PMS;
 import net.pms.encoders.Player;
 
 public class TreeNodeSettings extends DefaultMutableTreeNode {
-
 	private static final long serialVersionUID = -337606760204027449L;
 	private Player p;
 	private JComponent otherConfigPanel;
 	private boolean enable = true;
 	private JPanel warningPanel;
-	
+
 	public boolean isEnable() {
 		return enable;
 	}
@@ -61,31 +60,33 @@ public class TreeNodeSettings extends DefaultMutableTreeNode {
 		super(name);
 		this.p = p;
 		this.otherConfigPanel = otherConfigPanel;
-		
+
 	}
-	
+
 	public String id() {
-		if (p != null)
+		if (p != null) {
 			return p.id();
-		else if (otherConfigPanel != null)
+		} else if (otherConfigPanel != null) {
 			return "" + otherConfigPanel.hashCode(); //$NON-NLS-1$
-		else
+		} else {
 			return null;
-			
+		}
 	}
-	
+
 	public JComponent getConfigPanel() {
 		if (p != null) {
-			if (PMS.get().getPlayers().contains(p))
+			if (PMS.get().getPlayers().contains(p)) {
 				return p.config();
-			else
+			} else {
 				return getWarningPanel();
-		} else if (otherConfigPanel != null)
+			}
+		} else if (otherConfigPanel != null) {
 			return otherConfigPanel;
-		else
+		} else {
 			return new JPanel();
+		}
 	}
-	
+
 	public JPanel getWarningPanel() {
 		if (warningPanel == null) {
 			BufferedImage bi = null;
@@ -94,25 +95,24 @@ public class TreeNodeSettings extends DefaultMutableTreeNode {
 			} catch (IOException e) {
 			}
 			ImagePanel ip = new ImagePanel(bi);
-			
-			 FormLayout layout = new FormLayout(
-		                "0:grow, pref, 0:grow", //$NON-NLS-1$
-		                "pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
 
-		        PanelBuilder builder = new PanelBuilder(layout);
-		        builder.setDefaultDialogBorder();
-		        builder.setOpaque(false);
-		        CellConstraints cc = new CellConstraints();
+			FormLayout layout = new FormLayout(
+				"0:grow, pref, 0:grow", //$NON-NLS-1$
+				"pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
 
-		        JLabel jl = new JLabel(Messages.getString("TreeNodeSettings.4")); //$NON-NLS-1$
-		         builder.add(jl, cc.xy(2, 1, "center, fill")); //$NON-NLS-1$
-		         jl.setFont(jl.getFont().deriveFont(Font.BOLD));
-			       
-		        builder.add(ip, cc.xy(2, 3, "center, fill")); //$NON-NLS-1$
-		        
-		        warningPanel = builder.getPanel();
+			PanelBuilder builder = new PanelBuilder(layout);
+			builder.setDefaultDialogBorder();
+			builder.setOpaque(false);
+			CellConstraints cc = new CellConstraints();
+
+			JLabel jl = new JLabel(Messages.getString("TreeNodeSettings.4")); //$NON-NLS-1$
+			builder.add(jl, cc.xy(2, 1, "center, fill")); //$NON-NLS-1$
+			jl.setFont(jl.getFont().deriveFont(Font.BOLD));
+
+			builder.add(ip, cc.xy(2, 3, "center, fill")); //$NON-NLS-1$
+
+			warningPanel = builder.getPanel();
 		}
 		return warningPanel;
 	}
-
 }

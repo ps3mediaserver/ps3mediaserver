@@ -57,7 +57,7 @@ public class HelpTab {
 	 */
 	public JComponent build() {
 		FormLayout layout = new FormLayout("left:pref, 0:grow", //$NON-NLS-1$
-				"pref, fill:default:grow"); //$NON-NLS-1$
+			"pref, fill:default:grow"); //$NON-NLS-1$
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 		CellConstraints cc = new CellConstraints();
@@ -86,10 +86,10 @@ public class HelpTab {
 						String urlString = event.getURL().toExternalForm();
 
 						if (urlString.startsWith("http://") || urlString.startsWith("https://")
-								|| urlString.startsWith("ftp://")) {
+							|| urlString.startsWith("ftp://")) {
 							// Open external links in the desktop web browser
 							URI uri = new URI(urlString);
-		                    Desktop.getDesktop().browse(uri); 
+							Desktop.getDesktop().browse(uri);
 						} else {
 							// Open anchor links in the editorPane
 							editorPane.setPage(event.getURL());
@@ -104,8 +104,8 @@ public class HelpTab {
 		});
 
 		JScrollPane pane = new JScrollPane(editorPane,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		pane.setPreferredSize(new Dimension(500, 400));
 		builder.add(pane, cc.xy(2, 2));
 

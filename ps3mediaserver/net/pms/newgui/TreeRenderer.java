@@ -28,55 +28,49 @@ import net.pms.PMS;
 import net.pms.encoders.Player;
 
 public class TreeRenderer extends DefaultTreeCellRenderer {
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8830634234336247114L;
 
 	public TreeRenderer() {
-		
 	}
 
 	public Component getTreeCellRendererComponent(
-			JTree tree,
-			Object value,
-			boolean sel,
-			boolean expanded,
-			boolean leaf,
-			int row,
-			boolean hasFocus) {
+		JTree tree,
+		Object value,
+		boolean sel,
+		boolean expanded,
+		boolean leaf,
+		int row,
+		boolean hasFocus
+	) {
 
-			super.getTreeCellRendererComponent(
+		super.getTreeCellRendererComponent(
 			tree, value, sel,
 			expanded, leaf, row,
 			hasFocus);
-			if (leaf && value instanceof TreeNodeSettings) {
-				if (((TreeNodeSettings) value).getPlayer() == null) {
-					setIcon(LooksFrame.readImageIcon("icon_tree_parent-16.png")); //$NON-NLS-1$
-				} else {
+		if (leaf && value instanceof TreeNodeSettings) {
+			if (((TreeNodeSettings) value).getPlayer() == null) {
+				setIcon(LooksFrame.readImageIcon("icon_tree_parent-16.png")); //$NON-NLS-1$
+			} else {
 				if (((TreeNodeSettings) value).isEnable()) {
 					Player p = ((TreeNodeSettings) value).getPlayer();
-					if (PMS.get().getPlayers().contains(p))
+					if (PMS.get().getPlayers().contains(p)) {
 						setIcon(LooksFrame.readImageIcon("icon_tree_node-16.png")); //$NON-NLS-1$
-					else
+					} else {
 						setIcon(LooksFrame.readImageIcon("messagebox_warning-16.png")); //$NON-NLS-1$
-				}
-				else
+					}
+				} else {
 					setIcon(LooksFrame.readImageIcon("icon_tree_node_fail-16.png")); //$NON-NLS-1$
 				}
-				
-				if (((TreeNodeSettings) value).getPlayer() != null && ((TreeNodeSettings) value).getParent().getIndex((TreeNodeSettings) value) == 0) {
-					setFont(getFont().deriveFont(Font.BOLD));
-					} else
-						setFont(getFont().deriveFont(Font.PLAIN));	
+			}
+
+			if (((TreeNodeSettings) value).getPlayer() != null && ((TreeNodeSettings) value).getParent().getIndex((TreeNodeSettings) value) == 0) {
+				setFont(getFont().deriveFont(Font.BOLD));
 			} else {
-				setIcon(LooksFrame.readImageIcon("icon_tree_parent-16.png")); //$NON-NLS-1$
+				setFont(getFont().deriveFont(Font.PLAIN));
 			}
-
-			return this;
-			}
-
-			
-			
+		} else {
+			setIcon(LooksFrame.readImageIcon("icon_tree_parent-16.png")); //$NON-NLS-1$
+		}
+		return this;
+	}
 }

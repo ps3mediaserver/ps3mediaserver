@@ -62,11 +62,9 @@ import com.sun.jna.Platform;
 
 public class NetworkTab {
 	private static final Logger logger = LoggerFactory.getLogger(NetworkTab.class);
-
 	private JCheckBox smcheckBox;
 	private JCheckBox newHTTPEngine;
 	private JCheckBox preventSleep;
-	//private JCheckBox  blockBox;
 	private JTextField host;
 	private JTextField port;
 	private JComboBox langs;
@@ -92,7 +90,6 @@ public class NetworkTab {
 		smcheckBox = new JCheckBox(Messages.getString("NetworkTab.3")); //$NON-NLS-1$
 		smcheckBox.setContentAreaFilled(false);
 		smcheckBox.addItemListener(new ItemListener() {
-
 			public void itemStateChanged(ItemEvent e) {
 				PMS.getConfiguration().setMinimized((e.getStateChange() == ItemEvent.SELECTED));
 			}
@@ -111,7 +108,6 @@ public class NetworkTab {
 		final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[]{"bg", "ca", "zhs", "zht", "cz", "da", "nl", "en", "fi", "fr", "de", "el", "is", "it", "ja", "no", "pl", "pt", "br", "ro", "ru", "sl", "es", "sv"}, new Object[]{"Bulgarian", "Catalan", "Chinese (Simplified)", "Chinese (Traditional)", "Czech", "Danish", "Dutch", "English", "Finnish", "French", "German", "Greek", "Icelandic", "Italian", "Japanese", "Norwegian", "Polish", "Portuguese", "Portuguese (Brazilian)", "Romanian", "Russian", "Slovenian", "Spanish", "Swedish"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$ //$NON-NLS-27$ //$NON-NLS-28$ //$NON-NLS-29$ //$NON-NLS-30$ //$NON-NLS-31$ //$NON-NLS-32$ //$NON-NLS-33$ //$NON-NLS-34$ //$NON-NLS-35$ //$NON-NLS-36$ //$NON-NLS-37$ //$NON-NLS-38$ //$NON-NLS-39$ //$NON-NLS-40$ //$NON-NLS-41$ //$NON-NLS-42$ //$NON-NLS-43$ //$NON-NLS-44$ //$NON-NLS-45$ //$NON-NLS-46$ //$NON-NLS-47$ //$NON-NLS-48$
 		langs = new JComboBox(kcbm);
 		langs.setEditable(false);
-		//langs.setSelectedIndex(0);
 		String defaultLang = null;
 		if (configuration.getLanguage() != null && configuration.getLanguage().length() > 0) {
 			defaultLang = configuration.getLanguage();
@@ -127,7 +123,6 @@ public class NetworkTab {
 		}
 
 		langs.addItemListener(new ItemListener() {
-
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					configuration.setLanguage((String) kcbm.getSelectedKey());
@@ -141,7 +136,6 @@ public class NetworkTab {
 
 		JButton service = new JButton(Messages.getString("NetworkTab.4")); //$NON-NLS-1$
 		service.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (PMS.get().installWin32Service()) {
@@ -166,12 +160,8 @@ public class NetworkTab {
 			service.setEnabled(false);
 		}
 
-
-
-
 		host = new JTextField(PMS.getConfiguration().getServerHostname());
 		host.addKeyListener(new KeyListener() {
-
 			@Override
 			public void keyPressed(KeyEvent e) {
 			}
@@ -186,10 +176,9 @@ public class NetworkTab {
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
-		// host.setEnabled( StringUtils.isBlank(configuration.getNetworkInterface())) ;
+
 		port = new JTextField(configuration.getServerPort() != 5001 ? "" + configuration.getServerPort() : ""); //$NON-NLS-1$ //$NON-NLS-2$
 		port.addKeyListener(new KeyListener() {
-
 			@Override
 			public void keyPressed(KeyEvent e) {
 			}
@@ -241,16 +230,13 @@ public class NetworkTab {
 			logger.error(null, e1);
 		}
 
-
 		final KeyedComboBoxModel networkInterfaces = new KeyedComboBoxModel(names.toArray(), interfaces.toArray());
 		networkinterfacesCBX = new JComboBox(networkInterfaces);
 		networkInterfaces.setSelectedKey(configuration.getNetworkInterface());
 		networkinterfacesCBX.addItemListener(new ItemListener() {
-
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					configuration.setNetworkInterface((String) networkInterfaces.getSelectedKey());
-					//host.setEnabled( StringUtils.isBlank(configuration.getNetworkInterface())) ;
 					PMS.get().getFrame().setReloadable(true);
 				}
 			}
@@ -258,7 +244,6 @@ public class NetworkTab {
 
 		ip_filter = new JTextField(PMS.getConfiguration().getIpFilter());
 		ip_filter.addKeyListener(new KeyListener() {
-
 			@Override
 			public void keyPressed(KeyEvent e) {
 			}
@@ -288,12 +273,9 @@ public class NetworkTab {
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-
-
 		newHTTPEngine = new JCheckBox(Messages.getString("NetworkTab.32"));
 		newHTTPEngine.setSelected(PMS.getConfiguration().isHTTPEngineV2());
 		newHTTPEngine.addItemListener(new ItemListener() {
-
 			public void itemStateChanged(ItemEvent e) {
 				PMS.getConfiguration().setHTTPEngineV2((e.getStateChange() == ItemEvent.SELECTED));
 			}
@@ -303,7 +285,6 @@ public class NetworkTab {
 		preventSleep = new JCheckBox(Messages.getString("NetworkTab.33"));
 		preventSleep.setSelected(PMS.getConfiguration().isPreventsSleep());
 		preventSleep.addItemListener(new ItemListener() {
-
 			public void itemStateChanged(ItemEvent e) {
 				PMS.getConfiguration().setPreventsSleep((e.getStateChange() == ItemEvent.SELECTED));
 			}
@@ -332,8 +313,6 @@ public class NetworkTab {
 	}
 
 	public void addPlugins() {
-
-
 		int i = 0;
 		for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 			plugins[i].setText(listener.name());
@@ -341,16 +320,13 @@ public class NetworkTab {
 
 			//listener to show option screen
 			plugins[i++].addActionListener(new ActionListener() {
-
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
 						listener.config(), "Options", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
 				}
 			});
-
 			i++;
 		}
-
 	}
 }
