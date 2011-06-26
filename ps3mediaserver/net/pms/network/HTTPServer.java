@@ -46,10 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HTTPServer implements Runnable {
-	
 	private static final Logger logger = LoggerFactory.getLogger(HTTPServer.class);
-	
-	//private boolean newHTTP = false;
 	private ArrayList<String> ips;
 	private int port;
 	private String hostName;
@@ -58,12 +55,12 @@ public class HTTPServer implements Runnable {
 	private boolean stop;
 	private Thread runnable;
 	private InetAddress iafinal = null;
+
 	public InetAddress getIafinal() {
 		return iafinal;
 	}
-
 	private NetworkInterface ni = null;
-	
+
 	public NetworkInterface getNi() {
 		return ni;
 	}
@@ -72,9 +69,9 @@ public class HTTPServer implements Runnable {
 		this.port = port;
 		ips = new ArrayList<String>();
 	}
-	
+
 	public boolean start() throws IOException {
-		
+
 		Enumeration<NetworkInterface> enm = NetworkInterface.getNetworkInterfaces();
 		InetAddress ia = null;
 		boolean found = false;
@@ -82,11 +79,12 @@ public class HTTPServer implements Runnable {
 		NetworkInterface fixedNI = NetworkInterface.getByName(fixedNetworkInterfaceName);
 		while (enm.hasMoreElements()) {
 			ni = enm.nextElement();
-			if (fixedNI != null)
+			if (fixedNI != null) {
 				ni = fixedNI;
+			}
 			logger.info("Scanning network interface " + ni.getName() + " / " + ni.getDisplayName());
 			if (!PMSUtil.isNetworkInterfaceLoopback(ni) && ni.getName() != null && (ni.getDisplayName() == null || !ni.getDisplayName().toLowerCase().contains("vmnet")) && !ni.getName().toLowerCase().contains("vmnet")) {
-				
+
 				Enumeration<InetAddress> addrs = ni.getInetAddresses();
 				while (addrs.hasMoreElements()) {
 					ia = addrs.nextElement();
@@ -99,10 +97,11 @@ public class HTTPServer implements Runnable {
 						break;
 					}
 				}
-				
+
 			}
-			if (found || fixedNI != null)
+			if (found || fixedNI != null) {
 				break;
+			}
 		}
 		hostName = PMS.getConfiguration().getServerHostname();
 		SocketAddress address = null;
@@ -111,8 +110,9 @@ public class HTTPServer implements Runnable {
 			InetAddress tempIA = InetAddress.getByName(hostName);
 			if (tempIA != null && ni != null && ni.equals(NetworkInterface.getByInetAddress(tempIA))) {
 				address = new InetSocketAddress(tempIA, port);
-			} else
+			} else {
 				address = new InetSocketAddress(hostName, port);
+			}
 		} else if (iafinal != null) {
 			logger.info("Using address " + iafinal + " found on network interface: " + ni.toString().trim().replace('\n', ' '));
 			address = new InetSocketAddress(iafinal, port);
@@ -121,24 +121,25 @@ public class HTTPServer implements Runnable {
 			address = new InetSocketAddress(port);
 		}
 		logger.info("Created socket: " + address);
-		
+
 		if (!PMS.getConfiguration().isHTTPEngineV2()) {
 			serverSocketChannel = ServerSocketChannel.open();
-			
+
 			serverSocket = serverSocketChannel.socket();
 			serverSocket.setReuseAddress(true);
 			serverSocket.bind(address);
-			
-			if (hostName == null && iafinal !=null)
+
+			if (hostName == null && iafinal != null) {
 				hostName = iafinal.getHostAddress();
-			else if (hostName == null)
+			} else if (hostName == null) {
 				hostName = InetAddress.getLocalHost().getHostAddress();
-			
-			
+			}
+
+
 			runnable = new Thread(this);
 			runnable.setDaemon(false);
 			runnable.start();
-			
+
 		} else {
 			group = new DefaultChannelGroup("myServer");
 			factory = new NioServerSocketChannelFactory(
@@ -155,20 +156,19 @@ public class HTTPServer implements Runnable {
 			bootstrap.setOption("child.receiveBufferSize", 65536);
 			channel = bootstrap.bind(address);
 			group.add(channel);
-			if (hostName == null && iafinal !=null)
+			if (hostName == null && iafinal != null) {
 				hostName = iafinal.getHostAddress();
-			else if (hostName == null)
+			} else if (hostName == null) {
 				hostName = InetAddress.getLocalHost().getHostAddress();
-			
+			}
 		}
-		
 		return true;
 	}
-	
+
 	private ChannelFactory factory;
 	private Channel channel;
-	public static ChannelGroup group ;
-	
+	public static ChannelGroup group;
+
 	public void stop() {
 		logger.info("Stopping server on host " + hostName + " and port " + port + "...");
 		if (!PMS.getConfiguration().isHTTPEngineV2()) {
@@ -177,22 +177,21 @@ public class HTTPServer implements Runnable {
 			try {
 				serverSocket.close();
 				serverSocketChannel.close();
-			} catch (IOException e) {}
+			} catch (IOException e) {
+			}
 		} else if (channel != null) {
-			/*channel.disconnect().awaitUninterruptibly();
-			channel.close().awaitUninterruptibly();
-		    channel.unbind().awaitUninterruptibly();*/
-			if (group != null)
+			if (group != null) {
 				group.close().awaitUninterruptibly();
-			if (factory != null)
-		    	factory.releaseExternalResources();
+			}
+			if (factory != null) {
+				factory.releaseExternalResources();
+			}
 		}
 	}
-	
-	public void run() {
 
+	public void run() {
 		logger.info("Starting DLNA Server on host " + hostName + " and port " + port + "...");
-		
+
 		while (!stop) {
 			try {
 				Socket socket = serverSocket.accept();
@@ -200,16 +199,16 @@ public class HTTPServer implements Runnable {
 				// basic ipfilter solntcev@gmail.com
 				boolean ignore = false;
 				if (!ips.contains(ip)) {
-					if(PMS.getConfiguration().getIpFilter().length() > 0 && !PMS.getConfiguration().getIpFilter().equals(ip)){
+					if (PMS.getConfiguration().getIpFilter().length() > 0 && !PMS.getConfiguration().getIpFilter().equals(ip)) {
 						ignore = true;
 						socket.close();
 						logger.info("Ignoring request from: " + ip);
-					}else{
+					} else {
 						ips.add(ip);
 						logger.info("Receiving a request from: " + ip);
 					}
 				}
-				if(!ignore){
+				if (!ignore) {
 					RequestHandler request = new RequestHandler(socket);
 					Thread thread = new Thread(request);
 					thread.start();
@@ -220,32 +219,32 @@ public class HTTPServer implements Runnable {
 				e.printStackTrace();
 			} finally {
 				try {
-					if (stop && serverSocket != null)
+					if (stop && serverSocket != null) {
 						serverSocket.close();
-					if (stop && serverSocketChannel != null)
+					}
+					if (stop && serverSocketChannel != null) {
 						serverSocketChannel.close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		
 	}
-	
+
 	public String getURL() {
 		return "http://" + hostName + ":" + port;
 	}
-	
+
 	public String getURLP() {
-		return "http://" + hostName + ":" + (port+1);
+		return "http://" + hostName + ":" + (port + 1);
 	}
-	
+
 	public String getHost() {
 		return hostName;
 	}
-	
+
 	public int getPort() {
 		return port;
 	}
-
 }
