@@ -40,8 +40,6 @@ import org.slf4j.LoggerFactory;
 
 public class Proxy extends Thread {
 	private static final Logger logger = LoggerFactory.getLogger(Proxy.class);
-
-	
 	private Socket socket, socketToWeb;
 	private BufferedReader fromBrowser;
 	private OutputStream toBrowser;
@@ -58,11 +56,11 @@ public class Proxy extends Thread {
 	}
 
 	public void run() {
-		
+
 		// mms://202.167.254.196/FOX
 		// http://www.cnn.com/video/live/cnnlive_1.asx  [rtsp]
 		// http://atdhe.net/watchtv4.php?b=n   [rtmp, like hulu]
-		
+
 		try {
 			String getter = null;
 			String str, targetHost = "", httpHeader = "";
@@ -71,37 +69,30 @@ public class Proxy extends Thread {
 				str = fromBrowser.readLine();
 				if (str.startsWith("GET") || str.startsWith("DESCRIBE") || str.startsWith("POST") || str.startsWith("HEAD")) {
 					getter = str;
-					/*String s [] = str.split(" ");
-					if (s.length == 3 && s[1].contains(":")) {
-						int newPort = -1;
-						try {
-							newPort = Integer.parseInt(s[1].substring(s[1].lastIndexOf(":")+1));
-						} catch (NumberFormatException nfe) {}
-						if (newPort > -1)
-							targetPort = newPort;
-					}*/
 				}
 				if (str.startsWith("Accept-Encoding: gzip")) {
 					str = "Accept-Encoding: identity";
 				}
-				//if (!str.startsWith("If-Modified-Since") && !str.startsWith("Range") && !str.startsWith("If-None-Match"))
-					httpHeader += str + "\r\n";
-				if (str.startsWith("Host: "))
+
+				httpHeader += str + "\r\n";
+				if (str.startsWith("Host: ")) {
 					targetHost = str.substring(6);
-				else if (str.startsWith("DESCRIBE")) {
+				} else if (str.startsWith("DESCRIBE")) {
 					targetPort = 554;
-					targetHost = str.substring(str.indexOf("//")+2);
+					targetHost = str.substring(str.indexOf("//") + 2);
 					targetHost = targetHost.substring(0, targetHost.indexOf("/"));
 				}
-				if (str.length() == 0)
+				if (str.length() == 0) {
 					break;
+				}
 			}
 
 			String target = targetHost;
 			if (targetHost.indexOf(":") > -1) {
 				try {
-					targetPort = Integer.parseInt(targetHost.substring(targetHost.indexOf(":")+1));
-				} catch (NumberFormatException nfe) {}
+					targetPort = Integer.parseInt(targetHost.substring(targetHost.indexOf(":") + 1));
+				} catch (NumberFormatException nfe) {
+				}
 				target = targetHost.substring(0, targetHost.indexOf(":"));
 			}
 			logger.trace("[PROXY] Connect to: " + target + " and port: " + targetPort);
@@ -113,105 +104,109 @@ public class Proxy extends Thread {
 			StringTokenizer st = new StringTokenizer(getter, " ");
 			st.nextToken();
 			String askedResource = st.nextToken();
-			askedResource = askedResource.substring(askedResource.indexOf(targetHost)+targetHost.length());
+			askedResource = askedResource.substring(askedResource.indexOf(targetHost) + targetHost.length());
 			logger.trace("[PROXY] Asked resource: " + askedResource);
-			
+
 			String directoryResource = askedResource.substring(0, askedResource.lastIndexOf("/"));
 			directoryResource = getWritableFileName(directoryResource);
-			String fileResource = askedResource.substring(askedResource.lastIndexOf("/")+1);
+			String fileResource = askedResource.substring(askedResource.lastIndexOf("/") + 1);
 			fileResource = getWritableFileName(fileResource);
 			fileResource = fileResource + ".cached";
 			String fileN = "proxycache/" + target + "/" + directoryResource;
 			File directoryResourceFile = new File(fileN);
-			if (writeCache)
+			if (writeCache) {
 				directoryResourceFile.mkdirs();
+			}
 			File cachedResource = new File(directoryResourceFile, fileResource);
 			//System.out.println("Trying to find: " + cachedResource.getAbsolutePath());
-			
+
 			byte[] buffer = new byte[8192];
 			boolean resourceExists = cachedResource.exists() || this.getClass().getResource("/" + fileN) != null;
 			boolean inMemory = writeCache && !resourceExists;
-		
+
 			FileOutputStream fOUT = null;
 			if (resourceExists) {
 				logger.trace("[PROXY] File is cached: " + cachedResource.getAbsolutePath());
 				sockWebInputStream.close();
-				if (cachedResource.exists())
+				if (cachedResource.exists()) {
 					sockWebInputStream = new FileInputStream(cachedResource);
-				else
+				} else {
 					sockWebInputStream = this.getClass().getResourceAsStream("/" + fileN);
+				}
 			} else if (writeCache) {
 				logger.trace("[PROXY] File is not cached / Writing in it: " + cachedResource.getAbsolutePath());
 				fOUT = new FileOutputStream(cachedResource, false);
 			}
-			
+
 			OutputStream baos = null;
-			if (inMemory)
+			if (inMemory) {
 				baos = new ByteArrayOutputStream();
-			else
+			} else {
 				baos = toBrowser;
-			
-			
+			}
+
 			long total_read = 0;
-			
-		      int bytes_read;
-		      long CL = 10000000000L;
-		      while(total_read < CL && (bytes_read = sockWebInputStream.read(buffer)) != -1) {
-		    	  if (!resourceExists) {
-		    		  if (10000000000L == CL ) {
-				    	  String s = new String(buffer, 0, bytes_read);
-				    	  int clPos = s.indexOf("Content-Length: ");
-				    	  if (clPos > -1) {
-				    		  CL = Integer.parseInt(s.substring(clPos+16, s.indexOf("\n", clPos)).trim());
-				    		  logger.trace("Found Content Length: " + CL);
-				    	  }
-			    	  }
-			    	  if (bytes_read >= 7) {
-			    		  byte end [] = new byte [7];
-			    		  System.arraycopy(buffer, bytes_read-7, end, 0, 7);
-			    		  if (new String(end).equals("\r\n0\r\n\r\n")) {
-			    			  System.out.println("end of transfer chunked");
-			    			  CL = -1;
-			    		  }
-			    	  }
-			    	  if (writeCache)
-			    		  fOUT.write(buffer, 0, bytes_read);
-		    	  }
-		    	
-		    	  baos.write(buffer, 0, bytes_read);
-		    	  total_read += bytes_read;
-		      }
-		      if (inMemory) {
-					
-		    	  baos.close();
-		    	  toBrowser.write(((ByteArrayOutputStream) baos).toByteArray());
-					
+
+			int bytes_read;
+			long CL = 10000000000L;
+			while (total_read < CL && (bytes_read = sockWebInputStream.read(buffer)) != -1) {
+				if (!resourceExists) {
+					if (10000000000L == CL) {
+						String s = new String(buffer, 0, bytes_read);
+						int clPos = s.indexOf("Content-Length: ");
+						if (clPos > -1) {
+							CL = Integer.parseInt(s.substring(clPos + 16, s.indexOf("\n", clPos)).trim());
+							logger.trace("Found Content Length: " + CL);
+						}
+					}
+					if (bytes_read >= 7) {
+						byte end[] = new byte[7];
+						System.arraycopy(buffer, bytes_read - 7, end, 0, 7);
+						if (new String(end).equals("\r\n0\r\n\r\n")) {
+							System.out.println("end of transfer chunked");
+							CL = -1;
+						}
+					}
+					if (writeCache) {
+						fOUT.write(buffer, 0, bytes_read);
+					}
 				}
-		      
-		      if (writeCache && fOUT != null) {
-		    	
-					fOUT.close();
-				}
-		      
-		      
-		      socketToWeb.close();
-//		      baos.close();
-		      toBrowser.close();
+
+				baos.write(buffer, 0, bytes_read);
+				total_read += bytes_read;
+			}
+			if (inMemory) {
+
+				baos.close();
+				toBrowser.write(((ByteArrayOutputStream) baos).toByteArray());
+
+			}
+
+			if (writeCache && fOUT != null) {
+
+				fOUT.close();
+			}
+
+
+			socketToWeb.close();
+			toBrowser.close();
 		} catch (IOException e) {
 			//System.err.println("E2 " + Thread.currentThread().getName() + ": " + e.getMessage());
 		} finally {
 			try {
-				if (toWeb != null)
+				if (toWeb != null) {
 					toWeb.close();
-				if (toBrowser != null)
+				}
+				if (toBrowser != null) {
 					toBrowser.close();
+				}
 				socket.close();
 			} catch (IOException e) {
 				//System.err.println("E3 " + Thread.currentThread().getName() + ": " + e.getMessage());
 			}
 		}
 	}
-	
+
 	private String getWritableFileName(String resource) {
 		resource = resource.replace('?', '\u00b5');
 		resource = resource.replace('|', '\u00b5');
@@ -222,18 +217,17 @@ public class Proxy extends Thread {
 		resource = resource.replace('|', '\u00b5');
 		return resource;
 	}
-	
 
 	public static void main(String[] args) throws IOException {
 		ServerSocket s = new ServerSocket(8080);
-		//System.out.println("Started " + s);
+		// System.out.println("Started " + s);
 		try {
 			while (true) {
 				Socket socket = s.accept();
 				try {
 					new Proxy(socket, false);
 				} catch (IOException e) {
-					//System.err.println("E1 " + Thread.currentThread().getName() + ": " + e.getMessage());
+					// System.err.println("E1 " + Thread.currentThread().getName() + ": " + e.getMessage());
 					socket.close();
 				}
 			}
@@ -241,5 +235,4 @@ public class Proxy extends Thread {
 			s.close();
 		}
 	}
-
 }

@@ -23,14 +23,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ProxyServer extends Thread {
-	
 	private int port;
-	
+
 	public ProxyServer(int port) {
 		this.port = port;
 		start();
 	}
-	
+
 	public void run() {
 		ServerSocket s;
 		try {
@@ -51,12 +50,11 @@ public class ProxyServer extends Thread {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
+
 	}
-	
+
 	public static void main(String args[]) {
 		ProxyServer ps = new ProxyServer(5015);
 		ps.start();
 	}
-
 }

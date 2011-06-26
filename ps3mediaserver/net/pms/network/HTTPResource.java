@@ -43,11 +43,9 @@ import org.slf4j.LoggerFactory;
  */
 public class HTTPResource {
 	private static final Logger logger = LoggerFactory.getLogger(HTTPResource.class);
-
 	public static final String UNKNOWN_VIDEO_TYPEMIME = "video/mpeg";
 	public static final String UNKNOWN_IMAGE_TYPEMIME = "image/jpeg";
 	public static final String UNKNOWN_AUDIO_TYPEMIME = "audio/mpeg";
-	
 	public static final String AUDIO_MP3_TYPEMIME = "audio/mpeg";
 	public static final String AUDIO_MP4_TYPEMIME = "audio/x-m4a";
 	public static final String AUDIO_WAV_TYPEMIME = "audio/wav";
@@ -55,7 +53,6 @@ public class HTTPResource {
 	public static final String AUDIO_FLAC_TYPEMIME = "audio/x-flac";
 	public static final String AUDIO_OGG_TYPEMIME = "audio/x-ogg";
 	public static final String AUDIO_LPCM_TYPEMIME = "audio/L16";
-	
 	public static final String MPEG_TYPEMIME = "video/mpeg";
 	public static final String MP4_TYPEMIME = "video/mp4";
 	public static final String AVI_TYPEMIME = "video/avi";
@@ -64,21 +61,14 @@ public class HTTPResource {
 	public static final String MATROSKA_TYPEMIME = "video/x-matroska";
 	public static final String VIDEO_TRANSCODE = "video/transcode";
 	public static final String AUDIO_TRANSCODE = "audio/transcode";
-	
 	public static final String PNG_TYPEMIME = "image/png";
 	public static final String JPEG_TYPEMIME = "image/jpeg";
 	public static final String TIFF_TYPEMIME = "image/tiff";
 	public static final String GIF_TYPEMIME = "image/gif";
 	public static final String BMP_TYPEMIME = "image/bmp";
-	
-	//public static final int PS3 = 1;
-	//public static final int XBOX = 2;
-	
-	
 	public HTTPResource() {
-		
 	}
-	
+
 	/**Returns for a given item type the default MIME type associated. This is used in the HTTP transfers
 	 * as in the client might do different things for different MIME types.
 	 * @param type Type for which the default MIME type is needed.
@@ -86,16 +76,16 @@ public class HTTPResource {
 	 */
 	public String getDefaultMimeType(int type) {
 		String mimeType = HTTPResource.UNKNOWN_VIDEO_TYPEMIME;
-		if (type == Format.VIDEO)
+		if (type == Format.VIDEO) {
 			mimeType = HTTPResource.UNKNOWN_VIDEO_TYPEMIME;
-		else if (type == Format.IMAGE)
+		} else if (type == Format.IMAGE) {
 			mimeType = HTTPResource.UNKNOWN_IMAGE_TYPEMIME;
-		else if (type == Format.AUDIO)
+		} else if (type == Format.AUDIO) {
 			mimeType = HTTPResource.UNKNOWN_AUDIO_TYPEMIME;
+		}
 		return mimeType;
 	}
-	
-	
+
 	/**Returns a InputStream associated to the fileName.
 	 * @param fileName TODO Absolute or relative file path.
 	 * @return If found, an InputStream associated to the fileName. null otherwise.
@@ -110,7 +100,7 @@ public class HTTPResource {
 		}
 		return is;
 	}
-	
+
 	/**Creates an InputStream based on an URL. This is used while accessing external resources
 	 * like online radio stations.
 	 * @param u URL.
@@ -130,22 +120,23 @@ public class HTTPResource {
 			File hostDir = new File(PMS.getConfiguration().getTempFolder(), hostName);
 			hostDir.mkdir();
 			f = new File(hostDir, fileName);
-			if (f.exists())
+			if (f.exists()) {
 				return new FileInputStream(f);
+			}
 		}
-		byte content [] = downloadAndSendBinary(u, saveOnDisk, f);
+		byte content[] = downloadAndSendBinary(u, saveOnDisk, f);
 		return new ByteArrayInputStream(content);
 	}
-	
+
 	/**Overloaded method for {@link #downloadAndSendBinary(String, boolean, File)}, without storing any file in the harddisk.
 	 * @param u URL to retrieve.
 	 * @return byte array.
 	 * @throws IOException
 	 */
-	protected byte [] downloadAndSendBinary(String u) throws IOException {
+	protected byte[] downloadAndSendBinary(String u) throws IOException {
 		return downloadAndSendBinary(u, false, null);
 	}
-	
+
 	/**Returns a byte array representation of a file given by an URL. File is downloaded and optionally stored in the harddisk.
 	 * @param u URL to retrieve.
 	 * @param saveOnDisk If true, store the file in the harddisk.
@@ -154,7 +145,7 @@ public class HTTPResource {
 	 * @return
 	 * @throws IOException
 	 */
-	protected byte [] downloadAndSendBinary(String u, boolean saveOnDisk, File f) throws IOException {
+	protected byte[] downloadAndSendBinary(String u, boolean saveOnDisk, File f) throws IOException {
 		URL url = new URL(u);
 		logger.debug("Retrieving " + url.toString());
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -167,19 +158,21 @@ public class HTTPResource {
 			//fileName = convertURLToFileName(fileName);
 			fOUT = new FileOutputStream(f);
 		}
-		byte buf [] = new byte [4096];
+		byte buf[] = new byte[4096];
 		int n = -1;
-		while ((n=in.read(buf)) > -1) {
+		while ((n = in.read(buf)) > -1) {
 			bytes.write(buf, 0, n);
-			if (fOUT != null)
+			if (fOUT != null) {
 				fOUT.write(buf, 0, n);
+			}
 		}
 		in.close();
-		if (fOUT != null)
+		if (fOUT != null) {
 			fOUT.close();
+		}
 		return bytes.toByteArray();
 	}
-	
+
 	/**Converts an URL string to it more canonical form
 	 * @param url String to be converted
 	 * @return Converted String.
@@ -195,91 +188,44 @@ public class HTTPResource {
 		url = url.replace('>', '\u00b5');
 		return url;
 	}
-	
+
 	/**Returns an associated MIME type related to the Media Renderer. Some Media Renderer might need that the MIME type is not the correct one.
 	 * @param mimetype MIME type to transform.
 	 * @param mediarenderer Specific Media Renderer.
 	 * @return
 	 */
 	public String getRendererMimeType(String mimetype, RendererConfiguration mediarenderer) {
-//		if (mimetype != null && mimetype.equals(AVI_TYPEMIME)) {
-//			if (mediarenderer == PS3) {
-//				return "video/x-divx";
-//			} else if (mediarenderer == XBOX) {
-//				return AVI_TYPEMIME;
-//			}
-//		}
-//		if (mimetype != null && mimetype.equals(VIDEO_TRANSCODE)) {
-//			if (mediarenderer == XBOX) {
-//				return WMV_TYPEMIME;
-//			} else
-//				return MPEG_TYPEMIME;
-//		}
-//		if (mimetype != null && mimetype.equals(VIDEO_TRANSCODE)) {
-//			mimetype = MPEG_TYPEMIME;
-//			if (mediarenderer.isTranscodeToWMV())
-//				mimetype = WMV_TYPEMIME;
-//		} else if (mimetype != null && mimetype.equals(AUDIO_TRANSCODE)) {
-//			mimetype = AUDIO_WAV_TYPEMIME;
-//			if (mediarenderer.isTranscodeToMP3())
-//				mimetype = AUDIO_MP3_TYPEMIME;
-//		}
 		return mediarenderer.getMimeType(mimetype);
 	}
-	/*
-	public boolean isNorthAmericanLocale() {
-		return Locale.US.getCountry().equals(Locale.getDefault().getCountry()) || Locale.CANADA.getCountry().equals(Locale.getDefault().getCountry());
-	}
-	
-	public boolean isJapaneseLocale() {
-		return Locale.JAPAN.getCountry().equals(Locale.getDefault().getCountry());
-	}
-	
-	public String getMPEG_PS_PALLocalizedValue() {
-		if (isNorthAmericanLocale() || isJapaneseLocale())
-			return "MPEG_PS_NTSC";
-		return "MPEG_PS_PAL";
-	}
-	
-	public String getMPEG_TS_SD_EU_ISOLocalizedValue() {
-		if (isNorthAmericanLocale())
-			return "MPEG_TS_SD_NA_ISO";
-		if (isJapaneseLocale())
-			return "MPEG_TS_SD_JP_ISO";
-		return "MPEG_TS_SD_EU_ISO";
-	}
-	
-	public String getMPEG_TS_SD_EULocalizedValue() {
-		if (isNorthAmericanLocale())
-			return "MPEG_TS_SD_NA";
-		if (isJapaneseLocale())
-			return "MPEG_TS_SD_JP";
-		return "MPEG_TS_SD_EU";
-	}*/
-	
+
 	public int getDLNALocalesCount() {
 		return 3;
 	}
-	
+
 	public String getMPEG_PS_PALLocalizedValue(int index) {
-		if (index == 1 || index == 2)
+		if (index == 1 || index == 2) {
 			return "MPEG_PS_NTSC";
+		}
 		return "MPEG_PS_PAL";
 	}
-	
+
 	public String getMPEG_TS_SD_EU_ISOLocalizedValue(int index) {
-		if (index == 1)
+		if (index == 1) {
 			return "MPEG_TS_SD_NA_ISO";
-		if (index == 2)
+		}
+		if (index == 2) {
 			return "MPEG_TS_SD_JP_ISO";
+		}
 		return "MPEG_TS_SD_EU_ISO";
 	}
-	
+
 	public String getMPEG_TS_SD_EULocalizedValue(int index) {
-		if (index == 1)
+		if (index == 1) {
 			return "MPEG_TS_SD_NA";
-		if (index == 2)
+		}
+		if (index == 2) {
 			return "MPEG_TS_SD_JP";
+		}
 		return "MPEG_TS_SD_EU";
 	}
 }

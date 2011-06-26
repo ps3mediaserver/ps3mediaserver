@@ -21,28 +21,29 @@ package net.pms.network;
 import net.pms.PMS;
 
 public class HTMLConsole {
-	
 	public static String servePage(String resource) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<html><head><title>PS3 Media Server HTML Console</title></head><body>");
-		
+
 		if (resource.equals("compact") && PMS.getConfiguration().getUseCache()) {
 			PMS.get().getDatabase().compact();
-			sb.append( "<p align=center><b>Database compacted!</b></p><br>" );
-		} 
-		
+			sb.append("<p align=center><b>Database compacted!</b></p><br>");
+		}
+
 		if (resource.equals("scan") && PMS.getConfiguration().getUseCache()) {
-			if (!PMS.get().getDatabase().isScanLibraryRunning())
+			if (!PMS.get().getDatabase().isScanLibraryRunning()) {
 				PMS.get().getDatabase().scanLibrary();
-			if (PMS.get().getDatabase().isScanLibraryRunning())
-				sb.append( "<p align=center><b>Scan in progress! you can also <a href=\"stop\">stop it</a></b></p><br>" );
-		} 
-		
+			}
+			if (PMS.get().getDatabase().isScanLibraryRunning()) {
+				sb.append("<p align=center><b>Scan in progress! you can also <a href=\"stop\">stop it</a></b></p><br>");
+			}
+		}
+
 		if (resource.equals("stop") && PMS.getConfiguration().getUseCache() && PMS.get().getDatabase().isScanLibraryRunning()) {
 			PMS.get().getDatabase().stopScanLibrary();
-			sb.append( "<p align=center><b>Scan stopped!</b></p><br>" );
-		} 
-		
+			sb.append("<p align=center><b>Scan stopped!</b></p><br>");
+		}
+
 		sb.append("<p align=center><img src='/images/thumbnail-256.png'><br>PS3 Media Server HTML console<br><br>Menu:<br>");
 		sb.append("<a href=\"home\">Home</a><br>");
 		sb.append("<a href=\"scan\">Scan folders</a><br>");
@@ -50,5 +51,4 @@ public class HTMLConsole {
 		sb.append("</p></body></html>");
 		return sb.toString();
 	}
-
 }

@@ -35,14 +35,14 @@ import org.jboss.netty.handler.stream.ChunkedWriteHandler;
  * @author Andy Taylor (andy.taylor@jboss.org)
  */
 public class HttpServerPipelineFactory implements ChannelPipelineFactory {
-    public ChannelPipeline getPipeline() throws Exception {
-        // Create a default pipeline implementation.
-        ChannelPipeline pipeline = pipeline();
-        pipeline.addLast("decoder", new HttpRequestDecoder());
-        pipeline.addLast("aggregator", new HttpChunkAggregator(65536)); // eliminate the need to decode http chunks from the client
-        pipeline.addLast("encoder", new HttpResponseEncoder());
-        pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
-        pipeline.addLast("handler", new RequestHandlerV2());
-        return pipeline;
-    }
+	public ChannelPipeline getPipeline() throws Exception {
+		// Create a default pipeline implementation.
+		ChannelPipeline pipeline = pipeline();
+		pipeline.addLast("decoder", new HttpRequestDecoder());
+		pipeline.addLast("aggregator", new HttpChunkAggregator(65536)); // eliminate the need to decode http chunks from the client
+		pipeline.addLast("encoder", new HttpResponseEncoder());
+		pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
+		pipeline.addLast("handler", new RequestHandlerV2());
+		return pipeline;
+	}
 }
