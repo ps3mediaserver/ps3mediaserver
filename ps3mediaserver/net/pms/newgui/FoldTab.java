@@ -92,7 +92,7 @@ public class FoldTab {
 		if (df.size() == 1 && df.getElementAt(0).equals(ALL_DRIVES)) {
 			PMS.getConfiguration().setFolders(""); //$NON-NLS-1$
 		} else {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < df.size(); i++) {
 				if (i > 0) {
 					sb.append(","); //$NON-NLS-1$

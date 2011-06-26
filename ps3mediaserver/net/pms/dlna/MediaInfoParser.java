@@ -369,8 +369,11 @@ public class MediaInfoParser {
 			value = value.substring(0, value.indexOf("channel"));
 		}
 		value = value.trim();
-		int pixels = Integer.parseInt(value);
-		return pixels;
+		if (value.equals("7 / 6")) {
+			value = "6";
+		}
+		int channels = Integer.parseInt(value);
+		return channels;
 	}
 
 	public static int getSpecificID(String value) {

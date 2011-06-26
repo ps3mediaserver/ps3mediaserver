@@ -22,7 +22,7 @@ import net.pms.PMS;
 
 public class HTMLConsole {
 	public static String servePage(String resource) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("<html><head><title>PS3 Media Server HTML Console</title></head><body>");
 
 		if (resource.equals("compact") && PMS.getConfiguration().getUseCache()) {
