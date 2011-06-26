@@ -12,7 +12,6 @@ import java.util.Properties;
  */
 public class PmsProperties {
 	private final Properties properties = new Properties();
-	
 	private static final String ENCODING = "UTF-8";
 
 	public void loadFromByteArray(byte[] data) throws IOException {
@@ -24,13 +23,13 @@ public class PmsProperties {
 			reader.close();
 		} catch (UnsupportedEncodingException e) {
 			throw new IOException("Could not decode " + ENCODING);
-		}		
+		}
 	}
 
 	public void clear() {
 		properties.clear();
 	}
-	
+
 	public String get(String key) {
 		Object obj = properties.get(key);
 		if (obj != null) {
@@ -39,7 +38,7 @@ public class PmsProperties {
 			return "";
 		}
 	}
-	
+
 	private static String trimAndRemoveQuotes(String in) {
 		in = in.trim();
 		if (in.startsWith("\"")) {

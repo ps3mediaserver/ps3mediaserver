@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public abstract class FlowParserOutputStream extends OutputStream {
-
 	private ByteBuffer buffer;
 	private OutputStream out;
 	protected int neededByteNumber;
@@ -14,8 +13,8 @@ public abstract class FlowParserOutputStream extends OutputStream {
 	protected boolean discard;
 	protected int internalMark;
 	protected int swapOrderBits;
-	protected byte [] swapRemainingByte;
-	
+	protected byte[] swapRemainingByte;
+
 	public FlowParserOutputStream(OutputStream out, int maxbuffersize) {
 		this.out = out;
 		buffer = ByteBuffer.allocate(maxbuffersize);
@@ -26,7 +25,6 @@ public abstract class FlowParserOutputStream extends OutputStream {
 	@Override
 	public void write(int b) throws IOException {
 	}
-	
 	public int count;
 
 	@Override
@@ -39,18 +37,18 @@ public abstract class FlowParserOutputStream extends OutputStream {
 			}
 			int modulo = (len - off) % swapOrderBits;
 			if (modulo != 0) {
-				swapRemainingByte = new byte [1];
+				swapRemainingByte = new byte[1];
 				len -= modulo;
 				System.arraycopy(b, len, swapRemainingByte, 0, modulo);
 			}
-			for(int i=off;i<len;i+=2) {
+			for (int i = off; i < len; i += 2) {
 				byte temp = b[i];
-				b[i] = b[i+1];
-				b[i+1] = temp;
+				b[i] = b[i + 1];
+				b[i + 1] = temp;
 			}
 		}
 		buffer.put(b, off, len);
-		
+
 		int remains = buffer.position() - internalMark;
 
 		while (remains > streamableByteNumber || remains > neededByteNumber) {
@@ -63,8 +61,9 @@ public abstract class FlowParserOutputStream extends OutputStream {
 					if (streamableByteNumber == 0) {
 						throw new IOException("Packet size cannot be Null !");
 					}
-					if (!discard)
+					if (!discard) {
 						beforeChunkSend();
+					}
 				} else {
 					// let's wait for more data
 					buffer.position(internalMark);
@@ -85,8 +84,9 @@ public abstract class FlowParserOutputStream extends OutputStream {
 					internalMark += streamableByteNumber;
 					remains = remains - streamableByteNumber;
 					streamableByteNumber = 0;
-					if (!discard)
+					if (!discard) {
 						afterChunkSend();
+					}
 					if (remains == 0) {
 						//buffer.position(internalMark);
 						//buffer.compact();
@@ -94,7 +94,7 @@ public abstract class FlowParserOutputStream extends OutputStream {
 						internalMark = 0;
 					}
 				} else {
-					
+
 					if (!discard) {
 						out.write(buffer.array(), internalMark, remains);
 					}
@@ -104,21 +104,18 @@ public abstract class FlowParserOutputStream extends OutputStream {
 					remains = 0;
 				}
 			}
-			
-			
-
 		}
 	}
 
 	protected void writePayload(byte payload[]) throws IOException {
 		out.write(payload, 0, payload.length);
 	}
-
 	private byte zerobuffer[];
 
 	protected void padWithZeros(int numberOfZeros) throws IOException {
-		if (numberOfZeros > 0)
+		if (numberOfZeros > 0) {
 			out.write(zerobuffer, 0, numberOfZeros);
+		}
 	}
 
 	protected abstract void analyzeBuffer(byte data[], int off, int len);
@@ -136,5 +133,4 @@ public abstract class FlowParserOutputStream extends OutputStream {
 		}
 		out.close();
 	}
-
 }

@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class MpegUtil {
-	
 	public static int getDurationFromMpeg(File f) throws IOException {
 		RandomAccessFile raf = new RandomAccessFile(f, "r");
 		if (raf.length() >= 500000) {
@@ -21,7 +20,7 @@ public class MpegUtil {
 						Integer id = iterator.next();
 						if (ptsEnd.get(id) != null) {
 							int dur = ptsEnd.get(id).intValue()
-									- ptsStart.get(id).intValue();
+								- ptsStart.get(id).intValue();
 							dur = dur / 90000;
 							return dur;
 						}
@@ -34,13 +33,15 @@ public class MpegUtil {
 	}
 
 	private static Map<Integer, Integer> checkRange(RandomAccessFile raf, long startingPos,
-			int range, boolean end) throws IOException {
+		int range, boolean end) throws IOException {
 		Map<Integer, Integer> pts = new HashMap<Integer, Integer>();
 		byte buffer[] = new byte[range];
 		if (end) // statringPos not applicable for end==true
+		{
 			raf.seek(raf.length() - range);
-		else
+		} else {
 			raf.seek(0 + startingPos);
+		}
 		raf.read(buffer, 0, buffer.length);
 		int ps = 0;
 		int start = 0;
@@ -57,24 +58,26 @@ public class MpegUtil {
 				break;
 			}
 		}
-		if (ps == 0)
+		if (ps == 0) {
 			return null;
+		}
 		for (int i = start; i < buffer.length - ps; i += ps) {
-			Integer id = (((buffer[i+1]+256)%256) - 64) * 256 + ((buffer[i+2]+256)%256); // calc id
-			if (buffer[i+7] == -32 && buffer [i+6] == 1) {
+			Integer id = (((buffer[i + 1] + 256) % 256) - 64) * 256 + ((buffer[i + 2] + 256) % 256); // calc id
+			if (buffer[i + 7] == -32 && buffer[i + 6] == 1) {
 				int diff = i + 7 + 4; // 47 50 11 11 00 00 01 E0 00 00 84 C0
-				if ((buffer[diff]&128)==128 && (buffer[diff+2]&32)==32) { // check pts
-					if (pts.get(id) == null || (pts.get(id) != null && end))
-						pts.put(id, new Integer(getTS(buffer, diff+3)));
+				if ((buffer[diff] & 128) == 128 && (buffer[diff + 2] & 32) == 32) { // check pts
+					if (pts.get(id) == null || (pts.get(id) != null && end)) {
+						pts.put(id, new Integer(getTS(buffer, diff + 3)));
+					}
 				}
 			}
 		}
 		return pts;
 	}
-	
-	private static int getTS(byte buffer [], int diff) {
-		return (((((buffer[diff+0] & 0xff) << 8) + (buffer[diff+1] & 0xff)) >> 1) << 15)
-				+ ((((buffer[diff+2] & 0xff) << 8) + (buffer[diff+3] & 0xff)) >> 1);
+
+	private static int getTS(byte buffer[], int diff) {
+		return (((((buffer[diff + 0] & 0xff) << 8) + (buffer[diff + 1] & 0xff)) >> 1) << 15)
+			+ ((((buffer[diff + 2] & 0xff) << 8) + (buffer[diff + 3] & 0xff)) >> 1);
 	}
 
 	/**
@@ -84,46 +87,43 @@ public class MpegUtil {
 	 * @return position in stream (in bytes).
 	 * @throws IOException
 	 */
-	public static long getPossitionForTimeInMpeg(File f, int timeS) throws IOException
-	{
+	public static long getPossitionForTimeInMpeg(File f, int timeS) throws IOException {
 		RandomAccessFile raf = new RandomAccessFile(f, "r");
 		Map<Integer, Integer> ptsStart = checkRange(raf, 0, 250000, false);
 		long currentPos = 0;
-		
-		if (ptsStart != null && !ptsStart.isEmpty())
-		{
+
+		if (ptsStart != null && !ptsStart.isEmpty()) {
 			long minRangePos = 0;
 			long maxRangePos = raf.length();
 			boolean nextPossition = true;
-			while (maxRangePos - minRangePos > 250000 && nextPossition)
-			{
+			while (maxRangePos - minRangePos > 250000 && nextPossition) {
 				nextPossition = false;
 				currentPos = minRangePos + (maxRangePos - minRangePos) / 2;
 				Map<Integer, Integer> ptsEnd = checkRange(raf, currentPos, 250000, false);
-				if (ptsEnd != null)
-				{
+				if (ptsEnd != null) {
 					Iterator<Integer> iterator = ptsStart.keySet().iterator();
-					while (iterator.hasNext())
-					{
+					while (iterator.hasNext()) {
 						Integer id = iterator.next();
-						if (ptsEnd.get(id) != null)
-						{
+						if (ptsEnd.get(id) != null) {
 							int time = (ptsEnd.get(id).intValue() - ptsStart.get(id).intValue()) / 90000;
 
 							if (time == timeS) // found it
+							{
 								return currentPos;
-							
+							}
+
 							nextPossition = true;
-							if (time > timeS)
+							if (time > timeS) {
 								maxRangePos = currentPos;
-							else
+							} else {
 								minRangePos = currentPos;
+							}
 							break;
 						}
 					}
-				}
-				else
+				} else {
 					return currentPos;
+				}
 			}
 		}
 		return currentPos;

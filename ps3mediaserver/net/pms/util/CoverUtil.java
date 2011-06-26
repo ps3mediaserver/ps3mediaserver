@@ -12,14 +12,13 @@ import org.slf4j.LoggerFactory;
 
 public class CoverUtil extends HTTPResource {
 	private static final Logger logger = LoggerFactory.getLogger(CoverUtil.class);
-	
 	private static CoverUtil instance;
-	
 	private static byte[] lock = null;
+
 	static {
 		lock = new byte[0];
 	}
-	
+
 	public static CoverUtil get() {
 		if (instance == null) {
 			synchronized (lock) {
@@ -30,77 +29,78 @@ public class CoverUtil extends HTTPResource {
 		}
 		return instance;
 	}
-	
+
 	private CoverUtil() {
 		covers = new HashMap<String, byte[]>();
 	}
-	
-	private HashMap<String, byte []> covers;
-	
+	private HashMap<String, byte[]> covers;
 	public static final int AUDIO_DISCOGS = 0;
 	public static final int AUDIO_AMAZON = 1;
-	
-	public synchronized byte [] getThumbnailFromArtistAlbum(int backend, String...info) throws IOException {
-		if (info.length >=2 && StringUtils.isNotBlank(info[0]) && StringUtils.isNotBlank(info[1])) {
-			String artist = URLEncoder.encode(info[0] , "UTF-8");
-			String album = URLEncoder.encode(info[1] , "UTF-8");
-			if (covers.get(artist+album) != null) {
-				byte data [] = covers.get(artist+album);
-				if (data.length == 0)
+
+	public synchronized byte[] getThumbnailFromArtistAlbum(int backend, String... info) throws IOException {
+		if (info.length >= 2 && StringUtils.isNotBlank(info[0]) && StringUtils.isNotBlank(info[1])) {
+			String artist = URLEncoder.encode(info[0], "UTF-8");
+			String album = URLEncoder.encode(info[1], "UTF-8");
+			if (covers.get(artist + album) != null) {
+				byte data[] = covers.get(artist + album);
+				if (data.length == 0) {
 					return null;
-				else return data;
+				} else {
+					return data;
+				}
 			}
 			if (backend == AUDIO_DISCOGS) {
 				String url = "http://www.discogs.com/advanced_search?artist=" + artist + "&release_title=" + album + "&btn=Search+Releases";
-				byte data [] = downloadAndSendBinary(url);
+				byte data[] = downloadAndSendBinary(url);
 				if (data != null) {
 					try {
 						String html = new String(data, "UTF-8");
 						int firstItem = html.indexOf("<li style=\"background:");
 						if (firstItem > -1) {
-							String detailUrl = html.substring(html.indexOf("<a href=\"/", firstItem)+10, html.indexOf("\"><em>", firstItem));
+							String detailUrl = html.substring(html.indexOf("<a href=\"/", firstItem) + 10, html.indexOf("\"><em>", firstItem));
 							data = downloadAndSendBinary("http://www.discogs.com/" + detailUrl);
 							html = new String(data, "UTF-8");
 							firstItem = html.indexOf("<a href=\"/viewimages?");
 							if (firstItem > -1) {
-								String imageUrl = html.substring(html.indexOf("<img src=\"", firstItem)+10, html.indexOf("\" border", firstItem));
+								String imageUrl = html.substring(html.indexOf("<img src=\"", firstItem) + 10, html.indexOf("\" border", firstItem));
 								data = downloadAndSendBinary(imageUrl);
-								if (data != null)
-									covers.put(artist+album, data);
-								else
-									covers.put(artist+album, new byte[0]);
+								if (data != null) {
+									covers.put(artist + album, data);
+								} else {
+									covers.put(artist + album, new byte[0]);
+								}
 								return data;
 							}
 						}
 					} catch (Exception e) {
-						logger.error("Error while retrieving cover for " + artist+album, e);
+						logger.error("Error while retrieving cover for " + artist + album, e);
 					}
 				}
 			} else if (backend == AUDIO_AMAZON) {
 				String url = "http://www.amazon.com/gp/search/ref=sr_adv_m_pop/?search-alias=popular&unfiltered=1&field-keywords=&field-artist=" + artist + "&field-title=" + album + "&field-label=&field-binding=&sort=relevancerank&Adv-Srch-Music-Album-Submit.x=35&Adv-Srch-Music-Album-Submit.y=13";
-				byte data [] = downloadAndSendBinary(url);
+				byte data[] = downloadAndSendBinary(url);
 				if (data != null) {
 					try {
 						String html = new String(data, "UTF-8");
 						int firstItem = html.indexOf("class=\"imageColumn\"");
 						if (firstItem > -1) {
-							int imageUrlPos = html.indexOf("src=\"", firstItem)+5;
+							int imageUrlPos = html.indexOf("src=\"", firstItem) + 5;
 							String imageUrl = html.substring(imageUrlPos, html.indexOf("\" class", imageUrlPos));
 							data = downloadAndSendBinary(imageUrl);
-							if (data != null)
-								covers.put(artist+album, data);
-							else
-								covers.put(artist+album, new byte[0]);
+							if (data != null) {
+								covers.put(artist + album, data);
+							} else {
+								covers.put(artist + album, new byte[0]);
+							}
 							return data;
 						}
 					} catch (Exception e) {
-						logger.error("Error while retrieving cover for " + artist+album, e);
+						logger.error("Error while retrieving cover for " + artist + album, e);
 					}
 				}
 			}
-			covers.put(artist+album, new byte[0]);
+			covers.put(artist + album, new byte[0]);
 		}
 		return null;
 	}
-
 }
