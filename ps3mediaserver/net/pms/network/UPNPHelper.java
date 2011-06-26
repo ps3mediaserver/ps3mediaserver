@@ -273,16 +273,16 @@ public class UPNPHelper {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("NOTIFY * HTTP/1.1" + CRLF);
-		sb.append("HOST: " + UPNP_HOST + ":" + UPNP_PORT + CRLF);
-		sb.append("NT: " + nt + CRLF);
-		sb.append("NTS: " + message + CRLF);
+		sb.append("HOST: " + UPNP_HOST + ":").append(UPNP_PORT).append(CRLF);
+		sb.append("NT: ").append(nt).append(CRLF);
+		sb.append("NTS: ").append(message).append(CRLF);
 
 		if (message.equals(ALIVE)) {
-			sb.append("LOCATION: http://" + PMS.get().getServer().getHost() + ":" + PMS.get().getServer().getPort() + "/description/fetch" + CRLF);
+			sb.append("LOCATION: http://").append(PMS.get().getServer().getHost()).append(":").append(PMS.get().getServer().getPort()).append("/description/fetch" + CRLF);
 		}
-		sb.append("USN: " + PMS.get().usn());
+		sb.append("USN: ").append(PMS.get().usn());
 		if (!nt.equals(PMS.get().usn())) {
-			sb.append("::" + nt);
+			sb.append("::").append(nt);
 		}
 		sb.append(CRLF);
 
@@ -291,7 +291,7 @@ public class UPNPHelper {
 		}
 
 		if (message.equals(ALIVE)) {
-			sb.append("SERVER: " + PMS.get().getServerName() + CRLF);
+			sb.append("SERVER: ").append(PMS.get().getServerName()).append(CRLF);
 		}
 
 		sb.append(CRLF);

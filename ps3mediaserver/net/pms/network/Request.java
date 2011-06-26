@@ -312,7 +312,7 @@ public class Request extends HTTPResource {
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.GETSYSTEMUPDATEID_HEADER);
 				response.append(CRLF);
-				response.append("<Id>" + DLNAResource.systemUpdateId + "</Id>");
+				response.append("<Id>").append(DLNAResource.systemUpdateId).append("</Id>");
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.GETSYSTEMUPDATEID_FOOTER);
 				response.append(CRLF);
@@ -432,7 +432,7 @@ public class Request extends HTTPResource {
 				if (files != null) {
 					filessize = files.size();
 				}
-				response.append("<NumberReturned>" + (filessize - minus) + "</NumberReturned>");
+				response.append("<NumberReturned>").append(filessize - minus).append("</NumberReturned>");
 				response.append(CRLF);
 				DLNAResource parentFolder = null;
 				if (files != null && filessize > 0) {
@@ -450,9 +450,9 @@ public class Request extends HTTPResource {
 					{
 						totalCount = startingIndex;
 					}
-					response.append("<TotalMatches>" + totalCount + "</TotalMatches>");
+					response.append("<TotalMatches>").append(totalCount).append("</TotalMatches>");
 				} else {
-					response.append("<TotalMatches>" + (((parentFolder != null) ? parentFolder.childrenNumber() : filessize) - minus) + "</TotalMatches>");
+					response.append("<TotalMatches>").append(((parentFolder != null) ? parentFolder.childrenNumber() : filessize) - minus).append("</TotalMatches>");
 				}
 				response.append(CRLF);
 				response.append("<UpdateID>");
