@@ -369,6 +369,7 @@ public class MediaInfoParser {
 			value = value.substring(0, value.indexOf("channel"));
 		}
 		value = value.trim();
+
 		if (value.equals("7 / 6")) {
 			value = "6";
 		}
