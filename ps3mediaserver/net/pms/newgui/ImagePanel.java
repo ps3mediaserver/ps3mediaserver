@@ -24,11 +24,7 @@ import java.awt.image.RenderedImage;
 
 import javax.swing.JPanel;
 
-
 class ImagePanel extends JPanel {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6709086531128513425L;
 	protected RenderedImage source;
 	protected int originX;
@@ -50,8 +46,8 @@ class ImagePanel extends JPanel {
 			Insets insets = getInsets();
 			Dimension dimension =
 				new Dimension(
-					i + insets.left + insets.right,
-					j + insets.top + insets.bottom);
+				i + insets.left + insets.right,
+				j + insets.top + insets.bottom);
 			setPreferredSize(dimension);
 		}
 	}
@@ -77,8 +73,8 @@ class ImagePanel extends JPanel {
 		Insets insets = getInsets();
 		Dimension dimension =
 			new Dimension(
-				i + insets.left + insets.right,
-				j + insets.top + insets.bottom);
+			i + insets.left + insets.right,
+			j + insets.top + insets.bottom);
 		setPreferredSize(dimension);
 		revalidate();
 		repaint();
@@ -123,5 +119,4 @@ class ImagePanel extends JPanel {
 		} catch (OutOfMemoryError outofmemoryerror) {
 		}
 	}
-
 }

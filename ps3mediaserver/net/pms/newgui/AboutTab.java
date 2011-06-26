@@ -35,88 +35,71 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class AboutTab {
+	class PopupTriggerMouseListener extends MouseAdapter {
+		private JPopupMenu popup;
+		private JComponent component;
 
-	
-	class PopupTriggerMouseListener extends MouseAdapter
-    {
-        private JPopupMenu popup;
-        private JComponent component;
+		public PopupTriggerMouseListener(JPopupMenu popup, JComponent component) {
+			this.popup = popup;
+			this.component = component;
+		}
 
-        public PopupTriggerMouseListener(JPopupMenu popup, JComponent component)
-        {
-            this.popup = popup;
-            this.component = component;
-        }
+		//some systems trigger popup on mouse press, others on mouse release, we want to cater for both
+		private void showMenuIfPopupTrigger(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				popup.show(component, e.getX() + 3, e.getY() + 3);
+			}
+		}
 
-        //some systems trigger popup on mouse press, others on mouse release, we want to cater for both
-        private void showMenuIfPopupTrigger(MouseEvent e)
-        {
-            if (e.isPopupTrigger())
-            {
-               popup.show(component, e.getX() + 3, e.getY() + 3);
-            }
-        }
+		// According to the javadocs on isPopupTrigger, checking for popup trigger on mousePressed and mouseReleased 
+		// Should be all  that is required
+		//public void mouseClicked(MouseEvent e)  
+		//{
+		//    showMenuIfPopupTrigger(e);
+		//}
+		public void mousePressed(MouseEvent e) {
+			showMenuIfPopupTrigger(e);
+		}
 
-        //according to the javadocs on isPopupTrigger, checking for popup trigger on mousePressed and mouseReleased 
-        //should be all  that is required
-        //public void mouseClicked(MouseEvent e)  
-        //{
-        //    showMenuIfPopupTrigger(e);
-        //}
-
-        public void mousePressed(MouseEvent e)
-        {
-            showMenuIfPopupTrigger(e);
-        }
-
-        public void mouseReleased(MouseEvent e)
-        {
-            showMenuIfPopupTrigger(e);
-        }
-
-    }
+		public void mouseReleased(MouseEvent e) {
+			showMenuIfPopupTrigger(e);
+		}
+	}
 	private JTextArea jList;
-	
+
 	public JTextArea getList() {
 		return jList;
 	}
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 0:grow", //$NON-NLS-1$
-                "pref, fill:default:grow"); //$NON-NLS-1$
-         PanelBuilder builder = new PanelBuilder(layout);
-      //  builder.setBorder(Borders.DLU14_BORDER);
-        builder.setOpaque(true);
+			"left:pref, 0:grow", //$NON-NLS-1$
+			"pref, fill:default:grow"); //$NON-NLS-1$
+		PanelBuilder builder = new PanelBuilder(layout);
+		builder.setOpaque(true);
 
-        CellConstraints cc = new CellConstraints();
-        
-        jList = new JTextArea();
+		CellConstraints cc = new CellConstraints();
+
+		jList = new JTextArea();
 		jList.setEditable(false);
 		jList.setWrapStyleWord(false);
 		jList.setBackground(Color.WHITE);
-		//jList.setFont(new Font("Courier New", Font.PLAIN, 12)); //$NON-NLS-1$
 		FileInputStream fIN;
 		try {
 			fIN = new FileInputStream("README"); //$NON-NLS-1$
-			byte buf [] = new byte [fIN.available()];
+			byte buf[] = new byte[fIN.available()];
 			fIN.read(buf);
 			fIN.close();
 			jList.setText(new String(buf));
 		} catch (IOException e) {
-			
 		}
-		
-       
-        JScrollPane pane = new JScrollPane(jList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pane.setPreferredSize(new Dimension(500,400));
-      //  pane.setBorder(BorderFactory.createEtchedBorder());
-        
-       builder.add(pane,          cc.xy(2,  2));
-       
-       
-        return builder.getPanel();
+
+
+		JScrollPane pane = new JScrollPane(jList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		pane.setPreferredSize(new Dimension(500, 400));
+
+		builder.add(pane, cc.xy(2, 2));
+
+		return builder.getPanel();
 	}
-	
-	
 }

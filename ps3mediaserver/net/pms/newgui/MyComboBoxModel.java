@@ -21,10 +21,6 @@ package net.pms.newgui;
 import javax.swing.DefaultComboBoxModel;
 
 public class MyComboBoxModel extends DefaultComboBoxModel {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -9094365556516842551L;
 
 	public MyComboBoxModel() {
@@ -40,12 +36,6 @@ public class MyComboBoxModel extends DefaultComboBoxModel {
 	@Override
 	public Object getElementAt(int index) {
 		String s = (String) super.getElementAt(index);
-		//if (s.startsWith("[")) {
-		//	s = s.substring(s.lastIndexOf("]")).trim();
-		//}
 		return s;
 	}
-	
-	
-
 }

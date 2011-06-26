@@ -26,18 +26,16 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 
 public class ListCellRenderer implements javax.swing.ListCellRenderer {
-
 	protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
 	public Component getListCellRendererComponent(JList list, Object value,
-	int index, boolean isSelected, boolean cellHasFocus) {
-	JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, index,
-	isSelected, cellHasFocus);
+		int index, boolean isSelected, boolean cellHasFocus) {
+		JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, index,
+			isSelected, cellHasFocus);
 
-	if (index == 0) {
-	renderer.setFont(renderer.getFont().deriveFont(Font.BOLD));
+		if (index == 0) {
+			renderer.setFont(renderer.getFont().deriveFont(Font.BOLD));
+		}
+		return renderer;
 	}
-	return renderer;
-	}
-
-	}
+}

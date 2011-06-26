@@ -49,87 +49,73 @@ import com.jgoodies.forms.layout.FormLayout;
 public class TracesTab {
 	private static final Logger logger = LoggerFactory.getLogger(TracesTab.class);
 
-	
-	class PopupTriggerMouseListener extends MouseAdapter
-    {
-        private JPopupMenu popup;
-        private JComponent component;
+	class PopupTriggerMouseListener extends MouseAdapter {
+		private JPopupMenu popup;
+		private JComponent component;
 
-        public PopupTriggerMouseListener(JPopupMenu popup, JComponent component)
-        {
-            this.popup = popup;
-            this.component = component;
-        }
+		public PopupTriggerMouseListener(JPopupMenu popup, JComponent component) {
+			this.popup = popup;
+			this.component = component;
+		}
 
-        //some systems trigger popup on mouse press, others on mouse release, we want to cater for both
-        private void showMenuIfPopupTrigger(MouseEvent e)
-        {
-            if (e.isPopupTrigger())
-            {
-               popup.show(component, e.getX() + 3, e.getY() + 3);
-            }
-        }
+		// Some systems trigger popup on mouse press, others on mouse release, we want to cater for both
+		private void showMenuIfPopupTrigger(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				popup.show(component, e.getX() + 3, e.getY() + 3);
+			}
+		}
 
-        //according to the javadocs on isPopupTrigger, checking for popup trigger on mousePressed and mouseReleased 
-        //should be all  that is required
-        //public void mouseClicked(MouseEvent e)  
-        //{
-        //    showMenuIfPopupTrigger(e);
-        //}
+		// According to the javadocs on isPopupTrigger, checking for popup trigger on mousePressed and mouseReleased 
+		// Should be all that is required
 
-        public void mousePressed(MouseEvent e)
-        {
-            showMenuIfPopupTrigger(e);
-        }
+		public void mousePressed(MouseEvent e) {
+			showMenuIfPopupTrigger(e);
+		}
 
-        public void mouseReleased(MouseEvent e)
-        {
-            showMenuIfPopupTrigger(e);
-        }
-
-    }
+		public void mouseReleased(MouseEvent e) {
+			showMenuIfPopupTrigger(e);
+		}
+	}
 	private JTextArea jList;
-	
+
 	public JTextArea getList() {
 		return jList;
 	}
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-                "left:pref, 10:grow", //$NON-NLS-1$
-                "fill:10:grow, p"); //$NON-NLS-1$
-         PanelBuilder builder = new PanelBuilder(layout);
-      //  builder.setBorder(Borders.DLU14_BORDER);
-        builder.setOpaque(true);
+			"left:pref, 10:grow", //$NON-NLS-1$
+			"fill:10:grow, p"); //$NON-NLS-1$
+		PanelBuilder builder = new PanelBuilder(layout);
+		//  builder.setBorder(Borders.DLU14_BORDER);
+		builder.setOpaque(true);
 
-        CellConstraints cc = new CellConstraints();
-        
-        //create trace text box
-        jList = new JTextArea();
+		CellConstraints cc = new CellConstraints();
+
+		//create trace text box
+		jList = new JTextArea();
 		jList.setEditable(false);
 		jList.setBackground(Color.WHITE);
 		//jList.setFont(new Font("Arial", Font.PLAIN, 12)); //$NON-NLS-1$
 		final JPopupMenu popup = new JPopupMenu();
 		JMenuItem defaultItem = new JMenuItem(Messages.getString("TracesTab.3")); //$NON-NLS-1$
-		
+
 		defaultItem.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			jList.setText(""); //$NON-NLS-1$
-		}
+			public void actionPerformed(ActionEvent e) {
+				jList.setText(""); //$NON-NLS-1$
+			}
 		});
 
 		popup.add(defaultItem);
 		jList.addMouseListener(
-		           new PopupTriggerMouseListener(
-		                   popup,
-		                   jList
-		           )
-		        );
-       
-       JScrollPane pane = new JScrollPane(jList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-       builder.add(pane,          cc.xyw(1,  1, 2));       
-       
-       //Add buttons opening log files
+			new PopupTriggerMouseListener(
+			popup,
+			jList));
+
+		JScrollPane pane = new JScrollPane(jList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		builder.add(pane, cc.xyw(1, 1, 2));
+
+		// Add buttons opening log files
 		JPanel pLogFileButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		HashMap<String, String> logFiles = LoggingConfigFileLoader.getLogFilePaths();
 		for (String loggerName : logFiles.keySet()) {
@@ -152,6 +138,4 @@ public class TracesTab {
 
 		return builder.getPanel();
 	}
-	
-	
 }
