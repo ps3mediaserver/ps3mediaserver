@@ -165,7 +165,7 @@ public class RequestV2 extends HTTPResource {
 		final StartStopListenerDelegate startStopListenerDelegate) throws IOException {
 		ChannelFuture future = null;
 		long CLoverride = -1;
-		StringBuffer response = new StringBuffer();
+		StringBuilder response = new StringBuilder();
 		DLNAResource dlna = null;
 		boolean xbox = mediaRenderer.isXBOX();
 

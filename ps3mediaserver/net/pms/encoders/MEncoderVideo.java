@@ -1882,7 +1882,7 @@ public class MEncoderVideo extends Player {
 
 	private String[] getSpecificCodecOptions(String codecParam, DLNAMediaInfo media, OutputParams params, String filename, String srtFileName, boolean enable, boolean verifyOnly) {
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		String codecs = enable ? DEFAULT_CODEC_CONF_SCRIPT : ""; //$NON-NLS-1$
 		codecs += "\n" + codecParam; //$NON-NLS-1$

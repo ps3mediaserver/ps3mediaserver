@@ -166,7 +166,7 @@ public class Request extends HTTPResource {
 			output(output, http10 ? HTTP_200_OK_10 : HTTP_200_OK);
 		}
 
-		StringBuffer response = new StringBuffer();
+		StringBuilder response = new StringBuilder();
 		DLNAResource dlna = null;
 		boolean xbox = mediaRenderer.isXBOX();
 

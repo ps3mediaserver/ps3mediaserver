@@ -73,7 +73,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			cmdArray[0] = exec.getAbsolutePath();
 		}
 		this.cmdArray = cmdArray;
-		StringBuffer sb = new StringBuffer("");
+		StringBuilder sb = new StringBuilder("");
 		for (int i = 0; i < cmdArray.length; i++) {
 			if (i > 0) {
 				sb.append(" ");

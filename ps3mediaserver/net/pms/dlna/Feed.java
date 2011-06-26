@@ -196,7 +196,7 @@ public class Feed extends DLNAResource {
 	 * @return The in String, stripped of non-valid characters.
 	 */
 	private String stripNonValidXMLCharacters(String in) {
-		StringBuffer out = new StringBuffer(); // Used to hold the output.
+		StringBuilder out = new StringBuilder(); // Used to hold the output.
 		char current; // Used to reference the current character.
 
 		if (in == null || ("".equals(in))) {

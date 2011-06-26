@@ -713,7 +713,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * The idea is to use is in the UPNP ContentBrowser service.
 	 */
 	protected String getThumbnailURL() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(PMS.get().getServer().getURL());
 		sb.append("/images/");
 		String id = null;
@@ -728,7 +728,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 		if (id != null) {
 			String code = Iso639.getISO639_2Code(id.toLowerCase());
-			sb.append("codes/" + code + ".png");
+			sb.append("codes/").append(code).append(".png");
 			return sb.toString();
 		}
 		if (avisynth) {

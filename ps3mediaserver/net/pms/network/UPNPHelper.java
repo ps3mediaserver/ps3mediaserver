@@ -270,7 +270,7 @@ public class UPNPHelper {
 	}
 
 	private static String buildMsg(String nt, String message) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		sb.append("NOTIFY * HTTP/1.1" + CRLF);
 		sb.append("HOST: " + UPNP_HOST + ":" + UPNP_PORT + CRLF);

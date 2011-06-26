@@ -253,7 +253,7 @@ public class RealFile extends MapFile {
 		{
 			return null;
 		}
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(PMS.get().getServer().getURL());
 		sb.append("/");
 		if (media != null && media.thumb != null) {
