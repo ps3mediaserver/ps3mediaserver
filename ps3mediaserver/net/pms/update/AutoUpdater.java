@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.Observable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
@@ -22,31 +23,23 @@ import net.pms.util.UriRetrieverCallback;
  * @author Tim Cox (mail@tcox.org)
  */
 public class AutoUpdater extends Observable implements UriRetrieverCallback {
-
 	private static final String TARGET_FILENAME = "new-version.exe";
-	
 	private static final Logger LOG = Logger.getLogger(AutoUpdater.class.getName());
 
 	public static enum State {
 		NOTHING_KNOWN, POLLING_SERVER, NO_UPDATE_AVAILABLE, UPDATE_AVAILABLE, DOWNLOAD_IN_PROGRESS, DOWNLOAD_FINISHED, EXECUTING_SETUP, ERROR
 	}
-
 	private final String serverUrl;
-
 	private final UriRetriever uriRetriever = new UriRetriever();
 	private final AutoUpdaterServerProperties serverProperties = new AutoUpdaterServerProperties();
 	private final OperatingSystem operatingSystem = new OperatingSystem();
 	private final Version currentVersion;
-
 	private Executor executor = Executors.newSingleThreadExecutor();
-	
 	private State state = State.NOTHING_KNOWN;
 	private Object stateLock = new Object();
-
 	private Throwable errorStateCause;
 	private int bytesDownloaded = -1;
 	private int totalBytes = -1;
-	
 	private boolean downloadCancelled = false;
 
 	public AutoUpdater(String updateServerUrl, String currentVersion) {
@@ -92,7 +85,7 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 			}
 		});
 	}
-	
+
 	public void runUpdateAndExit() {
 		executor.execute(new Runnable() {
 			public void run() {
@@ -104,7 +97,7 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 			}
 		});
 	}
-	
+
 	private void setErrorState(UpdateException e) {
 		synchronized (stateLock) {
 			setState(State.ERROR);
@@ -120,14 +113,14 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 		downloadUpdate();
 		setState(State.DOWNLOAD_FINISHED);
 	}
-	
+
 	private void doRunUpdateAndExit() throws UpdateException {
 		synchronized (stateLock) {
 			if (state != State.DOWNLOAD_FINISHED) {
 				throw new UpdateException("Must download before run");
 			}
 		}
-		
+
 		setState(State.EXECUTING_SETUP);
 		launchExe();
 		System.exit(0);
@@ -136,8 +129,9 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 	private void launchExe() throws UpdateException {
 		try {
 			File exe = new File(TARGET_FILENAME);
-			if (!exe.exists())
+			if (!exe.exists()) {
 				exe = new File(PMS.getConfiguration().getTempFolder(), TARGET_FILENAME);
+			}
 			Runtime.getRuntime().exec(exe.getAbsolutePath());
 		} catch (IOException e) {
 			wrapException(serverProperties.getDownloadUrl(), "Unable to run update. You may need to manually download it.", e);
@@ -149,7 +143,7 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 			if (!serverProperties.isStateValid()) {
 				throw new UpdateException("Server error. Try again later.");
 			}
-	
+
 			if (!isUpdateAvailable()) {
 				throw new UpdateException("Attempt to perform non-existent update");
 			}
@@ -177,7 +171,7 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 				errorStateCause = null;
 			}
 		}
-		
+
 		setChanged();
 		notifyObservers();
 	}
@@ -213,7 +207,7 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 			}
 			fileOnDisk = new FileOutputStream(target);
 			int bytesSaved = IOUtils.copy(downloadedFromNetwork, fileOnDisk);
-			LOG.info("Wrote " + bytesSaved + " bytes to " + target.getAbsolutePath());
+			LOG.log(Level.INFO, "Wrote {0} bytes to {1}", new Object[]{bytesSaved, target.getAbsolutePath()});
 		} finally {
 			IOUtils.closeQuietly(downloadedFromNetwork);
 			IOUtils.closeQuietly(fileOnDisk);
@@ -233,13 +227,13 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 		synchronized (stateLock) {
 			this.bytesDownloaded = bytesDownloaded;
 			this.totalBytes = totalBytes;
-			
+
 			if (downloadCancelled) {
 				setErrorState(new UpdateException("Download cancelled"));
 				throw new CancelDownloadException();
 			}
 		}
-		
+
 		setChanged();
 		notifyObservers();
 	}
@@ -249,7 +243,7 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 			return state;
 		}
 	}
-	
+
 	public Throwable getErrorStateCause() {
 		synchronized (stateLock) {
 			return errorStateCause;

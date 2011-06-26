@@ -1,25 +1,24 @@
 package net.pms.update;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class OperatingSystem {
-	
 	private static final Logger LOG = Logger.getLogger(OperatingSystem.class.getName());
-	
 	private static final String platformName = detectPlatform();
-	
+
 	private static String detectPlatform() {
 		String fullPlatform = System.getProperty("os.name", "unknown");
 		String platform = fullPlatform.split(" ")[0].toLowerCase();
-		LOG.fine("Platform detected as [" + platform + "]");
+		LOG.log(Level.FINE, "Platform detected as [{0}]", platform);
 		return platform;
 	}
-	
+
 	public String getPlatformName() {
 		assert platformName != null;
-		return platformName; 
+		return platformName;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getPlatformName();
