@@ -8,14 +8,14 @@ import java.io.InputStream;
 import java.util.Observable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.io.IOUtils;
 
 import net.pms.PMS;
 import net.pms.util.UriRetriever;
 import net.pms.util.UriRetrieverCallback;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Checks for and downloads new versions of PMS.
@@ -24,7 +24,7 @@ import net.pms.util.UriRetrieverCallback;
  */
 public class AutoUpdater extends Observable implements UriRetrieverCallback {
 	private static final String TARGET_FILENAME = "new-version.exe";
-	private static final Logger LOG = Logger.getLogger(AutoUpdater.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(AutoUpdater.class);
 
 	public static enum State {
 		NOTHING_KNOWN, POLLING_SERVER, NO_UPDATE_AVAILABLE, UPDATE_AVAILABLE, DOWNLOAD_IN_PROGRESS, DOWNLOAD_FINISHED, EXECUTING_SETUP, ERROR
@@ -207,7 +207,7 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 			}
 			fileOnDisk = new FileOutputStream(target);
 			int bytesSaved = IOUtils.copy(downloadedFromNetwork, fileOnDisk);
-			LOG.log(Level.INFO, "Wrote {0} bytes to {1}", new Object[]{bytesSaved, target.getAbsolutePath()});
+			logger.info("Wrote " + bytesSaved + " bytes to " + target.getAbsolutePath());
 		} finally {
 			IOUtils.closeQuietly(downloadedFromNetwork);
 			IOUtils.closeQuietly(fileOnDisk);
