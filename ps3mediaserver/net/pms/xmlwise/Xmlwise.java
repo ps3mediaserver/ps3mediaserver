@@ -106,34 +106,13 @@ public class Xmlwise {
 	 * @return an escaped string suitable for use in an xml document.
 	 */
 	public static String escapeXML(String stringToEscape) {
-		int size = stringToEscape.length();
-		if (size == 0) {
-			return "";
-		}
-		StringBuilder s = new StringBuilder(size);
-		for (int i = 0; i < size; i++) {
-			char c = stringToEscape.charAt(i);
-			switch (c) {
-				case '<':
-					s.append("&lt;");
-					break;
-				case '>':
-					s.append("&gt;");
-					break;
-				case '&':
-					s.append("&amp;");
-					break;
-				case '"':
-					s.append("&quot;");
-					break;
-				case '\'':
-					s.append("&apos;");
-					break;
-				default:
-					s.append(c);
-			}
-		}
-		return s.toString();
+		stringToEscape = stringToEscape.replace("<", "&lt;");
+		stringToEscape = stringToEscape.replace(">", "&gt;");
+		stringToEscape = stringToEscape.replace("&", "&amp;");
+		stringToEscape = stringToEscape.replace("\"", "&quot;");
+		stringToEscape = stringToEscape.replace("'", "&apos;");
+
+		return stringToEscape;
 	}
 
 	/**
