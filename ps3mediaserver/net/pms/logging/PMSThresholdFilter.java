@@ -30,7 +30,7 @@ import ch.qos.logback.core.spi.FilterReply;
  * PmsConfiguration.
  * 
  * The threshold level is taken from {@link PmsConfiguration#getLoggingLevel()},
- * and is an integer between 0 and 3. These levels are used historically be PMS
+ * and is an integer between 0 and 3. These levels are used historically by PMS
  * and have the following mappings:
  * 
  * <table border="1">
