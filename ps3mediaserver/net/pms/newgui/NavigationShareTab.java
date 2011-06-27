@@ -55,8 +55,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
-public class FoldTab {
-	private static final Logger logger = LoggerFactory.getLogger(FoldTab.class);
+public class NavigationShareTab {
+	private static final Logger logger = LoggerFactory.getLogger(NavigationShareTab.class);
 	public static final String ALL_DRIVES = Messages.getString("FoldTab.0"); //$NON-NLS-1$
 	private JList FList;
 	private DefaultListModel df;
@@ -84,7 +84,7 @@ public class FoldTab {
 	}
 	private final PmsConfiguration configuration;
 
-	FoldTab(PmsConfiguration configuration) {
+	NavigationShareTab(PmsConfiguration configuration) {
 		this.configuration = configuration;
 	}
 

@@ -78,19 +78,19 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	public TracesTab getTt() {
 		return tt;
 	}
-	private FoldTab ft;
+	private NavigationShareTab ft;
 
-	public FoldTab getFt() {
+	public NavigationShareTab getFt() {
 		return ft;
 	}
 	private StatusTab st;
 	private TracesTab tt;
-	private TrTab2 tr;
+	private TranscodingTab tr;
 
-	public TrTab2 getTr() {
+	public TranscodingTab getTr() {
 		return tr;
 	}
-	private NetworkTab nt;
+	private GeneralTab nt;
 	private AbstractButton reload;
 
 	public AbstractButton getReload() {
@@ -336,9 +336,9 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 
 		st = new StatusTab();
 		tt = new TracesTab();
-		tr = new TrTab2(configuration);
-		nt = new NetworkTab(configuration);
-		ft = new FoldTab(configuration);
+		tr = new TranscodingTab(configuration);
+		nt = new GeneralTab(configuration);
+		ft = new NavigationShareTab(configuration);
 
 		tabbedPane.addTab(Messages.getString("LooksFrame.18"),/* readImageIcon("server-16.png"),*/ st.build()); //$NON-NLS-1$
 		tabbedPane.addTab(Messages.getString("LooksFrame.19"),/* readImageIcon("mail_new-16.png"),*/ tt.build()); //$NON-NLS-1$
@@ -346,7 +346,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		tabbedPane.addTab(Messages.getString("LooksFrame.22"), /*readImageIcon("bookmark-16.png"),*/ ft.build()); //$NON-NLS-1$
 		tabbedPane.addTab(Messages.getString("LooksFrame.21"),/* readImageIcon("player_play-16.png"),*/ tr.build()); //$NON-NLS-1$
 		tabbedPane.addTab(Messages.getString("LooksFrame.24"), /* readImageIcon("mail_new-16.png"), */ new HelpTab().build()); //$NON-NLS-1$
-		tabbedPane.addTab(Messages.getString("LooksFrame.25"), /*readImageIcon("documentinfo-16.png"),*/ new LinksTab().build()); //$NON-NLS-1$
+		tabbedPane.addTab(Messages.getString("LooksFrame.25"), /*readImageIcon("documentinfo-16.png"),*/ new AboutTab().build()); //$NON-NLS-1$
 
 		tabbedPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		return tabbedPane;

@@ -63,10 +63,10 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
-public class TrTab2 {
+public class TranscodingTab {
 	private final PmsConfiguration configuration;
 
-	TrTab2(PmsConfiguration configuration) {
+	TranscodingTab(PmsConfiguration configuration) {
 		this.configuration = configuration;
 	}
 	private JCheckBox disableSubs;
