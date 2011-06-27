@@ -61,8 +61,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
-public class NetworkTab {
-	private static final Logger logger = LoggerFactory.getLogger(NetworkTab.class);
+public class GeneralTab {
+	private static final Logger logger = LoggerFactory.getLogger(GeneralTab.class);
 	private JCheckBox smcheckBox;
 	private JCheckBox newHTTPEngine;
 	private JCheckBox preventSleep;
@@ -74,7 +74,7 @@ public class NetworkTab {
 	private JPanel pPlugins;
 	private final PmsConfiguration configuration;
 
-	NetworkTab(PmsConfiguration configuration) {
+	GeneralTab(PmsConfiguration configuration) {
 		this.configuration = configuration;
 	}
 

@@ -105,7 +105,7 @@ import net.pms.network.HTTPServer;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
 import net.pms.newgui.LooksFrame;
-import net.pms.newgui.NetworkTab;
+import net.pms.newgui.GeneralTab;
 import net.pms.update.AutoUpdater;
 import net.pms.util.PMSUtil;
 import net.pms.util.ProcessUtil;
@@ -1012,7 +1012,7 @@ public class PMS {
 	/**Executes the needed commands in order to make PMS a Windows service that starts whenever the machine is started.
 	 * This function is called from the Network tab.
 	 * @return true if PMS could be installed as a Windows service.
-	 * @see NetworkTab#build()
+	 * @see GeneralTab#build()
 	 */
 	public boolean installWin32Service() {
 		logger.info(Messages.getString("PMS.41")); //$NON-NLS-1$
