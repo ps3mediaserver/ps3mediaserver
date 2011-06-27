@@ -20,6 +20,7 @@ package net.pms.newgui;
 
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -70,7 +71,7 @@ public class NetworkTab {
 	private JComboBox langs;
 	private JComboBox networkinterfacesCBX;
 	private JTextField ip_filter;
-	private JButton plugins[];
+	private JPanel pPlugins;
 	private final PmsConfiguration configuration;
 
 	NetworkTab(PmsConfiguration configuration) {
@@ -79,8 +80,8 @@ public class NetworkTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-			"left:pref, 2dlu, p, 2dlu , p, 2dlu, p, 2dlu, pref:grow", //$NON-NLS-1$
-			"p, 0dlu, p, 0dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 15dlu, p, 3dlu,p, 3dlu, p,  3dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu "); //$NON-NLS-1$
+				"left:pref, 2dlu, p, 2dlu , p, 2dlu, p, 2dlu, pref:grow", //$NON-NLS-1$
+				"p, 0dlu, p, 0dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 15dlu, p, 3dlu,p, 3dlu, p,  3dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p"); //$NON-NLS-1$
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.DLU4_BORDER);
 		builder.setOpaque(true);
@@ -295,14 +296,8 @@ public class NetworkTab {
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		int y = 39;
-		plugins = new JButton[8];
-		for (int i = 0; i < plugins.length; i++) {
-			plugins[i] = new JButton();
-			plugins[i].setVisible(false);
-			builder.add(plugins[i], cc.xyw(1, y, 9));
-			y += 2;
-		}
+		pPlugins = new JPanel(new GridLayout());
+		builder.add(pPlugins, cc.xyw(1, 39, 9));
 
 		JPanel panel = builder.getPanel();
 		JScrollPane scrollPane = new JScrollPane(
@@ -313,20 +308,29 @@ public class NetworkTab {
 	}
 
 	public void addPlugins() {
-		int i = 0;
-		for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
-			plugins[i].setText(listener.name());
-			plugins[i].setVisible(true);
+		FormLayout layout = new FormLayout(
+				"fill:10:grow", //$NON-NLS-1$
+				"p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p"); //$NON-NLS-1$
+		PanelBuilder builder = new PanelBuilder(layout);
 
-			//listener to show option screen
-			plugins[i++].addActionListener(new ActionListener() {
+		CellConstraints cc = new CellConstraints();
+		int i = 1;
+		for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
+			if (i > 30) {
+				logger.warn("Plugin limit of 30 has been reached");
+				break;
+			}
+			JButton bPlugin = new JButton(listener.name());
+			// listener to show option screen
+			bPlugin.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-						listener.config(), "Options", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+					JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), 
+							listener.config(), "Options", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
 				}
 			});
-			i++;
+			builder.add(bPlugin, cc.xy(1, i++));
 		}
+		pPlugins.add(builder.getPanel());
 	}
 }
