@@ -370,11 +370,18 @@ public class MediaInfoParser {
 		}
 		value = value.trim();
 
+		// Audio is DTS-ES (6.1 channels) but MEncoder only supports either 6 or 2 for channel values so we use 6
 		if (value.equals("7 / 6")) {
 			value = "6";
 		}
-		int channels = Integer.parseInt(value);
-		return channels;
+
+		try {
+			int channels = Integer.parseInt(value);
+			return channels;
+		} catch(NumberFormatException e) {
+			logger.info("Unknown number of audio channels detected. Using 6."); //$NON-NLS-1$
+			return 6;
+		}
 	}
 
 	public static int getSpecificID(String value) {
