@@ -95,9 +95,9 @@ public class Xmlwise {
 	 * The following replacements are made:
 	 * <p>
 	 * <table>
+	 * <tr><td>&amp;</td><td>&amp;amp;</td></tr>
 	 * <tr><td>&lt;</td><td>&amp;lt;</td></tr>
 	 * <tr><td>&gt;</td><td>&amp;gt;</td></tr>
-	 * <tr><td>&amp;</td><td>&amp;amp;</td></tr>
 	 * <tr><td>&quot;</td><td>&amp;quot;</td></tr>
 	 * <tr><td>'</td><td>&amp;apos;</td></tr>
 	 * </table>
@@ -106,9 +106,9 @@ public class Xmlwise {
 	 * @return an escaped string suitable for use in an xml document.
 	 */
 	public static String escapeXML(String stringToEscape) {
+		stringToEscape = stringToEscape.replace("&", "&amp;");
 		stringToEscape = stringToEscape.replace("<", "&lt;");
 		stringToEscape = stringToEscape.replace(">", "&gt;");
-		stringToEscape = stringToEscape.replace("&", "&amp;");
 		stringToEscape = stringToEscape.replace("\"", "&quot;");
 		stringToEscape = stringToEscape.replace("'", "&apos;");
 
