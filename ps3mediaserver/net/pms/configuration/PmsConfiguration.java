@@ -242,7 +242,7 @@ public class PmsConfiguration {
 	static {
 		// first try the system property, typically set via the profile chooser
 		String profile = System.getProperty(PROPERTY_PROFILE_PATH);
-		
+
 		// failing that, try the environment variable
 		if (profile == null) {
 			profile = System.getenv(ENV_PROFILE_PATH);

@@ -158,6 +158,7 @@ public class MEncoderVideo extends Player {
 		+ "container == mov :: -mc 0.1 -noass\n" //$NON-NLS-1$
 		+ "container == rm  :: -mc 0.1\n" //$NON-NLS-1$
 		+ "container == matroska && framerate == 29.97  :: -nomux -mc 0\n" //$NON-NLS-1$
+		+ "container == mp4 && vcodec == h264 :: -mc 0.1 -noass\n" //$NON-NLS-1$
 		+ "\n" //$NON-NLS-1$
 		+ Messages.getString("MEncoderVideo.87") //$NON-NLS-1$
 		+ Messages.getString("MEncoderVideo.88") //$NON-NLS-1$
@@ -1237,6 +1238,16 @@ public class MEncoderVideo extends Player {
 
 		boolean needAssFixPTS = false;
 
+		boolean foundNoassParam = false;
+		if (media != null) {
+			String sArgs [] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, subString, configuration.isMencoderIntelligentSync(), false);
+			for(String s:sArgs) {
+				if (s.equals("-noass")) {
+					foundNoassParam = true;
+				}
+			}
+		}
+
 		StringBuilder sb = new StringBuilder();
 
 		// Use ASS & Fontconfig flags (and therefore ASS font styles) for all subtitled files except vobsub, embedded, dvd and mp4 container with srt
@@ -1248,6 +1259,7 @@ public class MEncoderVideo extends Player {
 			!(params.sid.type == DLNAMediaSubtitle.SUBRIP && media.container.equals("mp4")) &&
 			!configuration.isMencoderDisableSubs() &&
 			configuration.isMencoderAss() &&
+			!foundNoassParam &&
 			!dvd &&
 			!avisynth()
 		) {
@@ -1293,7 +1305,7 @@ public class MEncoderVideo extends Player {
 					sb.append("-subfont ").append(font).append(" "); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
-			if (configuration.isMencoderAss()) {
+			if (configuration.isMencoderAss() && !foundNoassParam) {
 				if (!configuration.isMencoderAssDefaultStyle() || (subString != null && params.sid.type != DLNAMediaSubtitle.ASS)) {
 					String assSubColor = "ffffff00";
 					if (configuration.getSubsColor() != 0) {

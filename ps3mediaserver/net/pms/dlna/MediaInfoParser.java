@@ -130,7 +130,7 @@ public class MediaInfoParser {
 								} else {
 									if (step == MediaInfo.StreamKind.Audio) {
 										currentAudioTrack.id = media.audioCodes.size();
-										if (media.container != null && (media.container.equals(FormatConfiguration.AVI) || media.container.equals(FormatConfiguration.FLV) || media.container.equals(FormatConfiguration.MOV))) {
+										if (media.container != null && (media.container.equals(FormatConfiguration.AVI) || media.container.equals(FormatConfiguration.FLV) || media.container.equals(FormatConfiguration.MOV) || media.container.equals(FormatConfiguration.MP4))) {
 											currentAudioTrack.id++;
 										}
 									} else if (step == MediaInfo.StreamKind.Text) {
