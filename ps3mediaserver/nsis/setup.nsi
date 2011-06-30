@@ -78,6 +78,7 @@ Section "Start Menu Shortcuts"
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\PS3 Media Server"
   CreateShortCut "$SMPROGRAMS\PS3 Media Server\PS3 Media Server.lnk" "$INSTDIR\PMS.exe" "" "$INSTDIR\PMS.exe" 0
+  CreateShortCut "$SMPROGRAMS\PS3 Media Server\PS3 Media Server (Select Profile).lnk" "$INSTDIR\PMS.exe" "profiles" "$INSTDIR\PMS.exe" 0
   CreateShortCut "$SMPROGRAMS\PS3 Media Server\Uninstall.lnk" "$INSTDIR\uninst.exe" "" "$INSTDIR\uninst.exe" 0
 SectionEnd
  
@@ -111,6 +112,7 @@ Section "Uninstall"
   Delete /REBOOTOK "$DESKTOP\PS3 Media Server.lnk"
   RMDir /REBOOTOK "$SMPROGRAMS\PS3 Media Server"
   Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server\PS3 Media Server.lnk"
+  Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server\PS3 Media Server (Select Profile).lnk"
   Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server\Uninstall.lnk"
  
   DeleteRegKey HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}"
