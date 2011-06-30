@@ -190,13 +190,20 @@ public class PmsConfiguration {
 	private final ProgramPathDisabler programPaths;
 
 	/*
-		The following code enables a single environment variable - PMS_PROFILE - to be used to
+		The following code enables a single setting - PMS_PROFILE - to be used to
 		initialize PROFILE_PATH i.e. the path to the current session's profile (AKA PMS.conf).
 		It also initializes PROFILE_DIRECTORY - i.e. the directory the profile is located in -
 		which is needed for configuration-by-convention detection of WEB.conf (anything else?).
 
 		While this convention - and therefore PROFILE_DIRECTORY - will remain,
 		adding more configurables - e.g. web_conf = ... - is on the TODO list.
+
+		PMS_PROFILE is read (in this order) from the property pms.profile.path or the
+		environment variable PMS_PROFILE. If PMS is launched with the command-line option
+		"profiles" (e.g. from a shortcut), it displays a file chooser dialog that
+		allows the pms.profile.path property to be set. This makes it easy to run PMS
+		under multiple profiles without fiddling with environment variables, properties or
+		command-line arguments.
 
 		1) if PMS_PROFILE is not set, PMS.conf is located in: 
 
@@ -226,12 +233,20 @@ public class PmsConfiguration {
 			PMS_PROFILE = folder/dev.conf     # profile dir = folder
 			PMS_PROFILE = /path/to/some.file  # profile dir = /path/to/
 	 */
-	private static final String DEFAULT_PROFILE_FILENAME = "PMS.conf";
+	private static final String DEFAULT_PROFILE_FILENAME = "PMS.conf"; //$NON-NLS-1
+	private static final String ENV_PROFILE_PATH = "PMS_PROFILE"; //$NON-NLS-1
 	private static final String PROFILE_DIRECTORY; // path to directory containing PMS config files
 	private static final String PROFILE_PATH; // abs path to profile file e.g. /path/to/PMS.conf
+	private static final String PROPERTY_PROFILE_PATH = "pms.profile.path"; //$NON-NLS-1
 
 	static {
-		String profile = System.getenv("PMS_PROFILE"); //$NON-NLS-1$
+		// first try the system property, typically set via the profile chooser
+		String profile = System.getProperty(PROPERTY_PROFILE_PATH);
+		
+		// failing that, try the environment variable
+		if (profile == null) {
+			profile = System.getenv(ENV_PROFILE_PATH);
+		}
 
 		if (profile != null) {
 			File f = new File(profile);

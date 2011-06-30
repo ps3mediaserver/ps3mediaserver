@@ -104,8 +104,9 @@ import net.pms.logging.LoggingConfigFileLoader;
 import net.pms.network.HTTPServer;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
-import net.pms.newgui.LooksFrame;
 import net.pms.newgui.GeneralTab;
+import net.pms.newgui.LooksFrame;
+import net.pms.newgui.ProfileChooser;
 import net.pms.update.AutoUpdater;
 import net.pms.util.PMSUtil;
 import net.pms.util.ProcessUtil;
@@ -1388,6 +1389,9 @@ public class PMS {
 	}
 
 	public static void main(String args[]) throws IOException, ConfigurationException {
+		boolean displayProfileChooser = false;
+		boolean headless = true;
+
 		if (args.length > 0) {
 			for (int a = 0; a < args.length; a++) {
 				if (args[a].equals(CONSOLE)) {
@@ -1398,20 +1402,30 @@ public class PMS {
 					System.setProperty(SCROLLBARS, Boolean.toString(true));
 				} else if (args[a].equals(NOCONSOLE)) {
 					System.setProperty(NOCONSOLE, Boolean.toString(true));
+				} else if (args[a].equals("profiles")) {
+					displayProfileChooser = true;
 				}
 			}
 		}
 
 		try {
 			Toolkit.getDefaultToolkit();
-			if (GraphicsEnvironment.isHeadless() && System.getProperty(NOCONSOLE) == null) {
-				System.setProperty(CONSOLE, Boolean.toString(true));
+			if (GraphicsEnvironment.isHeadless()) {
+				if (System.getProperty(NOCONSOLE) == null) {
+					System.setProperty(CONSOLE, Boolean.toString(true));
+				}
+			} else {
+				headless = false;
 			}
 		} catch (Throwable t) {
 			System.err.println("Toolkit error: " + t.getMessage());
 			if (System.getProperty(NOCONSOLE) == null) {
 				System.setProperty(CONSOLE, Boolean.toString(true));
 			}
+		}
+
+		if (!headless && displayProfileChooser) {
+			ProfileChooser.display();
 		}
 
 		try {
@@ -1426,7 +1440,7 @@ public class PMS {
 		// as the logging starts immediately and some filters need the PmsConfiguration.
 		LoggingConfigFileLoader.load();
 
-		get();
+		get(); // i.e. create the PMS instance
 
 		try {
 			// let's allow us time to show up serious errors in the GUI before quitting
