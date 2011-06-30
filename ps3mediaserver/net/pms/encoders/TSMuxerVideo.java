@@ -351,10 +351,6 @@ public class TSMuxerVideo extends Player {
 			pw.print("--no-asyncio "); //$NON-NLS-1$
 		}
 		pw.print(" --vbr"); //$NON-NLS-1$
-		if (params.timeseek > 0 && ffVideoPipe == null) {
-			pw.print(" --cut-start=" + params.timeseek + "s "); //$NON-NLS-1$ //$NON-NLS-2$
-			params.timeseek = 0;
-		}
 		pw.println(" --vbv-len=500"); //$NON-NLS-1$
 
 		if (ffVideoPipe != null) {

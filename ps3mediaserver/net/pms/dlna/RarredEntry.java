@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import net.pms.PMS;
 import net.pms.formats.Format;
 import net.pms.util.FileUtil;
 import de.innosystec.unrar.Archive;

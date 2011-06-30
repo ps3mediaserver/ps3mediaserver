@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
-import net.pms.io.BufferedOutputFile;
 
 import com.sun.jna.Platform;
 
