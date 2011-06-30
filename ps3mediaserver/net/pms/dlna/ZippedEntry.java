@@ -25,7 +25,6 @@ import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import net.pms.PMS;
 import net.pms.formats.Format;
 import net.pms.util.FileUtil;
 

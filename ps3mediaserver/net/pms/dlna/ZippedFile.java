@@ -29,7 +29,6 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import net.pms.PMS;
 import net.pms.formats.Format;
 
 import org.slf4j.Logger;

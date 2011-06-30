@@ -39,7 +39,6 @@ import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeIPCProcess;
-import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
@@ -166,7 +165,6 @@ public class FFMpegVideo extends Player {
 			videoP = new PipeIPCProcess("mplayer_vid1" + System.currentTimeMillis(), "mplayer_vid2" + System.currentTimeMillis(), false, false); //$NON-NLS-1$ //$NON-NLS-2$
 			audioP = new PipeIPCProcess("mplayer_aud1" + System.currentTimeMillis(), "mplayer_aud2" + System.currentTimeMillis(), false, false); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		PipeProcess ffPipe = null;
 
 		String cmdArray[] = new String[14 + args.length];
 		cmdArray[0] = executable();
@@ -306,17 +304,6 @@ public class FFMpegVideo extends Player {
 				Thread.sleep(250);
 			} catch (InterruptedException e) {
 			}
-		} else if (ffPipe != null) {
-			params.input_pipes[0] = ffPipe;
-
-			ProcessWrapper pipe_process = ffPipe.getPipeProcess();
-			pw.attachProcess(pipe_process);
-			pipe_process.runInNewThread();
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-			}
-			ffPipe.deleteLater();
 		}
 
 		pw.runInNewThread();

@@ -28,8 +28,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jdom.Content;
 import org.jdom.Element;
 
-import net.pms.PMS;
-
 import com.sun.syndication.feed.synd.SyndCategory;
 import com.sun.syndication.feed.synd.SyndEnclosure;
 import com.sun.syndication.feed.synd.SyndEntry;

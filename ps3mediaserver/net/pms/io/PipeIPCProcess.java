@@ -73,9 +73,6 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 			if (modifier != null && modifier.getHeader() != null && !modifier.isH264_annexb()) {
 				out.write(modifier.getHeader());
 			}
-			if (debug != null && modifier != null && modifier.getHeader() != null && !modifier.isH264_annexb()) {
-				debug.write(modifier.getHeader());
-			}
 			while ((n = in.read(b)) > -1) {
 				out.write(b, 0, n);
 				if (debug != null) {

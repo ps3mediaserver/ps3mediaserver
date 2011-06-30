@@ -66,9 +66,7 @@ public class PlaylistFolder extends DLNAResource {
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(playlistfile));
 				String line;
-				int lineno = 0;
 				while (!m3u && !pls && (line = br.readLine()) != null) {
-					lineno++;
 					line = line.trim();
 					if (line.startsWith("#EXTM3U")) {
 						m3u = true;
@@ -83,7 +81,6 @@ public class PlaylistFolder extends DLNAResource {
 				String fileName = null;
 				String title = null;
 				while ((line = br.readLine()) != null) {
-					lineno++;
 					line = line.trim();
 					if (pls) {
 						if (line.length() > 0 && !line.startsWith("#")) {
