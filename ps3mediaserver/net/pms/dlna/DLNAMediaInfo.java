@@ -497,7 +497,7 @@ public class DLNAMediaInfo implements Cloneable {
 								int a = line.indexOf("(");
 								int b = line.indexOf("):", a);
 								DLNAMediaAudio audio = new DLNAMediaAudio();
-								if (langId == 0 && (container.equals("avi") || container.equals("ogm") || container.equals("mov") || container.equals("flv"))) {
+								if (langId == 0 && (container.equals("avi") || container.equals("ogm") || container.equals("mov") || container.equals("flv") || container.equals("mp4"))) {
 									langId++;
 								}
 								audio.id = langId++;
