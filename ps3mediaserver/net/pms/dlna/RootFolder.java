@@ -96,6 +96,10 @@ public class RootFolder extends DLNAResource {
 
 	@Override
 	public void discoverChildren() {
+		if(discovered) {
+			return;
+		}
+		
 		for (DLNAResource r : getConfiguredFolders()) {
 			addChild(r);
 		}
@@ -133,11 +137,14 @@ public class RootFolder extends DLNAResource {
 				addChild(videoSettingsRes);
 			}
 		}
+		discovered = true;
 	}
 
 	public void scan() {
 		running = true;
-		refreshChildren();
+		if(!discovered) {
+			discoverChildren();
+		}
 		defaultRenderer = RendererConfiguration.getDefaultConf();
 		scan(this);
 		IFrame frame = PMS.get().getFrame();
