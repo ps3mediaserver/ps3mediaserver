@@ -108,6 +108,7 @@ public class WinUtils {
 		return pluginsDir;
 	}
 
+	// FIXME: delete this?
 	public static void main(String args[]) {
 		WinUtils rb = new WinUtils();
 		System.out.println(rb.getVlcp());
