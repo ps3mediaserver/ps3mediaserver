@@ -47,7 +47,7 @@ public class RendererConfiguration {
 
 		File renderersDir = new File("renderers");
 
-		if (renderersDir.exists()) {
+		if (renderersDir.exists() && renderersDir.isDirectory()) {
 			logger.info("Loading renderer configurations from " + renderersDir.getAbsolutePath());
 
 			File confs[] = renderersDir.listFiles();

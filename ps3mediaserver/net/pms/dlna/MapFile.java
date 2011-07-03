@@ -122,7 +122,7 @@ public class MapFile extends DLNAResource {
 	private List<File> getFileList() {
 		List<File> out = new ArrayList<File>();
 		for (File file : this.conf.getFiles()) {
-			if (file != null && file.canRead()) {
+			if (file != null && file.isDirectory() && file.canRead()) {
 				out.addAll(Arrays.asList(file.listFiles()));
 			}
 		}
