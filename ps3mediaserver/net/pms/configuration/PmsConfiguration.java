@@ -991,8 +991,7 @@ public class PmsConfiguration {
 
 	public void save() throws ConfigurationException {
 		configuration.save();
-		logger.info("(X) Configuration saved to: " + PROFILE_PATH);
-		logger.info("(Y) Configuration saved to: " + PROFILE_PATH);
+		logger.info("Configuration saved to: " + PROFILE_PATH);
 	}
 
 	public String getFolders() {
