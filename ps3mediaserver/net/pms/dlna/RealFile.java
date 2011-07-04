@@ -58,7 +58,7 @@ public class RealFile extends MapFile {
 		}
 		boolean valid = file.exists() && (ext != null || file.isDirectory());
 
-		if (valid && parent.defaultRenderer != null && parent.defaultRenderer.isMediaParserV2()) {
+		if (valid && parent != null && parent.defaultRenderer != null && parent.defaultRenderer.isMediaParserV2()) {
 			// we need to resolve the dlna resource now
 			run();
 			if (media != null && media.thumb == null && getType() != Format.AUDIO) // MediaInfo retrieves cover art now
@@ -170,7 +170,7 @@ public class RealFile extends MapFile {
 				}
 				found = !media.mediaparsed && !media.parsing;
 				if (ext != null) {
-					ext.parse(media, input, getType(), parent.defaultRenderer);
+					ext.parse(media, input, getType(), parent == null ? defaultRenderer : parent.defaultRenderer);
 				} else //don't think that will ever happen
 				{
 					media.parse(input, ext, getType(), false);
