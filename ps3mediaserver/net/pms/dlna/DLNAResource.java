@@ -178,7 +178,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected int splitTrack;
 	protected String fakeParentId;
 	// Ditlew - needs this in one of the derived classes
-	protected RendererConfiguration defaultRenderer = RendererConfiguration.getDefaultConf();
+	protected RendererConfiguration defaultRenderer;
 	private String dlnaspec;
 
 	public String getDlnaContentFeatures() {
