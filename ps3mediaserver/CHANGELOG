@@ -1,11 +1,13 @@
 Changelog:
 ==========
 
-2011-07-05 - 1.30.0
+2011-07-?? - 1.30.0
 
-	Backwards-incompatible API changes (for plugin developers) - see SVN changelog for more details
+	Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3hbqv4l for more details
 	Updated OS X binaries (FFmpeg, MEncoder and MPlayer) to fix an AC3 bug and improve internal VOBsub display quality
-	Consistent use of logging framework
+	Optional GUI to allow profile to be selected when PMS starts
+	Better UPnP spec compliance
+	Logging improvements
 	ASS/SSA subtitles disabled by default on Linux and OS X
 	Multithreaded MEncoder enabled by default on multithreaded CPUs
 	Subtitles stay within confines of original frame when using overscan compensation
