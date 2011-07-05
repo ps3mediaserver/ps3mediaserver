@@ -81,9 +81,6 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 		);
 	}
 
-	public static void main(String[] args) throws Exception {
-	}
-
 	private String name;
 	private boolean in;
 	private boolean forcereconnect;

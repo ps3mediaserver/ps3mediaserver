@@ -50,11 +50,5 @@ public class ProxyServer extends Thread {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-
-	}
-
-	public static void main(String args[]) {
-		ProxyServer ps = new ProxyServer(5015);
-		ps.start();
 	}
 }
