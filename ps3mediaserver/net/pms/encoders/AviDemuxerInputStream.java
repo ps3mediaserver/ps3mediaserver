@@ -167,16 +167,6 @@ public class AviDemuxerInputStream extends InputStream {
 		logger.trace("Ready to mux"); //$NON-NLS-1$
 	}
 
-	public static void main(String args[]) {
-		try {
-			OutputParams params = new OutputParams(new PmsConfiguration());
-			AviDemuxerInputStream av = new AviDemuxerInputStream(new FileInputStream("D:\\DEV\\PMS\\divers\\_\\speed.avi"), params, null); //$NON-NLS-1$
-			av.parsing.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void parseHeader() throws IOException {
 		logger.trace("Parsing AVI Stream"); //$NON-NLS-1$
 		String id = getString(stream, 4);

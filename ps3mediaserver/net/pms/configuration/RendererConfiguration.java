@@ -140,10 +140,6 @@ public class RendererConfiguration {
 		}
 	}
 
-	public static void main(String args[]) throws Exception {
-		new RendererConfiguration().associateIP(InetAddress.getByName("192.168.0.10"));
-	}
-
 	public static RendererConfiguration getRendererConfigurationBySocketAddress(InetAddress sa) {
 		for (RendererConfiguration r : renderersConfs) {
 			if (sa.equals(r.currentRendererAddress)) {

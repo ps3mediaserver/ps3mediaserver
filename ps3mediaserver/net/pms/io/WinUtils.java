@@ -108,22 +108,6 @@ public class WinUtils {
 		return pluginsDir;
 	}
 
-	// FIXME: delete this?
-	public static void main(String args[]) {
-		WinUtils rb = new WinUtils();
-		System.out.println(rb.getVlcp());
-		System.out.println(rb.getVlcv());
-		System.out.println(rb.isAvis());
-		WinUtils w = new WinUtils();
-		System.out.println(w.getWindowsDirectory());
-		File dir = new File("D:\\Tests\\wma");
-		File wma = dir.listFiles()[0];
-		for (int i = 0; i < 10000; i++) {
-			w.getShortPathNameW(wma.getAbsolutePath());
-			w.getWindowsDirectory();
-		}
-	}
-
 	public String getShortPathNameW(String longPathName) {
 		if (Platform.isWindows()) {
 			boolean unicodeChars = false;
