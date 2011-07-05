@@ -1,7 +1,11 @@
 Changelog:
 ==========
 
-2011-07-?? - 1.30.0
+2011-07-06 - 1.30.1
+
+	Fixed bug that caused very slow iTunes library parsing
+
+2011-07-05 - 1.30.0
 
 	Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3hbqv4l for more details
 	Updated OS X binaries (FFmpeg, MEncoder and MPlayer) to fix an AC3 bug and improve internal VOBsub display quality
