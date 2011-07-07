@@ -98,12 +98,11 @@ import org.apache.commons.configuration.ConfigurationException;
 import com.sun.jna.Platform;
 
 public class PMS {
-
 	private static final String SCROLLBARS = "scrollbars"; //$NON-NLS-1$
 	private static final String NATIVELOOK = "nativelook"; //$NON-NLS-1$
 	private static final String CONSOLE = "console"; //$NON-NLS-1$
 	private static final String NOCONSOLE = "noconsole"; //$NON-NLS-1$
-
+	private static final String PROFILES = "profiles"; //$NON-NLS-1$
 
 	/**
 	 * Update URL used in the {@link AutoUpdater}.
@@ -259,7 +258,6 @@ public class PMS {
 			outConsumer.start();
 
 			Runnable r = new Runnable() {
-
 				public void run() {
 					ProcessUtil.waitFor(process);
 				}
@@ -358,9 +356,11 @@ public class PMS {
 
 		logger.info("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
 		logger.info("Logging config file: " + LoggingConfigFileLoader.getConfigFilePath()); //$NON-NLS-1$
+
 		HashMap<String, String> lfps = LoggingConfigFileLoader.getLogFilePaths();
-		if(lfps != null && lfps.size() > 0) {
-			if(lfps.size() == 1) {
+
+		if (lfps != null && lfps.size() > 0) {
+			if (lfps.size() == 1) {
 				Entry<String, String> entry = lfps.entrySet().iterator().next();
 				logger.info(String.format("%s: %s", entry.getKey(), entry.getValue()));
 			} else {
@@ -373,6 +373,7 @@ public class PMS {
 				}
 			}
 		}
+
 		logger.info(""); //$NON-NLS-1$
 
 		logger.info("Profile directory: " + configuration.getProfileDirectory());
@@ -398,7 +399,7 @@ public class PMS {
 
 		logger.info("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
-      		if(isWindows()) {
+		if (isWindows()) {
 			checkProcessExistence("MPlayer", true, configuration.getTempFolder(), configuration.getMplayerPath(), "dummy");
 		}
 		logger.info("Done!");
@@ -710,7 +711,7 @@ public class PMS {
 		return f;
 	}
 
-	/**Restarts the servers. The trigger is either a button on the main PMS window or via
+	/**Restarts the server. The trigger is either a button on the main PMS window or via
 	 * an action item added via {@link PMS#addVideoSettingssFolder(RendererConfiguration).
 	 * @throws IOException
 	 */
@@ -912,7 +913,7 @@ public class PMS {
 					System.setProperty(SCROLLBARS, Boolean.toString(true));
 				} else if (args[a].equals(NOCONSOLE)) {
 					System.setProperty(NOCONSOLE, Boolean.toString(true));
-				} else if (args[a].equals("profiles")) {
+				} else if (args[a].equals(PROFILES)) {
 					displayProfileChooser = true;
 				}
 			}
