@@ -104,6 +104,7 @@ public class PMS {
 	private static final String CONSOLE = "console"; //$NON-NLS-1$
 	private static final String NOCONSOLE = "noconsole"; //$NON-NLS-1$
 
+
 	/**
 	 * Update URL used in the {@link AutoUpdater}.
 	 */
@@ -307,27 +308,18 @@ public class PMS {
 	 */
 	private DLNAMediaDatabase database;
 
+	private void initializeDatabase() {
+		database = new DLNAMediaDatabase("medias"); //$NON-NLS-1$
+		database.init(false);
+	}
+
 	/**Used to get the database. Needed in the case of the Xbox 360, that requires a database.
 	 * for its queries.
-	 * @return (DLNAMediaDatabase) If there exists a database register with the program, a pointer to it is returned.
-	 * If there is no database in memory, a new one is created. If the option to use a "cache" is deactivated, returns <b>null</b>.
+	 * @return (DLNAMediaDatabase) a reference to the database instance or <b>null</b> if one isn't defined
+	 * (e.g. if the cache is disabled).
 	 */
 	public synchronized DLNAMediaDatabase getDatabase() {
-		if (configuration.getUseCache()) {
-			if (database == null) {
-				database = new DLNAMediaDatabase("medias"); //$NON-NLS-1$
-				database.init(false);
-				/*try {
-				org.h2.tools.Server server = org.h2.tools.Server.createWebServer(null);
-				server.start();
-				logger.info("Starting H2 console on port " + server.getPort());
-				} catch (Exception e) {
-				e.printStackTrace();
-				}*/
-			}
-			return database;
-		}
-		return null;
+		return database;
 	}
 
 	/**Initialisation procedure for PMS.
@@ -339,7 +331,7 @@ public class PMS {
 		registry = new WinUtils();
 
 		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, VERSION);
-		if (System.getProperty(CONSOLE) == null) {//$NON-NLS-1$
+		if (System.getProperty(CONSOLE) == null) {
 			frame = new LooksFrame(autoUpdater, configuration);
 			autoUpdater.pollServer();
 		} else {
@@ -468,17 +460,16 @@ public class PMS {
 		Player.initializeFinalizeTranscoderArgsListeners();
 		registerPlayers();
 
-		getRootFolder(RendererConfiguration.getDefaultConf());
-
 		boolean binding = false;
+
 		try {
 			binding = server.start();
 		} catch (BindException b) {
 			logger.info("FATAL ERROR: Unable to bind on port: " + configuration.getServerPort() + ", because: " + b.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 			logger.info("Maybe another process is running or the hostname is wrong."); //$NON-NLS-1$
 		}
-		new Thread() {
 
+		new Thread() {
 			@Override
 			public void run() {
 				try {
@@ -500,23 +491,32 @@ public class PMS {
 				}
 			}
 		}.start();
+
 		if (!binding) {
 			return false;
 		}
+
 		if (proxy > 0) {
 			logger.info("Starting HTTP Proxy Server on port: " + proxy); //$NON-NLS-1$
 			proxyServer = new ProxyServer(proxy);
 		}
 
-		if (getDatabase() != null) {
+		// initialize the media library / cache
+		if (configuration.getUseCache()) {
+			initializeDatabase();
+			mediaLibrary = new MediaLibrary();
 			logger.info("A tiny media library admin interface is available at: http://" + server.getHost() + ":" + server.getPort() + "/console/home");
 		}
+
+		// XXX: this must be called:
+		//     a) *after* loading plugins i.e. plugins register root folders then RootFolder.discoverChildren adds them
+		//     b) *after* mediaLibrary is initialized, if enabled (above)
+		getRootFolder(RendererConfiguration.getDefaultConf());
 
 		frame.serverReady();
 
 		//UPNPHelper.sendByeBye();
 		Runtime.getRuntime().addShutdownHook(new Thread() {
-
 			@Override
 			public void run() {
 				try {
@@ -549,14 +549,13 @@ public class PMS {
 		return true;
 	}
 	
-	//private boolean mediaLibraryAdded = false;
-	private MediaLibrary library = new MediaLibrary();
+	private MediaLibrary mediaLibrary;
 
 	/**Returns the MediaLibrary used by PMS.
-	 * @return (MediaLibrary) Used library, if any. null if none is in use.
+	 * @return (MediaLibrary) Used mediaLibrary, if any. null if none is in use.
 	 */
 	public MediaLibrary getLibrary() {
-		return library;
+		return mediaLibrary;
 	}
 
 	/**Executes the needed commands in order to make PMS a Windows service that starts whenever the machine is started.
@@ -843,27 +842,26 @@ public class PMS {
 		return serverName;
 	}
 
-	/**Returns the PMS instance. New instance is created if needed.
+	/**Returns the PMS instance.
 	 * @return {@link PMS}
 	 */
 	public static PMS get() {
-		if (instance == null) {
-			synchronized (lock) {
-				if (instance == null) {
-					instance = new PMS();
-					try {
-						if (instance.init()) {
-							logger.info("The server should now appear on your renderer"); //$NON-NLS-1$
-						} else {
-							logger.error("A serious error occurred during PMS init"); //$NON-NLS-1$
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
+		assert instance != null;
 		return instance;
+	}
+
+	private static void createInstance() {
+		instance = new PMS();
+
+		try {
+			if (instance.init()) {
+				logger.info("The server should now appear on your renderer"); //$NON-NLS-1$
+			} else {
+				logger.error("A serious error occurred during PMS init"); //$NON-NLS-1$
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -952,7 +950,8 @@ public class PMS {
 		// as the logging starts immediately and some filters need the PmsConfiguration.
 		LoggingConfigFileLoader.load();
 
-		get(); // i.e. create the PMS instance
+		// create the PMS instance returned by get()
+		createInstance(); 
 
 		try {
 			// let's allow us time to show up serious errors in the GUI before quitting
