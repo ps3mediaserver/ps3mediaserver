@@ -38,7 +38,9 @@ if [ "x$JAVA" = "x" ]; then
 fi
 
 # Setup the classpath
-PMS_JARS="$PMS_HOME/update.jar:$PMS_HOME/pms.jar"
+# since we always cd to the working dir, these a) can be unqualified and b) *must*
+# be unqualified: https://code.google.com/p/ps3mediaserver/issues/detail?id=1122
+PMS_JARS="update.jar:pms.jar"
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
