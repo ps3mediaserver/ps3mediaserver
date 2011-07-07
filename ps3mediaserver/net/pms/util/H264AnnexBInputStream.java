@@ -1,12 +1,7 @@
 package net.pms.util;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import net.pms.dlna.DLNAMediaInfo;
-import net.pms.dlna.InputFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
