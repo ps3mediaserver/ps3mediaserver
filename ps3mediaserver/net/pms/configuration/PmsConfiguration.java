@@ -975,7 +975,7 @@ public class PmsConfiguration {
 	private static List<String> hackAvs(WinUtils registry, List<String> input) {
 		List<String> toBeRemoved = new ArrayList<String>();
 		for (String engineId : input) {
-			if (engineId.startsWith("avs") && !registry.isAvis() && PMS.get().isWindows()) {
+			if (engineId.startsWith("avs") && !registry.isAvis() && Platform.isWindows()) {
 				if (!avsHackLogged) {
 					logger.info("AviSynth is not installed. You cannot use " + engineId + " as a transcoding engine."); //$NON-NLS-1$ //$NON-NLS-2$
 					avsHackLogged = true;
