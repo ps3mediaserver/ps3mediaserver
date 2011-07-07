@@ -19,7 +19,6 @@
 package net.pms.encoders;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,7 +28,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import net.pms.PMS;
-import net.pms.configuration.PmsConfiguration;
 import net.pms.io.Gob;
 import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
