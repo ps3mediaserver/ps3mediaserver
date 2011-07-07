@@ -72,7 +72,7 @@ Section "Program Files"
   SetOutPath "$R0\PMS"
   SetOverwrite off
   File "WEB.conf"
-  AccessControl::GrantOnFile "$R0\PMS" "(S-1-1-0)" "FullAccess"
+  AccessControl::GrantOnFile "$R0\PMS" "(S-1-5-32-545)" "FullAccess"
 SectionEnd
  
 Section "Start Menu Shortcuts"
