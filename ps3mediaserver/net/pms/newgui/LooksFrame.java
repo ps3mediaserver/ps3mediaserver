@@ -411,15 +411,8 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		tr.addEngines();
 	}
 
-	// FIXME: remove this in 1.40.0
+	// FIXME: remove this (and unregister this class as an update observer) in 1.40.0
 	public void update(Observable o, Object arg) {
-		if (o == autoUpdater) {
-			try {
-				AutoUpdateDialog.showIfNecessary(this, autoUpdater);
-			} catch (NoClassDefFoundError ncdf) {
-				logger.info("Class not found: " + ncdf.getMessage()); //$NON-NLS-1$
-			}
-		}
 	}
 
 	public void checkForUpdates() {
