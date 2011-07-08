@@ -107,7 +107,7 @@ public class PMS {
 	/**
 	 * Update URL used in the {@link AutoUpdater}.
 	 */
-	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update.data"; //$NON-NLS-1$
+	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update2.data"; //$NON-NLS-1$
 	/**
 	 * Version showed in the UPnP XML descriptor and logs.
 	 */

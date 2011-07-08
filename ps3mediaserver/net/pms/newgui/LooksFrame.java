@@ -174,7 +174,6 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		assert this.autoUpdater != null;
 		assert this.configuration != null;
 		autoUpdater.addObserver(this);
-		update(autoUpdater, null);
 		Options.setDefaultIconSize(new Dimension(18, 18));
 		Options.setUseNarrowButtons(true);
 
@@ -412,6 +411,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		tr.addEngines();
 	}
 
+	// FIXME: remove this in 1.40.0
 	public void update(Observable o, Object arg) {
 		if (o == autoUpdater) {
 			try {
@@ -419,6 +419,14 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			} catch (NoClassDefFoundError ncdf) {
 				logger.info("Class not found: " + ncdf.getMessage()); //$NON-NLS-1$
 			}
+		}
+	}
+
+	public void checkForUpdates() {
+		try {
+			AutoUpdateDialog.showIfNecessary(this, autoUpdater);
+		} catch (NoClassDefFoundError ncdf) {
+			logger.info("Class not found: " + ncdf.getMessage()); //$NON-NLS-1$
 		}
 	}
 
