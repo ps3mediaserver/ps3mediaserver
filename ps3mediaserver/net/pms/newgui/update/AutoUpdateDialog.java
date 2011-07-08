@@ -26,8 +26,11 @@ public class AutoUpdateDialog extends JDialog implements Observer {
 	private static AutoUpdateDialog instance;
 
 	public synchronized static void showIfNecessary(Window parent, AutoUpdater autoUpdater) {
-		if (instance == null && autoUpdater.isUpdateAvailable()) {
-			instance = new AutoUpdateDialog(parent, autoUpdater);
+		if (autoUpdater.isUpdateAvailable()) {
+			if (instance == null) {
+				instance = new AutoUpdateDialog(parent, autoUpdater);
+			}
+			instance.setVisible(true);
 		}
 	}
 
@@ -41,7 +44,6 @@ public class AutoUpdateDialog extends JDialog implements Observer {
 		setLocationRelativeTo(parent);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		update();
-		setVisible(true);
 	}
 
 	private class DownloadButton extends JButton implements ActionListener {
