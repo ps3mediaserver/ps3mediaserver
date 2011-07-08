@@ -75,15 +75,15 @@ public class FFMpegVideo extends Player {
 	public boolean avisynth() {
 		return true;
 	}
-	private String overridenArgs[];
+	private String overriddenArgs[];
 
 	public FFMpegVideo() {
 		if (PMS.getConfiguration().getFfmpegSettings() != null) {
 			StringTokenizer st = new StringTokenizer(PMS.getConfiguration().getFfmpegSettings() + " -ab " + PMS.getConfiguration().getAudioBitrate() + "k -threads " + PMS.getConfiguration().getNumberOfCpuCores(), " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			overridenArgs = new String[st.countTokens()];
+			overriddenArgs = new String[st.countTokens()];
 			int i = 0;
 			while (st.hasMoreTokens()) {
-				overridenArgs[i++] = st.nextToken();
+				overriddenArgs[i++] = st.nextToken();
 			}
 		}
 	}
@@ -106,20 +106,20 @@ public class FFMpegVideo extends Player {
 	public String[] args() {
 		String args[] = null;
 		String defaultArgs[] = getDefaultArgs();
-		if (overridenArgs != null) {
-			args = new String[defaultArgs.length + overridenArgs.length];
+		if (overriddenArgs != null) {
+			args = new String[defaultArgs.length + overriddenArgs.length];
 			for (int i = 0; i < defaultArgs.length; i++) {
 				args[i] = defaultArgs[i];
 			}
-			for (int i = 0; i < overridenArgs.length; i++) {
-				if (overridenArgs[i].equals("-f") || overridenArgs[i].equals("-acodec") || overridenArgs[i].equals("-vcodec")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			for (int i = 0; i < overriddenArgs.length; i++) {
+				if (overriddenArgs[i].equals("-f") || overriddenArgs[i].equals("-acodec") || overriddenArgs[i].equals("-vcodec")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					logger.info("FFmpeg encoder settings: You cannot change Muxer, Video Codec or Audio Codec"); //$NON-NLS-1$
-					overridenArgs[i] = "-title"; //$NON-NLS-1$
-					if (i + 1 < overridenArgs.length) {
-						overridenArgs[i + 1] = "NewTitle"; //$NON-NLS-1$
+					overriddenArgs[i] = "-title"; //$NON-NLS-1$
+					if (i + 1 < overriddenArgs.length) {
+						overriddenArgs[i + 1] = "NewTitle"; //$NON-NLS-1$
 					}
 				}
-				args[i + defaultArgs.length] = overridenArgs[i];
+				args[i + defaultArgs.length] = overriddenArgs[i];
 			}
 		} else {
 			args = defaultArgs;
