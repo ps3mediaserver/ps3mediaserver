@@ -156,9 +156,27 @@ public class GeneralTab {
 				}
 			}
 		});
+
 		builder.add(service, cc.xy(1, 11));
+
 		if (System.getProperty(LooksFrame.START_SERVICE) != null || !Platform.isWindows()) {
 			service.setEnabled(false);
+		}
+
+		JButton checkForUpdates = new JButton(Messages.getString("NetworkTab.8")); //$NON-NLS-1$
+
+		checkForUpdates.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				LooksFrame frame = (LooksFrame) PMS.get().getFrame();
+				frame.checkForUpdates();
+			}
+		});
+
+		builder.add(checkForUpdates, cc.xy(1, 13));
+
+		if (!Platform.isWindows()) {
+			checkForUpdates.setEnabled(false);
 		}
 
 		host = new JTextField(PMS.getConfiguration().getServerHostname());
