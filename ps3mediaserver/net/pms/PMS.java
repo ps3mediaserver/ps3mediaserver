@@ -37,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.LogManager;
 
+import net.pms.configuration.Build;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaDatabase;
@@ -326,12 +327,17 @@ public class PMS {
 	 * @throws Exception
 	 */
 	private boolean init() throws Exception {
+		AutoUpdater autoUpdater = null;
+
+		if (Build.isUpdatable()) {
+			String serverURL = Build.getUpdateServerURL();
+			autoUpdater = new AutoUpdater(serverURL, VERSION);
+		}
+
 		registry = new WinUtils();
 
-		AutoUpdater autoUpdater = new AutoUpdater(UPDATE_SERVER_URL, VERSION);
 		if (System.getProperty(CONSOLE) == null) {
 			frame = new LooksFrame(autoUpdater, configuration);
-			autoUpdater.pollServer();
 		} else {
 			System.out.println("GUI environment not available"); //$NON-NLS-1$
 			System.out.println("Switching to console mode"); //$NON-NLS-1$

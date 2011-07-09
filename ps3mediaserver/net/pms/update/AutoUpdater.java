@@ -43,20 +43,22 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 	private boolean downloadCancelled = false;
 
 	public AutoUpdater(String updateServerUrl, String currentVersion) {
-		this.serverUrl = updateServerUrl;
+		this.serverUrl = updateServerUrl; // may be null if updating is disabled
 		this.currentVersion = new Version(currentVersion);
 	}
 
 	public void pollServer() {
-		executor.execute(new Runnable() {
-			public void run() {
-				try {
-					doPollServer();
-				} catch (UpdateException e) {
-					setErrorState(e);
+		if (serverUrl != null) { // don't poll if the server URL is null
+			executor.execute(new Runnable() {
+				public void run() {
+					try {
+						doPollServer();
+					} catch (UpdateException e) {
+						setErrorState(e);
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	private void doPollServer() throws UpdateException {
