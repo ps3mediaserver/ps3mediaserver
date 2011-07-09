@@ -40,6 +40,7 @@ public class PmsConfiguration {
 	private static final String KEY_AUDIO_CHANNEL_COUNT = "audiochannels";
 	private static final String KEY_AUDIO_RESAMPLE = "audio_resample";
 	private static final String KEY_AUDIO_THUMBNAILS_METHOD = "audio_thumbnails_method";
+	private static final String KEY_AUTO_UPDATE = "auto_update";
 	private static final String KEY_AVISYNTH_CONVERT_FPS = "avisynth_convertfps";
 	private static final String KEY_AVISYNTH_SCRIPT = "avisynth_script";
 	private static final String KEY_BUFFER_TYPE = "buffertype";
@@ -1326,5 +1327,13 @@ public class PmsConfiguration {
 		}
 
 		return getString(KEY_PROFILE_NAME, HOSTNAME);
+	}
+
+	public boolean isAutoUpdate() {
+		return Platform.isWindows() && configuration.getBoolean(KEY_AUTO_UPDATE, false);
+	}
+
+	public void setAutoUpdate(boolean value) {
+		configuration.setProperty(KEY_AUTO_UPDATE, value);
 	}
 }

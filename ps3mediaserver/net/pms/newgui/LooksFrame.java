@@ -174,6 +174,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		assert this.autoUpdater != null;
 		assert this.configuration != null;
 		autoUpdater.addObserver(this);
+		update(autoUpdater, null);
 		Options.setDefaultIconSize(new Dimension(18, 18));
 		Options.setUseNarrowButtons(true);
 
@@ -411,8 +412,10 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		tr.addEngines();
 	}
 
-	// FIXME: remove this (and unregister this class as an update observer) in 1.40.0
 	public void update(Observable o, Object arg) {
+		if (configuration.isAutoUpdate()) {
+			checkForUpdates();
+		}
 	}
 
 	public void checkForUpdates() {
