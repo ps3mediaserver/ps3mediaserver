@@ -188,7 +188,7 @@ public class GeneralTab {
 			autoUpdateCheckBox.setSelected(true);
 		}
 
-		builder.add(autoUpdateCheckBox, cc.xy(1, 14));
+		builder.add(autoUpdateCheckBox, cc.xyw(7, 13, 3));
 
 		if (!Build.isUpdatable()) {
 			checkForUpdates.setEnabled(false);
