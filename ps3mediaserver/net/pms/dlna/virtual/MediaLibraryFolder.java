@@ -17,6 +17,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 	public static final int ISOS = 3;
 	private String sqls[];
 	private int expectedOutputs[];
+	private DLNAMediaDatabase database;
 
 	public MediaLibraryFolder(String name, String sql, int expectedOutput) {
 		this(name, new String[]{sql}, new int[]{expectedOutput});
@@ -26,6 +27,10 @@ public class MediaLibraryFolder extends VirtualFolder {
 		super(name, null);
 		this.sqls = sql;
 		this.expectedOutputs = expectedOutput;
+		this.database = PMS.get().getDatabase();
+		// double check the database has been initialized (via PMS.init -> PMS.initializeDatabase)
+		// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=11474
+		assert this.database != null;
 	}
 
 	@Override
@@ -36,28 +41,28 @@ public class MediaLibraryFolder extends VirtualFolder {
 			if (sql != null) {
 				sql = transformSQL(sql);
 				if (expectedOutput == FILES) {
-					ArrayList<File> list = PMS.get().getDatabase().getFiles(sql);
+					ArrayList<File> list = database.getFiles(sql);
 					if (list != null) {
 						for (File f : list) {
 							addChild(new RealFile(f));
 						}
 					}
 				} else if (expectedOutput == PLAYLISTS) {
-					ArrayList<File> list = PMS.get().getDatabase().getFiles(sql);
+					ArrayList<File> list = database.getFiles(sql);
 					if (list != null) {
 						for (File f : list) {
 							addChild(new PlaylistFolder(f));
 						}
 					}
 				} else if (expectedOutput == ISOS) {
-					ArrayList<File> list = PMS.get().getDatabase().getFiles(sql);
+					ArrayList<File> list = database.getFiles(sql);
 					if (list != null) {
 						for (File f : list) {
 							addChild(new DVDISOFile(f));
 						}
 					}
 				} else if (expectedOutput == TEXTS) {
-					ArrayList<String> list = PMS.get().getDatabase().getStrings(sql);
+					ArrayList<String> list = database.getStrings(sql);
 					if (list != null) {
 						for (String s : list) {
 							String sqls2[] = new String[sqls.length - 1];
@@ -114,9 +119,9 @@ public class MediaLibraryFolder extends VirtualFolder {
 			if (sql != null) {
 				sql = transformSQL(sql);
 				if (expectedOutput == FILES || expectedOutput == PLAYLISTS || expectedOutput == ISOS) {
-					list = PMS.get().getDatabase().getFiles(sql);
+					list = database.getFiles(sql);
 				} else if (expectedOutput == TEXTS) {
-					strings = PMS.get().getDatabase().getStrings(sql);
+					strings = database.getStrings(sql);
 				}
 			}
 		}
