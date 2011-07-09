@@ -8,7 +8,7 @@ public class Build {
 	 * The URL of the properties file used by the {@link AutoUpdater} to announce PMS updates.
 	 * Can be null if the build doesn't support updating on any platform.
 	 */
-	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update2.data"; //$NON-NLS-1$
+	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update/update_1.properties"; //$NON-NLS-1$
 
 	// if false, both manual and automatic update checks are disabled
 	private static final boolean IS_UPDATABLE = true;
