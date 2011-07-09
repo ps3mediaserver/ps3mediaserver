@@ -704,7 +704,7 @@ public class BufferedOutputFile extends OutputStream {
 		}
 		timer.cancel();
 		if (buffer != null) {
-			logger.debug("Destroying buffer");
+			logger.trace("Destroying buffer");
 			buffer = null;
 		}
 		buffered = false;
