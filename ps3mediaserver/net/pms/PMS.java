@@ -510,7 +510,7 @@ public class PMS {
 
 		// initialize the media library / cache
 		if (configuration.getUseCache()) {
-			initializeDatabase();
+			initializeDatabase(); // XXX: this must be done *before* new MediaLibrary -> new MediaLibraryFolder
 			mediaLibrary = new MediaLibrary();
 			logger.info("A tiny media library admin interface is available at: http://" + server.getHost() + ":" + server.getPort() + "/console/home");
 		}
