@@ -64,6 +64,7 @@ import com.sun.jna.Platform;
 public class GeneralTab {
 	private static final Logger logger = LoggerFactory.getLogger(GeneralTab.class);
 	private JCheckBox smcheckBox;
+	private JCheckBox autoUpdateCheckBox;
 	private JCheckBox newHTTPEngine;
 	private JCheckBox preventSleep;
 	private JTextField host;
@@ -92,18 +93,17 @@ public class GeneralTab {
 		smcheckBox.setContentAreaFilled(false);
 		smcheckBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setMinimized((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setMinimized((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		if (PMS.getConfiguration().isMinimized()) {
+
+		if (configuration.isMinimized()) {
 			smcheckBox.setSelected(true);
 		}
 
 		JComponent cmp = builder.addSeparator(Messages.getString("NetworkTab.5"), cc.xyw(1, 1, 9)); //$NON-NLS-1$
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-
-
 
 		builder.addLabel(Messages.getString("NetworkTab.0"), cc.xy(1, 7)); //$NON-NLS-1$
 		final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[]{"bg", "ca", "zhs", "zht", "cz", "da", "nl", "en", "fi", "fr", "de", "el", "is", "it", "ja", "ko", "no", "pl", "pt", "br", "ro", "ru", "sl", "es", "sv"}, new Object[]{"Bulgarian", "Catalan", "Chinese (Simplified)", "Chinese (Traditional)", "Czech", "Danish", "Dutch", "English", "Finnish", "French", "German", "Greek", "Icelandic", "Italian", "Japanese", "Korean", "Norwegian", "Polish", "Portuguese", "Portuguese (Brazilian)", "Romanian", "Russian", "Slovenian", "Spanish", "Swedish"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$ //$NON-NLS-27$ //$NON-NLS-28$ //$NON-NLS-29$ //$NON-NLS-30$ //$NON-NLS-31$ //$NON-NLS-32$ //$NON-NLS-33$ //$NON-NLS-34$ //$NON-NLS-35$ //$NON-NLS-36$ //$NON-NLS-37$ //$NON-NLS-38$ //$NON-NLS-39$ //$NON-NLS-40$ //$NON-NLS-41$ //$NON-NLS-42$ //$NON-NLS-43$ //$NON-NLS-44$ //$NON-NLS-45$ //$NON-NLS-46$ //$NON-NLS-47$ //$NON-NLS-48$ //$NON-NLS-49$ //$NON-NLS-50$
@@ -175,11 +175,26 @@ public class GeneralTab {
 
 		builder.add(checkForUpdates, cc.xy(1, 13));
 
-		if (!Platform.isWindows()) {
-			checkForUpdates.setEnabled(false);
+		autoUpdateCheckBox = new JCheckBox(Messages.getString("NetworkTab.9")); //$NON-NLS-1$
+		autoUpdateCheckBox.setContentAreaFilled(false);
+		autoUpdateCheckBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setAutoUpdate((e.getStateChange() == ItemEvent.SELECTED));
+			}
+		});
+
+		if (configuration.isAutoUpdate()) {
+			autoUpdateCheckBox.setSelected(true);
 		}
 
-		host = new JTextField(PMS.getConfiguration().getServerHostname());
+		builder.add(autoUpdateCheckBox, cc.xy(1, 14));
+
+		if (!Platform.isWindows()) {
+			checkForUpdates.setEnabled(false);
+			autoUpdateCheckBox.setEnabled(false);
+		}
+
+		host = new JTextField(configuration.getServerHostname());
 		host.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -261,7 +276,7 @@ public class GeneralTab {
 			}
 		});
 
-		ip_filter = new JTextField(PMS.getConfiguration().getIpFilter());
+		ip_filter = new JTextField(configuration.getIpFilter());
 		ip_filter.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -293,19 +308,19 @@ public class GeneralTab {
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		newHTTPEngine = new JCheckBox(Messages.getString("NetworkTab.32"));
-		newHTTPEngine.setSelected(PMS.getConfiguration().isHTTPEngineV2());
+		newHTTPEngine.setSelected(configuration.isHTTPEngineV2());
 		newHTTPEngine.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setHTTPEngineV2((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setHTTPEngineV2((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 		builder.add(newHTTPEngine, cc.xyw(1, 33, 9));
 
 		preventSleep = new JCheckBox(Messages.getString("NetworkTab.33"));
-		preventSleep.setSelected(PMS.getConfiguration().isPreventsSleep());
+		preventSleep.setSelected(configuration.isPreventsSleep());
 		preventSleep.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setPreventsSleep((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setPreventsSleep((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 		builder.add(preventSleep, cc.xyw(1, 35, 9));
