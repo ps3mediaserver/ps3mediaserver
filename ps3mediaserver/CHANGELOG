@@ -4,7 +4,7 @@ Changelog:
 
 	Updated OS X MPlayer to enable external VOBsub support
 	allow update checks to be performed manually (Windows only)
-	add GUI/config option to allow update checks to be performed automatically (Windows only)
+	allow automatic update checks to be enabled (Windows only)
 
 2011-07-06 - 1.30.1
 
