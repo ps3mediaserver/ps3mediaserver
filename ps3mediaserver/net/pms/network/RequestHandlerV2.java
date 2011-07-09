@@ -177,7 +177,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		}
 
 		if (request != null) {
-			logger.debug("HTTP: " + request.getArgument() + " / "
+			logger.trace("HTTP: " + request.getArgument() + " / "
 				+ request.getLowRange() + "-" + request.getHighRange());
 		}
 

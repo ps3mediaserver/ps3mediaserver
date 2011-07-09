@@ -148,7 +148,7 @@ public class RequestHandler implements Runnable {
 			}
 
 			if (request != null) {
-				logger.debug("HTTP: " + request.getArgument() + " / " + request.getLowRange() + "-" + request.getHighRange());
+				logger.trace("HTTP: " + request.getArgument() + " / " + request.getLowRange() + "-" + request.getHighRange());
 			}
 
 			if (request != null) {

@@ -273,7 +273,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			defaultRenderer = parent.defaultRenderer;
 		}
 		if (child.isValid()) {
-			logger.debug("Adding " + child.getName() + " / class: " + child.getClass().getName());
+			logger.trace("Adding " + child.getName() + " / class: " + child.getClass().getName());
 			VirtualFolder vf = null;
 			//VirtualFolder vfCopy = null;
 
@@ -356,7 +356,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					// or 4- There's some sub files or embedded subs to deal with and no SkipTranscode extension forced by user
 					if (forceTranscode || !skipTranscode && (forceTranscodeV2 || (!parserV2 && !child.ext.ps3compatible()) || (PMS.getConfiguration().getUseSubtitles() && child.srtFile) || hasEmbeddedSubs)) {
 						child.player = pl;
-						logger.debug("Switching " + child.getName() + " to player: " + pl.toString());
+						logger.trace("Switching " + child.getName() + " to player: " + pl.toString());
 					}
 
 					if (child.ext.isVideo() && (!child.notranscodefolder) && (!PMS.getConfiguration().getHideTranscodeEnabled())) {
@@ -384,7 +384,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						fileFolder.children.add(newChild);
 						fileFolder.childrenNumber++;
 						newChild.parent = fileFolder;
-						logger.debug("Duplicate " + child.getName() + " with player: " + pl.toString());
+						logger.trace("Duplicate " + child.getName() + " with player: " + pl.toString());
 
 						vf.addChild(fileFolder);
 					}
