@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.configuration.Build;
 import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.util.KeyedComboBoxModel;
@@ -189,7 +190,7 @@ public class GeneralTab {
 
 		builder.add(autoUpdateCheckBox, cc.xy(1, 14));
 
-		if (!Platform.isWindows()) {
+		if (!Build.isUpdatable()) {
 			checkForUpdates.setEnabled(false);
 			autoUpdateCheckBox.setEnabled(false);
 		}

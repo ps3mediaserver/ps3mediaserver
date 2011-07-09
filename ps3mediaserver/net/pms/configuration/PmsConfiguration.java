@@ -142,32 +142,9 @@ public class PmsConfiguration {
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
 	private static final String UNLIMITED_BITRATE = "0";
 
-	/*
-	 * the name of the subdirectory under which PMS config files are stored for this build.
-	 * the default value is "PMS" e.g.
-	 *
-	 *     Windows:
-	 *
-	 *         %ALLUSERSPROFILE%\PMS
-	 *
-	 *     Mac OS X:
-	 *
-	 *         /home/<username>/Library/Application Support/PMS
-	 *
-	 *     Linux &c.
-	 *
-	 *         /home/<username>/.config/PMS
-	 *
-	 * a custom build can change this to avoid interfering with the config files of other
-	 * builds e.g.:
-	 *
-	 *     BUILD = "PMS Rendr Edition";
-	 *     BUILD = "pms-mlx";
-	 *
-	 * Note: custom Windows builds that change this value should change the corresponding "$ALLUSERSPROFILE\PMS"
-	 * value in nsis/setup.nsi
-	 */
-	private static final String BUILD = "PMS";
+	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
+	// see Build for more details
+	private static final String PROFILE_DIRECTORY_NAME = Build.getProfileDirectoryName();
 
 	// the default profile name displayed on the renderer
 	private static String HOSTNAME;
@@ -268,7 +245,7 @@ public class PmsConfiguration {
 			if (Platform.isWindows()) {
 				String programData = System.getenv("ALLUSERSPROFILE");
 				if (programData != null) {
-					profileDir = String.format("%s\\%s", programData, BUILD);
+					profileDir = String.format("%s\\%s", programData, PROFILE_DIRECTORY_NAME);
 				} else {
 					profileDir = ""; // i.e. current (working) directory
 				}
@@ -277,15 +254,15 @@ public class PmsConfiguration {
 					"%s/%s/%s",
 					System.getProperty("user.home"),
 					"/Library/Application Support",
-					BUILD
+					PROFILE_DIRECTORY_NAME
 				);
 			} else {
 				String xdgConfigHome = System.getenv("XDG_CONFIG_HOME");
 
 				if (xdgConfigHome == null) {
-					profileDir = String.format("%s/.config/%s", System.getProperty("user.home"), BUILD);
+					profileDir = String.format("%s/.config/%s", System.getProperty("user.home"), PROFILE_DIRECTORY_NAME);
 				} else {
-					profileDir = String.format("%s/%s", xdgConfigHome, BUILD);
+					profileDir = String.format("%s/%s", xdgConfigHome, PROFILE_DIRECTORY_NAME);
 				}
 			}
 
@@ -1330,7 +1307,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean isAutoUpdate() {
-		return Platform.isWindows() && configuration.getBoolean(KEY_AUTO_UPDATE, false);
+		return Build.isUpdatable() && configuration.getBoolean(KEY_AUTO_UPDATE, false);
 	}
 
 	public void setAutoUpdate(boolean value) {

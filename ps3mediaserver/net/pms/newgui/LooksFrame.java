@@ -171,10 +171,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	public LooksFrame(AutoUpdater autoUpdater, PmsConfiguration configuration) {
 		this.autoUpdater = autoUpdater;
 		this.configuration = configuration;
-		assert this.autoUpdater != null;
 		assert this.configuration != null;
-		autoUpdater.addObserver(this);
-		update(autoUpdater, null);
 		Options.setDefaultIconSize(new Dimension(18, 18));
 		Options.setUseNarrowButtons(true);
 
@@ -184,6 +181,12 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 
 		// Swing Settings
 		initializeLookAndFeel();
+
+		// wait till the look and feel has been initialized before (possibly) displaying the update notification dialog
+		if (autoUpdater != null) {
+			autoUpdater.addObserver(this);
+			autoUpdater.pollServer();
+		}
 
 		// http://propedit.sourceforge.jp/propertieseditor.jnlp
 		Font sf = null;
@@ -412,6 +415,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		tr.addEngines();
 	}
 
+	// fired on AutoUpdater state changes
 	public void update(Observable o, Object arg) {
 		if (configuration.isAutoUpdate()) {
 			checkForUpdates();
@@ -419,10 +423,12 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	}
 
 	public void checkForUpdates() {
-		try {
-			AutoUpdateDialog.showIfNecessary(this, autoUpdater);
-		} catch (NoClassDefFoundError ncdf) {
-			logger.info("Class not found: " + ncdf.getMessage()); //$NON-NLS-1$
+		if (autoUpdater != null) {
+			try {
+				AutoUpdateDialog.showIfNecessary(this, autoUpdater);
+			} catch (NoClassDefFoundError ncdf) {
+				logger.info("Class not found: " + ncdf.getMessage()); //$NON-NLS-1$
+			}
 		}
 	}
 
