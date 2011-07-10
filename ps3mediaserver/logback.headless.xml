@@ -1,29 +1,48 @@
 <configuration debug="true">
-
-  <!-- This is more of a sample. Tweak as required. -->
   <!-- See http://logback.qos.ch/manual/index.html for more information -->
   <!-- on how to configure the Logback logging engine. -->
+  <!-- Available levels: TRACE < DEBUG < INFO <  WARN < ERROR -->
 
-  <appender name="debug.log" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>debug.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <!-- daily rollover -->
-      <fileNamePattern>debug.%d{yyyy-MM-dd}.log</fileNamePattern>
-      <!-- keep 7 days' worth of history -->
-      <maxHistory>7</maxHistory>
-    </rollingPolicy>
-    <encoder>
-      <!-- This pattern mimics the original PMS debug.log format -->
-      <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
-    </encoder>
-    <!-- Log all events to debug.log -->
-    <!-- Change the level if the constant logging activity is undesirable -->
+  <define name="debugLogPath" class="net.pms.logging.DebugLogPathDefiner" />
+  
+  <appender name="debug.log" class="ch.qos.logback.core.FileAppender">
+    <!-- only show event DEBUG and higher on the Console. -->
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>DEBUG</level>
     </filter>
+    <file>${debugLogPath}${file.separator}debug.log</file>
+    <append>false</append>  <!-- Start new debug.log on each application start -->
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <!-- This pattern mimics the original PMS debug.log format -->
+        <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- If unlimited growth of debug.log is not desired use the "debug.log.10MB" -->
+  <!-- appender instead of the "debug.log" appender. This appender will -->
+  <!-- roll the debug.log file after 10 MBytes and will keep a maximum -->
+  <!-- of 5 old and compressed logs. -->
+  <appender name="debug.log.10MB" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- only show event DEBUG and higher on the Console. -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>DEBUG</level>
+    </filter>
+    <file>${debugLogPath}${file.separator}debug.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${debugLogPath}debug.log.%i.zip</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>5</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+        <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
+    </encoder>
   </appender>
 
   <root level="ALL">
     <appender-ref ref="debug.log" />
+    <!-- <appender-ref ref="debug.log.10MB" /> -->
   </root>
 </configuration>
