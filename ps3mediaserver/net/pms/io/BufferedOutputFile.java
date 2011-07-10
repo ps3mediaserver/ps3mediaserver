@@ -99,10 +99,100 @@ public class BufferedOutputFile extends OutputStream {
 			outputStream.detachInputStream();
 		}
 	}
+	
+	
+	/**
+	 * Try to increase the size of a memory buffer, while retaining its contents. The
+	 * provided new size is considered to be a request, it is scaled down when an
+	 * OutOfMemory error occurs. There is no guarantee about the exact length of the
+	 * returned byte array, only that it is greater than or equal to the original buffer
+	 * size.
+	 * Copying one byte array to another is a costly operation, both in memory usage
+	 * and performance. It is best to avoid using this method.
+	 * 
+	 * @param buffer The byte array to resize.
+	 * @param newSize The requested final size. Should be greater than the original size
+	 * or the original buffer will be returned. 
+	 * @return The resized byte array.
+	 */
+	private byte[] growBuffer(byte[] buffer, int newSize) {
+		byte[] copy;
+		
+		if (newSize <= buffer.length) {
+			// Cannot shrink the original
+			return buffer;
+		}
+		
+		try {
+			// Try to allocate the requested new size
+			copy = new byte[newSize];
+		} catch (OutOfMemoryError e) {
+			logger.debug("Cannot grow buffer size from " + buffer.length + " bytes to " + newSize + " bytes."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
+			// Could not allocate the requested new size, use 30% of free memory instead.
+			// Rationale behind using 30%: multiple threads are running at the same time,
+			// we do not want one threads memory usage to suffocate the others.
+			int realisticSize = new Long(Runtime.getRuntime().freeMemory() * 3 / 10).intValue();
+			
+			if (realisticSize < buffer.length) {
+				// A copy would be smaller in size, shrinking instead of growing the buffer.
+				// Better to return the original and retain its size.
+				return buffer;
+			} else {
+				try {
+					// Try to allocate the realistic alternative size
+					copy = new byte[realisticSize];
+				} catch (OutOfMemoryError e2) {
+					logger.debug("Cannot grow buffer size from " + buffer.length + " bytes to " + realisticSize + " bytes either."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					logger.trace("freeMemory: " + Runtime.getRuntime().freeMemory()); //$NON-NLS-1$
+					logger.trace("totalMemory: " + Runtime.getRuntime().totalMemory()); //$NON-NLS-1$
+					logger.trace("maxMemory: " + Runtime.getRuntime().maxMemory()); //$NON-NLS-1$
+
+					// Cannot allocate memory, no other option than to return the original.
+					return buffer;
+				}
+			}
+		}
+
+		try {
+			System.arraycopy(buffer, 0, copy, 0, buffer.length);
+			logger.trace("Successfully grown buffer from " + buffer.length + " bytes to " + copy.length + " bytes."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		} catch (NullPointerException npe) {
+			logger.trace("Cannot grow buffer size, error copying buffer contents."); //$NON-NLS-1$
+		}
+
+		return copy;
+	}
+	
+	
 	public BufferedOutputFile(OutputParams params) {
 		this.minMemorySize = (int) (1048576 * params.minBufferSize);
 		this.maxMemorySize = (int) (1048576 * params.maxBufferSize);
+
+		// Sanity check for memory allocations: determine 30% of free memory
+		// Rationale behind using 30%: multiple threads are running at the same time,
+		// we do not want one threads memory usage to suffocate the others.
+		int realisticMemorySize = new Long(Runtime.getRuntime().freeMemory() * 3 / 10).intValue();
+		
+		if (realisticMemorySize < TEMP_SIZE) {
+			// FIXME: The rest of the code expects maxMemorySize > TEMP_SIZE, plus TEMP_SIZE is
+			// used as a marker value. We'll have to rewrite that code some day, but for now assign
+			// some random value that respects the current code.
+			logger.debug("Should allocate " + realisticMemorySize + " bytes realistically, forcing allocation of " //$NON-NLS-1$ //$NON-NLS-2$
+					+ (TEMP_SIZE + 500000) + " bytes instead."); //$NON-NLS-1$
+			realisticMemorySize = TEMP_SIZE + 500000;
+		}
+		
+		if (maxMemorySize > realisticMemorySize) {
+			logger.debug("Not enough memory to allocate " + maxMemorySize + " bytes, using " + realisticMemorySize + " bytes instead."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+			// Not enough memory free, make due with what is available
+			maxMemorySize = realisticMemorySize;
+			minMemorySize = realisticMemorySize / 2;
+		}
+
+		// FIXME: Better to relate margin directly to maxMemorySize instead of using arbitrary fixed values
+
 		int margin = 20000000; // Issue 220: extends to 20Mb : readCount is wrongly set cause of the ps3's
 		// 2nd request with a range like 44-xxx, causing the end of buffer margin to be first sent 
 		if (this.maxMemorySize < margin) {// for thumbnails / small buffer usage
@@ -216,46 +306,21 @@ public class BufferedOutputFile extends OutputStream {
 			}
 			input = getCurrentInputStream();
 		}
-		int mb = (int) (writeCount % maxMemorySize);
+		
+		
 		if (buffer != null) {
+			int mb = (int) (writeCount % maxMemorySize);
+
 			if (mb >= buffer.length - (len - off)) {
 				if (buffer.length == TEMP_SIZE) {
-					logger.trace("freeMemory: " + Runtime.getRuntime().freeMemory());
-					logger.trace("totalMemory: " + Runtime.getRuntime().totalMemory());
-					logger.trace("maxMemory: " + Runtime.getRuntime().maxMemory());
-					logger.trace("Extending buffer to " + maxMemorySize);
-
-					try {
-						//buffer = Arrays.copyOf(buffer, maxMemorySize);
-						byte[] copy = new byte[maxMemorySize];
-						try {
-							System.arraycopy(buffer, 0, copy, 0, Math.min(buffer != null ? buffer.length : 0, maxMemorySize));
-							buffer = copy;
-						} catch (NullPointerException npe) {
-							return;
-						}
-
-					} catch (OutOfMemoryError ooe) {
-						logger.info("FATAL ERROR: OutOfMemory / dumping stats");
-						logger.trace("freeMemory: " + Runtime.getRuntime().freeMemory());
-						logger.trace("totalMemory: " + Runtime.getRuntime().totalMemory());
-						logger.trace("maxMemory: " + Runtime.getRuntime().maxMemory());
-						//System.exit(1);
-						logger.info("Not enough memory to allocate " + maxMemorySize + " bytes... Using half of it");
-						maxMemorySize = maxMemorySize / 2;
-						byte[] copy = new byte[maxMemorySize];
-						try {
-							System.arraycopy(buffer, 0, copy, 0, Math.min(buffer != null ? buffer.length : 0, maxMemorySize));
-							buffer = copy;
-						} catch (NullPointerException npe) {
-							return;
-						}
-					}
-					logger.trace("Done extending");
+					// Initial buffer size was not big enough, try to increase it
+					buffer = growBuffer(buffer, maxMemorySize);
 				}
+
+				// FIXME: This smells like 2x System.arraycopy()!
 				int s = (len - off);
 				for (int i = 0; i < s; i++) {
-					buffer[modulo(mb + i)] = b[off + i];
+					buffer[modulo(mb + i, buffer.length)] = b[off + i];
 				}
 			} else {
 				System.arraycopy(b, off, buffer, mb, (len - off));
@@ -279,24 +344,24 @@ public class BufferedOutputFile extends OutputStream {
 				while (packetpos + packetLength < writeCount && buffer != null) {
 					int packetposMB = (int) (packetpos % maxMemorySize);
 					int streamPos = 0;
-					if (buffer[modulo(packetposMB)] == 71) {// TS
+					if (buffer[modulo(packetposMB, buffer.length)] == 71) {// TS
 						packetLength = 188;
 						streamPos = 4;
 
 						// adaptation field
-						if ((buffer[modulo(packetposMB + 3)] & 0x20) == 0x20) {
-							streamPos += 1 + ((buffer[modulo(packetposMB + 4)] + 256) % 256);
+						if ((buffer[modulo(packetposMB + 3, buffer.length)] & 0x20) == 0x20) {
+							streamPos += 1 + ((buffer[modulo(packetposMB + 4, buffer.length)] + 256) % 256);
 						}
 
 						if (streamPos == 188) {
 							streamPos = -1;
 						}
 
-					} else if (buffer[modulo(packetposMB + 3)] == -70) { // BA
+					} else if (buffer[modulo(packetposMB + 3, buffer.length)] == -70) { // BA
 						packetLength = 14;
 						streamPos = -1;
 					} else {
-						packetLength = 6 + ((int) ((buffer[modulo(packetposMB + 4)] + 256) % 256)) * 256 + ((buffer[modulo(packetposMB + 5)] + 256) % 256);
+						packetLength = 6 + ((int) ((buffer[modulo(packetposMB + 4, buffer.length)] + 256) % 256)) * 256 + ((buffer[modulo(packetposMB + 5, buffer.length)] + 256) % 256);
 					}
 					if (streamPos != -1) {
 						mb = packetposMB + streamPos + 18;
@@ -311,13 +376,23 @@ public class BufferedOutputFile extends OutputStream {
 		}
 	}
 
-	private int modulo(int mb) {
-		if (mb >= 0) {
-			return mb % maxMemorySize;
+	
+	/**
+	 * Determine a modulo value that is guaranteed to be zero or positive, as opposed to
+	 * the standard Java % operator which can return a negative value. 
+	 * 
+	 * @param number Number to divide
+	 * @param divisor Number that is used to divide
+	 * @return The rest value of the division.
+	 */
+	private int modulo(int number, int divisor) {
+		if (number >= 0) {
+			return number % divisor;
 		}
-		return (mb + maxMemorySize) % maxMemorySize;
+		return ((number % divisor) + divisor) % divisor;
 	}
 
+	
 	public void write(int b) throws IOException {
 		boolean bb = b % 100000 == 0;
 		WaitBufferedInputStream input = getCurrentInputStream();
@@ -334,24 +409,7 @@ public class BufferedOutputFile extends OutputStream {
 			buffer[mb] = (byte) b;
 			buffered = true;
 			if (writeCount == TEMP_SIZE) {
-				logger.trace("freeMemory: " + Runtime.getRuntime().freeMemory());
-				logger.trace("totalMemory: " + Runtime.getRuntime().totalMemory());
-				logger.trace("maxMemory: " + Runtime.getRuntime().maxMemory());
-				logger.trace("Extending buffer to " + maxMemorySize);
-
-				try {
-					//buffer = Arrays.copyOf(buffer, maxMemorySize);
-					byte[] copy = new byte[maxMemorySize];
-					System.arraycopy(buffer, 0, copy, 0,
-						Math.min(buffer.length, maxMemorySize));
-					buffer = copy;
-				} catch (OutOfMemoryError ooe) {
-					logger.info("FATAL ERROR: OutOfMemory / dumping stats");
-					logger.trace("freeMemory: " + Runtime.getRuntime().freeMemory());
-					logger.trace("totalMemory: " + Runtime.getRuntime().totalMemory());
-					logger.trace("maxMemory: " + Runtime.getRuntime().maxMemory());
-					System.exit(1);
-				}
+				buffer = growBuffer(buffer, maxMemorySize);
 			}
 
 			if (timeseek > 0 && writeCount > 19) {
@@ -367,16 +425,16 @@ public class BufferedOutputFile extends OutputStream {
 
 	// Ditlew - Modify SCR
 	private void shiftSCRByTimeSeek(int buffer_index, int offset_sec) {
-		int m9 = modulo(buffer_index - 9);
-		int m8 = modulo(buffer_index - 8);
-		int m7 = modulo(buffer_index - 7);
-		int m6 = modulo(buffer_index - 6);
-		int m5 = modulo(buffer_index - 5);
-		int m4 = modulo(buffer_index - 4);
-		int m3 = modulo(buffer_index - 3);
-		int m2 = modulo(buffer_index - 2);
-		int m1 = modulo(buffer_index - 1);
-		int m0 = modulo(buffer_index);
+		int m9 = modulo(buffer_index - 9, buffer.length);
+		int m8 = modulo(buffer_index - 8, buffer.length);
+		int m7 = modulo(buffer_index - 7, buffer.length);
+		int m6 = modulo(buffer_index - 6, buffer.length);
+		int m5 = modulo(buffer_index - 5, buffer.length);
+		int m4 = modulo(buffer_index - 4, buffer.length);
+		int m3 = modulo(buffer_index - 3, buffer.length);
+		int m2 = modulo(buffer_index - 2, buffer.length);
+		int m1 = modulo(buffer_index - 1, buffer.length);
+		int m0 = modulo(buffer_index, buffer.length);
 
 		// SCR
 		if (buffer[m9] == 0
@@ -422,14 +480,14 @@ public class BufferedOutputFile extends OutputStream {
 	// Ditlew - Modify GOP
 	@SuppressWarnings("unused")
 	private void shiftGOPByTimeSeek(int buffer_index, int offset_sec) {
-		int m7 = modulo(buffer_index - 7);
-		int m6 = modulo(buffer_index - 6);
-		int m5 = modulo(buffer_index - 5);
-		int m4 = modulo(buffer_index - 4);
-		int m3 = modulo(buffer_index - 3);
-		int m2 = modulo(buffer_index - 2);
-		int m1 = modulo(buffer_index - 1);
-		int m0 = modulo(buffer_index);
+		int m7 = modulo(buffer_index - 7, buffer.length);
+		int m6 = modulo(buffer_index - 6, buffer.length);
+		int m5 = modulo(buffer_index - 5, buffer.length);
+		int m4 = modulo(buffer_index - 4, buffer.length);
+		int m3 = modulo(buffer_index - 3, buffer.length);
+		int m2 = modulo(buffer_index - 2, buffer.length);
+		int m1 = modulo(buffer_index - 1, buffer.length);
+		int m0 = modulo(buffer_index, buffer.length);
 
 		// check if valid gop
 		if (buffer[m7] == 0
@@ -478,9 +536,9 @@ public class BufferedOutputFile extends OutputStream {
 
 	private boolean shiftAudio(int mb, boolean mod) {
 		boolean bb = (!mod && (buffer[mb - 10] == -67 || buffer[mb - 10] == -64) && buffer[mb - 11] == 1 && buffer[mb - 12] == 0 && buffer[mb - 13] == 0 && /*(buffer[mb-7]&128)==128 &&*/ (buffer[mb - 6] & 128) == 128/*buffer[mb-6] == -128*/)
-			|| (mod && (buffer[modulo(mb - 10)] == -67 || buffer[modulo(mb - 10)] == -64) && buffer[modulo(mb - 11)] == 1 && buffer[modulo(mb - 12)] == 0 && buffer[modulo(mb - 13)] == 0 && /*(buffer[modulo(mb-7)]&128)==128 && */ (buffer[modulo(mb - 6)] & 128) == 128/*buffer[modulo(mb-6)] == -128*/);
+			|| (mod && (buffer[modulo(mb - 10, buffer.length)] == -67 || buffer[modulo(mb - 10, buffer.length)] == -64) && buffer[modulo(mb - 11, buffer.length)] == 1 && buffer[modulo(mb - 12, buffer.length)] == 0 && buffer[modulo(mb - 13, buffer.length)] == 0 && /*(buffer[modulo(mb-7)]&128)==128 && */ (buffer[modulo(mb - 6, buffer.length)] & 128) == 128/*buffer[modulo(mb-6, buffer.length)] == -128*/);
 		if (bb) {
-			int pts = (((((buffer[modulo(mb - 3)] & 0xff) << 8) + (buffer[modulo(mb - 2)] & 0xff)) >> 1) << 15) + ((((buffer[modulo(mb - 1)] & 0xff) << 8) + (buffer[modulo(mb)] & 0xff)) >> 1);
+			int pts = (((((buffer[modulo(mb - 3, buffer.length)] & 0xff) << 8) + (buffer[modulo(mb - 2, buffer.length)] & 0xff)) >> 1) << 15) + ((((buffer[modulo(mb - 1, buffer.length)] & 0xff) << 8) + (buffer[modulo(mb, buffer.length)] & 0xff)) >> 1);
 			pts += (int) (timeseek * 90000);
 
 			setTS(pts, mb, mod);
@@ -497,20 +555,20 @@ public class BufferedOutputFile extends OutputStream {
 			&& buffer[mb - 18] == 0
 			&& (buffer[mb - 11] & 128) == 128
 			&& (buffer[mb - 9] & 32) == 32) || (mod
-			&& (buffer[modulo(mb - 15)] == -32 || buffer[modulo(mb - 15)] == -3)
-			&& buffer[modulo(mb - 16)] == 1
-			&& buffer[modulo(mb - 17)] == 0
-			&& buffer[modulo(mb - 18)] == 0
-			&& (buffer[modulo(mb - 11)] & 128) == 128
-			&& (buffer[modulo(mb - 9)] & 32) == 32);
+			&& (buffer[modulo(mb - 15, buffer.length)] == -32 || buffer[modulo(mb - 15, buffer.length)] == -3)
+			&& buffer[modulo(mb - 16, buffer.length)] == 1
+			&& buffer[modulo(mb - 17, buffer.length)] == 0
+			&& buffer[modulo(mb - 18, buffer.length)] == 0
+			&& (buffer[modulo(mb - 11, buffer.length)] & 128) == 128
+			&& (buffer[modulo(mb - 9, buffer.length)] & 32) == 32);
 
 		if (bb) { // check EO or FD (tsmuxer)
 			int pts = getTS(mb - 5, mod);
 			int dts = 0;
-			boolean dts_present = (buffer[modulo(mb - 11)] & 64) == 64;
+			boolean dts_present = (buffer[modulo(mb - 11, buffer.length)] & 64) == 64;
 			if (dts_present) {
-				if ((buffer[modulo(mb - 4)] & 15) == 15) {
-					dts = (((((255 - (buffer[modulo(mb - 3)] & 0xff)) << 8) + (255 - (buffer[modulo(mb - 2)] & 0xff))) >> 1) << 15) + ((((255 - (buffer[modulo(mb - 1)] & 0xff)) << 8) + (255 - (buffer[modulo(mb)] & 0xff))) >> 1);
+				if ((buffer[modulo(mb - 4, buffer.length)] & 15) == 15) {
+					dts = (((((255 - (buffer[modulo(mb - 3, buffer.length)] & 0xff)) << 8) + (255 - (buffer[modulo(mb - 2, buffer.length)] & 0xff))) >> 1) << 15) + ((((255 - (buffer[modulo(mb - 1, buffer.length)] & 0xff)) << 8) + (255 - (buffer[modulo(mb, buffer.length)] & 0xff))) >> 1);
 					dts = -dts;
 				} else {
 					dts = getTS(mb, mod);
@@ -526,7 +584,7 @@ public class BufferedOutputFile extends OutputStream {
 			setTS(pts, mb - 5, mod);
 			if (dts_present) {
 				if (dts < 0) {
-					buffer[modulo(mb - 4)] = 17;
+					buffer[modulo(mb - 4, buffer.length)] = 17;
 				}
 				dts += ts;
 				setTS(dts, mb, mod);
@@ -542,10 +600,10 @@ public class BufferedOutputFile extends OutputStream {
 		int m1 = mb - 1;
 		int m0 = mb;
 		if (modulo) {
-			m3 = modulo(m3);
-			m2 = modulo(m2);
-			m1 = modulo(m1);
-			m0 = modulo(m0);
+			m3 = modulo(m3, buffer.length);
+			m2 = modulo(m2, buffer.length);
+			m1 = modulo(m1, buffer.length);
+			m0 = modulo(m0, buffer.length);
 		}
 
 		return (((((buffer[m3] & 0xff) << 8) + (buffer[m2] & 0xff)) >> 1) << 15)
@@ -558,10 +616,10 @@ public class BufferedOutputFile extends OutputStream {
 		int m1 = mb - 1;
 		int m0 = mb;
 		if (modulo) {
-			m3 = modulo(m3);
-			m2 = modulo(m2);
-			m1 = modulo(m1);
-			m0 = modulo(m0);
+			m3 = modulo(m3, buffer.length);
+			m2 = modulo(m2, buffer.length);
+			m1 = modulo(m1, buffer.length);
+			m0 = modulo(m0, buffer.length);
 		}
 		int pts_low = ts & 32767;
 		int pts_high = (ts >> 15) & 32767;
