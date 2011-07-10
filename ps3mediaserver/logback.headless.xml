@@ -4,7 +4,18 @@
   <!-- Available levels: TRACE < DEBUG < INFO <  WARN < ERROR -->
 
   <define name="debugLogPath" class="net.pms.logging.DebugLogPathDefiner" />
-  
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- only show event WARN and higher on the Console. -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>WARN</level>
+    </filter>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <!-- This pattern mimics the original PMS debug.log format -->
+          <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
+    </encoder>
+  </appender>
+
   <appender name="debug.log" class="ch.qos.logback.core.FileAppender">
     <!-- only show event DEBUG and higher on the Console. -->
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -42,6 +53,7 @@
   </appender>
 
   <root level="ALL">
+    <appender-ref ref="STDOUT" />
     <appender-ref ref="debug.log" />
     <!-- <appender-ref ref="debug.log.10MB" /> -->
   </root>
