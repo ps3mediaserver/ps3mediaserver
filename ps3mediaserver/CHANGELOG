@@ -6,6 +6,7 @@ Changelog:
 	allow update checks to be performed manually (Windows only)
 	allow automatic update checks to be enabled (Windows only)
 	simplify PMS customization for packagers of custom builds
+	logging fix for headless configurations
 
 2011-07-06 - 1.30.1
 
