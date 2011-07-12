@@ -95,13 +95,12 @@ public class PipeProcess {
 			OutputParams mkfifo_vid_params = new OutputParams(PMS.getConfiguration());
 			mkfifo_vid_params.maxBufferSize = 0.1;
 			mkfifo_vid_params.log = true;
-			String cmdArray[] = new String[]{"mkfifo", PMS.get().isWindows() ? "" : "--mode=777", linuxPipeName};
+			String cmdArray[];
 
 			if (Platform.isMac() || Platform.isFreeBSD() || Platform.isSolaris()) {
-				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 1);
-				cmdArray[1] = "-m";
-				cmdArray[3] = cmdArray[2];
-				cmdArray[2] = "777";
+				cmdArray = new String[] {"mkfifo", "-m", "777", linuxPipeName};
+			} else {
+				cmdArray = new String[] {"mkfifo", "--mode=777", linuxPipeName};
 			}
 
 			ProcessWrapperImpl mkfifo_vid_process = new ProcessWrapperImpl(cmdArray, mkfifo_vid_params);
