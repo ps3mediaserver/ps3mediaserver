@@ -130,12 +130,21 @@ public class RequestHandler implements Runnable {
 			}
 
 			// if client not recognized, take a default renderer config
-			if (request != null && request.getMediaRenderer() == null) {
-				request.setMediaRenderer(RendererConfiguration.getDefaultConf());
-				if (userAgentString != null && !userAgentString.equals("FDSSDP")) {
-					// we have found an unknown renderer
-					logger.info("Media renderer was not recognized. HTTP User agent: " + userAgentString);
-					PMS.get().setRendererfound(request.getMediaRenderer());
+			if (request != null) {
+				if (request.getMediaRenderer() == null) {
+					request.setMediaRenderer(RendererConfiguration.getDefaultConf());
+					logger.trace("Using default media renderer " + request.getMediaRenderer().getRendererName()); //$NON-NLS-1$
+					
+					if (userAgentString != null && !userAgentString.equals("FDSSDP")) { //$NON-NLS-1$
+						// we have found an unknown renderer
+						logger.info("Media renderer was not recognized. HTTP User-Agent: " + userAgentString); //$NON-NLS-1$
+						PMS.get().setRendererfound(request.getMediaRenderer());
+					}
+				} else {
+					if (userAgentString != null) {
+						logger.trace("HTTP User-Agent: " + userAgentString); //$NON-NLS-1$
+					}
+					logger.trace("Recognized media renderer " + request.getMediaRenderer().getRendererName()); //$NON-NLS-1$
 				}
 			}
 
