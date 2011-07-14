@@ -852,9 +852,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		addAttribute(sb, "id", id);
+		
 		if (isFolder()) {
-			if (mediaRenderer.isXBMC()) // todo: make that generic ?
-			{
+			if (!discovered && childrenNumber() == 0) {
+				//  When a folder has not been scanned for resources, it will automatically have zero children.
+				//  Some renderers like XBMC will assume a folder is empty when encountering childCount="0" and
+				//  will not display the folder. By returning childCount="1" these renderers will still display
+				//  the folder. When it is opened, its children will be discovered and childrenNumber() will be
+				//  set to the right value.
 				addAttribute(sb, "childCount", 1);
 			} else {
 				addAttribute(sb, "childCount", childrenNumber());
