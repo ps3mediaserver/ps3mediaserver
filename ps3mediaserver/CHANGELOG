@@ -8,6 +8,7 @@ Changelog:
 	simplify PMS customization for packagers of custom builds
 	logging fix for headless configurations
 	Added experimental support for iPad / iPhone
+	Fixed DVD ISO playback on OS X (thanks, jjmojojjmojo!)
 
 2011-07-06 - 1.30.1
 
