@@ -77,6 +77,7 @@ public class NavigationShareTab {
 	private JComboBox audiothumbnail;
 	private JTextField defaultThumbFolder;
 	private JCheckBox iphoto;
+	private JCheckBox aperture;
 	private JCheckBox itunes;
 
 	public DefaultListModel getDf() {
@@ -433,6 +434,23 @@ public class NavigationShareTab {
 			}
 		});
 		builder.add(iphoto, cc.xyw(4, 17, 3));
+		
+		// Add Aperture selection
+		aperture = new JCheckBox(Messages.getString("FoldTab.34")); //$NON-NLS-1$
+		aperture.setContentAreaFilled(false);
+		if (PMS.getConfiguration().getApertureEnabled()) {
+			aperture.setSelected(true);
+		}
+		if (!Platform.isMac()) {
+			aperture.setEnabled(false);
+		}
+		aperture.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				PMS.getConfiguration().setApertureEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				PMS.get().getFrame().setReloadable(true);
+			}
+		});
+		builder.add(aperture, cc.xyw(8, 17, 3));
 
 		final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[]{"0", "3", "1", "2"}, new Object[]{Messages.getString("FoldTab.15"), Messages.getString("FoldTab.20"), Messages.getString("FoldTab.16"), Messages.getString("FoldTab.17")}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
 		sortmethod = new JComboBox(kcbm);

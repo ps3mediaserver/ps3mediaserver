@@ -65,6 +65,7 @@ public class PmsConfiguration {
 	private static final String KEY_HTTP_ENGINE_V2 = "http_engine_v2";
 	private static final String KEY_IP_FILTER = "ip_filter";
 	private static final String KEY_IPHOTO_ENABLED = "iphoto";
+	private static final String KEY_APERTURE_ENABLED = "aperture";
 	private static final String KEY_ITUNES_ENABLED = "itunes";
 	private static final String KEY_LANGUAGE = "language";
 	private static final String KEY_LOGGING_LEVEL = "level";
@@ -1171,6 +1172,14 @@ public class PmsConfiguration {
 
 	public void setIphotoEnabled(boolean value) {
 		configuration.setProperty(KEY_IPHOTO_ENABLED, value);
+	}
+	
+	public boolean getApertureEnabled() {
+		return getBoolean(KEY_APERTURE_ENABLED, false);
+	}
+
+	public void setApertureEnabled(boolean value) {
+		configuration.setProperty(KEY_APERTURE_ENABLED, value);
 	}
 
 	public boolean getItunesEnabled() {

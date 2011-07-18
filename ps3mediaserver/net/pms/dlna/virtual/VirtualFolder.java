@@ -121,4 +121,15 @@ public class VirtualFolder extends DLNAResource {
 	public boolean isValid() {
 		return true;
 	}
+
+	public void setThumbnail(String thumbnailIcon) {
+		this.thumbnailIcon = thumbnailIcon;
+		
+		if (thumbnailIcon != null && thumbnailIcon.toLowerCase().endsWith(".png")) {
+			thumbnailContentType = HTTPResource.PNG_TYPEMIME;
+		} else {
+			thumbnailContentType = HTTPResource.JPEG_TYPEMIME;
+		}
+		
+	}
 }
