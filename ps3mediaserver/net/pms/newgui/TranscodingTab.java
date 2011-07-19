@@ -85,6 +85,7 @@ public class TranscodingTab {
 	private JTextField maxbitrate;
 	private JTree tree;
 	private JCheckBox forcePCM;
+	private JCheckBox hdaudiopass;
 	private JCheckBox forceDTSinPCM;
 	private JComboBox channels;
 	private JComboBox vq;
@@ -476,6 +477,27 @@ public class TranscodingTab {
 
 		builder.addLabel(Messages.getString("TrTab2.29"), cc.xy(1, 15)); //$NON-NLS-1$
 		builder.add(abitrate, cc.xy(3, 15));
+		
+		hdaudiopass = new JCheckBox(Messages.getString("TrTab2.53") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		hdaudiopass.setContentAreaFilled(false);
+		if (configuration.isHDAudioPassthrough()) {
+			hdaudiopass.setSelected(true);
+		}
+		hdaudiopass.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				configuration.setHDAudioPassthrough(hdaudiopass.isSelected());
+				if (configuration.isHDAudioPassthrough()) {
+					JOptionPane.showMessageDialog(
+						(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+						Messages.getString("TrTab2.10"), //$NON-NLS-1$
+						"Information", //$NON-NLS-1$
+						JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+		});
+
+		builder.add(hdaudiopass, cc.xyw(1, 19, 3));
 
 		forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		forceDTSinPCM.setContentAreaFilled(false);
@@ -509,7 +531,7 @@ public class TranscodingTab {
 			}
 		});
 
-		builder.add(forcePCM, cc.xyw(1, 19, 3));
+		builder.add(forcePCM, cc.xyw(1, 21, 3));
 
 		ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : "")); //$NON-NLS-1$
 		ac3remux.setContentAreaFilled(false);
@@ -522,7 +544,7 @@ public class TranscodingTab {
 			}
 		});
 
-		builder.add(ac3remux, cc.xyw(1, 21, 3));
+		builder.add(ac3remux, cc.xyw(1, 23, 3));
 
 		mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : "")); //$NON-NLS-1$
 		mpeg2remux.setContentAreaFilled(false);
@@ -535,14 +557,14 @@ public class TranscodingTab {
 			}
 		});
 
-		builder.add(mpeg2remux, cc.xyw(1, 23, 3));
+		builder.add(mpeg2remux, cc.xyw(1, 25, 3));
 
-		cmp = builder.addSeparator(Messages.getString("TrTab2.4"), cc.xyw(1, 25, 3)); //$NON-NLS-1$
+		cmp = builder.addSeparator(Messages.getString("TrTab2.4"), cc.xyw(1, 27, 3)); //$NON-NLS-1$
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 
-		builder.addLabel(Messages.getString("TrTab2.30"), cc.xy(1, 27)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("TrTab2.30"), cc.xy(1, 29)); //$NON-NLS-1$
 
 
 		maxbitrate = new JTextField("" + PMS.getConfiguration().getMaximumBitrate()); //$NON-NLS-1$
@@ -560,9 +582,9 @@ public class TranscodingTab {
 				PMS.getConfiguration().setMaximumBitrate(maxbitrate.getText());
 			}
 		});
-		builder.add(maxbitrate, cc.xy(3, 27));
+		builder.add(maxbitrate, cc.xy(3, 29));
 
-		builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 29, 3)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 31, 3)); //$NON-NLS-1$
 
 		Object data[] = new Object[]{PMS.getConfiguration().getMencoderMainSettings(),
 			"keyint=5:vqscale=1:vqmin=2  /* Great Quality */", //$NON-NLS-1$
@@ -600,7 +622,7 @@ public class TranscodingTab {
 			}
 		});
 		vq.setEditable(true);
-		builder.add(vq, cc.xyw(1, 31, 3));
+		builder.add(vq, cc.xyw(1, 33, 3));
 
 		String help1 = Messages.getString("TrTab2.39"); //$NON-NLS-1$
 		help1 += Messages.getString("TrTab2.40"); //$NON-NLS-1$
@@ -618,13 +640,13 @@ public class TranscodingTab {
 		disableSubs = new JCheckBox(Messages.getString("TrTab2.51")); //$NON-NLS-1$
 		disableSubs.setContentAreaFilled(false);
 
-		cmp = builder.addSeparator(Messages.getString("TrTab2.7"), cc.xyw(1, 33, 3)); //$NON-NLS-1$
+		cmp = builder.addSeparator(Messages.getString("TrTab2.7"), cc.xyw(1, 35, 3)); //$NON-NLS-1$
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		builder.add(disableSubs, cc.xy(1, 35));
+		builder.add(disableSubs, cc.xy(1, 37));
 
-		builder.addLabel(Messages.getString("TrTab2.8"), cc.xy(1, 37)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("TrTab2.8"), cc.xy(1, 39)); //$NON-NLS-1$
 
 		notranscode = new JTextField(configuration.getNoTranscode());
 		notranscode.addKeyListener(new KeyListener() {
@@ -642,9 +664,9 @@ public class TranscodingTab {
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
-		builder.add(notranscode, cc.xy(3, 37));
+		builder.add(notranscode, cc.xy(3, 39));
 
-		builder.addLabel(Messages.getString("TrTab2.9"), cc.xy(1, 39)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("TrTab2.9"), cc.xy(1, 41)); //$NON-NLS-1$
 
 		forcetranscode = new JTextField(configuration.getForceTranscode());
 		forcetranscode.addKeyListener(new KeyListener() {
@@ -662,7 +684,7 @@ public class TranscodingTab {
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
-		builder.add(forcetranscode, cc.xy(3, 39));
+		builder.add(forcetranscode, cc.xy(3, 41));
 
 		return builder.getPanel();
 	}

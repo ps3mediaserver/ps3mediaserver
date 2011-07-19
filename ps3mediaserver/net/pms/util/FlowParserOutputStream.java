@@ -18,7 +18,7 @@ public abstract class FlowParserOutputStream extends OutputStream {
 	public FlowParserOutputStream(OutputStream out, int maxbuffersize) {
 		this.out = out;
 		buffer = ByteBuffer.allocate(maxbuffersize);
-		zerobuffer = new byte[5000];
+		zerobuffer = new byte[15000];
 		Arrays.fill(zerobuffer, (byte) 0);
 	}
 
@@ -35,7 +35,7 @@ public abstract class FlowParserOutputStream extends OutputStream {
 				buffer.put(swapRemainingByte[0]);
 				off++;
 			}
-			int modulo = (len - off) % swapOrderBits;
+			int modulo = (int) Math.abs(len - off) % swapOrderBits;
 			if (modulo != 0) {
 				swapRemainingByte = new byte[1];
 				len -= modulo;
