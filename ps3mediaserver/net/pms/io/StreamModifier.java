@@ -21,6 +21,15 @@ public class StreamModifier {
 	}
 
 	private boolean dtsembed;
+	private boolean spdifembed;
+
+	public boolean isEncodedAudioPassthrough() {
+		return spdifembed;
+	}
+
+	public void setEncodedAudioPassthrough(boolean spdifembed) {
+		this.spdifembed = spdifembed;
+	}
 
 	public boolean isDtsembed() {
 		return dtsembed;

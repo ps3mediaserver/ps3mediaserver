@@ -361,6 +361,9 @@ public class MediaInfoParser {
 	}
 
 	public static int getBitrate(String value) {
+		if (value.contains("/")) {
+			value = value.substring(0, value.indexOf("/")).trim();
+		}
 		return Integer.parseInt(value);
 	}
 
