@@ -55,7 +55,7 @@ public class IEC61937AudioOutputStream extends FlowParserOutputStream {
 	@Override
 	protected void analyzeBuffer(byte[] data, int off, int len) {
 		if (data[off + 0] == 100 && data[off + 1] == 88 && data[off + 2] == 32 && data[off + 3] == 37) {
-			logger.trace("DTS-HD stray frame, skipping this one...");http://www.ps3mediaserver.org/forum/viewtopic.php?f=4&t=6235
+			logger.trace("DTS-HD stray frame, skipping this one...");
 			//dtsHD = true;
 			streamableByteNumber = ((data[off + 6] & 0x0f) << 11) + ((data[off + 7] & 0xff) << 3) + ((data[off + 8] & 0xf0) >> 5) + 1;
 			discard = true;
