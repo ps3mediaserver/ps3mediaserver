@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import net.pms.PMS;
 import net.pms.io.WinUtils;
 
 import org.apache.commons.configuration.Configuration;
