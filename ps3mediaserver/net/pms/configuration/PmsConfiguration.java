@@ -141,6 +141,7 @@ public class PmsConfiguration {
 	private static final String KEY_USE_SUBTITLES = "autoloadsrt";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
+	private static final String KEY_HDAUDIO_PASSTHROUGH = "hdaudio_passthrough";
 	private static final String UNLIMITED_BITRATE = "0";
 
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
@@ -1116,6 +1117,14 @@ public class PmsConfiguration {
 
 	public boolean isDTSEmbedInPCM() {
 		return getBoolean(KEY_EMBED_DTS_IN_PCM, false);
+	}
+	
+	public void setHDAudioPassthrough(boolean value) {
+		configuration.setProperty(KEY_HDAUDIO_PASSTHROUGH, value);
+	}
+
+	public boolean isHDAudioPassthrough() {
+		return getBoolean(KEY_HDAUDIO_PASSTHROUGH, false);
 	}
 
 	public void setMencoderMuxWhenCompatible(boolean value) {
