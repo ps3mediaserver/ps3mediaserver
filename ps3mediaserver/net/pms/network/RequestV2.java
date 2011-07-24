@@ -27,11 +27,11 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.external.StartStopListenerDelegate;
-import net.pms.PMS;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -41,11 +41,14 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.stream.ChunkedStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class handles all forms of incoming requests by constructing a proper response. 
+ */
 public class RequestV2 extends HTTPResource {
 	private static final Logger logger = LoggerFactory.getLogger(RequestV2.class);
 	private final static String CRLF = "\r\n";
@@ -53,21 +56,37 @@ public class RequestV2 extends HTTPResource {
 	private static int BUFFER_SIZE = 8 * 1024;
 	int sendB = 0;
 	private String method;
-	private String argument;
 	private String soapaction;
 	private String content;
 	private String objectID;
 	private int startingIndex;
 	private int requestCount;
 	private String browseFlag;
-	private long lowRange;
 	private InputStream inputStream;
 	private RendererConfiguration mediaRenderer;
 	private String transferMode;
 	private String contentFeatures;
 	private double timeseek;
-	private long highRange;
 	private boolean http10;
+	
+	/**
+	 * A {@link String} that contains the argument with which this {@link RequestV2} was
+	 * created. It contains a command, a unique resource id and a resource name, all
+	 * separated by slashes. For example: "get/0$0$2$17/big_buck_bunny_1080p_h264.mov" or
+	 * "get/0$0$2$13/thumbnail0000Sintel.2010.1080p.mkv"
+	 */
+	private String argument;
+	
+	/**
+	 * When sending an input stream, the lowRange indicates which byte to start from.  
+	 */
+	private long lowRange;
+
+	/**
+	 * When sending an input stream, the highRange indicates which byte to stop at.  
+	 */
+	private long highRange;
+	
 
 	public RendererConfiguration getMediaRenderer() {
 		return mediaRenderer;
@@ -132,6 +151,8 @@ public class RequestV2 extends HTTPResource {
 	public RequestV2(String method, String argument) {
 		this.method = method;
 		this.argument = argument;
+		this.lowRange = 0;
+		this.highRange = 0;
 	}
 
 	public String getSoapaction() {
@@ -150,19 +171,45 @@ public class RequestV2 extends HTTPResource {
 		this.content = content;
 	}
 
+	
+	/**
+	 * Retrieves the HTTP method with which this {@link RequestV2} was created.
+	 * @return The (@link String} containing the HTTP method.
+	 */
 	public String getMethod() {
 		return method;
 	}
 
+	
+	/**
+	 * Retrieves the argument with which this {@link RequestV2} was created. It contains
+	 * a command, a unique resource id and a resource name, all separated by slashes. For
+	 * example: "get/0$0$2$17/big_buck_bunny_1080p_h264.mov" or "get/0$0$2$13/thumbnail0000Sintel.2010.1080p.mkv"
+	 * @return The {@link String} containing the argument.
+	 */
 	public String getArgument() {
 		return argument;
 	}
 
-	public ChannelFuture answer(
-		HttpResponse output,
-		MessageEvent e,
-		final boolean close,
-		final StartStopListenerDelegate startStopListenerDelegate) throws IOException {
+	
+	/**
+	 * Construct a proper HTTP response to a received request. After the response has been
+	 * created, it is sent and the resulting {@link ChannelFuture} object is returned.
+	 * See <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html">RFC-2616</a>
+	 * for HTTP header field definitions. 
+	 * @param output The {@link HttpResponse} object that will be used to construct the response.
+	 * @param event The {@link MessageEvent} object used to communicate with the client that sent
+	 * 			the request.
+	 * @param close Set to true to close the channel after sending the response. By default the
+	 * 			channel is not closed after sending.
+	 * @param startStopListenerDelegate The {@link StartStopListenerDelegate} object that is used
+	 * 			to notify plugins that the {@link DNLAResource} is about to start playing.
+	 * @return The {@link ChannelFuture} object via which the response was sent.
+	 * @throws IOException
+	 */
+	public ChannelFuture answer(HttpResponse output, MessageEvent event, final boolean close,
+			final StartStopListenerDelegate startStopListenerDelegate) throws IOException {
+		
 		ChannelFuture future = null;
 		long CLoverride = -1;
 		StringBuilder response = new StringBuilder();
@@ -170,62 +217,96 @@ public class RequestV2 extends HTTPResource {
 		boolean xbox = mediaRenderer.isXBOX();
 
 		if ((method.equals("GET") || method.equals("HEAD")) && argument.startsWith("console/")) {
+			// Request to output a page to the HTLM console.
 			output.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/html");
 			response.append(HTMLConsole.servePage(argument.substring(8)));
 		} else if ((method.equals("GET") || method.equals("HEAD")) && argument.startsWith("get/")) {
-			String id = argument.substring(argument.indexOf("get/") + 4, argument.lastIndexOf("/"));
-			id = id.replace("%24", "$"); // popcorn hour ?
+			// Request to retrieve a file
+			
+			// Extract the resource id from the argument string.
+			String id = argument.substring(4, argument.lastIndexOf("/"));
+			
+			// Some clients escape the separators in their request, unescape them.
+			id = id.replace("%24", "$");
+			
+			// Retrieve the DLNAresource itself .
 			ArrayList<DLNAResource> files = PMS.get().getRootFolder(mediaRenderer).getDLNAResources(id, false, 0, 0, mediaRenderer);
+
 			if (transferMode != null) {
 				output.setHeader("TransferMode.DLNA.ORG", transferMode);
 			}
 
 			if (files.size() == 1) {
+				// DNLAresource was found.
 				dlna = files.get(0);
 				String fileName = argument.substring(argument.lastIndexOf("/") + 1);
+				
 				if (fileName.startsWith("thumbnail0000")) {
+					// This a is request for a thumbnail file
 					output.setHeader(HttpHeaders.Names.CONTENT_TYPE, files.get(0).getThumbnailContentType());
 					output.setHeader(HttpHeaders.Names.ACCEPT_RANGES, "bytes");
 					output.setHeader(HttpHeaders.Names.EXPIRES, getFUTUREDATE() + " GMT");
 					output.setHeader(HttpHeaders.Names.CONNECTION, "keep-alive");
+					
 					if (mediaRenderer.isMediaParserV2()) {
 						dlna.checkThumbnail();
 					}
+					
 					inputStream = dlna.getThumbnailInputStream();
 				} else {
+					// This is a request for a regular file.
 					inputStream = dlna.getInputStream(lowRange, highRange, timeseek, mediaRenderer);
+					
 					if (inputStream != null) {
+						// Notify plugins that the DLNAresource is about to start playing
 						startStopListenerDelegate.start(dlna);
 					}
+					
 					output.setHeader(HttpHeaders.Names.CONTENT_TYPE, getRendererMimeType(files.get(0).mimeType(), mediaRenderer));
-					// Ditlew - org
 					String name = dlna.getDisplayName(mediaRenderer);
+
 					if (dlna.media != null) {
 						if (StringUtils.isNotBlank(dlna.media.container)) {
 							name += " [container: " + dlna.media.container + "]";
 						}
+						
 						if (StringUtils.isNotBlank(dlna.media.codecV)) {
 							name += " [video: " + dlna.media.codecV + "]";
 						}
 					}
+					
 					PMS.get().getFrame().setStatusLine("Serving " + name);
-					// Ditlew - org
-					CLoverride = files.get(0).length(mediaRenderer);
-					if (lowRange > 0 || highRange > 0) {
-						long totalsize = CLoverride;
-						if (highRange >= CLoverride) {
-							highRange = CLoverride - 1;
-						}
-						if (CLoverride == -1) {
-							lowRange = 0;
-							totalsize = inputStream.available();
-							highRange = totalsize - 1;
-						}
-						output.setHeader(HttpHeaders.Names.CONTENT_RANGE, "bytes " + lowRange + "-" + highRange + "/" + totalsize);
+					
+					// Determine the total size and Content-Length override. Note: when transcoding the length is
+					// not known in advance, so DLNAMediaInfo.TRANS_SIZE will be returned instead.
+					long totalsize = files.get(0).length(mediaRenderer);
+					CLoverride = totalsize;
+
+					// FIXME: Not sure this will ever happen because DLNAResources usually return a length > -1.
+					if (totalsize == -1) {
+						// Cannot determine total size, send everything that is available.
+						lowRange = 0;
+						totalsize = inputStream.available();
+						highRange = totalsize - 1;
 					}
+					
+					// Sanity checks
+					if (totalsize <= 1) {
+						// TODO: Nothing to stream?
+					}
+					
+					if (highRange >= totalsize) {
+						highRange = totalsize - 1;
+					}
+						
+					if (lowRange >= highRange) {
+						lowRange = highRange - 1;
+					}
+					
 					if (contentFeatures != null) {
 						output.setHeader("ContentFeatures.DLNA.ORG", files.get(0).getDlnaContentFeatures());
 					}
+					
 					output.setHeader(HttpHeaders.Names.ACCEPT_RANGES, "bytes");
 					output.setHeader(HttpHeaders.Names.CONNECTION, "keep-alive");
 				}
@@ -482,7 +563,6 @@ public class RequestV2 extends HTTPResource {
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
-				// logger.trace(response.toString());
 			}
 		} else if (method.equals("SUBSCRIBE")) {
 			output.setHeader("SID", PMS.get().usn());
@@ -509,44 +589,80 @@ public class RequestV2 extends HTTPResource {
 		output.setHeader("Server", PMS.get().getServerName());
 
 		if (response.length() > 0) {
+			// A response message was constructed; convert it to data ready to be sent.
 			byte responseData[] = response.toString().getBytes("UTF-8");
+			output.setStatus(HttpResponseStatus.OK);
 			output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + responseData.length);
+
+			// HEAD requests only require headers to be set.
 			if (!method.equals("HEAD")) {
+				// Not a HEAD request, so set the contents of the response.
 				ChannelBuffer buf = ChannelBuffers.copiedBuffer(responseData);
 				output.setContent(buf);
-				// logger.trace(response.toString());
 			}
-			future = e.getChannel().write(output);
+			
+			// Send the response to the client.
+			future = event.getChannel().write(output);
+			
 			if (close) {
+				// Close the channel after the response is sent.
 				future.addListener(ChannelFutureListener.CLOSE);
 			}
 		} else if (inputStream != null) {
+			// There is an input stream to send as a response.
+
 			if (CLoverride > -1) {
-				if (lowRange > 0 && highRange > 0) {
-					output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + (highRange - lowRange + 1));
-				} else if (CLoverride != DLNAMediaInfo.TRANS_SIZE) {
-					// since 2.50, it's wiser not to send an arbitrary Content length,
-					// as the PS3 displays a network error and asks the last seconds of the transcoded video
-					// deprecated since the "-1" size sent anyway
+				// Content-Length override has been set, so use it.
+				if (lowRange == 0 && highRange == 0) {
+					// lowRange and highRange have not specifically been set.
+					
+					// DLNAMediaInfo.TRANS_SIZE is a marker value used by DLNA resources when their
+					// length is not exactly known, e.g. when transcoding.
+					if (CLoverride != DLNAMediaInfo.TRANS_SIZE) {
+						// Send the determined content length
+						output.setStatus(HttpResponseStatus.OK);
+						output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + CLoverride);
+					} else {
+						// Since PS3 firmware 2.50, it is wiser not to send an arbitrary Content-Length,
+						// as the PS3 will display a network error and request the last seconds of the
+						// transcoded video. Better to send no Content-Length at all.
+						output.setStatus(HttpResponseStatus.OK);
+					}
+				} else if (lowRange == 0 && highRange == CLoverride - 1) {
+					// lowRange and highRange have been set and indicate the full range.
+					// Send full content instead of a range of bytes.
+					output.setStatus(HttpResponseStatus.OK);
 					output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + CLoverride);
+				} else {
+					// lowRange and highRange have been set, send a range of bytes.
+					// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.16 for details.
+					output.setStatus(HttpResponseStatus.PARTIAL_CONTENT);
+					output.setHeader(HttpHeaders.Names.CONTENT_RANGE, "bytes " + lowRange + "-" + highRange + "/" + CLoverride);
+					output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + (highRange - lowRange + 1));
 				}
 			} else {
+				// No Content-Length override set, use the available length.
 				int cl = inputStream.available();
-				logger.trace("Available Content-Length: " + cl);
+				output.setStatus(HttpResponseStatus.OK);
 				output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + cl);
 			}
 
 			if (timeseek > 0 && dlna != null) {
+				// Add timeseek information headers.
 				String timeseekValue = DLNAMediaInfo.getDurationString(timeseek);
 				String timetotalValue = dlna.media.duration;
 				output.setHeader("TimeSeekRange.dlna.org", "npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
 				output.setHeader("X-Seek-Range", "npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
 			}
-			future = e.getChannel().write(output);
+			
+			// Send the response headers to the client.
+			future = event.getChannel().write(output);
 
-			if (lowRange != DLNAMediaInfo.ENDFILE_POS && !method.equals("HEAD")) {
-				ChannelFuture chunkWriteFuture = e.getChannel().write(new ChunkedStream(inputStream, BUFFER_SIZE));
+			if (!method.equals("HEAD")) {
+				// Send the response body to the client in chunks.
+				ChannelFuture chunkWriteFuture = event.getChannel().write(new ChunkedStream(inputStream, BUFFER_SIZE));
 
+				// Add a listener to clean up after sending the entire response body.
 				chunkWriteFuture.addListener(new ChannelFutureListener() {
 					public void operationComplete(ChannelFuture future) {
 						try {
@@ -555,37 +671,43 @@ public class RequestV2 extends HTTPResource {
 						} catch (IOException e) {
 						}
 
-						// always closed because of freeze at the end of video due to no channel close sent
+						// Always close the channel after the response is sent because of
+						// a freeze at the end of video when the channel is not closed.
 						future.getChannel().close();
 						startStopListenerDelegate.stop();
 					}
 				});
 			} else {
+				// HEAD method, so simply clean up after the response was sent.
 				try {
 					PMS.get().getRegistry().reenableGoToSleep();
 					inputStream.close();
 				} catch (IOException ioe) {
 				}
+				
 				if (close) {
+					// Close the channel after the response is sent
 					future.addListener(ChannelFutureListener.CLOSE);
 				}
+				
 				startStopListenerDelegate.stop();
 			}
-			// logger.trace( "Sending stream: " + sendB + " bytes of " + argument);
-			// PMS.get().getFrame().setStatusLine(null);
 		} else {
-			if (lowRange > 0 && highRange > 0) {
-				output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + (highRange - lowRange + 1));
-			} else {
-				output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "0");
-			}
-			// output(output, "");
-			future = e.getChannel().write(output);
+			// No response data and no input stream. Seems we are merely serving up headers.
+			output.setStatus(HttpResponseStatus.OK);
+			output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "0");
+			
+			// Send the response headers to the client.
+			future = event.getChannel().write(output);
+
 			if (close) {
+				// Close the channel after the response is sent.
 				future.addListener(ChannelFutureListener.CLOSE);
 			}
 		}
-
+		
+		// Log trace information
+		logger.trace("Sent to socket: " + output.getStatus().toString());
 		Iterator<String> it = output.getHeaderNames().iterator();
 
 		while (it.hasNext()) {
@@ -596,6 +718,10 @@ public class RequestV2 extends HTTPResource {
 		return future;
 	}
 
+	/**
+	 * Returns a date somewhere in the far future.
+	 * @return The {@link String} containing the date
+	 */
 	private String getFUTUREDATE() {
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return sdf.format(new Date(10000000000L + System.currentTimeMillis()));
