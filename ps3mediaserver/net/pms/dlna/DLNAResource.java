@@ -308,28 +308,35 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					child.media = new DLNAMediaInfo();
 				}
 
+				// Try to determine a player to use for transcoding. 
 				Player pl = null;
-				if (pl == null) {
-					if (child.ext.getProfiles() != null && child.ext.getProfiles().size() > 0) {
-						int i = 0;
-						while (pl == null && i < child.ext.getProfiles().size()) {
-							pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
-							i++;
-						}
-						String name = getName();
-						for (Class<? extends Player> clazz : child.ext.getProfiles()) {
-							for (Player p : PMS.get().getPlayers()) {
-								if (p.getClass().equals(clazz)) {
-									String end = "[" + p.id() + "]";
-									if (name.endsWith(end)) {
-										nametruncate = name.lastIndexOf(end);
-										pl = p;
-										break;
-									} else if (getParent() != null && getParent().getName().endsWith(end)) {
-										getParent().nametruncate = getParent().getName().lastIndexOf(end);
-										pl = p;
-										break;
-									}
+				
+				if (child.ext.getProfiles() != null && child.ext.getProfiles().size() > 0) {
+					// First try to match a player based on the format profiles.
+					int i = 0;
+					
+					while (pl == null && i < child.ext.getProfiles().size()) {
+						pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
+						i++;
+					}
+					
+					// Next, try to match a player based on the name of the DLNAResource.
+					// When a match is found it overrules the result of the first try.
+					String name = getName();
+					
+					for (Class<? extends Player> clazz : child.ext.getProfiles()) {
+						for (Player p : PMS.get().getPlayers()) {
+							if (p.getClass().equals(clazz)) {
+								String end = "[" + p.id() + "]";
+								
+								if (name.endsWith(end)) {
+									nametruncate = name.lastIndexOf(end);
+									pl = p;
+									break;
+								} else if (getParent() != null && getParent().getName().endsWith(end)) {
+									getParent().nametruncate = getParent().getName().lastIndexOf(end);
+									pl = p;
+									break;
 								}
 							}
 						}
