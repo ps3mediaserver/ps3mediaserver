@@ -1912,16 +1912,16 @@ public class MEncoderVideo extends Player {
 					int r = rank++;
 					interpreter.set("" + type, r); //$NON-NLS-1$
 					String secondaryType = "dummy"; //$NON-NLS-1$
-					if (type.equals("matroska")) { //$NON-NLS-1$
+					if ("matroska".equals(type)) { //$NON-NLS-1$
 						secondaryType = "mkv";
 						interpreter.set(secondaryType, r); //$NON-NLS-1$
-					} else if (type.equals("rm")) { //$NON-NLS-1$
+					} else if ("rm".equals(type)) { //$NON-NLS-1$
 						secondaryType = "rmvb";
 						interpreter.set(secondaryType, r); //$NON-NLS-1$
-					} else if (type.equals("mpeg2video")) { //$NON-NLS-1$
+					} else if ("mpeg2video".equals(type)) { //$NON-NLS-1$
 						secondaryType = "mpeg2";
 						interpreter.set(secondaryType, r); //$NON-NLS-1$
-					} else if (type.equals("mpeg1video")) { //$NON-NLS-1$
+					} else if ("mpeg1video".equals(type)) { //$NON-NLS-1$
 						secondaryType = "mpeg1";
 						interpreter.set(secondaryType, r); //$NON-NLS-1$
 					}
