@@ -972,7 +972,7 @@ public class MEncoderVideo extends Player {
 				args[i] = defaultArgs[i];
 			}
 			for (int i = 0; i < overriddenMainArgs.length; i++) {
-				if (overriddenMainArgs[i].equals("-of") || overriddenMainArgs[i].equals("-oac") || overriddenMainArgs[i].equals("-ovc") || overriddenMainArgs[i].equals("-mpegopts")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				if ("-of".equals(overriddenMainArgs[i]) || "-oac".equals(overriddenMainArgs[i]) || "-ovc".equals(overriddenMainArgs[i]) || "-mpegopts".equals(overriddenMainArgs[i])) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 					logger.info("MEncoder encoder settings: You cannot change Muxer, Muxer options, Video Codec or Audio Codec"); //$NON-NLS-1$
 					overriddenMainArgs[i] = "-quiet"; //$NON-NLS-1$
 					if (i + 1 < overriddenMainArgs.length) {
