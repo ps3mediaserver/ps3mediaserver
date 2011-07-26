@@ -37,6 +37,7 @@ import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
+import net.pms.Messages;
 import net.pms.network.HTTPResource;
 import net.pms.PMS;
 
@@ -65,7 +66,7 @@ public class FFMpegAudio extends FFMpegVideo {
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		noresample = new JCheckBox("Automatic audio resampling to 44.1 or 48 kHz");
+		noresample = new JCheckBox(Messages.getString("TrTab2.22"));
 		noresample.setContentAreaFilled(false);
 		noresample.setSelected(configuration.isAudioResample());
 		noresample.addItemListener(new ItemListener() {

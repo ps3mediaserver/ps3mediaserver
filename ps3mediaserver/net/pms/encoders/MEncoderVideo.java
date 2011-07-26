@@ -538,7 +538,7 @@ public class MEncoderVideo extends Player {
 		subcp.setEditable(true);
 		builder.add(subcp, cc.xyw(3, 31, 7));
 
-		fribidi = new JCheckBox("FriBiDi mode"); //$NON-NLS-1$
+		fribidi = new JCheckBox(Messages.getString("MEncoderVideo.23")); //$NON-NLS-1$
 		fribidi.setContentAreaFilled(false);
 		if (configuration.isMencoderSubFribidi()) {
 			fribidi.setSelected(true);
@@ -887,7 +887,7 @@ public class MEncoderVideo extends Player {
 		builder.add(och, cc.xyw(7, 49, 1));
 
 		subColor = new JButton();
-		subColor.setText("Subs color");
+		subColor.setText(Messages.getString("MEncoderVideo.31"));
 		subColor.setBackground(new Color(configuration.getSubsColor()));
 		subColor.addActionListener(new ActionListener() {
 			@Override
