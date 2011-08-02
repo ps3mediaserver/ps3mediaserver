@@ -50,12 +50,15 @@ public class UPNPHelper {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
 
 	private static void sendDiscover(String host, int port, String st) throws IOException {
-		String usn = PMS.get().usn() + "::";
+		String usn = PMS.get().usn();
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 		if (st.equals(usn)) {
 			usn = "";
+		} else {
+			usn += "::";
 		}
+			
 		String discovery =
 			"HTTP/1.1 200 OK" + CRLF
 			+ "CACHE-CONTROL: max-age=1200" + CRLF
