@@ -283,7 +283,13 @@ public class RequestV2 extends HTTPResource {
 						startStopListenerDelegate.start(dlna);
 					}
 
-					output.setHeader(HttpHeaders.Names.CONTENT_TYPE, getRendererMimeType(files.get(0).mimeType(), mediaRenderer));
+					// Try to determine the content type of the file
+					String rendererMimeType = getRendererMimeType(files.get(0).mimeType(), mediaRenderer);
+					
+					if (rendererMimeType != null && !"".equals(rendererMimeType)) {
+						output.setHeader(HttpHeaders.Names.CONTENT_TYPE, rendererMimeType);
+					}
+					
 					String name = dlna.getDisplayName(mediaRenderer);
 
 					if (dlna.media != null) {
