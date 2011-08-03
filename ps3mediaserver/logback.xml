@@ -1,7 +1,7 @@
 <configuration debug="true">
   <!-- See http://logback.qos.ch/manual/index.html for more information -->
   <!-- on how to configure the Logback logging engine. -->
-  <!-- Available levels: TRACE < DEBUG < INFO <  WARN < ERROR -->
+  <!-- Available levels: ALL < TRACE < DEBUG < INFO < WARN < ERROR < OFF -->
 
   <define name="debugLogPath" class="net.pms.logging.DebugLogPathDefiner" />
 
