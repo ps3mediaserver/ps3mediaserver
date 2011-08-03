@@ -23,21 +23,25 @@ public class CodecUtil {
 	public static ArrayList<String> getPossibleCodecs() {
 		if (codecs == null) {
 			codecs = new ArrayList<String>();
-			InputStream is = CodecUtil.class.getClassLoader().getResourceAsStream("resources/ffmpeg_formats.txt");
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			String line = null;
-			try {
-				while ((line = br.readLine()) != null) {
-					if (line.contains(" ")) {
-						codecs.add(line.substring(0, line.indexOf(" ")));
-					} else {
-						codecs.add(line);
+			
+			// Multiple threads can call this at the same time and initializing takes a while
+			synchronized (codecs) {
+				InputStream is = CodecUtil.class.getClassLoader().getResourceAsStream("resources/ffmpeg_formats.txt");
+				BufferedReader br = new BufferedReader(new InputStreamReader(is));
+				String line = null;
+				try {
+					while ((line = br.readLine()) != null) {
+						if (line.contains(" ")) {
+							codecs.add(line.substring(0, line.indexOf(" ")));
+						} else {
+							codecs.add(line);
+						}
 					}
+					br.close();
+					codecs.add("iso");
+				} catch (IOException e) {
+					logger.error("Error while retrieving codec list", e);
 				}
-				br.close();
-				codecs.add("iso");
-			} catch (IOException e) {
-				logger.error("Error while retrieving codec list", e);
 			}
 		}
 		return codecs;
