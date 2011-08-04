@@ -341,7 +341,7 @@ public class MediaInfoParser {
 	}
 
 	public static void getSubCodec(DLNAMediaSubtitle subt, String value) {
-		if (value.equals("s_text/ass")) {
+		if (value.equals("s_text/ass") || value.equals("s_text/ssa")) {
 			subt.type = DLNAMediaSubtitle.ASS;
 		} else if (value.equals("pgs")) {
 			subt.type = -1; // PGS not yet supported
