@@ -2,7 +2,7 @@ Changelog:
 ==========
 2011-??-?? - 1.31.0
 
-	Updated OS X MPlayer to enable external VOBsub support
+	Updated OS X MPlayer to enable external VOBsub, ASS/SSA and Fribidi support
 	allow update checks to be performed manually (Windows only)
 	allow automatic update checks to be enabled (Windows only)
 	simplify PMS customization for packagers of custom builds
