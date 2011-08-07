@@ -29,13 +29,18 @@ import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.stream.ChunkedWriteHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The Netty Project (netty-dev@lists.jboss.org)
  * @author Andy Taylor (andy.taylor@jboss.org)
  */
 public class HttpServerPipelineFactory implements ChannelPipelineFactory {
+	private static final Logger logger = LoggerFactory.getLogger(HttpServerPipelineFactory.class);
+
 	public ChannelPipeline getPipeline() throws Exception {
+		logger.trace("Creating new pipeline");
 		// Create a default pipeline implementation.
 		ChannelPipeline pipeline = pipeline();
 		pipeline.addLast("decoder", new HttpRequestDecoder());
