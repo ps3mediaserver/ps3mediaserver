@@ -279,6 +279,50 @@ public class DLNAMediaInfo implements Cloneable {
 		return pw;
 	}
 
+	private ProcessWrapperImpl getImageMagickThumbnail(InputFile media) throws IOException {
+	// convert -size 320x180  hatching_orig.jpg  -auto-orient -thumbnail 160x90   -unsharp 0x.5  thumbnail.gif
+		String args [] = new String[10];
+		args[0] = PMS.getConfiguration().getIMConvertPath();
+		args[1] = "-size";
+		args[2] = "320x180";
+		if (media.file != null)
+			args[3] = ProcessUtil.getShortFileNameIfWideChars(media.file.getAbsolutePath());
+		else
+			args[3] = "-";
+		args[4] = "-auto-orient";
+		args[5] = "-thumbnail";
+		args[6] = "160x90";
+		args[7] = "-unsharp";
+		args[8] = "-0x.5";
+		args[9] = PMS.getConfiguration().getTempFolder() + "/imagemagick_thumbs/" + media.file.getName() + ".jpg";
+		OutputParams params = new OutputParams(PMS.getConfiguration());
+		params.workDir = new File(PMS.getConfiguration().getTempFolder().getAbsolutePath() + "/imagemagick_thumbs/");
+		if (!params.workDir.exists())
+			params.workDir.mkdirs();
+		params.maxBufferSize = 1;
+		params.stdin = media.push;
+		params.log = true;
+		params.noexitcheck = true; // not serious if anything happens during the thumbnailer
+		final ProcessWrapperImpl pw = new ProcessWrapperImpl(args, params);
+			// FAILSAFE
+		parsing = true;
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(7000);
+					ffmpeg_failure = true;
+				} catch (InterruptedException e) {}
+				pw.stopProcess();
+				parsing = false;
+			}
+		};
+		Thread failsafe = new Thread(r);
+		failsafe.start();
+		pw.run();
+		parsing = false;
+		return pw;
+	}
+
 	private String getFfmpegPath() {
 		String value = PMS.getConfiguration().getFfmpegPath();
 		if (value == null) {
@@ -429,6 +473,27 @@ public class DLNAMediaInfo implements Cloneable {
 					} catch (Throwable e) {
 						// ffmpeg_parsing = true;
 						logger.info("Error during the parsing of image with Sanselan... switching to Ffmpeg: " + e.getMessage());
+					}
+					try {
+						if(PMS.getConfiguration().getImageThumbnailsEnabled()) {
+							getImageMagickThumbnail(f);
+							String frameName = PMS.getConfiguration().getTempFolder() + "/imagemagick_thumbs/" + f.file.getName() + ".jpg";
+							File jpg = new File(frameName);
+							if (jpg.exists()) {
+								InputStream is = new FileInputStream(jpg);
+								int sz = is.available();
+								if (sz > 0) {
+									thumb = new byte [sz];
+									is.read(thumb);
+								}
+								is.close();
+								if (!jpg.delete())
+									jpg.deleteOnExit();
+							}
+						}
+					} catch (Throwable e) {
+						logger.info("Error during the generating thumbnail of image with ImageMagick...: " + e.getMessage());
+					
 					}
 				}
 			}

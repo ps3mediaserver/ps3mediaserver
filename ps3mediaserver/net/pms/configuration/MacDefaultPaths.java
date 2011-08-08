@@ -55,4 +55,9 @@ class MacDefaultPaths implements ProgramPaths {
 	public String getDCRaw() {
 		return "osx/dcraw";
 	}
+	
+	@Override
+	public String getIMConvertPath() {
+		return "osx/convert";
+	}
 }

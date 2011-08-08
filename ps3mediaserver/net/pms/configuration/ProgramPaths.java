@@ -12,4 +12,5 @@ interface ProgramPaths {
 	String getFlacPath();
 	String getEac3toPath(); 
 	String getDCRaw(); 
+	String getIMConvertPath();
 }

@@ -55,4 +55,9 @@ class LinuxDefaultPaths implements ProgramPaths {
 	public String getDCRaw() {
 		return "dcraw";
 	}
+	
+	@Override
+	public String getIMConvertPath() {
+		return "convert";
+	}
 }

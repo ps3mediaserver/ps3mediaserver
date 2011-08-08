@@ -55,4 +55,9 @@ class WindowsDefaultPaths implements ProgramPaths {
 	public String getDCRaw() {
 		return "win32/dcrawMS.exe";
 	}
+	
+	@Override
+	public String getIMConvertPath() {
+		return "win32/convert.exe";
+	}
 }
