@@ -71,6 +71,7 @@ public class NavigationShareTab {
 	private JCheckBox tncheckBox;
 	private JCheckBox mplayer_thumb;
 	private JCheckBox dvdiso_thumb;
+	private JCheckBox image_thumb;
 	private JCheckBox cacheenable;
 	private JCheckBox archive;
 	private JComboBox sortmethod;
@@ -203,6 +204,18 @@ public class NavigationShareTab {
 			dvdiso_thumb.setSelected(true);
 		}
 		builder.add(dvdiso_thumb, cc.xyw(3, 5, 3));
+		
+		image_thumb = new JCheckBox(Messages.getString("FoldTab.21"));
+		image_thumb.setContentAreaFilled(false);
+		image_thumb.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				PMS.getConfiguration().setImageThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
+			}
+		});
+		if (PMS.getConfiguration().getImageThumbnailsEnabled()) {
+			image_thumb.setSelected(true);
+		}
+		builder.add(image_thumb, cc.xyw(1, 7, 3));
 
 		final KeyedComboBoxModel thumbKCBM = new KeyedComboBoxModel(new Object[]{"0", "1", "2"}, new Object[]{Messages.getString("FoldTab.15"), Messages.getString("FoldTab.23"), Messages.getString("FoldTab.24")}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 		audiothumbnail = new JComboBox(thumbKCBM);
@@ -223,10 +236,10 @@ public class NavigationShareTab {
 				}
 			}
 		});
-		builder.addLabel(Messages.getString("FoldTab.26"), cc.xyw(1, 7, 3)); //$NON-NLS-1$
-		builder.add(audiothumbnail, cc.xyw(4, 7, 4));
+		builder.addLabel(Messages.getString("FoldTab.26"), cc.xyw(1, 9, 3)); //$NON-NLS-1$
+		builder.add(audiothumbnail, cc.xyw(4, 9, 4));
 
-		builder.addLabel(Messages.getString("FoldTab.27"), cc.xyw(1, 9, 3)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("FoldTab.27"), cc.xyw(1, 10, 3)); //$NON-NLS-1$
 		defaultThumbFolder = new JTextField(configuration.getAlternateThumbFolder());
 		defaultThumbFolder.addKeyListener(new KeyListener() {
 			@Override
@@ -242,7 +255,7 @@ public class NavigationShareTab {
 				configuration.setAlternateThumbFolder(defaultThumbFolder.getText());
 			}
 		});
-		builder.add(defaultThumbFolder, cc.xyw(4, 9, 3));
+		builder.add(defaultThumbFolder, cc.xyw(4, 10, 3));
 
 		JButton select = new JButton("..."); //$NON-NLS-1$
 		select.addActionListener(new ActionListener() {
@@ -263,7 +276,7 @@ public class NavigationShareTab {
 				}
 			}
 		});
-		builder.add(select, cc.xyw(7, 9, 1));
+		builder.add(select, cc.xyw(7, 10, 1));
 
 		cmp = builder.addSeparator(Messages.getString("NetworkTab.15"), cc.xyw(1, 11, 10)); //$NON-NLS-1$
 		cmp = (JComponent) cmp.getComponent(0);

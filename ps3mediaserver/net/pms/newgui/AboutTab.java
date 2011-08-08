@@ -57,7 +57,7 @@ public class AboutTab {
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
 			"0:grow, pref, 0:grow", //$NON-NLS-1$
-			"pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
+			"pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
 
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setDefaultDialogBorder();
@@ -93,6 +93,11 @@ public class AboutTab {
 			"http://oss.netfarm.it/mplayer-win32.php");
 		builder.addLabel(mplayerSherpiaBuildsLink.getLabel(),
 			cc.xy(2, 13, "center, fill")).addMouseListener(mplayerSherpiaBuildsLink);
+
+		final LinkMouseListener ImageMagickLink = new LinkMouseListener("ImageMagick",
+			"http://www.imagemagick.org");
+		builder.addLabel(ImageMagickLink.getLabel(),
+				cc.xy(2, 15, "center, fill")).addMouseListener(ImageMagickLink);
 
 		JScrollPane scrollPane = new JScrollPane(builder.getPanel());
 		scrollPane.setBorder(null);

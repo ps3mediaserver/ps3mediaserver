@@ -12,6 +12,7 @@ Changelog:
 	Added support for the AirPlayer app
 	Added support for Samsung TV model SEC_HHP_TV (thanks, coax-!)
 	Added Aperture support on OS X (thanks, coax-!)
+	Added thumbnail support for images (some code from http://www.rayinblu.com/ps3mediaserver)
 
 2011-07-06 - 1.30.1
 

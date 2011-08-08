@@ -9,6 +9,7 @@ class ProgramPathDisabler implements ProgramPaths {
 	private boolean disableFfmpeg = false;
 	private boolean disableMplayer = false;
 	private boolean disableDCraw = false;
+	private boolean disableIMConvert = false;
 	private final ProgramPaths ifEnabled;
 
 	public ProgramPathDisabler(ProgramPaths ifEnabled) {
@@ -84,5 +85,10 @@ class ProgramPathDisabler implements ProgramPaths {
 	@Override
 	public String getDCRaw() {
 		return disableDCraw ? null : ifEnabled.getDCRaw();
+	}
+	
+	@Override
+	public String getIMConvertPath() {
+		return disableIMConvert ? null : ifEnabled.getIMConvertPath();
 	}
 }

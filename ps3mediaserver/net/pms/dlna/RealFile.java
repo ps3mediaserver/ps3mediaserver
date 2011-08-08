@@ -249,7 +249,7 @@ public class RealFile extends MapFile {
 
 	@Override
 	protected String getThumbnailURL() {
-		if (getType() == Format.IMAGE) // no thumbnail support for now for real based disk images
+		if (getType() == Format.IMAGE && !PMS.getConfiguration().getImageThumbnailsEnabled())
 		{
 			return null;
 		}
