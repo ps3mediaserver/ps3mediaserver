@@ -39,7 +39,7 @@ public class BufferedOutputFile extends OutputStream {
 	/**
 	 * Initial size for the buffer in bytes.
 	 */
-	public static final int INITIAL_BUFFER_SIZE = 50000000;
+	private static final int INITIAL_BUFFER_SIZE = 50000000;
 	
 	/**
 	 * Amount of extra bytes to increase the initial buffer with when memory allocation fails.
