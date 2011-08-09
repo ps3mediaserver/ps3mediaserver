@@ -28,6 +28,19 @@ import org.slf4j.LoggerFactory;
 public class OutputBufferConsumer extends OutputConsumer {
 	private static final Logger logger = LoggerFactory.getLogger(OutputBufferConsumer.class);
 	private BufferedOutputFile outputBuffer;
+	
+	/**
+	 * Size of a buffer in bytes. The buffer is used to copy data from an
+	 * {@link java.io.InputStream InputStream} to an {@link java.io.OutputStream OutputStream}
+	 * such as {@link net.pms.io.BufferedOutputFile BufferedOutputFile}.
+	 * <p>
+	 * It is unknown up front how many bytes will be read at once by
+	 * {@link java.io.InputStream#read(byte[]) read(byte[])}, but it will never be more than
+	 * the buffer size that we define here. Tests show varying numbers between 2048 and 450560
+	 * being copied, with 8192 being most commonly used, probably because that is the default
+	 * size for {@link org.jboss.netty.channel.Channel Channel} packets.
+	 */
+	private static final int PIPE_BUFFER_SIZE = 500000;
 
 	public OutputBufferConsumer(InputStream inputStream, OutputParams params) {
 		super(inputStream);
@@ -37,7 +50,7 @@ public class OutputBufferConsumer extends OutputConsumer {
 	public void run() {
 		try {
 			//logger.trace("Starting read from pipe");
-			byte buf[] = new byte[500000];
+			byte buf[] = new byte[PIPE_BUFFER_SIZE];
 			int n = 0;
 			while ((n = inputStream.read(buf)) > 0) {
 				//logger.trace("Fetched " + n + " from pipe");

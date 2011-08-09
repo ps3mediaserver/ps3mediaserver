@@ -40,6 +40,12 @@ import com.sun.jna.win32.StdCallLibrary;
 
 public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 	private static final Logger logger = LoggerFactory.getLogger(WindowsNamedPipe.class);
+
+	/**
+	 * Size for the buffer used in defining pipes for Windows in bytes. The buffer is used
+	 * to copy from memory to an {@link java.io.OutputStream OutputStream} such as
+	 * {@link net.pms.io.BufferedOutputFile BufferedOutputFile}.
+	 */
 	private static final int BUFSIZE = 500000;
 
 	public interface Kernel32 extends StdCallLibrary {
