@@ -43,7 +43,6 @@ public class UPNPHelper {
 	private final static String CRLF = "\r\n";
 	private final static String ALIVE = "ssdp:alive";
 	private final static String UPNP_HOST = "239.255.255.250";
-	private final static int UPNP_PORT = 1900;
 	private final static String BYEBYE = "ssdp:byebye";
 	private static Thread listener;
 	private static Thread aliveThread;
@@ -154,7 +153,7 @@ public class UPNPHelper {
 		String msg = buildMsg(nt, message);
 		Random rand = new Random();
 		//logger.trace( "Sending this SSDP packet: " + CRLF + msg);// StringUtils.replace(msg, CRLF, "<CRLF>"));
-		DatagramPacket ssdpPacket = new DatagramPacket(msg.getBytes(), msg.length(), getUPNPAddress(), UPNP_PORT);
+		DatagramPacket ssdpPacket = new DatagramPacket(msg.getBytes(), msg.length(), getUPNPAddress(), PMS.getConfiguration().getUpnpPort());
 		socket.send(ssdpPacket);
 		try {
 			Thread.sleep(rand.nextInt(1800 / 2));
@@ -276,7 +275,7 @@ public class UPNPHelper {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("NOTIFY * HTTP/1.1" + CRLF);
-		sb.append("HOST: " + UPNP_HOST + ":").append(UPNP_PORT).append(CRLF);
+		sb.append("HOST: " + UPNP_HOST + ":").append(PMS.getConfiguration().getUpnpPort()).append(CRLF);
 		sb.append("NT: ").append(nt).append(CRLF);
 		sb.append("NTS: ").append(message).append(CRLF);
 
