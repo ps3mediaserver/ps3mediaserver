@@ -142,6 +142,7 @@ public class PmsConfiguration {
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
 	private static final String KEY_HDAUDIO_PASSTHROUGH = "hdaudio_passthrough";
+	private static final String KEY_UPNP_PORT = "upnp_port";
 	private static final String UNLIMITED_BITRATE = "0";
 
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
@@ -1342,5 +1343,9 @@ public class PmsConfiguration {
 	
 	public String getIMConvertPath() {
 		return programPaths.getIMConvertPath();
+	}
+
+	public int getUpnpPort() {
+		return getInt(KEY_UPNP_PORT, 1900);
 	}
 }
