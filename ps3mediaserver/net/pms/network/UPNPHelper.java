@@ -38,11 +38,16 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Helper class to handle the UPnP traffic that makes PMS discoverable by other clients.
+ * See http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.0.pdf for the specifications.
+ */
 public class UPNPHelper {
 	private static final Logger logger = LoggerFactory.getLogger(UPNPHelper.class);
 	private final static String CRLF = "\r\n";
 	private final static String ALIVE = "ssdp:alive";
 	private final static String UPNP_HOST = "239.255.255.250";
+	private final static int UPNP_PORT = 1900;
 	private final static String BYEBYE = "ssdp:byebye";
 	private static Thread listener;
 	private static Thread aliveThread;
@@ -153,7 +158,7 @@ public class UPNPHelper {
 		String msg = buildMsg(nt, message);
 		Random rand = new Random();
 		//logger.trace( "Sending this SSDP packet: " + CRLF + msg);// StringUtils.replace(msg, CRLF, "<CRLF>"));
-		DatagramPacket ssdpPacket = new DatagramPacket(msg.getBytes(), msg.length(), getUPNPAddress(), PMS.getConfiguration().getUpnpPort());
+		DatagramPacket ssdpPacket = new DatagramPacket(msg.getBytes(), msg.length(), getUPNPAddress(), UPNP_PORT);
 		socket.send(ssdpPacket);
 		try {
 			Thread.sleep(rand.nextInt(1800 / 2));
@@ -196,7 +201,8 @@ public class UPNPHelper {
 			public void run() {
 				while (true) {
 					try {
-						MulticastSocket socket = new MulticastSocket(1900);
+						// Use configurable source port as per http://code.google.com/p/ps3mediaserver/issues/detail?id=1166
+						MulticastSocket socket = new MulticastSocket(PMS.getConfiguration().getUpnpPort());
 						if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
 							logger.trace("Searching network interface for " + PMS.getConfiguration().getServerHostname());
 							NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
@@ -275,7 +281,7 @@ public class UPNPHelper {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("NOTIFY * HTTP/1.1" + CRLF);
-		sb.append("HOST: " + UPNP_HOST + ":").append(PMS.getConfiguration().getUpnpPort()).append(CRLF);
+		sb.append("HOST: " + UPNP_HOST + ":").append(UPNP_PORT).append(CRLF);
 		sb.append("NT: ").append(nt).append(CRLF);
 		sb.append("NTS: ").append(message).append(CRLF);
 
