@@ -6,12 +6,25 @@ Links
 =====
 
 Website:       http://www.ps3mediaserver.org
+Forum:         http://www.ps3mediaserver.org/forum/
 Issue tracker: https://code.google.com/p/ps3mediaserver/issues/list
 
 Thanks
 ======
 
-- Redlum, SubJunk, Ditlew, and chocolateboy for major code contributions
+Thanks to:
+
+    - Redlum
+    - tcox
+    - SubJunk
+    - taconaut
+    - tomeko
+    - chocolateboy
+    - ditlew
+    - Raptor399
+
+for major code contributions
+
 - boblinds and snoots for the network test cases :)
 - sarraken, bleuecinephile, bd.azerty, fabounnet for the support and feedback
-- See changelog for more thanks
+- See changelog and FAQ for more thanks: http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=3507
