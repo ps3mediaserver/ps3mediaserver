@@ -33,6 +33,17 @@ import net.pms.io.WaitBufferedInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Circular memory buffer that can be used as {@link java.io.OutputStream OutputStream} and
+ * provides methods that can read data from the memory buffer using an
+ * {@link java.io.InputStream InputStream}. The name of this class is a bit misleading, as
+ * there is typically no file involved in the process at all. Instead, the buffer is
+ * typically used to hold data piped by a transcoding process in one thread until a request
+ * for data comes in from another thread.
+ * 
+ * @see {@link ProcessWrapperImpl}, {@link net.pms.network.Request Request},
+ * {@link net.pms.network.RequestV2 RequestV2}
+ */
 public class BufferedOutputFile extends OutputStream {
 	private static final Logger logger = LoggerFactory.getLogger(BufferedOutputFile.class);
 	
@@ -133,7 +144,13 @@ public class BufferedOutputFile extends OutputStream {
 		return copy;
 	}
 	
-	
+	/**
+	 * Constructor to create a memory buffer based on settings that are passed on. Will also
+	 * start up a timer task to display buffer size and usage in the PMS main screen.
+	 * 
+	 * @param params {@link OutputParams} object that contains preferences for the buffers
+	 * 				dimensions and behavior.
+	 */
 	public BufferedOutputFile(OutputParams params) {
 		this.minMemorySize = (int) (1048576 * params.minBufferSize);
 		this.maxMemorySize = (int) (1048576 * params.maxBufferSize);
