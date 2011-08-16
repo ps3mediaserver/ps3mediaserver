@@ -120,8 +120,8 @@ public class DLNAMediaDatabase implements Runnable {
 			} catch (SQLException e) {
 			}
 		}
-		boolean force_reinit = version != null && version.startsWith("1.0"); // here we can force a deletion for a specific version //$NON-NLS-1$
-		if (force || count == -1 || version == null || force_reinit) {
+		boolean force_reinit = !PMS.VERSION.equals(version); // here we can force a deletion for a specific version //$NON-NLS-1$
+		if (force || count == -1 || force_reinit) {
 			logger.debug("Database will be (re)initialized"); //$NON-NLS-1$
 			if (force_reinit) {
 				JOptionPane.showMessageDialog(
