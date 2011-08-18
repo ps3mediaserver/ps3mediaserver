@@ -123,13 +123,13 @@ public class DLNAMediaDatabase implements Runnable {
 		boolean force_reinit = !PMS.VERSION.equals(version); // here we can force a deletion for a specific version //$NON-NLS-1$
 		if (force || count == -1 || force_reinit) {
 			logger.debug("Database will be (re)initialized"); //$NON-NLS-1$
-			if (force_reinit) {
-				JOptionPane.showMessageDialog(
-					(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-					Messages.getString("DLNAMediaDatabase.0"), //$NON-NLS-1$
-					"Information", //$NON-NLS-1$
-					JOptionPane.INFORMATION_MESSAGE);
-			}
+//			if (force_reinit) {
+//				JOptionPane.showMessageDialog(
+//					(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+//					Messages.getString("DLNAMediaDatabase.0"), //$NON-NLS-1$
+//					"Information", //$NON-NLS-1$
+//					JOptionPane.INFORMATION_MESSAGE);
+//			}
 			try {
 				conn = getConnection();
 				executeUpdate(conn, "DROP TABLE FILES"); //$NON-NLS-1$
