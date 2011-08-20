@@ -492,7 +492,8 @@ public class MEncoderVideo extends Player {
 		builder.add(defaultaudiosubs, cc.xyw(3, 29, 8));
 
 		builder.addLabel(Messages.getString("MEncoderVideo.11"), cc.xy(1, 31)); //$NON-NLS-1$
-		Object data[] = new Object[]{configuration.getMencoderSubCp(),
+		Object data[] = new Object[]{
+			configuration.getMencoderSubCp(),
 			"cp1250  /* Windows - Eastern Europe */", //$NON-NLS-1$
 			"cp1251  /* Windows - Cyrillic */", //$NON-NLS-1$
 			"cp1252  /* Windows - Western Europe */", //$NON-NLS-1$
@@ -520,7 +521,9 @@ public class MEncoderVideo extends Player {
 			"cp932   /* Japanese */", //$NON-NLS-1$
 			"cp936   /* Chinese */", //$NON-NLS-1$
 			"cp949   /* Korean */", //$NON-NLS-1$
-			"cp950   /* Big5, Taiwanese, Cantonese */"}; //$NON-NLS-1$
+			"cp950   /* Big5, Taiwanese, Cantonese */", //$NON-NLS-1$ 
+			"UTF-8   /* Unicode */ " //$NON-NLS-1$
+		};
 		MyComboBoxModel cbm = new MyComboBoxModel(data);
 
 		subcp = new JComboBox(cbm);
