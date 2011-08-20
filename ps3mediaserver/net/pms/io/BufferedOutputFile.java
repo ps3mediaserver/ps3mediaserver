@@ -86,17 +86,22 @@ public class BufferedOutputFile extends OutputStream {
 	 * provided new size is considered to be a request, it is scaled down when an
 	 * OutOfMemory error occurs. There is no guarantee about the exact length of the
 	 * returned byte array, only that it is greater than or equal to the original buffer
-	 * size.
+	 * size. When null is passed as an argument, a fresh buffer will be allocated.
 	 * Copying one byte array to another is a costly operation, both in memory usage
 	 * and performance. It is best to avoid using this method.
 	 * 
-	 * @param buffer The byte array to resize.
+	 * @param buffer The byte array to resize, null is allowed.
 	 * @param newSize The requested final size. Should be greater than the original size
 	 * or the original buffer will be returned. 
 	 * @return The resized byte array.
 	 */
 	private byte[] growBuffer(byte[] buffer, int newSize) {
 		byte[] copy;
+		
+		if (buffer == null) {
+			// Temporary empty array to avoid null tests in the code below
+			buffer = new byte[0];
+		}
 		
 		if (newSize <= buffer.length) {
 			// Cannot shrink the original
@@ -112,7 +117,10 @@ public class BufferedOutputFile extends OutputStream {
 			// Could not allocate the requested new size, use 30% of free memory instead.
 			// Rationale behind using 30%: multiple threads are running at the same time,
 			// we do not want one threads memory usage to suffocate the others.
-			int realisticSize = new Long(Runtime.getRuntime().freeMemory() * 3 / 10).intValue();
+			// Using maxMemory() to ignore the initial Java heap space size that freeMemory()
+			// takes into account.
+			// See http://javarevisited.blogspot.com/2011/05/java-heap-space-memory-size-jvm.html
+			int realisticSize = new Long(Runtime.getRuntime().maxMemory() * 3 / 10).intValue();
 			
 			if (realisticSize < buffer.length) {
 				// A copy would be smaller in size, shrinking instead of growing the buffer.
@@ -123,10 +131,11 @@ public class BufferedOutputFile extends OutputStream {
 					// Try to allocate the realistic alternative size
 					copy = new byte[realisticSize];
 				} catch (OutOfMemoryError e2) {
-					logger.debug("Cannot grow buffer size from " + buffer.length + " bytes to " + realisticSize + " bytes either."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					logger.trace("freeMemory: " + Runtime.getRuntime().freeMemory()); //$NON-NLS-1$
-					logger.trace("totalMemory: " + Runtime.getRuntime().totalMemory()); //$NON-NLS-1$
-					logger.trace("maxMemory: " + Runtime.getRuntime().maxMemory()); //$NON-NLS-1$
+					logger.debug("Cannot grow buffer size from " + formatter.format(buffer.length) + " bytes to " //$NON-NLS-1$ //$NON-NLS-2$
+							+ formatter.format(realisticSize) + " bytes either."); //$NON-NLS-1$
+					logger.trace("freeMemory: " + formatter.format(Runtime.getRuntime().freeMemory())); //$NON-NLS-1$
+					logger.trace("totalMemory: " + formatter.format(Runtime.getRuntime().totalMemory())); //$NON-NLS-1$
+					logger.trace("maxMemory: " + formatter.format(Runtime.getRuntime().maxMemory())); //$NON-NLS-1$
 
 					// Cannot allocate memory, no other option than to return the original.
 					return buffer;
@@ -134,11 +143,16 @@ public class BufferedOutputFile extends OutputStream {
 			}
 		}
 
-		try {
-			System.arraycopy(buffer, 0, copy, 0, buffer.length);
-			logger.trace("Successfully grown buffer from " + buffer.length + " bytes to " + copy.length + " bytes."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		} catch (NullPointerException npe) {
-			logger.trace("Cannot grow buffer size, error copying buffer contents."); //$NON-NLS-1$
+		if (buffer.length == 0) {
+			logger.trace("Successfully initialized buffer to " + formatter.format(copy.length) + " bytes."); //$NON-NLS-1$ //$NON-NLS-2$
+		} else {
+			try {
+				System.arraycopy(buffer, 0, copy, 0, buffer.length);
+				logger.trace("Successfully grown buffer from " + formatter.format(buffer.length) + " bytes to " //$NON-NLS-1$ //$NON-NLS-2$
+						+ formatter.format(copy.length) + " bytes.");  //$NON-NLS-1$
+			} catch (NullPointerException npe) {
+				logger.trace("Cannot grow buffer size, error copying buffer contents."); //$NON-NLS-1$
+			}
 		}
 
 		return copy;
@@ -155,26 +169,10 @@ public class BufferedOutputFile extends OutputStream {
 		this.minMemorySize = (int) (1048576 * params.minBufferSize);
 		this.maxMemorySize = (int) (1048576 * params.maxBufferSize);
 
-		// Sanity check for memory allocations: determine 30% of free memory
-		// Rationale behind using 30%: multiple threads are running at the same time,
-		// we do not want one threads memory usage to suffocate the others.
-		int realisticMemorySize = new Long(Runtime.getRuntime().freeMemory() * 3 / 10).intValue();
-		
-		if (realisticMemorySize < INITIAL_BUFFER_SIZE) {
-			// FIXME: The rest of the code expects maxMemorySize > TEMP_SIZE, plus TEMP_SIZE is
-			// used as a marker value. We'll have to rewrite that code some day, but for now assign
-			// some random value that respects the current code.
-			logger.debug("Should allocate " + realisticMemorySize + " bytes realistically, forcing allocation of " //$NON-NLS-1$ //$NON-NLS-2$
-					+ (INITIAL_BUFFER_SIZE + BUFFER_INCREMENT) + " bytes instead."); //$NON-NLS-1$
-			realisticMemorySize = INITIAL_BUFFER_SIZE + BUFFER_INCREMENT;
-		}
-		
-		if (maxMemorySize > realisticMemorySize) {
-			logger.debug("Not enough memory to allocate " + maxMemorySize + " bytes, using " + realisticMemorySize + " bytes instead."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
-			// Not enough memory free, make due with what is available
-			maxMemorySize = realisticMemorySize;
-			minMemorySize = realisticMemorySize / 2;
+		// Enforce the minimum transcoding buffer size
+		if (maxMemorySize < INITIAL_BUFFER_SIZE) {
+			maxMemorySize = INITIAL_BUFFER_SIZE;
+			minMemorySize = INITIAL_BUFFER_SIZE / 2;
 		}
 
 		// FIXME: Better to relate margin directly to maxMemorySize instead of using arbitrary fixed values
@@ -192,15 +190,19 @@ public class BufferedOutputFile extends OutputStream {
 		this.timeseek = params.timeseek;
 		this.timeend = params.timeend;
 		this.shiftScr = params.shift_scr;
-		try {
-			buffer = new byte[this.maxMemorySize < INITIAL_BUFFER_SIZE ? this.maxMemorySize : INITIAL_BUFFER_SIZE];
-		} catch (OutOfMemoryError ooe) {
+
+		// Allocate the buffer
+		buffer = growBuffer(null, maxMemorySize);
+
+		if (buffer.length == 0) {
+			// Cannot transcode without a buffer
 			logger.info("FATAL ERROR: OutOfMemory / dumping stats");
 			logger.trace("freeMemory: " + Runtime.getRuntime().freeMemory());
 			logger.trace("totalMemory: " + Runtime.getRuntime().totalMemory());
 			logger.trace("maxMemory: " + Runtime.getRuntime().maxMemory());
-			System.exit(1);
+			System.exit(1);			
 		}
+		
 		inputStreams = new ArrayList<WaitBufferedInputStream>();
 		timer = new Timer();
 		if (params.maxBufferSize > 15 && !params.hidebuffer) {
