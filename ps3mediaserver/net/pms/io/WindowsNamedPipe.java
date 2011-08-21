@@ -116,7 +116,7 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 						BUFSIZE, BUFSIZE, 0, null);
 				}
 				if (params != null) {
-					directBuffer = new BufferedOutputFile(params);
+					directBuffer = new BufferedOutputFileImpl(params);
 				} else {
 					writable = new PipedOutputStream();
 					readable = new PipedInputStream((PipedOutputStream) writable, BUFSIZE);
