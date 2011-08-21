@@ -1,6 +1,5 @@
 package net.pms.dlna;
 
-import java.awt.Component;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,11 +10,6 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
 
