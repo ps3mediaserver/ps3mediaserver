@@ -986,6 +986,12 @@ public class PMS {
 		}
 	}
 
+	/**
+	 * Retrieves the {@link net.pms.configuration.PmsConfiguration PmsConfiguration} object
+	 * that contains all configured settings for PMS. The object provides getters for all
+	 * configurable PMS settings.
+	 * @return The configuration object
+	 */
 	public static PmsConfiguration getConfiguration() {
 		return configuration;
 	}

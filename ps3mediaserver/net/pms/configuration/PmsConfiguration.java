@@ -1,3 +1,21 @@
+/*
+ * PS3 Media Server, for streaming any medias to your PS3.
+ * Copyright (C) 2008  A.Brochard
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package net.pms.configuration;
 
 import java.awt.Color;
@@ -24,6 +42,13 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.jna.Platform;
 
+/**
+ * Container for all configurable PMS settings. Settings are typically defined by three things:
+ * a unique key for use in the configuration file "PMS.conf", a getter (and setter) method and
+ * a default value. When a key cannot be found in the current configuration, the getter will
+ * return a default value. Setters only store a value, they do not permanently save it to
+ * file.
+ */
 public class PmsConfiguration {
 	private static final Logger logger = LoggerFactory.getLogger(PmsConfiguration.class);
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
@@ -377,34 +402,70 @@ public class PmsConfiguration {
 		return programPaths.getFlacPath();
 	}
 
+	/**
+	 * If the framerate is not recognized correctly and the video runs too fast or too
+	 * slow, tsMuxeR can be forced to parse the fps from FFmpeg. Default value is true.
+	 * @return True if tsMuxeR should parse fps from FFmpeg.
+	 */
 	public boolean isTsmuxerForceFps() {
 		return configuration.getBoolean(KEY_TSMUXER_FORCEFPS, true);
 	}
 
+	/**
+	 * Force tsMuxeR to mux all audio tracks.
+	 * TODO: Remove this redundant code.
+	 * @return True
+	 */
 	public boolean isTsmuxerPreremuxAc3() {
 		return true;
 	}
 
+	/**
+	 * The AC3 audio bitrate determines the quality of digital audio sound. An AV-receiver
+	 * or amplifier has to be capable of playing this quality. Default value is 640.
+	 * @return The AC3 audio bitrate.
+	 */
 	public int getAudioBitrate() {
 		return getInt(KEY_AUDIO_BITRATE, 640);
 	}
 
+	/**
+	 * Force tsMuxeR to mux all audio tracks.
+	 * TODO: Remove this redundant code; getter always returns true.
+	 */
 	public void setTsmuxerPreremuxAc3(boolean value) {
 		configuration.setProperty(KEY_TSMUXER_PREREMIX_AC3, value);
 	}
 
+	/**
+	 * If the framerate is not recognized correctly and the video runs too fast or too
+	 * slow, tsMuxeR can be forced to parse the fps from FFmpeg.
+	 * @param value Set to true if tsMuxeR should parse fps from FFmpeg.
+	 */
 	public void setTsmuxerForceFps(boolean value) {
 		configuration.setProperty(KEY_TSMUXER_FORCEFPS, value);
 	}
 
+	/**
+	 * The server port where PMS listens for TCP/IP traffic. Default value is 5001.
+	 * @return The port number.
+	 */
 	public int getServerPort() {
 		return getInt(KEY_SERVER_PORT, DEFAULT_SERVER_PORT);
 	}
 
+	/**
+	 * Set the server port where PMS must listen for TCP/IP traffic.
+	 * @param value The TCP/IP port number.
+	 */
 	public void setServerPort(int value) {
 		configuration.setProperty(KEY_SERVER_PORT, value);
 	}
 
+	/**
+	 * The hostname of the server.
+	 * @return The hostname if it is defined, otherwise <code>null</code>.
+	 */
 	public String getServerHostname() {
 		String value = getString(KEY_SERVER_HOSTNAME, "");
 		if (StringUtils.isNotBlank(value)) {
@@ -414,14 +475,28 @@ public class PmsConfiguration {
 		}
 	}
 
+	/**
+	 * Set the hostname of the server.
+	 * @param value The hostname.
+	 */
 	public void setHostname(String value) {
 		configuration.setProperty(KEY_SERVER_HOSTNAME, value);
 	}
 
+	/**
+	 * The TCP/IP port number for a proxy server. Default value is -1.
+	 * TODO: Is this still used?
+	 * @return The proxy port number.
+	 */
 	public int getProxyServerPort() {
 		return getInt(KEY_PROXY_SERVER_PORT, DEFAULT_PROXY_SERVER_PORT);
 	}
 
+	/**
+	 * Get the code of the preferred language for the PMS user interface. Default
+	 * is based on the locale.
+	 * @return The ISO 639 language code.
+	 */
 	public String getLanguage() {
 		String def = Locale.getDefault().getLanguage();
 		if (def == null) {
@@ -431,6 +506,15 @@ public class PmsConfiguration {
 		return StringUtils.isNotBlank(value) ? value.trim() : def;
 	}
 
+	/**
+	 * Return the <code>int</code> value for a given configuration key. First, the key
+	 * is looked up in the current configuration settings. If it exists and contains a
+	 * valid value, that value is returned. If the key contains an invalid value or
+	 * cannot be found, the specified default value is returned.
+	 * @param key The key to look up.
+	 * @param def The default value to return when no valid key value can be found.
+	 * @return The value configured for the key.
+	 */
 	private int getInt(String key, int def) {
 		try {
 			return configuration.getInt(key, def);
@@ -439,6 +523,15 @@ public class PmsConfiguration {
 		}
 	}
 
+	/**
+	 * Return the <code>boolean</code> value for a given configuration key. First, the
+	 * key is looked up in the current configuration settings. If it exists and contains
+	 * a valid value, that value is returned. If the key contains an invalid value or
+	 * cannot be found, the specified default value is returned.
+	 * @param key The key to look up.
+	 * @param def The default value to return when no valid key value can be found.
+	 * @return The value configured for the key.
+	 */
 	private boolean getBoolean(String key, boolean def) {
 		try {
 			return configuration.getBoolean(key, def);
@@ -447,6 +540,15 @@ public class PmsConfiguration {
 		}
 	}
 
+	/**
+	 * Return the <code>String</code> value for a given configuration key. First, the
+	 * key is looked up in the current configuration settings. If it exists and contains
+	 * a valid value, that value is returned. If the key contains an invalid value or
+	 * cannot be found, the specified default value is returned.
+	 * @param key The key to look up.
+	 * @param def The default value to return when no valid key value can be found.
+	 * @return The value configured for the key.
+	 */
 	private String getString(String key, String def) {
 		String value = configuration.getString(key, def);
 		if (value != null) {
@@ -455,101 +557,207 @@ public class PmsConfiguration {
 		return value;
 	}
 
+	/**
+	 * Returns the preferred minimum size for the transcoding memory buffer in megabytes.
+	 * Default value is 12.
+	 * @return The minimum memory buffer size.
+	 */
 	public int getMinMemoryBufferSize() {
 		return getInt(KEY_MIN_MEMORY_BUFFER_SIZE, 12);
 	}
 
+	/**
+	 * Returns the preferred maximum size for the transcoding memory buffer in megabytes.
+	 * The value returned has a top limit of 600. Default value is 400.
+	 * @return The maximum memory buffer size.
+	 */
 	public int getMaxMemoryBufferSize() {
 		return Math.max(0, Math.min(MAX_MAX_MEMORY_BUFFER_SIZE, getInt(KEY_MAX_MEMORY_BUFFER_SIZE, 400)));
 	}
 
+	/**
+	 * Returns the top limit that can be set for the maximum memory buffer size.
+	 * @return The top limit.
+	 */
 	public String getMaxMemoryBufferSizeStr() {
 		return String.valueOf(MAX_MAX_MEMORY_BUFFER_SIZE);
 	}
 
+	/**
+	 * Set the preferred maximum for the transcoding memory buffer in megabytes. The top
+	 * limit for the value is 600.
+	 * @param value The maximum buffer size.
+	 */
 	public void setMaxMemoryBufferSize(int value) {
 		configuration.setProperty(KEY_MAX_MEMORY_BUFFER_SIZE, Math.max(0, Math.min(MAX_MAX_MEMORY_BUFFER_SIZE, value)));
 	}
 
+	/**
+	 * Returns the font scale used for ASS subtitling. Default value is 1.0.
+	 * @return The ASS font scale.
+	 */
 	public String getMencoderAssScale() {
 		return getString(KEY_MENCODER_ASS_SCALE, "1.0");
 	}
 
-	// https://code.google.com/p/ps3mediaserver/issues/detail?id=1092#c1
+	/**
+	 * Some versions of mencoder produce garbled audio because the "ac3" codec is used
+	 * instead of the "ac3_fixed" codec. Returns true if "ac3_fixed" should be used.
+	 * Default is false.
+	 * @see https://code.google.com/p/ps3mediaserver/issues/detail?id=1092#c1
+	 * @return True if "ac3_fixed" should be used. 
+	 */
 	public boolean isMencoderAc3Fixed() {
 		return configuration.getBoolean(KEY_MENCODER_AC3_FIXED, false);
 	}
 
+	/**
+	 * Returns the margin used for ASS subtitling. Default value is 10.
+	 * @return The ASS margin.
+	 */
 	public String getMencoderAssMargin() {
 		return getString(KEY_MENCODER_ASS_MARGIN, "10");
 	}
 
+	/**
+	 * Returns the outline parameter used for ASS subtitling. Default value is 1.
+	 * @return The ASS outline parameter.
+	 */
 	public String getMencoderAssOutline() {
 		return getString(KEY_MENCODER_ASS_OUTLINE, "1");
 	}
 
+	/**
+	 * Returns the shadow parameter used for ASS subtitling. Default value is 1.
+	 * @return The ASS shadow parameter.
+	 */
 	public String getMencoderAssShadow() {
 		return getString(KEY_MENCODER_ASS_SHADOW, "1");
 	}
 
+	/**
+	 * Returns the subfont text scale parameter used for subtitling without ASS.
+	 * Default value is 3.
+	 * @return The subfont text scale parameter.
+	 */
 	public String getMencoderNoAssScale() {
 		return getString(KEY_MENCODER_NOASS_SCALE, "3");
 	}
 
+	/**
+	 * Returns the subpos parameter used for subtitling without ASS.
+	 * Default value is 2.
+	 * @return The subpos parameter.
+	 */
 	public String getMencoderNoAssSubPos() {
 		return getString(KEY_MENCODER_NOASS_SUBPOS, "2");
 	}
 
+	/**
+	 * Returns the subfont blur parameter used for subtitling without ASS.
+	 * Default value is 1.
+	 * @return The subfont blur parameter.
+	 */
 	public String getMencoderNoAssBlur() {
 		return getString(KEY_MENCODER_NOASS_BLUR, "1");
 	}
 
+	/**
+	 * Returns the subfont outline parameter used for subtitling without ASS.
+	 * Default value is 1.
+	 * @return The subfont outline parameter.
+	 */
 	public String getMencoderNoAssOutline() {
 		return getString(KEY_MENCODER_NOASS_OUTLINE, "1");
 	}
 
+	/**
+	 * Set the subfont outline parameter used for subtitling without ASS.
+	 * @param value The subfont outline parameter value to set.
+	 */
 	public void setMencoderNoAssOutline(String value) {
 		configuration.setProperty(KEY_MENCODER_NOASS_OUTLINE, value);
 	}
 
-	// FIXME currently unused
+	/**
+	 * Some versions of mencoder produce garbled audio because the "ac3" codec is used
+	 * instead of the "ac3_fixed" codec.
+	 * @see https://code.google.com/p/ps3mediaserver/issues/detail?id=1092#c1
+	 * @param value Set to true if "ac3_fixed" should be used.
+	 */
 	public void setMencoderAc3Fixed(boolean value) {
 		configuration.setProperty(KEY_MENCODER_AC3_FIXED, value);
 	}
 
+	/**
+	 * Set the margin used for ASS subtitling.
+	 * @param value The ASS margin value to set.
+	 */
 	public void setMencoderAssMargin(String value) {
 		configuration.setProperty(KEY_MENCODER_ASS_MARGIN, value);
 	}
 
+	/**
+	 * Set the outline parameter used for ASS subtitling.
+	 * @param value The ASS outline parameter value to set.
+	 */
 	public void setMencoderAssOutline(String value) {
 		configuration.setProperty(KEY_MENCODER_ASS_OUTLINE, value);
 	}
 
+	/**
+	 * Set the shadow parameter used for ASS subtitling.
+	 * @param value The ASS shadow parameter value to set.
+	 */
 	public void setMencoderAssShadow(String value) {
 		configuration.setProperty(KEY_MENCODER_ASS_SHADOW, value);
 	}
 
+	/**
+	 * Set the font scale used for ASS subtitling.
+	 * @param value The ASS font scale value to set.
+	 */
 	public void setMencoderAssScale(String value) {
 		configuration.setProperty(KEY_MENCODER_ASS_SCALE, value);
 	}
 
+	/**
+	 * Set the subfont text scale parameter used for subtitling without ASS.
+	 * @param value The subfont text scale parameter value to set.
+	 */
 	public void setMencoderNoAssScale(String value) {
 		configuration.setProperty(KEY_MENCODER_NOASS_SCALE, value);
 	}
 
+	/**
+	 * Set the subfont blur parameter used for subtitling without ASS.
+	 * @param value The subfont blur parameter value to set.
+	 */
 	public void setMencoderNoAssBlur(String value) {
 		configuration.setProperty(KEY_MENCODER_NOASS_BLUR, value);
 	}
 
+	/**
+	 * Set the subpos parameter used for subtitling without ASS.
+	 * @param value The subpos parameter value to set.
+	 */
 	public void setMencoderNoAssSubPos(String value) {
 		configuration.setProperty(KEY_MENCODER_NOASS_SUBPOS, value);
 	}
 
-	// FIXME currently unused
+	/**
+	 * Set the maximum number of concurrent mencoder threads.
+	 * FIXME: Currently unused.
+	 * @param value The maximum number of concurrent threads.
+	 */
 	public void setMencoderMaxThreads(int value) {
 		configuration.setProperty(KEY_MENCODER_MAX_THREADS, value);
 	}
 
+	/**
+	 * Set the preferred language for the PMS user interface.
+	 * @param value The ISO 639 language code
+	 */
 	public void setLanguage(String value) {
 		configuration.setProperty(KEY_LANGUAGE, value);
 		Locale.setDefault(new Locale(getLanguage()));
@@ -563,6 +771,12 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_THUMBNAIL_SEEK_POS, value);
 	}
 
+	/**
+	 * Older versions of mencoder do not support ASS/SSA subtitles on all
+	 * platforms. Returns true if mencoder supports them. Default is true
+	 * on Windows, false otherwise.
+	 * @return True if mencoder supports ASS/SSA subtitles.
+	 */
 	public boolean isMencoderAss() {
 		return getBoolean(KEY_MENCODER_ASS, Platform.isWindows());
 	}
