@@ -1,6 +1,6 @@
 Changelog:
 ==========
-2011-??-?? - 1.31.0
+2011-??-?? - 1.40.0
 
 	Updated OS X MPlayer to enable external VOBsub, ASS/SSA and Fribidi support
 	allow update checks to be performed manually (Windows only)
