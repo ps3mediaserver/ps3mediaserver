@@ -13,7 +13,7 @@ public class Build {
 	 * Can be null/empty if not used. Not used if IS_UPDATABLE is set to false.
 	 */
 
-	private static final String UPDATE_SERVER_URL = REPO + "/update/update_1.properties"; //$NON-NLS-1$
+	private static final String UPDATE_SERVER_URL = REPO + "/update/update_2.properties"; //$NON-NLS-1$
 
 	// if false, manual and automatic update checks are unconditionally disabled
 	private static final boolean IS_UPDATABLE = true;

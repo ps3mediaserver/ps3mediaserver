@@ -3,16 +3,17 @@ Changelog:
 2011-??-?? - 1.40.0
 
 	Updated OS X MPlayer to enable external VOBsub, ASS/SSA and Fribidi support
-	allow update checks to be performed manually (Windows only)
-	allow automatic update checks to be enabled (Windows only)
-	simplify PMS customization for packagers of custom builds
-	logging fix for headless configurations
+	Allow update checks to be performed manually (Windows only)
+	Allow automatic update checks to be enabled (Windows only)
+	Simplify PMS customization for packagers of custom builds
+	Logging fix for headless configurations
 	Added experimental support for iPad / iPhone
 	Fixed DVD ISO playback on OS X (thanks, jjmojojjmojo!)
 	Added support for the AirPlayer app
 	Added support for Samsung TV model SEC_HHP_TV (thanks, coax-!)
 	Added Aperture support on OS X (thanks, coax-!)
 	Added thumbnail support for images (some code from http://www.rayinblu.com/ps3mediaserver)
+	The cache is now reset after each upgrade
 
 2011-07-06 - 1.30.1
 
