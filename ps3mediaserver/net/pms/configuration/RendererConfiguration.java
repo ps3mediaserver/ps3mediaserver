@@ -95,7 +95,14 @@ public class RendererConfiguration {
 
 	public void associateIP(InetAddress sa) {
 		currentRendererAddress = sa;
-		logger.info("Renderer " + this + " found on this address: " + sa);
+		String ip = currentRendererAddress.getHostAddress();
+		String hostname = currentRendererAddress.getCanonicalHostName();
+
+		if (!ip.equals(hostname)) {
+			logger.info("Renderer " + this + " found on this address: " + hostname + " (" + ip + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		} else {
+			logger.info("Renderer " + this + " found on this address: " + ip); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 
 		// let's get that speed
 		OutputParams op = new OutputParams(null);
@@ -509,7 +516,14 @@ public class RendererConfiguration {
 	public String getRendererNameWithAddress() {
 		String s = getString(RENDERER_NAME, Messages.getString("PMS.17"));
 		if (currentRendererAddress != null) {
-			s = s + " [" + currentRendererAddress.getHostAddress() + "]";
+			String ip = currentRendererAddress.getHostAddress();
+			String hostname = currentRendererAddress.getCanonicalHostName();
+
+			if (!ip.equals(hostname)) {
+				s = s + " [" + hostname + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+			} else {
+				s = s + " [" + ip + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+			}
 		}
 		if (speedInMbits > 0) {
 			s = "<html><p align=center>" + s + "<br><b>Speed: " + speedInMbits + " Mb/s</b></p></html>";
