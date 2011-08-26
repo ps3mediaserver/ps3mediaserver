@@ -111,7 +111,12 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			// Try to allocate the requested new size
 			copy = new byte[newSize];
 		} catch (OutOfMemoryError e) {
-			logger.debug("Cannot grow buffer size from " + buffer.length + " bytes to " + newSize + " bytes."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			if (buffer.length == 0) {
+				logger.trace("Cannot initialize buffer to " + formatter.format(newSize) + " bytes."); //$NON-NLS-1$ //$NON-NLS-2$
+			} else {
+				logger.debug("Cannot grow buffer size from " + formatter.format(buffer.length) + " bytes to " + formatter.format(newSize) + " bytes."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				
+			}
 
 			// Could not allocate the requested new size, use 30% of free memory instead.
 			// Rationale behind using 30%: multiple threads are running at the same time,
@@ -168,12 +173,6 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 		this.minMemorySize = (int) (1048576 * params.minBufferSize);
 		this.maxMemorySize = (int) (1048576 * params.maxBufferSize);
 
-		// Enforce the minimum transcoding buffer size
-		if (maxMemorySize < INITIAL_BUFFER_SIZE) {
-			maxMemorySize = INITIAL_BUFFER_SIZE;
-			minMemorySize = INITIAL_BUFFER_SIZE / 2;
-		}
-
 		// FIXME: Better to relate margin directly to maxMemorySize instead of using arbitrary fixed values
 
 		int margin = MARGIN_LARGE; // Issue 220: extends to 20Mb : readCount is wrongly set cause of the ps3's
@@ -190,8 +189,13 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 		this.timeend = params.timeend;
 		this.shiftScr = params.shift_scr;
 
-		// Allocate the buffer
-		buffer = growBuffer(null, maxMemorySize);
+		if (maxMemorySize > INITIAL_BUFFER_SIZE) {
+			// Try to limit memory usage a bit.
+			// Start with a modest allocation initially, grow to max when needed later.
+			buffer = growBuffer(null, INITIAL_BUFFER_SIZE);
+		} else {
+			buffer = growBuffer(null, maxMemorySize);
+		}
 
 		if (buffer.length == 0) {
 			// Cannot transcode without a buffer
