@@ -13,6 +13,8 @@
  */
 package net.pms.formats;
 
+import net.pms.PMS;
+
 public class M4A extends OGG {
 	@Override
 	public boolean transcodable() {
@@ -21,9 +23,7 @@ public class M4A extends OGG {
 
 	@Override
 	public String[] getId() {
-		return new String[]{
-				"wma", "m4a", "aac" //$NON-NLS-1$ //$NON-NLS-2$
-			};
+		return PMS.getConfiguration().getM4aFileExtensions();
 	}
 
 	@Override

@@ -15,7 +15,7 @@ import net.pms.io.ProcessWrapperImpl;
 public class RAW extends JPG {
 	@Override
 	public String[] getId() {
-		return new String[]{"arw", "cr2", "crw", "dng", "raf", "mrw", "nef", "pef", "srf", "orf"}; //$NON-NLS-1$
+		return PMS.getConfiguration().getRawFileExtensions();
 	}
 
 	@Override

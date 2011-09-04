@@ -169,6 +169,21 @@ public class PmsConfiguration {
 	private static final String KEY_HDAUDIO_PASSTHROUGH = "hdaudio_passthrough";
 	private static final String KEY_UPNP_PORT = "upnp_port";
 	private static final String UNLIMITED_BITRATE = "0";
+	private static final String DVRMS_FILE_EXTENSIONS = "dvrms_file_extensions";
+	private static final String FLAC_FILE_EXTENSIONS = "flac_file_extensions";
+	private static final String GIF_FILE_EXTENSIONS = "gif_file_extensions";
+	private static final String ISO_FILE_EXTENSIONS = "iso_file_extensions";
+	private static final String JPG_FILE_EXTENSIONS = "jpg_file_extensions";
+	private static final String M4A_FILE_EXTENSIONS = "m4a_file_extensions";
+	private static final String MKV_FILE_EXTENSIONS = "mkv_file_extensions";
+	private static final String MP3_FILE_EXTENSIONS = "mp3_file_extensions";
+	private static final String MPG_FILE_EXTENSIONS = "mpg_file_extensions";
+	private static final String OGG_FILE_EXTENSIONS = "ogg_file_extensions";
+	private static final String PNG_FILE_EXTENSIONS = "png_file_extensions";
+	private static final String RAW_FILE_EXTENSIONS = "raw_file_extensions";
+	private static final String TIF_FILE_EXTENSIONS = "tif_file_extensions";
+	private static final String WEB_FILE_EXTENSIONS = "web_file_extensions";
+	
 
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
 	// see Build for more details
@@ -1562,5 +1577,61 @@ public class PmsConfiguration {
 
 	public int getUpnpPort() {
 		return getInt(KEY_UPNP_PORT, 1900);
+	}
+	
+	public String[] getDvrmsFileExtensions(){
+		return configuration.getString(DVRMS_FILE_EXTENSIONS , "dvr-ms|dvr").split("\\|");
+	}
+	
+	public String[] getFlacFileExtensions(){
+		return configuration.getString(FLAC_FILE_EXTENSIONS , "flac|mlp|fla").split("\\|");
+	}
+	
+	public String[] getGifFileExtensions(){
+		return configuration.getString(GIF_FILE_EXTENSIONS , "gif").split("\\|");
+	}
+	
+	public String[] getIsoFileExtensions(){
+		return configuration.getString(ISO_FILE_EXTENSIONS , "iso|img").split("\\|");
+	}
+	
+	public String[] getJpgFileExtensions(){
+		return configuration.getString(JPG_FILE_EXTENSIONS , "jpeg|jpg|jpe").split("\\|");
+	}
+	
+	public String[] getM4aFileExtensions(){
+		return configuration.getString(M4A_FILE_EXTENSIONS , "wma|m4a|aac").split("\\|");
+	}
+	
+	public String[] getMkvFileExtensions(){
+		return configuration.getString(MKV_FILE_EXTENSIONS , "mkv|dv|ty|mov|ogm|ogv|hdmov|hdm|rmv|rmvb|rm|asf|evo|asx|flv|m2v|3gp|3g2").split("\\|");
+	}
+	
+	public String[] getMp3FileExtensions(){
+		return configuration.getString(MP3_FILE_EXTENSIONS , "mp3|wav").split("\\|");
+	}
+	
+	public String[] getMpgFileExtensions(){
+		return configuration.getString(MPG_FILE_EXTENSIONS , "mpg|mpeg|mpe|mod|tivo|ty|tmf|ts|tp|m2t|m2ts|m2p|mts|mp4|m4v|avi|wmv|wm|vob|divx|div|vdr").split("\\|");
+	}
+	
+	public String[] getOggFileExtensions(){
+		return configuration.getString(OGG_FILE_EXTENSIONS , "dts|mka|ape|ogg|shn|mpc|ra|mp2|wv|oma|aa3|at3|aif|aiff").split("\\|");
+	}
+	
+	public String[] getPngFileExtensions(){
+		return configuration.getString(PNG_FILE_EXTENSIONS , "png").split("\\|");
+	}
+	
+	public String[] getRawFileExtensions(){
+		return configuration.getString(RAW_FILE_EXTENSIONS , "arw|cr2|crw|dng|raf|mrw|nef|pef|srf|orf").split("\\|");
+	}
+	
+	public String[] getTifFileExtensions(){
+		return configuration.getString(TIF_FILE_EXTENSIONS , "tif|tiff").split("\\|");
+	}
+	
+	public String[] getWebFileExtensions(){
+		return configuration.getString(WEB_FILE_EXTENSIONS , "http|mms|rtsp|rtp|udp|screen").split("\\|");
 	}
 }
