@@ -20,6 +20,7 @@ package net.pms.formats;
 
 import java.util.ArrayList;
 
+import net.pms.PMS;
 import net.pms.encoders.Player;
 
 public class JPG extends Format {
@@ -29,7 +30,7 @@ public class JPG extends Format {
 
 	@Override
 	public String[] getId() {
-		return new String[]{"jpeg", "jpg", "jpe"}; //$NON-NLS-1$ //$NON-NLS-2$
+		return PMS.getConfiguration().getJpgFileExtensions();
 	}
 
 	@Override
