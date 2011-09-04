@@ -522,7 +522,7 @@ public class MEncoderVideo extends Player {
 			"cp936   /* Chinese */", //$NON-NLS-1$
 			"cp949   /* Korean */", //$NON-NLS-1$
 			"cp950   /* Big5, Taiwanese, Cantonese */", //$NON-NLS-1$ 
-			"UTF-8   /* Unicode */ " //$NON-NLS-1$
+			"UTF-8   /* Unicode */" //$NON-NLS-1$
 		};
 		MyComboBoxModel cbm = new MyComboBoxModel(data);
 
