@@ -26,6 +26,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -183,6 +184,7 @@ public class PmsConfiguration {
 	private static final String RAW_FILE_EXTENSIONS = "raw_file_extensions";
 	private static final String TIF_FILE_EXTENSIONS = "tif_file_extensions";
 	private static final String WEB_FILE_EXTENSIONS = "web_file_extensions";
+	private HashMap<String, String[]> fileExtensionsCache = new HashMap<String, String[]>();
 	
 
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
@@ -1580,58 +1582,100 @@ public class PmsConfiguration {
 	}
 	
 	public String[] getDvrmsFileExtensions(){
-		return configuration.getString(DVRMS_FILE_EXTENSIONS , "dvr-ms|dvr").split("\\|");
+		if(fileExtensionsCache.get(DVRMS_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(DVRMS_FILE_EXTENSIONS, configuration.getString(DVRMS_FILE_EXTENSIONS , "dvr-ms|dvr").split("\\|"));
+		}
+		return fileExtensionsCache.get(DVRMS_FILE_EXTENSIONS);
 	}
 	
 	public String[] getFlacFileExtensions(){
-		return configuration.getString(FLAC_FILE_EXTENSIONS , "flac|mlp|fla").split("\\|");
+		if(fileExtensionsCache.get(FLAC_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(FLAC_FILE_EXTENSIONS, configuration.getString(FLAC_FILE_EXTENSIONS , "flac|mlp|fla").split("\\|"));
+		}
+		return fileExtensionsCache.get(FLAC_FILE_EXTENSIONS);
 	}
 	
 	public String[] getGifFileExtensions(){
-		return configuration.getString(GIF_FILE_EXTENSIONS , "gif").split("\\|");
+		if(fileExtensionsCache.get(GIF_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(GIF_FILE_EXTENSIONS, configuration.getString(GIF_FILE_EXTENSIONS , "gif").split("\\|"));
+		}
+		return fileExtensionsCache.get(GIF_FILE_EXTENSIONS);
 	}
 	
 	public String[] getIsoFileExtensions(){
-		return configuration.getString(ISO_FILE_EXTENSIONS , "iso|img").split("\\|");
+		if(fileExtensionsCache.get(ISO_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(ISO_FILE_EXTENSIONS, configuration.getString(ISO_FILE_EXTENSIONS , "iso|img").split("\\|"));
+		}
+		return fileExtensionsCache.get(ISO_FILE_EXTENSIONS);
 	}
 	
 	public String[] getJpgFileExtensions(){
-		return configuration.getString(JPG_FILE_EXTENSIONS , "jpeg|jpg|jpe").split("\\|");
+		if(fileExtensionsCache.get(JPG_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(JPG_FILE_EXTENSIONS, configuration.getString(JPG_FILE_EXTENSIONS , "jpeg|jpg|jpe").split("\\|"));
+		}
+		return fileExtensionsCache.get(JPG_FILE_EXTENSIONS);
 	}
 	
 	public String[] getM4aFileExtensions(){
-		return configuration.getString(M4A_FILE_EXTENSIONS , "wma|m4a|aac").split("\\|");
+		if(fileExtensionsCache.get(M4A_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(M4A_FILE_EXTENSIONS, configuration.getString(M4A_FILE_EXTENSIONS , "wma|m4a|aac").split("\\|"));
+		}
+		return fileExtensionsCache.get(M4A_FILE_EXTENSIONS);
 	}
 	
 	public String[] getMkvFileExtensions(){
-		return configuration.getString(MKV_FILE_EXTENSIONS , "mkv|dv|ty|mov|ogm|ogv|hdmov|hdm|rmv|rmvb|rm|asf|evo|asx|flv|m2v|3gp|3g2").split("\\|");
+		if(fileExtensionsCache.get(MKV_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(MKV_FILE_EXTENSIONS, configuration.getString(MKV_FILE_EXTENSIONS , "mkv|dv|ty|mov|ogm|ogv|hdmov|hdm|rmv|rmvb|rm|asf|evo|asx|flv|m2v|3gp|3g2").split("\\|"));
+		}
+		return fileExtensionsCache.get(MKV_FILE_EXTENSIONS);
 	}
 	
 	public String[] getMp3FileExtensions(){
-		return configuration.getString(MP3_FILE_EXTENSIONS , "mp3|wav").split("\\|");
+		if(fileExtensionsCache.get(MP3_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(MP3_FILE_EXTENSIONS, configuration.getString(MP3_FILE_EXTENSIONS , "mp3|wav").split("\\|"));
+		}
+		return fileExtensionsCache.get(MP3_FILE_EXTENSIONS);
 	}
 	
 	public String[] getMpgFileExtensions(){
-		return configuration.getString(MPG_FILE_EXTENSIONS , "mpg|mpeg|mpe|mod|tivo|ty|tmf|ts|tp|m2t|m2ts|m2p|mts|mp4|m4v|avi|wmv|wm|vob|divx|div|vdr").split("\\|");
+		if(fileExtensionsCache.get(MPG_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(MPG_FILE_EXTENSIONS, configuration.getString(MPG_FILE_EXTENSIONS , "mpg|mpeg|mpe|mod|tivo|ty|tmf|ts|tp|m2t|m2ts|m2p|mts|mp4|m4v|avi|wmv|wm|vob|divx|div|vdr").split("\\|"));
+		}
+		return fileExtensionsCache.get(MPG_FILE_EXTENSIONS);
 	}
 	
 	public String[] getOggFileExtensions(){
-		return configuration.getString(OGG_FILE_EXTENSIONS , "dts|mka|ape|ogg|shn|mpc|ra|mp2|wv|oma|aa3|at3|aif|aiff").split("\\|");
+		if(fileExtensionsCache.get(OGG_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(OGG_FILE_EXTENSIONS, configuration.getString(OGG_FILE_EXTENSIONS , "dts|mka|ape|ogg|shn|mpc|ra|mp2|wv|oma|aa3|at3|aif|aiff").split("\\|"));
+		}
+		return fileExtensionsCache.get(OGG_FILE_EXTENSIONS);
 	}
 	
 	public String[] getPngFileExtensions(){
-		return configuration.getString(PNG_FILE_EXTENSIONS , "png").split("\\|");
+		if(fileExtensionsCache.get(PNG_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(PNG_FILE_EXTENSIONS, configuration.getString(PNG_FILE_EXTENSIONS , "png").split("\\|"));
+		}
+		return fileExtensionsCache.get(PNG_FILE_EXTENSIONS);
 	}
 	
 	public String[] getRawFileExtensions(){
-		return configuration.getString(RAW_FILE_EXTENSIONS , "arw|cr2|crw|dng|raf|mrw|nef|pef|srf|orf").split("\\|");
+		if(fileExtensionsCache.get(RAW_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(RAW_FILE_EXTENSIONS, configuration.getString(RAW_FILE_EXTENSIONS , "arw|cr2|crw|dng|raf|mrw|nef|pef|srf|orf").split("\\|"));
+		}
+		return fileExtensionsCache.get(RAW_FILE_EXTENSIONS);
 	}
 	
 	public String[] getTifFileExtensions(){
-		return configuration.getString(TIF_FILE_EXTENSIONS , "tif|tiff").split("\\|");
+		if(fileExtensionsCache.get(TIF_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(TIF_FILE_EXTENSIONS, configuration.getString(TIF_FILE_EXTENSIONS , "tif|tiff").split("\\|"));
+		}
+		return fileExtensionsCache.get(TIF_FILE_EXTENSIONS);
 	}
 	
 	public String[] getWebFileExtensions(){
-		return configuration.getString(WEB_FILE_EXTENSIONS , "http|mms|rtsp|rtp|udp|screen").split("\\|");
+		if(fileExtensionsCache.get(WEB_FILE_EXTENSIONS) == null) {
+			fileExtensionsCache.put(WEB_FILE_EXTENSIONS, configuration.getString(WEB_FILE_EXTENSIONS , "http|mms|rtsp|rtp|udp|screen").split("\\|"));
+		}
+		return fileExtensionsCache.get(WEB_FILE_EXTENSIONS);
 	}
 }
