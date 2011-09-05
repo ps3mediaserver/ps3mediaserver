@@ -15,6 +15,7 @@ Changelog:
 	Added thumbnail support for images (some code from http://www.rayinblu.com/ps3mediaserver)
 	The cache is now reset after each up- or downgrade (for versions higher than 1.40.0)
 	Files with the extension *.vdr are now being recognized as MPG videos
+	Made file extensions per format configurable (see http://tinyurl.com/3fctx5j)
 
 2011-07-06 - 1.30.1
 
