@@ -853,11 +853,19 @@ public class PMS {
 	 * @return {@link PMS}
 	 */
 	public static PMS get() {
-		assert instance != null;
+		// XXX when PMS is run as an application, the instance is initialized via the createInstance call in main().
+		// However, plugin tests may need access to a PMS instance without going
+		// to the trouble of launching the PMS application, so we provide a fallback
+		// initialization here. Either way, createInstance() should only be called once (see below)
+		if (instance == null) {
+			createInstance();
+		}
+
 		return instance;
 	}
 
-	private static void createInstance() {
+	private synchronized static void createInstance() {
+		assert instance == null; // this should only be called once
 		instance = new PMS();
 
 		try {
