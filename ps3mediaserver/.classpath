@@ -3,9 +3,9 @@
 	<classpathentry excluding="eclipse-classes/" including="net/|resources/" kind="src" path=""/>
 	<classpathentry kind="lib" path="lib/commons-logging-api-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/java-unrar-0.5.jar"/>
-	<classpathentry kind="lib" path="lib/jgoodies-common-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jgoodies-forms-1.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/jgoodies-looks-2.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/jgoodies-common-1.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/jgoodies-forms-1.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/jgoodies-looks-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/jna-3.2.5.jar"/>
 	<classpathentry kind="lib" path="lib/commons-configuration-1.6.jar" sourcepath="lib/commons-configuration-1.6-sources.zip"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar" sourcepath="lib/commons-lang-2.6-sources.zip"/>
@@ -16,20 +16,20 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/ps3mediaserver/lib/commons-lang-2.6-javadoc.zip!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/jaudiotagger-2.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/h2-1.1.105.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/logback-core-0.9.28.jar"/>
-	<classpathentry kind="lib" path="lib/logback-classic-0.9.28.jar"/>
+	<classpathentry kind="lib" path="lib/logback-core-0.9.29.jar"/>
+	<classpathentry kind="lib" path="lib/logback-classic-0.9.29.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/bsh-core-2.0b4.jar"/>
 	<classpathentry kind="lib" path="lib/jdom-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/rome-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/cuelib-1.2.1-2008-06-13.jar"/>
-	<classpathentry kind="lib" path="lib/netty-3.2.3.Final.jar" sourcepath="lib/netty-3.2.3.Final-sources.jar"/>
+	<classpathentry kind="lib" path="lib/netty-3.2.4.Final.jar" sourcepath="lib/netty-3.2.4.Final-sources.jar"/>
 	<classpathentry kind="lib" path="lib/mediautil-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/sanselan-0.97-incubator.jar"/>
-	<classpathentry kind="lib" path="lib/gson-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/gson-1.7.1.jar"/>
 	<classpathentry kind="output" path="eclipse-classes"/>
 </classpath>
