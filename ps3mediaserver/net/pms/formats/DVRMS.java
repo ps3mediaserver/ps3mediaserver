@@ -51,7 +51,7 @@ public class DVRMS extends Format {
 
 	@Override
 	public String[] getId() {
-		return PMS.getConfiguration().getDvrmsFileExtensions();
+		return new String[]{"dvr-ms", "dvr"}; //$NON-NLS-1$
 	}
 
 	@Override

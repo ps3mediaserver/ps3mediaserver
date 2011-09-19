@@ -18,12 +18,10 @@
  */
 package net.pms.formats;
 
-import net.pms.PMS;
-
 public class GIF extends JPG {
 	@Override
 	public String[] getId() {
-		return PMS.getConfiguration().getGifFileExtensions();
+		return new String[]{"gif"}; //$NON-NLS-1$
 	}
 
 	@Override
