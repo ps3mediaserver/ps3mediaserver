@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */package net.pms.formats;
 
-import net.pms.PMS;
-
 public class FLAC extends OGG {
 	public FLAC() {
 		type = AUDIO;
@@ -27,6 +25,6 @@ public class FLAC extends OGG {
 
 	@Override
 	public String[] getId() {
-		return PMS.getConfiguration().getFlacFileExtensions();
+		return new String[]{"flac", "mlp", "fla"}; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

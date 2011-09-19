@@ -18,12 +18,10 @@
  */
 package net.pms.formats;
 
-import net.pms.PMS;
-
 public class PNG extends JPG {
 	@Override
 	public String[] getId() {
-		return PMS.getConfiguration().getPngFileExtensions();
+		return new String[]{"png"}; //$NON-NLS-1$
 	}
 
 	@Override
