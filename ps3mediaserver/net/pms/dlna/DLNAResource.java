@@ -48,6 +48,7 @@ import net.pms.external.StartStopListener;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
+import net.pms.io.SizeLimitInputStream;
 import net.pms.network.HTTPResource;
 import net.pms.util.FileUtil;
 import net.pms.util.ImagesUtil;
@@ -960,6 +961,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						} else {
 							dlnaspec = "DLNA.ORG_PN=" + getMPEG_PS_PALLocalizedValue(c);
 						}
+					} else if (mime.equals("video/vnd.dlna.mpeg-tts")) {
+						// patters - on Sony BDP m2ts clips aren't listed without this
+						dlnaspec = "DLNA.ORG_PN=" + getMPEG_TS_SD_EULocalizedValue(c);
 					} else if (mime.equals("image/jpeg")) {
 						dlnaspec = "DLNA.ORG_PN=JPEG_LRG";
 					} else if (mime.equals("audio/mpeg")) {
@@ -1070,7 +1074,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		if (!isFolder() && (ext == null || (ext != null && thumbURL != null))) {
 			openTag(sb, "upnp:albumArtURI");
 			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
-			if (getThumbnailContentType().equals(PNG_TYPEMIME) && !mediaRenderer.isBRAVIA()) {
+
+			if (getThumbnailContentType().equals(PNG_TYPEMIME) && !mediaRenderer.isForceJPGThumbnails()) {
 				addAttribute(sb, "dlna:profileID", "PNG_TN");
 			} else {
 				addAttribute(sb, "dlna:profileID", "JPEG_TN");
@@ -1080,9 +1085,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			closeTag(sb, "upnp:albumArtURI");
 		}
 
-		if ((isFolder() || mediaRenderer.isBRAVIA()) && thumbURL != null) {
+		if ((isFolder() || mediaRenderer.isForceJPGThumbnails()) && thumbURL != null) {
 			openTag(sb, "res");
-			if (getThumbnailContentType().equals(PNG_TYPEMIME) && !mediaRenderer.isBRAVIA()) {
+
+			if (getThumbnailContentType().equals(PNG_TYPEMIME) && !mediaRenderer.isForceJPGThumbnails()) {
 				addAttribute(sb, "protocolInfo", "http-get:*:image/png:DLNA.ORG_PN=PNG_TN");
 			} else {
 				addAttribute(sb, "protocolInfo", "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_TN");
@@ -1277,6 +1283,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				if (low > 0 && fis != null) {
 					fis.skip(low);
 				}
+
+				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=12035
+				if (high > low && fis != null) {
+					long bytes = (high - (low < 0 ? 0 : low)) + 1;
+					
+					PMS.debug("Using size-limiting stream (" + bytes + " bytes)");
+					SizeLimitInputStream slis = new SizeLimitInputStream(fis, bytes);
+					return slis;
+				}
+
 				return fis;
 			}
 
@@ -1294,6 +1310,15 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			if (low > 0 && fis != null) {
 				fis.skip(low);
 			}
+
+			// http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=12035
+			if (high > low && fis != null) {
+				long bytes = (high - (low < 0 ? 0 : low)) + 1;
+				
+				PMS.debug("Using size-limiting stream (" + bytes + " bytes)");
+				fis = new SizeLimitInputStream(fis, bytes);
+			}
+			
 			if (timeseek != 0 && this instanceof RealFile) {
 				fis.skip(MpegUtil.getPossitionForTimeInMpeg(((RealFile) this).getFile(), (int) timeseek));
 			}
