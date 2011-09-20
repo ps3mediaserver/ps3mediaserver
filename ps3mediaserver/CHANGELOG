@@ -17,6 +17,7 @@ Changelog:
 	Files with the extension *.vdr are now recognized as MPG videos
 	Added support for JPEG Multi-Picture Format (.mpo) files
 	Added support for chunking renderers like Sony Bluray (thanks, infidel, WorldOfHurt and patters!)
+	Updated Italian translation (thanks, nocciola82!)
 
 2011-07-06 - 1.30.1
 
