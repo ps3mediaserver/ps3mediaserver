@@ -29,7 +29,7 @@ public class JPG extends Format {
 
 	@Override
 	public String[] getId() {
-		return new String[]{"jpeg", "jpg", "jpe"}; //$NON-NLS-1$ //$NON-NLS-2$
+		return new String[]{"jpeg", "jpg", "jpe", "mpo"}; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	@Override
