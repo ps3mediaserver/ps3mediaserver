@@ -125,7 +125,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 					if (!nums.startsWith("-") && !nums.endsWith("-")) {
 						request.setHighRange(Long.parseLong(st.nextToken()));
 					} else {
-						request.setHighRange(DLNAMediaInfo.TRANS_SIZE);
+						request.setHighRange(-1);
 					}
 				} else if (headerLine.toLowerCase().indexOf("transfermode.dlna.org:") > -1) {
 					request.setTransferMode(headerLine.substring(headerLine.toLowerCase().indexOf("transfermode.dlna.org:") + 22).trim());
@@ -203,7 +203,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 
 		// Build the response object.
 		HttpResponse response = null;
-		if (request.getLowRange() > 0 || request.getHighRange() > 0) {
+		if (request.getLowRange() != 0 || request.getHighRange() != 0) {
 			response = new DefaultHttpResponse(
 				/*request.isHttp10() ? HttpVersion.HTTP_1_0
 				: */HttpVersion.HTTP_1_1,

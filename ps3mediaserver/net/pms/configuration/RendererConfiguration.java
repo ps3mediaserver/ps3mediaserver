@@ -285,7 +285,11 @@ public class RendererConfiguration {
 	private static final String SUPPORTED = "Supported";
 	private static final String CUSTOM_MENCODER_QUALITYSETTINGS = "CustomMencoderQualitySettings";
 	private static final String DLNA_TREE_HACK = "CreateDLNATreeFaster";
+	private static final String CHUNKED_TRANSFER = "ChunkedTransfer";
 
+	// Sony devices require JPG thumbnails
+	private static final String FORCE_JPG_THUMBNAILS = "ForceJPGThumbnails";
+    	
 	// Ditlew
 	private static final String SHOW_DVD_TITLE_DURATION = "ShowDVDTitleDuration";
 	private static final String CBR_VIDEO_BITRATE = "CBRVideoBitrate";
@@ -689,8 +693,16 @@ public class RendererConfiguration {
 		return getBoolean(MEDIAPARSERV2_THUMB, false) && MediaInfoParser.isValid();
 	}
 
+	public boolean isForceJPGThumbnails() {
+		return (getBoolean(FORCE_JPG_THUMBNAILS, false) && MediaInfoParser.isValid()) || isBRAVIA();
+	}
+
 	public boolean isDLNATreeHack() {
 		
 		return getBoolean(DLNA_TREE_HACK, false) && MediaInfoParser.isValid();
+	}
+
+	public boolean isChunkedTransfer() {
+		return getBoolean(CHUNKED_TRANSFER, false);
 	}
 }

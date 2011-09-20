@@ -16,6 +16,7 @@ Changelog:
 	The cache is now reset after each upgrade/downgrade (for versions higher than 1.40.0)
 	Files with the extension *.vdr are now recognized as MPG videos
 	Added support for JPEG Multi-Picture Format (.mpo) files
+	Added support for chunking renderers like Sony Bluray (thanks, infidel, WorldOfHurt and patters!)
 
 2011-07-06 - 1.30.1
 

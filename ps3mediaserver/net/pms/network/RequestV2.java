@@ -232,7 +232,7 @@ public class RequestV2 extends HTTPResource {
 		final boolean close,
 		final StartStopListenerDelegate startStopListenerDelegate) throws IOException {
 		ChannelFuture future = null;
-		long CLoverride = -1;
+		long CLoverride = -2; // 0 and above are valid Content-Length values, -1 means omit
 		StringBuilder response = new StringBuilder();
 		DLNAResource dlna = null;
 		boolean xbox = mediaRenderer.isXBOX();
@@ -304,25 +304,53 @@ public class RequestV2 extends HTTPResource {
 
 					PMS.get().getFrame().setStatusLine("Serving " + name);
 
-					// Determine the total size and Content-Length override. Note: when transcoding the length is
+					// Response modes:
+					//   Default          - Content-Length refers to total media size.
+					//   Chunked          - Content-Length refers to chunk size.
+					// We use -1 for arithmetic convenience but don't send it as a value. 
+					// If Content-Length < 0 we omit it, for Content-Range we use '*' to signify unspecified.
+					
+					boolean chunked = mediaRenderer.isChunkedTransfer();
+					
+					// Determine the total size. Note: when transcoding the length is
 					// not known in advance, so DLNAMediaInfo.TRANS_SIZE will be returned instead.
-					CLoverride = files.get(0).length(mediaRenderer);
-					if (lowRange > 0 || highRange > 0) {
-						long totalsize = CLoverride;
-
-						if (highRange >= CLoverride) {
-							highRange = CLoverride - 1;
-						}
-
-						if (CLoverride == -1) {
-							// FIXME: Not sure this will ever happen because DLNAResources usually return a length > -1.
-							lowRange = 0;
-							totalsize = inputStream.available();
-							highRange = totalsize - 1;
-						}
-
-						output.setHeader(HttpHeaders.Names.CONTENT_RANGE, "bytes " + lowRange + "-" + highRange + "/" + totalsize);
+					
+					long totalsize = files.get(0).length(mediaRenderer);
+					
+					if (chunked && totalsize == DLNAMediaInfo.TRANS_SIZE) {
+						// In chunked mode we try to avoid arbitrary values.
+						totalsize = -1;
 					}
+
+					long available = inputStream.available();
+					
+					// Determine the current chunk's Content-Length
+					if (chunked) {
+						long requested = highRange - lowRange;
+						if (requested < 0) {
+							// In chunked mode when request is open-ended and totalsize is unknown
+							// we omit Content-Length.
+							CLoverride = (totalsize > 0 ? available : -1);
+						} else {
+							requested += (requested > 0 ? 1 : 0);
+							// In chunked mode Content-Length is never more than requested.
+							CLoverride = (available < requested ? available : requested);
+						}
+					} else {
+						CLoverride = available;
+					}
+
+					// Calculate the corresponding highRange (this is usually redundant).
+					highRange = lowRange + CLoverride - (CLoverride > 0 ? 1 : 0);
+
+					if (!chunked) {
+						CLoverride = totalsize;
+					}
+					
+					logger.trace((chunked ? "Using chunked response. " : "")  + "Available Content-Length: " + available);
+
+					output.setHeader(HttpHeaders.Names.CONTENT_RANGE, "bytes " + lowRange + "-" 
+						+ (highRange > -1 ? highRange : "*") + "/" + (totalsize > -1 ? totalsize : "*"));
 
 					if (contentFeatures != null) {
 						output.setHeader("ContentFeatures.DLNA.ORG", files.get(0).getDlnaContentFeatures());
@@ -632,15 +660,9 @@ public class RequestV2 extends HTTPResource {
 		} else if (inputStream != null) {
 			// There is an input stream to send as a response.
 
-			if (CLoverride > -1) {
-				// Content-Length override has been set, so use it.
-				if (lowRange > 0 && highRange > 0) {
-					// lowRange and highRange have been set, send a range of bytes.
-					// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.16 for details.
-					// FIXME: Don't send the default OK status, send PARTIAL_CONTENT instead. 
-					// output.setStatus(HttpResponseStatus.PARTIAL_CONTENT);
-					output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + (highRange - lowRange + 1));
-				} else if (CLoverride != DLNAMediaInfo.TRANS_SIZE) {
+			if (CLoverride > -2) {
+				// Content-Length override has been set, send or omit as appropriate
+				if (CLoverride > -1 && CLoverride != DLNAMediaInfo.TRANS_SIZE) {
 					// Since PS3 firmware 2.50, it is wiser not to send an arbitrary Content-Length,
 					// as the PS3 will display a network error and request the last seconds of the
 					// transcoded video. Better to send no Content-Length at all.
