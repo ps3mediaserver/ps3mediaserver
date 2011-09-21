@@ -1,6 +1,6 @@
 Changelog:
 ==========
-2011-??-?? - 1.40.0
+2011-09-22 - 1.40.0
 
 	Updated OS X MPlayer to enable external VOBsub, ASS/SSA and Fribidi support
 	Allow update checks to be performed manually (Windows only)
@@ -19,6 +19,14 @@ Changelog:
 	Added support for chunking renderers like Sony Bluray (thanks, infidel, WorldOfHurt and patters!)
 	Updated Italian translation (thanks, nocciola82!)
 	Fixed bug that would often limit streaming buffer to 50 MB.
+	Updated FFmpeg for Windows to r30656 from r30172
+	Updated French translation (thanks, danielha!)
+	Updated Russian translation (thanks, Tianuchka!)
+	Added support for regular ASS/SSA subtitles (before we only supported the more popular "advanced" kind)
+	Updated MediaInfo to 0.7.47 from 0.7.44
+	Updated JRE autodownload to 6u27 from 6u26
+	Removed IP/hostname from Status tab (still shown in Traces)
+	Updated libraries (codec, gson, jgoodies, logback and netty)
 
 2011-07-06 - 1.30.1
 
