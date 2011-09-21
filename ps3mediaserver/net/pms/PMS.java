@@ -794,42 +794,48 @@ public class PMS {
 	 */
 	public String usn() {
 		if (uuid == null) {
-			boolean uuidBasedOnMAC = false;
-			NetworkInterface ni = null;
-			try {
-				if (configuration.getServerHostname() != null && configuration.getServerHostname().length() > 0) {
-					try {
+			//retrieve UUID from configuration
+			uuid = getConfiguration().getUuid();
+
+			if (uuid == null) {
+				//create a new UUID based on the MAC address of the used network adapter
+				NetworkInterface ni = null;
+				try {
+					if (configuration.getServerHostname() != null && configuration.getServerHostname().length() > 0) {
 						ni = NetworkInterface.getByInetAddress(InetAddress.getByName(configuration.getServerHostname()));
-					} catch (Exception e) {
+					} else if (get().getServer().getNi() != null) {
+						ni = get().getServer().getNi();
 					}
-				} else if (get().getServer().getNi() != null) {
-					ni = get().getServer().getNi();
-				}
-				if (ni != null) {
-
-					byte[] addr = PMSUtil.getHardwareAddress(ni); // return null when java.net.preferIPv4Stack=true
-					if (addr != null) {
-						uuid = UUID.nameUUIDFromBytes(addr).toString();
-						uuidBasedOnMAC = true;
-					} else {
-						logger.info("Unable to retrieve MAC address for UUID creation: using a random one..."); //$NON-NLS-1$
+					
+					if (ni != null) {
+						byte[] addr = PMSUtil.getHardwareAddress(ni); // return null when java.net.preferIPv4Stack=true
+						if (addr != null) {
+							uuid = UUID.nameUUIDFromBytes(addr).toString();
+							logger.info(String.format("Generated new UUID based on the MAC address of the network adapter '%s'", ni.getDisplayName()));
+						}
 					}
+				} catch (Throwable e) {
+					//do nothing
 				}
-			} catch (Throwable e) {
-				logger.info("Switching to random UUID cause there's an error in getting UUID from MAC address: " + e.getMessage()); //$NON-NLS-1$
-			}
 
-			if (!uuidBasedOnMAC) {
-				if (ni != null && (ni.getDisplayName() != null || ni.getName() != null)) {
-					uuid = UUID.nameUUIDFromBytes((ni.getDisplayName() != null ? ni.getDisplayName() : (ni.getName() != null ? ni.getName() : "dummy")).getBytes()).toString(); //$NON-NLS-1$
-				} else {
+				//create random UUID if the generation by MAC address failed
+				if (uuid == null) {
 					uuid = UUID.randomUUID().toString();
+					logger.info("Generated new random UUID");
+				}
+
+				//save the newly generated UUID
+				getConfiguration().setUuid(uuid);
+				try {
+					getConfiguration().save();
+				} catch (ConfigurationException e) {
+					logger.error("Failed to save configuration with new UUID", e);
 				}
 			}
-			logger.info("Using the following UUID: " + uuid); //$NON-NLS-1$
+
+			logger.info("Using the following UUID configured in PMS.conf: " + uuid); //$NON-NLS-1$
 		}
-		return "uuid:" + uuid; //$NON-NLS-1$ //$NON-NLS-2$
-		//return "uuid:1234567890TOTO::";
+		return "uuid:" + uuid; //$NON-NLS-1$
 	}
 
 	/**Returns the user friendly name of the UPnP server. 

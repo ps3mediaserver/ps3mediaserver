@@ -169,6 +169,7 @@ public class PmsConfiguration {
 	private static final String KEY_HDAUDIO_PASSTHROUGH = "hdaudio_passthrough";
 	private static final String KEY_UPNP_PORT = "upnp_port";
 	private static final String UNLIMITED_BITRATE = "0";
+	private static final String KEY_UUID = "uuid";
 
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
 	// see Build for more details
@@ -1562,5 +1563,13 @@ public class PmsConfiguration {
 
 	public int getUpnpPort() {
 		return getInt(KEY_UPNP_PORT, 1900);
+	}
+
+	public String getUuid() {
+		return getString(KEY_UUID, null);
+	}
+	
+	public void setUuid(String value){
+		configuration.setProperty(KEY_UUID, value);
 	}
 }
