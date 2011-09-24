@@ -22,8 +22,8 @@ VIProductVersion "1.40.0.0"
  
 ; Definitions for Java 6.0
 !define JRE_VERSION "6.0"
-!define JRE_URL "http://download.oracle.com/otn-pub/java/jdk/6u27-b07/jre-6u27-windows-i586.exe"
-!define JRE64_URL "http://download.oracle.com/otn-pub/java/jdk/6u27-b07/jre-6u27-windows-x64.exe"
+!define JRE_URL "http://download.oracle.com/otn-pub/java/jdk/7/jre-7-windows-i586.exe"
+!define JRE64_URL "http://download.oracle.com/otn-pub/java/jdk/7/jre-7-windows-x64.exe"
  
 ; use javaw.exe to avoid dosbox.
 ; use java.exe to keep stdout/stderr
