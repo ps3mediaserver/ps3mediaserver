@@ -48,6 +48,7 @@ Section "Program Files"
   File "LICENSE.txt"
   File "logback.xml"
   File "icon.ico"
+  File "WEB.conf"
   
   ;Store install folder
   WriteRegStr HKCU "${REG_KEY_SOFTWARE}" "" $INSTDIR
@@ -70,8 +71,6 @@ Section "Program Files"
 
   ReadENVStr $R0 ALLUSERSPROFILE
   SetOutPath "$R0\PMS"
-  SetOverwrite off
-  File "WEB.conf"
   AccessControl::GrantOnFile "$R0\PMS" "(S-1-5-32-545)" "FullAccess"
 SectionEnd
  
