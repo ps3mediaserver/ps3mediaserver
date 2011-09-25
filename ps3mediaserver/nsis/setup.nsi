@@ -15,7 +15,7 @@ InstallDirRegKey HKCU "${REG_KEY_SOFTWARE}" ""
 
 SetCompressor /SOLID lzma
 SetCompressorDictSize 32
- 
+
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN "$INSTDIR\PMS.exe"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\win.bmp"
@@ -56,11 +56,15 @@ Section "Program Files"
   File "LICENSE.txt"
   File "logback.xml"
   File "icon.ico"
+
+  ;the user may have set the installation dir
+  ;as the profile dir, so we can't clobber this
+  SetOverwrite off
   File "WEB.conf"
-  
+
   ;Store install folder
   WriteRegStr HKCU "${REG_KEY_SOFTWARE}" "" $INSTDIR
- 
+
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninst.exe"
 
