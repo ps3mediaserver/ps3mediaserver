@@ -1,5 +1,9 @@
 Changelog:
 ==========
+2011-??-?? - 1.40.1
+
+	Updated OS X MPlayer to include fontconfig support
+
 2011-09-22 - 1.40.0
 
 	Updated OS X MPlayer to enable external VOBsub, ASS/SSA and Fribidi support
