@@ -1,4 +1,3 @@
-
 !include "MUI.nsh"
 !include "FileFunc.nsh"
 
@@ -21,6 +20,11 @@ SetCompressorDictSize 32
 !define MUI_FINISHPAGE_RUN "$INSTDIR\PMS.exe"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\win.bmp"
 
+!define MUI_FINISHPAGE_SHOWREADME ""
+!define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
+!define MUI_FINISHPAGE_SHOWREADME_TEXT "Create Desktop Shortcut"
+!define MUI_FINISHPAGE_SHOWREADME_FUNCTION CreateDesktopShortcut
+
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -30,6 +34,10 @@ SetCompressorDictSize 32
 !insertmacro MUI_LANGUAGE "English"
 
 ShowUninstDetails show
+
+Function CreateDesktopShortcut
+  CreateShortCut "$DESKTOP\PS3 Media Server.lnk" "$INSTDIR\pms.exe"
+FunctionEnd
 
 Section "Program Files"
   SetOutPath "$INSTDIR"
@@ -53,8 +61,8 @@ Section "Program Files"
   ;Store install folder
   WriteRegStr HKCU "${REG_KEY_SOFTWARE}" "" $INSTDIR
  
- ;Create uninstaller
- WriteUninstaller "$INSTDIR\Uninst.exe"
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninst.exe"
 
   WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayName" "PS3 Media Server"
   WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayIcon" "$INSTDIR\icon.ico"
@@ -73,18 +81,13 @@ Section "Program Files"
   SetOutPath "$R0\PMS"
   AccessControl::GrantOnFile "$R0\PMS" "(S-1-5-32-545)" "FullAccess"
 SectionEnd
- 
+
 Section "Start Menu Shortcuts"
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\PS3 Media Server"
   CreateShortCut "$SMPROGRAMS\PS3 Media Server\PS3 Media Server.lnk" "$INSTDIR\PMS.exe" "" "$INSTDIR\PMS.exe" 0
   CreateShortCut "$SMPROGRAMS\PS3 Media Server\PS3 Media Server (Select Profile).lnk" "$INSTDIR\PMS.exe" "profiles" "$INSTDIR\PMS.exe" 0
   CreateShortCut "$SMPROGRAMS\PS3 Media Server\Uninstall.lnk" "$INSTDIR\uninst.exe" "" "$INSTDIR\uninst.exe" 0
-SectionEnd
- 
-Section "Desktop shortcut"
-  SetShellVarContext all
-  CreateShortCut "$DESKTOP\PS3 Media Server.lnk" "$INSTDIR\pms.exe"
 SectionEnd
 
 Section "Uninstall"
@@ -114,7 +117,7 @@ Section "Uninstall"
   Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server\PS3 Media Server.lnk"
   Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server\PS3 Media Server (Select Profile).lnk"
   Delete /REBOOTOK "$SMPROGRAMS\PS3 Media Server\Uninstall.lnk"
- 
+
   DeleteRegKey HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}"
   DeleteRegKey HKCU "${REG_KEY_SOFTWARE}"
 
