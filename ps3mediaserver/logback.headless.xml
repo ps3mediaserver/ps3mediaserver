@@ -6,7 +6,7 @@
   <define name="debugLogPath" class="net.pms.logging.DebugLogPathDefiner" />
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <!-- only show event WARN and higher on the Console. -->
+    <!-- only show event WARN and higher on the console. -->
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>WARN</level>
     </filter>
@@ -17,7 +17,7 @@
   </appender>
 
   <appender name="debug.log" class="ch.qos.logback.core.FileAppender">
-    <!-- only show event DEBUG and higher on the Console. -->
+    <!-- only log event DEBUG and higher to the debug.log. -->
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>DEBUG</level>
     </filter>
@@ -34,7 +34,7 @@
   <!-- roll the debug.log file after 10 MBytes and will keep a maximum -->
   <!-- of 5 old and compressed logs. -->
   <appender name="debug.log.10MB" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <!-- only show event DEBUG and higher on the Console. -->
+    <!-- only log event DEBUG and higher to the rolling debug.log. -->
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>DEBUG</level>
     </filter>
