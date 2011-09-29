@@ -30,7 +30,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 
 public class TsMuxerAudio extends TSMuxerVideo {
-	public static final String ID = "tsmuxeraudio"; //$NON-NLS-1$
+	public static final String ID = "tsmuxeraudio";
 
 	public TsMuxerAudio(PmsConfiguration configuration) {
 		super(configuration);
@@ -64,7 +64,7 @@ public class TsMuxerAudio extends TSMuxerVideo {
 
 	@Override
 	public String name() {
-		return "Audio High Fidelity"; //$NON-NLS-1$
+		return "Audio High Fidelity";
 	}
 
 	@Override

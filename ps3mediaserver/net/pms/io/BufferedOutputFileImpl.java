@@ -112,9 +112,9 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			copy = new byte[newSize];
 		} catch (OutOfMemoryError e) {
 			if (buffer.length == 0) {
-				logger.trace("Cannot initialize buffer to " + formatter.format(newSize) + " bytes."); //$NON-NLS-1$ //$NON-NLS-2$
+				logger.trace("Cannot initialize buffer to " + formatter.format(newSize) + " bytes.");
 			} else {
-				logger.debug("Cannot grow buffer size from " + formatter.format(buffer.length) + " bytes to " + formatter.format(newSize) + " bytes."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				logger.debug("Cannot grow buffer size from " + formatter.format(buffer.length) + " bytes to " + formatter.format(newSize) + " bytes.");
 				
 			}
 
@@ -135,11 +135,11 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 					// Try to allocate the realistic alternative size
 					copy = new byte[realisticSize];
 				} catch (OutOfMemoryError e2) {
-					logger.debug("Cannot grow buffer size from " + formatter.format(buffer.length) + " bytes to " //$NON-NLS-1$ //$NON-NLS-2$
-							+ formatter.format(realisticSize) + " bytes either."); //$NON-NLS-1$
-					logger.trace("freeMemory: " + formatter.format(Runtime.getRuntime().freeMemory())); //$NON-NLS-1$
-					logger.trace("totalMemory: " + formatter.format(Runtime.getRuntime().totalMemory())); //$NON-NLS-1$
-					logger.trace("maxMemory: " + formatter.format(Runtime.getRuntime().maxMemory())); //$NON-NLS-1$
+					logger.debug("Cannot grow buffer size from " + formatter.format(buffer.length) + " bytes to "
+							+ formatter.format(realisticSize) + " bytes either.");
+					logger.trace("freeMemory: " + formatter.format(Runtime.getRuntime().freeMemory()));
+					logger.trace("totalMemory: " + formatter.format(Runtime.getRuntime().totalMemory()));
+					logger.trace("maxMemory: " + formatter.format(Runtime.getRuntime().maxMemory()));
 
 					// Cannot allocate memory, no other option than to return the original.
 					return buffer;
@@ -148,14 +148,14 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 		}
 
 		if (buffer.length == 0) {
-			logger.trace("Successfully initialized buffer to " + formatter.format(copy.length) + " bytes."); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.trace("Successfully initialized buffer to " + formatter.format(copy.length) + " bytes.");
 		} else {
 			try {
 				System.arraycopy(buffer, 0, copy, 0, buffer.length);
-				logger.trace("Successfully grown buffer from " + formatter.format(buffer.length) + " bytes to " //$NON-NLS-1$ //$NON-NLS-2$
-						+ formatter.format(copy.length) + " bytes.");  //$NON-NLS-1$
+				logger.trace("Successfully grown buffer from " + formatter.format(buffer.length) + " bytes to "
+						+ formatter.format(copy.length) + " bytes."); 
 			} catch (NullPointerException npe) {
-				logger.trace("Cannot grow buffer size, error copying buffer contents."); //$NON-NLS-1$
+				logger.trace("Cannot grow buffer size, error copying buffer contents.");
 			}
 		}
 

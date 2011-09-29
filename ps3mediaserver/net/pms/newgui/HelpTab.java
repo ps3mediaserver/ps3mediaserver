@@ -56,8 +56,8 @@ public class HelpTab {
 	 * @return The component containing the help tab and its contents
 	 */
 	public JComponent build() {
-		FormLayout layout = new FormLayout("left:pref, 0:grow", //$NON-NLS-1$
-			"pref, fill:default:grow"); //$NON-NLS-1$
+		FormLayout layout = new FormLayout("left:pref, 0:grow",
+			"pref, fill:default:grow");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 		CellConstraints cc = new CellConstraints();
@@ -68,7 +68,7 @@ public class HelpTab {
 
 		try {
 			// Read the HTML help file
-			File file = new File("documentation/index.html"); //$NON-NLS-1$
+			File file = new File("documentation/index.html");
 
 			// Display the HTML help file in the editor
 			editorPane.setPage(file.toURI().toURL());

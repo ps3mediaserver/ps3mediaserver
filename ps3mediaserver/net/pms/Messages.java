@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
  * on {@link ResourceBundle}.
  */
 public class Messages {
-	private static final String BUNDLE_NAME = "net.pms.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "net.pms.messages";
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 

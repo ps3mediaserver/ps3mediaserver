@@ -110,7 +110,7 @@ public class RootFolder extends DLNAResource {
 		for (DLNAResource r : getVirtualFolders()) {
 			addChild(r);
 		}
-		File webConf = new File(configuration.getProfileDirectory(), "WEB.conf"); //$NON-NLS-1$
+		File webConf = new File(configuration.getProfileDirectory(), "WEB.conf");
 		if (webConf.exists()) {
 			addWebFolder(webConf);
 		}
@@ -237,30 +237,30 @@ public class RootFolder extends DLNAResource {
 	private void addWebFolder(File webConf) {
 		if (webConf.exists()) {
 			try {
-				LineNumberReader br = new LineNumberReader(new InputStreamReader(new FileInputStream(webConf), "UTF-8")); //$NON-NLS-1$
+				LineNumberReader br = new LineNumberReader(new InputStreamReader(new FileInputStream(webConf), "UTF-8"));
 				String line = null;
 				while ((line = br.readLine()) != null) {
 					line = line.trim();
-					if (line.length() > 0 && !line.startsWith("#") && line.indexOf("=") > -1) { //$NON-NLS-1$ //$NON-NLS-2$
-						String key = line.substring(0, line.indexOf("=")); //$NON-NLS-1$
-						String value = line.substring(line.indexOf("=") + 1); //$NON-NLS-1$
+					if (line.length() > 0 && !line.startsWith("#") && line.indexOf("=") > -1) {
+						String key = line.substring(0, line.indexOf("="));
+						String value = line.substring(line.indexOf("=") + 1);
 						String keys[] = parseFeedKey(key);
 						try {
 							if (keys[0].equals("imagefeed")
 									|| keys[0].equals("audiofeed")
 									|| keys[0].equals("videofeed")
 									|| keys[0].equals("audiostream")
-									|| keys[0].equals("videostream")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+									|| keys[0].equals("videostream")) {
 								String values[] = parseFeedValue(value);
 								DLNAResource parent = null;
 								if (keys[1] != null) {
-									StringTokenizer st = new StringTokenizer(keys[1], ","); //$NON-NLS-1$
+									StringTokenizer st = new StringTokenizer(keys[1], ",");
 									DLNAResource currentRoot = this;
 									while (st.hasMoreTokens()) {
 										String folder = st.nextToken();
 										parent = currentRoot.searchByName(folder);
 										if (parent == null) {
-											parent = new VirtualFolder(folder, ""); //$NON-NLS-1$
+											parent = new VirtualFolder(folder, "");
 											currentRoot.addChild(parent);
 										}
 										currentRoot = parent;
@@ -269,28 +269,28 @@ public class RootFolder extends DLNAResource {
 								if (parent == null) {
 									parent = this;
 								}
-								if (keys[0].equals("imagefeed")) { //$NON-NLS-1$
+								if (keys[0].equals("imagefeed")) {
 									parent.addChild(new ImagesFeed(values[0]));
-								} else if (keys[0].equals("videofeed")) { //$NON-NLS-1$
+								} else if (keys[0].equals("videofeed")) {
 									parent.addChild(new VideosFeed(values[0]));
-								} else if (keys[0].equals("audiofeed")) { //$NON-NLS-1$
+								} else if (keys[0].equals("audiofeed")) {
 									parent.addChild(new AudiosFeed(values[0]));
-								} else if (keys[0].equals("audiostream")) { //$NON-NLS-1$
+								} else if (keys[0].equals("audiostream")) {
 									parent.addChild(new WebAudioStream(values[0], values[1], values[2]));
-								} else if (keys[0].equals("videostream")) { //$NON-NLS-1$
+								} else if (keys[0].equals("videostream")) {
 									parent.addChild(new WebVideoStream(values[0], values[1], values[2]));
 								}
 							}
 							// catch exception here and go with parsing
 						} catch (ArrayIndexOutOfBoundsException e) {
-							logger.info("Error at line " + br.getLineNumber() + " of WEB.conf: " + e.getMessage()); //$NON-NLS-1$
+							logger.info("Error at line " + br.getLineNumber() + " of WEB.conf: " + e.getMessage());
 						}
 					}
 				}
 				br.close();
 			} catch (Exception e) {
 				e.printStackTrace();
-				logger.info("Unexpected error in WEB.conf: " + e.getMessage()); //$NON-NLS-1$
+				logger.info("Unexpected error in WEB.conf: " + e.getMessage());
 			}
 		}
 	}
@@ -326,7 +326,7 @@ public class RootFolder extends DLNAResource {
 	 * @return Array of (String) that represents the tokenized entry.
 	 */
 	private String[] parseFeedValue(String spec) {
-		StringTokenizer st = new StringTokenizer(spec, ","); //$NON-NLS-1$
+		StringTokenizer st = new StringTokenizer(spec, ",");
 		String triple[] = new String[3];
 		int i = 0;
 		while (st.hasMoreTokens()) {
@@ -366,23 +366,23 @@ public class RootFolder extends DLNAResource {
 					iPhotoLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile(), System.getProperty("file.encoding"))); // loads the (nested) properties.
 					PhotoList = (HashMap<?, ?>) iPhotoLib.get("Master Image List"); // the list of photos
 					ListofRolls = (ArrayList<?>) iPhotoLib.get("List of Rolls"); // the list of events (rolls)
-					res = new VirtualFolder("iPhoto Library", null); //$NON-NLS-1$
+					res = new VirtualFolder("iPhoto Library", null);
 					for (Object item : ListofRolls) {
 						Roll = (HashMap<?, ?>) item;
-						VirtualFolder rf = new VirtualFolder(Roll.get("RollName").toString(), null); //$NON-NLS-1$
+						VirtualFolder rf = new VirtualFolder(Roll.get("RollName").toString(), null);
 						RollPhotos = (ArrayList<?>) Roll.get("KeyList"); // list of photos in an event (roll)
 						for (Object p : RollPhotos) {
 							Photo = (HashMap<?, ?>) PhotoList.get(p);
 							RealFile file = new RealFile(new File(Photo.get("ImagePath").toString()));
 							rf.addChild(file);
 						}
-						res.addChild(rf); //$NON-NLS-1$
+						res.addChild(rf);
 					}
 				} else {
 					logger.info("iPhoto folder not found !?");
 				}
 			} catch (Exception e) {
-				logger.error("Something went wrong with the iPhoto Library scan: ", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				logger.error("Something went wrong with the iPhoto Library scan: ", e);
 			}
 		}
 		return res;
@@ -404,7 +404,7 @@ public class RootFolder extends DLNAResource {
 				BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
 				// Every line entry is one aperture library, we want all of them as a dlna folder. 
 				String line = null;
-				res = new VirtualFolder("Aperture libraries", null); //$NON-NLS-1$ 
+				res = new VirtualFolder("Aperture libraries", null); 
 				
 				while ((line = in.readLine()) != null) {
 					if (line.startsWith("(") || line.startsWith(")")) {
@@ -421,7 +421,7 @@ public class RootFolder extends DLNAResource {
 				in.close();
 				
 			} catch (Exception e) {
-				logger.error("Something went wrong with the aperture library scan: ", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				logger.error("Something went wrong with the aperture library scan: ", e);
 			} finally {
 				// Avoid zombie processes, or open stream failures...
 				if (prc!=null) {
@@ -627,10 +627,10 @@ public class RootFolder extends DLNAResource {
 					iTunesLib = Plist.load(URLDecoder.decode(iTunesFile, System.getProperty("file.encoding"))); // loads the (nested) properties.
 					Tracks = (HashMap<?, ?>) iTunesLib.get("Tracks"); // the list of tracks
 					Playlists = (ArrayList<?>) iTunesLib.get("Playlists"); // the list of Playlists
-					res = new VirtualFolder("iTunes Library", null); //$NON-NLS-1$
+					res = new VirtualFolder("iTunes Library", null);
 					for (Object item : Playlists) {
 						Playlist = (HashMap<?, ?>) item;
-						VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(), null); //$NON-NLS-1$
+						VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(), null);
 						PlaylistTracks = (ArrayList<?>) Playlist.get("Playlist Items"); // list of tracks in a playlist
 						if (PlaylistTracks != null) {
 							for (Object t : PlaylistTracks) {
@@ -643,13 +643,13 @@ public class RootFolder extends DLNAResource {
 								}
 							}
 						}
-						res.addChild(pf); //$NON-NLS-1$
+						res.addChild(pf);
 					}
 				} else {
 					logger.info("Could not find the iTunes file");
 				}
 			} catch (Exception e) {
-				logger.error("Something went wrong with the iTunes Library scan: ", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				logger.error("Something went wrong with the iTunes Library scan: ", e);
 			}
 		}
 		return res;
@@ -663,11 +663,11 @@ public class RootFolder extends DLNAResource {
 	private DLNAResource getVideoSettingssFolder() {
 		DLNAResource res = null;
 		if (!configuration.getHideVideoSettings()) {
-			res = new VirtualFolder(Messages.getString("PMS.37"), null); //$NON-NLS-1$
-			VirtualFolder vfSub = new VirtualFolder(Messages.getString("PMS.8"), null); //$NON-NLS-1$
+			res = new VirtualFolder(Messages.getString("PMS.37"), null);
+			VirtualFolder vfSub = new VirtualFolder(Messages.getString("PMS.8"), null);
 			res.addChild(vfSub);
 
-			res.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) { //$NON-NLS-1$
+			res.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) {
 				@Override
 				public boolean enable() {
 					configuration.setMencoderNoOutOfSync(!configuration
@@ -676,7 +676,7 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
-			res.addChild(new VirtualVideoAction(Messages.getString("PMS.14"), configuration.isMencoderMuxWhenCompatible()) { //$NON-NLS-1$
+			res.addChild(new VirtualVideoAction(Messages.getString("PMS.14"), configuration.isMencoderMuxWhenCompatible()) {
 				@Override
 				public boolean enable() {
 					configuration.setMencoderMuxWhenCompatible(!configuration.isMencoderMuxWhenCompatible());
@@ -685,7 +685,7 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
-			res.addChild(new VirtualVideoAction("  !!-- Fix 23.976/25fps A/V Mismatch --!!", configuration.isFix25FPSAvMismatch()) { //$NON-NLS-1$
+			res.addChild(new VirtualVideoAction("  !!-- Fix 23.976/25fps A/V Mismatch --!!", configuration.isFix25FPSAvMismatch()) {
 				@Override
 				public boolean enable() {
 					configuration.setMencoderForceFps(!configuration.isFix25FPSAvMismatch());
@@ -694,7 +694,7 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
-			res.addChild(new VirtualVideoAction(Messages.getString("PMS.4"), configuration.isMencoderYadif()) { //$NON-NLS-1$
+			res.addChild(new VirtualVideoAction(Messages.getString("PMS.4"), configuration.isMencoderYadif()) {
 				@Override
 				public boolean enable() {
 					configuration.setMencoderYadif(!configuration.isMencoderYadif());
@@ -703,7 +703,7 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
-			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.10"), configuration.isMencoderDisableSubs()) { //$NON-NLS-1$
+			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.10"), configuration.isMencoderDisableSubs()) {
 				@Override
 				public boolean enable() {
 					boolean oldValue = configuration.isMencoderDisableSubs();
@@ -713,7 +713,7 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
-			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.6"), configuration.getUseSubtitles()) { //$NON-NLS-1$
+			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.6"), configuration.getUseSubtitles()) {
 				@Override
 				public boolean enable() {
 					boolean oldValue = configuration.getUseSubtitles();
@@ -723,7 +723,7 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
-			vfSub.addChild(new VirtualVideoAction(Messages.getString("MEncoderVideo.36"), configuration.isMencoderAssDefaultStyle()) { //$NON-NLS-1$
+			vfSub.addChild(new VirtualVideoAction(Messages.getString("MEncoderVideo.36"), configuration.isMencoderAssDefaultStyle()) {
 				@Override
 				public boolean enable() {
 					boolean oldValue = configuration.isMencoderAssDefaultStyle();
@@ -733,7 +733,7 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
-			res.addChild(new VirtualVideoAction(Messages.getString("PMS.7"), configuration.getSkipLoopFilterEnabled()) { //$NON-NLS-1$
+			res.addChild(new VirtualVideoAction(Messages.getString("PMS.7"), configuration.getSkipLoopFilterEnabled()) {
 				@Override
 				public boolean enable() {
 					configuration.setSkipLoopFilterEnabled(!configuration.getSkipLoopFilterEnabled());
@@ -741,7 +741,7 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
-			res.addChild(new VirtualVideoAction(Messages.getString("PMS.27"), true) { //$NON-NLS-1$
+			res.addChild(new VirtualVideoAction(Messages.getString("PMS.27"), true) {
 				@Override
 				public boolean enable() {
 					try {
@@ -752,7 +752,7 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
-			res.addChild(new VirtualVideoAction(Messages.getString("LooksFrame.12"), true) { //$NON-NLS-1$
+			res.addChild(new VirtualVideoAction(Messages.getString("LooksFrame.12"), true) {
 				@Override
 				public boolean enable() {
 					try {

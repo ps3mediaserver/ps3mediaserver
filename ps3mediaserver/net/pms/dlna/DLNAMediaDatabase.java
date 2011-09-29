@@ -28,12 +28,12 @@ public class DLNAMediaDatabase implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaDatabase.class);
 	private String url;
 	private String dir;
-	public static String NONAME = "###"; //$NON-NLS-1$
+	public static String NONAME = "###";
 	private Thread scanner;
 	private JdbcConnectionPool cp;
 
 	public DLNAMediaDatabase(String name) {
-		dir = "database"; //$NON-NLS-1$
+		dir = "database";
 		File fileDir = new File(dir);
 		boolean defaultLocation = fileDir.mkdir() || fileDir.exists();
 		if (defaultLocation) {
@@ -51,16 +51,16 @@ public class DLNAMediaDatabase implements Runnable {
 		}
 		if (Platform.isWindows() && !defaultLocation) {
 			String profileDir = PMS.getConfiguration().getProfileDirectory();
-			url = String.format("jdbc:h2:%s\\%s/%s", profileDir, dir, name); //$NON-NLS-1$
+			url = String.format("jdbc:h2:%s\\%s/%s", profileDir, dir, name);
 			fileDir = new File(profileDir, dir);
 		} else {
-			url = "jdbc:h2:" + dir + "/" + name; //$NON-NLS-1$ //$NON-NLS-2$
+			url = "jdbc:h2:" + dir + "/" + name;
 		}
-		logger.debug("Using database URL: " + url); //$NON-NLS-1$
-		logger.info("Using database located at: " + fileDir.getAbsolutePath()); //$NON-NLS-1$
+		logger.debug("Using database URL: " + url);
+		logger.info("Using database located at: " + fileDir.getAbsolutePath());
 
 		try {
-			Class.forName("org.h2.Driver"); //$NON-NLS-1$
+			Class.forName("org.h2.Driver");
 		} catch (ClassNotFoundException e) {
 			logger.error(null, e);
 		}
@@ -86,7 +86,7 @@ public class DLNAMediaDatabase implements Runnable {
 			conn = getConnection();
 
 			stmt = conn.createStatement();
-			rs = stmt.executeQuery("SELECT count(*) FROM FILES"); //$NON-NLS-1$
+			rs = stmt.executeQuery("SELECT count(*) FROM FILES");
 			if (rs.next()) {
 				count = rs.getInt(1);
 			}
@@ -94,12 +94,12 @@ public class DLNAMediaDatabase implements Runnable {
 			stmt.close();
 
 			stmt = conn.createStatement();
-			rs = stmt.executeQuery("SELECT VALUE FROM METADATA WHERE KEY = 'VERSION'"); //$NON-NLS-1$
+			rs = stmt.executeQuery("SELECT VALUE FROM METADATA WHERE KEY = 'VERSION'");
 			if (rs.next()) {
 				version = rs.getString(1);
 			}
 		} catch (SQLException se) {
-			logger.debug("Database not created or corrupted"); //$NON-NLS-1$
+			logger.debug("Database not created or corrupted");
 		} finally {
 			try {
 				if (rs != null) {
@@ -114,93 +114,93 @@ public class DLNAMediaDatabase implements Runnable {
 			} catch (SQLException e) {
 			}
 		}
-		boolean force_reinit = !PMS.VERSION.equals(version); // here we can force a deletion for a specific version //$NON-NLS-1$
+		boolean force_reinit = !PMS.VERSION.equals(version); // here we can force a deletion for a specific version
 		if (force || count == -1 || force_reinit) {
-			logger.debug("Database will be (re)initialized"); //$NON-NLS-1$
+			logger.debug("Database will be (re)initialized");
 //			if (force_reinit) {
 //				JOptionPane.showMessageDialog(
 //					(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-//					Messages.getString("DLNAMediaDatabase.0"), //$NON-NLS-1$
-//					"Information", //$NON-NLS-1$
+//					Messages.getString("DLNAMediaDatabase.0"),
+//					"Information",
 //					JOptionPane.INFORMATION_MESSAGE);
 //			}
 			try {
 				conn = getConnection();
-				executeUpdate(conn, "DROP TABLE FILES"); //$NON-NLS-1$
-				executeUpdate(conn, "DROP TABLE METADATA"); //$NON-NLS-1$
-				executeUpdate(conn, "DROP TABLE REGEXP_RULES"); //$NON-NLS-1$
-				executeUpdate(conn, "DROP TABLE AUDIOTRACKS"); //$NON-NLS-1$
-				executeUpdate(conn, "DROP TABLE SUBTRACKS"); //$NON-NLS-1$
+				executeUpdate(conn, "DROP TABLE FILES");
+				executeUpdate(conn, "DROP TABLE METADATA");
+				executeUpdate(conn, "DROP TABLE REGEXP_RULES");
+				executeUpdate(conn, "DROP TABLE AUDIOTRACKS");
+				executeUpdate(conn, "DROP TABLE SUBTRACKS");
 			} catch (SQLException se) {
 			}
 			try {
 				StringBuffer sb = new StringBuffer();
-				sb.append("CREATE TABLE FILES ("); //$NON-NLS-1$
-				sb.append("  ID                INT AUTO_INCREMENT"); //$NON-NLS-1$
-				sb.append(", FILENAME          VARCHAR2(1024)       NOT NULL"); //$NON-NLS-1$
-				sb.append(", MODIFIED          TIMESTAMP            NOT NULL"); //$NON-NLS-1$
-				sb.append(", TYPE              INT"); //$NON-NLS-1$
-				sb.append(", DURATION          VARCHAR2(30)"); //$NON-NLS-1$
-				sb.append(", BITRATE           INT"); //$NON-NLS-1$
-				sb.append(", WIDTH             INT"); //$NON-NLS-1$
-				sb.append(", HEIGHT            INT"); //$NON-NLS-1$
-				sb.append(", SIZE              NUMERIC"); //$NON-NLS-1$
-				sb.append(", CODECV            VARCHAR2(32)"); //$NON-NLS-1$
-				sb.append(", FRAMERATE         VARCHAR2(16)"); //$NON-NLS-1$
-				sb.append(", ASPECT            VARCHAR2(16)"); //$NON-NLS-1$
-				sb.append(", BITSPERPIXEL      INT"); //$NON-NLS-1$
-				sb.append(", THUMB             BINARY"); //$NON-NLS-1$
-				sb.append(", CONTAINER         VARCHAR2(32)"); //$NON-NLS-1$
-				sb.append(", MODEL             VARCHAR2(128)"); //$NON-NLS-1$
-				sb.append(", EXPOSURE          INT"); //$NON-NLS-1$
-				sb.append(", ORIENTATION       INT"); //$NON-NLS-1$
-				sb.append(", ISO               INT"); //$NON-NLS-1$
-				sb.append(", MUXINGMODE        VARCHAR2(32)"); //$NON-NLS-1$
-				sb.append(", constraint PK1 primary key (FILENAME, MODIFIED, ID))"); //$NON-NLS-1$
+				sb.append("CREATE TABLE FILES (");
+				sb.append("  ID                INT AUTO_INCREMENT");
+				sb.append(", FILENAME          VARCHAR2(1024)       NOT NULL");
+				sb.append(", MODIFIED          TIMESTAMP            NOT NULL");
+				sb.append(", TYPE              INT");
+				sb.append(", DURATION          VARCHAR2(30)");
+				sb.append(", BITRATE           INT");
+				sb.append(", WIDTH             INT");
+				sb.append(", HEIGHT            INT");
+				sb.append(", SIZE              NUMERIC");
+				sb.append(", CODECV            VARCHAR2(32)");
+				sb.append(", FRAMERATE         VARCHAR2(16)");
+				sb.append(", ASPECT            VARCHAR2(16)");
+				sb.append(", BITSPERPIXEL      INT");
+				sb.append(", THUMB             BINARY");
+				sb.append(", CONTAINER         VARCHAR2(32)");
+				sb.append(", MODEL             VARCHAR2(128)");
+				sb.append(", EXPOSURE          INT");
+				sb.append(", ORIENTATION       INT");
+				sb.append(", ISO               INT");
+				sb.append(", MUXINGMODE        VARCHAR2(32)");
+				sb.append(", constraint PK1 primary key (FILENAME, MODIFIED, ID))");
 				executeUpdate(conn, sb.toString());
 				sb = new StringBuffer();
-				sb.append("CREATE TABLE AUDIOTRACKS ("); //$NON-NLS-1$
-				sb.append("  FILEID            INT              NOT NULL"); //$NON-NLS-1$
-				sb.append(", ID                INT              NOT NULL"); //$NON-NLS-1$
-				sb.append(", LANG              VARCHAR2(3)"); //$NON-NLS-1$
-				sb.append(", NRAUDIOCHANNELS   NUMERIC"); //$NON-NLS-1$
-				sb.append(", SAMPLEFREQ        VARCHAR2(16)"); //$NON-NLS-1$
-				sb.append(", CODECA            VARCHAR2(32)"); //$NON-NLS-1$
-				sb.append(", BITSPERSAMPLE     INT"); //$NON-NLS-1$
-				sb.append(", ALBUM             VARCHAR2(255)"); //$NON-NLS-1$
-				sb.append(", ARTIST            VARCHAR2(255)"); //$NON-NLS-1$
-				sb.append(", SONGNAME          VARCHAR2(255)"); //$NON-NLS-1$
-				sb.append(", GENRE             VARCHAR2(64)"); //$NON-NLS-1$
-				sb.append(", YEAR              INT"); //$NON-NLS-1$
-				sb.append(", TRACK             INT"); //$NON-NLS-1$
-				sb.append(", DELAY             INT"); //$NON-NLS-1$
-				sb.append(", MUXINGMODE        VARCHAR2(32)"); //$NON-NLS-1$
-				sb.append(", constraint PKAUDIO primary key (FILEID, ID))"); //$NON-NLS-1$
+				sb.append("CREATE TABLE AUDIOTRACKS (");
+				sb.append("  FILEID            INT              NOT NULL");
+				sb.append(", ID                INT              NOT NULL");
+				sb.append(", LANG              VARCHAR2(3)");
+				sb.append(", NRAUDIOCHANNELS   NUMERIC");
+				sb.append(", SAMPLEFREQ        VARCHAR2(16)");
+				sb.append(", CODECA            VARCHAR2(32)");
+				sb.append(", BITSPERSAMPLE     INT");
+				sb.append(", ALBUM             VARCHAR2(255)");
+				sb.append(", ARTIST            VARCHAR2(255)");
+				sb.append(", SONGNAME          VARCHAR2(255)");
+				sb.append(", GENRE             VARCHAR2(64)");
+				sb.append(", YEAR              INT");
+				sb.append(", TRACK             INT");
+				sb.append(", DELAY             INT");
+				sb.append(", MUXINGMODE        VARCHAR2(32)");
+				sb.append(", constraint PKAUDIO primary key (FILEID, ID))");
 				executeUpdate(conn, sb.toString());
 				sb = new StringBuffer();
-				sb.append("CREATE TABLE SUBTRACKS ("); //$NON-NLS-1$
-				sb.append("  FILEID            INT              NOT NULL"); //$NON-NLS-1$
-				sb.append(", ID                INT              NOT NULL"); //$NON-NLS-1$
-				sb.append(", LANG              VARCHAR2(3)"); //$NON-NLS-1$
-				sb.append(", TYPE              INT"); //$NON-NLS-1$
-				sb.append(", constraint PKSUB primary key (FILEID, ID))"); //$NON-NLS-1$
+				sb.append("CREATE TABLE SUBTRACKS (");
+				sb.append("  FILEID            INT              NOT NULL");
+				sb.append(", ID                INT              NOT NULL");
+				sb.append(", LANG              VARCHAR2(3)");
+				sb.append(", TYPE              INT");
+				sb.append(", constraint PKSUB primary key (FILEID, ID))");
 
 				executeUpdate(conn, sb.toString());
-				executeUpdate(conn, "CREATE TABLE METADATA (KEY VARCHAR2(255) NOT NULL, VALUE VARCHAR2(255) NOT NULL)"); //$NON-NLS-1$
-				executeUpdate(conn, "INSERT INTO METADATA VALUES ('VERSION', '" + PMS.VERSION + "')"); //$NON-NLS-1$ //$NON-NLS-2$
-				executeUpdate(conn, "CREATE INDEX IDXARTIST on AUDIOTRACKS (ARTIST asc);"); //$NON-NLS-1$
-				executeUpdate(conn, "CREATE INDEX IDXALBUM on AUDIOTRACKS (ALBUM asc);"); //$NON-NLS-1$
-				executeUpdate(conn, "CREATE INDEX IDXGENRE on AUDIOTRACKS (GENRE asc);"); //$NON-NLS-1$
-				executeUpdate(conn, "CREATE INDEX IDXYEAR on AUDIOTRACKS (YEAR asc);"); //$NON-NLS-1$
-				executeUpdate(conn, "CREATE TABLE REGEXP_RULES ( ID VARCHAR2(255) PRIMARY KEY, RULE VARCHAR2(255), ORDR NUMERIC);"); //$NON-NLS-1$
-				executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '###', '(?i)^\\W.+', 0 );"); //$NON-NLS-1$
-				executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '0-9', '(?i)^\\d.+', 1 );"); //$NON-NLS-1$
+				executeUpdate(conn, "CREATE TABLE METADATA (KEY VARCHAR2(255) NOT NULL, VALUE VARCHAR2(255) NOT NULL)");
+				executeUpdate(conn, "INSERT INTO METADATA VALUES ('VERSION', '" + PMS.VERSION + "')");
+				executeUpdate(conn, "CREATE INDEX IDXARTIST on AUDIOTRACKS (ARTIST asc);");
+				executeUpdate(conn, "CREATE INDEX IDXALBUM on AUDIOTRACKS (ALBUM asc);");
+				executeUpdate(conn, "CREATE INDEX IDXGENRE on AUDIOTRACKS (GENRE asc);");
+				executeUpdate(conn, "CREATE INDEX IDXYEAR on AUDIOTRACKS (YEAR asc);");
+				executeUpdate(conn, "CREATE TABLE REGEXP_RULES ( ID VARCHAR2(255) PRIMARY KEY, RULE VARCHAR2(255), ORDR NUMERIC);");
+				executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '###', '(?i)^\\W.+', 0 );");
+				executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '0-9', '(?i)^\\d.+', 1 );");
 				for (int i = 65; i <= 90; i++) {
-					executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '" + ((char) i) + "', '(?i)^" + ((char) i) + ".+', " + (i - 63) + " );"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '" + ((char) i) + "', '(?i)^" + ((char) i) + ".+', " + (i - 63) + " );");
 				}
-				logger.debug("Database initialized"); //$NON-NLS-1$
+				logger.debug("Database initialized");
 			} catch (SQLException se) {
-				logger.info("Error in table creation: " + se.getMessage()); //$NON-NLS-1$
+				logger.info("Error in table creation: " + se.getMessage());
 			} finally {
 				if (conn != null) {
 					try {
@@ -210,8 +210,8 @@ public class DLNAMediaDatabase implements Runnable {
 				}
 			}
 		} else {
-			logger.debug("Database file count: " + count); //$NON-NLS-1$
-			logger.debug("Database version: " + version); //$NON-NLS-1$
+			logger.debug("Database file count: " + count);
+			logger.debug("Database version: " + version);
 		}
 	}
 
@@ -230,7 +230,7 @@ public class DLNAMediaDatabase implements Runnable {
 		PreparedStatement stmt = null;
 		try {
 			conn = getConnection();
-			stmt = conn.prepareStatement("SELECT * FROM FILES WHERE FILENAME = ? AND MODIFIED = ?"); //$NON-NLS-1$
+			stmt = conn.prepareStatement("SELECT * FROM FILES WHERE FILENAME = ? AND MODIFIED = ?");
 			stmt.setString(1, name);
 			stmt.setTimestamp(2, new Timestamp(modified));
 			rs = stmt.executeQuery();
@@ -264,65 +264,65 @@ public class DLNAMediaDatabase implements Runnable {
 		PreparedStatement stmt = null;
 		try {
 			conn = getConnection();
-			stmt = conn.prepareStatement("SELECT * FROM FILES WHERE FILENAME = ? AND MODIFIED = ?"); //$NON-NLS-1$
+			stmt = conn.prepareStatement("SELECT * FROM FILES WHERE FILENAME = ? AND MODIFIED = ?");
 			stmt.setString(1, name);
 			stmt.setTimestamp(2, new Timestamp(modified));
 			rs = stmt.executeQuery();
 			while (rs.next()) {
 				DLNAMediaInfo media = new DLNAMediaInfo();
 				int id = rs.getInt("ID");
-				media.duration = rs.getString("DURATION"); //$NON-NLS-1$
-				media.bitrate = rs.getInt("BITRATE"); //$NON-NLS-1$
-				media.width = rs.getInt("WIDTH"); //$NON-NLS-1$
-				media.height = rs.getInt("HEIGHT"); //$NON-NLS-1$
-				media.size = rs.getLong("SIZE"); //$NON-NLS-1$
-				media.codecV = rs.getString("CODECV"); //$NON-NLS-1$
-				media.frameRate = rs.getString("FRAMERATE"); //$NON-NLS-1$
-				media.aspect = rs.getString("ASPECT"); //$NON-NLS-1$
-				media.bitsPerPixel = rs.getInt("BITSPERPIXEL"); //$NON-NLS-1$
-				media.thumb = rs.getBytes("THUMB"); //$NON-NLS-1$
-				media.container = rs.getString("CONTAINER"); //$NON-NLS-1$
-				media.model = rs.getString("MODEL"); //$NON-NLS-1$
+				media.duration = rs.getString("DURATION");
+				media.bitrate = rs.getInt("BITRATE");
+				media.width = rs.getInt("WIDTH");
+				media.height = rs.getInt("HEIGHT");
+				media.size = rs.getLong("SIZE");
+				media.codecV = rs.getString("CODECV");
+				media.frameRate = rs.getString("FRAMERATE");
+				media.aspect = rs.getString("ASPECT");
+				media.bitsPerPixel = rs.getInt("BITSPERPIXEL");
+				media.thumb = rs.getBytes("THUMB");
+				media.container = rs.getString("CONTAINER");
+				media.model = rs.getString("MODEL");
 				if (media.model != null && !FormatConfiguration.JPG.equals(media.container)) {
 					media.setExtrasAsString(media.model);
 				}
-				media.exposure = rs.getInt("EXPOSURE"); //$NON-NLS-1$
-				media.orientation = rs.getInt("ORIENTATION"); //$NON-NLS-1$
-				media.iso = rs.getInt("ISO"); //$NON-NLS-1$
-				media.muxingMode = rs.getString("MUXINGMODE"); //$NON-NLS-1$
+				media.exposure = rs.getInt("EXPOSURE");
+				media.orientation = rs.getInt("ORIENTATION");
+				media.iso = rs.getInt("ISO");
+				media.muxingMode = rs.getString("MUXINGMODE");
 				media.mediaparsed = true;
-				PreparedStatement audios = conn.prepareStatement("SELECT * FROM AUDIOTRACKS WHERE FILEID = ?"); //$NON-NLS-1$
+				PreparedStatement audios = conn.prepareStatement("SELECT * FROM AUDIOTRACKS WHERE FILEID = ?");
 				audios.setInt(1, id);
 				ResultSet subrs = audios.executeQuery();
 				while (subrs.next()) {
 					DLNAMediaAudio audio = new DLNAMediaAudio();
-					audio.id = subrs.getInt("ID"); //$NON-NLS-1$
-					audio.lang = subrs.getString("LANG"); //$NON-NLS-1$
-					audio.nrAudioChannels = subrs.getInt("NRAUDIOCHANNELS"); //$NON-NLS-1$
-					audio.sampleFrequency = subrs.getString("SAMPLEFREQ"); //$NON-NLS-1$
-					audio.codecA = subrs.getString("CODECA"); //$NON-NLS-1$
-					audio.bitsperSample = subrs.getInt("BITSPERSAMPLE"); //$NON-NLS-1$
-					audio.album = subrs.getString("ALBUM"); //$NON-NLS-1$
-					audio.artist = subrs.getString("ARTIST"); //$NON-NLS-1$
-					audio.songname = subrs.getString("SONGNAME"); //$NON-NLS-1$
-					audio.genre = subrs.getString("GENRE"); //$NON-NLS-1$
-					audio.year = subrs.getInt("YEAR"); //$NON-NLS-1$
-					audio.track = subrs.getInt("TRACK"); //$NON-NLS-1$
-					audio.delay = subrs.getInt("DELAY"); //$NON-NLS-1$
-					audio.muxingModeAudio = subrs.getString("MUXINGMODE"); //$NON-NLS-1$
+					audio.id = subrs.getInt("ID");
+					audio.lang = subrs.getString("LANG");
+					audio.nrAudioChannels = subrs.getInt("NRAUDIOCHANNELS");
+					audio.sampleFrequency = subrs.getString("SAMPLEFREQ");
+					audio.codecA = subrs.getString("CODECA");
+					audio.bitsperSample = subrs.getInt("BITSPERSAMPLE");
+					audio.album = subrs.getString("ALBUM");
+					audio.artist = subrs.getString("ARTIST");
+					audio.songname = subrs.getString("SONGNAME");
+					audio.genre = subrs.getString("GENRE");
+					audio.year = subrs.getInt("YEAR");
+					audio.track = subrs.getInt("TRACK");
+					audio.delay = subrs.getInt("DELAY");
+					audio.muxingModeAudio = subrs.getString("MUXINGMODE");
 					media.audioCodes.add(audio);
 				}
 				subrs.close();
 				audios.close();
 
-				PreparedStatement subs = conn.prepareStatement("SELECT * FROM SUBTRACKS WHERE FILEID = ?"); //$NON-NLS-1$
+				PreparedStatement subs = conn.prepareStatement("SELECT * FROM SUBTRACKS WHERE FILEID = ?");
 				subs.setInt(1, id);
 				subrs = subs.executeQuery();
 				while (subrs.next()) {
 					DLNAMediaSubtitle sub = new DLNAMediaSubtitle();
-					sub.id = subrs.getInt("ID"); //$NON-NLS-1$
-					sub.lang = subrs.getString("LANG"); //$NON-NLS-1$
-					sub.type = subrs.getInt("TYPE"); //$NON-NLS-1$
+					sub.id = subrs.getInt("ID");
+					sub.lang = subrs.getString("LANG");
+					sub.type = subrs.getInt("TYPE");
 					media.subtitlesCodes.add(sub);
 				}
 				subrs.close();
@@ -355,7 +355,7 @@ public class DLNAMediaDatabase implements Runnable {
 		PreparedStatement ps = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("INSERT INTO FILES(FILENAME, MODIFIED, TYPE, DURATION, BITRATE, WIDTH, HEIGHT, SIZE, CODECV, FRAMERATE, ASPECT, BITSPERPIXEL, THUMB, CONTAINER, MODEL, EXPOSURE, ORIENTATION, ISO, MUXINGMODE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); //$NON-NLS-1$
+			ps = conn.prepareStatement("INSERT INTO FILES(FILENAME, MODIFIED, TYPE, DURATION, BITRATE, WIDTH, HEIGHT, SIZE, CODECV, FRAMERATE, ASPECT, BITSPERPIXEL, THUMB, CONTAINER, MODEL, EXPOSURE, ORIENTATION, ISO, MUXINGMODE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			ps.setString(1, name);
 			ps.setTimestamp(2, new Timestamp(modified));
 			ps.setInt(3, type);
@@ -409,7 +409,7 @@ public class DLNAMediaDatabase implements Runnable {
 			if (media != null && id > -1) {
 				PreparedStatement insert = null;
 				if (media.audioCodes.size() > 0) {
-					insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); //$NON-NLS-1$
+					insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				}
 				for (DLNAMediaAudio audio : media.audioCodes) {
 					insert.clearParameters();
@@ -432,7 +432,7 @@ public class DLNAMediaDatabase implements Runnable {
 				}
 
 				if (media.subtitlesCodes.size() > 0) {
-					insert = conn.prepareStatement("INSERT INTO SUBTRACKS VALUES (?, ?, ?, ?)"); //$NON-NLS-1$
+					insert = conn.prepareStatement("INSERT INTO SUBTRACKS VALUES (?, ?, ?, ?)");
 				}
 				for (DLNAMediaSubtitle sub : media.subtitlesCodes) {
 					if (sub.file == null) { // no save of external subtitles
@@ -449,8 +449,8 @@ public class DLNAMediaDatabase implements Runnable {
 				}
 			}
 		} catch (SQLException se) {
-			if (se.getMessage().contains("[23001")) { //$NON-NLS-1$
-				logger.debug("Duplicate key while inserting this entry: " + name + " into the database: " + se.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			if (se.getMessage().contains("[23001")) {
+				logger.debug("Duplicate key while inserting this entry: " + name + " into the database: " + se.getMessage());
 			} else {
 				logger.error(null, se);
 			}
@@ -472,7 +472,7 @@ public class DLNAMediaDatabase implements Runnable {
 		PreparedStatement ps = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("UPDATE FILES SET THUMB = ? WHERE FILENAME = ? AND MODIFIED = ?"); //$NON-NLS-1$
+			ps = conn.prepareStatement("UPDATE FILES SET THUMB = ? WHERE FILENAME = ? AND MODIFIED = ?");
 			ps.setString(2, name);
 			ps.setTimestamp(3, new Timestamp(modified));
 			if (media != null) {
@@ -482,8 +482,8 @@ public class DLNAMediaDatabase implements Runnable {
 			}
 			ps.executeUpdate();
 		} catch (SQLException se) {
-			if (se.getMessage().contains("[23001")) { //$NON-NLS-1$
-				logger.debug("Duplicate key while inserting this entry: " + name + " into the database: " + se.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			if (se.getMessage().contains("[23001")) {
+				logger.debug("Duplicate key while inserting this entry: " + name + " into the database: " + se.getMessage());
 			} else {
 				logger.error(null, se);
 			}
@@ -543,7 +543,7 @@ public class DLNAMediaDatabase implements Runnable {
 		Connection conn = null;
 		try {
 			conn = getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) FROM FILES"); //$NON-NLS-1$
+			PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) FROM FILES");
 			ResultSet rs = ps.executeQuery();
 			int count = 0;
 			if (rs.next()) {
@@ -551,15 +551,15 @@ public class DLNAMediaDatabase implements Runnable {
 			}
 			rs.close();
 			ps.close();
-			PMS.get().getFrame().setStatusLine("Cleanup database... 0%"); //$NON-NLS-1$
+			PMS.get().getFrame().setStatusLine("Cleanup database... 0%");
 			int i = 0;
 			int oldpercent = 0;
 			if (count > 0) {
-				ps = conn.prepareStatement("SELECT FILENAME, MODIFIED, ID FROM FILES", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE); //$NON-NLS-1$
+				ps = conn.prepareStatement("SELECT FILENAME, MODIFIED, ID FROM FILES", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
 				rs = ps.executeQuery();
 				while (rs.next()) {
-					String filename = rs.getString("FILENAME"); //$NON-NLS-1$
-					long modified = rs.getTimestamp("MODIFIED").getTime(); //$NON-NLS-1$
+					String filename = rs.getString("FILENAME");
+					long modified = rs.getTimestamp("MODIFIED").getTime();
 					File entry = new File(filename);
 					if (!entry.exists() || entry.lastModified() != modified) {
 						rs.deleteRow();
@@ -567,7 +567,7 @@ public class DLNAMediaDatabase implements Runnable {
 					i++;
 					int newpercent = i * 100 / count;
 					if (newpercent > oldpercent) {
-						PMS.get().getFrame().setStatusLine("Cleanup database... " + newpercent + "%"); //$NON-NLS-1$ //$NON-NLS-2$
+						PMS.get().getFrame().setStatusLine("Cleanup database... " + newpercent + "%");
 						oldpercent = newpercent;
 					}
 				}
@@ -594,11 +594,11 @@ public class DLNAMediaDatabase implements Runnable {
 		PreparedStatement ps = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement(sql.toLowerCase().startsWith("select") ? sql : ("SELECT FILENAME, MODIFIED FROM FILES WHERE " + sql)); //$NON-NLS-1$
+			ps = conn.prepareStatement(sql.toLowerCase().startsWith("select") ? sql : ("SELECT FILENAME, MODIFIED FROM FILES WHERE " + sql));
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				String filename = rs.getString("FILENAME"); //$NON-NLS-1$
-				long modified = rs.getTimestamp("MODIFIED").getTime(); //$NON-NLS-1$
+				String filename = rs.getString("FILENAME");
+				long modified = rs.getTimestamp("MODIFIED").getTime();
 				File entry = new File(filename);
 				if (entry.exists() && entry.lastModified() == modified) {
 					list.add(entry);
@@ -633,7 +633,7 @@ public class DLNAMediaDatabase implements Runnable {
 			scanner = new Thread(this);
 			scanner.start();
 		} else if (scanner.isAlive()) {
-			logger.info("Scanner is already running !"); //$NON-NLS-1$
+			logger.info("Scanner is already running !");
 		} else {
 			scanner = new Thread(this);
 			scanner.start();
@@ -651,15 +651,15 @@ public class DLNAMediaDatabase implements Runnable {
 	}
 
 	public void compact() {
-		logger.info("Compacting database..."); //$NON-NLS-1$
-		PMS.get().getFrame().setStatusLine("Compacting database..."); //$NON-NLS-1$
-		String file = "database/backup.sql"; //$NON-NLS-1$
+		logger.info("Compacting database...");
+		PMS.get().getFrame().setStatusLine("Compacting database...");
+		String file = "database/backup.sql";
 		try {
-			Script.execute(url, "sa", "", file); //$NON-NLS-1$ //$NON-NLS-2$
-			DeleteDbFiles.execute(dir, "medias", true); //$NON-NLS-1$
-			RunScript.execute(url, "sa", "", file, null, false); //$NON-NLS-1$ //$NON-NLS-2$
+			Script.execute(url, "sa", "", file);
+			DeleteDbFiles.execute(dir, "medias", true);
+			RunScript.execute(url, "sa", "", file, null, false);
 		} catch (Exception s) {
-			logger.error("Error in compacting database: ", s); //$NON-NLS-1$
+			logger.error("Error in compacting database: ", s);
 		} finally {
 			File testsql = new File(file);
 			if (testsql.exists()) {

@@ -84,8 +84,8 @@ public class TracesTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-			"left:pref, 10:grow", //$NON-NLS-1$
-			"fill:10:grow, p"); //$NON-NLS-1$
+			"left:pref, 10:grow",
+			"fill:10:grow, p");
 		PanelBuilder builder = new PanelBuilder(layout);
 		//  builder.setBorder(Borders.DLU14_BORDER);
 		builder.setOpaque(true);
@@ -96,13 +96,13 @@ public class TracesTab {
 		jList = new JTextArea();
 		jList.setEditable(false);
 		jList.setBackground(Color.WHITE);
-		//jList.setFont(new Font("Arial", Font.PLAIN, 12)); //$NON-NLS-1$
+		//jList.setFont(new Font("Arial", Font.PLAIN, 12));
 		final JPopupMenu popup = new JPopupMenu();
-		JMenuItem defaultItem = new JMenuItem(Messages.getString("TracesTab.3")); //$NON-NLS-1$
+		JMenuItem defaultItem = new JMenuItem(Messages.getString("TracesTab.3"));
 
 		defaultItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				jList.setText(""); //$NON-NLS-1$
+				jList.setText("");
 			}
 		});
 

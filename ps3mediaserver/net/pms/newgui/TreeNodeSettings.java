@@ -67,7 +67,7 @@ public class TreeNodeSettings extends DefaultMutableTreeNode {
 		if (p != null) {
 			return p.id();
 		} else if (otherConfigPanel != null) {
-			return "" + otherConfigPanel.hashCode(); //$NON-NLS-1$
+			return "" + otherConfigPanel.hashCode();
 		} else {
 			return null;
 		}
@@ -91,25 +91,25 @@ public class TreeNodeSettings extends DefaultMutableTreeNode {
 		if (warningPanel == null) {
 			BufferedImage bi = null;
 			try {
-				bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/messagebox_warning-220.png")); //$NON-NLS-1$
+				bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/messagebox_warning-220.png"));
 			} catch (IOException e) {
 			}
 			ImagePanel ip = new ImagePanel(bi);
 
 			FormLayout layout = new FormLayout(
-				"0:grow, pref, 0:grow", //$NON-NLS-1$
-				"pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
+				"0:grow, pref, 0:grow",
+				"pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p");
 
 			PanelBuilder builder = new PanelBuilder(layout);
 			builder.setDefaultDialogBorder();
 			builder.setOpaque(false);
 			CellConstraints cc = new CellConstraints();
 
-			JLabel jl = new JLabel(Messages.getString("TreeNodeSettings.4")); //$NON-NLS-1$
-			builder.add(jl, cc.xy(2, 1, "center, fill")); //$NON-NLS-1$
+			JLabel jl = new JLabel(Messages.getString("TreeNodeSettings.4"));
+			builder.add(jl, cc.xy(2, 1, "center, fill"));
 			jl.setFont(jl.getFont().deriveFont(Font.BOLD));
 
-			builder.add(ip, cc.xy(2, 3, "center, fill")); //$NON-NLS-1$
+			builder.add(ip, cc.xy(2, 3, "center, fill"));
 
 			warningPanel = builder.getPanel();
 		}

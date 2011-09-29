@@ -53,7 +53,7 @@ public abstract class Player {
 	public static final int VIDEO_WEBSTREAM_PLAYER = 2;
 	public static final int AUDIO_WEBSTREAM_PLAYER = 3;
 	public static final int MISC_PLAYER = 4;
-	public static final String NATIVE = "NATIVE"; //$NON-NLS-1$
+	public static final String NATIVE = "NATIVE";
 
 	public abstract int purpose();
 	public abstract JComponent config();
@@ -142,7 +142,7 @@ public abstract class Player {
 	public void setAudioAndSubs(String fileName, DLNAMediaInfo media, OutputParams params, PmsConfiguration configuration) {
 		if (params.aid == null && media != null) {
 			// check for preferred audio
-			StringTokenizer st = new StringTokenizer(configuration.getMencoderAudioLanguages(), ","); //$NON-NLS-1$
+			StringTokenizer st = new StringTokenizer(configuration.getMencoderAudioLanguages(), ",");
 			while (st != null && st.hasMoreTokens()) {
 				String lang = st.nextToken();
 				lang = lang.trim();
@@ -187,13 +187,13 @@ public abstract class Player {
 			return;
 		}
 
-		StringTokenizer st1 = new StringTokenizer(configuration.getMencoderAudioSubLanguages(), ";"); //$NON-NLS-1$
+		StringTokenizer st1 = new StringTokenizer(configuration.getMencoderAudioSubLanguages(), ";");
 
 		while (st1.hasMoreTokens()) {
 			String pair = st1.nextToken();
-			if (pair.contains(",")) { //$NON-NLS-1$
-				String audio = pair.substring(0, pair.indexOf(",")); //$NON-NLS-1$
-				String sub = pair.substring(pair.indexOf(",") + 1); //$NON-NLS-1$
+			if (pair.contains(",")) {
+				String audio = pair.substring(0, pair.indexOf(","));
+				String sub = pair.substring(pair.indexOf(",") + 1);
 				audio = audio.trim();
 				sub = sub.trim();
 				logger.trace("Search a match for: " + currentLang + " with " + audio + " and " + sub);
@@ -246,7 +246,7 @@ public abstract class Player {
 			}
 
 			if (params.sid == null) {
-				StringTokenizer st = new StringTokenizer(configuration.getMencoderSubLanguages(), ","); //$NON-NLS-1$
+				StringTokenizer st = new StringTokenizer(configuration.getMencoderSubLanguages(), ",");
 				while (st != null && st.hasMoreTokens()) {
 					String lang = st.nextToken();
 					lang = lang.trim();

@@ -32,7 +32,7 @@ import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 
 public class MEncoderWebVideo extends Player {
-	public static final String ID = "mencoderwebvideo"; //$NON-NLS-1$
+	public static final String ID = "mencoderwebvideo";
 	private final PmsConfiguration configuration;
 
 	@Override
@@ -57,24 +57,24 @@ public class MEncoderWebVideo extends Player {
 
 	@Override
 	public String mimeType() {
-		return "video/mpeg"; //$NON-NLS-1$
+		return "video/mpeg";
 	}
 
 	protected String[] getDefaultArgs() {
 		int nThreads = configuration.getMencoderMaxThreads();
 		String acodec = configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3";
 		return new String[]{
-				"-msglevel", "all=2", //$NON-NLS-1$ //$NON-NLS-2$
-				"-quiet", //$NON-NLS-1$
-				"-prefer-ipv4", //$NON-NLS-1$
-				"-cache", "16384", //$NON-NLS-1$ //$NON-NLS-2$
-				"-oac", "lavc", //$NON-NLS-1$ //$NON-NLS-2$
-				"-of", "lavf", //$NON-NLS-1$ //$NON-NLS-2$
-				"-lavfopts", "format=dvd", //$NON-NLS-1$ //$NON-NLS-2$
-				"-ovc", "lavc", //$NON-NLS-1$ //$NON-NLS-2$
-				"-lavcopts", "vcodec=mpeg2video:vbitrate=4096:threads=" + nThreads + ":acodec=" + acodec + ":abitrate=128", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				"-vf", "harddup", //$NON-NLS-1$ //$NON-NLS-2$
-				"-ofps", "25" //$NON-NLS-1$ //$NON-NLS-2$
+				"-msglevel", "all=2",
+				"-quiet",
+				"-prefer-ipv4",
+				"-cache", "16384",
+				"-oac", "lavc",
+				"-of", "lavf",
+				"-lavfopts", "format=dvd",
+				"-ovc", "lavc",
+				"-lavcopts", "vcodec=mpeg2video:vbitrate=4096:threads=" + nThreads + ":acodec=" + acodec + ":abitrate=128",
+				"-vf", "harddup",
+				"-ofps", "25"
 			};
 	}
 
@@ -91,7 +91,7 @@ public class MEncoderWebVideo extends Player {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 
-		PipeProcess pipe = new PipeProcess("mencoder" + System.currentTimeMillis()); //$NON-NLS-1$
+		PipeProcess pipe = new PipeProcess("mencoder" + System.currentTimeMillis());
 		params.input_pipes[0] = pipe;
 
 		String cmdArray[] = new String[args().length + 4];
@@ -100,7 +100,7 @@ public class MEncoderWebVideo extends Player {
 		for (int i = 0; i < args().length; i++) {
 			cmdArray[i + 2] = args()[i];
 		}
-		cmdArray[cmdArray.length - 2] = "-o"; //$NON-NLS-1$
+		cmdArray[cmdArray.length - 2] = "-o";
 		cmdArray[cmdArray.length - 1] = pipe.getInputPipe();
 
 		ProcessWrapper mkfifo_process = pipe.getPipeProcess();
@@ -137,7 +137,7 @@ public class MEncoderWebVideo extends Player {
 
 	@Override
 	public String name() {
-		return "MEncoder Web"; //$NON-NLS-1$
+		return "MEncoder Web";
 	}
 
 	@Override

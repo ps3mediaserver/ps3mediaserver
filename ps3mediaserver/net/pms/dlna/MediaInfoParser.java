@@ -382,7 +382,7 @@ public class MediaInfoParser {
 			int channels = Integer.parseInt(value);
 			return channels;
 		} catch(NumberFormatException e) {
-			logger.info("Unknown number of audio channels detected. Using 6."); //$NON-NLS-1$
+			logger.info("Unknown number of audio channels detected. Using 6.");
 			return 6;
 		}
 	}

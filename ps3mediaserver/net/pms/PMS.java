@@ -99,21 +99,21 @@ import org.apache.commons.configuration.ConfigurationException;
 import com.sun.jna.Platform;
 
 public class PMS {
-	private static final String SCROLLBARS = "scrollbars"; //$NON-NLS-1$
-	private static final String NATIVELOOK = "nativelook"; //$NON-NLS-1$
-	private static final String CONSOLE = "console"; //$NON-NLS-1$
-	private static final String NOCONSOLE = "noconsole"; //$NON-NLS-1$
-	private static final String PROFILES = "profiles"; //$NON-NLS-1$
+	private static final String SCROLLBARS = "scrollbars";
+	private static final String NATIVELOOK = "nativelook";
+	private static final String CONSOLE = "console";
+	private static final String NOCONSOLE = "noconsole";
+	private static final String PROFILES = "profiles";
 
 	/**
 	 * Update URL used in the {@link AutoUpdater}.
 	 */
-	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update2.data"; //$NON-NLS-1$
+	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update2.data";
 	/**
 	 * Version showed in the UPnP XML descriptor and logs.
 	 */
-	public static final String VERSION = "1.40.1"; //$NON-NLS-1$
-	public static final String AVS_SEPARATOR = "\1"; //$NON-NLS-1$
+	public static final String VERSION = "1.40.1";
+	public static final String AVS_SEPARATOR = "\1";
 
 	// (innot): The logger used for all logging.
 	private static final Logger logger = LoggerFactory.getLogger(PMS.class);
@@ -151,8 +151,8 @@ public class PMS {
 
 	static {
 		lock = new byte[0];
-		sdfHour = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US); //$NON-NLS-1$
-		sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US); //$NON-NLS-1$
+		sdfHour = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
+		sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 	}
 	/**
 	 * Array of {@link RendererConfiguration} that have been found by PMS.
@@ -168,13 +168,13 @@ public class PMS {
 			foundRenderers.add(mediarenderer);
 			frame.addRendererIcon(mediarenderer.getRank(), mediarenderer.getRendererName(), mediarenderer.getRendererIcon());
 			if (mediarenderer.isPS3()) {
-				frame.setStatusCode(0, Messages.getString("PMS.5"), "clients/ps3slim_220.png"); //$NON-NLS-1$ //$NON-NLS-2$
+				frame.setStatusCode(0, Messages.getString("PMS.5"), "clients/ps3slim_220.png");
 			}
 		}
 		/*if (mediarenderer == HTTPResource.PS3) {
-		frame.setStatusCode(0, Messages.getString("PMS.5"), "PS3_2.png"); //$NON-NLS-1$ //$NON-NLS-2$
+		frame.setStatusCode(0, Messages.getString("PMS.5"), "PS3_2.png");
 		} else if (mediarenderer == HTTPResource.XBOX && !foundRenderers.contains(HTTPResource.PS3)) {
-		frame.setStatusCode(0, "Xbox found", "xbox360.png"); //$NON-NLS-1$ //$NON-NLS-2$
+		frame.setStatusCode(0, "Xbox found", "xbox360.png");
 		}*/
 	}
 	/**
@@ -243,7 +243,7 @@ public class PMS {
 	 * @throws Exception TODO: Check which exceptions to use
 	 */
 	private boolean checkProcessExistence(String name, boolean error, File workDir, String... params) throws Exception {
-		logger.debug("launching: " + params[0]); //$NON-NLS-1$
+		logger.debug("launching: " + params[0]);
 
 		try {
 			ProcessBuilder pb = new ProcessBuilder(params);
@@ -271,26 +271,26 @@ public class PMS {
 			checkThread = null;
 
 			// XXX no longer used
-			if (params[0].equals("vlc") && stderrConsumer.getResults().get(0).startsWith("VLC")) //$NON-NLS-1$ //$NON-NLS-2$
+			if (params[0].equals("vlc") && stderrConsumer.getResults().get(0).startsWith("VLC"))
 			{
 				return true;
 			}
 			// XXX no longer used
-			if (params[0].equals("ffmpeg") && stderrConsumer.getResults().get(0).startsWith("FF")) //$NON-NLS-1$ //$NON-NLS-2$
+			if (params[0].equals("ffmpeg") && stderrConsumer.getResults().get(0).startsWith("FF"))
 			{
 				return true;
 			}
 			int exit = process.exitValue();
 			if (exit != 0) {
 				if (error) {
-					logger.info("[" + exit + "] Cannot launch " + name + " / Check the presence of " + params[0] + " ..."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					logger.info("[" + exit + "] Cannot launch " + name + " / Check the presence of " + params[0] + " ...");
 				}
 				return false;
 			}
 			return true;
 		} catch (Exception e) {
 			if (error) {
-				logger.error("Cannot launch " + name + " / Check the presence of " + params[0] + " ...", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				logger.error("Cannot launch " + name + " / Check the presence of " + params[0] + " ...", e);
 			}
 			return false;
 		}
@@ -308,7 +308,7 @@ public class PMS {
 	private DLNAMediaDatabase database;
 
 	private void initializeDatabase() {
-		database = new DLNAMediaDatabase("medias"); //$NON-NLS-1$
+		database = new DLNAMediaDatabase("medias");
 		database.init(false);
 	}
 
@@ -339,29 +339,29 @@ public class PMS {
 		if (System.getProperty(CONSOLE) == null) {
 			frame = new LooksFrame(autoUpdater, configuration);
 		} else {
-			System.out.println("GUI environment not available"); //$NON-NLS-1$
-			System.out.println("Switching to console mode"); //$NON-NLS-1$
+			System.out.println("GUI environment not available");
+			System.out.println("Switching to console mode");
 			frame = new DummyFrame();
 		}
 
-		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-220.png"); //$NON-NLS-1$ //$NON-NLS-2$
+		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-220.png");
 		proxy = -1;
 
-		logger.info("Starting PS3 Media Server " + VERSION); //$NON-NLS-1$
-		logger.info("by shagrath / 2008-2011"); //$NON-NLS-1$
-		logger.info("http://ps3mediaserver.org"); //$NON-NLS-1$
-		logger.info("http://code.google.com/p/ps3mediaserver"); //$NON-NLS-1$
-		logger.info("http://ps3mediaserver.blogspot.com"); //$NON-NLS-1$
-		logger.info(""); //$NON-NLS-1$
-		logger.info("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		logger.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-		logger.info("Encoding: " + System.getProperty("file.encoding")); //$NON-NLS-1$ //$NON-NLS-2$
+		logger.info("Starting PS3 Media Server " + VERSION);
+		logger.info("by shagrath / 2008-2011");
+		logger.info("http://ps3mediaserver.org");
+		logger.info("http://code.google.com/p/ps3mediaserver");
+		logger.info("http://ps3mediaserver.blogspot.com");
+		logger.info("");
+		logger.info("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor"));
+		logger.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
+		logger.info("Encoding: " + System.getProperty("file.encoding"));
 
 		String cwd = new File("").getAbsolutePath();
 		logger.info("Working directory: " + cwd);
 
-		logger.info("Temp folder: " + configuration.getTempFolder()); //$NON-NLS-1$
-		logger.info("Logging config file: " + LoggingConfigFileLoader.getConfigFilePath()); //$NON-NLS-1$
+		logger.info("Temp folder: " + configuration.getTempFolder());
+		logger.info("Logging config file: " + LoggingConfigFileLoader.getConfigFilePath());
 
 		HashMap<String, String> lfps = LoggingConfigFileLoader.getLogFilePaths();
 
@@ -380,7 +380,7 @@ public class PMS {
 			}
 		}
 
-		logger.info(""); //$NON-NLS-1$
+		logger.info("");
 
 		logger.info("Profile directory: " + configuration.getProfileDirectory());
 		String profilePath = configuration.getProfilePath();
@@ -398,8 +398,8 @@ public class PMS {
 			logger.info("Profile status: no such file");
 		}
 
-		logger.info("Profile name: " + configuration.getProfileName()); //$NON-NLS-1$
-		logger.info(""); //$NON-NLS-1$
+		logger.info("Profile name: " + configuration.getProfileName());
+		logger.info("");
 
 		RendererConfiguration.loadRendererConfigurations();
 
@@ -412,15 +412,15 @@ public class PMS {
 
 		// check the existence of Vsfilter.dll
 		if (registry.isAvis() && registry.getAvsPluginsDir() != null) {
-			logger.info("Found AviSynth plugins dir: " + registry.getAvsPluginsDir().getAbsolutePath()); //$NON-NLS-1$
-			File vsFilterdll = new File(registry.getAvsPluginsDir(), "VSFilter.dll"); //$NON-NLS-1$
+			logger.info("Found AviSynth plugins dir: " + registry.getAvsPluginsDir().getAbsolutePath());
+			File vsFilterdll = new File(registry.getAvsPluginsDir(), "VSFilter.dll");
 			if (!vsFilterdll.exists()) {
-				logger.info("VSFilter.dll is not in the AviSynth plugins directory. This can cause problems when trying to play subtitled videos with AviSynth"); //$NON-NLS-1$
+				logger.info("VSFilter.dll is not in the AviSynth plugins directory. This can cause problems when trying to play subtitled videos with AviSynth");
 			}
 		}
 
 		if (registry.getVlcv() != null && registry.getVlcp() != null) {
-			logger.info("Found VideoLAN version " + registry.getVlcv() + " at: " + registry.getVlcp()); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.info("Found VideoLAN version " + registry.getVlcv() + " at: " + registry.getVlcp());
 		}
 
 		//check if Kerio is installed
@@ -429,13 +429,13 @@ public class PMS {
 		}
 
 		// force use of specific dvr ms muxer when it's installed in the right place
-		File dvrsMsffmpegmuxer = new File("win32/dvrms/ffmpeg_MPGMUX.exe"); //$NON-NLS-1$
+		File dvrsMsffmpegmuxer = new File("win32/dvrms/ffmpeg_MPGMUX.exe");
 		if (dvrsMsffmpegmuxer.exists()) {
 			configuration.setFfmpegAlternativePath(dvrsMsffmpegmuxer.getAbsolutePath());
 		}
 
 		// disable jaudiotagger logging
-		LogManager.getLogManager().readConfiguration(new ByteArrayInputStream("org.jaudiotagger.level=OFF".getBytes())); //$NON-NLS-1$
+		LogManager.getLogManager().readConfiguration(new ByteArrayInputStream("org.jaudiotagger.level=OFF".getBytes()));
 
 		// wrap System.err
 		System.setErr(new PrintStream(new SystemErrWrapper(), true));
@@ -472,8 +472,8 @@ public class PMS {
 		try {
 			binding = server.start();
 		} catch (BindException b) {
-			logger.info("FATAL ERROR: Unable to bind on port: " + configuration.getServerPort() + ", because: " + b.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
-			logger.info("Maybe another process is running or the hostname is wrong."); //$NON-NLS-1$
+			logger.info("FATAL ERROR: Unable to bind on port: " + configuration.getServerPort() + ", because: " + b.getMessage());
+			logger.info("Maybe another process is running or the hostname is wrong.");
 		}
 
 		new Thread() {
@@ -491,9 +491,9 @@ public class PMS {
 				}
 				if (!ps3found) {
 					if (foundRenderers.isEmpty()) {
-						frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-220.png"); //$NON-NLS-1$ //$NON-NLS-2$
+						frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-220.png");
 					} else {
-						frame.setStatusCode(0, Messages.getString("PMS.15"), "messagebox_warning-220.png"); //$NON-NLS-1$ //$NON-NLS-2$
+						frame.setStatusCode(0, Messages.getString("PMS.15"), "messagebox_warning-220.png");
 					}
 				}
 			}
@@ -504,7 +504,7 @@ public class PMS {
 		}
 
 		if (proxy > 0) {
-			logger.info("Starting HTTP Proxy Server on port: " + proxy); //$NON-NLS-1$
+			logger.info("Starting HTTP Proxy Server on port: " + proxy);
 			proxyServer = new ProxyServer(proxy);
 		}
 
@@ -532,12 +532,12 @@ public class PMS {
 					}
 					UPNPHelper.shutDownListener();
 					UPNPHelper.sendByeBye();
-					logger.debug("Forcing shutdown of all active processes"); //$NON-NLS-1$
+					logger.debug("Forcing shutdown of all active processes");
 					for (Process p : currentProcesses) {
 						try {
 							p.exitValue();
 						} catch (IllegalThreadStateException ise) {
-							logger.trace("Forcing shutdown of process: " + p); //$NON-NLS-1$
+							logger.trace("Forcing shutdown of process: " + p);
 							ProcessUtil.destroy(p);
 						}
 					}
@@ -549,7 +549,7 @@ public class PMS {
 		});
 
 		UPNPHelper.sendAlive();
-		logger.trace("Waiting 250 milliseconds..."); //$NON-NLS-1$
+		logger.trace("Waiting 250 milliseconds...");
 		Thread.sleep(250);
 		UPNPHelper.listen();
 
@@ -571,13 +571,13 @@ public class PMS {
 	 * @see GeneralTab#build()
 	 */
 	public boolean installWin32Service() {
-		logger.info(Messages.getString("PMS.41")); //$NON-NLS-1$
-		String cmdArray[] = new String[]{"win32/service/wrapper.exe", "-r", "wrapper.conf"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		logger.info(Messages.getString("PMS.41"));
+		String cmdArray[] = new String[]{"win32/service/wrapper.exe", "-r", "wrapper.conf"};
 		OutputParams output = new OutputParams(configuration);
 		output.noexitcheck = true;
 		ProcessWrapperImpl pwuninstall = new ProcessWrapperImpl(cmdArray, output);
 		pwuninstall.run();
-		cmdArray = new String[]{"win32/service/wrapper.exe", "-i", "wrapper.conf"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		cmdArray = new String[]{"win32/service/wrapper.exe", "-i", "wrapper.conf"};
 		ProcessWrapperImpl pwinstall = new ProcessWrapperImpl(cmdArray, new OutputParams(configuration));
 		pwinstall.run();
 		return pwinstall.isSuccess();
@@ -643,16 +643,16 @@ public class PMS {
 		} else {
 			if (isWindows()) {
 				if (p.executable() == null) {
-					logger.info("Executable of transcoder profile " + p + " not found"); //$NON-NLS-1$ //$NON-NLS-2$
+					logger.info("Executable of transcoder profile " + p + " not found");
 					return;
 				}
 				File executable = new File(p.executable());
-				File executable2 = new File(p.executable() + ".exe"); //$NON-NLS-1$
+				File executable2 = new File(p.executable() + ".exe");
 
 				if (executable.exists() || executable2.exists()) {
 					ok = true;
 				} else {
-					logger.info("Executable of transcoder profile " + p + " not found"); //$NON-NLS-1$ //$NON-NLS-2$
+					logger.info("Executable of transcoder profile " + p + " not found");
 					return;
 				}
 				if (p.avisynth()) {
@@ -660,7 +660,7 @@ public class PMS {
 					if (registry.isAvis()) {
 						ok = true;
 					} else {
-						logger.info("Transcoder profile " + p + " will not be used because AviSynth was not found"); //$NON-NLS-1$ //$NON-NLS-2$
+						logger.info("Transcoder profile " + p + " will not be used because AviSynth was not found");
 					}
 				}
 			} else if (!p.avisynth()) {
@@ -668,7 +668,7 @@ public class PMS {
 			}
 		}
 		if (ok) {
-			logger.info("Registering transcoding engine: " + p /*+ (p.avisynth()?(" with " + (forceMPlayer?"MPlayer":"AviSynth")):"")*/); //$NON-NLS-1$
+			logger.info("Registering transcoding engine: " + p /*+ (p.avisynth()?(" with " + (forceMPlayer?"MPlayer":"AviSynth")):"")*/);
 			players.add(p);
 		}
 	}
@@ -691,22 +691,22 @@ public class PMS {
 			return null;
 		}
 		ArrayList<File> directories = new ArrayList<File>();
-		String[] foldersArray = folders.split(","); //$NON-NLS-1$
+		String[] foldersArray = folders.split(",");
 		for (String folder : foldersArray) {
 			// unescape embedded commas. note: backslashing isn't safe as it conflicts with
 			// Windows path separators:
 			// http://ps3mediaserver.org/forum/viewtopic.php?f=14&t=8883&start=250#p43520
-			folder = folder.replaceAll("&comma;", ","); //$NON-NLS-1$ //$NON-NLS-2$
+			folder = folder.replaceAll("&comma;", ",");
 			if (log) {
-				logger.trace("Checking shared folder: " + folder); //$NON-NLS-1$
+				logger.trace("Checking shared folder: " + folder);
 			}
 			File file = new File(folder);
 			if (file.exists()) {
 				if (!file.isDirectory()) {
-					logger.warn("The file " + folder + " is not a directory! Please remove it from your Shared folders list on the Navigation/Share Settings tab"); //$NON-NLS-1$ //$NON-NLS-2$
+					logger.warn("The file " + folder + " is not a directory! Please remove it from your Shared folders list on the Navigation/Share Settings tab");
 				}
 			} else {
-				logger.warn("The directory " + folder + " does not exist. Please remove it from your Shared folders list on the Navigation/Share Settings tab"); //$NON-NLS-1$ //$NON-NLS-2$
+				logger.warn("The directory " + folder + " does not exist. Please remove it from your Shared folders list on the Navigation/Share Settings tab");
 			}
 
 			// add the file even if there are problems so that the user can update the shared folders as required.
@@ -724,7 +724,7 @@ public class PMS {
 	// XXX: don't try to optimize this by reusing the same server instance.
 	// see the comment above HTTPServer.stop()
 	public void reset() throws IOException {
-		logger.trace("Waiting 1 second..."); //$NON-NLS-1$
+		logger.trace("Waiting 1 second...");
 		UPNPHelper.sendByeBye();
 		server.stop();
 		server = null;
@@ -833,9 +833,9 @@ public class PMS {
 				}
 			}
 
-			logger.info("Using the following UUID configured in PMS.conf: " + uuid); //$NON-NLS-1$
+			logger.info("Using the following UUID configured in PMS.conf: " + uuid);
 		}
-		return "uuid:" + uuid; //$NON-NLS-1$
+		return "uuid:" + uuid;
 	}
 
 	/**Returns the user friendly name of the UPnP server. 
@@ -844,12 +844,12 @@ public class PMS {
 	public String getServerName() {
 		if (serverName == null) {
 			StringBuilder sb = new StringBuilder();
-			sb.append(System.getProperty("os.name").replace(" ", "_")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			sb.append("-"); //$NON-NLS-1$
-			sb.append(System.getProperty("os.arch").replace(" ", "_")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			sb.append("-"); //$NON-NLS-1$
-			sb.append(System.getProperty("os.version").replace(" ", "_")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			sb.append(", UPnP/1.0, PMS/" + VERSION); //$NON-NLS-1$
+			sb.append(System.getProperty("os.name").replace(" ", "_"));
+			sb.append("-");
+			sb.append(System.getProperty("os.arch").replace(" ", "_"));
+			sb.append("-");
+			sb.append(System.getProperty("os.version").replace(" ", "_"));
+			sb.append(", UPnP/1.0, PMS/" + VERSION);
 			serverName = sb.toString();
 		}
 		return serverName;
@@ -876,9 +876,9 @@ public class PMS {
 
 		try {
 			if (instance.init()) {
-				logger.info("The server should now appear on your renderer"); //$NON-NLS-1$
+				logger.info("The server should now appear on your renderer");
 			} else {
-				logger.error("A serious error occurred during PMS init"); //$NON-NLS-1$
+				logger.error("A serious error occurred during PMS init");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -890,10 +890,10 @@ public class PMS {
 	 * @return
 	 */
 	public Format getAssociatedExtension(String filename) {
-		logger.trace("Search extension for " + filename); //$NON-NLS-1$
+		logger.trace("Search extension for " + filename);
 		for (Format ext : extensions) {
 			if (ext.match(filename)) {
-				logger.trace("Found 1! " + ext.getClass().getName()); //$NON-NLS-1$
+				logger.trace("Found 1! " + ext.getClass().getName());
 				return ext.duplicate();
 			}
 		}
@@ -996,7 +996,7 @@ public class PMS {
 		try {
 			configuration.save();
 		} catch (ConfigurationException e) {
-			logger.error("Could not save configuration", e); //$NON-NLS-1$
+			logger.error("Could not save configuration", e);
 		}
 	}
 

@@ -25,6 +25,6 @@ public class FLAC extends OGG {
 
 	@Override
 	public String[] getId() {
-		return new String[]{"flac", "mlp", "fla"}; //$NON-NLS-1$ //$NON-NLS-2$
+		return new String[]{"flac", "mlp", "fla"};
 	}
 }

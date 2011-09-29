@@ -87,7 +87,7 @@ public abstract class VirtualVideoAction extends DLNAResource {
 	 * Recommended way to instantiate this class is as follows (taken from {@link PMS#addVideoSettingssFolder(net.pms.configuration.RendererConfiguration)}:
 	 * <pre> VirtualFolder vf;
 	 * [...]
-	 * vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) { //$NON-NLS-1$
+	 * vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) {
 	 *   public boolean enable() {
 	 *   configuration.setMencoderNoOutOfSync(!configuration.isMencoderNoOutOfSync());
 	 *   return configuration.isMencoderNoOutOfSync();

@@ -51,8 +51,8 @@ public class MEncoderAviSynth extends MEncoderVideo {
 	@Override
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
-			"left:pref, 0:grow", //$NON-NLS-1$
-			"p, 3dlu, p, 3dlu, p, 3dlu,  0:grow"); //$NON-NLS-1$
+			"left:pref, 0:grow",
+			"p, 3dlu, p, 3dlu, p, 3dlu,  0:grow");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.EMPTY_BORDER);
 		builder.setOpaque(false);
@@ -60,11 +60,11 @@ public class MEncoderAviSynth extends MEncoderVideo {
 		CellConstraints cc = new CellConstraints();
 
 
-		JComponent cmp = builder.addSeparator(Messages.getString("MEncoderAviSynth.2"), cc.xyw(2, 1, 1)); //$NON-NLS-1$
+		JComponent cmp = builder.addSeparator(Messages.getString("MEncoderAviSynth.2"), cc.xyw(2, 1, 1));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		convertfps = new JCheckBox(Messages.getString("MEncoderAviSynth.3")); //$NON-NLS-1$
+		convertfps = new JCheckBox(Messages.getString("MEncoderAviSynth.3"));
 		convertfps.setContentAreaFilled(false);
 		if (PMS.getConfiguration().getAvisynthConvertFps()) {
 			convertfps.setSelected(true);
@@ -78,14 +78,14 @@ public class MEncoderAviSynth extends MEncoderVideo {
 
 		String clip = PMS.getConfiguration().getAvisynthScript();
 		if (clip == null) {
-			clip = ""; //$NON-NLS-1$
+			clip = "";
 		}
 		StringBuilder sb = new StringBuilder();
 		StringTokenizer st = new StringTokenizer(clip, PMS.AVS_SEPARATOR);
 		int i = 0;
 		while (st.hasMoreTokens()) {
 			if (i > 0) {
-				sb.append("\n"); //$NON-NLS-1$
+				sb.append("\n");
 			}
 			sb.append(st.nextToken());
 			i++;
@@ -103,7 +103,7 @@ public class MEncoderAviSynth extends MEncoderVideo {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				StringBuilder sb = new StringBuilder();
-				StringTokenizer st = new StringTokenizer(textArea.getText(), "\n"); //$NON-NLS-1$
+				StringTokenizer st = new StringTokenizer(textArea.getText(), "\n");
 				int i = 0;
 				while (st.hasMoreTokens()) {
 					if (i > 0) {
@@ -128,7 +128,7 @@ public class MEncoderAviSynth extends MEncoderVideo {
 	public int purpose() {
 		return VIDEO_SIMPLEFILE_PLAYER;
 	}
-	public static final String ID = "avsmencoder"; //$NON-NLS-1$
+	public static final String ID = "avsmencoder";
 
 	@Override
 	public String id() {
@@ -142,6 +142,6 @@ public class MEncoderAviSynth extends MEncoderVideo {
 
 	@Override
 	public String name() {
-		return "Avisynth/MEncoder"; //$NON-NLS-1$
+		return "Avisynth/MEncoder";
 	}
 }

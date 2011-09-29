@@ -57,7 +57,7 @@ import com.sun.jna.Platform;
 
 public class NavigationShareTab {
 	private static final Logger logger = LoggerFactory.getLogger(NavigationShareTab.class);
-	public static final String ALL_DRIVES = Messages.getString("FoldTab.0"); //$NON-NLS-1$
+	public static final String ALL_DRIVES = Messages.getString("FoldTab.0");
 	private JList FList;
 	private DefaultListModel df;
 	private JCheckBox hidevideosettings;
@@ -92,12 +92,12 @@ public class NavigationShareTab {
 
 	private void updateModel() {
 		if (df.size() == 1 && df.getElementAt(0).equals(ALL_DRIVES)) {
-			PMS.getConfiguration().setFolders(""); //$NON-NLS-1$
+			PMS.getConfiguration().setFolders("");
 		} else {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < df.size(); i++) {
 				if (i > 0) {
-					sb.append(","); //$NON-NLS-1$
+					sb.append(",");
 				}
 				String entry = (String) df.getElementAt(i);
 				// escape embedded commas. note: backslashing isn't safe as it conflicts with
@@ -112,8 +112,8 @@ public class NavigationShareTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-			"left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref, 25dlu, pref, default:grow", //$NON-NLS-1$
-			"p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, fill:default:grow"); //$NON-NLS-1$
+			"left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref, 25dlu, pref, default:grow",
+			"p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, fill:default:grow");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.DLU4_BORDER);
 		builder.setOpaque(true);
@@ -141,11 +141,11 @@ public class NavigationShareTab {
 		FList.setModel(df);
 		JScrollPane pane = new JScrollPane(FList);
 
-		JComponent cmp = builder.addSeparator(Messages.getString("FoldTab.13"), cc.xyw(1, 1, 10)); //$NON-NLS-1$
+		JComponent cmp = builder.addSeparator(Messages.getString("FoldTab.13"), cc.xyw(1, 1, 10));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		tncheckBox = new JCheckBox(Messages.getString("NetworkTab.2")); //$NON-NLS-1$
+		tncheckBox = new JCheckBox(Messages.getString("NetworkTab.2"));
 		tncheckBox.setContentAreaFilled(false);
 		tncheckBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -157,7 +157,7 @@ public class NavigationShareTab {
 		}
 		builder.add(tncheckBox, cc.xyw(1, 3, 3));
 
-		seekpos = new JTextField("" + configuration.getThumbnailSeekPos()); //$NON-NLS-1$
+		seekpos = new JTextField("" + configuration.getThumbnailSeekPos());
 		seekpos.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -178,10 +178,10 @@ public class NavigationShareTab {
 			}
 		});
 
-		builder.addLabel(Messages.getString("NetworkTab.16"), cc.xyw(4, 3, 3)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("NetworkTab.16"), cc.xyw(4, 3, 3));
 		builder.add(seekpos, cc.xyw(6, 3, 2));
 
-		mplayer_thumb = new JCheckBox(Messages.getString("FoldTab.14")); //$NON-NLS-1$
+		mplayer_thumb = new JCheckBox(Messages.getString("FoldTab.14"));
 		mplayer_thumb.setContentAreaFilled(false);
 		mplayer_thumb.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -217,11 +217,11 @@ public class NavigationShareTab {
 		}
 		builder.add(image_thumb, cc.xyw(1, 7, 3));
 
-		final KeyedComboBoxModel thumbKCBM = new KeyedComboBoxModel(new Object[]{"0", "1", "2"}, new Object[]{Messages.getString("FoldTab.15"), Messages.getString("FoldTab.23"), Messages.getString("FoldTab.24")}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		final KeyedComboBoxModel thumbKCBM = new KeyedComboBoxModel(new Object[]{"0", "1", "2"}, new Object[]{Messages.getString("FoldTab.15"), Messages.getString("FoldTab.23"), Messages.getString("FoldTab.24")});
 		audiothumbnail = new JComboBox(thumbKCBM);
 		audiothumbnail.setEditable(false);
 
-		thumbKCBM.setSelectedKey("" + configuration.getAudioThumbnailMethod()); //$NON-NLS-1$
+		thumbKCBM.setSelectedKey("" + configuration.getAudioThumbnailMethod());
 
 		audiothumbnail.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -236,10 +236,10 @@ public class NavigationShareTab {
 				}
 			}
 		});
-		builder.addLabel(Messages.getString("FoldTab.26"), cc.xyw(1, 9, 3)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("FoldTab.26"), cc.xyw(1, 9, 3));
 		builder.add(audiothumbnail, cc.xyw(4, 9, 4));
 
-		builder.addLabel(Messages.getString("FoldTab.27"), cc.xyw(1, 10, 3)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("FoldTab.27"), cc.xyw(1, 10, 3));
 		defaultThumbFolder = new JTextField(configuration.getAlternateThumbFolder());
 		defaultThumbFolder.addKeyListener(new KeyListener() {
 			@Override
@@ -257,7 +257,7 @@ public class NavigationShareTab {
 		});
 		builder.add(defaultThumbFolder, cc.xyw(4, 10, 3));
 
-		JButton select = new JButton("..."); //$NON-NLS-1$
+		JButton select = new JButton("...");
 		select.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -268,7 +268,7 @@ public class NavigationShareTab {
 					chooser = new JFileChooser(new RestrictedFileSystemView());
 				}
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int returnVal = chooser.showDialog((Component) e.getSource(), Messages.getString("FoldTab.28")); //$NON-NLS-1$
+				int returnVal = chooser.showDialog((Component) e.getSource(), Messages.getString("FoldTab.28"));
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					defaultThumbFolder.setText(chooser.getSelectedFile().getAbsolutePath());
 					PMS.get().getFrame().setReloadable(true);
@@ -278,11 +278,11 @@ public class NavigationShareTab {
 		});
 		builder.add(select, cc.xyw(7, 10, 1));
 
-		cmp = builder.addSeparator(Messages.getString("NetworkTab.15"), cc.xyw(1, 11, 10)); //$NON-NLS-1$
+		cmp = builder.addSeparator(Messages.getString("NetworkTab.15"), cc.xyw(1, 11, 10));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		hidevideosettings = new JCheckBox(Messages.getString("FoldTab.6")); //$NON-NLS-1$
+		hidevideosettings = new JCheckBox(Messages.getString("FoldTab.6"));
 		hidevideosettings.setContentAreaFilled(false);
 		if (PMS.getConfiguration().getHideVideoSettings()) {
 			hidevideosettings.setSelected(true);
@@ -294,7 +294,7 @@ public class NavigationShareTab {
 			}
 		});
 
-		hidetranscode = new JCheckBox(Messages.getString("FoldTab.33")); //$NON-NLS-1$
+		hidetranscode = new JCheckBox(Messages.getString("FoldTab.33"));
 		hidetranscode.setContentAreaFilled(false);
 		if (PMS.getConfiguration().getHideTranscodeEnabled()) {
 			hidetranscode.setSelected(true);
@@ -306,7 +306,7 @@ public class NavigationShareTab {
 			}
 		});
 
-		hidemedialibraryfolder = new JCheckBox(Messages.getString("FoldTab.32")); //$NON-NLS-1$
+		hidemedialibraryfolder = new JCheckBox(Messages.getString("FoldTab.32"));
 		hidemedialibraryfolder.setContentAreaFilled(false);
 		if (PMS.getConfiguration().isHideMediaLibraryFolder()) {
 			hidemedialibraryfolder.setSelected(true);
@@ -318,7 +318,7 @@ public class NavigationShareTab {
 			}
 		});
 
-		archive = new JCheckBox(Messages.getString("NetworkTab.1")); //$NON-NLS-1$
+		archive = new JCheckBox(Messages.getString("NetworkTab.1"));
 		archive.setContentAreaFilled(false);
 		archive.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -334,9 +334,9 @@ public class NavigationShareTab {
 
 		builder.add(archive, cc.xyw(1, 13, 3));
 
-		final JButton cachereset = new JButton(Messages.getString("NetworkTab.18")); //$NON-NLS-1$
+		final JButton cachereset = new JButton(Messages.getString("NetworkTab.18"));
 
-		cacheenable = new JCheckBox(Messages.getString("NetworkTab.17")); //$NON-NLS-1$
+		cacheenable = new JCheckBox(Messages.getString("NetworkTab.17"));
 		cacheenable.setContentAreaFilled(false);
 		cacheenable.setSelected(PMS.getConfiguration().getUseCache());
 		cacheenable.addItemListener(new ItemListener() {
@@ -357,9 +357,9 @@ public class NavigationShareTab {
 			public void actionPerformed(ActionEvent e) {
 				int option = JOptionPane.showConfirmDialog(
 					(Component) PMS.get().getFrame(),
-					Messages.getString("NetworkTab.13") + //$NON-NLS-1$
-					Messages.getString("NetworkTab.19"), //$NON-NLS-1$
-					"Question", //$NON-NLS-1$
+					Messages.getString("NetworkTab.13") +
+					Messages.getString("NetworkTab.19"),
+					"Question",
 					JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION) {
 					PMS.get().getDatabase().init(true);
@@ -377,7 +377,7 @@ public class NavigationShareTab {
 
 		builder.add(hidemedialibraryfolder, cc.xyw(8, 19, 3));
 
-		hideextensions = new JCheckBox(Messages.getString("FoldTab.5")); //$NON-NLS-1$
+		hideextensions = new JCheckBox(Messages.getString("FoldTab.5"));
 		hideextensions.setContentAreaFilled(false);
 		if (PMS.getConfiguration().isHideExtensions()) {
 			hideextensions.setSelected(true);
@@ -390,7 +390,7 @@ public class NavigationShareTab {
 		});
 		builder.add(hideextensions, cc.xyw(1, 15, 3));
 
-		hideengines = new JCheckBox(Messages.getString("FoldTab.8")); //$NON-NLS-1$
+		hideengines = new JCheckBox(Messages.getString("FoldTab.8"));
 		hideengines.setContentAreaFilled(false);
 		if (PMS.getConfiguration().isHideEngineNames()) {
 			hideengines.setSelected(true);
@@ -403,7 +403,7 @@ public class NavigationShareTab {
 		});
 		builder.add(hideengines, cc.xyw(4, 15, 3));
 
-		hideemptyfolders = new JCheckBox(Messages.getString("FoldTab.31")); //$NON-NLS-1$
+		hideemptyfolders = new JCheckBox(Messages.getString("FoldTab.31"));
 		hideemptyfolders.setContentAreaFilled(false);
 		if (PMS.getConfiguration().isHideEmptyFolders()) {
 			hideemptyfolders.setSelected(true);
@@ -416,7 +416,7 @@ public class NavigationShareTab {
 		});
 		builder.add(hideemptyfolders, cc.xyw(8, 15, 3));
 
-		itunes = new JCheckBox(Messages.getString("FoldTab.30")); //$NON-NLS-1$
+		itunes = new JCheckBox(Messages.getString("FoldTab.30"));
 		itunes.setContentAreaFilled(false);
 		if (PMS.getConfiguration().getItunesEnabled()) {
 			itunes.setSelected(true);
@@ -432,7 +432,7 @@ public class NavigationShareTab {
 		});
 		builder.add(itunes, cc.xyw(1, 17, 3));
 
-		iphoto = new JCheckBox(Messages.getString("FoldTab.29")); //$NON-NLS-1$
+		iphoto = new JCheckBox(Messages.getString("FoldTab.29"));
 		iphoto.setContentAreaFilled(false);
 		if (PMS.getConfiguration().getIphotoEnabled()) {
 			iphoto.setSelected(true);
@@ -449,7 +449,7 @@ public class NavigationShareTab {
 		builder.add(iphoto, cc.xyw(4, 17, 3));
 		
 		// Add Aperture selection
-		aperture = new JCheckBox(Messages.getString("FoldTab.34")); //$NON-NLS-1$
+		aperture = new JCheckBox(Messages.getString("FoldTab.34"));
 		aperture.setContentAreaFilled(false);
 		if (PMS.getConfiguration().getApertureEnabled()) {
 			aperture.setSelected(true);
@@ -465,11 +465,11 @@ public class NavigationShareTab {
 		});
 		builder.add(aperture, cc.xyw(8, 17, 3));
 
-		final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[]{"0", "3", "1", "2"}, new Object[]{Messages.getString("FoldTab.15"), Messages.getString("FoldTab.20"), Messages.getString("FoldTab.16"), Messages.getString("FoldTab.17")}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+		final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[]{"0", "3", "1", "2"}, new Object[]{Messages.getString("FoldTab.15"), Messages.getString("FoldTab.20"), Messages.getString("FoldTab.16"), Messages.getString("FoldTab.17")});
 		sortmethod = new JComboBox(kcbm);
 		sortmethod.setEditable(false);
 
-		kcbm.setSelectedKey("" + configuration.getSortMethod()); //$NON-NLS-1$
+		kcbm.setSelectedKey("" + configuration.getSortMethod());
 
 		sortmethod.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -485,21 +485,21 @@ public class NavigationShareTab {
 			}
 		});
 
-		builder.addLabel(Messages.getString("FoldTab.18"), cc.xyw(1, 21, 3)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("FoldTab.18"), cc.xyw(1, 21, 3));
 		builder.add(sortmethod, cc.xyw(4, 21, 4));
 
 		FormLayout layoutFolders = new FormLayout(
-			"left:pref, left:pref, pref, pref, pref, 0:grow", //$NON-NLS-1$
-			"p, 3dlu, p, 3dlu, fill:default:grow"); //$NON-NLS-1$
+			"left:pref, left:pref, pref, pref, pref, 0:grow",
+			"p, 3dlu, p, 3dlu, fill:default:grow");
 		PanelBuilder builderFolder = new PanelBuilder(layoutFolders);
 		builderFolder.setOpaque(true);
 
 
-		cmp = builderFolder.addSeparator(Messages.getString("FoldTab.7"), cc.xyw(1, 1, 6)); //$NON-NLS-1$
+		cmp = builderFolder.addSeparator(Messages.getString("FoldTab.7"), cc.xyw(1, 1, 6));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		JButton but = new JButton(LooksFrame.readImageIcon("folder_new-32.png")); //$NON-NLS-1$
+		JButton but = new JButton(LooksFrame.readImageIcon("folder_new-32.png"));
 		but.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				JFileChooser chooser = null;
@@ -509,7 +509,7 @@ public class NavigationShareTab {
 					chooser = new JFileChooser(new RestrictedFileSystemView());
 				}
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				//int returnVal = chooser.showDialog((Component) e.getSource(), Messages.getString("FoldTab.9")); //$NON-NLS-1$
+				//int returnVal = chooser.showDialog((Component) e.getSource(), Messages.getString("FoldTab.9"));
 				int returnVal = chooser.showOpenDialog((Component) e.getSource());
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					((DefaultListModel) FList.getModel()).add(FList.getModel().getSize(), chooser.getSelectedFile().getAbsolutePath());
@@ -521,7 +521,7 @@ public class NavigationShareTab {
 			}
 		});
 		builderFolder.add(but, cc.xy(1, 3));
-		JButton but2 = new JButton(LooksFrame.readImageIcon("button_cancel-32.png")); //$NON-NLS-1$
+		JButton but2 = new JButton(LooksFrame.readImageIcon("button_cancel-32.png"));
 		//but2.setBorder(BorderFactory.createEtchedBorder());
 		but2.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -536,8 +536,8 @@ public class NavigationShareTab {
 		});
 		builderFolder.add(but2, cc.xy(2, 3));
 
-		JButton but3 = new JButton(LooksFrame.readImageIcon("kdevelop_down-32.png")); //$NON-NLS-1$
-		but3.setToolTipText(Messages.getString("FoldTab.12")); //$NON-NLS-1$
+		JButton but3 = new JButton(LooksFrame.readImageIcon("kdevelop_down-32.png"));
+		but3.setToolTipText(Messages.getString("FoldTab.12"));
 		// but3.setBorder(BorderFactory.createEmptyBorder());
 		but3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -556,8 +556,8 @@ public class NavigationShareTab {
 		});
 
 		builderFolder.add(but3, cc.xy(3, 3));
-		JButton but4 = new JButton(LooksFrame.readImageIcon("up-32.png")); //$NON-NLS-1$
-		but4.setToolTipText(Messages.getString("FoldTab.12")); //$NON-NLS-1$
+		JButton but4 = new JButton(LooksFrame.readImageIcon("up-32.png"));
+		but4.setToolTipText(Messages.getString("FoldTab.12"));
 		//  but4.setBorder(BorderFactory.createEmptyBorder());
 		but4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -578,8 +578,8 @@ public class NavigationShareTab {
 		});
 		builderFolder.add(but4, cc.xy(4, 3));
 
-		but5 = new JButton(LooksFrame.readImageIcon("search-32.png")); //$NON-NLS-1$
-		but5.setToolTipText(Messages.getString("FoldTab.2")); //$NON-NLS-1$
+		but5 = new JButton(LooksFrame.readImageIcon("search-32.png"));
+		but5.setToolTipText(Messages.getString("FoldTab.2"));
 		//but5.setBorder(BorderFactory.createEmptyBorder());
 		but5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -587,24 +587,24 @@ public class NavigationShareTab {
 					if (!PMS.get().getDatabase().isScanLibraryRunning()) {
 						int option = JOptionPane.showConfirmDialog(
 							(Component) PMS.get().getFrame(),
-							Messages.getString("FoldTab.3") + //$NON-NLS-1$
-							Messages.getString("FoldTab.4"), //$NON-NLS-1$
-							"Question", //$NON-NLS-1$
+							Messages.getString("FoldTab.3") +
+							Messages.getString("FoldTab.4"),
+							"Question",
 							JOptionPane.YES_NO_OPTION);
 						if (option == JOptionPane.YES_OPTION) {
 							PMS.get().getDatabase().scanLibrary();
-							but5.setIcon(LooksFrame.readImageIcon("viewmagfit-32.png")); //$NON-NLS-1$
+							but5.setIcon(LooksFrame.readImageIcon("viewmagfit-32.png"));
 						}
 					} else {
 						int option = JOptionPane.showConfirmDialog(
 							(Component) PMS.get().getFrame(),
-							Messages.getString("FoldTab.10"), //$NON-NLS-1$
-							"Question", //$NON-NLS-1$
+							Messages.getString("FoldTab.10"),
+							"Question",
 							JOptionPane.YES_NO_OPTION);
 						if (option == JOptionPane.YES_OPTION) {
 							PMS.get().getDatabase().stopScanLibrary();
 							PMS.get().getFrame().setStatusLine(null);
-							but5.setIcon(LooksFrame.readImageIcon("search-32.png")); //$NON-NLS-1$
+							but5.setIcon(LooksFrame.readImageIcon("search-32.png"));
 						}
 					}
 				}
@@ -628,6 +628,6 @@ public class NavigationShareTab {
 
 	public void setScanLibraryEnabled(boolean enabled) {
 		but5.setEnabled(enabled);
-		but5.setIcon(LooksFrame.readImageIcon("search-32.png")); //$NON-NLS-1$
+		but5.setIcon(LooksFrame.readImageIcon("search-32.png"));
 	}
 }

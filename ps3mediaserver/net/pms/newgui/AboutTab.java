@@ -56,8 +56,8 @@ public class AboutTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-			"0:grow, pref, 0:grow", //$NON-NLS-1$
-			"pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p"); //$NON-NLS-1$
+			"0:grow, pref, 0:grow",
+			"pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p");
 
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setDefaultDialogBorder();
@@ -72,7 +72,7 @@ public class AboutTab {
 		builder.add(imagePanel, cc.xy(2, 3, "center, fill"));
 
 
-		builder.addLabel(Messages.getString("LinksTab.5"), cc.xy(2, 5, "center, fill")); //$NON-NLS-1$ //$NON-NLS-2$
+		builder.addLabel(Messages.getString("LinksTab.5"), cc.xy(2, 5, "center, fill"));
 
 		final LinkMouseListener tsMuxerLink = new LinkMouseListener("tsMuxeR (c) Smartlabs",
 			"http://www.smlabs.net/en/products/tsmuxer/");
@@ -128,7 +128,7 @@ public class AboutTab {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			try {
-				PMSUtil.browseURI(link); //$NON-NLS-1$
+				PMSUtil.browseURI(link);
 			} catch (Exception e1) {
 			}
 		}
@@ -153,7 +153,7 @@ public class AboutTab {
 	public ImagePanel buildImagePanel() {
 		BufferedImage bi = null;
 		try {
-			bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/logo.png")); //$NON-NLS-1$
+			bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/logo.png"));
 		} catch (IOException e) {
 		}
 		return new ImagePanel(bi);

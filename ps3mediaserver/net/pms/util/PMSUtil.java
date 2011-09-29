@@ -30,7 +30,7 @@ public class PMSUtil {
 
 	public static void browseURI(String uri) {
 		try {
-			Desktop.getDesktop().browse(new URI(uri)); //$NON-NLS-1$
+			Desktop.getDesktop().browse(new URI(uri));
 		} catch (Exception e1) {
 		}
 	}
@@ -39,11 +39,11 @@ public class PMSUtil {
 		if (SystemTray.isSupported()) {
 			SystemTray tray = SystemTray.getSystemTray();
 
-			Image image = Toolkit.getDefaultToolkit().getImage(frame.getClass().getResource("/resources/images/icon-16.png")); //$NON-NLS-1$
+			Image image = Toolkit.getDefaultToolkit().getImage(frame.getClass().getResource("/resources/images/icon-16.png"));
 
 			PopupMenu popup = new PopupMenu();
-			MenuItem defaultItem = new MenuItem(Messages.getString("LooksFrame.5")); //$NON-NLS-1$
-			MenuItem traceItem = new MenuItem(Messages.getString("LooksFrame.6")); //$NON-NLS-1$
+			MenuItem defaultItem = new MenuItem(Messages.getString("LooksFrame.5"));
+			MenuItem traceItem = new MenuItem(Messages.getString("LooksFrame.6"));
 
 			defaultItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -60,7 +60,7 @@ public class PMSUtil {
 			popup.add(traceItem);
 			popup.add(defaultItem);
 
-			final TrayIcon trayIcon = new TrayIcon(image, "PS3 Media Server " + PMS.VERSION, popup); //$NON-NLS-1$
+			final TrayIcon trayIcon = new TrayIcon(image, "PS3 Media Server " + PMS.VERSION, popup);
 
 			trayIcon.setImageAutoSize(true);
 			trayIcon.addActionListener(new ActionListener() {

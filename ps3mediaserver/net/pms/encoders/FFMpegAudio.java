@@ -42,7 +42,7 @@ import net.pms.network.HTTPResource;
 import net.pms.PMS;
 
 public class FFMpegAudio extends FFMpegVideo {
-	public static final String ID = "ffmpegaudio"; //$NON-NLS-1$
+	public static final String ID = "ffmpegaudio";
 	private final PmsConfiguration configuration;
 
 	public FFMpegAudio(PmsConfiguration configuration) {
@@ -53,8 +53,8 @@ public class FFMpegAudio extends FFMpegVideo {
 	@Override
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
-			"left:pref, 0:grow", //$NON-NLS-1$
-			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow"); //$NON-NLS-1$
+			"left:pref, 0:grow",
+			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.EMPTY_BORDER);
 		builder.setOpaque(false);
@@ -100,7 +100,7 @@ public class FFMpegAudio extends FFMpegVideo {
 
 	@Override
 	public String name() {
-		return "FFmpeg Audio"; //$NON-NLS-1$
+		return "FFmpeg Audio";
 	}
 
 	@Override
@@ -110,12 +110,12 @@ public class FFMpegAudio extends FFMpegVideo {
 
 	@Override
 	public String[] args() {
-		return new String[]{"-f", "s16be", "-ar", "48000"}; //$NON-NLS-1$ //$NON-NLS-2$
+		return new String[]{"-f", "s16be", "-ar", "48000"};
 	}
 
 	@Override
 	public String mimeType() {
-		return HTTPResource.AUDIO_TRANSCODE; //$NON-NLS-1$
+		return HTTPResource.AUDIO_TRANSCODE;
 	}
 
 	@Override

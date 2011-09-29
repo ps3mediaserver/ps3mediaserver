@@ -240,11 +240,11 @@ public class PmsConfiguration {
 			PMS_PROFILE = folder/dev.conf     # profile dir = folder
 			PMS_PROFILE = /path/to/some.file  # profile dir = /path/to/
 	 */
-	private static final String DEFAULT_PROFILE_FILENAME = "PMS.conf"; //$NON-NLS-1
-	private static final String ENV_PROFILE_PATH = "PMS_PROFILE"; //$NON-NLS-1
+	private static final String DEFAULT_PROFILE_FILENAME = "PMS.conf";
+	private static final String ENV_PROFILE_PATH = "PMS_PROFILE";
 	private static final String PROFILE_DIRECTORY; // path to directory containing PMS config files
 	private static final String PROFILE_PATH; // abs path to profile file e.g. /path/to/PMS.conf
-	private static final String PROPERTY_PROFILE_PATH = "pms.profile.path"; //$NON-NLS-1
+	private static final String PROPERTY_PROFILE_PATH = "pms.profile.path";
 
 	static {
 		// first try the system property, typically set via the profile chooser
@@ -1182,7 +1182,7 @@ public class PmsConfiguration {
 		for (String engineId : input) {
 			if (engineId.startsWith("avs") && !registry.isAvis() && Platform.isWindows()) {
 				if (!avsHackLogged) {
-					logger.info("AviSynth is not installed. You cannot use " + engineId + " as a transcoding engine."); //$NON-NLS-1$ //$NON-NLS-2$
+					logger.info("AviSynth is not installed. You cannot use " + engineId + " as a transcoding engine.");
 					avsHackLogged = true;
 				}
 				toBeRemoved.add(engineId);
