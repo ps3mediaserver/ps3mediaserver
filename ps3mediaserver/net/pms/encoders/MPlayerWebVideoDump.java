@@ -37,7 +37,7 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 	public MPlayerWebVideoDump(PmsConfiguration configuration) {
 		super(configuration);
 	}
-	public static final String ID = "mplayervideodump"; //$NON-NLS-1$
+	public static final String ID = "mplayervideodump";
 
 	@Override
 	public JComponent config() {
@@ -61,9 +61,9 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 		params.secondread_minsize = 100000;
 		params.waitbeforestart = 6000;
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
-		PipeProcess audioP = new PipeProcess("mplayer_webvid" + System.currentTimeMillis()); //$NON-NLS-1$
+		PipeProcess audioP = new PipeProcess("mplayer_webvid" + System.currentTimeMillis());
 
-		String mPlayerdefaultAudioArgs[] = new String[]{PMS.getConfiguration().getMplayerPath(), fileName, "-nocache", "-dumpstream", "-quiet", "-dumpfile", audioP.getInputPipe()}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		String mPlayerdefaultAudioArgs[] = new String[]{PMS.getConfiguration().getMplayerPath(), fileName, "-nocache", "-dumpstream", "-quiet", "-dumpfile", audioP.getInputPipe()};
 		params.input_pipes[0] = audioP;
 
 		ProcessWrapper mkfifo_process = audioP.getPipeProcess();
@@ -96,12 +96,12 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 
 	@Override
 	public String mimeType() {
-		return HTTPResource.VIDEO_TRANSCODE; //$NON-NLS-1$
+		return HTTPResource.VIDEO_TRANSCODE;
 	}
 
 	@Override
 	public String name() {
-		return "MPlayer Video Dump"; //$NON-NLS-1$
+		return "MPlayer Video Dump";
 	}
 
 	@Override

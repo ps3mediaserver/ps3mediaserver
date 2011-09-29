@@ -49,17 +49,17 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
 			hasFocus);
 		if (leaf && value instanceof TreeNodeSettings) {
 			if (((TreeNodeSettings) value).getPlayer() == null) {
-				setIcon(LooksFrame.readImageIcon("icon_tree_parent-16.png")); //$NON-NLS-1$
+				setIcon(LooksFrame.readImageIcon("icon_tree_parent-16.png"));
 			} else {
 				if (((TreeNodeSettings) value).isEnable()) {
 					Player p = ((TreeNodeSettings) value).getPlayer();
 					if (PMS.get().getPlayers().contains(p)) {
-						setIcon(LooksFrame.readImageIcon("icon_tree_node-16.png")); //$NON-NLS-1$
+						setIcon(LooksFrame.readImageIcon("icon_tree_node-16.png"));
 					} else {
-						setIcon(LooksFrame.readImageIcon("messagebox_warning-16.png")); //$NON-NLS-1$
+						setIcon(LooksFrame.readImageIcon("messagebox_warning-16.png"));
 					}
 				} else {
-					setIcon(LooksFrame.readImageIcon("icon_tree_node_fail-16.png")); //$NON-NLS-1$
+					setIcon(LooksFrame.readImageIcon("icon_tree_node_fail-16.png"));
 				}
 			}
 
@@ -69,7 +69,7 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
 				setFont(getFont().deriveFont(Font.PLAIN));
 			}
 		} else {
-			setIcon(LooksFrame.readImageIcon("icon_tree_parent-16.png")); //$NON-NLS-1$
+			setIcon(LooksFrame.readImageIcon("icon_tree_parent-16.png"));
 		}
 		return this;
 	}

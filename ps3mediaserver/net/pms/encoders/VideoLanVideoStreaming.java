@@ -37,7 +37,7 @@ import net.pms.io.ProcessWrapperImpl;
 
 public class VideoLanVideoStreaming extends Player {
 	private final PmsConfiguration configuration;
-	public static final String ID = "vlcvideo"; //$NON-NLS-1$
+	public static final String ID = "vlcvideo";
 
 	public VideoLanVideoStreaming(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -60,7 +60,7 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public String name() {
-		return "VLC Video Streaming"; //$NON-NLS-1$
+		return "VLC Video Streaming";
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public String mimeType() {
-		return "video/mpeg"; //$NON-NLS-1$
+		return "video/mpeg";
 	}
 
 	@Override
@@ -99,11 +99,11 @@ public class VideoLanVideoStreaming extends Player {
 			http://feedproxy.google.com/~r/TEDTalks_video/~5/wdul2VS10rw/BillGates_2011U.mp4 vlc://quit
 		 */
 
-		return "vcodec=mp2v,vb=4096,fps=25,scale=1,acodec=mp2a,ab=128,channels=2"; //$NON-NLS-1$
+		return "vcodec=mp2v,vb=4096,fps=25,scale=1,acodec=mp2a,ab=128,channels=2";
 	}
 
 	protected String getMux() {
-		return "ts"; //$NON-NLS-1$
+		return "ts";
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class VideoLanVideoStreaming extends Player {
 		DLNAMediaInfo media,
 		OutputParams params) throws IOException {
 		boolean isWindows = Platform.isWindows();
-		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux()); //$NON-NLS-1$
+		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux());
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 
 		// XXX it can take a long time for Windows to create a named pipe
@@ -127,8 +127,8 @@ public class VideoLanVideoStreaming extends Player {
 
 		List<String> cmdList = new ArrayList<String>();
 		cmdList.add(executable());
-		cmdList.add("-I"); //$NON-NLS-1$
-		cmdList.add("dummy"); //$NON-NLS-1$
+		cmdList.add("-I");
+		cmdList.add("dummy");
 
 		// TODO: either
 		// 1) add this automatically if enabled (probe)
@@ -136,13 +136,13 @@ public class VideoLanVideoStreaming extends Player {
 		// 3) document it as an option the user can enable themselves in the vlc GUI (saved to a config file used by cvlc)
 		// XXX: it's still experimental (i.e. unstable), causing (consistent) segfaults on Windows and Linux,
 		// so don't even document it for now
-		// cmdList.add("--ffmpeg-hw"); //$NON-NLS-1$
+		// cmdList.add("--ffmpeg-hw");
 
 		String transcodeSpec = String.format(
-			"#transcode{%s}:standard{access=file,mux=%s,dst=\"%s%s\"}", //$NON-NLS-1$
+			"#transcode{%s}:standard{access=file,mux=%s,dst=\"%s%s\"}",
 			getEncodingArgs(),
 			getMux(),
-			(isWindows ? "\\\\" : ""), //$NON-NLS-1$
+			(isWindows ? "\\\\" : ""),
 			tsPipe.getInputPipe());
 
 		// XXX there's precious little documentation on how (if at all) VLC
@@ -151,22 +151,22 @@ public class VideoLanVideoStreaming extends Player {
 		// these work fine on Windows and Linux with VLC 1.1.x
 
 		if (isWindows) {
-			cmdList.add("--dummy-quiet"); //$NON-NLS-1$
+			cmdList.add("--dummy-quiet");
 		}
 		if (isWindows || Platform.isMac()) {
-			cmdList.add("--sout=" + transcodeSpec); //$NON-NLS-1$
+			cmdList.add("--sout=" + transcodeSpec);
 		} else {
-			cmdList.add("--sout"); //$NON-NLS-1$
+			cmdList.add("--sout");
 			cmdList.add(transcodeSpec);
 		}
 
 		// FIXME: cargo-culted from here:
 		// via: https://code.google.com/p/ps3mediaserver/issues/detail?id=711
 		if (Platform.isMac()) {
-			cmdList.add(""); //$NON-NLS-1$
+			cmdList.add("");
 		}
 		cmdList.add(fileName);
-		cmdList.add("vlc://quit"); //$NON-NLS-1$
+		cmdList.add("vlc://quit");
 
 		String[] cmdArray = new String[cmdList.size()];
 		cmdList.toArray(cmdArray);

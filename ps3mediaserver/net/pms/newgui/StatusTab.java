@@ -66,32 +66,32 @@ public class StatusTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-			"0:grow, pref, 0:grow", //$NON-NLS-1$
-			"pref, 9dlu, pref, 3dlu, pref, 15dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 5dlu, p"); //$NON-NLS-1$
+			"0:grow, pref, 0:grow",
+			"pref, 9dlu, pref, 3dlu, pref, 15dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 5dlu, p");
 
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setDefaultDialogBorder();
 		builder.setOpaque(true);
 		CellConstraints cc = new CellConstraints();
 
-		JComponent cmp = builder.addSeparator(Messages.getString("StatusTab.2"), cc.xy(2, 1)); //$NON-NLS-1$
+		JComponent cmp = builder.addSeparator(Messages.getString("StatusTab.2"), cc.xy(2, 1));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		jl = new JLabel(Messages.getString("StatusTab.3")); //$NON-NLS-1$
+		jl = new JLabel(Messages.getString("StatusTab.3"));
 
 		builder.add(jl, cc.xy(2, 3));
 		imagePanel = buildImagePanel("/resources/images/connect_no-220.png");
-		builder.add(imagePanel, cc.xy(2, 5, "center, fill")); //$NON-NLS-1$
+		builder.add(imagePanel, cc.xy(2, 5, "center, fill"));
 
 		jpb = new JProgressBar(0, 100);
 		jpb.setStringPainted(true);
-		jpb.setString(Messages.getString("StatusTab.5")); //$NON-NLS-1$
+		jpb.setString(Messages.getString("StatusTab.5"));
 
-		builder.addLabel(Messages.getString("StatusTab.6"), cc.xy(2, 7)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("StatusTab.6"), cc.xy(2, 7));
 		builder.add(jpb, cc.xy(2, 9));
-		//builder.addLabel(Messages.getString("StatusTab.7"),  cc.xy(2,  11)); //$NON-NLS-1$
-		jio = new JLabel(Messages.getString("StatusTab.8")); //$NON-NLS-1$
+		//builder.addLabel(Messages.getString("StatusTab.7"),  cc.xy(2,  11));
+		jio = new JLabel(Messages.getString("StatusTab.8"));
 		builder.add(jio, cc.xy(2, 13));
 
 		cmp = builder.addSeparator(Messages.getString("StatusTab.9"), cc.xy(2, 15));
@@ -99,7 +99,7 @@ public class StatusTab {
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		FormLayout layoutRenderer = new FormLayout(
-			"0:grow, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 0:grow", //$NON-NLS-1$
+			"0:grow, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 0:grow",
 			"pref, 3dlu, pref");
 		PanelBuilder rendererBuilder = new PanelBuilder(layoutRenderer);
 		rendererBuilder.setOpaque(true);
@@ -128,7 +128,7 @@ public class StatusTab {
 			if (sizeinKb > peak) {
 				peak = sizeinKb;
 			}
-			jio.setText(Messages.getString("StatusTab.8") + formatter.format(sizeinKb) + Messages.getString("StatusTab.10") + formatter.format(peak) + Messages.getString("StatusTab.11")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			jio.setText(Messages.getString("StatusTab.8") + formatter.format(sizeinKb) + Messages.getString("StatusTab.10") + formatter.format(peak) + Messages.getString("StatusTab.11"));
 			rc = v;
 		}
 	}
@@ -137,7 +137,7 @@ public class StatusTab {
 		BufferedImage bi = null;
 		if (url != null) {
 			try {
-				bi = ImageIO.read(LooksFrame.class.getResourceAsStream(url)); //$NON-NLS-1$
+				bi = ImageIO.read(LooksFrame.class.getResourceAsStream(url));
 			} catch (IOException e) {
 			}
 		}
@@ -186,7 +186,7 @@ public class StatusTab {
 				}
 
 				if (is != null) {
-					bi = ImageIO.read(is); //$NON-NLS-1$
+					bi = ImageIO.read(is);
 				}
 			} catch (IOException e) {
 			}

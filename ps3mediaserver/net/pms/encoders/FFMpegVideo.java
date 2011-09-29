@@ -54,7 +54,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class FFMpegVideo extends Player {
 	private static final Logger logger = LoggerFactory.getLogger(FFMpegVideo.class);
-	public static final String ID      = "avsffmpeg"; //$NON-NLS-1$
+	public static final String ID      = "avsffmpeg";
 
 	@Override
 	public int purpose() {
@@ -79,7 +79,7 @@ public class FFMpegVideo extends Player {
 
 	public FFMpegVideo() {
 		if (PMS.getConfiguration().getFfmpegSettings() != null) {
-			StringTokenizer st = new StringTokenizer(PMS.getConfiguration().getFfmpegSettings() + " -ab " + PMS.getConfiguration().getAudioBitrate() + "k -threads " + PMS.getConfiguration().getNumberOfCpuCores(), " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			StringTokenizer st = new StringTokenizer(PMS.getConfiguration().getFfmpegSettings() + " -ab " + PMS.getConfiguration().getAudioBitrate() + "k -threads " + PMS.getConfiguration().getNumberOfCpuCores(), " ");
 			overriddenArgs = new String[st.countTokens()];
 			int i = 0;
 			while (st.hasMoreTokens()) {
@@ -90,7 +90,7 @@ public class FFMpegVideo extends Player {
 
 	@Override
 	public String name() {
-		return "AviSynth/FFmpeg"; //$NON-NLS-1$
+		return "AviSynth/FFmpeg";
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class FFMpegVideo extends Player {
 	}
 
 	protected String[] getDefaultArgs() {
-		return new String[]{"-vcodec", "mpeg2video", "-f", "vob", "-acodec", "ac3"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		return new String[]{"-vcodec", "mpeg2video", "-f", "vob", "-acodec", "ac3"};
 	}
 
 	@Override
@@ -112,11 +112,11 @@ public class FFMpegVideo extends Player {
 				args[i] = defaultArgs[i];
 			}
 			for (int i = 0; i < overriddenArgs.length; i++) {
-				if (overriddenArgs[i].equals("-f") || overriddenArgs[i].equals("-acodec") || overriddenArgs[i].equals("-vcodec")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					logger.info("FFmpeg encoder settings: You cannot change Muxer, Video Codec or Audio Codec"); //$NON-NLS-1$
-					overriddenArgs[i] = "-title"; //$NON-NLS-1$
+				if (overriddenArgs[i].equals("-f") || overriddenArgs[i].equals("-acodec") || overriddenArgs[i].equals("-vcodec")) {
+					logger.info("FFmpeg encoder settings: You cannot change Muxer, Video Codec or Audio Codec");
+					overriddenArgs[i] = "-title";
 					if (i + 1 < overriddenArgs.length) {
-						overriddenArgs[i + 1] = "NewTitle"; //$NON-NLS-1$
+						overriddenArgs[i + 1] = "NewTitle";
 					}
 				}
 				args[i + defaultArgs.length] = overriddenArgs[i];
@@ -134,7 +134,7 @@ public class FFMpegVideo extends Player {
 
 	@Override
 	public String mimeType() {
-		return HTTPResource.VIDEO_TRANSCODE; //$NON-NLS-1$
+		return HTTPResource.VIDEO_TRANSCODE;
 	}
 
 	@Override
@@ -162,28 +162,28 @@ public class FFMpegVideo extends Player {
 		PipeIPCProcess videoP = null;
 		PipeIPCProcess audioP = null;
 		if (mplayer()) {
-			videoP = new PipeIPCProcess("mplayer_vid1" + System.currentTimeMillis(), "mplayer_vid2" + System.currentTimeMillis(), false, false); //$NON-NLS-1$ //$NON-NLS-2$
-			audioP = new PipeIPCProcess("mplayer_aud1" + System.currentTimeMillis(), "mplayer_aud2" + System.currentTimeMillis(), false, false); //$NON-NLS-1$ //$NON-NLS-2$
+			videoP = new PipeIPCProcess("mplayer_vid1" + System.currentTimeMillis(), "mplayer_vid2" + System.currentTimeMillis(), false, false);
+			audioP = new PipeIPCProcess("mplayer_aud1" + System.currentTimeMillis(), "mplayer_aud2" + System.currentTimeMillis(), false, false);
 		}
 
 		String cmdArray[] = new String[14 + args.length];
 		cmdArray[0] = executable();
-		cmdArray[1] = "-sn"; //$NON-NLS-1$
-		cmdArray[2] = "-sn"; //$NON-NLS-1$
+		cmdArray[1] = "-sn";
+		cmdArray[2] = "-sn";
 		if (params.timeseek > 0 && !mplayer()) {
-			cmdArray[1] = "-ss"; //$NON-NLS-1$
-			cmdArray[2] = "" + params.timeseek; //$NON-NLS-1$
+			cmdArray[1] = "-ss";
+			cmdArray[2] = "" + params.timeseek;
 		}
-		cmdArray[3] = "-sn"; //$NON-NLS-1$
-		cmdArray[4] = "-sn"; //$NON-NLS-1$
-		cmdArray[5] = "-sn"; //$NON-NLS-1$
-		cmdArray[6] = "-sn"; //$NON-NLS-1$
+		cmdArray[3] = "-sn";
+		cmdArray[4] = "-sn";
+		cmdArray[5] = "-sn";
+		cmdArray[6] = "-sn";
 		if (type() == Format.VIDEO) {
-			cmdArray[5] = "-i"; //$NON-NLS-1$
+			cmdArray[5] = "-i";
 			cmdArray[6] = fileName;
 			if (mplayer()) {
-				cmdArray[3] = "-f"; //$NON-NLS-1$
-				cmdArray[4] = "yuv4mpegpipe"; //$NON-NLS-1$
+				cmdArray[3] = "-f";
+				cmdArray[4] = "yuv4mpegpipe";
 				//cmdArray[6] = pipeprefix + videoPipe + (PMS.get().isWindows()?".2":"");
 				cmdArray[6] = videoP.getOutputPipe();
 			} else if (avisynth()) {
@@ -191,43 +191,43 @@ public class FFMpegVideo extends Player {
 				cmdArray[6] = ProcessUtil.getShortFileNameIfWideChars(avsFile.getAbsolutePath());
 			}
 		}
-		cmdArray[7] = "-sn"; //$NON-NLS-1$
-		cmdArray[8] = "-sn"; //$NON-NLS-1$
-		cmdArray[9] = "-sn"; //$NON-NLS-1$
-		cmdArray[10] = "-sn"; //$NON-NLS-1$
+		cmdArray[7] = "-sn";
+		cmdArray[8] = "-sn";
+		cmdArray[9] = "-sn";
+		cmdArray[10] = "-sn";
 		if (type() == Format.VIDEO || type() == Format.AUDIO) {
 			if (type() == Format.VIDEO && (mplayer())) {
-				cmdArray[7] = "-f"; //$NON-NLS-1$
-				cmdArray[8] = "wav"; //$NON-NLS-1$
-				cmdArray[9] = "-i"; //$NON-NLS-1$
+				cmdArray[7] = "-f";
+				cmdArray[8] = "wav";
+				cmdArray[9] = "-i";
 				//cmdArray[10] = pipeprefix + audioPipe + (PMS.get().isWindows()?".2":"");
 				cmdArray[10] = audioP.getOutputPipe();
 			} else if (type() == Format.AUDIO) {
-				cmdArray[7] = "-i"; //$NON-NLS-1$
+				cmdArray[7] = "-i";
 				cmdArray[8] = fileName;
 			}
 		}
 		if (params.timeend > 0) {
-			cmdArray[9] = "-t"; //$NON-NLS-1$
-			cmdArray[10] = "" + params.timeend; //$NON-NLS-1$
+			cmdArray[9] = "-t";
+			cmdArray[10] = "" + params.timeend;
 		}
 		for (int i = 0; i < args.length; i++) {
 			cmdArray[11 + i] = args[i];
 		}
 
-		cmdArray[cmdArray.length - 3] = "-muxpreload"; //$NON-NLS-1$
-		cmdArray[cmdArray.length - 2] = "0"; //$NON-NLS-1$
+		cmdArray[cmdArray.length - 3] = "-muxpreload";
+		cmdArray[cmdArray.length - 2] = "0";
 
 		if (PMS.getConfiguration().isFileBuffer()) {
-			File m = new File(PMS.getConfiguration().getTempFolder(), "pms-transcode.tmp"); //$NON-NLS-1$
+			File m = new File(PMS.getConfiguration().getTempFolder(), "pms-transcode.tmp");
 			if (m.exists() && !m.delete()) {
-				logger.info("Temp file currently used.. Waiting 3 seconds"); //$NON-NLS-1$
+				logger.info("Temp file currently used.. Waiting 3 seconds");
 				try {
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
 				}
 				if (m.exists() && !m.delete()) {
-					logger.info("Temp file cannot be deleted... Serious ERROR"); //$NON-NLS-1$
+					logger.info("Temp file cannot be deleted... Serious ERROR");
 				}
 			}
 			params.outputFile = m;
@@ -235,7 +235,7 @@ public class FFMpegVideo extends Player {
 			m.deleteOnExit();
 			cmdArray[cmdArray.length - 1] = m.getAbsolutePath();
 		} else {
-			cmdArray[cmdArray.length - 1] = "pipe:"; //$NON-NLS-1$
+			cmdArray[cmdArray.length - 1] = "pipe:";
 		}
 
 		cmdArray = finalizeTranscoderArgs(
@@ -253,11 +253,11 @@ public class FFMpegVideo extends Player {
 			ProcessWrapper mkfifo_vid_process = videoP.getPipeProcess();
 			ProcessWrapper mkfifo_aud_process = audioP.getPipeProcess();
 
-			String seek_param = "-quiet"; //$NON-NLS-1$
-			String seek_value = "-quiet"; //$NON-NLS-1$
+			String seek_param = "-quiet";
+			String seek_value = "-quiet";
 			if (params.timeseek > 0) {
-				seek_param = "-ss"; //$NON-NLS-1$
-				seek_value = "" + params.timeseek; //$NON-NLS-1$
+				seek_param = "-ss";
+				seek_value = "" + params.timeseek;
 			}
 
 			String overiddenMPlayerArgs[] = null;
@@ -265,7 +265,7 @@ public class FFMpegVideo extends Player {
 			overiddenMPlayerArgs = new String[0];
 
 
-			String mPlayerdefaultVideoArgs[] = new String[]{fileName, seek_param, seek_value, "-vo", "yuv4mpeg:file=" + videoP.getInputPipe(), "-ao", "pcm:waveheader:file=" + audioP.getInputPipe(), "-benchmark", "-noframedrop", "-speed", "100"/*, "-quiet"*/}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+			String mPlayerdefaultVideoArgs[] = new String[]{fileName, seek_param, seek_value, "-vo", "yuv4mpeg:file=" + videoP.getInputPipe(), "-ao", "pcm:waveheader:file=" + audioP.getInputPipe(), "-benchmark", "-noframedrop", "-speed", "100"/*, "-quiet"*/};
 			OutputParams mplayer_vid_params = new OutputParams(PMS.getConfiguration());
 			mplayer_vid_params.maxBufferSize = 1;
 
@@ -315,28 +315,28 @@ public class FFMpegVideo extends Player {
 	}
 
 	public static File getAVSScript(String fileName, DLNAMediaSubtitle subTrack, int fromFrame, int toFrame) throws IOException {
-		String onlyFileName = fileName.substring(1 + fileName.lastIndexOf("\\")); //$NON-NLS-1$
-		File file = new File(PMS.getConfiguration().getTempFolder(), "pms-avs-" + onlyFileName + ".avs"); //$NON-NLS-1$ //$NON-NLS-2$
+		String onlyFileName = fileName.substring(1 + fileName.lastIndexOf("\\"));
+		File file = new File(PMS.getConfiguration().getTempFolder(), "pms-avs-" + onlyFileName + ".avs");
 		PrintWriter pw = new PrintWriter(new FileOutputStream(file));
 
-		String convertfps = ""; //$NON-NLS-1$
+		String convertfps = "";
 		if (PMS.getConfiguration().getAvisynthConvertFps()) {
-			convertfps = ", convertfps=true"; //$NON-NLS-1$
+			convertfps = ", convertfps=true";
 		}
 		File f = new File(fileName);
 		if (f.exists()) {
 			fileName = ProcessUtil.getShortFileNameIfWideChars(fileName);
 		}
-		String movieLine = "clip=DirectShowSource(\"" + fileName + "\"" + convertfps + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		String movieLine = "clip=DirectShowSource(\"" + fileName + "\"" + convertfps + ")";
 		String subLine = null;
 		if (subTrack != null && PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
 			logger.trace("Avisynth script: Using sub track: " + subTrack);
 			if (subTrack.file != null) {
-				String function = "TextSub"; //$NON-NLS-1$
+				String function = "TextSub";
 				if (subTrack.type == DLNAMediaSubtitle.VOBSUB) {
-					function = "VobSub"; //$NON-NLS-1$
+					function = "VobSub";
 				}
-				subLine = "clip=" + function + "(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(subTrack.file.getAbsolutePath()) + "\")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				subLine = "clip=" + function + "(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(subTrack.file.getAbsolutePath()) + "\")";
 			}
 		}
 
@@ -347,7 +347,7 @@ public class FFMpegVideo extends Player {
 		StringTokenizer st = new StringTokenizer(script, PMS.AVS_SEPARATOR);
 		while (st.hasMoreTokens()) {
 			String line = st.nextToken();
-			if (line.contains("<movie") || line.contains("<sub")) //$NON-NLS-1$ //$NON-NLS-2$
+			if (line.contains("<movie") || line.contains("<sub"))
 			{
 				fullyManaged = true;
 			}
@@ -356,11 +356,11 @@ public class FFMpegVideo extends Player {
 
 		if (fullyManaged) {
 			for (String s : lines) {
-				s = s.replace("<moviefilename>", fileName); //$NON-NLS-1$
+				s = s.replace("<moviefilename>", fileName);
 				if (movieLine != null) {
-					s = s.replace("<movie>", movieLine); //$NON-NLS-1$
+					s = s.replace("<movie>", movieLine);
 				}
-				s = s.replace("<sub>", subLine != null ? subLine : "#"); //$NON-NLS-1$ //$NON-NLS-2$
+				s = s.replace("<sub>", subLine != null ? subLine : "#");
 				pw.println(s);
 			}
 		} else {
@@ -368,7 +368,7 @@ public class FFMpegVideo extends Player {
 			if (subLine != null) {
 				pw.println(subLine);
 			}
-			pw.println("clip"); //$NON-NLS-1$
+			pw.println("clip");
 
 		}
 
@@ -381,15 +381,15 @@ public class FFMpegVideo extends Player {
 	@Override
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
-			"left:pref, 0:grow", //$NON-NLS-1$
-			"p, 3dlu, p, 3dlu"); //$NON-NLS-1$
+			"left:pref, 0:grow",
+			"p, 3dlu, p, 3dlu");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.EMPTY_BORDER);
 		builder.setOpaque(false);
 
 		CellConstraints cc = new CellConstraints();
 
-		JComponent cmp = builder.addSeparator(Messages.getString("FFMpegVideo.0"), cc.xyw(2, 1, 1)); //$NON-NLS-1$
+		JComponent cmp = builder.addSeparator(Messages.getString("FFMpegVideo.0"), cc.xyw(2, 1, 1));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 

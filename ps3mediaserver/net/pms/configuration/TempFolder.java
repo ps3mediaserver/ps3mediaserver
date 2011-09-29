@@ -58,8 +58,8 @@ class TempFolder {
 	}
 
 	private static File getSystemTempFolder() throws IOException {
-		File tmp = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
-		File myTMP = new File(tmp, DEFAULT_TEMP_FOLDER_NAME); //$NON-NLS-1$
+		File tmp = new File(System.getProperty("java.io.tmpdir"));
+		File myTMP = new File(tmp, DEFAULT_TEMP_FOLDER_NAME);
 		FileUtils.forceMkdir(myTMP);
 		assertFolderIsValid(myTMP);
 		return myTMP;

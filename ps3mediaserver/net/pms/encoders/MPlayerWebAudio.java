@@ -29,7 +29,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 
 public class MPlayerWebAudio extends MPlayerAudio {
-	public static final String ID = "mplayerwebaudio"; //$NON-NLS-1$
+	public static final String ID = "mplayerwebaudio";
 
 	public MPlayerWebAudio(PmsConfiguration configuration) {
 		super(configuration);
@@ -47,7 +47,7 @@ public class MPlayerWebAudio extends MPlayerAudio {
 
 	@Override
 	public String id() {
-		return "mplayerwebaudio"; //$NON-NLS-1$
+		return "mplayerwebaudio";
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class MPlayerWebAudio extends MPlayerAudio {
 
 	@Override
 	public String name() {
-		return "MPlayer Web"; //$NON-NLS-1$
+		return "MPlayer Web";
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class M4A extends OGG {
 	@Override
 	public String[] getId() {
 		return new String[]{
-				"wma", "m4a", "aac" //$NON-NLS-1$ //$NON-NLS-2$
+				"wma", "m4a", "aac"
 			};
 	}
 

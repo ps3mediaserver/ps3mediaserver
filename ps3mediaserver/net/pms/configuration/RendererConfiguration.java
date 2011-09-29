@@ -99,9 +99,9 @@ public class RendererConfiguration {
 		String hostname = currentRendererAddress.getCanonicalHostName();
 
 		if (!ip.equals(hostname)) {
-			logger.info("Renderer " + this + " found on this address: " + hostname + " (" + ip + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			logger.info("Renderer " + this + " found on this address: " + hostname + " (" + ip + ")");
 		} else {
-			logger.info("Renderer " + this + " found on this address: " + ip); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.info("Renderer " + this + " found on this address: " + ip);
 		}
 
 		// let's get that speed
@@ -524,9 +524,9 @@ public class RendererConfiguration {
 			String hostname = currentRendererAddress.getCanonicalHostName();
 
 			if (!ip.equals(hostname)) {
-				s = s + " [" + hostname + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+				s = s + " [" + hostname + "]";
 			} else {
-				s = s + " [" + ip + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+				s = s + " [" + ip + "]";
 			}
 		}
 		if (speedInMbits > 0) {

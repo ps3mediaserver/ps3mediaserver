@@ -82,15 +82,15 @@ public class GeneralTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-				"left:pref, 2dlu, p, 2dlu , p, 2dlu, p, 2dlu, pref:grow", //$NON-NLS-1$
-				"p, 0dlu, p, 0dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 15dlu, p, 3dlu,p, 3dlu, p,  3dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p"); //$NON-NLS-1$
+				"left:pref, 2dlu, p, 2dlu , p, 2dlu, p, 2dlu, pref:grow",
+				"p, 0dlu, p, 0dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 15dlu, p, 3dlu,p, 3dlu, p,  3dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.DLU4_BORDER);
 		builder.setOpaque(true);
 
 		CellConstraints cc = new CellConstraints();
 
-		smcheckBox = new JCheckBox(Messages.getString("NetworkTab.3")); //$NON-NLS-1$
+		smcheckBox = new JCheckBox(Messages.getString("NetworkTab.3"));
 		smcheckBox.setContentAreaFilled(false);
 		smcheckBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -102,12 +102,12 @@ public class GeneralTab {
 			smcheckBox.setSelected(true);
 		}
 
-		JComponent cmp = builder.addSeparator(Messages.getString("NetworkTab.5"), cc.xyw(1, 1, 9)); //$NON-NLS-1$
+		JComponent cmp = builder.addSeparator(Messages.getString("NetworkTab.5"), cc.xyw(1, 1, 9));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		builder.addLabel(Messages.getString("NetworkTab.0"), cc.xy(1, 7)); //$NON-NLS-1$
-		final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[]{"bg", "ca", "zhs", "zht", "cz", "da", "nl", "en", "fi", "fr", "de", "el", "is", "it", "ja", "ko", "no", "pl", "pt", "br", "ro", "ru", "sl", "es", "sv"}, new Object[]{"Bulgarian", "Catalan", "Chinese (Simplified)", "Chinese (Traditional)", "Czech", "Danish", "Dutch", "English", "Finnish", "French", "German", "Greek", "Icelandic", "Italian", "Japanese", "Korean", "Norwegian", "Polish", "Portuguese", "Portuguese (Brazilian)", "Romanian", "Russian", "Slovenian", "Spanish", "Swedish"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$ //$NON-NLS-21$ //$NON-NLS-22$ //$NON-NLS-23$ //$NON-NLS-24$ //$NON-NLS-25$ //$NON-NLS-26$ //$NON-NLS-27$ //$NON-NLS-28$ //$NON-NLS-29$ //$NON-NLS-30$ //$NON-NLS-31$ //$NON-NLS-32$ //$NON-NLS-33$ //$NON-NLS-34$ //$NON-NLS-35$ //$NON-NLS-36$ //$NON-NLS-37$ //$NON-NLS-38$ //$NON-NLS-39$ //$NON-NLS-40$ //$NON-NLS-41$ //$NON-NLS-42$ //$NON-NLS-43$ //$NON-NLS-44$ //$NON-NLS-45$ //$NON-NLS-46$ //$NON-NLS-47$ //$NON-NLS-48$ //$NON-NLS-49$ //$NON-NLS-50$
+		builder.addLabel(Messages.getString("NetworkTab.0"), cc.xy(1, 7));
+		final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[]{"bg", "ca", "zhs", "zht", "cz", "da", "nl", "en", "fi", "fr", "de", "el", "is", "it", "ja", "ko", "no", "pl", "pt", "br", "ro", "ru", "sl", "es", "sv"}, new Object[]{"Bulgarian", "Catalan", "Chinese (Simplified)", "Chinese (Traditional)", "Czech", "Danish", "Dutch", "English", "Finnish", "French", "German", "Greek", "Icelandic", "Italian", "Japanese", "Korean", "Norwegian", "Polish", "Portuguese", "Portuguese (Brazilian)", "Romanian", "Russian", "Slovenian", "Spanish", "Swedish"});
 		langs = new JComboBox(kcbm);
 		langs.setEditable(false);
 		String defaultLang = null;
@@ -117,7 +117,7 @@ public class GeneralTab {
 			defaultLang = Locale.getDefault().getLanguage();
 		}
 		if (defaultLang == null) {
-			defaultLang = "en"; //$NON-NLS-1$
+			defaultLang = "en";
 		}
 		kcbm.setSelectedKey(defaultLang);
 		if (langs.getSelectedIndex() == -1) {
@@ -136,23 +136,23 @@ public class GeneralTab {
 
 		builder.add(smcheckBox, cc.xyw(1, 9, 9));
 
-		JButton service = new JButton(Messages.getString("NetworkTab.4")); //$NON-NLS-1$
+		JButton service = new JButton(Messages.getString("NetworkTab.4"));
 		service.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (PMS.get().installWin32Service()) {
 					JOptionPane.showMessageDialog(
 						(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-						Messages.getString("NetworkTab.11") + //$NON-NLS-1$
-						Messages.getString("NetworkTab.12"), //$NON-NLS-1$
-						"Information", //$NON-NLS-1$
+						Messages.getString("NetworkTab.11") +
+						Messages.getString("NetworkTab.12"),
+						"Information",
 						JOptionPane.INFORMATION_MESSAGE);
 
 				} else {
 					JOptionPane.showMessageDialog(
 						(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-						Messages.getString("NetworkTab.14"), //$NON-NLS-1$
-						"Error", //$NON-NLS-1$
+						Messages.getString("NetworkTab.14"),
+						"Error",
 						JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -164,7 +164,7 @@ public class GeneralTab {
 			service.setEnabled(false);
 		}
 
-		JButton checkForUpdates = new JButton(Messages.getString("NetworkTab.8")); //$NON-NLS-1$
+		JButton checkForUpdates = new JButton(Messages.getString("NetworkTab.8"));
 
 		checkForUpdates.addActionListener(new ActionListener() {
 			@Override
@@ -176,7 +176,7 @@ public class GeneralTab {
 
 		builder.add(checkForUpdates, cc.xy(1, 13));
 
-		autoUpdateCheckBox = new JCheckBox(Messages.getString("NetworkTab.9")); //$NON-NLS-1$
+		autoUpdateCheckBox = new JCheckBox(Messages.getString("NetworkTab.9"));
 		autoUpdateCheckBox.setContentAreaFilled(false);
 		autoUpdateCheckBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -212,7 +212,7 @@ public class GeneralTab {
 			}
 		});
 
-		port = new JTextField(configuration.getServerPort() != 5001 ? "" + configuration.getServerPort() : ""); //$NON-NLS-1$ //$NON-NLS-2$
+		port = new JTextField(configuration.getServerPort() != 5001 ? "" + configuration.getServerPort() : "");
 		port.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -227,7 +227,7 @@ public class GeneralTab {
 				try {
 					String p = port.getText();
 					if (StringUtils.isEmpty(p)) {
-						p = "5001"; //$NON-NLS-1$
+						p = "5001";
 					}
 					int ab = Integer.parseInt(p);
 					configuration.setServerPort(ab);
@@ -238,14 +238,14 @@ public class GeneralTab {
 			}
 		});
 
-		cmp = builder.addSeparator(Messages.getString("NetworkTab.22"), cc.xyw(1, 21, 9)); //$NON-NLS-1$
+		cmp = builder.addSeparator(Messages.getString("NetworkTab.22"), cc.xyw(1, 21, 9));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		ArrayList<String> names = new ArrayList<String>();
-		names.add(""); //$NON-NLS-1$
+		names.add("");
 		ArrayList<String> interfaces = new ArrayList<String>();
-		interfaces.add(""); //$NON-NLS-1$
+		interfaces.add("");
 		Enumeration<NetworkInterface> enm;
 		try {
 			enm = NetworkInterface.getNetworkInterfaces();
@@ -294,13 +294,13 @@ public class GeneralTab {
 			}
 		});
 
-		builder.addLabel(Messages.getString("NetworkTab.20"), cc.xy(1, 23)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("NetworkTab.20"), cc.xy(1, 23));
 		builder.add(networkinterfacesCBX, cc.xyw(3, 23, 7));
-		builder.addLabel(Messages.getString("NetworkTab.23"), cc.xy(1, 25)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("NetworkTab.23"), cc.xy(1, 25));
 		builder.add(host, cc.xyw(3, 25, 7));
-		builder.addLabel(Messages.getString("NetworkTab.24"), cc.xy(1, 27)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("NetworkTab.24"), cc.xy(1, 27));
 		builder.add(port, cc.xyw(3, 27, 7));
-		builder.addLabel(Messages.getString("NetworkTab.30"), cc.xy(1, 29)); //$NON-NLS-1$
+		builder.addLabel(Messages.getString("NetworkTab.30"), cc.xy(1, 29));
 		builder.add(ip_filter, cc.xyw(3, 29, 7));
 
 
@@ -343,8 +343,8 @@ public class GeneralTab {
 
 	public void addPlugins() {
 		FormLayout layout = new FormLayout(
-				"fill:10:grow", //$NON-NLS-1$
-				"p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p"); //$NON-NLS-1$
+				"fill:10:grow",
+				"p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p");
 		PanelBuilder builder = new PanelBuilder(layout);
 
 		CellConstraints cc = new CellConstraints();

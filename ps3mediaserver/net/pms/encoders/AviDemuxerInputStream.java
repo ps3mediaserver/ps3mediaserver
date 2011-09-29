@@ -67,12 +67,12 @@ public class AviDemuxerInputStream extends InputStream {
 
 	public AviDemuxerInputStream(InputStream fin, final OutputParams params, ArrayList<ProcessWrapper> at) throws IOException {
 		stream = fin;
-		logger.trace("Opening AVI Stream"); //$NON-NLS-1$
+		logger.trace("Opening AVI Stream");
 		this.attachedProcesses = at;
 		this.params = params;
 
 		aOut = params.output_pipes[1].getOutputStream();
-		if (params.no_videoencode && params.forceType != null && params.forceType.equals("V_MPEG4/ISO/AVC") && params.header != null) { //$NON-NLS-1$
+		if (params.no_videoencode && params.forceType != null && params.forceType.equals("V_MPEG4/ISO/AVC") && params.header != null) {
 			// NOT USED RIGHT NOW
 			PipedOutputStream pout = new PipedOutputStream();
 			final InputStream pin = new H264AnnexBInputStream(new PipedInputStream(pout), params.header);
@@ -102,26 +102,26 @@ public class AviDemuxerInputStream extends InputStream {
 				try {
 					// TODO(tcox): Is this used anymore?
 					TSMuxerVideo ts = new TSMuxerVideo(PMS.getConfiguration());
-					File f = new File(PMS.getConfiguration().getTempFolder(), "pms-tsmuxer.meta"); //$NON-NLS-1$
+					File f = new File(PMS.getConfiguration().getTempFolder(), "pms-tsmuxer.meta");
 					PrintWriter pw = new PrintWriter(f);
-					pw.println("MUXOPT --no-pcr-on-video-pid --no-asyncio --new-audio-pes --vbr --vbv-len=500"); //$NON-NLS-1$
-					String videoType = "V_MPEG-2"; //$NON-NLS-1$
+					pw.println("MUXOPT --no-pcr-on-video-pid --no-asyncio --new-audio-pes --vbr --vbv-len=500");
+					String videoType = "V_MPEG-2";
 					if (params.no_videoencode && params.forceType != null) {
 						videoType = params.forceType;
 					}
-					String fps = ""; //$NON-NLS-1$
+					String fps = "";
 					if (params.forceFps != null) {
-						fps = "fps=" + params.forceFps + ", "; //$NON-NLS-1$ //$NON-NLS-2$
+						fps = "fps=" + params.forceFps + ", ";
 					}
-					String audioType = "A_LPCM"; //$NON-NLS-1$
+					String audioType = "A_LPCM";
 					if (params.lossyaudio) {
-						audioType = "A_AC3"; //$NON-NLS-1$
+						audioType = "A_AC3";
 					}
-					pw.println(videoType + ", \"" + params.output_pipes[0].getOutputPipe() + "\", " + fps + "level=4.1, insertSEI, contSPS, track=1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					pw.println(audioType + ", \"" + params.output_pipes[1].getOutputPipe() + "\", track=2"); //$NON-NLS-1$ //$NON-NLS-2$
+					pw.println(videoType + ", \"" + params.output_pipes[0].getOutputPipe() + "\", " + fps + "level=4.1, insertSEI, contSPS, track=1");
+					pw.println(audioType + ", \"" + params.output_pipes[1].getOutputPipe() + "\", track=2");
 					pw.close();
 
-					PipeProcess tsPipe = new PipeProcess(System.currentTimeMillis() + "tsmuxerout.ts"); //$NON-NLS-1$
+					PipeProcess tsPipe = new PipeProcess(System.currentTimeMillis() + "tsmuxerout.ts");
 					ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 					attachedProcesses.add(pipe_process);
 					pipe_process.runInNewThread();
@@ -140,7 +140,7 @@ public class AviDemuxerInputStream extends InputStream {
 
 					realIS = tsPipe.getInputStream();
 					ProcessUtil.waitFor(process);
-					logger.trace("tsMuxeR muxing finished"); //$NON-NLS-1$
+					logger.trace("tsMuxeR muxing finished");
 				} catch (Exception e) {
 					logger.error(null, e);
 				}
@@ -154,25 +154,25 @@ public class AviDemuxerInputStream extends InputStream {
 					parseHeader();
 				} catch (Exception e) {
 					//e.printStackTrace();
-					logger.debug("Parsing error: " + e.getMessage()); //$NON-NLS-1$
+					logger.debug("Parsing error: " + e.getMessage());
 				}
 			}
 		};
 
-		logger.trace("Launching tsMuxeR muxing"); //$NON-NLS-1$
+		logger.trace("Launching tsMuxeR muxing");
 		new Thread(r).start();
 		parsing = new Thread(r2);
-		logger.trace("Ready to mux"); //$NON-NLS-1$
+		logger.trace("Ready to mux");
 	}
 
 	private void parseHeader() throws IOException {
-		logger.trace("Parsing AVI Stream"); //$NON-NLS-1$
+		logger.trace("Parsing AVI Stream");
 		String id = getString(stream, 4);
 		getBytes(stream, 4);
 		String type = getString(stream, 4);
-		if (!"RIFF".equalsIgnoreCase(id) || !"AVI ".equalsIgnoreCase(type)) //$NON-NLS-1$ //$NON-NLS-2$
+		if (!"RIFF".equalsIgnoreCase(id) || !"AVI ".equalsIgnoreCase(type))
 		{
-			throw new IOException("Not AVI file"); //$NON-NLS-1$
+			throw new IOException("Not AVI file");
 		}
 		byte[] hdrl = null;
 
@@ -180,20 +180,20 @@ public class AviDemuxerInputStream extends InputStream {
 			String command = getString(stream, 4);
 			int length = (readBytes(stream, 4) + 1) & ~1;
 
-			if ("LIST".equalsIgnoreCase(command)) { //$NON-NLS-1$
+			if ("LIST".equalsIgnoreCase(command)) {
 				command = getString(stream, 4);
 				length -= 4;
-				if ("movi".equalsIgnoreCase(command)) { //$NON-NLS-1$
+				if ("movi".equalsIgnoreCase(command)) {
 					break;
 				}
-				if ("hdrl".equalsIgnoreCase(command)) { //$NON-NLS-1$
+				if ("hdrl".equalsIgnoreCase(command)) {
 					hdrl = getBytes(stream, length);
 				}
-				if ("idx1".equalsIgnoreCase(command)) { //$NON-NLS-1$
+				if ("idx1".equalsIgnoreCase(command)) {
 					/*idx = */
 					getBytes(stream, length);
 				}
-				if ("iddx".equalsIgnoreCase(command)) { //$NON-NLS-1$
+				if ("iddx".equalsIgnoreCase(command)) {
 					/*idx = */
 					getBytes(stream, length);
 				}
@@ -210,15 +210,15 @@ public class AviDemuxerInputStream extends InputStream {
 			String command = new String(hdrl, i, 4);
 			int size = str2ulong(hdrl, i + 4);
 
-			if ("LIST".equalsIgnoreCase(command)) { //$NON-NLS-1$
+			if ("LIST".equalsIgnoreCase(command)) {
 				i += 12;
 				continue;
 			}
 
 			String command2 = new String(hdrl, i + 8, 4);
-			if ("strh".equalsIgnoreCase(command)) { //$NON-NLS-1$
+			if ("strh".equalsIgnoreCase(command)) {
 				lastTagID = 0;
-				if ("vids".equalsIgnoreCase(command2)) { //$NON-NLS-1$
+				if ("vids".equalsIgnoreCase(command2)) {
 					String compressor = new String(hdrl, i + 12, 4);
 					int scale = str2ulong(hdrl, i + 28);
 					int rate = str2ulong(hdrl, i + 32);
@@ -229,7 +229,7 @@ public class AviDemuxerInputStream extends InputStream {
 					streamNumber++;
 					lastTagID = 1;
 				}
-				if ("auds".equalsIgnoreCase(command2)) { //$NON-NLS-1$
+				if ("auds".equalsIgnoreCase(command2)) {
 					int scale = str2ulong(hdrl, i + 28);
 					int rate = str2ulong(hdrl, i + 32);
 					int sampleSize = str2ulong(hdrl, i + 52);
@@ -242,7 +242,7 @@ public class AviDemuxerInputStream extends InputStream {
 				}
 			}
 
-			if ("strf".equalsIgnoreCase(command)) { //$NON-NLS-1$
+			if ("strf".equalsIgnoreCase(command)) {
 				if (lastTagID == 1) {
 
 					byte[] information = new byte[size]; // formerly size-4
@@ -277,7 +277,7 @@ public class AviDemuxerInputStream extends InputStream {
 			i += size + 8;
 		}
 
-		logger.trace("Found " + streamNumber + " stream(s)"); //$NON-NLS-1$ //$NON-NLS-2$
+		logger.trace("Found " + streamNumber + " stream(s)");
 
 		boolean init = false;
 		while (true) {
@@ -286,7 +286,7 @@ public class AviDemuxerInputStream extends InputStream {
 			try {
 				command = getString(stream, 4);
 			} catch (Exception e) {
-				logger.trace("Error attendue: " + e.getMessage()); //$NON-NLS-1$
+				logger.trace("Error attendue: " + e.getMessage());
 				break;
 			}
 			if (command == null) {
@@ -297,16 +297,16 @@ public class AviDemuxerInputStream extends InputStream {
 
 			boolean framed = false;
 
-			while ("LIST".equals(command) //$NON-NLS-1$
-				|| "RIFF".equals(command) //$NON-NLS-1$
-				|| "JUNK".equals(command)) { //$NON-NLS-1$
+			while ("LIST".equals(command)
+				|| "RIFF".equals(command)
+				|| "JUNK".equals(command)) {
 				if (size < 0) {
 					size = 4;
 				}
-				getBytes(stream, "RIFF".equals(command) ? 4 : size); //$NON-NLS-1$
+				getBytes(stream, "RIFF".equals(command) ? 4 : size);
 				command = getString(stream, 4).toUpperCase();
 				size = readBytes(stream, 4);
-				if (("LIST".equals(command) || "RIFF".equals(command) || "JUNK".equals(command)) && (size % 2 == 1)) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				if (("LIST".equals(command) || "RIFF".equals(command) || "JUNK".equals(command)) && (size % 2 == 1))
 				{
 					readByte(stream);
 				}
@@ -317,7 +317,7 @@ public class AviDemuxerInputStream extends InputStream {
 			if (command.substring(0, 3).equalsIgnoreCase(videoTag)
 				&& (command.charAt(3) == 'B' || command.charAt(3) == 'C')) {
 				byte buffer[] = getBytes(stream, size);
-				if (!command.equalsIgnoreCase("IDX1")) { //$NON-NLS-1$
+				if (!command.equalsIgnoreCase("IDX1")) {
 					vOut.write(buffer);
 					videosize += size;
 				}
@@ -328,7 +328,7 @@ public class AviDemuxerInputStream extends InputStream {
 				for (int i = 0; i < numberOfAudioChannels; i++) {
 
 					byte buffer[] = getBytes(stream, size);
-					if (!command.equalsIgnoreCase("IDX1")) { //$NON-NLS-1$
+					if (!command.equalsIgnoreCase("IDX1")) {
 						aOut.write(buffer, init ? 4 : 0, init ? (size - 4) : size);
 						init = false;
 						audiosize += size;
@@ -340,7 +340,7 @@ public class AviDemuxerInputStream extends InputStream {
 			}
 
 			if (!framed) {
-				throw new IOException("Not header: " + command); //$NON-NLS-1$
+				throw new IOException("Not header: " + command);
 			}
 
 			if (size % 2 == 1) {
@@ -348,7 +348,7 @@ public class AviDemuxerInputStream extends InputStream {
 			}
 
 		}
-		logger.trace("output pipes closed"); //$NON-NLS-1$
+		logger.trace("output pipes closed");
 		aOut.close();
 		vOut.close();
 	}
@@ -377,7 +377,7 @@ public class AviDemuxerInputStream extends InputStream {
 
 		if (read < number) {
 			if (read < 0) {
-				throw new IOException("End of Stream"); //$NON-NLS-1$
+				throw new IOException("End of Stream");
 			}
 			for (int i = read; i < number; i++) {
 				buffer[i] = (byte) readByte(input);
@@ -399,7 +399,7 @@ public class AviDemuxerInputStream extends InputStream {
 				return (buffer[0] & 0xff) | ((buffer[1] & 0xff) << 8)
 					| ((buffer[2] & 0xff) << 16) | ((buffer[3] & 0xff) << 24);
 			default:
-				throw new IOException("Illegal Read quantity"); //$NON-NLS-1$
+				throw new IOException("Illegal Read quantity");
 		}
 	}
 

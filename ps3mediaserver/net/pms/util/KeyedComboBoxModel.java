@@ -162,7 +162,7 @@ public class KeyedComboBoxModel implements ComboBoxModel {
 	 */
 	public void setData(final Object[] keys, final Object[] values) {
 		if (values.length != keys.length) {
-			throw new IllegalArgumentException("Values and text must have the same length."); //$NON-NLS-1$
+			throw new IllegalArgumentException("Values and text must have the same length.");
 		}
 
 		data.clear();
@@ -353,7 +353,7 @@ public class KeyedComboBoxModel implements ComboBoxModel {
 	 */
 	private int findDataElementIndex(final Object anItem) {
 		if (anItem == null) {
-			throw new NullPointerException("Item to find must not be null"); //$NON-NLS-1$
+			throw new NullPointerException("Item to find must not be null");
 		}
 
 		for (int i = 0; i < data.size(); i++) {
@@ -374,7 +374,7 @@ public class KeyedComboBoxModel implements ComboBoxModel {
 	 */
 	public int findElementIndex(final Object key) {
 		if (key == null) {
-			throw new NullPointerException("Item to find must not be null"); //$NON-NLS-1$
+			throw new NullPointerException("Item to find must not be null");
 		}
 
 		for (int i = 0; i < data.size(); i++) {

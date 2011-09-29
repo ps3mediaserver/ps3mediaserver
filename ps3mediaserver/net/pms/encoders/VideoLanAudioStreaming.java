@@ -22,7 +22,7 @@ import net.pms.configuration.PmsConfiguration;
 import net.pms.formats.Format;
 
 public class VideoLanAudioStreaming extends VideoLanVideoStreaming {
-	public static final String ID = "vlcaudio"; //$NON-NLS-1$
+	public static final String ID = "vlcaudio";
 
 	public VideoLanAudioStreaming(PmsConfiguration configuration) {
 		super(configuration);
@@ -40,7 +40,7 @@ public class VideoLanAudioStreaming extends VideoLanVideoStreaming {
 
 	@Override
 	public String name() {
-		return "VLC Audio Streaming"; //$NON-NLS-1$
+		return "VLC Audio Streaming";
 	}
 
 	@Override
@@ -50,16 +50,16 @@ public class VideoLanAudioStreaming extends VideoLanVideoStreaming {
 
 	@Override
 	public String mimeType() {
-		return "audio/wav"; //$NON-NLS-1$
+		return "audio/wav";
 	}
 
 	@Override
 	protected String getEncodingArgs() {
-		return "acodec=s16l,channels=2"; //$NON-NLS-1$
+		return "acodec=s16l,channels=2";
 	}
 
 	@Override
 	protected String getMux() {
-		return "wav"; //$NON-NLS-1$
+		return "wav";
 	}
 }

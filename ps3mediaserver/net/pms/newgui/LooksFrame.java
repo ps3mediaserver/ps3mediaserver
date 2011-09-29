@@ -72,7 +72,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	private static final Logger logger = LoggerFactory.getLogger(LooksFrame.class);
 	private final AutoUpdater autoUpdater;
 	private final PmsConfiguration configuration;
-	public static final String START_SERVICE = "start.service"; //$NON-NLS-1$
+	public static final String START_SERVICE = "start.service";
 	private static final long serialVersionUID = 8723727186288427690L;
 	private NavigationShareTab ft;
 	private StatusTab st;
@@ -110,32 +110,32 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		LookAndFeel selectedLaf = null;
 		if (Platform.isWindows()) {
 			try {
-				selectedLaf = (LookAndFeel) Class.forName("com.jgoodies.looks.windows.WindowsLookAndFeel").newInstance(); //$NON-NLS-1$
-				//selectedLaf = (LookAndFeel) Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance(); //$NON-NLS-1$
+				selectedLaf = (LookAndFeel) Class.forName("com.jgoodies.looks.windows.WindowsLookAndFeel").newInstance();
+				//selectedLaf = (LookAndFeel) Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance();
 			} catch (Exception e) {
 				selectedLaf = new PlasticLookAndFeel();
 			}
-		} else if (System.getProperty("nativelook") == null && !Platform.isMac()) { //$NON-NLS-1$
+		} else if (System.getProperty("nativelook") == null && !Platform.isMac()) {
 			selectedLaf = new PlasticLookAndFeel();
 		} else {
 			try {
 				String systemClassName = UIManager.getSystemLookAndFeelClassName();
 				// workaround for gnome
 				try {
-					String gtkLAF = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel"; //$NON-NLS-1$
+					String gtkLAF = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
 					Class.forName(gtkLAF);
-					if (systemClassName.equals("javax.swing.plaf.metal.MetalLookAndFeel")) //$NON-NLS-1$
+					if (systemClassName.equals("javax.swing.plaf.metal.MetalLookAndFeel"))
 					{
 						systemClassName = gtkLAF;
 					}
 				} catch (ClassNotFoundException ce) {
 				}
 
-				logger.debug("Choosing java look and feel: " + systemClassName); //$NON-NLS-1$
+				logger.debug("Choosing java look and feel: " + systemClassName);
 				UIManager.setLookAndFeel(systemClassName);
 			} catch (Exception e1) {
 				selectedLaf = new PlasticLookAndFeel();
-				logger.error("Error while setting native look and feel: ", e1); //$NON-NLS-1$
+				logger.error("Error while setting native look and feel: ", e1);
 			}
 		}
 
@@ -157,7 +157,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			try {
 				UIManager.setLookAndFeel(selectedLaf);
 			} catch (Exception e) {
-				System.out.println("Can't change L&F: " + e); //$NON-NLS-1$
+				System.out.println("Can't change L&F: " + e);
 			}
 		}
 
@@ -192,53 +192,53 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		Font sf = null;
 
 		// Set an unicode font for testing exotics languages (japanese)
-		if (PMS.getConfiguration().getLanguage() != null && (PMS.getConfiguration().getLanguage().equals("ja") || PMS.getConfiguration().getLanguage().startsWith("zh"))) //$NON-NLS-1$ //$NON-NLS-2$
+		if (PMS.getConfiguration().getLanguage() != null && (PMS.getConfiguration().getLanguage().equals("ja") || PMS.getConfiguration().getLanguage().startsWith("zh")))
 		{
-			sf = new Font("Serif", Font.PLAIN, 12); //$NON-NLS-1$
+			sf = new Font("Serif", Font.PLAIN, 12);
 		}
 		if (sf != null) {
-			UIManager.put("Button.font", sf);  //$NON-NLS-1$
-			UIManager.put("ToggleButton.font", sf);  //$NON-NLS-1$
-			UIManager.put("RadioButton.font", sf);  //$NON-NLS-1$
-			UIManager.put("CheckBox.font", sf);  //$NON-NLS-1$
-			UIManager.put("ColorChooser.font", sf);  //$NON-NLS-1$
-			UIManager.put("ToggleButton.font", sf);  //$NON-NLS-1$
-			UIManager.put("ComboBox.font", sf);  //$NON-NLS-1$
-			UIManager.put("ComboBoxItem.font", sf);  //$NON-NLS-1$
-			UIManager.put("InternalFrame.titleFont", sf);  //$NON-NLS-1$
-			UIManager.put("Label.font", sf);  //$NON-NLS-1$
-			UIManager.put("List.font", sf);  //$NON-NLS-1$
-			UIManager.put("MenuBar.font", sf);  //$NON-NLS-1$
-			UIManager.put("Menu.font", sf);  //$NON-NLS-1$
-			UIManager.put("MenuItem.font", sf);  //$NON-NLS-1$
-			UIManager.put("RadioButtonMenuItem.font", sf);  //$NON-NLS-1$
-			UIManager.put("CheckBoxMenuItem.font", sf);  //$NON-NLS-1$
-			UIManager.put("PopupMenu.font", sf);  //$NON-NLS-1$
-			UIManager.put("OptionPane.font", sf);  //$NON-NLS-1$
-			UIManager.put("Panel.font", sf);  //$NON-NLS-1$
-			UIManager.put("ProgressBar.font", sf);  //$NON-NLS-1$
-			UIManager.put("ScrollPane.font", sf);  //$NON-NLS-1$
-			UIManager.put("Viewport", sf);  //$NON-NLS-1$
-			UIManager.put("TabbedPane.font", sf);  //$NON-NLS-1$
-			UIManager.put("TableHeader.font", sf);  //$NON-NLS-1$
-			UIManager.put("TextField.font", sf);  //$NON-NLS-1$
-			UIManager.put("PasswordFiled.font", sf);  //$NON-NLS-1$
-			UIManager.put("TextArea.font", sf);  //$NON-NLS-1$
-			UIManager.put("TextPane.font", sf);  //$NON-NLS-1$
-			UIManager.put("EditorPane.font", sf);  //$NON-NLS-1$
-			UIManager.put("TitledBorder.font", sf);  //$NON-NLS-1$
-			UIManager.put("ToolBar.font", sf);  //$NON-NLS-1$
-			UIManager.put("ToolTip.font", sf);  //$NON-NLS-1$
-			UIManager.put("Tree.font", sf);  //$NON-NLS-1$
+			UIManager.put("Button.font", sf); 
+			UIManager.put("ToggleButton.font", sf); 
+			UIManager.put("RadioButton.font", sf); 
+			UIManager.put("CheckBox.font", sf); 
+			UIManager.put("ColorChooser.font", sf); 
+			UIManager.put("ToggleButton.font", sf); 
+			UIManager.put("ComboBox.font", sf); 
+			UIManager.put("ComboBoxItem.font", sf); 
+			UIManager.put("InternalFrame.titleFont", sf); 
+			UIManager.put("Label.font", sf); 
+			UIManager.put("List.font", sf); 
+			UIManager.put("MenuBar.font", sf); 
+			UIManager.put("Menu.font", sf); 
+			UIManager.put("MenuItem.font", sf); 
+			UIManager.put("RadioButtonMenuItem.font", sf); 
+			UIManager.put("CheckBoxMenuItem.font", sf); 
+			UIManager.put("PopupMenu.font", sf); 
+			UIManager.put("OptionPane.font", sf); 
+			UIManager.put("Panel.font", sf); 
+			UIManager.put("ProgressBar.font", sf); 
+			UIManager.put("ScrollPane.font", sf); 
+			UIManager.put("Viewport", sf); 
+			UIManager.put("TabbedPane.font", sf); 
+			UIManager.put("TableHeader.font", sf); 
+			UIManager.put("TextField.font", sf); 
+			UIManager.put("PasswordFiled.font", sf); 
+			UIManager.put("TextArea.font", sf); 
+			UIManager.put("TextPane.font", sf); 
+			UIManager.put("EditorPane.font", sf); 
+			UIManager.put("TitledBorder.font", sf); 
+			UIManager.put("ToolBar.font", sf); 
+			UIManager.put("ToolTip.font", sf); 
+			UIManager.put("Tree.font", sf); 
 		}
 
-		setTitle("Test"); //$NON-NLS-1$
-		setIconImage(readImageIcon("icon-32.png").getImage()); //$NON-NLS-1$
+		setTitle("Test");
+		setIconImage(readImageIcon("icon-32.png").getImage());
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		JComponent jp = buildContent();
-		String showScrollbars = System.getProperty("scrollbars", "").toLowerCase(); //$NON-NLS-1$
+		String showScrollbars = System.getProperty("scrollbars", "").toLowerCase();
 
 		/*
 		 * handle scrollbars:
@@ -263,7 +263,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			setContentPane(jp);
 		}
 
-		this.setTitle("PS3 Media Server " + PMS.VERSION + " - FOR TESTING ONLY, POSSIBLY UNSTABLE"); //$NON-NLS-1$
+		this.setTitle("PS3 Media Server " + PMS.VERSION + " - FOR TESTING ONLY, POSSIBLY UNSTABLE");
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		Dimension screenSize = getToolkit().getScreenSize();
 
@@ -291,7 +291,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	}
 
 	protected static ImageIcon readImageIcon(String filename) {
-		URL url = LooksFrame.class.getResource("/resources/images/" + filename); //$NON-NLS-1$
+		URL url = LooksFrame.class.getResource("/resources/images/" + filename);
 		return new ImageIcon(url);
 	}
 
@@ -302,7 +302,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		toolBar.setRollover(true);
 
 		toolBar.add(new JPanel());
-		AbstractButton save = createToolBarButton(Messages.getString("LooksFrame.9"), "filesave-48.png", Messages.getString("LooksFrame.9")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		AbstractButton save = createToolBarButton(Messages.getString("LooksFrame.9"), "filesave-48.png", Messages.getString("LooksFrame.9"));
 		save.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PMS.get().save();
@@ -310,7 +310,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		});
 		toolBar.add(save);
 		toolBar.addSeparator();
-		reload = createToolBarButton(Messages.getString("LooksFrame.12"), "reload_page-48.png", Messages.getString("LooksFrame.12")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		reload = createToolBarButton(Messages.getString("LooksFrame.12"), "reload_page-48.png", Messages.getString("LooksFrame.12"));
 		reload.setEnabled(false);
 		reload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -323,7 +323,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		});
 		toolBar.add(reload);
 		toolBar.addSeparator();
-		AbstractButton quit = createToolBarButton(Messages.getString("LooksFrame.5"), "exit-48.png", Messages.getString("LooksFrame.5")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		AbstractButton quit = createToolBarButton(Messages.getString("LooksFrame.5"), "exit-48.png", Messages.getString("LooksFrame.5"));
 		quit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				quit();
@@ -336,7 +336,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		toolBar.add(new JPanel());
 		panel.add(toolBar, BorderLayout.NORTH);
 		panel.add(buildMain(), BorderLayout.CENTER);
-		status = new JLabel(" "); //$NON-NLS-1$
+		status = new JLabel(" ");
 		status.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(0, 5, 0, 5)));
 		panel.add(status, BorderLayout.SOUTH);
 		return panel;
@@ -351,13 +351,13 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		nt = new GeneralTab(configuration);
 		ft = new NavigationShareTab(configuration);
 
-		tabbedPane.addTab(Messages.getString("LooksFrame.18"),/* readImageIcon("server-16.png"),*/ st.build()); //$NON-NLS-1$
-		tabbedPane.addTab(Messages.getString("LooksFrame.19"),/* readImageIcon("mail_new-16.png"),*/ tt.build()); //$NON-NLS-1$
-		tabbedPane.addTab(Messages.getString("LooksFrame.20"),/* readImageIcon("advanced-16.png"),*/ nt.build()); //$NON-NLS-1$
-		tabbedPane.addTab(Messages.getString("LooksFrame.22"), /*readImageIcon("bookmark-16.png"),*/ ft.build()); //$NON-NLS-1$
-		tabbedPane.addTab(Messages.getString("LooksFrame.21"),/* readImageIcon("player_play-16.png"),*/ tr.build()); //$NON-NLS-1$
-		tabbedPane.addTab(Messages.getString("LooksFrame.24"), /* readImageIcon("mail_new-16.png"), */ new HelpTab().build()); //$NON-NLS-1$
-		tabbedPane.addTab(Messages.getString("LooksFrame.25"), /*readImageIcon("documentinfo-16.png"),*/ new AboutTab().build()); //$NON-NLS-1$
+		tabbedPane.addTab(Messages.getString("LooksFrame.18"),/* readImageIcon("server-16.png"),*/ st.build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.19"),/* readImageIcon("mail_new-16.png"),*/ tt.build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.20"),/* readImageIcon("advanced-16.png"),*/ nt.build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.22"), /*readImageIcon("bookmark-16.png"),*/ ft.build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.21"),/* readImageIcon("player_play-16.png"),*/ tr.build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.24"), /* readImageIcon("mail_new-16.png"), */ new HelpTab().build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.25"), /*readImageIcon("documentinfo-16.png"),*/ new AboutTab().build());
 
 		tabbedPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		return tabbedPane;
@@ -393,7 +393,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	public void setStatusCode(int code, String msg, String icon) {
 		st.getJl().setText(msg);
 		try {
-			st.getImagePanel().set(ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/" + icon))); //$NON-NLS-1$
+			st.getImagePanel().set(ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/" + icon)));
 		} catch (IOException e) {
 			logger.error(null, e);
 		}
@@ -427,14 +427,14 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			try {
 				AutoUpdateDialog.showIfNecessary(this, autoUpdater);
 			} catch (NoClassDefFoundError ncdf) {
-				logger.info("Class not found: " + ncdf.getMessage()); //$NON-NLS-1$
+				logger.info("Class not found: " + ncdf.getMessage());
 			}
 		}
 	}
 
 	public void setStatusLine(String line) {
 		if (line == null) {
-			line = " "; //$NON-NLS-1$
+			line = " ";
 		}
 		status.setText(line);
 	}

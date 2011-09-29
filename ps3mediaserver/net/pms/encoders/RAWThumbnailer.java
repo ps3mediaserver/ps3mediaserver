@@ -17,10 +17,10 @@ import net.pms.io.ProcessWrapperImpl;
 import net.pms.PMS;
 
 public class RAWThumbnailer extends Player {
-	public static String ID = "rawthumbs"; //$NON-NLS-1$
+	public static String ID = "rawthumbs";
 
 	protected String[] getDefaultArgs() {
-		return new String[]{"-e", "-c"}; //$NON-NLS-1$ //$NON-NLS-2$
+		return new String[]{"-e", "-c"};
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class RAWThumbnailer extends Player {
 
 	@Override
 	public String id() {
-		return ID; //$NON-NLS-1$
+		return ID;
 	}
 
 	@Override
@@ -75,12 +75,12 @@ public class RAWThumbnailer extends Player {
 
 	@Override
 	public String mimeType() {
-		return "image/jpeg"; //$NON-NLS-1$
+		return "image/jpeg";
 	}
 
 	@Override
 	public String name() {
-		return "Raws Thumbnailer"; //$NON-NLS-1$
+		return "Raws Thumbnailer";
 	}
 
 	@Override
@@ -98,8 +98,8 @@ public class RAWThumbnailer extends Player {
 
 		String cmdArray[] = new String[4];
 		cmdArray[0] = PMS.getConfiguration().getDCRawPath();
-		cmdArray[1] = "-e"; //$NON-NLS-1$
-		cmdArray[2] = "-c"; //$NON-NLS-1$
+		cmdArray[1] = "-e";
+		cmdArray[2] = "-c";
 		cmdArray[3] = fileName;
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.run();

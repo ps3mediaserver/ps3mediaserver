@@ -24,7 +24,7 @@ import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
 
 public class ISO extends MPG {
-	public static final String[] ISO_EXTENSIONS = new String[]{"iso", "img", /*"bin", "mdf", "nrg", "bwt", "cif","ccd", "vcd", "fcd"*/}; //$NON-NLS-1$
+	public static final String[] ISO_EXTENSIONS = new String[]{"iso", "img", /*"bin", "mdf", "nrg", "bwt", "cif","ccd", "vcd", "fcd"*/};
 
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {

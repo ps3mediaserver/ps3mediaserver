@@ -45,7 +45,7 @@ import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
 
 public class MPlayerAudio extends Player {
-	public static final String ID = "mplayeraudio"; //$NON-NLS-1$
+	public static final String ID = "mplayeraudio";
 	private final PmsConfiguration configuration;
 
 	public MPlayerAudio(PmsConfiguration configuration) {
@@ -90,9 +90,9 @@ public class MPlayerAudio extends Player {
 		}
 
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
-		PipeProcess audioP = new PipeProcess("mplayer_aud" + System.currentTimeMillis()); //$NON-NLS-1$
+		PipeProcess audioP = new PipeProcess("mplayer_aud" + System.currentTimeMillis());
 
-		String mPlayerdefaultAudioArgs[] = new String[]{PMS.getConfiguration().getMplayerPath(), fileName, "-prefer-ipv4", "-nocache", "-af", "channels=2", "-srate", "48000", "-vo", "null", "-ao", "pcm:nowaveheader:fast:file=" + audioP.getInputPipe(), "-quiet"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+		String mPlayerdefaultAudioArgs[] = new String[]{PMS.getConfiguration().getMplayerPath(), fileName, "-prefer-ipv4", "-nocache", "-af", "channels=2", "-srate", "48000", "-vo", "null", "-ao", "pcm:nowaveheader:fast:file=" + audioP.getInputPipe(), "-quiet"};
 		if (params.mediaRenderer.isTranscodeToWAV()) {
 			mPlayerdefaultAudioArgs[11] = "pcm:waveheader:fast:file=" + audioP.getInputPipe();
 		}
@@ -146,12 +146,12 @@ public class MPlayerAudio extends Player {
 
 	@Override
 	public String mimeType() {
-		return HTTPResource.AUDIO_TRANSCODE; //$NON-NLS-1$
+		return HTTPResource.AUDIO_TRANSCODE;
 	}
 
 	@Override
 	public String name() {
-		return "MPlayer Audio"; //$NON-NLS-1$
+		return "MPlayer Audio";
 	}
 
 	@Override
@@ -163,8 +163,8 @@ public class MPlayerAudio extends Player {
 	@Override
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
-			"left:pref, 0:grow", //$NON-NLS-1$
-			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow"); //$NON-NLS-1$
+			"left:pref, 0:grow",
+			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.EMPTY_BORDER);
 		builder.setOpaque(false);
