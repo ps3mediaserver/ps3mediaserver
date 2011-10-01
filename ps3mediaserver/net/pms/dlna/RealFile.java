@@ -155,12 +155,18 @@ public class RealFile extends MapFile {
 			if (splitTrack > 0) {
 				fileName += "#SplitTrack" + splitTrack;
 			}
+			
 			if (PMS.getConfiguration().getUseCache()) {
-				ArrayList<DLNAMediaInfo> medias = PMS.get().getDatabase().getData(fileName, file.lastModified());
-				if (medias != null && medias.size() == 1) {
-					media = medias.get(0);
-					media.finalize(getType(), input);
-					found = true;
+				DLNAMediaDatabase database = PMS.get().getDatabase();
+
+				if (database != null) {
+					ArrayList<DLNAMediaInfo> medias = database.getData(fileName, file.lastModified());
+
+					if (medias != null && medias.size() == 1) {
+						media = medias.get(0);
+						media.finalize(getType(), input);
+						found = true;
+					}
 				}
 			}
 
