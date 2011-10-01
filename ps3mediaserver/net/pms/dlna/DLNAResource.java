@@ -1287,7 +1287,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=12035
 				if (high > low && fis != null) {
 					long bytes = (high - (low < 0 ? 0 : low)) + 1;
-					
+
 					PMS.debug("Using size-limiting stream (" + bytes + " bytes)");
 					SizeLimitInputStream slis = new SizeLimitInputStream(fis, bytes);
 					return slis;
