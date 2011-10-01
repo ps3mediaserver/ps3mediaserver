@@ -1035,18 +1035,15 @@ public class MEncoderVideo extends Player {
 			}
 
 			if (defaultMaxBitrates[1] > 0) {
-				bufSize = defaultMaxBitrates[1] /** 1000*/
-					;
+				bufSize = defaultMaxBitrates[1];
 			}
 
 			if (mediaRenderer.isDefaultVBVSize() && rendererMaxBitrates[1] == 0) {
 				bufSize = 1835;
 			}
 
-			//bufSize = 2000;
 			encodeSettings += ":vrc_maxrate=" + defaultMaxBitrates[0] + ":vrc_buf_size=" + bufSize;
-		} /*else if (mediaRenderer != HTTPResource.PS3)
-		encodeSettings += ":vrc_buf_size=1835";*/
+		}
 		return encodeSettings;
 	}
 
@@ -1059,7 +1056,7 @@ public class MEncoderVideo extends Player {
 	) throws IOException {
 		params.manageFastStart();
 
-		boolean avisynth = avisynth()/* || params.avisynth*/;
+		boolean avisynth = avisynth();
 
 		setAudioAndSubs(fileName, media, params, configuration);
 
@@ -1431,7 +1428,7 @@ public class MEncoderVideo extends Player {
 		} else if (subString != null && !avisynth()) { // Trick necessary for mencoder to skip the internal embedded track ?
 			cmdArray[cmdArray.length - 10] = "-sid";
 			cmdArray[cmdArray.length - 9] = "100";
-		} else if (subString == null) { // Trick necessary for mencoder to not display the internal embedded track
+		} else if (subString == null) { // Trick necessary for MEncoder to not display the internal embedded track
 			cmdArray[cmdArray.length - 10] = "-subdelay";
 			cmdArray[cmdArray.length - 9] = "20000";
 		}
@@ -1762,9 +1759,27 @@ public class MEncoderVideo extends Player {
 				sm.setSampleFrequency(48000);
 				sm.setBitspersample(16);
 				String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed() && !sm.isEncodedAudioPassthrough(), sm.getNbchannels());
+
 				// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
 				// -mc 0.1 make the DTS-HD extraction works better with latest mencoder builds, and makes no impact on the regular DTS one
-				String ffmpegLPCMextract[] = new String[]{configuration.getMencoderPath(), "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=2", "-channels", "" + sm.getNbchannels(), "-ovc", "copy", "-of", "rawaudio", "-mc", (dts || encodedaudiopassthrough) ? "0.1" : "0", "-noskip", (aid == null) ? "-quiet" : "-aid", (aid == null) ? "-quiet" : aid, "-oac", sm.isDtsembed() || sm.isEncodedAudioPassthrough() ? "copy" : "pcm", (mixer != null && !channels_filter_present) ? "-af" : "-quiet", (mixer != null && !channels_filter_present) ? mixer : "-quiet", "-srate", "48000", "-o", ffAudioPipe.getInputPipe()};
+				String ffmpegLPCMextract[] = new String[]{
+					configuration.getMencoderPath(),
+					"-ss", "0",
+					fileName,
+					"-really-quiet",
+					"-msglevel", "statusline=2",
+					"-channels", "" + sm.getNbchannels(),
+					"-ovc", "copy",
+					"-of", "rawaudio",
+					"-mc", (dts || encodedaudiopassthrough) ? "0.1" : "0",
+					"-noskip",
+					(aid == null) ? "-quiet" : "-aid", (aid == null) ? "-quiet" : aid,
+					"-oac", sm.isDtsembed() || sm.isEncodedAudioPassthrough() ? "copy" : "pcm",
+					(mixer != null && !channels_filter_present) ? "-af" : "-quiet", (mixer != null && !channels_filter_present) ? mixer : "-quiet",
+					"-srate", "48000",
+					"-o", ffAudioPipe.getInputPipe()
+				};
+
 				if (!params.mediaRenderer.isMuxDTSToMpeg()) // no need to use the PCM trick when media renderer supports DTS
 				{
 					ffAudioPipe.setModifier(sm);

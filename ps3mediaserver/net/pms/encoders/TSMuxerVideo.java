@@ -114,9 +114,8 @@ public class TSMuxerVideo extends Player {
 		}
 
 		if (this instanceof TsMuxerAudio && media.getFirstAudioTrack() != null) {
-
 			ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "fakevideo", System.currentTimeMillis() + "videoout", false, true);
-			String ffmpegLPCMextract[] = new String[]{configuration.getFfmpegPath(), "-t", "" + params.timeend, "-loop_input", "-i", "resources/images/fake.jpg", "-qcomp", "0.6", "-qmin", "10", "-qmax", "51", "-qdiff", "4", "-me_range", "4", "-f", "h264", "-vcodec", "libx264", "-an", "-y", ffVideoPipe.getInputPipe()};
+			String ffmpegLPCMextract[] = new String[]{configuration.getFfmpegPath(), "-t", "" + params.timeend, "-loop_input", "-i", "/resources/images/fake.jpg", "-qcomp", "0.6", "-qmin", "10", "-qmax", "51", "-qdiff", "4", "-me_range", "4", "-f", "h264", "-vcodec", "libx264", "-an", "-y", ffVideoPipe.getInputPipe()};
 			//videoType = "V_MPEG-2";
 			videoType = "V_MPEG4/ISO/AVC";
 			if (params.timeend < 1) {
@@ -370,7 +369,14 @@ public class TSMuxerVideo extends Player {
 		if (ffAudioPipe != null && ffAudioPipe.length == 1) {
 			String timeshift = "";
 			String type = "A_AC3";
-			if (((configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && (params.aid.isDTS() || params.aid.isLossless()) && params.mediaRenderer.isDTSPlayable()) || this instanceof TsMuxerAudio) {
+			if (
+				(
+					(configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) &&
+					(params.aid.isDTS() || params.aid.isLossless()) &&
+					params.mediaRenderer.isDTSPlayable()
+				) ||
+				this instanceof TsMuxerAudio
+			) {
 				type = "A_LPCM";
 				if (params.mediaRenderer.isMuxDTSToMpeg()) {
 					type = "A_DTS";
