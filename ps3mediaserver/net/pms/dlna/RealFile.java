@@ -182,7 +182,11 @@ public class RealFile extends MapFile {
 					media.parse(input, ext, getType(), false);
 				}
 				if (found && PMS.getConfiguration().getUseCache()) {
-					PMS.get().getDatabase().insertData(fileName, file.lastModified(), getType(), media);
+					DLNAMediaDatabase database = PMS.get().getDatabase();
+
+					if (database != null) {
+						database.insertData(fileName, file.lastModified(), getType(), media);
+					}
 				}
 			}
 		}
