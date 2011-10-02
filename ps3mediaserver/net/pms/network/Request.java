@@ -159,8 +159,8 @@ public class Request extends HTTPResource {
 	public void answer(OutputStream output, StartStopListenerDelegate startStopListenerDelegate) throws IOException {
 		this.output = output;
 
-		long CLoverride = -1;
-		if (lowRange > 0 || highRange > 0) {
+		long CLoverride = -2; // 0 and above are valid Content-Length values, -1 means omit
+		if (lowRange != 0 || highRange != 0) {
 			output(output, http10 ? HTTP_206_OK_10 : HTTP_206_OK);
 		} else {
 			output(output, http10 ? HTTP_200_OK_10 : HTTP_200_OK);
@@ -193,44 +193,77 @@ public class Request extends HTTPResource {
 					inputStream = files.get(0).getThumbnailInputStream();
 				} else {
 					dlna = files.get(0);
-					inputStream = dlna.getInputStream(lowRange, highRange, timeseek, mediaRenderer);
-					if (inputStream != null) {
-						startStopListenerDelegate.start(dlna);
-					}
-					output(output, "Content-Type: " + getRendererMimeType(dlna.mimeType(), mediaRenderer));
-					// Ditlew - org
-					//String name = dlna.getDisplayName();
-					// Ditlew
 					String name = dlna.getDisplayName(mediaRenderer);
-					if (dlna.media != null) {
-						if (StringUtils.isNotBlank(dlna.media.container)) {
-							name += " [container: " + dlna.media.container + "]";
+					inputStream = dlna.getInputStream(lowRange, highRange, timeseek, mediaRenderer);
+					if (inputStream == null) {
+						// No inputStream indicates that transcoding / remuxing probably crashed.
+						logger.error("There is no inputstream to return for " + name);
+					} else {
+						output(output, "Content-Type: " + getRendererMimeType(dlna.mimeType(), mediaRenderer));
+						if (dlna.media != null) {
+							if (StringUtils.isNotBlank(dlna.media.container)) {
+								name += " [container: " + dlna.media.container + "]";
+							}
+							if (StringUtils.isNotBlank(dlna.media.codecV)) {
+								name += " [video: " + dlna.media.codecV + "]";
+							}
 						}
-						if (StringUtils.isNotBlank(dlna.media.codecV)) {
-							name += " [video: " + dlna.media.codecV + "]";
+						PMS.get().getFrame().setStatusLine("Serving " + name);
+
+						// Response modes:
+						//   Default          - Content-Length refers to total media size.
+						//   Chunked          - Content-Length refers to chunk size.
+						// We use -1 for arithmetic convenience but don't send it as a value. 
+						// If Content-Length < 0 we omit it, for Content-Range we use '*' to signify unspecified.
+						
+						boolean chunked = mediaRenderer.isChunkedTransfer();
+						
+						// Determine the total size. Note: when transcoding the length is
+						// not known in advance, so DLNAMediaInfo.TRANS_SIZE will be returned instead.
+						
+						long totalsize = dlna.length();
+						
+						if (chunked && totalsize == DLNAMediaInfo.TRANS_SIZE) {
+							// In chunked mode we try to avoid arbitrary values.
+							totalsize = -1;
 						}
-					}
-					PMS.get().getFrame().setStatusLine("Serving " + name);
-					CLoverride = dlna.length();
-					if (lowRange > 0 || highRange > 0) {
-						long totalsize = CLoverride;
-						if (highRange >= CLoverride) {
-							highRange = CLoverride - 1;
+						
+						long available = inputStream.available();
+
+						if (chunked) {
+							long requested = highRange - lowRange;
+							
+							if (requested < 0) {
+								CLoverride = (totalsize > 0 ? available : -1);
+							} else {
+								requested += (requested > 0 ? 1 : 0);
+								CLoverride = (available < requested ? available : requested);
+							}
+						} else {
+							CLoverride = available;
 						}
-						if (CLoverride == -1) {
-							lowRange = 0;
-							totalsize = inputStream.available();
-							highRange = totalsize - 1;
+						
+						// Calculate the corresponding highRange (this is usually redundant).
+						highRange = lowRange + CLoverride - (CLoverride > 0 ? 1 : 0);
+						
+						if (!chunked) {
+							CLoverride = totalsize;
 						}
-						output(output, "CONTENT-RANGE: bytes " + lowRange + "-" + highRange + "/" + totalsize);
+					
+						logger.trace((chunked ? "Using chunked response. " : "")  + "Available Content-Length: " + available);
+
+						output(output, "Content-Range: bytes " + lowRange + "-" 
+							+ (highRange > -1 ? highRange : "*") + "/" + (totalsize > -1 ? totalsize : "*"));
+
+						if (contentFeatures != null) {
+							output(output, "ContentFeatures.DLNA.ORG: " + dlna.getDlnaContentFeatures());
+						}
+						if (dlna.getPlayer() == null || xbox) {
+
+							output(output, "Accept-Ranges: bytes");
+						}
+						output(output, "Connection: keep-alive");
 					}
-					if (contentFeatures != null) {
-						output(output, "ContentFeatures.DLNA.ORG: " + dlna.getDlnaContentFeatures());
-					}
-					if (dlna.getPlayer() == null || xbox) {
-						output(output, "Accept-Ranges: bytes");
-					}
-					output(output, "Connection: keep-alive");
 				}
 			}
 		} else if ((method.equals("GET") || method.equals("HEAD")) && (argument.toLowerCase().endsWith(".png") || argument.toLowerCase().endsWith(".jpg") || argument.toLowerCase().endsWith(".jpeg"))) {
@@ -489,13 +522,12 @@ public class Request extends HTTPResource {
 				//logger.trace(response.toString());
 			}
 		} else if (inputStream != null) {
-			if (CLoverride > -1) {
-				if (lowRange > 0 && highRange > 0) {
-					output(output, "Content-Length: " + (highRange - lowRange + 1));
-				} else if (CLoverride != DLNAMediaInfo.TRANS_SIZE) // since 2.50, it's wiser not to send an arbitrary Content length,
-				// as the PS3 displays a network error and asks the last seconds of the transcoded video
-				// deprecated since the "-1" size sent anyway
-				{
+			if (CLoverride > -2) {
+				// Content-Length override has been set, send or omit as appropriate
+				if (CLoverride > -1 && CLoverride != DLNAMediaInfo.TRANS_SIZE) {
+					// Since PS3 firmware 2.50, it is wiser not to send an arbitrary Content-Length,
+					// as the PS3 will display a network error and request the last seconds of the
+					// transcoded video. Better to send no Content-Length at all.
 					output(output, "Content-Length: " + CLoverride);
 				}
 			} else {
