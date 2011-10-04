@@ -28,4 +28,5 @@ public interface IFrame {
 	public void addEngines();
 	public void setStatusLine(String line);
 	public void serverReady();
+    public void setScanLibraryEnabled(boolean flag);
 }

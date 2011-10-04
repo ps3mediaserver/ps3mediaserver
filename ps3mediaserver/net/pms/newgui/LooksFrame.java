@@ -449,4 +449,9 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	public void serverReady() {
 		nt.addPlugins();
 	}
+	
+	@Override
+	public void setScanLibraryEnabled(boolean flag) {
+	    getFt().setScanLibraryEnabled(flag);
+	}
 }
