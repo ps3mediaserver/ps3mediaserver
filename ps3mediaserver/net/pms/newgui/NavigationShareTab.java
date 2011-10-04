@@ -102,7 +102,6 @@ public class NavigationShareTab {
 			}
 			configuration.setFolders(sb.toString());
 		}
-		PMS.get().getFrame().setReloadable(true);
 	}
 
 	public JComponent build() {
@@ -216,7 +215,6 @@ public class NavigationShareTab {
 
 					try {
 						configuration.setAudioThumbnailMethod(Integer.parseInt((String) thumbKCBM.getSelectedKey()));
-						PMS.get().getFrame().setReloadable(true);
 					} catch (NumberFormatException nfe) {
 					}
 
@@ -258,7 +256,6 @@ public class NavigationShareTab {
 				int returnVal = chooser.showDialog((Component) e.getSource(), Messages.getString("FoldTab.28"));
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					defaultThumbFolder.setText(chooser.getSelectedFile().getAbsolutePath());
-					PMS.get().getFrame().setReloadable(true);
 					configuration.setAlternateThumbFolder(chooser.getSelectedFile().getAbsolutePath());
 				}
 			}
@@ -277,7 +274,6 @@ public class NavigationShareTab {
 		hidevideosettings.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 			        configuration.setHideVideoSettings((e.getStateChange() == ItemEvent.SELECTED));
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 
@@ -289,7 +285,6 @@ public class NavigationShareTab {
 		hidetranscode.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 			        configuration.setHideTranscodeEnabled((e.getStateChange() == ItemEvent.SELECTED));
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 
@@ -301,7 +296,6 @@ public class NavigationShareTab {
 		hidemedialibraryfolder.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 			        configuration.setHideMediaLibraryFolder((e.getStateChange() == ItemEvent.SELECTED));
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 
@@ -310,9 +304,6 @@ public class NavigationShareTab {
 		archive.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 			        configuration.setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
-				if (PMS.get().getFrame() != null) {
-					PMS.get().getFrame().setReloadable(true);
-				}
 			}
 		});
 		if (configuration.isArchiveBrowsing()) {
@@ -330,7 +321,6 @@ public class NavigationShareTab {
 			public void itemStateChanged(ItemEvent e) {
 			        configuration.setUseCache((e.getStateChange() == ItemEvent.SELECTED));
 				cachereset.setEnabled(configuration.getUseCache());
-				PMS.get().getFrame().setReloadable(true);
 				if ((LooksFrame) PMS.get().getFrame() != null) {
 					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(configuration.getUseCache());
 				}
@@ -372,7 +362,6 @@ public class NavigationShareTab {
 		hideextensions.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setHideExtensions((e.getStateChange() == ItemEvent.SELECTED));
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 		builder.add(hideextensions, cc.xyw(1, 15, 3));
@@ -385,7 +374,6 @@ public class NavigationShareTab {
 		hideengines.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setHideEngineNames((e.getStateChange() == ItemEvent.SELECTED));
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 		builder.add(hideengines, cc.xyw(4, 15, 3));
@@ -398,7 +386,6 @@ public class NavigationShareTab {
 		hideemptyfolders.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setHideEmptyFolders((e.getStateChange() == ItemEvent.SELECTED));
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 		builder.add(hideemptyfolders, cc.xyw(8, 15, 3));
@@ -414,7 +401,6 @@ public class NavigationShareTab {
 		itunes.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setItunesEnabled((e.getStateChange() == ItemEvent.SELECTED));
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 		builder.add(itunes, cc.xyw(1, 17, 3));
@@ -430,7 +416,6 @@ public class NavigationShareTab {
 		iphoto.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setIphotoEnabled((e.getStateChange() == ItemEvent.SELECTED));
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 		builder.add(iphoto, cc.xyw(4, 17, 3));
@@ -447,7 +432,6 @@ public class NavigationShareTab {
 		aperture.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setApertureEnabled((e.getStateChange() == ItemEvent.SELECTED));
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 		builder.add(aperture, cc.xyw(8, 17, 3));
@@ -464,7 +448,6 @@ public class NavigationShareTab {
 
 					try {
 						configuration.setSortMethod(Integer.parseInt((String) kcbm.getSelectedKey()));
-						PMS.get().getFrame().setReloadable(true);
 					} catch (NumberFormatException nfe) {
 					}
 

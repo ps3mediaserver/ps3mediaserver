@@ -112,7 +112,6 @@ public class TranscodingTab {
 				}
 			}
 		}
-		PMS.get().getFrame().setReloadable(true);
 		configuration.setEnginesAsList(engines);
 	}
 
@@ -427,7 +426,6 @@ public class TranscodingTab {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setChapterSupport((e.getStateChange() == ItemEvent.SELECTED));
 				chapter_interval.setEnabled(configuration.isChapterSupport());
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 
@@ -661,7 +659,6 @@ public class TranscodingTab {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setNoTranscode(notranscode.getText());
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 		builder.add(notranscode, cc.xy(3, 39));
@@ -681,7 +678,6 @@ public class TranscodingTab {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setForceTranscode(forcetranscode.getText());
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 		builder.add(forcetranscode, cc.xy(3, 41));
