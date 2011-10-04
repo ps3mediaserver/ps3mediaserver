@@ -784,5 +784,10 @@ public class RootFolder extends DLNAResource {
 		}
 		return res;
 	}
+	
+	@Override
+	public String toString() {
+	    return "RootFolder["+children+"]";
+	}
 }
  

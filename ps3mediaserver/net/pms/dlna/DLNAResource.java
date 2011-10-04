@@ -82,7 +82,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
          * that is different that the one used here, is the XBox360. For more info, check 
          * {@link http://www.mperfect.net/whsUpnp360/} . PMS translates the XBox360 queries on the fly.
          */
-        protected String id;
+        private String id;
 
         /**
          * In the DLDI queries, the UPNP server needs to give out the parent container where the item is. <i>parent</i> represents
@@ -128,6 +128,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
         private boolean allChildrenAreFolders = true;
         private String flags;
 
+        /**
+         * List of children objects associated with this DLNAResource. This is only valid when the DLNAResource is of the container type.
+         */
+        protected List<DLNAResource> children;
+
         /**Returns parent object, usually a folder type of resource.
 	 * @return Parent object.
 	 * @see #parent
@@ -141,12 +146,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @see #id
 	 */
 	public String getId() {
-		return id;
+	        return id;
 	}
-	/**
-	 * List of children objects associated with this DLNAResource. This is only valid when the DLNAResource is of the container type.
-	 */
-	protected List<DLNAResource> children;
 
 	/**
 	 * @return List of children objects
@@ -732,7 +733,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		StringBuilder sb = new StringBuilder();
 		sb.append(PMS.get().getServer().getURL());
 		sb.append("/get/");
-		sb.append(id); //id
+		sb.append(getId()); //id
 		sb.append("/");
 		sb.append(prefix);
 		sb.append(encode(getName()));
@@ -809,7 +810,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			openTag(sb, "item");
 		}
 
-		addAttribute(sb, "id", id);
+		addAttribute(sb, "id", getId());
 		
 		if (isFolder()) {
 			if (!discovered && childrenNumber() == 0) {
@@ -823,7 +824,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				addAttribute(sb, "childCount", childrenNumber());
 			}
 		}
-		addAttribute(sb, "parentID", fakeParentId != null ? fakeParentId : (parent == null ? -1 : parent.id));
+		addAttribute(sb, "parentID", fakeParentId != null ? fakeParentId : (parent == null ? -1 : parent.getId()));
 		addAttribute(sb, "restricted", "true");
 		endTag(sb);
 
@@ -1432,4 +1433,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public boolean allowScan() {
 		return false;
 	}
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DLNAResource [id=" + id + ", ext=" + ext + ", discovered=" + discovered + ", children=" + children + "]";
+    }
+	
+	
 }
