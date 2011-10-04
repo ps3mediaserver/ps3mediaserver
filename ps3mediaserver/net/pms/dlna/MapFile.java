@@ -324,4 +324,14 @@ public class MapFile extends DLNAResource {
 	public boolean allowScan() {
 		return isFolder();
 	}
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "MapFile [name=" + getName() + ", id=" + getInternalId() + ", ext=" + ext + ", children=" + children + "]";
+    }
+	
+	
 }
