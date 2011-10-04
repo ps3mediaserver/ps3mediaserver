@@ -150,6 +150,7 @@ public class PmsConfiguration {
 	private static final String KEY_SERVER_PORT = "port";
 	private static final String KEY_SHARES = "shares";
 	private static final String KEY_SKIP_LOOP_FILTER_ENABLED = "skiploopfilter";
+	private static final String KEY_SKIP_NETWORK_INTERFACES = "skip_network_interfaces";
 	private static final String KEY_SORT_METHOD = "key_sort_method";
 	private static final String KEY_SUBS_COLOR = "subs_color";
 	private static final String KEY_TEMP_FOLDER_PATH = "temp";
@@ -556,6 +557,22 @@ public class PmsConfiguration {
 			value = value.trim();
 		}
 		return value;
+	}
+	
+	private List<String> getStringList(String key, String def) {
+	    String value = getString(key, def);
+	    if (value != null) {
+	        String[] arr = value.split(",");
+	        List<String> result = new ArrayList<String> (arr.length);
+	        for (String str : arr) {
+	            if (str.trim().length()>0) {
+	                result.add(str.trim());
+	            }
+	        }
+	        return result;
+	    } else {
+	        return Collections.emptyList();
+	    }
 	}
 
 	/**
@@ -1107,7 +1124,20 @@ public class PmsConfiguration {
 	public boolean getSkipLoopFilterEnabled() {
 		return getBoolean(KEY_SKIP_LOOP_FILTER_ENABLED, false);
 	}
-
+	
+	/**
+	 * The list of network interfaces that should be skipped when checking
+	 * for an available network interface. Entries should be comma separated
+	 * and typically exclude the number at the end of the interface name.
+	 * <p>
+	 * Default is to skip the interfaces created by Virtualbox, OpenVPN and
+	 * Parallels: "tap,vmnet,vnic".
+	 * @return The string of network interface names to skip.
+	 */
+	public List<String> getSkipNetworkInterfaces() {
+		return getStringList(KEY_SKIP_NETWORK_INTERFACES, "tap,vmnet,vnic");
+	}
+	
 	public void setSkipLoopFilterEnabled(boolean value) {
 		configuration.setProperty(KEY_SKIP_LOOP_FILTER_ENABLED, value);
 	}
