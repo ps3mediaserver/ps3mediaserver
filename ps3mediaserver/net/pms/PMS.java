@@ -1019,6 +1019,14 @@ public class PMS {
 		}
 	}
 
+        public void storeFileInCache(File file, int formatType) {
+            if (getConfiguration().getUseCache()) {
+                if (!getDatabase().isDataExists(file.getAbsolutePath(), file.lastModified())) {
+                    getDatabase().insertData(file.getAbsolutePath(), file.lastModified(), formatType, null);
+                }
+            }
+        }
+    
 	/**
 	 * Retrieves the {@link net.pms.configuration.PmsConfiguration PmsConfiguration} object
 	 * that contains all configured settings for PMS. The object provides getters for all

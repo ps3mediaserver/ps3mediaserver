@@ -31,6 +31,7 @@ import net.pms.util.ProcessUtil;
 public class DVDISOFile extends VirtualFolder {
 	public static final String PREFIX = "[DVD ISO] ";
 
+	@Override
 	public void resolve() {
 		double titles[] = new double[100];
 		String cmd[] = new String[]{PMS.getConfiguration().getMplayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()), "dvd://1"};
@@ -76,11 +77,7 @@ public class DVDISOFile extends VirtualFolder {
 		}
 
 		if (childrenNumber() > 0) {
-			if (PMS.getConfiguration().getUseCache()) {
-				if (!PMS.get().getDatabase().isDataExists(f.getAbsolutePath(), f.lastModified())) {
-					PMS.get().getDatabase().insertData(f.getAbsolutePath(), f.lastModified(), Format.ISO, null);
-				}
-			}
+		    PMS.get().storeFileInCache(f, Format.ISO);
 		}
 
 	}

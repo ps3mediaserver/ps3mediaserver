@@ -19,28 +19,32 @@
 package net.pms.network;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
+import net.pms.dlna.DLNAMediaDatabase;
 
 public class HTMLConsole {
 	public static String servePage(String resource) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><head><title>PS3 Media Server HTML Console</title></head><body>");
 
-		if (resource.equals("compact") && PMS.getConfiguration().getUseCache()) {
-			PMS.get().getDatabase().compact();
+		DLNAMediaDatabase database = PMS.get().getDatabase();
+                PmsConfiguration configuration = PMS.getConfiguration();
+                if (resource.equals("compact") && configuration.getUseCache()) {
+			database.compact();
 			sb.append("<p align=center><b>Database compacted!</b></p><br>");
 		}
 
-		if (resource.equals("scan") && PMS.getConfiguration().getUseCache()) {
-			if (!PMS.get().getDatabase().isScanLibraryRunning()) {
-				PMS.get().getDatabase().scanLibrary();
+		if (resource.equals("scan") && configuration.getUseCache()) {
+			if (!database.isScanLibraryRunning()) {
+				database.scanLibrary();
 			}
-			if (PMS.get().getDatabase().isScanLibraryRunning()) {
+			if (database.isScanLibraryRunning()) {
 				sb.append("<p align=center><b>Scan in progress! you can also <a href=\"stop\">stop it</a></b></p><br>");
 			}
 		}
 
-		if (resource.equals("stop") && PMS.getConfiguration().getUseCache() && PMS.get().getDatabase().isScanLibraryRunning()) {
-			PMS.get().getDatabase().stopScanLibrary();
+		if (resource.equals("stop") && configuration.getUseCache() && database.isScanLibraryRunning()) {
+			database.stopScanLibrary();
 			sb.append("<p align=center><b>Scan stopped!</b></p><br>");
 		}
 
