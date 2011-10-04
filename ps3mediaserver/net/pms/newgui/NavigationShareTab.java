@@ -87,7 +87,7 @@ public class NavigationShareTab {
 
 	private void updateModel() {
 		if (df.size() == 1 && df.getElementAt(0).equals(ALL_DRIVES)) {
-			PMS.getConfiguration().setFolders("");
+		    configuration.setFolders("");
 		} else {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < df.size(); i++) {
@@ -100,7 +100,7 @@ public class NavigationShareTab {
 				// http://ps3mediaserver.org/forum/viewtopic.php?f=14&t=8883&start=250#p43520
 				sb.append(entry.replace(",", "&comma;"));
 			}
-			PMS.getConfiguration().setFolders(sb.toString());
+			configuration.setFolders(sb.toString());
 		}
 		PMS.get().getFrame().setReloadable(true);
 	}
@@ -136,10 +136,10 @@ public class NavigationShareTab {
 		tncheckBox.setContentAreaFilled(false);
 		tncheckBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
+			    configuration.setThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		if (PMS.getConfiguration().getThumbnailsEnabled()) {
+		if (configuration.getThumbnailsEnabled()) {
 			tncheckBox.setSelected(true);
 		}
 		builder.add(tncheckBox, cc.xyw(1, 3, 3));
@@ -172,10 +172,10 @@ public class NavigationShareTab {
 		mplayer_thumb.setContentAreaFilled(false);
 		mplayer_thumb.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setUseMplayerForVideoThumbs((e.getStateChange() == ItemEvent.SELECTED));
+			    configuration.setUseMplayerForVideoThumbs((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		if (PMS.getConfiguration().isUseMplayerForVideoThumbs()) {
+		if (configuration.isUseMplayerForVideoThumbs()) {
 			mplayer_thumb.setSelected(true);
 		}
 		builder.add(mplayer_thumb, cc.xyw(1, 5, 3));
@@ -184,10 +184,10 @@ public class NavigationShareTab {
 		dvdiso_thumb.setContentAreaFilled(false);
 		dvdiso_thumb.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setDvdIsoThumbnails((e.getStateChange() == ItemEvent.SELECTED));
+			    configuration.setDvdIsoThumbnails((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		if (PMS.getConfiguration().isDvdIsoThumbnails()) {
+		if (configuration.isDvdIsoThumbnails()) {
 			dvdiso_thumb.setSelected(true);
 		}
 		builder.add(dvdiso_thumb, cc.xyw(3, 5, 3));
@@ -196,10 +196,10 @@ public class NavigationShareTab {
 		image_thumb.setContentAreaFilled(false);
 		image_thumb.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setImageThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
+			    configuration.setImageThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		if (PMS.getConfiguration().getImageThumbnailsEnabled()) {
+		if (configuration.getImageThumbnailsEnabled()) {
 			image_thumb.setSelected(true);
 		}
 		builder.add(image_thumb, cc.xyw(1, 7, 3));
@@ -271,36 +271,36 @@ public class NavigationShareTab {
 
 		hidevideosettings = new JCheckBox(Messages.getString("FoldTab.6"));
 		hidevideosettings.setContentAreaFilled(false);
-		if (PMS.getConfiguration().getHideVideoSettings()) {
+		if (configuration.getHideVideoSettings()) {
 			hidevideosettings.setSelected(true);
 		}
 		hidevideosettings.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setHideVideoSettings((e.getStateChange() == ItemEvent.SELECTED));
+			        configuration.setHideVideoSettings((e.getStateChange() == ItemEvent.SELECTED));
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 
 		hidetranscode = new JCheckBox(Messages.getString("FoldTab.33"));
 		hidetranscode.setContentAreaFilled(false);
-		if (PMS.getConfiguration().getHideTranscodeEnabled()) {
+		if (configuration.getHideTranscodeEnabled()) {
 			hidetranscode.setSelected(true);
 		}
 		hidetranscode.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setHideTranscodeEnabled((e.getStateChange() == ItemEvent.SELECTED));
+			        configuration.setHideTranscodeEnabled((e.getStateChange() == ItemEvent.SELECTED));
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 
 		hidemedialibraryfolder = new JCheckBox(Messages.getString("FoldTab.32"));
 		hidemedialibraryfolder.setContentAreaFilled(false);
-		if (PMS.getConfiguration().isHideMediaLibraryFolder()) {
+		if (configuration.isHideMediaLibraryFolder()) {
 			hidemedialibraryfolder.setSelected(true);
 		}
 		hidemedialibraryfolder.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setHideMediaLibraryFolder((e.getStateChange() == ItemEvent.SELECTED));
+			        configuration.setHideMediaLibraryFolder((e.getStateChange() == ItemEvent.SELECTED));
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
@@ -309,13 +309,13 @@ public class NavigationShareTab {
 		archive.setContentAreaFilled(false);
 		archive.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
+			        configuration.setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
 				if (PMS.get().getFrame() != null) {
 					PMS.get().getFrame().setReloadable(true);
 				}
 			}
 		});
-		if (PMS.getConfiguration().isArchiveBrowsing()) {
+		if (configuration.isArchiveBrowsing()) {
 			archive.setSelected(true);
 		}
 
@@ -325,14 +325,14 @@ public class NavigationShareTab {
 
 		cacheenable = new JCheckBox(Messages.getString("NetworkTab.17"));
 		cacheenable.setContentAreaFilled(false);
-		cacheenable.setSelected(PMS.getConfiguration().getUseCache());
+		cacheenable.setSelected(configuration.getUseCache());
 		cacheenable.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setUseCache((e.getStateChange() == ItemEvent.SELECTED));
-				cachereset.setEnabled(PMS.getConfiguration().getUseCache());
+			        configuration.setUseCache((e.getStateChange() == ItemEvent.SELECTED));
+				cachereset.setEnabled(configuration.getUseCache());
 				PMS.get().getFrame().setReloadable(true);
 				if ((LooksFrame) PMS.get().getFrame() != null) {
-					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(PMS.getConfiguration().getUseCache());
+					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(configuration.getUseCache());
 				}
 			}
 		});
@@ -356,7 +356,7 @@ public class NavigationShareTab {
 		});
 		builder.add(cachereset, cc.xyw(4, 19, 4));
 
-		cachereset.setEnabled(PMS.getConfiguration().getUseCache());
+		cachereset.setEnabled(configuration.getUseCache());
 
 		builder.add(hidevideosettings, cc.xyw(4, 13, 3));
 
@@ -366,12 +366,12 @@ public class NavigationShareTab {
 
 		hideextensions = new JCheckBox(Messages.getString("FoldTab.5"));
 		hideextensions.setContentAreaFilled(false);
-		if (PMS.getConfiguration().isHideExtensions()) {
+		if (configuration.isHideExtensions()) {
 			hideextensions.setSelected(true);
 		}
 		hideextensions.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setHideExtensions((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setHideExtensions((e.getStateChange() == ItemEvent.SELECTED));
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
@@ -379,12 +379,12 @@ public class NavigationShareTab {
 
 		hideengines = new JCheckBox(Messages.getString("FoldTab.8"));
 		hideengines.setContentAreaFilled(false);
-		if (PMS.getConfiguration().isHideEngineNames()) {
+		if (configuration.isHideEngineNames()) {
 			hideengines.setSelected(true);
 		}
 		hideengines.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setHideEngineNames((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setHideEngineNames((e.getStateChange() == ItemEvent.SELECTED));
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
@@ -392,12 +392,12 @@ public class NavigationShareTab {
 
 		hideemptyfolders = new JCheckBox(Messages.getString("FoldTab.31"));
 		hideemptyfolders.setContentAreaFilled(false);
-		if (PMS.getConfiguration().isHideEmptyFolders()) {
+		if (configuration.isHideEmptyFolders()) {
 			hideemptyfolders.setSelected(true);
 		}
 		hideemptyfolders.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setHideEmptyFolders((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setHideEmptyFolders((e.getStateChange() == ItemEvent.SELECTED));
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
@@ -405,7 +405,7 @@ public class NavigationShareTab {
 
 		itunes = new JCheckBox(Messages.getString("FoldTab.30"));
 		itunes.setContentAreaFilled(false);
-		if (PMS.getConfiguration().getItunesEnabled()) {
+		if (configuration.getItunesEnabled()) {
 			itunes.setSelected(true);
 		}
 		if (!(Platform.isMac() || Platform.isWindows())) {
@@ -413,7 +413,7 @@ public class NavigationShareTab {
 		}
 		itunes.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setItunesEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setItunesEnabled((e.getStateChange() == ItemEvent.SELECTED));
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
@@ -421,7 +421,7 @@ public class NavigationShareTab {
 
 		iphoto = new JCheckBox(Messages.getString("FoldTab.29"));
 		iphoto.setContentAreaFilled(false);
-		if (PMS.getConfiguration().getIphotoEnabled()) {
+		if (configuration.getIphotoEnabled()) {
 			iphoto.setSelected(true);
 		}
 		if (!Platform.isMac()) {
@@ -429,7 +429,7 @@ public class NavigationShareTab {
 		}
 		iphoto.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setIphotoEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setIphotoEnabled((e.getStateChange() == ItemEvent.SELECTED));
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
@@ -438,7 +438,7 @@ public class NavigationShareTab {
 		// Add Aperture selection
 		aperture = new JCheckBox(Messages.getString("FoldTab.34"));
 		aperture.setContentAreaFilled(false);
-		if (PMS.getConfiguration().getApertureEnabled()) {
+		if (configuration.getApertureEnabled()) {
 			aperture.setSelected(true);
 		}
 		if (!Platform.isMac()) {
@@ -446,7 +446,7 @@ public class NavigationShareTab {
 		}
 		aperture.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setApertureEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setApertureEnabled((e.getStateChange() == ItemEvent.SELECTED));
 				PMS.get().getFrame().setReloadable(true);
 			}
 		});
@@ -570,7 +570,7 @@ public class NavigationShareTab {
 		//but5.setBorder(BorderFactory.createEmptyBorder());
 		but5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (PMS.getConfiguration().getUseCache()) {
+				if (configuration.getUseCache()) {
 					if (!PMS.get().getDatabase().isScanLibraryRunning()) {
 						int option = JOptionPane.showConfirmDialog(
 							(Component) PMS.get().getFrame(),
@@ -599,7 +599,7 @@ public class NavigationShareTab {
 		});
 
 		builderFolder.add(but5, cc.xy(5, 3));
-		but5.setEnabled(PMS.getConfiguration().getUseCache());
+		but5.setEnabled(configuration.getUseCache());
 
 		builderFolder.add(pane, cc.xyw(1, 5, 6));
 

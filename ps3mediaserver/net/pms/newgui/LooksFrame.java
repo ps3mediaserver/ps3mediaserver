@@ -192,7 +192,8 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		Font sf = null;
 
 		// Set an unicode font for testing exotics languages (japanese)
-		if (PMS.getConfiguration().getLanguage() != null && (PMS.getConfiguration().getLanguage().equals("ja") || PMS.getConfiguration().getLanguage().startsWith("zh")))
+		final String language = configuration.getLanguage();
+                if (language != null && (language.equals("ja") || language.startsWith("zh")))
 		{
 			sf = new Font("Serif", Font.PLAIN, 12);
 		}
@@ -284,7 +285,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		setLocation(
 			((screenSize.width > paneSize.width) ? ((screenSize.width - paneSize.width) / 2) : 0),
 			((screenSize.height > paneSize.height) ? ((screenSize.height - paneSize.height) / 2) : 0));
-		if (!PMS.getConfiguration().isMinimized() && System.getProperty(START_SERVICE) == null) {
+		if (!configuration.isMinimized() && System.getProperty(START_SERVICE) == null) {
 			setVisible(true);
 		}
 		PMSUtil.addSystemTray(this);
