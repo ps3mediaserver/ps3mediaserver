@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -98,13 +99,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	/**
 	 * List of children objects associated with this DLNAResource. This is only valid when the DLNAResource is of the container type.
 	 */
-	protected ArrayList<DLNAResource> children;
+	protected List<DLNAResource> children;
 
 	/**
 	 * @return List of children objects
 	 * @see #children
 	 */
-	public ArrayList<DLNAResource> getChildren() {
+	public List<DLNAResource> getChildren() {
 		return children;
 	}
 
@@ -460,7 +461,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @throws IOException
 	 * @see #closeChildren(int, boolean)
 	 */
-	public synchronized ArrayList<DLNAResource> getDLNAResources(String objectId, boolean children, int start, int count, RendererConfiguration renderer) throws IOException {
+	public synchronized List<DLNAResource> getDLNAResources(String objectId, boolean children, int start, int count, RendererConfiguration renderer) throws IOException {
 		logger.trace("Searching for objectId: " + objectId + " with children option: " + children);
 		ArrayList<DLNAResource> resources = new ArrayList<DLNAResource>();
 		DLNAResource resource = search(objectId);
