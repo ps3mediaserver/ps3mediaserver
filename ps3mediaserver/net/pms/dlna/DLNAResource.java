@@ -95,7 +95,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
         protected DLNAMediaInfo media;
         protected DLNAMediaAudio media_audio;
         protected DLNAMediaSubtitle media_subtitle;
-        protected boolean notranscodefolder;
         protected long lastmodified;
 
         /**
@@ -165,8 +164,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		this.parent = parent;
 	}
 
-	public boolean isNotranscodefolder() {
-		return notranscodefolder;
+	/**
+	 * 
+	 * @return true, if this contain can have a transcode folder
+	 */
+	public boolean isCanHaveTranscodeFolder() {
+		return true;
 	}
 
 	public long getLastmodified() {
@@ -382,7 +385,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						logger.trace("Switching " + child.getName() + " to player: " + pl.toString());
 					}
 
-					if (child.ext.isVideo() && (!child.notranscodefolder) && (!PMS.getConfiguration().getHideTranscodeEnabled())) {
+					if (child.ext.isVideo() && child.isCanHaveTranscodeFolder() && (!PMS.getConfiguration().getHideTranscodeEnabled())) {
 						//search for transcode folder
 						for (DLNAResource r : children) {
 							if (r instanceof TranscodeVirtualFolder) {

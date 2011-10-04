@@ -55,8 +55,12 @@ public abstract class VirtualVideoAction extends DLNAResource {
 		this.videoOk = "videos/action_success-512.mpg";
 		this.videoKo = "videos/button_cancel-512.mpg";
 		timer1 = -1;
-		notranscodefolder = true;
 		this.enabled = enabled;
+	}
+	
+	@Override
+	public boolean isCanHaveTranscodeFolder() {
+	    return false;
 	}
 
 	/**This function is called as an action from the UPNP client when
