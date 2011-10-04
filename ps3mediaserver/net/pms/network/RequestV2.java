@@ -291,14 +291,15 @@ public class RequestV2 extends HTTPResource {
 						if (rendererMimeType != null && !"".equals(rendererMimeType)) {
 							output.setHeader(HttpHeaders.Names.CONTENT_TYPE, rendererMimeType);
 						}
-						
-						if (dlna.media != null) {
-							if (StringUtils.isNotBlank(dlna.media.container)) {
-								name += " [container: " + dlna.media.container + "]";
+
+						final DLNAMediaInfo media = dlna.getMedia();
+						if (media != null) {
+							if (StringUtils.isNotBlank(media.container)) {
+								name += " [container: " + media.container + "]";
 							}
 	
-							if (StringUtils.isNotBlank(dlna.media.codecV)) {
-								name += " [video: " + dlna.media.codecV + "]";
+							if (StringUtils.isNotBlank(media.codecV)) {
+								name += " [video: " + media.codecV + "]";
 							}
 						}
 	
@@ -678,7 +679,7 @@ public class RequestV2 extends HTTPResource {
 			if (timeseek > 0 && dlna != null) {
 				// Add timeseek information headers.
 				String timeseekValue = DLNAMediaInfo.getDurationString(timeseek);
-				String timetotalValue = dlna.media.duration;
+				String timetotalValue = dlna.getMedia().duration;
 				output.setHeader("TimeSeekRange.dlna.org", "npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
 				output.setHeader("X-Seek-Range", "npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
 			}

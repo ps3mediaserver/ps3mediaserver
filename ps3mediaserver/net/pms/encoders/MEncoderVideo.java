@@ -1077,7 +1077,7 @@ public class MEncoderVideo extends Player {
 		// don't honour "Switch to tsMuxeR..." if the resource is being streamed via an MEncoder entry in
 		// the #--TRANSCODE--# folder
 		boolean forceMencoder = !configuration.getHideTranscodeEnabled()
-			&& dlna.noName
+			&& dlna.isNoName()
 			&& (dlna.getParent() instanceof FileTranscodeVirtualFolder);
 
 		ovccopy = false;
