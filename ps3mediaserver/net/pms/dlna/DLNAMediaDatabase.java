@@ -101,18 +101,9 @@ public class DLNAMediaDatabase implements Runnable {
 		} catch (SQLException se) {
 			logger.debug("Database not created or corrupted");
 		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (stmt != null) {
-					stmt.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-			}
+                        close(rs);
+                        close(stmt);
+                        close(conn);
 		}
 		boolean force_reinit = !PMS.VERSION.equals(version); // here we can force a deletion for a specific version
 		if (force || count == -1 || force_reinit) {
@@ -202,12 +193,7 @@ public class DLNAMediaDatabase implements Runnable {
 			} catch (SQLException se) {
 				logger.info("Error in table creation: " + se.getMessage());
 			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-					}
-				}
+			    close(conn);
 			}
 		} else {
 			logger.debug("Database file count: " + count);
@@ -241,18 +227,9 @@ public class DLNAMediaDatabase implements Runnable {
 			logger.error(null, se);
 			return false;
 		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (stmt != null) {
-					stmt.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-			}
+                        close(rs);
+                        close(stmt);
+                        close(conn);
 		}
 		return found;
 	}
@@ -334,18 +311,9 @@ public class DLNAMediaDatabase implements Runnable {
 			logger.error(null, se);
 			return null;
 		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (stmt != null) {
-					stmt.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-			}
+                        close(rs);
+                        close(stmt);
+                        close(conn);
 		}
 		return list;
 	}
@@ -444,9 +412,7 @@ public class DLNAMediaDatabase implements Runnable {
 						insert.executeUpdate();
 					}
 				}
-				if (insert != null) {
-					insert.close();
-				}
+				close(insert);
 			}
 		} catch (SQLException se) {
 			if (se.getMessage().contains("[23001")) {
@@ -455,15 +421,8 @@ public class DLNAMediaDatabase implements Runnable {
 				logger.error(null, se);
 			}
 		} finally {
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-			}
+                        close(ps);
+                        close(conn);
 		}
 	}
 
@@ -488,15 +447,8 @@ public class DLNAMediaDatabase implements Runnable {
 				logger.error(null, se);
 			}
 		} finally {
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-			}
+                        close(ps);
+                        close(conn);
 		}
 	}
 
@@ -523,18 +475,9 @@ public class DLNAMediaDatabase implements Runnable {
 			logger.error(null, se);
 			return null;
 		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (ps != null) {
-					ps.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-			}
+                        close(rs);
+                        close(ps);
+                        close(conn);
 		}
 		return list;
 	}
@@ -578,12 +521,7 @@ public class DLNAMediaDatabase implements Runnable {
 		} catch (SQLException se) {
 			logger.error(null, se);
 		} finally {
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-			}
+		        close(conn);
 		}
 	}
 
@@ -608,21 +546,42 @@ public class DLNAMediaDatabase implements Runnable {
 			logger.error(null, se);
 			return null;
 		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (ps != null) {
-					ps.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-			}
+                        close(rs);
+                        close(ps);
+                        close(conn);
 		}
 		return list;
 	}
+
+    private void close(ResultSet rs) {
+        try {
+            if (rs != null) {
+            	rs.close();
+            }
+        } catch (SQLException e) {
+            logger.error("error during closing:"+e.getMessage(), e);
+        }
+    }
+
+    private void close(Statement ps) {
+        try {
+            if (ps != null) {
+            	ps.close();
+            }
+        } catch (SQLException e) {
+            logger.error("error during closing:"+e.getMessage(), e);
+        }
+    }
+
+    private void close(Connection conn) {
+        try {
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+            logger.error("error during closing:" + e.getMessage(), e);
+        }
+    }
 
 	public synchronized boolean isScanLibraryRunning() {
 		return scanner != null && scanner.isAlive();
