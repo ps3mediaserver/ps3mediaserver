@@ -113,7 +113,7 @@ public class TranscodingTab {
 			}
 		}
 		PMS.get().getFrame().setReloadable(true);
-		PMS.getConfiguration().setEnginesAsList(engines);
+		configuration.setEnginesAsList(engines);
 	}
 
 	private void handleCardComponentChange(Component component) {
@@ -280,7 +280,7 @@ public class TranscodingTab {
 		ArrayList<Player> ordPlayers = new ArrayList<Player>();
 		PMS r = PMS.get();
 
-		for (String id : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
+		for (String id : configuration.getEnginesAsList(r.getRegistry())) {
 			//boolean matched = false;
 			for (Player p : PMS.get().getAllPlayers()) {
 				if (p.id().equals(id)) {
@@ -384,7 +384,7 @@ public class TranscodingTab {
 		}
 		nbcores = new JComboBox(guiCores);
 		nbcores.setEditable(false);
-		int nbConfCores = PMS.getConfiguration().getNumberOfCpuCores();
+		int nbConfCores = configuration.getNumberOfCpuCores();
 		if (nbConfCores > 0 && nbConfCores <= MAX_CORES) {
 			nbcores.setSelectedItem(Integer.toString(nbConfCores));
 		} else {
@@ -393,7 +393,7 @@ public class TranscodingTab {
 
 		nbcores.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setNumberOfCpuCores(Integer.parseInt(e.getItem().toString()));
+			        configuration.setNumberOfCpuCores(Integer.parseInt(e.getItem().toString()));
 			}
 		});
 		builder.add(nbcores, cc.xy(3, 5));
@@ -441,21 +441,21 @@ public class TranscodingTab {
 
 		channels = new JComboBox(new Object[]{"2 channels (Stereo)", "6 channels (5.1)" /*, "8 channels 7.1" */}); // 7.1 not supported by Mplayer :\
 		channels.setEditable(false);
-		if (PMS.getConfiguration().getAudioChannelCount() == 2) {
+		if (configuration.getAudioChannelCount() == 2) {
 			channels.setSelectedIndex(0);
 		} else {
 			channels.setSelectedIndex(1);
 		}
 		channels.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setAudioChannelCount(Integer.parseInt(e.getItem().toString().substring(0, 1)));
+				configuration.setAudioChannelCount(Integer.parseInt(e.getItem().toString().substring(0, 1)));
 			}
 		});
 
 		builder.addLabel(Messages.getString("TrTab2.50"), cc.xy(1, 13));
 		builder.add(channels, cc.xy(3, 13));
 
-		abitrate = new JTextField("" + PMS.getConfiguration().getAudioBitrate());
+		abitrate = new JTextField("" + configuration.getAudioBitrate());
 		abitrate.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -469,7 +469,7 @@ public class TranscodingTab {
 			public void keyReleased(KeyEvent e) {
 				try {
 					int ab = Integer.parseInt(abitrate.getText());
-					PMS.getConfiguration().setAudioBitrate(ab);
+					configuration.setAudioBitrate(ab);
 				} catch (NumberFormatException nfe) {
 				}
 			}
@@ -535,12 +535,12 @@ public class TranscodingTab {
 
 		ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
 		ac3remux.setContentAreaFilled(false);
-		if (PMS.getConfiguration().isRemuxAC3()) {
+		if (configuration.isRemuxAC3()) {
 			ac3remux.setSelected(true);
 		}
 		ac3remux.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setRemuxAC3((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setRemuxAC3((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 
@@ -548,12 +548,12 @@ public class TranscodingTab {
 
 		mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
 		mpeg2remux.setContentAreaFilled(false);
-		if (PMS.getConfiguration().isMencoderRemuxMPEG2()) {
+		if (configuration.isMencoderRemuxMPEG2()) {
 			mpeg2remux.setSelected(true);
 		}
 		mpeg2remux.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				PMS.getConfiguration().setMencoderRemuxMPEG2((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setMencoderRemuxMPEG2((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 
@@ -567,7 +567,7 @@ public class TranscodingTab {
 		builder.addLabel(Messages.getString("TrTab2.30"), cc.xy(1, 29));
 
 
-		maxbitrate = new JTextField("" + PMS.getConfiguration().getMaximumBitrate());
+		maxbitrate = new JTextField("" + configuration.getMaximumBitrate());
 		maxbitrate.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -579,14 +579,14 @@ public class TranscodingTab {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				PMS.getConfiguration().setMaximumBitrate(maxbitrate.getText());
+				configuration.setMaximumBitrate(maxbitrate.getText());
 			}
 		});
 		builder.add(maxbitrate, cc.xy(3, 29));
 
 		builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 31, 3));
 
-		Object data[] = new Object[]{PMS.getConfiguration().getMencoderMainSettings(),
+		Object data[] = new Object[]{configuration.getMencoderMainSettings(),
 			"keyint=5:vqscale=1:vqmin=2  /* Great Quality */",
 			"keyint=5:vqscale=1:vqmin=1  /* Lossless Quality */",
 			"keyint=5:vqscale=2:vqmin=3  /* Good quality */",
@@ -603,7 +603,7 @@ public class TranscodingTab {
 					if (s.indexOf("/*") > -1) {
 						s = s.substring(0, s.indexOf("/*")).trim();
 					}
-					PMS.getConfiguration().setMencoderMainSettings(s);
+					configuration.setMencoderMainSettings(s);
 				}
 			}
 		});

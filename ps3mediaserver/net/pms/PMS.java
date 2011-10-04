@@ -37,6 +37,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.LogManager;
 
+import javax.swing.JOptionPane;
+
 import net.pms.configuration.Build;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
@@ -966,24 +968,21 @@ public class PMS {
 		}
 
 		try {
-			configuration = new PmsConfiguration();
-		} catch (Throwable t) {
-			System.err.println("Configuration error: " + t.getMessage());
-		}
+		    configuration = new PmsConfiguration();
 
-		assert configuration != null;
+    		    assert configuration != null;
+    
+    		    // Load the (optional) logback config file. This has to be called after 'new PmsConfiguration'
+    		    // as the logging starts immediately and some filters need the PmsConfiguration.
+    		    LoggingConfigFileLoader.load();
+    
+    		    // create the PMS instance returned by get()
+    		    createInstance(); 
+                } catch (Throwable t) {
+                    System.err.println("Configuration error: " + t.getMessage());
+                    JOptionPane.showMessageDialog(null, "Configuration error:"+t.getMessage(), "Error initalizing PMS!", JOptionPane.ERROR_MESSAGE);
+                }
 
-		// Load the (optional) logback config file. This has to be called after 'new PmsConfiguration'
-		// as the logging starts immediately and some filters need the PmsConfiguration.
-		LoggingConfigFileLoader.load();
-
-		// create the PMS instance returned by get()
-		createInstance(); 
-
-		try {
-			// let's allow us time to show up serious errors in the GUI before quitting
-			Thread.sleep(60000);
-		} catch (InterruptedException e) {}
 	}
 
 	public HTTPServer getServer() {
