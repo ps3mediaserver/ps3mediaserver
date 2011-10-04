@@ -70,26 +70,71 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private static final Logger logger = LoggerFactory.getLogger(DLNAResource.class);
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
-	protected static String TRANSCODE_FOLDER = "#--TRANSCODE--#";
+	protected static final String TRANSCODE_FOLDER = "#--TRANSCODE--#";
 	private Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
-	private final int STOP_PLAYING_DELAY = 4000;
+	private static final int STOP_PLAYING_DELAY = 4000;
 
-	/**Returns parent object, usually a folder type of resource.
+        protected int specificType;
+        /**
+         * String representing this resource ID. This string is used by the UPNP ContentDirectory service.
+         * There is no hard spec on the actual numbering except for the root container that always has to be "0".
+         * In PMS, the format used is <i>number($number)+</i>. A common client that expects a given format,
+         * that is different that the one used here, is the XBox360. For more info, check 
+         * {@link http://www.mperfect.net/whsUpnp360/} . PMS translates the XBox360 queries on the fly.
+         */
+        protected String id;
+
+        /**
+         * In the DLDI queries, the UPNP server needs to give out the parent container where the item is. <i>parent</i> represents
+         * such a container.
+         */
+        protected DLNAResource parent;
+
+
+        protected Format ext;
+        public DLNAMediaInfo media;
+        public DLNAMediaAudio media_audio;
+        public DLNAMediaSubtitle media_subtitle;
+        protected boolean notranscodefolder;
+        protected long lastmodified;
+
+        /**
+         * Represents the transformation to be used to the file. If null, then 
+         * @see Player
+         */
+        protected Player player;
+
+        protected boolean discovered = false;
+        private ProcessWrapper externalProcess;
+        protected boolean srtFile;
+        public int updateId = 1;
+        public static int systemUpdateId = 1;
+        public boolean noName;
+        private int nametruncate;
+        private DLNAResource first;
+        private DLNAResource second;
+        protected double splitStart;
+        protected double splitLength;
+        protected int splitTrack;
+        protected String fakeParentId;
+        // Ditlew - needs this in one of the derived classes
+        protected RendererConfiguration defaultRenderer;
+        private String dlnaspec;
+
+        protected boolean avisynth;
+
+        public boolean skipTranscode = false;
+        protected int childrenNumber;
+        private boolean allChildrenAreFolders = true;
+        private String flags;
+
+        /**Returns parent object, usually a folder type of resource.
 	 * @return Parent object.
 	 * @see #parent
 	 */
 	public DLNAResource getParent() {
 		return parent;
 	}
-	protected int specificType;
-	/**
-	 * String representing this resource ID. This string is used by the UPNP ContentDirectory service.
-	 * There is no hard spec on the actual numbering except for the root container that always has to be "0".
-	 * In PMS, the format used is <i>number($number)+</i>. A common client that expects a given format,
-	 * that is different that the one used here, is the XBox360. For more info, check 
-	 * {@link http://www.mperfect.net/whsUpnp360/} . PMS translates the XBox360 queries on the fly.
-	 */
-	protected String id;
 
 	/**
 	 * @return ID string
@@ -112,12 +157,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**
-	 * In the DLDI queries, the UPNP server needs to give out the parent container where the item is. <i>parent</i> represents
-	 * such a container.
-	 */
-	protected DLNAResource parent;
-
-	/**
 	 * @param parent Sets the parent folder.
 	 * @see #parent
 	 */
@@ -125,26 +164,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		this.parent = parent;
 	}
 
-	protected Format ext;
-	public DLNAMediaInfo media;
-	public DLNAMediaAudio media_audio;
-	public DLNAMediaSubtitle media_subtitle;
-	protected boolean notranscodefolder;
-
 	public boolean isNotranscodefolder() {
 		return notranscodefolder;
 	}
-	protected long lastmodified;
 
 	public long getLastmodified() {
 		return lastmodified;
 	}
-
-	/**
-	 * Represents the transformation to be used to the file. If null, then 
-	 * @see Player
-	 */
-	protected Player player;
 
 	public Format getExt() {
 		return ext;
@@ -167,22 +193,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public abstract InputStream getInputStream() throws IOException;
 
 	public abstract boolean isFolder();
-	protected boolean discovered = false;
-	private ProcessWrapper externalProcess;
-	protected boolean srtFile;
-	public int updateId = 1;
-	public static int systemUpdateId = 1;
-	public boolean noName;
-	private int nametruncate;
-	private DLNAResource first;
-	private DLNAResource second;
-	protected double splitStart;
-	protected double splitLength;
-	protected int splitTrack;
-	protected String fakeParentId;
-	// Ditlew - needs this in one of the derived classes
-	protected RendererConfiguration defaultRenderer;
-	private String dlnaspec;
 
 	public String getDlnaContentFeatures() {
 		return (dlnaspec != null ? (dlnaspec + ";") : "") + getFlags() + ";DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000";
@@ -203,8 +213,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public void setFakeParentId(String fakeParentId) {
 		this.fakeParentId = fakeParentId;
 	}
-
-	protected boolean avisynth;
 
 	public int getUpdateId() {
 		return updateId;
@@ -250,10 +258,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			|| (ext.isAudio() && renderer.isAudioSupported())
 			|| (ext.isImage() && renderer.isImageSupported());
 	}
-
-	public boolean skipTranscode = false;
-	protected int childrenNumber;
-	private boolean allChildrenAreFolders = true;
 
 	/**Adds a new DLNAResource to the child list. Only useful if this object is of the container type.<P>
 	 * TODO: (botijo) check what happens with the child object. This function can and will transform the child
@@ -779,7 +783,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 		return s;
 	}
-	private String flags;
 
 	public String getFlags() {
 		return flags;
