@@ -781,26 +781,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return "";
 	}
 
-	/**Removes any children associated to this DLNAResource.<p>Note: (botijo) this function is not called anywhere.
-	 * 
-	 * @param level This integer represents how deep the items are in the tree. For the root
-	 * container (level==0), you do want to keep the children. For the rest of the levels,
-	 * children is set to null.
-	 * @see #children
-	 */
-//	@Deprecated
-	public void reset(int level) {
-		for (DLNAResource r : children) {
-			r.reset(level++);
-		}
-		if (level > 0) {
-			children.clear();
-		}
-		if (level > 1) {
-			children = null;
-		}
-	}
-
 	/**
 	 * @return Number of children objects. This might be used in the DLDI response, as some renderers might
 	 * not have enough memory to hold the list for every children.
