@@ -54,8 +54,4 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 		resolved = true;
 	}
 
-	@Override
-	public void discoverChildren() {
-		super.discoverChildren();
-	}
 }

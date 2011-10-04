@@ -125,7 +125,7 @@ public class DLNAMediaDatabase implements Runnable {
 			} catch (SQLException se) {
 			}
 			try {
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				sb.append("CREATE TABLE FILES (");
 				sb.append("  ID                INT AUTO_INCREMENT");
 				sb.append(", FILENAME          VARCHAR2(1024)       NOT NULL");
@@ -149,7 +149,7 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append(", MUXINGMODE        VARCHAR2(32)");
 				sb.append(", constraint PK1 primary key (FILENAME, MODIFIED, ID))");
 				executeUpdate(conn, sb.toString());
-				sb = new StringBuffer();
+				sb = new StringBuilder();
 				sb.append("CREATE TABLE AUDIOTRACKS (");
 				sb.append("  FILEID            INT              NOT NULL");
 				sb.append(", ID                INT              NOT NULL");
@@ -168,7 +168,7 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append(", MUXINGMODE        VARCHAR2(32)");
 				sb.append(", constraint PKAUDIO primary key (FILEID, ID))");
 				executeUpdate(conn, sb.toString());
-				sb = new StringBuffer();
+				sb = new StringBuilder();
 				sb.append("CREATE TABLE SUBTRACKS (");
 				sb.append("  FILEID            INT              NOT NULL");
 				sb.append(", ID                INT              NOT NULL");
