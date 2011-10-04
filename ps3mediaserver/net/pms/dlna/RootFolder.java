@@ -48,7 +48,6 @@ import net.pms.external.AdditionalFoldersAtRoot;
 import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.gui.IFrame;
-import net.pms.newgui.LooksFrame;
 import net.pms.xmlwise.Plist;
 import net.pms.xmlwise.XmlParseException;
 
@@ -158,12 +157,9 @@ public class RootFolder extends DLNAResource {
 		defaultRenderer = RendererConfiguration.getDefaultConf();
 		scan(this);
 		IFrame frame = PMS.get().getFrame();
-		if (frame instanceof LooksFrame) {
-			LooksFrame looksframe = (LooksFrame) frame;
-			looksframe.getFt().setScanLibraryEnabled(true);
-		}
+		frame.setScanLibraryEnabled(true);
 		PMS.get().getDatabase().cleanup();
-		PMS.get().getFrame().setStatusLine(null);
+		frame.setStatusLine(null);
 	}
 
 	public void stopscan() {
