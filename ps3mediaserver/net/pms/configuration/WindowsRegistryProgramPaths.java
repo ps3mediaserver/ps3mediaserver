@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.pms.PMS;
-import net.pms.io.WinUtils;
+import net.pms.io.SystemUtils;
 
 class WindowsRegistryProgramPaths implements ProgramPaths {
 	private static final Logger logger = LoggerFactory.getLogger(WindowsRegistryProgramPaths.class);
@@ -63,7 +63,7 @@ class WindowsRegistryProgramPaths implements ProgramPaths {
 
 	@Override
 	public String getVlcPath() {
-		WinUtils registry = PMS.get().getRegistry();
+		SystemUtils registry = PMS.get().getRegistry();
 		if (registry.getVlcp() != null) {
 			String vlc = registry.getVlcp();
 			String version = registry.getVlcv();

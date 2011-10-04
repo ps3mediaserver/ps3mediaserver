@@ -30,11 +30,15 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
-import com.sun.jna.Platform;
 import com.sun.jna.WString;
 import com.sun.jna.ptr.LongByReference;
 
-public class WinUtils {
+/**
+ * Contains the Windows specific native functionality. Do not try to instantiate on Linux/MacOSX !
+ * @author zsombor
+ *
+ */
+public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	private static final Logger logger = LoggerFactory.getLogger(WinUtils.class);
 
 	public interface Kernel32 extends Library {
@@ -63,41 +67,46 @@ public class WinUtils {
 		int ES_CONTINUOUS = 0x80000000;
 	}
 	private static final int KEY_READ = 0x20019;
-	private String vlcp;
-	private String vlcv;
-	private boolean avis;
 	private boolean kerio;
 	private String avsPluginsDir;
 	public long lastDontSleepCall = 0;
 	public long lastGoToSleepCall = 0;
 
-	public void disableGoToSleep() {
+	/* (non-Javadoc)
+     * @see net.pms.io.SystemUtils#disableGoToSleep()
+     */
+	@Override
+    public void disableGoToSleep() {
 		if (PMS.getConfiguration().isPreventsSleep()) {
-			if (Platform.isWindows()) {
-				// Disable go to sleep (every 40s)
-				if (System.currentTimeMillis() - lastDontSleepCall > 40000) {
-					logger.debug("Calling SetThreadExecutionState ES_SYSTEM_REQUIRED");
-					Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_SYSTEM_REQUIRED | Kernel32.ES_CONTINUOUS);
-					lastDontSleepCall = System.currentTimeMillis();
-				}
+			// Disable go to sleep (every 40s)
+			if (System.currentTimeMillis() - lastDontSleepCall > 40000) {
+				logger.debug("Calling SetThreadExecutionState ES_SYSTEM_REQUIRED");
+				Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_SYSTEM_REQUIRED | Kernel32.ES_CONTINUOUS);
+				lastDontSleepCall = System.currentTimeMillis();
 			}
 		}
 	}
 
-	public void reenableGoToSleep() {
+	/* (non-Javadoc)
+     * @see net.pms.io.SystemUtils#reenableGoToSleep()
+     */
+	@Override
+    public void reenableGoToSleep() {
 		if (PMS.getConfiguration().isPreventsSleep()) {
-			if (Platform.isWindows()) {
-				// Reenable go to sleep
-				if (System.currentTimeMillis() - lastGoToSleepCall > 40000) {
-					logger.debug("Calling SetThreadExecutionState ES_CONTINUOUS");
-					Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_CONTINUOUS);
-					lastGoToSleepCall = System.currentTimeMillis();
-				}
+			// Reenable go to sleep
+			if (System.currentTimeMillis() - lastGoToSleepCall > 40000) {
+				logger.debug("Calling SetThreadExecutionState ES_CONTINUOUS");
+				Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_CONTINUOUS);
+				lastGoToSleepCall = System.currentTimeMillis();
 			}
 		}
 	}
 
-	public File getAvsPluginsDir() {
+	/* (non-Javadoc)
+     * @see net.pms.io.SystemUtils#getAvsPluginsDir()
+     */
+	@Override
+    public File getAvsPluginsDir() {
 		if (avsPluginsDir == null) {
 			return null;
 		}
@@ -108,89 +117,93 @@ public class WinUtils {
 		return pluginsDir;
 	}
 
-	public String getShortPathNameW(String longPathName) {
-		if (Platform.isWindows()) {
-			boolean unicodeChars = false;
-			try {
-				byte b1[] = longPathName.getBytes("UTF-8");
-				byte b2[] = longPathName.getBytes("cp1252");
-				unicodeChars = b1.length != b2.length;
-			} catch (Exception e) {
-				return longPathName;
-			}
+	/* (non-Javadoc)
+     * @see net.pms.io.SystemUtils#getShortPathNameW(java.lang.String)
+     */
+	@Override
+    public String getShortPathNameW(String longPathName) {
+    		boolean unicodeChars = false;
+    		try {
+    			byte b1[] = longPathName.getBytes("UTF-8");
+    			byte b2[] = longPathName.getBytes("cp1252");
+    			unicodeChars = b1.length != b2.length;
+    		} catch (Exception e) {
+    			return longPathName;
+    		}
+    
+    		if (unicodeChars) {
+    			try {
+   				WString pathname = new WString(longPathName);
+    
+    				char test[] = new char[2 + pathname.length() * 2];
+    				int r = Kernel32.INSTANCE.GetShortPathNameW(pathname, test, test.length);
+    				if (r > 0) {
+    					logger.debug("Forcing short path name on " + pathname);
+    					return Native.toString(test);
+    				} else {
+    					logger.info("File does not exist? " + pathname);
+    					return null;
+    				}
+    
+    			} catch (Exception e) {
+    				return longPathName;
+    			}
+    		}
+ 		return longPathName;
+	}
 
-			if (unicodeChars && Platform.isWindows()) {
-				try {
-					WString pathname = new WString(longPathName);
-
-					char test[] = new char[2 + pathname.length() * 2];
-					int r = Kernel32.INSTANCE.GetShortPathNameW(pathname, test, test.length);
-					if (r > 0) {
-						logger.debug("Forcing short path name on " + pathname);
-						return Native.toString(test);
-					} else {
-						logger.info("File does not exist? " + pathname);
-						return null;
-					}
-
-				} catch (Exception e) {
-					return longPathName;
-				}
-			}
-			return longPathName;
+	/* (non-Javadoc)
+     * @see net.pms.io.SystemUtils#getWindowsDirectory()
+     */
+	@Override
+    public String getWindowsDirectory() {
+		char test[] = new char[2 + 256 * 2];
+		int r = Kernel32.INSTANCE.GetWindowsDirectoryW(test, 256);
+		if (r > 0) {
+			return Native.toString(test);
 		}
 		return null;
 	}
 
-	public String getWindowsDirectory() {
-		if (Platform.isWindows()) {
-			char test[] = new char[2 + 256 * 2];
-			int r = Kernel32.INSTANCE.GetWindowsDirectoryW(test, 256);
-			if (r > 0) {
-				return Native.toString(test);
+	/* (non-Javadoc)
+     * @see net.pms.io.SystemUtils#getDiskLabel(java.io.File)
+     */
+	@Override
+    public String getDiskLabel(File f) {
+		String driveName;
+		try {
+			driveName = f.getCanonicalPath().substring(0, 2) + "\\";
+
+			char[] lpRootPathName_chars = new char[4];
+			for (int i = 0; i < 3; i++) {
+				lpRootPathName_chars[i] = driveName.charAt(i);
 			}
-		}
-		return null;
-	}
+			lpRootPathName_chars[3] = '\0';
+			int nVolumeNameSize = 256;
+			CharBuffer lpVolumeNameBuffer_char = CharBuffer.allocate(nVolumeNameSize);
+			LongByReference lpVolumeSerialNumber = new LongByReference();
+			LongByReference lpMaximumComponentLength = new LongByReference();
+			LongByReference lpFileSystemFlags = new LongByReference();
+			int nFileSystemNameSize = 256;
+			CharBuffer lpFileSystemNameBuffer_char = CharBuffer.allocate(nFileSystemNameSize);
 
-	public String getDiskLabel(File f) {
-		if (Platform.isWindows()) {
-			String driveName;
-			try {
-				driveName = f.getCanonicalPath().substring(0, 2) + "\\";
-
-				char[] lpRootPathName_chars = new char[4];
-				for (int i = 0; i < 3; i++) {
-					lpRootPathName_chars[i] = driveName.charAt(i);
-				}
-				lpRootPathName_chars[3] = '\0';
-				int nVolumeNameSize = 256;
-				CharBuffer lpVolumeNameBuffer_char = CharBuffer.allocate(nVolumeNameSize);
-				LongByReference lpVolumeSerialNumber = new LongByReference();
-				LongByReference lpMaximumComponentLength = new LongByReference();
-				LongByReference lpFileSystemFlags = new LongByReference();
-				int nFileSystemNameSize = 256;
-				CharBuffer lpFileSystemNameBuffer_char = CharBuffer.allocate(nFileSystemNameSize);
-
-				boolean result2 = Kernel32.INSTANCE.GetVolumeInformationW(
-					lpRootPathName_chars,
-					lpVolumeNameBuffer_char,
-					nVolumeNameSize,
-					lpVolumeSerialNumber,
-					lpMaximumComponentLength,
-					lpFileSystemFlags,
-					lpFileSystemNameBuffer_char,
-					nFileSystemNameSize);
-				if (!result2) {
-					return null;
-				}
-				String diskLabel = charString2String(lpVolumeNameBuffer_char);
-				return diskLabel;
-			} catch (Exception e) {
+			boolean result2 = Kernel32.INSTANCE.GetVolumeInformationW(
+				lpRootPathName_chars,
+				lpVolumeNameBuffer_char,
+				nVolumeNameSize,
+				lpVolumeSerialNumber,
+				lpMaximumComponentLength,
+				lpFileSystemFlags,
+				lpFileSystemNameBuffer_char,
+				nFileSystemNameSize);
+			if (!result2) {
 				return null;
 			}
+			String diskLabel = charString2String(lpVolumeNameBuffer_char);
+			return diskLabel;
+		} catch (Exception e) {
+			return null;
 		}
-		return null;
 	}
 
 	private String charString2String(CharBuffer buf) {
@@ -205,9 +218,7 @@ public class WinUtils {
 	}
 
 	public WinUtils() {
-		if (Platform.isWindows()) {
-			start();
-		}
+	    start();
 	}
 
 	private void start() {
@@ -275,7 +286,11 @@ public class WinUtils {
 		}
 	}
 
-	public boolean isKerioFirewall() {
+	/* (non-Javadoc)
+     * @see net.pms.io.SystemUtils#isKerioFirewall()
+     */
+	@Override
+    public boolean isKerioFirewall() {
 		return kerio;
 	}
 
@@ -288,15 +303,4 @@ public class WinUtils {
 		return result;
 	}
 
-	public String getVlcp() {
-		return vlcp;
-	}
-
-	public String getVlcv() {
-		return vlcv;
-	}
-
-	public boolean isAvis() {
-		return avis;
-	}
 }

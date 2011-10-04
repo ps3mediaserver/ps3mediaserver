@@ -77,9 +77,11 @@ import net.pms.formats.TIF;
 import net.pms.formats.WEB;
 import net.pms.gui.DummyFrame;
 import net.pms.gui.IFrame;
+import net.pms.io.BasicSystemUtils;
 import net.pms.io.OutputParams;
 import net.pms.io.OutputTextConsumer;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.io.SystemUtils;
 import net.pms.io.WinUtils;
 import net.pms.logging.LoggingConfigFileLoader;
 import net.pms.network.HTTPServer;
@@ -224,12 +226,12 @@ public class PMS {
 	/**Interface to Windows specific functions, like Windows Registry. registry is set by {@link #init()}.
 	 * @see WinUtils
 	 */
-	private WinUtils registry;
+	private SystemUtils registry;
 
 	/**
 	 * @see WinUtils
 	 */
-	public WinUtils getRegistry() {
+	public SystemUtils getRegistry() {
 		return registry;
 	}
 
@@ -334,7 +336,7 @@ public class PMS {
 			autoUpdater = new AutoUpdater(serverURL, VERSION);
 		}
 
-		registry = new WinUtils();
+		registry = createSystemUtils();
 
 		if (System.getProperty(CONSOLE) == null) {
 			frame = new LooksFrame(autoUpdater, configuration);
@@ -563,6 +565,14 @@ public class PMS {
 	 */
 	public MediaLibrary getLibrary() {
 		return mediaLibrary;
+	}
+	
+	private SystemUtils createSystemUtils() {
+	    if (Platform.isWindows()) {
+	        return new WinUtils();
+	    } else {
+	        return new BasicSystemUtils();
+	    }
 	}
 
 	/**Executes the needed commands in order to make PMS a Windows service that starts whenever the machine is started.

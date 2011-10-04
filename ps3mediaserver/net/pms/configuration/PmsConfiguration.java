@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import net.pms.io.WinUtils;
+import net.pms.io.SystemUtils;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -1188,7 +1188,7 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_ENGINES, listToString(enginesAsList));
 	}
 
-	public List<String> getEnginesAsList(WinUtils registry) {
+	public List<String> getEnginesAsList(SystemUtils registry) {
 		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,mplayeraudio,ffmpegaudio,tsmuxeraudio,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux,rawthumbs"));
 		engines = hackAvs(registry, engines);
 		return engines;
@@ -1207,7 +1207,7 @@ public class PmsConfiguration {
 	private static boolean avsHackLogged = false;
 
 	// TODO: Get this out of here
-	private static List<String> hackAvs(WinUtils registry, List<String> input) {
+	private static List<String> hackAvs(SystemUtils registry, List<String> input) {
 		List<String> toBeRemoved = new ArrayList<String>();
 		for (String engineId : input) {
 			if (engineId.startsWith("avs") && !registry.isAvis() && Platform.isWindows()) {
