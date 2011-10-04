@@ -94,10 +94,11 @@ import net.pms.update.AutoUpdater;
 import net.pms.util.PMSUtil;
 import net.pms.util.ProcessUtil;
 import net.pms.util.SystemErrWrapper;
+
+import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.configuration.ConfigurationException;
 import com.sun.jna.Platform;
 
 public class PMS {
@@ -146,13 +147,8 @@ public class PMS {
 	 * Pointer to a running PMS server.
 	 */
 	private static PMS instance = null;
-	/**
-	 * Semaphore used in order to not create two PMS instances at the same time.
-	 */
-	private static byte[] lock = null;
 
 	static {
-		lock = new byte[0];
 		sdfHour = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
 		sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 	}
@@ -685,18 +681,14 @@ public class PMS {
 
 	/**Transforms a comma separated list of directory entries into an array of {@link String}.
 	 * Checks that the directory exists and is a valid directory.
-	 * @param folders {@link String} Comma separated list of directories.
 	 * @param log whether to output log information
 	 * @return {@link File}[] Array of directories.
 	 * @throws IOException
 	 * @see {@link PMS#manageRoot(RendererConfiguration)}
 	 */
 
-	// this is called *way* too often (e.g. a dozen times with 1 renderer and 1 shared folder),
-	// so log it by default so we can fix it.
-	// BUT it's also called when the GUI is initialized (to populate the list of shared folders),
-	// and we don't want this message to appear *before* the PMS banner, so allow that call to suppress logging
-	public File[] loadFoldersConf(String folders, boolean log) throws IOException {
+	public File[] getFoldersConf(boolean log) {
+	        String folders = getConfiguration().getFolders();
 		if (folders == null || folders.length() == 0) {
 			return null;
 		}
@@ -707,10 +699,10 @@ public class PMS {
 			// Windows path separators:
 			// http://ps3mediaserver.org/forum/viewtopic.php?f=14&t=8883&start=250#p43520
 			folder = folder.replaceAll("&comma;", ",");
-			if (log) {
-				logger.trace("Checking shared folder: " + folder);
-			}
-			File file = new File(folder);
+                        if (log) {
+                            logger.trace("Checking shared folder: " + folder);
+                        }
+                        File file = new File(folder);
 			if (file.exists()) {
 				if (!file.isDirectory()) {
 					logger.warn("The file " + folder + " is not a directory! Please remove it from your Shared folders list on the Navigation/Share Settings tab");
@@ -725,6 +717,10 @@ public class PMS {
 		File f[] = new File[directories.size()];
 		directories.toArray(f);
 		return f;
+	}
+	
+	public File[] getFoldersConf() {
+	    return getFoldersConf(true);
 	}
 
 	/**Restarts the server. The trigger is either a button on the main PMS window or via
