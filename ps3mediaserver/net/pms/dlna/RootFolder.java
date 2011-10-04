@@ -209,18 +209,14 @@ public class RootFolder extends DLNAResource {
 
 	private List<RealFile> getConfiguredFolders() {
 		List<RealFile> res = new ArrayList<RealFile>();
-		File files[];
-		try {
-			files = PMS.get().loadFoldersConf(configuration.getFolders(), true);
-			if (files == null || files.length == 0) {
-				files = File.listRoots();
-			}
-			for (File f : files) {
-				res.add(new RealFile(f));
-			}
-		} catch (IOException e) {
-			logger.error("Failed to load configured folders", e);
-		}
+		File[] files = PMS.get().getFoldersConf();
+                if (files == null || files.length == 0) {
+                    files = File.listRoots();
+                }
+                for (File f : files) {
+                    logger.info("Checking shared folder :" + f);
+                    res.add(new RealFile(f));
+                }
 		return res;
 	}
 

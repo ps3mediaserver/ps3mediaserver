@@ -27,7 +27,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -46,9 +45,6 @@ import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.util.KeyedComboBoxModel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -56,7 +52,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
 public class NavigationShareTab {
-	private static final Logger logger = LoggerFactory.getLogger(NavigationShareTab.class);
 	public static final String ALL_DRIVES = Messages.getString("FoldTab.0");
 	private JList FList;
 	private DefaultListModel df;
@@ -121,19 +116,11 @@ public class NavigationShareTab {
 		CellConstraints cc = new CellConstraints();
 
 		df = new DefaultListModel();
-		if (PMS.getConfiguration().getFolders() != null && PMS.getConfiguration().getFolders().length() > 0) {
-			try {
-				// false: don't log this call as it occurs before the PMS banner is logged/displayed
-				File f[] = PMS.get().loadFoldersConf(PMS.getConfiguration().getFolders(), false);
-				for (File file : f) {
-					df.addElement(file.getAbsolutePath());
-				}
-				if (f == null || f.length == 0) {
-					df.addElement(ALL_DRIVES);
-				}
-			} catch (IOException e1) {
-				logger.error(null, e1);
-			}
+		File[] folders = PMS.get().getFoldersConf(false);
+		if (folders != null && folders.length > 0) {
+                    for (File file : folders) {
+                        df.addElement(file.getAbsolutePath());
+                    }
 		} else {
 			df.addElement(ALL_DRIVES);
 		}
