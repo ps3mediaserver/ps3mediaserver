@@ -202,6 +202,8 @@ public class PmsConfiguration {
 	private final TempFolder tempFolder;
 	private final ProgramPathDisabler programPaths;
 	
+	private final IpFilter filter = new IpFilter();
+	
 	/**
 	 * The set of the keys, which change needs reload.
 	 */
@@ -1426,6 +1428,11 @@ public class PmsConfiguration {
 
 	public String getIpFilter() {
 		return getString(KEY_IP_FILTER, "");
+	}
+	
+	public synchronized IpFilter getIpFiltering() {
+	    filter.setRawFilter(getIpFilter());
+	    return filter;
 	}
 
 	public void setIpFilter(String value) {

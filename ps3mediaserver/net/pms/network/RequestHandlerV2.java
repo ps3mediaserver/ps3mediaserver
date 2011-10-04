@@ -68,9 +68,14 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 
 		HttpRequest nettyRequest = this.nettyRequest = (HttpRequest) e.getMessage();
 
-		InetAddress ia = ((InetSocketAddress) e.getChannel().getRemoteAddress()).getAddress();
+		InetSocketAddress remoteAddress = (InetSocketAddress) e.getChannel().getRemoteAddress();
+                InetAddress ia = remoteAddress.getAddress();
+                if (filterIp(ia)) {
+                    e.getChannel().close();
+                    return;
+                }
 		RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(ia);
-		logger.trace("Opened request handler on socket " + e.getChannel().getRemoteAddress() + (renderer != null ? (" // " + renderer) : ""));
+		logger.trace("Opened request handler on socket " + remoteAddress + (renderer != null ? (" // " + renderer) : ""));
 		PMS.get().getRegistry().disableGoToSleep();
 		boolean useragentfound = renderer != null;
 		String userAgentString = null;
@@ -201,7 +206,11 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		writeResponse(e, request, ia);
 	}
 
-	private void writeResponse(MessageEvent e, RequestV2 request, InetAddress ia) {
+    private boolean filterIp(InetAddress ia) {
+        return !PMS.getConfiguration().getIpFiltering().allowed(ia);
+    }
+
+    private void writeResponse(MessageEvent e, RequestV2 request, InetAddress ia) {
 		// Decide whether to close the connection or not.
 		boolean close = HttpHeaders.Values.CLOSE.equalsIgnoreCase(nettyRequest.getHeader(HttpHeaders.Names.CONNECTION))
 			|| nettyRequest.getProtocolVersion().equals(

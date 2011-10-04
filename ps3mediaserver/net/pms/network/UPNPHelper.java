@@ -225,11 +225,12 @@ public class UPNPHelper {
 							/* Does it come from me ? */
 							//String lines[] = s.split(CRLF);
 
-							if (s.startsWith("M-SEARCH")) {
-								String remoteAddr = packet_r.getAddress().getHostAddress();
+							InetAddress address = packet_r.getAddress();
+                                                        if (s.startsWith("M-SEARCH")) {
+								String remoteAddr = address.getHostAddress();
 								int remotePort = packet_r.getPort();
 
-								if (!(PMS.getConfiguration().getIpFilter().length() > 0 && !PMS.getConfiguration().getIpFilter().equals(remoteAddr))) {
+								if (PMS.getConfiguration().getIpFiltering().allowed(address)) {
 									logger.trace("Receiving a M-SEARCH from [" + remoteAddr + ":" + remotePort + "]");
 									//logger.trace("Data: " + s);
 
@@ -251,7 +252,7 @@ public class UPNPHelper {
 									}
 								}
 							} else if (s.startsWith("NOTIFY")) {
-								String remoteAddr = packet_r.getAddress().getHostAddress();
+								String remoteAddr = address.getHostAddress();
 								int remotePort = packet_r.getPort();
 
 								logger.trace("Receiving a NOTIFY from [" + remoteAddr + ":" + remotePort + "]");

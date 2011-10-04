@@ -239,19 +239,19 @@ public class HTTPServer implements Runnable {
 		while (!stop) {
 			try {
 				Socket socket = serverSocket.accept();
-				String ip = socket.getInetAddress().getHostAddress();
+				InetAddress inetAddress = socket.getInetAddress();
+                                String ip = inetAddress.getHostAddress();
 				// basic ipfilter solntcev@gmail.com
 				boolean ignore = false;
-				if (!ips.contains(ip)) {
-					if (PMS.getConfiguration().getIpFilter().length() > 0 && !PMS.getConfiguration().getIpFilter().equals(ip)) {
+				//if (!ips.contains(ip)) {
+					if (!PMS.getConfiguration().getIpFiltering().allowed(inetAddress)) {
 						ignore = true;
 						socket.close();
 						logger.info("Ignoring request from: " + ip);
 					} else {
-						ips.add(ip);
 						logger.info("Receiving a request from: " + ip);
 					}
-				}
+				//}
 				if (!ignore) {
 					RequestHandler request = new RequestHandler(socket);
 					Thread thread = new Thread(request);
