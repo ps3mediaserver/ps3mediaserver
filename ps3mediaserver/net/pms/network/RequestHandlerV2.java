@@ -39,6 +39,7 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
@@ -53,8 +54,14 @@ import org.slf4j.LoggerFactory;
 public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 	private static final Logger logger = LoggerFactory.getLogger(RequestHandlerV2.class);
 	private volatile HttpRequest nettyRequest;
+	
+	private ChannelGroup group;
 
-	@Override
+	public RequestHandlerV2(ChannelGroup group) {
+            this.group = group;
+	}
+
+    @Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 		throws Exception {
 		RequestV2 request = null;
@@ -263,8 +270,8 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		throws Exception {
 		// as seen in http://www.jboss.org/netty/community.html#nabble-td2423020
 		super.channelOpen(ctx, e);
-		if (HTTPServer.group != null) {
-			HTTPServer.group.add(ctx.getChannel());
+		if (group != null) {
+			group.add(ctx.getChannel());
 		}
 	}
 	

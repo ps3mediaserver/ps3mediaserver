@@ -25,7 +25,6 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.channels.ClosedByInterruptException;
@@ -61,7 +60,7 @@ public class HTTPServer implements Runnable {
 	private ChannelFactory factory;
 	private Channel channel;
 	private NetworkInterface ni = null;
-	public static ChannelGroup group;
+	private ChannelGroup group;
 
 	public InetAddress getIafinal() {
 		return iafinal;
@@ -137,7 +136,7 @@ public class HTTPServer implements Runnable {
 				Executors.newCachedThreadPool(),
 				Executors.newCachedThreadPool());
 			ServerBootstrap bootstrap = new ServerBootstrap(factory);
-			HttpServerPipelineFactory pipeline = new HttpServerPipelineFactory();
+			HttpServerPipelineFactory pipeline = new HttpServerPipelineFactory(group);
 			bootstrap.setPipelineFactory(pipeline);
 			bootstrap.setOption("child.tcpNoDelay", true);
 			bootstrap.setOption("child.keepAlive", true);
@@ -279,10 +278,6 @@ public class HTTPServer implements Runnable {
 
 	public String getURL() {
 		return "http://" + hostName + ":" + port;
-	}
-
-	public String getURLP() {
-		return "http://" + hostName + ":" + (port + 1);
 	}
 
 	public String getHost() {
