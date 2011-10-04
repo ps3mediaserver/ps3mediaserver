@@ -114,7 +114,7 @@ public class AboutTab {
 		}
 
 		public String getLabel() {
-			final StringBuffer sb = new StringBuffer();
+			final StringBuilder sb = new StringBuilder();
 			sb.append("<html>");
 			sb.append("<a href=\"");
 			sb.append(link);

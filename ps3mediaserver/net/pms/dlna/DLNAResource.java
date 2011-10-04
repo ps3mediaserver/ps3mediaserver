@@ -60,6 +60,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static net.pms.util.StringUtil.*;
+
 /**
  * Represents any item that can be browsed via the UPNP ContentDirectory service.
  *
@@ -162,7 +164,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return length();
 	}
 
-	;	
 	public abstract InputStream getInputStream() throws IOException;
 
 	public abstract boolean isFolder();
@@ -602,49 +603,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public void resolve() {
 	}
 
-	/**Appends "&lt;<u>tag</u> " to the StringBuffer. This is a typical HTML/DIDL/XML tag opening.
-	 * @param sb String to append the tag beginning to.
-	 * @param tag String that represents the tag
-	 */
-	private void openTag(StringBuffer sb, String tag) {
-		sb.append("&lt;");
-		sb.append(tag);
-	}
-
-	/**Appends the closing symbol &gt; to the StringBuffer. This is a typical HTML/DIDL/XML tag closing.
-	 * @param sb String to append the ending character of a tag.
-	 */
-	private void endTag(StringBuffer sb) {
-		sb.append("&gt;");
-	}
-
-	/**Appends "&lt;/<u>tag</u>&gt;" to the StringBuffer. This is a typical closing HTML/DIDL/XML tag.
-	 * @param sb
-	 * @param tag
-	 */
-	private void closeTag(StringBuffer sb, String tag) {
-		sb.append("&lt;/");
-		sb.append(tag);
-		sb.append("&gt;");
-	}
-
-	private void addAttribute(StringBuffer sb, String attribute, Object value) {
-		sb.append(" ");
-		sb.append(attribute);
-		sb.append("=\"");
-		sb.append(value);
-		sb.append("\"");
-	}
-
-	private void addXMLTagAndAttribute(StringBuffer sb, String tag, Object value) {
-		sb.append("&lt;");
-		sb.append(tag);
-		sb.append("&gt;");
-		sb.append(value);
-		sb.append("&lt;/");
-		sb.append(tag);
-		sb.append("&gt;");
-	}
 
 	// Ditlew
 	/**Returns the DisplayName for the default renderer.
@@ -810,7 +768,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param s String to be encoded
 	 * @return Encoded String
 	 */
-	private String encodeXML(String s) {
+	private static String encodeXML(String s) {
 
 		s = s.replace("&", "&amp;");
 		s = s.replace("<", "&lt;");
@@ -833,7 +791,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @return String representing the item. An example would start like this: {@code <container id="0$1" childCount=1 parentID="0" restricted="true">}
 	 */
 	public String toString(RendererConfiguration mediaRenderer) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (isFolder()) {
 			openTag(sb, "container");
 		} else {

@@ -138,11 +138,6 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 		}
 	}
 
-	@Override
-	public void discoverChildren() {
-		super.discoverChildren();
-	}
-
 	public FileTranscodeVirtualFolder(String name, String thumbnailIcon) {
 		super(name, thumbnailIcon);
 	}
