@@ -170,9 +170,9 @@ public class HTTPServer implements Runnable {
         }
         
         if (skip) {
-        	logger.info("Skipping network interface " + displayName + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        	logger.info("Skipping network interface " + displayName + " (" + name + ")");
         } else {
-        	logger.info("Scanning network interface " + displayName + " (" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        	logger.info("Scanning network interface " + displayName + " (" + name + ")");
         	Enumeration<InetAddress> addrs = net.getInetAddresses();
 
         	while (addrs.hasMoreElements()) {
