@@ -208,7 +208,6 @@ public class GeneralTab {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setHostname(host.getText());
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 
@@ -231,7 +230,6 @@ public class GeneralTab {
 					}
 					int ab = Integer.parseInt(p);
 					configuration.setServerPort(ab);
-					PMS.get().getFrame().setReloadable(true);
 				} catch (NumberFormatException nfe) {
 				}
 
@@ -272,7 +270,6 @@ public class GeneralTab {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					configuration.setNetworkInterface((String) networkInterfaces.getSelectedKey());
-					PMS.get().getFrame().setReloadable(true);
 				}
 			}
 		});
@@ -290,7 +287,6 @@ public class GeneralTab {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setIpFilter(ip_filter.getText());
-				PMS.get().getFrame().setReloadable(true);
 			}
 		});
 

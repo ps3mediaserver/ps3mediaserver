@@ -98,6 +98,8 @@ import net.pms.util.ProcessUtil;
 import net.pms.util.SystemErrWrapper;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.event.ConfigurationEvent;
+import org.apache.commons.configuration.event.ConfigurationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -343,6 +345,18 @@ public class PMS {
 			System.out.println("Switching to console mode");
 			frame = new DummyFrame();
 		}
+		configuration.addConfigurationListener(new ConfigurationListener() {
+                    
+                    @Override
+                    public void configurationChanged(ConfigurationEvent event) {
+                        if (!event.isBeforeUpdate()) {
+                            if (PmsConfiguration.NEED_RELOAD_FLAGS.contains(event.getPropertyName())) {
+                                frame.setReloadable(true);
+                            }
+                        }
+                    }
+                    
+		});
 
 		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-220.png");
 		proxy = -1;
