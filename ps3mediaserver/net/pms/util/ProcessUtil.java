@@ -73,7 +73,7 @@ public class ProcessUtil {
 	 *
 	 *     The Java 6 API clearly states that failure to promptly
 	 *     â€œread the output stream of the subprocess may cause the subprocess
-	 *     to block, and even deadlock.â€?
+	 *     to block, and even deadlock.
 	 *
 	 * This is corroborated by the fact that destroy() works fine if the
 	 * process is allowed to run to completion:
@@ -143,9 +143,6 @@ public class ProcessUtil {
 	}
 
 	public static String getShortFileNameIfWideChars(String name) {
-		if (Platform.isWindows()) {
-			return PMS.get().getRegistry().getShortPathNameW(name);
-		}
-		return name;
+	    return PMS.get().getRegistry().getShortPathNameW(name);
 	}
 }
