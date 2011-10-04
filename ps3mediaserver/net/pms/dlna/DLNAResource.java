@@ -82,7 +82,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
          * that is different that the one used here, is the XBox360. For more info, check 
          * {@link http://www.mperfect.net/whsUpnp360/} . PMS translates the XBox360 queries on the fly.
          */
-        private String id;
+        protected String id;
 
         /**
          * In the DLDI queries, the UPNP server needs to give out the parent container where the item is. <i>parent</i> represents
