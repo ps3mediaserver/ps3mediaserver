@@ -199,12 +199,13 @@ public class Request extends HTTPResource {
 						logger.error("There is no inputstream to return for " + name);
 					} else {
 						output(output, "Content-Type: " + getRendererMimeType(dlna.mimeType(), mediaRenderer));
-						if (dlna.media != null) {
-							if (StringUtils.isNotBlank(dlna.media.container)) {
-								name += " [container: " + dlna.media.container + "]";
+					    final DLNAMediaInfo media = dlna.getMedia();
+						if (media != null) {
+							if (StringUtils.isNotBlank(media.container)) {
+								name += " [container: " + media.container + "]";
 							}
-							if (StringUtils.isNotBlank(dlna.media.codecV)) {
-								name += " [video: " + dlna.media.codecV + "]";
+							if (StringUtils.isNotBlank(media.codecV)) {
+								name += " [video: " + media.codecV + "]";
 							}
 						}
 						PMS.get().getFrame().setStatusLine("Serving " + name);
@@ -225,7 +226,7 @@ public class Request extends HTTPResource {
 						if (chunked && totalsize == DLNAMediaInfo.TRANS_SIZE) {
 							// In chunked mode we try to avoid arbitrary values.
 							totalsize = -1;
-						}
+                        }
 						
 						long available = inputStream.available();
 
@@ -537,7 +538,7 @@ public class Request extends HTTPResource {
 
 			if (timeseek > 0 && dlna != null) {
 				String timeseekValue = DLNAMediaInfo.getDurationString(timeseek);
-				String timetotalValue = dlna.media.duration;
+				String timetotalValue = dlna.getMedia().duration;
 				output(output, "TimeSeekRange.dlna.org: npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
 				output(output, "X-Seek-Range: npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
 			}

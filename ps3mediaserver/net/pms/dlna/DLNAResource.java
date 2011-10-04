@@ -92,9 +92,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 
         protected Format ext;
-        public DLNAMediaInfo media;
-        public DLNAMediaAudio media_audio;
-        public DLNAMediaSubtitle media_subtitle;
+        protected DLNAMediaInfo media;
+        protected DLNAMediaAudio media_audio;
+        protected DLNAMediaSubtitle media_subtitle;
         protected boolean notranscodefolder;
         protected long lastmodified;
 
@@ -107,9 +107,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
         protected boolean discovered = false;
         private ProcessWrapper externalProcess;
         protected boolean srtFile;
-        public int updateId = 1;
+        protected int updateId = 1;
         public static int systemUpdateId = 1;
-        public boolean noName;
+        protected boolean noName;
         private int nametruncate;
         private DLNAResource first;
         private DLNAResource second;
@@ -123,7 +123,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
         protected boolean avisynth;
 
-        public boolean skipTranscode = false;
+        protected boolean skipTranscode = false;
         protected int childrenNumber;
         private boolean allChildrenAreFolders = true;
         private String flags;
@@ -217,6 +217,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public int getUpdateId() {
 		return updateId;
 	}
+	
+	public DLNAMediaInfo getMedia() {
+            return media;
+        }
+	
+	public boolean isNoName() {
+            return noName;
+        }
 
 	public DLNAResource() {
 		specificType = Format.UNKNOWN;
