@@ -168,7 +168,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * 
 	 * @return true, if this contain can have a transcode folder
 	 */
-	public boolean isCanHaveTranscodeFolder() {
+	public boolean isTranscodeFolderAvailable() {
 		return true;
 	}
 
@@ -385,7 +385,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						logger.trace("Switching " + child.getName() + " to player: " + pl.toString());
 					}
 
-					if (child.ext.isVideo() && child.isCanHaveTranscodeFolder() && (!PMS.getConfiguration().getHideTranscodeEnabled())) {
+					if (child.ext.isVideo() && child.isTranscodeFolderAvailable() && (!PMS.getConfiguration().getHideTranscodeEnabled())) {
 						//search for transcode folder
 						for (DLNAResource r : children) {
 							if (r instanceof TranscodeVirtualFolder) {

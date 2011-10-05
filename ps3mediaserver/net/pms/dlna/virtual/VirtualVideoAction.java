@@ -59,7 +59,7 @@ public abstract class VirtualVideoAction extends DLNAResource {
 	}
 	
 	@Override
-	public boolean isCanHaveTranscodeFolder() {
+	public boolean isTranscodeFolderAvailable() {
 	    return false;
 	}
 
