@@ -579,6 +579,19 @@ public class PmsConfiguration {
 		return value;
 	}
 	
+	/**
+	 * Return a <code>List</code> of <code>String</code> values for a given configuration
+	 * key. First, the key is looked up in the current configuration settings. If it
+	 * exists and contains a valid value, that value is returned. If the key contains an
+	 * invalid value or cannot be found, a list with the specified default values is
+	 * returned.
+	 * @param key The key to look up.
+	 * @param def The default values to return when no valid key value can be found.
+	 *            These values should be entered as a comma separated string, whitespace
+	 *            will be trimmed. For example: <code>"gnu,    gnat  ,moo "</code> will be
+	 *            returned as <code>{ "gnu", "gnat", "moo" }</code>.
+	 * @return The list of value strings configured for the key.
+	 */
 	private List<String> getStringList(String key, String def) {
 	    String value = getString(key, def);
 	    if (value != null) {
@@ -794,17 +807,29 @@ public class PmsConfiguration {
 
 	/**
 	 * Set the preferred language for the PMS user interface.
-	 * @param value The ISO 639 language code
+	 * @param value The ISO 639 language code.
 	 */
 	public void setLanguage(String value) {
 		configuration.setProperty(KEY_LANGUAGE, value);
 		Locale.setDefault(new Locale(getLanguage()));
 	}
 
+	/**
+	 * Returns the number of seconds from the start of a video file (the seek
+	 * position) where the thumbnail image for the movie should be extracted
+	 * from. Default is 1 second.
+	 * @return The seek position in seconds.
+	 */
 	public int getThumbnailSeekPos() {
 		return getInt(KEY_THUMBNAIL_SEEK_POS, 1);
 	}
 
+	/**
+	 * Sets the number of seconds from the start of a video file (the seek
+	 * position) where the thumbnail image for the movie should be extracted
+	 * from.
+	 * @param value The seek position in seconds.
+	 */
 	public void setThumbnailSeekPos(int value) {
 		configuration.setProperty(KEY_THUMBNAIL_SEEK_POS, value);
 	}
@@ -820,22 +845,49 @@ public class PmsConfiguration {
 		return getBoolean(KEY_MENCODER_ASS, Platform.isWindows() || Platform.isMac());
 	}
 
+	/**
+	 * Returns whether or not subtitles should be disabled when using MEncoder
+	 * as transcoding engine. Default is false, meaning subtitles should not
+	 * be disabled.
+	 * @return True if subtitles should be disabled, false otherwise.
+	 */
 	public boolean isMencoderDisableSubs() {
 		return getBoolean(KEY_MENCODER_DISABLE_SUBS, false);
 	}
 
+	/**
+	 * Returns whether or not the Pulse Code Modulation audio format should be
+	 * forced when using MEncoder as transcoding engine. The default is false.
+	 * @return True if PCM should be forced, false otherwise.
+	 */
 	public boolean isMencoderUsePcm() {
 		return getBoolean(KEY_MENCODER_USE_PCM, false);
 	}
 
+	/**
+	 * Returns the name of a TrueType font to use for MEncoder subtitles.
+	 * Default is <code>""</code>.
+	 * @return The font name.
+	 */
 	public String getMencoderFont() {
 		return getString(KEY_MENCODER_FONT, "");
 	}
 
+	/**
+	 * Returns the audio language priority for MEncoder as a comma separated
+	 * string. For example: <code>"eng,fre,jpn,ger,und"</code>, where "und"
+	 * stands for "undefined".
+	 * @return The audio language priority string.
+	 */
 	public String getMencoderAudioLanguages() {
 		return getString(KEY_MENCODER_AUDIO_LANGS, getDefaultLanguages());
 	}
 
+	/**
+	 * Returns a string of comma separated audio or subtitle languages,
+	 * ordered by priority. 
+	 * @return The string of languages.
+	 */
 	private String getDefaultLanguages() {
 		if ("fr".equals(getLanguage())) {
 			return "fre,jpn,ger,eng,und";
@@ -844,22 +896,54 @@ public class PmsConfiguration {
 		}
 	}
 
+	/**
+	 * Returns the subtitle language priority for MEncoder as a comma
+	 * separated string. For example: <code>"eng,fre,jpn,ger,und"</code>,
+	 * where "und" stands for "undefined".
+	 * @return The subtitle language priority string.
+	 */
 	public String getMencoderSubLanguages() {
 		return getString(KEY_MENCODER_SUB_LANGS, getDefaultLanguages());
 	}
 
+	/**
+	 * Returns a string of audio language and subtitle language pairs
+	 * ordered by priority for MEncoder to try to match. Audio language
+	 * and subtitle language should be comma separated as a pair,
+	 * individual pairs should be semicolon separated. "*" can be used to
+	 * match any language. Subtitle language can be defined as "off". For
+	 * example: <code>"en,off;jpn,eng;*,eng;*;*"</code>.
+	 * Default value is <code>""</code>.
+	 * @return The audio and subtitle languages priority string.
+	 */
 	public String getMencoderAudioSubLanguages() {
 		return getString(KEY_MENCODER_AUDIO_SUB_LANGS, "");
 	}
 
+	/**
+	 * Returns whether or not MEncoder should use FriBiDi mode, which
+	 * is needed to display subtitles in languages that read from right to
+	 * left, like Arabic, Farsi, Hebrew, Urdu, etc. Default value is false.
+	 * @return True if FriBiDi mode should be used, false otherwise.
+	 */
 	public boolean isMencoderSubFribidi() {
 		return getBoolean(KEY_MENCODER_SUB_FRIBIDI, false);
 	}
 
+	/**
+	 * Returns the character encoding (or code page) that MEncoder should use
+	 * for displaying subtitles. Default is "cp1252".
+	 * @return The character encoding.
+	 */
 	public String getMencoderSubCp() {
 		return getString(KEY_MENCODER_SUB_CP, "cp1252");
 	}
 
+	/**
+	 * Returns whether or not MEncoder should use fontconfig for displaying
+	 * subtitles. Default is false.
+	 * @return True if fontconfig should be used, false otherwise.
+	 */
 	public boolean isMencoderFontConfig() {
 		return getBoolean(KEY_MENCODER_FONT_CONFIG, false);
 	}
