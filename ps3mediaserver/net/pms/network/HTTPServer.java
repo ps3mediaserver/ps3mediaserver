@@ -241,17 +241,15 @@ public class HTTPServer implements Runnable {
 				Socket socket = serverSocket.accept();
 				InetAddress inetAddress = socket.getInetAddress();
 				String ip = inetAddress.getHostAddress();
-				// basic ipfilter solntcev@gmail.com
+				// basic ipfilter: solntcev at gmail dot com
 				boolean ignore = false;
-				//if (!ips.contains(ip)) {
 				if (!PMS.getConfiguration().getIpFiltering().allowed(inetAddress)) {
 					ignore = true;
 					socket.close();
-					logger.info("Ignoring request from: " + ip);
+					logger.debug("Ignoring request from: " + ip);
 				} else {
-					logger.info("Receiving a request from: " + ip);
+					logger.debug("Receiving a request from: " + ip);
 				}
-				//}
 				if (!ignore) {
 					RequestHandler request = new RequestHandler(socket);
 					Thread thread = new Thread(request);

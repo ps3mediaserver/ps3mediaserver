@@ -206,13 +206,13 @@ public class RootFolder extends DLNAResource {
 	private List<RealFile> getConfiguredFolders() {
 		List<RealFile> res = new ArrayList<RealFile>();
 		File[] files = PMS.get().getFoldersConf();
-                if (files == null || files.length == 0) {
-                    files = File.listRoots();
-                }
-                for (File f : files) {
-                    logger.info("Checking shared folder :" + f);
-                    res.add(new RealFile(f));
-                }
+		if (files == null || files.length == 0) {
+			files = File.listRoots();
+		}
+		for (File f : files) {
+			logger.info("Checking shared folder: " + f);
+			res.add(new RealFile(f));
+		}
 		return res;
 	}
 

@@ -277,7 +277,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			return null;
 		}
 		if (newReadPosition > 0) {
-			logger.debug("Setting InputStream new position to: " + newReadPosition);
+			logger.debug("Setting InputStream new position to: " + formatter.format(newReadPosition));
 			atominputStream.setReadCount(newReadPosition);
 		}
 		return atominputStream;
