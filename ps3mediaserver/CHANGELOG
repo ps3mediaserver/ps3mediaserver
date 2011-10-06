@@ -2,11 +2,13 @@ Changelog:
 ==========
 2011-??-?? - 1.50.0
 
+	Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3qtgk5k for more details
 	Updated binaries build script to include Linux support (thanks, happy.neko!)
 	Updated OS X MPlayer to include fontconfig support
 
 2011-09-22 - 1.40.0
 
+	Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3wspwn8 for more details
 	Updated OS X MPlayer to enable external VOBsub, ASS/SSA and Fribidi support
 	Allow update checks to be performed manually (Windows only)
 	Allow automatic update checks to be enabled (Windows only)
