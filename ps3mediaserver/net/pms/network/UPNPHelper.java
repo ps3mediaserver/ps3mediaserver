@@ -62,7 +62,7 @@ public class UPNPHelper {
 		} else {
 			usn += "::";
 		}
-			
+
 		String discovery =
 			"HTTP/1.1 200 OK" + CRLF
 			+ "CACHE-CONTROL: max-age=1200" + CRLF
@@ -226,7 +226,7 @@ public class UPNPHelper {
 							//String lines[] = s.split(CRLF);
 
 							InetAddress address = packet_r.getAddress();
-                                                        if (s.startsWith("M-SEARCH")) {
+							if (s.startsWith("M-SEARCH")) {
 								String remoteAddr = address.getHostAddress();
 								int remotePort = packet_r.getPort();
 

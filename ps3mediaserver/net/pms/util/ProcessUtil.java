@@ -143,6 +143,6 @@ public class ProcessUtil {
 	}
 
 	public static String getShortFileNameIfWideChars(String name) {
-	    return PMS.get().getRegistry().getShortPathNameW(name);
+		return PMS.get().getRegistry().getShortPathNameW(name);
 	}
 }

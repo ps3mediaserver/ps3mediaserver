@@ -74,65 +74,64 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
 	private static final int STOP_PLAYING_DELAY = 4000;
 
-        protected int specificType;
-        /**
-         * String representing this resource ID. This string is used by the UPNP ContentDirectory service.
-         * There is no hard spec on the actual numbering except for the root container that always has to be "0".
-         * In PMS, the format used is <i>number($number)+</i>. A common client that expects a given format,
-         * that is different that the one used here, is the XBox360. For more info, check 
-         * {@link http://www.mperfect.net/whsUpnp360/} . PMS translates the XBox360 queries on the fly.
-         */
-        protected String id;
+	protected int specificType;
+	/**
+	 * String representing this resource ID. This string is used by the UPNP ContentDirectory service.
+	 * There is no hard spec on the actual numbering except for the root container that always has to be "0".
+	 * In PMS, the format used is <i>number($number)+</i>. A common client that expects a given format,
+	 * that is different that the one used here, is the XBox360. For more info, check 
+	 * {@link http://www.mperfect.net/whsUpnp360/} . PMS translates the XBox360 queries on the fly.
+	 */
+	protected String id;
 
-        /**
-         * In the DLDI queries, the UPNP server needs to give out the parent container where the item is. <i>parent</i> represents
-         * such a container.
-         */
-        protected DLNAResource parent;
+	/**
+	 * In the DLDI queries, the UPNP server needs to give out the parent container where the item is. <i>parent</i> represents
+	 * such a container.
+	 */
+	protected DLNAResource parent;
 
+	protected Format ext;
+	protected DLNAMediaInfo media;
+	protected DLNAMediaAudio media_audio;
+	protected DLNAMediaSubtitle media_subtitle;
+	protected long lastmodified;
 
-        protected Format ext;
-        protected DLNAMediaInfo media;
-        protected DLNAMediaAudio media_audio;
-        protected DLNAMediaSubtitle media_subtitle;
-        protected long lastmodified;
+	/**
+	 * Represents the transformation to be used to the file. If null, then 
+	 * @see Player
+	 */
+	protected Player player;
 
-        /**
-         * Represents the transformation to be used to the file. If null, then 
-         * @see Player
-         */
-        protected Player player;
+	protected boolean discovered = false;
+	private ProcessWrapper externalProcess;
+	protected boolean srtFile;
+	protected int updateId = 1;
+	public static int systemUpdateId = 1;
+	protected boolean noName;
+	private int nametruncate;
+	private DLNAResource first;
+	private DLNAResource second;
+	protected double splitStart;
+	protected double splitLength;
+	protected int splitTrack;
+	protected String fakeParentId;
+	// Ditlew - needs this in one of the derived classes
+	protected RendererConfiguration defaultRenderer;
+	private String dlnaspec;
 
-        protected boolean discovered = false;
-        private ProcessWrapper externalProcess;
-        protected boolean srtFile;
-        protected int updateId = 1;
-        public static int systemUpdateId = 1;
-        protected boolean noName;
-        private int nametruncate;
-        private DLNAResource first;
-        private DLNAResource second;
-        protected double splitStart;
-        protected double splitLength;
-        protected int splitTrack;
-        protected String fakeParentId;
-        // Ditlew - needs this in one of the derived classes
-        protected RendererConfiguration defaultRenderer;
-        private String dlnaspec;
+	protected boolean avisynth;
 
-        protected boolean avisynth;
+	protected boolean skipTranscode = false;
+	protected int childrenNumber;
+	private boolean allChildrenAreFolders = true;
+	private String flags;
 
-        protected boolean skipTranscode = false;
-        protected int childrenNumber;
-        private boolean allChildrenAreFolders = true;
-        private String flags;
+	/**
+	 * List of children objects associated with this DLNAResource. This is only valid when the DLNAResource is of the container type.
+	 */
+	protected List<DLNAResource> children;
 
-        /**
-         * List of children objects associated with this DLNAResource. This is only valid when the DLNAResource is of the container type.
-         */
-        protected List<DLNAResource> children;
-
-        /**Returns parent object, usually a folder type of resource.
+	/**Returns parent object, usually a folder type of resource.
 	 * @return Parent object.
 	 * @see #parent
 	 */
@@ -145,7 +144,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @see #id
 	 */
 	public String getId() {
-	        return id;
+		return id;
 	}
 
 	/**
@@ -221,14 +220,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public int getUpdateId() {
 		return updateId;
 	}
-	
+
 	public DLNAMediaInfo getMedia() {
-            return media;
-        }
-	
+		return media;
+	}
+
 	public boolean isNoName() {
-            return noName;
-        }
+		return noName;
+	}
 
 	public DLNAResource() {
 		specificType = Format.UNKNOWN;

@@ -80,7 +80,7 @@ public class HTTPServer implements Runnable {
 		String fixedNetworkInterfaceName = PMS.getConfiguration().getNetworkInterface();
 		NetworkInterface fixedNI = NetworkInterface.getByName(fixedNetworkInterfaceName);
 
-			if (fixedNI != null) {
+		if (fixedNI != null) {
 			if (checkNetworkInterface(fixedNI)) {
 				ni = fixedNI;
 			}
@@ -90,9 +90,9 @@ public class HTTPServer implements Runnable {
 				ni = enm.nextElement();
 				found = checkNetworkInterface(ni);
 				if (found) {
-						break;
-					}
+					break;
 				}
+			}
 		}
 
 		hostName = PMS.getConfiguration().getServerHostname();
@@ -155,64 +155,64 @@ public class HTTPServer implements Runnable {
 		return true;
 	}
 
-    private boolean checkNetworkInterface(NetworkInterface net) throws SocketException, UnknownHostException {
-        InetAddress ia;
-        boolean found = false;
-        boolean skip = false;
-    	String name = net.getName();
-    	String displayName = net.getDisplayName();
-        
-        // Should we skip this particular network interface?
-        if (PMSUtil.isNetworkInterfaceLoopback(net)) {
-        	skip = true;
-        } else {
-        	skip = skipNetworkInterface(name, displayName);
-        }
-        
-        if (skip) {
-        	logger.info("Skipping network interface " + displayName + " (" + name + ")");
-        } else {
-        	logger.info("Scanning network interface " + displayName + " (" + name + ")");
-        	Enumeration<InetAddress> addrs = net.getInetAddresses();
+	private boolean checkNetworkInterface(NetworkInterface net) throws SocketException, UnknownHostException {
+		InetAddress ia;
+		boolean found = false;
+		boolean skip = false;
+		String name = net.getName();
+		String displayName = net.getDisplayName();
 
-        	while (addrs.hasMoreElements()) {
-        		ia = addrs.nextElement();
+		// Should we skip this particular network interface?
+		if (PMSUtil.isNetworkInterfaceLoopback(net)) {
+			skip = true;
+		} else {
+			skip = skipNetworkInterface(name, displayName);
+		}
 
-        		if (!(ia instanceof Inet6Address) && !ia.isLoopbackAddress()) {
-        			iafinal = ia;
-        			found = true;
-        			
-        			if (StringUtils.isNotEmpty(PMS.getConfiguration().getServerHostname())) {
-        				found = iafinal.equals(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
-        			}
-        			break;
-        		}
-        	}
-        }
-        return found;
-    }
+		if (skip) {
+			logger.info("Skipping network interface " + displayName + " (" + name + ")");
+		} else {
+			logger.info("Scanning network interface " + displayName + " (" + name + ")");
+			Enumeration<InetAddress> addrs = net.getInetAddresses();
 
-    private boolean skipNetworkInterface(String name, String displayName) {
-        // Try to match all configured blacklisted network interfaces
-        List<String> skipNetworkInterfaces = PMS.getConfiguration().getSkipNetworkInterfaces(); 
-        
-        for (String current : skipNetworkInterfaces) {
-        	
-        	if (name != null && lcontains(name, current)) {
-        		return true;
-        	}
-        		
-        	if (displayName != null && lcontains(displayName, current)) {
-                    return true;
-        	}
-        }
-        return false;
-    }
-    
-    private boolean lcontains(String txt, String substr) {
-        return txt.toLowerCase().contains(substr);
-    }
-	
+			while (addrs.hasMoreElements()) {
+				ia = addrs.nextElement();
+
+				if (!(ia instanceof Inet6Address) && !ia.isLoopbackAddress()) {
+					iafinal = ia;
+					found = true;
+
+					if (StringUtils.isNotEmpty(PMS.getConfiguration().getServerHostname())) {
+						found = iafinal.equals(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
+					}
+					break;
+				}
+			}
+		}
+		return found;
+	}
+
+	private boolean skipNetworkInterface(String name, String displayName) {
+		// Try to match all configured blacklisted network interfaces
+		List<String> skipNetworkInterfaces = PMS.getConfiguration().getSkipNetworkInterfaces();
+
+		for (String current : skipNetworkInterfaces) {
+
+			if (name != null && lcontains(name, current)) {
+				return true;
+			}
+
+			if (displayName != null && lcontains(displayName, current)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean lcontains(String txt, String substr) {
+		return txt.toLowerCase().contains(substr);
+	}
+
 	public void stop() {
 		logger.info("Stopping server on host " + hostName + " and port " + port + "...");
 		if (!PMS.getConfiguration().isHTTPEngineV2()) {
@@ -240,17 +240,17 @@ public class HTTPServer implements Runnable {
 			try {
 				Socket socket = serverSocket.accept();
 				InetAddress inetAddress = socket.getInetAddress();
-                                String ip = inetAddress.getHostAddress();
+				String ip = inetAddress.getHostAddress();
 				// basic ipfilter solntcev@gmail.com
 				boolean ignore = false;
 				//if (!ips.contains(ip)) {
-					if (!PMS.getConfiguration().getIpFiltering().allowed(inetAddress)) {
-						ignore = true;
-						socket.close();
-						logger.info("Ignoring request from: " + ip);
-					} else {
-						logger.info("Receiving a request from: " + ip);
-					}
+				if (!PMS.getConfiguration().getIpFiltering().allowed(inetAddress)) {
+					ignore = true;
+					socket.close();
+					logger.info("Ignoring request from: " + ip);
+				} else {
+					logger.info("Receiving a request from: " + ip);
+				}
 				//}
 				if (!ignore) {
 					RequestHandler request = new RequestHandler(socket);

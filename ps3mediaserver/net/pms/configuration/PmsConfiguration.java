@@ -1695,7 +1695,7 @@ public class PmsConfiguration {
 	public void setAutoUpdate(boolean value) {
 		configuration.setProperty(KEY_AUTO_UPDATE, value);
 	}
-	
+
 	public String getIMConvertPath() {
 		return programPaths.getIMConvertPath();
 	}
@@ -1710,13 +1710,13 @@ public class PmsConfiguration {
 
 	public void setUuid(String value){
 		configuration.setProperty(KEY_UUID, value);
-        }
+	}
 
 	public void addConfigurationListener(ConfigurationListener l) {
-	    configuration.addConfigurationListener(l);
+		configuration.addConfigurationListener(l);
 	}
 
 	public void removeConfigurationListener(ConfigurationListener l) {
-	    configuration.removeConfigurationListener(l);
+		configuration.removeConfigurationListener(l);
 	}
 }

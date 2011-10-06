@@ -226,7 +226,7 @@ public class Request extends HTTPResource {
 						if (chunked && totalsize == DLNAMediaInfo.TRANS_SIZE) {
 							// In chunked mode we try to avoid arbitrary values.
 							totalsize = -1;
-                        }
+						}
 						
 						long available = inputStream.available();
 

@@ -325,13 +325,11 @@ public class MapFile extends DLNAResource {
 		return isFolder();
 	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "MapFile [name=" + getName() + ", id=" + getId() + ", ext=" + ext + ", children=" + children + "]";
-    }
-	
-	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "MapFile [name=" + getName() + ", id=" + getId() + ", ext=" + ext + ", children=" + children + "]";
+	}
 }
