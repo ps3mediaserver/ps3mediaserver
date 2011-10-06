@@ -716,7 +716,7 @@ public class PMS {
 			// http://ps3mediaserver.org/forum/viewtopic.php?f=14&t=8883&start=250#p43520
 			folder = folder.replaceAll("&comma;", ",");
 			if (log) {
-				logger.trace("Checking shared folder: " + folder);
+				logger.info("Checking shared folder: " + folder);
 			}
 			File file = new File(folder);
 			if (file.exists()) {
