@@ -1,6 +1,6 @@
 Changelog:
 ==========
-2011-??-?? - 1.40.1
+2011-??-?? - 1.50.0
 
 	Updated binaries build script to include Linux support (thanks, happy.neko!)
 	Updated OS X MPlayer to include fontconfig support
