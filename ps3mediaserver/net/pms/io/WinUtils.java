@@ -73,10 +73,10 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	public long lastGoToSleepCall = 0;
 
 	/* (non-Javadoc)
-     * @see net.pms.io.SystemUtils#disableGoToSleep()
-     */
+	 * @see net.pms.io.SystemUtils#disableGoToSleep()
+	 */
 	@Override
-    public void disableGoToSleep() {
+	public void disableGoToSleep() {
 		if (PMS.getConfiguration().isPreventsSleep()) {
 			// Disable go to sleep (every 40s)
 			if (System.currentTimeMillis() - lastDontSleepCall > 40000) {
@@ -88,10 +88,10 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	}
 
 	/* (non-Javadoc)
-     * @see net.pms.io.SystemUtils#reenableGoToSleep()
-     */
+	 * @see net.pms.io.SystemUtils#reenableGoToSleep()
+	 */
 	@Override
-    public void reenableGoToSleep() {
+	public void reenableGoToSleep() {
 		if (PMS.getConfiguration().isPreventsSleep()) {
 			// Reenable go to sleep
 			if (System.currentTimeMillis() - lastGoToSleepCall > 40000) {
@@ -103,10 +103,10 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	}
 
 	/* (non-Javadoc)
-     * @see net.pms.io.SystemUtils#getAvsPluginsDir()
-     */
+	 * @see net.pms.io.SystemUtils#getAvsPluginsDir()
+	 */
 	@Override
-    public File getAvsPluginsDir() {
+	public File getAvsPluginsDir() {
 		if (avsPluginsDir == null) {
 			return null;
 		}
@@ -118,45 +118,45 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	}
 
 	/* (non-Javadoc)
-     * @see net.pms.io.SystemUtils#getShortPathNameW(java.lang.String)
-     */
+	 * @see net.pms.io.SystemUtils#getShortPathNameW(java.lang.String)
+	 */
 	@Override
-    public String getShortPathNameW(String longPathName) {
-    		boolean unicodeChars = false;
-    		try {
-    			byte b1[] = longPathName.getBytes("UTF-8");
-    			byte b2[] = longPathName.getBytes("cp1252");
-    			unicodeChars = b1.length != b2.length;
-    		} catch (Exception e) {
-    			return longPathName;
-    		}
-    
-    		if (unicodeChars) {
-    			try {
-   				WString pathname = new WString(longPathName);
-    
-    				char test[] = new char[2 + pathname.length() * 2];
-    				int r = Kernel32.INSTANCE.GetShortPathNameW(pathname, test, test.length);
-    				if (r > 0) {
-    					logger.debug("Forcing short path name on " + pathname);
-    					return Native.toString(test);
-    				} else {
-    					logger.info("File does not exist? " + pathname);
-    					return null;
-    				}
-    
-    			} catch (Exception e) {
-    				return longPathName;
-    			}
-    		}
- 		return longPathName;
+	public String getShortPathNameW(String longPathName) {
+		boolean unicodeChars = false;
+		try {
+			byte b1[] = longPathName.getBytes("UTF-8");
+			byte b2[] = longPathName.getBytes("cp1252");
+			unicodeChars = b1.length != b2.length;
+		} catch (Exception e) {
+			return longPathName;
+		}
+
+		if (unicodeChars) {
+			try {
+				WString pathname = new WString(longPathName);
+
+				char test[] = new char[2 + pathname.length() * 2];
+				int r = Kernel32.INSTANCE.GetShortPathNameW(pathname, test, test.length);
+				if (r > 0) {
+					logger.debug("Forcing short path name on " + pathname);
+					return Native.toString(test);
+				} else {
+					logger.info("File does not exist? " + pathname);
+					return null;
+				}
+
+			} catch (Exception e) {
+				return longPathName;
+			}
+		}
+		return longPathName;
 	}
 
 	/* (non-Javadoc)
-     * @see net.pms.io.SystemUtils#getWindowsDirectory()
-     */
+	 * @see net.pms.io.SystemUtils#getWindowsDirectory()
+	 */
 	@Override
-    public String getWindowsDirectory() {
+	public String getWindowsDirectory() {
 		char test[] = new char[2 + 256 * 2];
 		int r = Kernel32.INSTANCE.GetWindowsDirectoryW(test, 256);
 		if (r > 0) {
@@ -166,10 +166,10 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	}
 
 	/* (non-Javadoc)
-     * @see net.pms.io.SystemUtils#getDiskLabel(java.io.File)
-     */
+	 * @see net.pms.io.SystemUtils#getDiskLabel(java.io.File)
+	 */
 	@Override
-    public String getDiskLabel(File f) {
+	public String getDiskLabel(File f) {
 		String driveName;
 		try {
 			driveName = f.getCanonicalPath().substring(0, 2) + "\\";
@@ -218,7 +218,7 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	}
 
 	public WinUtils() {
-	    start();
+		start();
 	}
 
 	private void start() {
@@ -287,10 +287,10 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	}
 
 	/* (non-Javadoc)
-     * @see net.pms.io.SystemUtils#isKerioFirewall()
-     */
+	 * @see net.pms.io.SystemUtils#isKerioFirewall()
+	 */
 	@Override
-    public boolean isKerioFirewall() {
+	public boolean isKerioFirewall() {
 		return kerio;
 	}
 
@@ -302,5 +302,4 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 		result[str.length()] = 0;
 		return result;
 	}
-
 }

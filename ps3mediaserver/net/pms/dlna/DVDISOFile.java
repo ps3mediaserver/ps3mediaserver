@@ -77,7 +77,7 @@ public class DVDISOFile extends VirtualFolder {
 		}
 
 		if (childrenNumber() > 0) {
-		    PMS.get().storeFileInCache(f, Format.ISO);
+			PMS.get().storeFileInCache(f, Format.ISO);
 		}
 
 	}

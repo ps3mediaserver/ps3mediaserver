@@ -28,8 +28,8 @@ public class HTMLConsole {
 		sb.append("<html><head><title>PS3 Media Server HTML Console</title></head><body>");
 
 		DLNAMediaDatabase database = PMS.get().getDatabase();
-                PmsConfiguration configuration = PMS.getConfiguration();
-                if (resource.equals("compact") && configuration.getUseCache()) {
+		PmsConfiguration configuration = PMS.getConfiguration();
+		if (resource.equals("compact") && configuration.getUseCache()) {
 			database.compact();
 			sb.append("<p align=center><b>Database compacted!</b></p><br>");
 		}

@@ -54,14 +54,13 @@ import org.slf4j.LoggerFactory;
 public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 	private static final Logger logger = LoggerFactory.getLogger(RequestHandlerV2.class);
 	private volatile HttpRequest nettyRequest;
-	
 	private ChannelGroup group;
 
 	public RequestHandlerV2(ChannelGroup group) {
-            this.group = group;
+		this.group = group;
 	}
 
-    @Override
+	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 		throws Exception {
 		RequestV2 request = null;
@@ -69,11 +68,11 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		HttpRequest nettyRequest = this.nettyRequest = (HttpRequest) e.getMessage();
 
 		InetSocketAddress remoteAddress = (InetSocketAddress) e.getChannel().getRemoteAddress();
-                InetAddress ia = remoteAddress.getAddress();
-                if (filterIp(ia)) {
-                    e.getChannel().close();
-                    return;
-                }
+		InetAddress ia = remoteAddress.getAddress();
+		if (filterIp(ia)) {
+			e.getChannel().close();
+			return;
+		}
 		RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(ia);
 		logger.trace("Opened request handler on socket " + remoteAddress + (renderer != null ? (" // " + renderer) : ""));
 		PMS.get().getRegistry().disableGoToSleep();
@@ -177,7 +176,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			if (request.getMediaRenderer() == null) {
 				request.setMediaRenderer(RendererConfiguration.getDefaultConf());
 				logger.trace("Using default media renderer " + request.getMediaRenderer().getRendererName());
-				
+
 				if (userAgentString != null && !userAgentString.equals("FDSSDP")) {
 					// we have found an unknown renderer
 					logger.info("Media renderer was not recognized. HTTP User-Agent: " + userAgentString);
@@ -190,7 +189,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 				logger.trace("Recognized media renderer " + request.getMediaRenderer().getRendererName());
 			}
 		}
-		
+
 		if (HttpHeaders.getContentLength(nettyRequest) > 0) {
 			byte data[] = new byte[(int) HttpHeaders.getContentLength(nettyRequest)];
 			ChannelBuffer content = nettyRequest.getContent();
@@ -206,11 +205,11 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		writeResponse(e, request, ia);
 	}
 
-    private boolean filterIp(InetAddress ia) {
-        return !PMS.getConfiguration().getIpFiltering().allowed(ia);
-    }
+	private boolean filterIp(InetAddress ia) {
+		return !PMS.getConfiguration().getIpFiltering().allowed(ia);
+	}
 
-    private void writeResponse(MessageEvent e, RequestV2 request, InetAddress ia) {
+	private void writeResponse(MessageEvent e, RequestV2 request, InetAddress ia) {
 		// Decide whether to close the connection or not.
 		boolean close = HttpHeaders.Values.CLOSE.equalsIgnoreCase(nettyRequest.getHeader(HttpHeaders.Names.CONNECTION))
 			|| nettyRequest.getProtocolVersion().equals(
@@ -283,13 +282,12 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			group.add(ctx.getChannel());
 		}
 	}
-	
 	/* Uncomment to see channel events in the trace logs
-    @Override
-    public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-        // Log all channel events.
-        logger.trace("Channel upstream event: " + e);
-        super.handleUpstream(ctx, e);
-    }
-    */
+	@Override
+	public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
+	// Log all channel events.
+	logger.trace("Channel upstream event: " + e);
+	super.handleUpstream(ctx, e);
+	}
+	 */
 }

@@ -57,10 +57,10 @@ public abstract class VirtualVideoAction extends DLNAResource {
 		timer1 = -1;
 		this.enabled = enabled;
 	}
-	
+
 	@Override
 	public boolean isTranscodeFolderAvailable() {
-	    return false;
+		return false;
 	}
 
 	/**This function is called as an action from the UPNP client when

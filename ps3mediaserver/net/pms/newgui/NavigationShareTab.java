@@ -87,7 +87,7 @@ public class NavigationShareTab {
 
 	private void updateModel() {
 		if (df.size() == 1 && df.getElementAt(0).equals(ALL_DRIVES)) {
-		    configuration.setFolders("");
+			configuration.setFolders("");
 		} else {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < df.size(); i++) {
@@ -117,9 +117,9 @@ public class NavigationShareTab {
 		df = new DefaultListModel();
 		File[] folders = PMS.get().getFoldersConf(false);
 		if (folders != null && folders.length > 0) {
-                    for (File file : folders) {
-                        df.addElement(file.getAbsolutePath());
-                    }
+			for (File file : folders) {
+				df.addElement(file.getAbsolutePath());
+			}
 		} else {
 			df.addElement(ALL_DRIVES);
 		}
@@ -135,7 +135,7 @@ public class NavigationShareTab {
 		tncheckBox.setContentAreaFilled(false);
 		tncheckBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-			    configuration.setThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 		if (configuration.getThumbnailsEnabled()) {
@@ -171,7 +171,7 @@ public class NavigationShareTab {
 		mplayer_thumb.setContentAreaFilled(false);
 		mplayer_thumb.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-			    configuration.setUseMplayerForVideoThumbs((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setUseMplayerForVideoThumbs((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 		if (configuration.isUseMplayerForVideoThumbs()) {
@@ -183,19 +183,19 @@ public class NavigationShareTab {
 		dvdiso_thumb.setContentAreaFilled(false);
 		dvdiso_thumb.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-			    configuration.setDvdIsoThumbnails((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setDvdIsoThumbnails((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 		if (configuration.isDvdIsoThumbnails()) {
 			dvdiso_thumb.setSelected(true);
 		}
 		builder.add(dvdiso_thumb, cc.xyw(3, 5, 3));
-		
+
 		image_thumb = new JCheckBox(Messages.getString("FoldTab.21"));
 		image_thumb.setContentAreaFilled(false);
 		image_thumb.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-			    configuration.setImageThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setImageThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 		if (configuration.getImageThumbnailsEnabled()) {
@@ -273,7 +273,7 @@ public class NavigationShareTab {
 		}
 		hidevideosettings.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-			        configuration.setHideVideoSettings((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setHideVideoSettings((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 
@@ -284,7 +284,7 @@ public class NavigationShareTab {
 		}
 		hidetranscode.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-			        configuration.setHideTranscodeEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setHideTranscodeEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 
@@ -295,7 +295,7 @@ public class NavigationShareTab {
 		}
 		hidemedialibraryfolder.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-			        configuration.setHideMediaLibraryFolder((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setHideMediaLibraryFolder((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 
@@ -303,7 +303,7 @@ public class NavigationShareTab {
 		archive.setContentAreaFilled(false);
 		archive.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-			        configuration.setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
+				configuration.setArchiveBrowsing(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
 		if (configuration.isArchiveBrowsing()) {
@@ -319,7 +319,7 @@ public class NavigationShareTab {
 		cacheenable.setSelected(configuration.getUseCache());
 		cacheenable.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-			        configuration.setUseCache((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setUseCache((e.getStateChange() == ItemEvent.SELECTED));
 				cachereset.setEnabled(configuration.getUseCache());
 				if ((LooksFrame) PMS.get().getFrame() != null) {
 					((LooksFrame) PMS.get().getFrame()).getFt().setScanLibraryEnabled(configuration.getUseCache());
@@ -334,8 +334,7 @@ public class NavigationShareTab {
 			public void actionPerformed(ActionEvent e) {
 				int option = JOptionPane.showConfirmDialog(
 					(Component) PMS.get().getFrame(),
-					Messages.getString("NetworkTab.13") +
-					Messages.getString("NetworkTab.19"),
+					Messages.getString("NetworkTab.13") + Messages.getString("NetworkTab.19"),
 					"Question",
 					JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION) {
@@ -419,7 +418,7 @@ public class NavigationShareTab {
 			}
 		});
 		builder.add(iphoto, cc.xyw(4, 17, 3));
-		
+
 		// Add Aperture selection
 		aperture = new JCheckBox(Messages.getString("FoldTab.34"));
 		aperture.setContentAreaFilled(false);
@@ -557,8 +556,7 @@ public class NavigationShareTab {
 					if (!PMS.get().getDatabase().isScanLibraryRunning()) {
 						int option = JOptionPane.showConfirmDialog(
 							(Component) PMS.get().getFrame(),
-							Messages.getString("FoldTab.3") +
-							Messages.getString("FoldTab.4"),
+							Messages.getString("FoldTab.3") + Messages.getString("FoldTab.4"),
 							"Question",
 							JOptionPane.YES_NO_OPTION);
 						if (option == JOptionPane.YES_OPTION) {

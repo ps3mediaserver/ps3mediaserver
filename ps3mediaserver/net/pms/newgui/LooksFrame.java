@@ -124,8 +124,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 				try {
 					String gtkLAF = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
 					Class.forName(gtkLAF);
-					if (systemClassName.equals("javax.swing.plaf.metal.MetalLookAndFeel"))
-					{
+					if (systemClassName.equals("javax.swing.plaf.metal.MetalLookAndFeel")) {
 						systemClassName = gtkLAF;
 					}
 				} catch (ClassNotFoundException ce) {
@@ -193,44 +192,43 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 
 		// Set an unicode font for testing exotics languages (japanese)
 		final String language = configuration.getLanguage();
-                if (language != null && (language.equals("ja") || language.startsWith("zh")))
-		{
+		if (language != null && (language.equals("ja") || language.startsWith("zh"))) {
 			sf = new Font("Serif", Font.PLAIN, 12);
 		}
 		if (sf != null) {
-			UIManager.put("Button.font", sf); 
-			UIManager.put("ToggleButton.font", sf); 
-			UIManager.put("RadioButton.font", sf); 
-			UIManager.put("CheckBox.font", sf); 
-			UIManager.put("ColorChooser.font", sf); 
-			UIManager.put("ToggleButton.font", sf); 
-			UIManager.put("ComboBox.font", sf); 
-			UIManager.put("ComboBoxItem.font", sf); 
-			UIManager.put("InternalFrame.titleFont", sf); 
-			UIManager.put("Label.font", sf); 
-			UIManager.put("List.font", sf); 
-			UIManager.put("MenuBar.font", sf); 
-			UIManager.put("Menu.font", sf); 
-			UIManager.put("MenuItem.font", sf); 
-			UIManager.put("RadioButtonMenuItem.font", sf); 
-			UIManager.put("CheckBoxMenuItem.font", sf); 
-			UIManager.put("PopupMenu.font", sf); 
-			UIManager.put("OptionPane.font", sf); 
-			UIManager.put("Panel.font", sf); 
-			UIManager.put("ProgressBar.font", sf); 
-			UIManager.put("ScrollPane.font", sf); 
-			UIManager.put("Viewport", sf); 
-			UIManager.put("TabbedPane.font", sf); 
-			UIManager.put("TableHeader.font", sf); 
-			UIManager.put("TextField.font", sf); 
-			UIManager.put("PasswordFiled.font", sf); 
-			UIManager.put("TextArea.font", sf); 
-			UIManager.put("TextPane.font", sf); 
-			UIManager.put("EditorPane.font", sf); 
-			UIManager.put("TitledBorder.font", sf); 
-			UIManager.put("ToolBar.font", sf); 
-			UIManager.put("ToolTip.font", sf); 
-			UIManager.put("Tree.font", sf); 
+			UIManager.put("Button.font", sf);
+			UIManager.put("ToggleButton.font", sf);
+			UIManager.put("RadioButton.font", sf);
+			UIManager.put("CheckBox.font", sf);
+			UIManager.put("ColorChooser.font", sf);
+			UIManager.put("ToggleButton.font", sf);
+			UIManager.put("ComboBox.font", sf);
+			UIManager.put("ComboBoxItem.font", sf);
+			UIManager.put("InternalFrame.titleFont", sf);
+			UIManager.put("Label.font", sf);
+			UIManager.put("List.font", sf);
+			UIManager.put("MenuBar.font", sf);
+			UIManager.put("Menu.font", sf);
+			UIManager.put("MenuItem.font", sf);
+			UIManager.put("RadioButtonMenuItem.font", sf);
+			UIManager.put("CheckBoxMenuItem.font", sf);
+			UIManager.put("PopupMenu.font", sf);
+			UIManager.put("OptionPane.font", sf);
+			UIManager.put("Panel.font", sf);
+			UIManager.put("ProgressBar.font", sf);
+			UIManager.put("ScrollPane.font", sf);
+			UIManager.put("Viewport", sf);
+			UIManager.put("TabbedPane.font", sf);
+			UIManager.put("TableHeader.font", sf);
+			UIManager.put("TextField.font", sf);
+			UIManager.put("PasswordFiled.font", sf);
+			UIManager.put("TextArea.font", sf);
+			UIManager.put("TextPane.font", sf);
+			UIManager.put("EditorPane.font", sf);
+			UIManager.put("TitledBorder.font", sf);
+			UIManager.put("ToolBar.font", sf);
+			UIManager.put("ToolTip.font", sf);
+			UIManager.put("Tree.font", sf);
 		}
 
 		setTitle("Test");
@@ -284,7 +282,8 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		Dimension paneSize = getSize();
 		setLocation(
 			((screenSize.width > paneSize.width) ? ((screenSize.width - paneSize.width) / 2) : 0),
-			((screenSize.height > paneSize.height) ? ((screenSize.height - paneSize.height) / 2) : 0));
+			((screenSize.height > paneSize.height) ? ((screenSize.height - paneSize.height) / 2) : 0)
+		);
 		if (!configuration.isMinimized() && System.getProperty(START_SERVICE) == null) {
 			setVisible(true);
 		}
@@ -449,9 +448,9 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	public void serverReady() {
 		nt.addPlugins();
 	}
-	
+
 	@Override
 	public void setScanLibraryEnabled(boolean flag) {
-	    getFt().setScanLibraryEnabled(flag);
+		getFt().setScanLibraryEnabled(flag);
 	}
 }
