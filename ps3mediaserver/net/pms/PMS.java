@@ -715,10 +715,10 @@ public class PMS {
 			// Windows path separators:
 			// http://ps3mediaserver.org/forum/viewtopic.php?f=14&t=8883&start=250#p43520
 			folder = folder.replaceAll("&comma;", ",");
-                        if (log) {
-                            logger.trace("Checking shared folder: " + folder);
-                        }
-                        File file = new File(folder);
+			if (log) {
+				logger.trace("Checking shared folder: " + folder);
+			}
+			File file = new File(folder);
 			if (file.exists()) {
 				if (!file.isDirectory()) {
 					logger.warn("The file " + folder + " is not a directory! Please remove it from your Shared folders list on the Navigation/Share Settings tab");
@@ -734,7 +734,7 @@ public class PMS {
 		directories.toArray(f);
 		return f;
 	}
-	
+
 	public File[] getFoldersConf() {
 	    return getFoldersConf(true);
 	}
