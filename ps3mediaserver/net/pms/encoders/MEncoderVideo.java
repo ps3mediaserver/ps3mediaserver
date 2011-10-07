@@ -289,7 +289,7 @@ public class MEncoderVideo extends Player {
 					audio.codecA = "ac3";
 					fakemedia.codecV = "mpeg4";
 					fakemedia.container = "matroska";
-					fakemedia.duration = "00:45:00";
+					fakemedia.setDuration(45d*60);
 					audio.nrAudioChannels = 2;
 					fakemedia.width = 1280;
 					fakemedia.height = 720;
