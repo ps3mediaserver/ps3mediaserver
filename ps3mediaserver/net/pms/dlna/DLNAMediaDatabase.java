@@ -131,7 +131,7 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append(", FILENAME          VARCHAR2(1024)       NOT NULL");
 				sb.append(", MODIFIED          TIMESTAMP            NOT NULL");
 				sb.append(", TYPE              INT");
-				sb.append(", DURATION          VARCHAR2(30)");
+				sb.append(", DURATION          DOUBLE");
 				sb.append(", BITRATE           INT");
 				sb.append(", WIDTH             INT");
 				sb.append(", HEIGHT            INT");
@@ -250,7 +250,7 @@ public class DLNAMediaDatabase implements Runnable {
 			while (rs.next()) {
 				DLNAMediaInfo media = new DLNAMediaInfo();
 				int id = rs.getInt("ID");
-				media.duration = rs.getString("DURATION");
+				media.setDuration(toDouble(rs,"DURATION"));
 				media.bitrate = rs.getInt("BITRATE");
 				media.width = rs.getInt("WIDTH");
 				media.height = rs.getInt("HEIGHT");
@@ -321,6 +321,14 @@ public class DLNAMediaDatabase implements Runnable {
 		}
 		return list;
 	}
+	
+	private Double toDouble(ResultSet rs, String column) throws SQLException {
+		Object obj = rs.getObject(column);
+		if (obj instanceof Double) {
+			return (Double) obj;
+		}
+		return null;
+	}
 
 	public synchronized void insertData(String name, long modified, int type, DLNAMediaInfo media) {
 		Connection conn = null;
@@ -332,7 +340,11 @@ public class DLNAMediaDatabase implements Runnable {
 			ps.setTimestamp(2, new Timestamp(modified));
 			ps.setInt(3, type);
 			if (media != null) {
-				ps.setString(4, media.duration);
+				if (media.getDurationInSeconds() != null) {
+					ps.setDouble(4, media.getDurationInSeconds());
+				} else {
+					ps.setNull(4, Types.DOUBLE);
+				}
 				ps.setInt(5, media.bitrate);
 				ps.setInt(6, media.width);
 				ps.setInt(7, media.height);
@@ -559,35 +571,35 @@ public class DLNAMediaDatabase implements Runnable {
 		return list;
 	}
 
-    private void close(ResultSet rs) {
-        try {
-            if (rs != null) {
-            	rs.close();
-            }
-        } catch (SQLException e) {
-            logger.error("error during closing:"+e.getMessage(), e);
-        }
-    }
+	private void close(ResultSet rs) {
+		try {
+			if (rs != null) {
+				rs.close();
+			}
+		} catch (SQLException e) {
+			logger.error("error during closing:" + e.getMessage(), e);
+		}
+	}
 
-    private void close(Statement ps) {
-        try {
-            if (ps != null) {
-            	ps.close();
-            }
-        } catch (SQLException e) {
-            logger.error("error during closing:"+e.getMessage(), e);
-        }
-    }
+	private void close(Statement ps) {
+		try {
+			if (ps != null) {
+				ps.close();
+			}
+		} catch (SQLException e) {
+			logger.error("error during closing:" + e.getMessage(), e);
+		}
+	}
 
-    private void close(Connection conn) {
-        try {
-            if (conn != null) {
-                conn.close();
-            }
-        } catch (SQLException e) {
-            logger.error("error during closing:" + e.getMessage(), e);
-        }
-    }
+	private void close(Connection conn) {
+		try {
+			if (conn != null) {
+				conn.close();
+			}
+		} catch (SQLException e) {
+			logger.error("error during closing:" + e.getMessage(), e);
+		}
+	}
 
 	public synchronized boolean isScanLibraryRunning() {
 		return scanner != null && scanner.isAlive();

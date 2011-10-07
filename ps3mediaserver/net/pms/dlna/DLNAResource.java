@@ -718,7 +718,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			} else {
 				// Ditlew - WDTV Live don't show durations otherwise, and this is useful for finding the main title
 				if (mediaRenderer != null && mediaRenderer.isShowDVDTitleDuration() && media.dvdtrack > 0) {
-					name += " - " + media.duration;
+					name += " - " + media.getDurationString();
 				}
 
 				if (!PMS.getConfiguration().isHideEngineNames()) {
@@ -1014,11 +1014,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							addAttribute(sb, "size", transcoded_size);
 						}
 					}
-					if (media.duration != null) {
+					if (media.getDurationInSeconds() != null) {
 						if (splitStart > 0 && splitLength > 0) {
 							addAttribute(sb, "duration", DLNAMediaInfo.getDurationString(splitLength));
 						} else {
-							addAttribute(sb, "duration", media.duration);
+							addAttribute(sb, "duration", media.getDurationString());
 						}
 					}
 					if (media.getResolution() != null) {
@@ -1045,8 +1045,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				} else if (ext != null && ext.isAudio()) {
 					if (media != null && media.mediaparsed) {
 						addAttribute(sb, "bitrate", media.bitrate);
-						if (media.duration != null) {
-							addAttribute(sb, "duration", media.duration);
+						if (media.getDurationInSeconds() != null) {
+							addAttribute(sb, "duration", media.getDurationString());
 						}
 						if (media.getFirstAudioTrack() != null && media.getFirstAudioTrack().sampleFrequency != null) {
 							addAttribute(sb, "sampleFrequency", media.getFirstAudioTrack().sampleFrequency);
@@ -1072,7 +1072,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								{
 									na = 2;
 								}
-								int finalsize = (int) media.getDurationInSeconds() * defaultFrequency * 2 * na;
+								int finalsize = (int) (media.getDurationInSeconds() * defaultFrequency * 2 * na);
 								logger.debug("Calculated size: " + finalsize);
 								addAttribute(sb, "size", finalsize);
 							}

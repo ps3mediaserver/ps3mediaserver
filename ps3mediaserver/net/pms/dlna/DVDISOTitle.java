@@ -183,7 +183,7 @@ public class DVDISOTitle extends DLNAResource {
 		media.subtitlesCodes = subs;
 
 		if (duration != null) {
-			media.setDurationString(d);
+			media.setDuration(d);
 		}
 		media.frameRate = fps;
 		media.aspect = aspect;

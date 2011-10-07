@@ -679,7 +679,7 @@ public class RequestV2 extends HTTPResource {
 			if (timeseek > 0 && dlna != null) {
 				// Add timeseek information headers.
 				String timeseekValue = DLNAMediaInfo.getDurationString(timeseek);
-				String timetotalValue = dlna.getMedia().duration;
+				String timetotalValue = dlna.getMedia().getDurationString();
 				output.setHeader("TimeSeekRange.dlna.org", "npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
 				output.setHeader("X-Seek-Range", "npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
 			}

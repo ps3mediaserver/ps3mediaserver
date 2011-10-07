@@ -100,7 +100,7 @@ public class CueFolder extends DLNAResource {
 								count++;
 							}
 							prec.splitLength = end - prec.splitStart;
-							prec.media.setDurationString(prec.splitLength);
+							prec.media.setDuration(prec.splitLength);
 							logger.debug("Track #" + i + " split range: " + prec.splitStart + " - " + prec.splitLength);
 						}
 						Position start = track.getIndices().get(0).getPosition();
@@ -160,7 +160,7 @@ public class CueFolder extends DLNAResource {
 						// last track
 						DLNAResource prec = addedResources.get(addedResources.size() - 1);
 						prec.splitLength = prec.media.getDurationInSeconds() - prec.splitStart;
-						prec.media.setDurationString(prec.splitLength);
+						prec.media.setDuration(prec.splitLength);
 						logger.debug("Track #" + childrenNumber() + " split range: " + prec.splitStart + " - " + prec.splitLength);
 					}
 

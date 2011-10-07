@@ -74,7 +74,7 @@ public class DLNAMediaInfo implements Cloneable {
 	public static final long TRANS_SIZE = 100000000000L;
 
 	// Stored in database
-	public String duration;
+	private Double durationSec;
 	public int bitrate;
 	public int width;
 	public int height;
@@ -166,7 +166,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	public void generateThumbnail(InputFile input, Format ext, int type) {
 		DLNAMediaInfo forThumbnail = new DLNAMediaInfo();
-		forThumbnail.duration = duration;
+		forThumbnail.durationSec = durationSec;
 		forThumbnail.parse(input, ext, type, true);
 		thumb = forThumbnail.thumb;
 	}
@@ -375,7 +375,7 @@ public class DLNAMediaInfo implements Cloneable {
 								audio.bitsperSample = 24;
 							}
 							audio.sampleFrequency = "" + rate;
-							setDurationString(length);
+							setDuration((double) length);
 							bitrate = (int) ah.getBitRateAsNumber();
 							audio.nrAudioChannels = 2;
 							if (ah.getChannels() != null && ah.getChannels().toLowerCase().contains("mono")) {
@@ -536,14 +536,17 @@ public class DLNAMediaInfo implements Cloneable {
 								while (st.hasMoreTokens()) {
 									String token = st.nextToken().trim();
 									if (token.startsWith("Duration: ")) {
-										duration = token.substring(10);
-										int l = duration.substring(duration.indexOf(".") + 1).length();
+										String durationStr = token.substring(10);
+										int l = durationStr.substring(durationStr.indexOf(".") + 1).length();
 										if (l < 4) {
-											duration = duration + "00".substring(0, 3 - l);
+											durationStr = durationStr + "00".substring(0, 3 - l);
 										}
-										if (duration.indexOf("N/A") > -1) {
-											duration = null;
+										if (durationStr.indexOf("N/A") > -1) {
+											setDuration(null);
+										} else {
+											setDuration(parseDurationString(durationStr));
 										}
+										
 									} else if (token.startsWith("bitrate: ")) {
 										String bitr = token.substring(9);
 										int spacepos = bitr.indexOf(" ");
@@ -709,7 +712,7 @@ public class DLNAMediaInfo implements Cloneable {
 					try {
 						int length = MpegUtil.getDurationFromMpeg(f.file);
 						if (length > 0) {
-							setDurationString(length);
+							setDuration((double) length);
 						}
 					} catch (IOException e) {
 						logger.trace("Error in retrieving length: " + e.getMessage());
@@ -791,8 +794,16 @@ public class DLNAMediaInfo implements Cloneable {
 		return (int) (getDurationInSeconds() * fr);
 	}
 
-	public void setDurationString(double d) {
-		duration = getDurationString(d);
+	public void setDuration(Double d) {
+		this.durationSec = d;
+	}
+
+	public Double getDurationInSeconds() {
+		return durationSec;
+	}
+
+	public String getDurationString() {
+		return durationSec != null ? getDurationString(durationSec) : null;
 	}
 
 	public static String getDurationString(double d) {
@@ -801,19 +812,20 @@ public class DLNAMediaInfo implements Cloneable {
 		int m = ((int) (d / 60)) % 60;
 		return String.format("%02d:%02d:%02d.00", h, m, s);
 	}
-
-	public double getDurationInSeconds() {
-		if (StringUtils.isNotBlank(duration)) {
-			StringTokenizer st = new StringTokenizer(duration, ":");
-			try {
-				int h = Integer.parseInt(st.nextToken());
-				int m = Integer.parseInt(st.nextToken());
-				double s = Double.parseDouble(st.nextToken());
-				return h * 3600 + m * 60 + s;
-			} catch (NumberFormatException nfe) {
-			}
+	
+	public static Double parseDurationString(String duration) {
+		if (duration == null) {
+			return null;
 		}
-		return 0;
+		StringTokenizer st = new StringTokenizer(duration, ":");
+		try {
+			int h = Integer.parseInt(st.nextToken());
+			int m = Integer.parseInt(st.nextToken());
+			double s = Double.parseDouble(st.nextToken());
+			return h * 3600 + m * 60 + s;
+		} catch (NumberFormatException nfe) {
+		}
+		return null;
 	}
 
 	public void finalize(int type, InputFile f) {
@@ -919,7 +931,7 @@ public class DLNAMediaInfo implements Cloneable {
 	}
 
 	public String toString() {
-		String s = "container: " + container + " / bitrate: " + bitrate + " / size: " + size + " / codecV: " + codecV + " / duration: " + duration + " / width: " + width + " / height: " + height + " / frameRate: " + frameRate + " / thumb size : " + (thumb != null ? thumb.length : 0) + " / muxingMode: " + muxingMode;
+		String s = "container: " + container + " / bitrate: " + bitrate + " / size: " + size + " / codecV: " + codecV + " / duration: " + getDurationString() + " / width: " + width + " / height: " + height + " / frameRate: " + frameRate + " / thumb size : " + (thumb != null ? thumb.length : 0) + " / muxingMode: " + muxingMode;
 		for (DLNAMediaAudio audio : audioCodes) {
 			s += "\n\taudio: id=" + audio.id + " / lang: " + audio.lang + " / flavor: " + audio.flavor + " / codec: " + audio.codecA + " / sf:" + audio.sampleFrequency + " / na: " + audio.nrAudioChannels + " / bs: " + audio.bitsperSample;
 			if (audio.artist != null) {
