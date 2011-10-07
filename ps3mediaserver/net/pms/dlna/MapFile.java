@@ -207,14 +207,14 @@ public class MapFile extends DLNAResource {
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean isRefreshNeeded() {
-	    long lastModif = 0;
-	    for (File f : this.conf.getFiles()) {
-	        lastModif = Math.max(lastModif, f.lastModified());
-	    }
-	    return getLastRefreshTime() < lastModif;
+		long lastModif = 0;
+		for (File f : this.conf.getFiles()) {
+			lastModif = Math.max(lastModif, f.lastModified());
+		}
+		return getLastRefreshTime() < lastModif;
 	}
 
 	@Override

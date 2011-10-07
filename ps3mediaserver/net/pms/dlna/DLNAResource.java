@@ -416,16 +416,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						vf = getTranscodeFolder(true);
 
 						if (vf != null) {
-        						VirtualFolder fileFolder = new FileTranscodeVirtualFolder(child.getName(), null);
-        
-        						DLNAResource newChild = (DLNAResource) child.clone();
-        						newChild.player = pl;
-        						newChild.media = child.media;
-        						//newChild.original = child;
-        						fileFolder.addChildInternal(newChild);
-        						logger.trace("Duplicate " + child.getName() + " with player: " + pl.toString());
-        
-        						vf.addChild(fileFolder);
+							VirtualFolder fileFolder = new FileTranscodeVirtualFolder(child.getName(), null);
+
+							DLNAResource newChild = (DLNAResource) child.clone();
+							newChild.player = pl;
+							newChild.media = child.media;
+							// newChild.original = child;
+							fileFolder.addChildInternal(newChild);
+							logger.trace("Duplicate " + child.getName() + " with player: " + pl.toString());
+
+							vf.addChild(fileFolder);
 						}
 					}
 
@@ -459,26 +459,26 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param create
 	 * @return
 	 */
-        TranscodeVirtualFolder getTranscodeFolder(boolean create) {
-            if (!isTranscodeFolderAvailable()) {
-                return null;
-            }
-            if (PMS.getConfiguration().getHideTranscodeEnabled()) {
-                return null;
-            }
-            //search for transcode folder
-            for (DLNAResource r : getChildren()) {
-                if (r instanceof TranscodeVirtualFolder) {
-                    return (TranscodeVirtualFolder) r;
-                }
-            }
-            if (create) {
-                TranscodeVirtualFolder vf = new TranscodeVirtualFolder(null);
-                addChildInternal(vf);
-                return vf;
-            }
-            return null;
-        }
+	TranscodeVirtualFolder getTranscodeFolder(boolean create) {
+		if (!isTranscodeFolderAvailable()) {
+			return null;
+		}
+		if (PMS.getConfiguration().getHideTranscodeEnabled()) {
+			return null;
+		}
+		// search for transcode folder
+		for (DLNAResource r : getChildren()) {
+			if (r instanceof TranscodeVirtualFolder) {
+				return (TranscodeVirtualFolder) r;
+			}
+		}
+		if (create) {
+			TranscodeVirtualFolder vf = new TranscodeVirtualFolder(null);
+			addChildInternal(vf);
+			return vf;
+		}
+		return null;
+	}
 	
 	/**
 	 * Add to the internal list of child nodes, and sets the parent to the
@@ -520,7 +520,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				resources.add(resource);
 				resource.refreshChildrenIfNeeded();
 			} else {
-			        resource.discoverWithRenderer(renderer, count);
+				resource.discoverWithRenderer(renderer, count);
 
 				if (count == 0) {
 					count = resource.children.size();
@@ -568,13 +568,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 
-        /**
-         * update the last refresh time.
-         */
-        protected void refreshHappened() {
-        	lastRefreshTime = System.currentTimeMillis();
-        }
-        
+	/**
+	 * update the last refresh time.
+	 */
+	protected void refreshHappened() {
+		lastRefreshTime = System.currentTimeMillis();
+	}
+
 	protected void discoverWithRenderer(RendererConfiguration renderer, int count) {
 		// Discovering if not already done.
 		if (!discovered) {
@@ -1506,14 +1506,15 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	
 	long getLastRefreshTime() {
 		return lastRefreshTime;
-        }
+	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName()+" [id=" + id + ", name="+getName() + ", full path="+getId()+ ", ext=" + ext + ", discovered=" + discovered + "]";
-    }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return this.getClass().getSimpleName() + " [id=" + id + ", name=" + getName() + ", full path=" + getId() + ", ext=" + ext + ", discovered="
+				+ discovered + "]";
+	}
 
 }
