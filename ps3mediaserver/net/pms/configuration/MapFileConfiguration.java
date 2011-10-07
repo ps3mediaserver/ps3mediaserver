@@ -57,10 +57,6 @@ public class MapFileConfiguration {
 		thumbnailIcon = t;
 	}
 
-	public void setChilds(List<MapFileConfiguration> c) {
-		children = c;
-	}
-
 	public void setFiles(List<File> f) {
 		files = f;
 	}
