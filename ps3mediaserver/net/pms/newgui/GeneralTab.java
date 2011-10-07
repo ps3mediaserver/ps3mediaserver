@@ -73,6 +73,7 @@ public class GeneralTab {
 	private JComboBox langs;
 	private JComboBox networkinterfacesCBX;
 	private JTextField ip_filter;
+	private JTextField maxbitrate;
 	private JPanel pPlugins;
 	private final PmsConfiguration configuration;
 
@@ -83,7 +84,7 @@ public class GeneralTab {
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
 				"left:pref, 2dlu, p, 2dlu , p, 2dlu, p, 2dlu, pref:grow",
-				"p, 0dlu, p, 0dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 15dlu, p, 3dlu,p, 3dlu, p,  3dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p");
+				"p, 0dlu, p, 0dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 15dlu, p, 3dlu,p, 3dlu, p,  3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p,3dlu, p, 3dlu, p, 15dlu, p,3dlu, p, 3dlu, p, 15dlu, p, 3dlu, p");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.DLU4_BORDER);
 		builder.setOpaque(true);
@@ -290,6 +291,22 @@ public class GeneralTab {
 			}
 		});
 
+		maxbitrate = new JTextField(configuration.getMaximumBitrate());
+		maxbitrate.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				PMS.getConfiguration().setMaximumBitrate(maxbitrate.getText());
+			}
+		});
+
 		builder.addLabel(Messages.getString("NetworkTab.20"), cc.xy(1, 23));
 		builder.add(networkinterfacesCBX, cc.xyw(3, 23, 7));
 		builder.addLabel(Messages.getString("NetworkTab.23"), cc.xy(1, 25));
@@ -298,9 +315,11 @@ public class GeneralTab {
 		builder.add(port, cc.xyw(3, 27, 7));
 		builder.addLabel(Messages.getString("NetworkTab.30"), cc.xy(1, 29));
 		builder.add(ip_filter, cc.xyw(3, 29, 7));
+		builder.addLabel(Messages.getString("NetworkTab.35"), cc.xy(1, 31));
+		builder.add(maxbitrate, cc.xyw(3, 31, 7));
 
 
-		cmp = builder.addSeparator(Messages.getString("NetworkTab.31"), cc.xyw(1, 31, 9));
+		cmp = builder.addSeparator(Messages.getString("NetworkTab.31"), cc.xyw(1, 33, 9));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
@@ -311,7 +330,7 @@ public class GeneralTab {
 				configuration.setHTTPEngineV2((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		builder.add(newHTTPEngine, cc.xyw(1, 33, 9));
+		builder.add(newHTTPEngine, cc.xyw(1, 35, 9));
 
 		preventSleep = new JCheckBox(Messages.getString("NetworkTab.33"));
 		preventSleep.setSelected(configuration.isPreventsSleep());
@@ -320,9 +339,9 @@ public class GeneralTab {
 				configuration.setPreventsSleep((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		builder.add(preventSleep, cc.xyw(1, 35, 9));
+		builder.add(preventSleep, cc.xyw(1, 37, 9));
 
-		cmp = builder.addSeparator(Messages.getString("NetworkTab.34"), cc.xyw(1, 37, 9));
+		cmp = builder.addSeparator(Messages.getString("NetworkTab.34"), cc.xyw(1, 39, 9));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
