@@ -107,10 +107,10 @@ public class MediaLibraryFolder extends VirtualFolder {
 		name = name.replace("'", "''"); // issue 448
 		return name;
 	}
-	
+
 	@Override
 	public boolean isRefreshNeeded() {
-	    return true;
+		return true;
 	}
 
 	@Override
