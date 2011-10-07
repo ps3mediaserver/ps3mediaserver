@@ -99,6 +99,12 @@ public class MediaInfoParser {
 								} else if (step == MediaInfo.StreamKind.Text) {
 									currentSubTrack.lang = getLang(value);
 								}
+							} else if (key.equals("Title")) {
+								if (step == MediaInfo.StreamKind.Audio) {
+									currentAudioTrack.flavor = getFlavor(value);
+								} else if (step == MediaInfo.StreamKind.Text) {
+									currentSubTrack.flavor = getFlavor(value);
+								}
 							} else if (key.equals("Width")) {
 								media.width = getPixelValue(value);
 							} else if (key.equals("Encryption") && !media.encrypted) {
@@ -419,6 +425,11 @@ public class MediaInfoParser {
 		if (value.indexOf("/") > -1) {
 			value = value.substring(0, value.indexOf("/"));
 		}
+		value = value.trim();
+		return value;
+	}
+
+	public static String getFlavor(String value) {
 		value = value.trim();
 		return value;
 	}

@@ -102,6 +102,8 @@ public class MEncoderVideo extends Player {
 	private JTextField decode;
 	private JTextField langs;
 	private JTextField defaultsubs;
+	private JTextField forcedsub;
+	private JTextField forcedtags;
 	private JTextField defaultaudiosubs;
 	private JTextField defaultfont;
 	private JComboBox subcp;
@@ -471,7 +473,45 @@ public class MEncoderVideo extends Player {
 				configuration.setMencoderSubLanguages(defaultsubs.getText());
 			}
 		});
-		builder.add(defaultsubs, cc.xyw(3, 27, 8));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.94"), cc.xy(5, 27));
+		forcedsub = new JTextField(configuration.getMencoderForcedSubLanguage());
+		forcedsub.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderForcedSubLanguage(forcedsub.getText());
+			}
+		});
+
+		builder.addLabel(Messages.getString("MEncoderVideo.95"), cc.xy(9, 27));
+		forcedtags = new JTextField(configuration.getMencoderForcedSubTags());
+		forcedtags.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderForcedSubTags(forcedtags.getText());
+			}
+		});
+		builder.add(defaultsubs, cc.xyw(3, 27, 2));
+
+		builder.add(forcedsub, cc.xy(7, 27));
+
+		builder.add(forcedtags, cc.xyw(11, 27, 5));
 
 		builder.addLabel(Messages.getString("MEncoderVideo.10"), cc.xy(1, 29));
 		defaultaudiosubs = new JTextField(configuration.getMencoderAudioSubLanguages());

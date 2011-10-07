@@ -222,7 +222,6 @@ public abstract class Player {
 		if (matchedSub != null && params.sid == null) {
 			if (matchedSub.lang != null && matchedSub.lang.equals("off")) {
 				logger.trace(" Disabled the subtitles: " + matchedSub);
-				return;
 			} else {
 				params.sid = matchedSub;
 			}
@@ -234,15 +233,44 @@ public abstract class Player {
 			FileUtil.doesSubtitlesExists(video, media, false);
 
 			if (configuration.getUseSubtitles()) {
+				boolean forcedSubsFound = false;
 				// Priority to external subtitles
 				for (DLNAMediaSubtitle sub : media.subtitlesCodes) {
-					logger.trace("Found subtitles track: " + sub);
-					if (sub.file != null) {
-						logger.trace("Found external file: " + sub.file.getAbsolutePath());
-						params.sid = sub;
-						break;
+					if (matchedSub !=null && matchedSub.lang !=null && matchedSub.lang.equals("off")) {
+						StringTokenizer st = new StringTokenizer(configuration.getMencoderForcedSubTags(), ",");
+						while (st != null && sub.flavor != null && st.hasMoreTokens()) {
+							String forcedTags = st.nextToken();
+							forcedTags = forcedTags.trim();
+							if (sub.flavor.toLowerCase().indexOf(forcedTags) > -1) {
+								if (Iso639.isCodesMatching(sub.lang,configuration.getMencoderForcedSubLanguage())) {
+									logger.trace("Forcing preferred subtitles : " + sub.getLang() + "/" + sub.flavor);
+									logger.trace("Forced subtitles track : " + sub);
+									if (sub.file != null) {
+										logger.trace("Found external forced file : " + sub.file.getAbsolutePath());
+									}
+									params.sid = sub;
+									forcedSubsFound = true;
+									break;
+								}
+							}
+						}
+						if (forcedSubsFound == true) break;
+					} else {
+							logger.trace("Found subtitles track: " + sub);
+							if (sub.file != null) {
+								logger.trace("Found external file: " + sub.file.getAbsolutePath());
+								params.sid = sub;
+								break;
+							}
 					}
 				}
+			}
+			if (
+				matchedSub !=null && 
+				matchedSub.lang !=null && 
+				matchedSub.lang.equals("off")
+			) {
+				return;
 			}
 
 			if (params.sid == null) {

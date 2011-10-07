@@ -284,6 +284,8 @@ public class RendererConfiguration {
 	private static final String MEDIAPARSERV2_THUMB = "MediaParserV2_ThumbnailGeneration";
 	private static final String SUPPORTED = "Supported";
 	private static final String CUSTOM_MENCODER_QUALITYSETTINGS = "CustomMencoderQualitySettings";
+	private static final String SHOW_AUDIO_METADATA = "ShowAudioMetadata";
+	private static final String SHOW_SUB_METADATA = "ShowSubMetadata";
 	private static final String DLNA_TREE_HACK = "CreateDLNATreeFaster";
 	private static final String CHUNKED_TRANSFER = "ChunkedTransfer";
 
@@ -695,6 +697,14 @@ public class RendererConfiguration {
 
 	public boolean isForceJPGThumbnails() {
 		return (getBoolean(FORCE_JPG_THUMBNAILS, false) && MediaInfoParser.isValid()) || isBRAVIA();
+	}
+
+	public boolean isShowAudioMetadata() {
+		return getBoolean(SHOW_AUDIO_METADATA, true);
+	}
+
+	public boolean isShowSubMetadata() {
+		return getBoolean(SHOW_SUB_METADATA, true);
 	}
 
 	public boolean isDLNATreeHack() {

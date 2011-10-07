@@ -672,11 +672,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		if (media_audio != null) {
-			name = (player != null ? ("[" + player.name() + "]") : "") + " {Audio: " + media_audio.getAudioCodec() + "/" + media_audio.getLang() + "}";
+			name = (player != null ? ("[" + player.name() + "]") : "") + " {Audio: " + media_audio.getAudioCodec() + "/" + media_audio.getLang() + ((media_audio.flavor != null && mediaRenderer != null && mediaRenderer.isShowAudioMetadata()) ? (" (" + media_audio.flavor + ")") : "") + "}";
 		}
 
 		if (media_subtitle != null && media_subtitle.id != -1) {
-			name += " {Sub: " + media_subtitle.getSubType() + "/" + media_subtitle.getLang() + (media_subtitle.flavor != null ? ("/" + media_subtitle.flavor) : "") + "}";
+			name += " {Sub: " + media_subtitle.getSubType() + "/" + media_subtitle.getLang() + ((media_subtitle.flavor != null && mediaRenderer != null && mediaRenderer.isShowSubMetadata()) ? (" (" + media_subtitle.flavor + ")") : "") + "}";
 		}
 
 		if (avisynth) {

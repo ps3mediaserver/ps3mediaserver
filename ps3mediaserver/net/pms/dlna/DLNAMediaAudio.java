@@ -12,6 +12,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	public int year;
 	public int track;
 	public int delay;
+	public String flavor;
 	public String muxingModeAudio;
 
 	public DLNAMediaAudio() {
@@ -81,7 +82,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	}
 
 	public String toString() {
-		return "Audio: " + getAudioCodec() + " / lang: " + lang + " / ID: " + id;
+		return "Audio: " + getAudioCodec() + " / lang: " + lang + " / flavor: " + flavor + " / ID: " + id;
 	}
 
 	@Override
