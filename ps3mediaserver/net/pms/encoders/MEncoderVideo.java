@@ -1012,7 +1012,11 @@ public class MEncoderVideo extends Player {
 		return bitrates;
 	}
 
-	private String addMaximumBitrateConstraints(String encodeSettings, DLNAMediaInfo media, String quality, RendererConfiguration mediaRenderer) {
+	/**
+	 * Note: This is not exact, the bitrate can go above this but it is generally pretty good.
+	 * @return The maximum bitrate the video should be along with the buffer size using MEncoder vars
+	 */
+	private String addMaximumBitrateConstraints(String encodeSettings, DLNAMediaInfo media, String quality, RendererConfiguration mediaRenderer, String audioType) {
 		int defaultMaxBitrates[] = getVideoBitrateConfig(configuration.getMaximumBitrate());
 		int rendererMaxBitrates[] = new int[2];
 		if (mediaRenderer.getMaxVideoBitrate() != null) {
@@ -1022,10 +1026,12 @@ public class MEncoderVideo extends Player {
 			defaultMaxBitrates = rendererMaxBitrates;
 		}
 		if (defaultMaxBitrates[0] > 0 && !quality.contains("vrc_buf_size") && !quality.contains("vrc_maxrate") && !quality.contains("vbitrate")) {
+			// Convert value from Mb to Kb
 			defaultMaxBitrates[0] = 1000 * defaultMaxBitrates[0];
-			if (defaultMaxBitrates[0] > 60000) {
-				defaultMaxBitrates[0] = 60000;
-			}
+
+			// Halve it since it seems to send up to 1 second of video in advance
+			defaultMaxBitrates[0] = defaultMaxBitrates[0] / 2;
+
 			int bufSize = 1835;
 			if (media.isHDVideo()) {
 				bufSize = defaultMaxBitrates[0] / 3;
@@ -1041,6 +1047,23 @@ public class MEncoderVideo extends Player {
 			if (mediaRenderer.isDefaultVBVSize() && rendererMaxBitrates[1] == 0) {
 				bufSize = 1835;
 			}
+
+			// Make room for audio
+			// If audio is PCM, subtract 4600kb/s
+			if ("pcm".equals(audioType)) {
+				defaultMaxBitrates[0] = defaultMaxBitrates[0] - 4600;
+			}
+			// If audio is DTS, subtract 1510kb/s
+			else if ("dts".equals(audioType)) {
+				defaultMaxBitrates[0] = defaultMaxBitrates[0] - 1510;
+			}
+			// If audio is AC3, subtract 640kb/s to be safe
+			else if ("ac3".equals(audioType)) {
+				defaultMaxBitrates[0] = defaultMaxBitrates[0] - 640;
+			}
+
+			// Round down to the nearest Mb
+			defaultMaxBitrates[0] = defaultMaxBitrates[0] / 1000 * 1000;
 
 			encodeSettings += ":vrc_maxrate=" + defaultMaxBitrates[0] + ":vrc_buf_size=" + bufSize;
 		}
@@ -1228,7 +1251,14 @@ public class MEncoderVideo extends Player {
 				":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid))) +
 				":threads=" + (wmv ? 1 : configuration.getMencoderMaxThreads()) + ":" + mainConfig;
 
-			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, mainConfig, params.mediaRenderer);
+			String audioType = "ac3";
+			if (dts) {
+				audioType = "dts";
+			} else if (pcm || encodedaudiopassthrough) {
+				audioType = "pcm";
+			}
+
+			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, mainConfig, params.mediaRenderer, audioType);
 			st = new StringTokenizer(encodeSettings, " ");
 			int oldc = overriddenMainArgs.length;
 			overriddenMainArgs = Arrays.copyOf(overriddenMainArgs, overriddenMainArgs.length + st.countTokens());
@@ -1573,7 +1603,7 @@ public class MEncoderVideo extends Player {
 									":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") +
 									":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid) +
 									":threads=" + configuration.getMencoderMaxThreads() + ":" + sArgs[s + 1];
-								addMaximumBitrateConstraints(cmdArray[c + 1], media, cmdArray[c + 1], params.mediaRenderer);
+								addMaximumBitrateConstraints(cmdArray[c + 1], media, cmdArray[c + 1], params.mediaRenderer, "");
 								sArgs[s + 1] = "-quality";
 								s++;
 							}
