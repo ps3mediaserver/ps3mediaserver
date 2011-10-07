@@ -703,6 +703,10 @@ public class PMS {
 	 * @see {@link PMS#manageRoot(RendererConfiguration)}
 	 */
 
+	// this is called *way* too often (e.g. a dozen times with 1 renderer and 1 shared folder),
+	// so log it by default so we can fix it.
+	// BUT it's also called when the GUI is initialized (to populate the list of shared folders),
+	// and we don't want this message to appear *before* the PMS banner, so allow that call to suppress logging	
 	public File[] getFoldersConf(boolean log) {
 	        String folders = getConfiguration().getFolders();
 		if (folders == null || folders.length() == 0) {
