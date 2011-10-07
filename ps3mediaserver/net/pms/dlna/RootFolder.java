@@ -64,7 +64,7 @@ public class RootFolder extends DLNAResource {
 	private boolean running;
 
 	public RootFolder() {
-		id = "0";
+		setIndexId(0);
 	}
 
 	@Override
@@ -181,7 +181,6 @@ public class RootFolder extends DLNAResource {
 					}
 					if (child.discovered) {
 						child.refreshChildren();
-						child.closeChildren(child.childrenNumber(), true);
 					} else {
 						if (child instanceof DVDISOFile || child instanceof DVDISOTitle) // ugly hack
 						{
@@ -189,7 +188,6 @@ public class RootFolder extends DLNAResource {
 						}
 						child.discoverChildren();
 						child.analyzeChildren(-1);
-						child.closeChildren(0, false);
 						child.discovered = true;
 					}
 					int count = child.children.size();

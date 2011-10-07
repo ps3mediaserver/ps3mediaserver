@@ -50,43 +50,37 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 						DLNAResource avisnewChild = (DLNAResource) child.clone();
 						avisnewChild.player = pl;
 						avisnewChild.noName = true;
-						avisnewChild.id = avisnewChild.parent.id + "$" + children.size();
 						avisnewChild.media = child.media;
-						children.add(avisnewChild);
-						avisnewChild.parent = this;
 						if (avisnewChild.player.id().equals(MEncoderVideo.ID)) {
 							ref = avisnewChild;
 						}
 						if (avisnewChild.player.id().equals(TSMuxerVideo.ID)) {
 							tsMuxer = pl;
 						}
+						addChildInternal(avisnewChild);
 						addChapterFile(avisnewChild);
 					}
 				}
 				for (int i = 0; i < child.media.audioCodes.size(); i++) {
 					DLNAResource newChildNoSub = (DLNAResource) ref.clone();
 					newChildNoSub.player = ref.player;
-					newChildNoSub.id = newChildNoSub.parent.id + "$" + children.size();
 					newChildNoSub.media = ref.media;
 					newChildNoSub.noName = true;
-					children.add(newChildNoSub);
-					newChildNoSub.parent = this;
 					newChildNoSub.media_audio = ref.media.audioCodes.get(i);
 					newChildNoSub.media_subtitle = new DLNAMediaSubtitle();
 					newChildNoSub.media_subtitle.id = -1;
+					addChildInternal(newChildNoSub);
 
 					addChapterFile(newChildNoSub);
 
 					for (int j = 0; j < child.media.subtitlesCodes.size(); j++) {
 						DLNAResource newChild = (DLNAResource) ref.clone();
 						newChild.player = ref.player;
-						newChild.id = newChild.parent.id + "$" + children.size();
 						newChild.media = ref.media;
 						newChild.noName = true;
-						children.add(newChild);
-						newChild.parent = this;
 						newChild.media_audio = ref.media.audioCodes.get(i);
 						newChild.media_subtitle = ref.media.subtitlesCodes.get(j);
+						addChildInternal(newChild);
 						addChapterFile(newChild);
 
 						logger.debug("Duplicate " + ref.getName() + " with player: " + ref.player.toString() + " and aid: " + newChild.media_audio.id + " and sid: " + newChild.media_subtitle);
@@ -97,12 +91,10 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					for (int i = 0; i < child.media.audioCodes.size(); i++) {
 						DLNAResource newChildNoSub = (DLNAResource) ref.clone();
 						newChildNoSub.player = tsMuxer;
-						newChildNoSub.id = newChildNoSub.parent.id + "$" + children.size();
 						newChildNoSub.media = ref.media;
 						newChildNoSub.noName = true;
-						children.add(newChildNoSub);
-						newChildNoSub.parent = this;
 						newChildNoSub.media_audio = ref.media.audioCodes.get(i);
+						addChildInternal(newChildNoSub);
 						addChapterFile(newChildNoSub);
 
 					}
@@ -112,11 +104,9 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 				DLNAResource justStreamed = (DLNAResource) ref.clone();
 				if (justStreamed.ext != null && (justStreamed.ext.ps3compatible() || justStreamed.skipTranscode)) {
 					justStreamed.player = null;
-					justStreamed.id = justStreamed.parent.id + "$" + children.size();
 					justStreamed.media = ref.media;
 					justStreamed.noName = true;
-					children.add(justStreamed);
-					justStreamed.parent = this;
+					addChildInternal(justStreamed);
 					addChapterFile(justStreamed);
 				}
 			}
@@ -127,14 +117,10 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 	private void addChapterFile(DLNAResource source) {
 		if (PMS.getConfiguration().getChapterInterval() > 0 && PMS.getConfiguration().isChapterSupport()) {
 			ChapterFileTranscodeVirtualFolder chapterFolder = new ChapterFileTranscodeVirtualFolder("Chapters:" + source.getDisplayName(), null, PMS.getConfiguration().getChapterInterval());
-			chapterFolder.parent = this;
-			chapterFolder.id = this.id + "$" + children.size();
 			DLNAResource newSeekChild = (DLNAResource) source.clone();
-			newSeekChild.parent = chapterFolder;
-			newSeekChild.id = newSeekChild.parent.id + "$0";
 			newSeekChild.noName = true;
-			chapterFolder.children.add(newSeekChild);
-			children.add(chapterFolder);
+			chapterFolder.addChildInternal(newSeekChild);
+			addChildInternal(chapterFolder);
 		}
 	}
 

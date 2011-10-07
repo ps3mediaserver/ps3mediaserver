@@ -11,6 +11,7 @@ Changelog:
 	Added full featured IP filter with support for wildcards and ranges
 	Improved network interface choosing algorithm now skips virtual interfaces
 	Updated libraries (configuration, jgoodies and slf4j)
+	Detect file system changes runtime (adding/removing folders/files).
 
 2011-09-22 - 1.40.0
 

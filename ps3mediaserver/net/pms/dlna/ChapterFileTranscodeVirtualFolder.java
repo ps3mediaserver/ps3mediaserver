@@ -40,15 +40,13 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 			for (int i = 1; i <= nbIntervals; i++) {
 				DLNAResource newChildNoSub = (DLNAResource) child.clone();
 				newChildNoSub.player = child.player;
-				newChildNoSub.id = newChildNoSub.parent.id + "$" + children.size();
 				newChildNoSub.media = child.media;
 				newChildNoSub.noName = true;
-				children.add(newChildNoSub);
-				newChildNoSub.parent = this;
 				newChildNoSub.media_audio = child.media_audio;
 				newChildNoSub.media_subtitle = child.media_subtitle;
 				newChildNoSub.splitStart = 60 * i * interval;
 				newChildNoSub.splitLength = newChildNoSub.media.getDurationInSeconds() - newChildNoSub.splitStart;
+				addChildInternal(newChildNoSub);
 			}
 		}
 		resolved = true;

@@ -207,9 +207,18 @@ public class MapFile extends DLNAResource {
 			}
 		}
 	}
+	
+	@Override
+	public boolean isRefreshNeeded() {
+	    long lastModif = 0;
+	    for (File f : this.conf.getFiles()) {
+	        lastModif = Math.max(lastModif, f.lastModified());
+	    }
+	    return getLastRefreshTime() < lastModif;
+	}
 
 	@Override
-	public boolean refreshChildren() {
+	public void refreshChildren() {
 		List<File> files = getFileList();
 		ArrayList<File> addedFiles = new ArrayList<File>();
 		ArrayList<DLNAResource> removedFiles = new ArrayList<DLNAResource>();
@@ -247,15 +256,7 @@ public class MapFile extends DLNAResource {
 		}
 
 
-		TranscodeVirtualFolder vf = null;
-		if (!PMS.getConfiguration().getHideTranscodeEnabled()) {
-			for (DLNAResource r : children) {
-				if (r instanceof TranscodeVirtualFolder) {
-					vf = (TranscodeVirtualFolder) r;
-					break;
-				}
-			}
-		}
+		TranscodeVirtualFolder vf = getTranscodeFolder(false);
 
 		for (DLNAResource f : removedFiles) {
 			children.remove(f);
@@ -276,7 +277,7 @@ public class MapFile extends DLNAResource {
 			addChild(new MapFile(f));
 		}
 
-		return !removedFiles.isEmpty() || !addedFiles.isEmpty();
+		// return !removedFiles.isEmpty() || !addedFiles.isEmpty();
 	}
 
 	@Override
