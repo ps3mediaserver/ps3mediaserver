@@ -176,6 +176,8 @@ public class PmsConfiguration {
 	private static final String KEY_UPNP_PORT = "upnp_port";
 	private static final String UNLIMITED_BITRATE = "0";
 	private static final String KEY_UUID = "uuid";
+	private static final String KEY_MENCODER_FORCED_SUB_LANG = "forced_sub_lang";
+	private static final String KEY_MENCODER_FORCED_SUB_TAGS = "forced_sub_tags";
 
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
 	// see Build for more details
@@ -906,6 +908,14 @@ public class PmsConfiguration {
 		return getString(KEY_MENCODER_SUB_LANGS, getDefaultLanguages());
 	}
 
+	public String getMencoderForcedSubLanguage() {
+		return getString(KEY_MENCODER_FORCED_SUB_LANG, getLanguage());
+	}
+
+	public String getMencoderForcedSubTags() {
+  		return getString(KEY_MENCODER_FORCED_SUB_TAGS, "forced");
+  	}
+
 	/**
 	 * Returns a string of audio language and subtitle language pairs
 	 * ordered by priority for MEncoder to try to match. Audio language
@@ -962,6 +972,14 @@ public class PmsConfiguration {
 
 	public void setMencoderSubLanguages(String value) {
 		configuration.setProperty(KEY_MENCODER_SUB_LANGS, value);
+	}
+
+	public void setMencoderForcedSubLanguage(String value) {
+		configuration.setProperty(KEY_MENCODER_FORCED_SUB_LANG, value);
+	}
+
+	public void setMencoderForcedSubTags(String value) {
+		configuration.setProperty(KEY_MENCODER_FORCED_SUB_TAGS, value);
 	}
 
 	public void setMencoderAudioSubLanguages(String value) {

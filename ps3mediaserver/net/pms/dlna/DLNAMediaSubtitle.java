@@ -56,7 +56,7 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	}
 
 	public String toString() {
-		return "Sub: " + getSubType() + " / lang: " + lang + " / ID: " + id + " / FILE: " + (file != null ? file.getAbsolutePath() : "-");
+		return "Sub: " + getSubType() + " / lang: " + lang + " / flavor: " + flavor + " / ID: " + id + " / FILE: " + (file != null ? file.getAbsolutePath() : "-");
 	}
 
 	public void checkUnicode() {

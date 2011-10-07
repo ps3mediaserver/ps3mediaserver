@@ -154,6 +154,7 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append("  FILEID            INT              NOT NULL");
 				sb.append(", ID                INT              NOT NULL");
 				sb.append(", LANG              VARCHAR2(3)");
+				sb.append(", FLAVOR            VARCHAR2(128)");
 				sb.append(", NRAUDIOCHANNELS   NUMERIC");
 				sb.append(", SAMPLEFREQ        VARCHAR2(16)");
 				sb.append(", CODECA            VARCHAR2(32)");
@@ -173,6 +174,7 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append("  FILEID            INT              NOT NULL");
 				sb.append(", ID                INT              NOT NULL");
 				sb.append(", LANG              VARCHAR2(3)");
+				sb.append(", FLAVOR            VARCHAR2(128)");
 				sb.append(", TYPE              INT");
 				sb.append(", constraint PKSUB primary key (FILEID, ID))");
 
@@ -275,6 +277,7 @@ public class DLNAMediaDatabase implements Runnable {
 					DLNAMediaAudio audio = new DLNAMediaAudio();
 					audio.id = subrs.getInt("ID");
 					audio.lang = subrs.getString("LANG");
+					audio.flavor = subrs.getString("FLAVOR");
 					audio.nrAudioChannels = subrs.getInt("NRAUDIOCHANNELS");
 					audio.sampleFrequency = subrs.getString("SAMPLEFREQ");
 					audio.codecA = subrs.getString("CODECA");
@@ -299,6 +302,7 @@ public class DLNAMediaDatabase implements Runnable {
 					DLNAMediaSubtitle sub = new DLNAMediaSubtitle();
 					sub.id = subrs.getInt("ID");
 					sub.lang = subrs.getString("LANG");
+					sub.flavor = subrs.getString("FLAVOR");
 					sub.type = subrs.getInt("TYPE");
 					media.subtitlesCodes.add(sub);
 				}
@@ -377,30 +381,31 @@ public class DLNAMediaDatabase implements Runnable {
 			if (media != null && id > -1) {
 				PreparedStatement insert = null;
 				if (media.audioCodes.size() > 0) {
-					insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				}
 				for (DLNAMediaAudio audio : media.audioCodes) {
 					insert.clearParameters();
 					insert.setInt(1, id);
 					insert.setInt(2, audio.id);
 					insert.setString(3, audio.lang);
-					insert.setInt(4, audio.nrAudioChannels);
-					insert.setString(5, audio.sampleFrequency);
-					insert.setString(6, audio.codecA);
-					insert.setInt(7, audio.bitsperSample);
-					insert.setString(8, StringUtils.trimToEmpty(audio.album));
-					insert.setString(9, StringUtils.trimToEmpty(audio.artist));
-					insert.setString(10, StringUtils.trimToEmpty(audio.songname));
-					insert.setString(11, StringUtils.trimToEmpty(audio.genre));
-					insert.setInt(12, audio.year);
-					insert.setInt(13, audio.track);
-					insert.setInt(14, audio.delay);
-					insert.setString(15, StringUtils.trimToEmpty(audio.muxingModeAudio));
+					insert.setString(4, audio.flavor);
+					insert.setInt(5, audio.nrAudioChannels);
+					insert.setString(6, audio.sampleFrequency);
+					insert.setString(7, audio.codecA);
+					insert.setInt(8, audio.bitsperSample);
+					insert.setString(9, StringUtils.trimToEmpty(audio.album));
+					insert.setString(10, StringUtils.trimToEmpty(audio.artist));
+					insert.setString(11, StringUtils.trimToEmpty(audio.songname));
+					insert.setString(12, StringUtils.trimToEmpty(audio.genre));
+					insert.setInt(13, audio.year);
+					insert.setInt(14, audio.track);
+					insert.setInt(15, audio.delay);
+					insert.setString(16, StringUtils.trimToEmpty(audio.muxingModeAudio));
 					insert.executeUpdate();
 				}
 
 				if (media.subtitlesCodes.size() > 0) {
-					insert = conn.prepareStatement("INSERT INTO SUBTRACKS VALUES (?, ?, ?, ?)");
+					insert = conn.prepareStatement("INSERT INTO SUBTRACKS VALUES (?, ?, ?, ?, ?)");
 				}
 				for (DLNAMediaSubtitle sub : media.subtitlesCodes) {
 					if (sub.file == null) { // no save of external subtitles
@@ -408,7 +413,8 @@ public class DLNAMediaDatabase implements Runnable {
 						insert.setInt(1, id);
 						insert.setInt(2, sub.id);
 						insert.setString(3, sub.lang);
-						insert.setInt(4, sub.type);
+						insert.setString(4, sub.flavor);
+						insert.setInt(5, sub.type);
 						insert.executeUpdate();
 					}
 				}
