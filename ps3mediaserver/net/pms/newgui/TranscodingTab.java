@@ -82,7 +82,6 @@ public class TranscodingTab {
 	private JPanel tabbedPane;
 	private CardLayout cl;
 	private JTextField abitrate;
-	private JTextField maxbitrate;
 	private JTree tree;
 	private JCheckBox forcePCM;
 	private JCheckBox hdaudiopass;
@@ -560,27 +559,6 @@ public class TranscodingTab {
 		cmp = builder.addSeparator(Messages.getString("TrTab2.4"), cc.xyw(1, 27, 3));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-
-
-		builder.addLabel(Messages.getString("TrTab2.30"), cc.xy(1, 29));
-
-
-		maxbitrate = new JTextField("" + configuration.getMaximumBitrate());
-		maxbitrate.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				configuration.setMaximumBitrate(maxbitrate.getText());
-			}
-		});
-		builder.add(maxbitrate, cc.xy(3, 29));
 
 		builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 31, 3));
 
