@@ -484,7 +484,7 @@ public class TSMuxerVideo extends Player {
 
 	@Override
 	public String name() {
-		return "TsMuxer";
+		return "tsMuxeR";
 	}
 
 	@Override
