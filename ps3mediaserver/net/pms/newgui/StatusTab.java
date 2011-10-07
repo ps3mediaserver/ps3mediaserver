@@ -124,11 +124,11 @@ public class StatusTab {
 		if (v < rc) {
 			rc = v;
 		} else {
-			int sizeinKb = (int) ((v - rc) / 125);
-			if (sizeinKb > peak) {
-				peak = sizeinKb;
+			int sizeinMb = (int) ((v - rc) / 125) / 1024;
+			if (sizeinMb > peak) {
+				peak = sizeinMb;
 			}
-			jio.setText(Messages.getString("StatusTab.8") + formatter.format(sizeinKb) + Messages.getString("StatusTab.10") + formatter.format(peak) + Messages.getString("StatusTab.11"));
+			jio.setText(Messages.getString("StatusTab.8") + formatter.format(sizeinMb) + Messages.getString("StatusTab.10") + formatter.format(peak) + Messages.getString("StatusTab.11"));
 			rc = v;
 		}
 	}
