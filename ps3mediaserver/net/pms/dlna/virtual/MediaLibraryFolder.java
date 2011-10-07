@@ -107,9 +107,14 @@ public class MediaLibraryFolder extends VirtualFolder {
 		name = name.replace("'", "''"); // issue 448
 		return name;
 	}
+	
+	@Override
+	public boolean isRefreshNeeded() {
+	    return true;
+	}
 
 	@Override
-	public boolean refreshChildren() {
+	public void refreshChildren() {
 		ArrayList<File> list = null;
 		ArrayList<String> strings = null;
 		int expectedOutput = 0;
@@ -197,6 +202,6 @@ public class MediaLibraryFolder extends VirtualFolder {
 			}
 		}
 
-		return removedFiles.size() != 0 || addedFiles.size() != 0 || removedString.size() != 0 || addedString.size() != 0;
+		//return removedFiles.size() != 0 || addedFiles.size() != 0 || removedString.size() != 0 || addedString.size() != 0;
 	}
 }

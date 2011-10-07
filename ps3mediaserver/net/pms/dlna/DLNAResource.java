@@ -130,6 +130,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * List of children objects associated with this DLNAResource. This is only valid when the DLNAResource is of the container type.
 	 */
 	protected List<DLNAResource> children;
+	
+	/**
+	 * the id which the last child got, so the next child can get unique id with incrementing this value.
+	 */
+	protected int lastChildrenId;
+	
+	/**
+	 * The last time when refresh is called.
+	 */
+	protected long lastRefreshTime;
 
 	/**Returns parent object, usually a folder type of resource.
 	 * @return Parent object.
@@ -144,6 +154,26 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @see #id
 	 */
 	public String getId() {
+		return parent != null ? parent.getId() + '$' + id : id;
+	}
+	
+	/**
+	 * Set the id based on the index in their parent container. Main purpose
+	 * is to be unique in the parent container, it's called automaticly 
+	 * by addChildInternal, so most of the time it's unnecessary to call
+	 * 
+	 * @see #addChildInternal(DLNAResource)
+	 * @param id
+	 */
+	protected void setIndexId(int id) {
+		this.id = Integer.toString(id);
+	}
+
+	/**
+	 * 
+	 * @return the unique id which identifies the DLNAResource relative to it's parent. 
+	 */
+	public String getInternalId() {
 		return id;
 	}
 
@@ -298,9 +328,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			if (allChildrenAreFolders && !child.isFolder()) {
 				allChildrenAreFolders = false;
 			}
-
-			children.add(child);
-			childrenNumber++;
+			addChildInternal(child);
 
 			boolean forceTranscodeV2 = false;
 			boolean parserV2 = child.media != null && defaultRenderer != null && defaultRenderer.isMediaParserV2();
@@ -384,34 +412,21 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						logger.trace("Switching " + child.getName() + " to player: " + pl.toString());
 					}
 
-					if (child.ext.isVideo() && child.isTranscodeFolderAvailable() && (!PMS.getConfiguration().getHideTranscodeEnabled())) {
-						//search for transcode folder
-						for (DLNAResource r : children) {
-							if (r instanceof TranscodeVirtualFolder) {
-								vf = (TranscodeVirtualFolder) r;
-								break;
-							}
+					if (child.ext.isVideo()) {
+						vf = getTranscodeFolder(true);
+
+						if (vf != null) {
+        						VirtualFolder fileFolder = new FileTranscodeVirtualFolder(child.getName(), null);
+        
+        						DLNAResource newChild = (DLNAResource) child.clone();
+        						newChild.player = pl;
+        						newChild.media = child.media;
+        						//newChild.original = child;
+        						fileFolder.addChildInternal(newChild);
+        						logger.trace("Duplicate " + child.getName() + " with player: " + pl.toString());
+        
+        						vf.addChild(fileFolder);
 						}
-						if (vf == null) {
-							vf = new TranscodeVirtualFolder(null);
-							children.add(vf);
-							childrenNumber++;
-							vf.parent = this;
-						}
-
-						VirtualFolder fileFolder = new FileTranscodeVirtualFolder(child.getName(), null);
-
-
-						DLNAResource newChild = (DLNAResource) child.clone();
-						newChild.player = pl;
-						newChild.media = child.media;
-						//newChild.original = child;
-						fileFolder.children.add(newChild);
-						fileFolder.childrenNumber++;
-						newChild.parent = fileFolder;
-						logger.trace("Duplicate " + child.getName() + " with player: " + pl.toString());
-
-						vf.addChild(fileFolder);
 					}
 
 					for (ExternalListener listener : ExternalFactory.getExternalListeners()) {
@@ -439,28 +454,43 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 
-	/**Recursive function that assigns proper IDs to the items. It follows the format number($number)+.
-	 * It is used after all the root directories have been set. 
-	 * @param index Index where to start numbering. 
-	 * @param refresh If true, then the IDs are not reset to zero for each child item.
-	 * @see #id
-	 * @see #children
-	 * @see PMS#manageRoot(RendererConfiguration)
+	/**
+	 * Return the transcode virtual folder if it's supported and allowed. If create set to true, it tries to create if not yet created.
+	 * @param create
+	 * @return
 	 */
-	public synchronized void closeChildren(int index, boolean refresh) {
-		if (id == null || id.equals("0")) {
-			if (parent != null) {
-				id = parent.id + "$" + index;
-				logger.trace("Setting DLNA id " + id + " to " + getName());
-			}
-		}
-		if (!refresh) {
-			index = 0;
-		}
-		if (children != null) {
-			for (DLNAResource f : children) {
-				f.closeChildren(index++, false);
-			}
+        TranscodeVirtualFolder getTranscodeFolder(boolean create) {
+            if (!isTranscodeFolderAvailable()) {
+                return null;
+            }
+            if (PMS.getConfiguration().getHideTranscodeEnabled()) {
+                return null;
+            }
+            //search for transcode folder
+            for (DLNAResource r : getChildren()) {
+                if (r instanceof TranscodeVirtualFolder) {
+                    return (TranscodeVirtualFolder) r;
+                }
+            }
+            if (create) {
+                TranscodeVirtualFolder vf = new TranscodeVirtualFolder(null);
+                addChildInternal(vf);
+                return vf;
+            }
+            return null;
+        }
+	
+	/**
+	 * Add to the internal list of child nodes, and sets the parent to the
+	 * current node.
+	 * 
+	 * @param res
+	 */
+	protected synchronized void addChildInternal(DLNAResource res) {
+		this.children.add(res);
+		res.parent = this;
+		if (res.getInternalId() == null) {
+			res.setIndexId(lastChildrenId++);
 		}
 	}
 
@@ -480,35 +510,17 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public synchronized List<DLNAResource> getDLNAResources(String objectId, boolean children, int start, int count, RendererConfiguration renderer) throws IOException {
 		logger.trace("Searching for objectId: " + objectId + " with children option: " + children);
 		ArrayList<DLNAResource> resources = new ArrayList<DLNAResource>();
-		DLNAResource resource = search(objectId);
+		DLNAResource resource = search(objectId, count, renderer);
+		logger.trace("looking up "+objectId+" found:"+resource);
 
 		if (resource != null) {
 			resource.defaultRenderer = renderer;
 
 			if (!children) {
 				resources.add(resource);
-				if (resource.discovered) {
-					if (resource.refreshChildren()) {
-						resource.closeChildren(resource.childrenNumber, true);
-						resource.updateId++;
-						systemUpdateId++;
-					}
-				}
+				resource.refreshChildrenIfNeeded();
 			} else {
-				// Discovering if not already done.
-				if (!resource.discovered) {
-					resource.discoverChildren();
-					boolean ready = true;
-					if (renderer.isMediaParserV2() && renderer.isDLNATreeHack()) {
-						ready = resource.analyzeChildren(count);
-					} else {
-						ready = resource.analyzeChildren(-1);
-					}
-					resource.closeChildren(0, false);
-					if (!renderer.isMediaParserV2() || ready) {
-						resource.discovered = true;
-					}
-				}
+			        resource.discoverWithRenderer(renderer, count);
 
 				if (count == 0) {
 					count = resource.children.size();
@@ -544,6 +556,47 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return resources;
 	}
 
+	protected void refreshChildrenIfNeeded() {
+		logger.trace("refreshChildrenIfNeeded() : discovered= " + discovered + ", name:" + getName() + ", id :" + getId());
+		if (discovered) {
+			if (isRefreshNeeded()) {
+				refreshChildren();
+				updateId++;
+				systemUpdateId++;
+				refreshHappened();
+			}
+		}
+	}
+
+        /**
+         * update the last refresh time.
+         */
+        protected void refreshHappened() {
+        	lastRefreshTime = System.currentTimeMillis();
+        }
+        
+	protected void discoverWithRenderer(RendererConfiguration renderer, int count) {
+		// Discovering if not already done.
+		if (!discovered) {
+			discoverChildren();
+			boolean ready = true;
+			if (renderer.isMediaParserV2() && renderer.isDLNATreeHack()) {
+				ready = analyzeChildren(count);
+			} else {
+				ready = analyzeChildren(-1);
+			}
+			if (!renderer.isMediaParserV2() || ready) {
+				discovered = true;
+			}
+			refreshHappened();
+		} else {
+			if (isRefreshNeeded()) {
+				refreshChildren();
+				refreshHappened();
+			}
+		}
+	}
+
 	@Override
 	public void run() {
 		if (first == null) {
@@ -556,25 +609,32 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 	/**Recursive function that searches for a given ID.
 	 * @param searchId ID to search for.
+	 * @param renderer 
+	 * @param count 
 	 * @return Item found, or null otherwise. 
 	 * @see #id
 	 * 
 	 */
-	public DLNAResource search(String searchId) {
-		DLNAResource found = null;
-		if (id != null) {
-			if (id.equals(searchId)) {
-				return this;
-			} else {
-				for (DLNAResource file : children) {
-					found = file.search(searchId);
-					if (found != null) {
-						break;
+	public DLNAResource search(String searchId, int count, RendererConfiguration renderer) {
+		if (id != null && searchId != null) {
+			String[] indexPath = searchId.split("\\$", 2);
+			if (id.equals(indexPath[0])) {
+				if (indexPath.length == 1 || indexPath[1].length() == 0) {
+					return this;
+				} else {
+					discoverWithRenderer(renderer, count);
+					for (DLNAResource file : children) {
+						DLNAResource found = file.search(indexPath[1], count, renderer);
+						if (found != null) {
+							return found;
+						}
 					}
 				}
+			} else {
+				return null;
 			}
 		}
-		return found;
+		return null;
 	}
 
 	/**
@@ -593,10 +653,18 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**
-	 * TODO: (botijo) What is the intention of this function? Looks like a prototype to be overloaded.
+	 * Reload the list of children
 	 * @return
 	 */
-	public boolean refreshChildren() {
+	public void refreshChildren() {
+	}
+	
+
+	/**
+	 * 
+	 * @return true, if the container is changed, so refresh is needed
+	 */
+	public boolean isRefreshNeeded() {
 		return false;
 	}
 
@@ -1435,14 +1503,17 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public boolean allowScan() {
 		return false;
 	}
+	
+	long getLastRefreshTime() {
+		return lastRefreshTime;
+        }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        return "DLNAResource [id=" + id + ", ext=" + ext + ", discovered=" + discovered + ", children=" + children + "]";
+        return this.getClass().getSimpleName()+" [id=" + id + ", name="+getName() + ", full path="+getId()+ ", ext=" + ext + ", discovered=" + discovered + "]";
     }
-	
-	
+
 }
