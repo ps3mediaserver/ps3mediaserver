@@ -101,9 +101,9 @@ public class DLNAMediaDatabase implements Runnable {
 		} catch (SQLException se) {
 			logger.debug("Database not created or corrupted");
 		} finally {
-                        close(rs);
-                        close(stmt);
-                        close(conn);
+			close(rs);
+			close(stmt);
+			close(conn);
 		}
 		boolean force_reinit = !PMS.VERSION.equals(version); // here we can force a deletion for a specific version
 		if (force || count == -1 || force_reinit) {
@@ -229,9 +229,9 @@ public class DLNAMediaDatabase implements Runnable {
 			logger.error(null, se);
 			return false;
 		} finally {
-                        close(rs);
-                        close(stmt);
-                        close(conn);
+			close(rs);
+			close(stmt);
+			close(conn);
 		}
 		return found;
 	}
@@ -315,9 +315,9 @@ public class DLNAMediaDatabase implements Runnable {
 			logger.error(null, se);
 			return null;
 		} finally {
-                        close(rs);
-                        close(stmt);
-                        close(conn);
+			close(rs);
+			close(stmt);
+			close(conn);
 		}
 		return list;
 	}
@@ -439,8 +439,8 @@ public class DLNAMediaDatabase implements Runnable {
 				logger.error(null, se);
 			}
 		} finally {
-                        close(ps);
-                        close(conn);
+			close(ps);
+			close(conn);
 		}
 	}
 
@@ -465,8 +465,8 @@ public class DLNAMediaDatabase implements Runnable {
 				logger.error(null, se);
 			}
 		} finally {
-                        close(ps);
-                        close(conn);
+			close(ps);
+			close(conn);
 		}
 	}
 
@@ -493,9 +493,9 @@ public class DLNAMediaDatabase implements Runnable {
 			logger.error(null, se);
 			return null;
 		} finally {
-                        close(rs);
-                        close(ps);
-                        close(conn);
+			close(rs);
+			close(ps);
+			close(conn);
 		}
 		return list;
 	}
@@ -539,7 +539,7 @@ public class DLNAMediaDatabase implements Runnable {
 		} catch (SQLException se) {
 			logger.error(null, se);
 		} finally {
-		        close(conn);
+			close(conn);
 		}
 	}
 
@@ -564,9 +564,9 @@ public class DLNAMediaDatabase implements Runnable {
 			logger.error(null, se);
 			return null;
 		} finally {
-                        close(rs);
-                        close(ps);
-                        close(conn);
+			close(rs);
+			close(ps);
+			close(conn);
 		}
 		return list;
 	}
