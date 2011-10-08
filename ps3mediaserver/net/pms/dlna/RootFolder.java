@@ -208,7 +208,6 @@ public class RootFolder extends DLNAResource {
 			files = File.listRoots();
 		}
 		for (File f : files) {
-			logger.info("Checking shared folder: " + f);
 			res.add(new RealFile(f));
 		}
 		return res;
