@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.pms.PMS;
 import net.pms.configuration.MapFileConfiguration;
@@ -220,31 +222,22 @@ public class MapFile extends DLNAResource {
 	@Override
 	public void refreshChildren() {
 		List<File> files = getFileList();
-		ArrayList<File> addedFiles = new ArrayList<File>();
-		ArrayList<DLNAResource> removedFiles = new ArrayList<DLNAResource>();
-		int i = 0;
+		List<File> addedFiles = new ArrayList<File>();
+		List<DLNAResource> removedFiles = new ArrayList<DLNAResource>();
+		for (DLNAResource d : children) {
+			boolean isNeedMatching = !(d.getClass() == MapFile.class ||  (d instanceof VirtualFolder && !(d instanceof DVDISOFile)) );
+			if (isNeedMatching) {
+				if (!foundInList(files, d)) {
+					removedFiles.add(d);
+				}
+			}
+		}
 		for (File f : files) {
 			if (!f.isHidden()) {
-				boolean present = false;
-				for (DLNAResource d : children) {
-					if (i == 0 && (!(d instanceof VirtualFolder) || (d instanceof DVDISOFile))) // specific for video_ts, we need to refresh it
-					{
-						if (d.getClass() != MapFile.class) {
-							removedFiles.add(d);
-						}
-					}
-					boolean video_ts_hack = (d instanceof DVDISOFile) && d.getName().startsWith(DVDISOFile.PREFIX) && d.getName().substring(DVDISOFile.PREFIX.length()).equals(f.getName());
-					if ((d.getName().equals(f.getName()) || video_ts_hack)
-						&& ((d instanceof RealFile && d.isFolder()) || d.lastmodified == f.lastModified())) { // && (!addcheck || (addcheck && d.lastmodified == f.lastModified()))
-						removedFiles.remove(d);
-						present = true;
-					}
-				}
-				if (!present && (f.isDirectory() || PMS.get().getAssociatedExtension(f.getName()) != null)) {
+				if (f.isDirectory() || PMS.get().getAssociatedExtension(f.getName()) != null) {
 					addedFiles.add(f);
 				}
 			}
-			i++;
 		}
 
 		for (DLNAResource f : removedFiles) {
@@ -276,8 +269,34 @@ public class MapFile extends DLNAResource {
 		for (MapFileConfiguration f : this.conf.getChildren()) {
 			addChild(new MapFile(f));
 		}
+	}
 
-		// return !removedFiles.isEmpty() || !addedFiles.isEmpty();
+	private boolean foundInList(List<File> files, DLNAResource d) {
+		for (File f: files) {
+			if (!f.isHidden()) {
+				if (isNameMatch(f, d) && (isRealFolder(d) || isSameLastModified(f, d))) {
+					files.remove(f);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isSameLastModified(File f, DLNAResource d) {
+		return d.lastmodified == f.lastModified();
+	}
+
+	private boolean isRealFolder(DLNAResource d) {
+		return d instanceof RealFile && d.isFolder();
+	}
+
+	private boolean isNameMatch(File file, DLNAResource resource) {
+		return (resource.getName().equals(file.getName()) || isDVDIsoMatch(file, resource));
+	}
+
+	private boolean isDVDIsoMatch(File file, DLNAResource resource) {
+		return (resource instanceof DVDISOFile) && resource.getName().startsWith(DVDISOFile.PREFIX) && resource.getName().substring(DVDISOFile.PREFIX.length()).equals(file.getName());
 	}
 
 	@Override
