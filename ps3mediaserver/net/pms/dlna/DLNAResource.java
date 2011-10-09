@@ -18,6 +18,13 @@
  */
 package net.pms.dlna;
 
+import static net.pms.util.StringUtil.addAttribute;
+import static net.pms.util.StringUtil.addXMLTagAndAttribute;
+import static net.pms.util.StringUtil.closeTag;
+import static net.pms.util.StringUtil.encodeXML;
+import static net.pms.util.StringUtil.endTag;
+import static net.pms.util.StringUtil.openTag;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
@@ -59,8 +66,6 @@ import net.pms.util.MpegUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static net.pms.util.StringUtil.*;
 
 /**
  * Represents any item that can be browsed via the UPNP ContentDirectory service.
@@ -561,8 +566,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		if (discovered) {
 			if (isRefreshNeeded()) {
 				refreshChildren();
-				updateId++;
-				systemUpdateId++;
 				notifyRefresh();
 			}
 		}
@@ -573,6 +576,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	protected void notifyRefresh() {
 		lastRefreshTime = System.currentTimeMillis();
+		updateId++;
+		systemUpdateId++;
 	}
 
 	protected void discoverWithRenderer(RendererConfiguration renderer, int count) {
