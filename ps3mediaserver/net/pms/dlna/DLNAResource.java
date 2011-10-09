@@ -21,7 +21,6 @@ package net.pms.dlna;
 import static net.pms.util.StringUtil.addAttribute;
 import static net.pms.util.StringUtil.addXMLTagAndAttribute;
 import static net.pms.util.StringUtil.closeTag;
-import static net.pms.util.StringUtil.encodeXML;
 import static net.pms.util.StringUtil.endTag;
 import static net.pms.util.StringUtil.openTag;
 
