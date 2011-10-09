@@ -246,9 +246,9 @@ public class HTTPServer implements Runnable {
 				if (!PMS.getConfiguration().getIpFiltering().allowed(inetAddress)) {
 					ignore = true;
 					socket.close();
-					logger.debug("Ignoring request from: " + ip);
+					logger.trace("Ignoring request from: " + ip);
 				} else {
-					logger.debug("Receiving a request from: " + ip);
+					logger.trace("Receiving a request from: " + ip);
 				}
 				if (!ignore) {
 					RequestHandler request = new RequestHandler(socket);

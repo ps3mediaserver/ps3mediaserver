@@ -563,7 +563,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				refreshChildren();
 				updateId++;
 				systemUpdateId++;
-				refreshHappened();
+				notifyRefresh();
 			}
 		}
 	}
@@ -571,12 +571,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	/**
 	 * update the last refresh time.
 	 */
-	protected void refreshHappened() {
+	protected void notifyRefresh() {
 		lastRefreshTime = System.currentTimeMillis();
 	}
 
 	protected void discoverWithRenderer(RendererConfiguration renderer, int count) {
-		logger.debug("discoverWithRenderer: " + renderer + " count: " + count + " self: " + this.toString());
 		// Discovering if not already done.
 		if (!discovered) {
 			discoverChildren();
@@ -589,14 +588,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			if (!renderer.isMediaParserV2() || ready) {
 				discovered = true;
 			}
-			refreshHappened();
+			notifyRefresh();
 		} else {
 			if (isRefreshNeeded()) {
-				logger.debug("refresh needed " + this.getName());
 				refreshChildren();
-				refreshHappened();
-			} else {
-				logger.debug("NO refresh for " + this.getName());
+				notifyRefresh();
 			}
 		}
 	}
@@ -1162,7 +1158,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		} else {
 			closeTag(sb, "item");
 		}
-		logger.debug("RESOURCE FOR " + getId() + " name: " + getName() + " XML: " + sb);
 		return sb.toString();
 	}
 
