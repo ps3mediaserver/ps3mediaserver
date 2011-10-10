@@ -340,7 +340,7 @@ public class DLNAMediaDatabase implements Runnable {
 			ps.setTimestamp(2, new Timestamp(modified));
 			ps.setInt(3, type);
 			if (media != null) {
-				if (media.getDurationInSeconds() != null) {
+				if (media.getDuration() != null) {
 					ps.setDouble(4, media.getDurationInSeconds());
 				} else {
 					ps.setNull(4, Types.DOUBLE);

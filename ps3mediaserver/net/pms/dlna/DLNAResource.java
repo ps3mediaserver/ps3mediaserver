@@ -1018,7 +1018,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							addAttribute(sb, "size", transcoded_size);
 						}
 					}
-					if (media.getDurationInSeconds() != null) {
+					if (media.getDuration() != null) {
 						if (splitStart > 0 && splitLength > 0) {
 							addAttribute(sb, "duration", DLNAMediaInfo.getDurationString(splitLength));
 						} else {
@@ -1049,8 +1049,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				} else if (ext != null && ext.isAudio()) {
 					if (media != null && media.mediaparsed) {
 						addAttribute(sb, "bitrate", media.bitrate);
-						if (media.getDurationInSeconds() != null) {
-							addAttribute(sb, "duration", media.getDurationString());
+						if (media.getDuration() != null) {
+							addAttribute(sb, "duration", media.getDuration());
 						}
 						if (media.getFirstAudioTrack() != null && media.getFirstAudioTrack().sampleFrequency != null) {
 							addAttribute(sb, "sampleFrequency", media.getFirstAudioTrack().sampleFrequency);
