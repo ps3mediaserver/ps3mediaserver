@@ -32,6 +32,7 @@ import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
+import static net.pms.util.StringUtil.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public class HTTPResource {
 	 * @param type Type for which the default MIME type is needed.
 	 * @return Default MIME associated with the file type.
 	 */
-	public String getDefaultMimeType(int type) {
+	public static String getDefaultMimeType(int type) {
 		String mimeType = HTTPResource.UNKNOWN_VIDEO_TYPEMIME;
 		if (type == Format.VIDEO) {
 			mimeType = HTTPResource.UNKNOWN_VIDEO_TYPEMIME;
@@ -109,7 +110,7 @@ public class HTTPResource {
 	 * @throws IOException
 	 * @see downloadAndSendBinary
 	 */
-	protected InputStream downloadAndSend(String u, boolean saveOnDisk) throws IOException {
+	protected static InputStream downloadAndSend(String u, boolean saveOnDisk) throws IOException {
 		URL url = new URL(u);
 		File f = null;
 		if (saveOnDisk) {
@@ -133,7 +134,7 @@ public class HTTPResource {
 	 * @return byte array.
 	 * @throws IOException
 	 */
-	protected byte[] downloadAndSendBinary(String u) throws IOException {
+	protected static byte[] downloadAndSendBinary(String u) throws IOException {
 		return downloadAndSendBinary(u, false, null);
 	}
 
@@ -145,7 +146,7 @@ public class HTTPResource {
 	 * @return
 	 * @throws IOException
 	 */
-	protected byte[] downloadAndSendBinary(String u, boolean saveOnDisk, File f) throws IOException {
+	protected static byte[] downloadAndSendBinary(String u, boolean saveOnDisk, File f) throws IOException {
 		URL url = new URL(u);
 		logger.debug("Retrieving " + url.toString());
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -173,21 +174,6 @@ public class HTTPResource {
 		return bytes.toByteArray();
 	}
 
-	/**Converts an URL string to it more canonical form
-	 * @param url String to be converted
-	 * @return Converted String.
-	 */
-	protected String convertURLToFileName(String url) {
-		url = url.replace('/', '\u00b5');
-		url = url.replace('\\', '\u00b5');
-		url = url.replace(':', '\u00b5');
-		url = url.replace('?', '\u00b5');
-		url = url.replace('*', '\u00b5');
-		url = url.replace('|', '\u00b5');
-		url = url.replace('<', '\u00b5');
-		url = url.replace('>', '\u00b5');
-		return url;
-	}
 
 	/**Returns an associated MIME type related to the Media Renderer. Some Media Renderer might need that the MIME type is not the correct one.
 	 * @param mimetype MIME type to transform.
@@ -202,14 +188,14 @@ public class HTTPResource {
 		return 3;
 	}
 
-	public String getMPEG_PS_PALLocalizedValue(int index) {
+	public final String getMPEG_PS_PALLocalizedValue(int index) {
 		if (index == 1 || index == 2) {
 			return "MPEG_PS_NTSC";
 		}
 		return "MPEG_PS_PAL";
 	}
 
-	public String getMPEG_TS_SD_EU_ISOLocalizedValue(int index) {
+	public final String getMPEG_TS_SD_EU_ISOLocalizedValue(int index) {
 		if (index == 1) {
 			return "MPEG_TS_SD_NA_ISO";
 		}
@@ -219,7 +205,7 @@ public class HTTPResource {
 		return "MPEG_TS_SD_EU_ISO";
 	}
 
-	public String getMPEG_TS_SD_EULocalizedValue(int index) {
+	public final String getMPEG_TS_SD_EULocalizedValue(int index) {
 		if (index == 1) {
 			return "MPEG_TS_SD_NA";
 		}

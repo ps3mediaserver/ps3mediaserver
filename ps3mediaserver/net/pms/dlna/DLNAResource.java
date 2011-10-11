@@ -21,6 +21,7 @@ package net.pms.dlna;
 import static net.pms.util.StringUtil.addAttribute;
 import static net.pms.util.StringUtil.addXMLTagAndAttribute;
 import static net.pms.util.StringUtil.closeTag;
+import static net.pms.util.StringUtil.encodeXML;
 import static net.pms.util.StringUtil.endTag;
 import static net.pms.util.StringUtil.openTag;
 
@@ -857,22 +858,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return o;
 	}
 
-	/**Does basic transformations between characters and their HTML representation with ampersands.
-	 * @param s String to be encoded
-	 * @return Encoded String
-	 */
-	private static String encodeXML(String s) {
-
-		s = s.replace("&", "&amp;");
-		s = s.replace("<", "&lt;");
-		s = s.replace(">", "&gt;");
-		s = s.replace("\"", "&quot;");
-		s = s.replace("'", "&apos;");
-		s = s.replace("&", "&amp;");
-
-		return s;
-	}
-
 	public String getFlags() {
 		return flags;
 	}
@@ -882,7 +867,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param mediaRenderer Media Renderer for which to represent this information. Useful for some hacks.
 	 * @return String representing the item. An example would start like this: {@code <container id="0$1" childCount=1 parentID="0" restricted="true">}
 	 */
-	public String toString(RendererConfiguration mediaRenderer) {
+	public final String toString(RendererConfiguration mediaRenderer) {
 		StringBuilder sb = new StringBuilder();
 		if (isFolder()) {
 			openTag(sb, "container");
@@ -917,6 +902,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		{
 			addXMLTagAndAttribute(sb, "dc:title", encodeXML((isFolder() || player == null) ? getDisplayName() : mediaRenderer.getUseSameExtension(getDisplayName(mediaRenderer))));
 		}
+
 		if (firstAudioTrack != null) {
 			if (StringUtils.isNotBlank(firstAudioTrack.album)) {
 				addXMLTagAndAttribute(sb, "upnp:album", encodeXML(firstAudioTrack.album));
@@ -1037,12 +1023,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						addAttribute(sb, "resolution", media.getResolution());
 					}
 					addAttribute(sb, "bitrate", media.getRealVideoBitrate());
-					if (media.getFirstAudioTrack() != null) {
-						if (media.getFirstAudioTrack().nrAudioChannels > 0) {
-							addAttribute(sb, "nrAudioChannels", media.getFirstAudioTrack().nrAudioChannels);
+					if (firstAudioTrack != null) {
+						if (firstAudioTrack.nrAudioChannels > 0) {
+							addAttribute(sb, "nrAudioChannels", firstAudioTrack.nrAudioChannels);
 						}
-						if (media.getFirstAudioTrack().sampleFrequency != null) {
-							addAttribute(sb, "sampleFrequency", media.getFirstAudioTrack().sampleFrequency);
+						if (firstAudioTrack.sampleFrequency != null) {
+							addAttribute(sb, "sampleFrequency", firstAudioTrack.sampleFrequency);
 						}
 					}
 				} else if (ext != null && ext.isImage()) {
@@ -1060,26 +1046,26 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						if (media.getDuration() != null) {
 							addAttribute(sb, "duration", media.getDuration());
 						}
-						if (media.getFirstAudioTrack() != null && media.getFirstAudioTrack().sampleFrequency != null) {
-							addAttribute(sb, "sampleFrequency", media.getFirstAudioTrack().sampleFrequency);
+						if (firstAudioTrack != null && firstAudioTrack.sampleFrequency != null) {
+							addAttribute(sb, "sampleFrequency", firstAudioTrack.sampleFrequency);
 						}
-						if (media.getFirstAudioTrack() != null) {
-							addAttribute(sb, "nrAudioChannels", media.getFirstAudioTrack().nrAudioChannels);
+						if (firstAudioTrack != null) {
+							addAttribute(sb, "nrAudioChannels", firstAudioTrack.nrAudioChannels);
 						}
 
 						if (player == null) {
 							addAttribute(sb, "size", media.size);
 						} else {
 							// calcul taille wav
-							if (media.getFirstAudioTrack() != null) {
+							if (firstAudioTrack != null) {
 								int defaultFrequency = mediaRenderer.isTranscodeAudioTo441() ? 44100 : 48000;
 								if (!PMS.getConfiguration().isAudioResample()) {
 									try {
-										defaultFrequency = media.getFirstAudioTrack().getSampleRate();
+										defaultFrequency = firstAudioTrack.getSampleRate();
 									} catch (Exception e) {
 									}
 								}
-								int na = media.getFirstAudioTrack().nrAudioChannels;
+								int na = firstAudioTrack.nrAudioChannels;
 								if (na > 2) // no 5.1 dump in mplayer
 								{
 									na = 2;
@@ -1535,7 +1521,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public boolean allowScan() {
 		return false;
 	}
-	
+
 	long getLastRefreshTime() {
 		return lastRefreshTime;
 	}
@@ -1553,5 +1539,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return splitRange;
 	}
 
+	public boolean isDiscovered() {
+		return discovered;
+	}
 
 }
