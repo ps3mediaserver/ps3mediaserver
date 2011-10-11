@@ -171,16 +171,10 @@ public class PMS {
 		if (!foundRenderers.contains(mediarenderer) && !mediarenderer.isFDSSDP()) {
 			foundRenderers.add(mediarenderer);
 			frame.addRendererIcon(mediarenderer.getRank(), mediarenderer.getRendererName(), mediarenderer.getRendererIcon());
-			if (mediarenderer.isPS3()) {
-				frame.setStatusCode(0, Messages.getString("PMS.5"), "clients/ps3slim_220.png");
-			}
+			frame.setStatusCode(0, Messages.getString("PMS.18"), "apply-220.png");
 		}
-		/*if (mediarenderer == HTTPResource.PS3) {
-		frame.setStatusCode(0, Messages.getString("PMS.5"), "PS3_2.png");
-		} else if (mediarenderer == HTTPResource.XBOX && !foundRenderers.contains(HTTPResource.PS3)) {
-		frame.setStatusCode(0, "Xbox found", "xbox360.png");
-		}*/
 	}
+
 	/**
 	 * HTTP server that serves the XML files needed by UPnP server and the media files.
 	 */
@@ -508,18 +502,10 @@ public class PMS {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {
 				}
-				boolean ps3found = false;
-				for (RendererConfiguration r : foundRenderers) {
-					if (r.isPS3()) {
-						ps3found = true;
-					}
-				}
-				if (!ps3found) {
-					if (foundRenderers.isEmpty()) {
-						frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-220.png");
-					} else {
-						frame.setStatusCode(0, Messages.getString("PMS.15"), "messagebox_warning-220.png");
-					}
+				if (foundRenderers.isEmpty()) {
+					frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-220.png");
+				} else {
+					frame.setStatusCode(0, Messages.getString("PMS.18"), "apply-220.png");
 				}
 			}
 		}.start();
