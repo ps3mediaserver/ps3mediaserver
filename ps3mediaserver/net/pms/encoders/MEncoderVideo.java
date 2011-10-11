@@ -211,7 +211,6 @@ public class MEncoderVideo extends Player {
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		mencodermt = new JCheckBox(Messages.getString("MEncoderVideo.35"));
-		mencodermt.setFont(mencodermt.getFont().deriveFont(Font.BOLD));
 		mencodermt.setContentAreaFilled(false);
 		if (configuration.getMencoderMT()) {
 			mencodermt.setSelected(true);
@@ -401,7 +400,6 @@ public class MEncoderVideo extends Player {
 
 		videoremux = new JCheckBox("<html>" + Messages.getString("MEncoderVideo.38") + "</html>");
 		videoremux.setContentAreaFilled(false);
-		videoremux.setFont(videoremux.getFont().deriveFont(Font.BOLD));
 		if (configuration.isMencoderMuxWhenCompatible()) {
 			videoremux.setSelected(true);
 		}
