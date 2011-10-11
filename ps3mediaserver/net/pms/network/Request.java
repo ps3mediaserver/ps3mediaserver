@@ -32,6 +32,7 @@ import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
+import net.pms.dlna.Range;
 import net.pms.external.StartStopListenerDelegate;
 
 import org.apache.commons.lang.StringUtils;
@@ -62,7 +63,8 @@ public class Request extends HTTPResource {
 	private RendererConfiguration mediaRenderer;
 	private String transferMode;
 	private String contentFeatures;
-	private double timeseek;
+	private Double timeseek;
+	private Double timeRangeEnd;
 	private long highRange;
 	private boolean http10;
 
@@ -109,6 +111,10 @@ public class Request extends HTTPResource {
 	public void setTimeseek(double timeseek) {
 		this.timeseek = timeseek;
 	}
+	
+	public void setTimeRangeEnd(double timeRangeEnd) {
+            this.timeRangeEnd = timeRangeEnd;
+        }
 
 	public long getHighRange() {
 		return highRange;
@@ -193,7 +199,7 @@ public class Request extends HTTPResource {
 				} else {
 					dlna = files.get(0);
 					String name = dlna.getDisplayName(mediaRenderer);
-					inputStream = dlna.getInputStream(lowRange, highRange, timeseek, mediaRenderer);
+					inputStream = dlna.getInputStream(Range.create(lowRange, highRange, timeseek, timeRangeEnd), mediaRenderer);
 					if (inputStream == null) {
 						// No inputStream indicates that transcoding / remuxing probably crashed.
 						logger.error("There is no inputstream to return for " + name);
