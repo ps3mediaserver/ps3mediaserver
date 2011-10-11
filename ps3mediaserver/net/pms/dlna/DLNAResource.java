@@ -251,6 +251,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		this.fakeParentId = fakeParentId;
 	}
 
+	/**
+	 * @return the fake parent id if specified, or the real parent id
+	 */
+	public String getParentId() {
+		return fakeParentId != null ? fakeParentId : (parent != null ? parent.getId() : "-1");
+	}
+
 	public int getUpdateId() {
 		return updateId;
 	}
@@ -898,31 +905,33 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				addAttribute(sb, "childCount", childrenNumber());
 			}
 		}
-		addAttribute(sb, "parentID", fakeParentId != null ? fakeParentId : (parent == null ? -1 : parent.getId()));
+		addAttribute(sb, "parentID", getParentId());
 		addAttribute(sb, "restricted", "true");
 		endTag(sb);
 
-		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().songname)) {
-			addXMLTagAndAttribute(sb, "dc:title", encodeXML(media.getFirstAudioTrack().songname + (player != null && !PMS.getConfiguration().isHideEngineNames() ? (" [" + player.name() + "]") : "")));
+		final DLNAMediaAudio firstAudioTrack = media != null ? media.getFirstAudioTrack() : null;
+		if (firstAudioTrack != null && StringUtils.isNotBlank(firstAudioTrack.songname)) {
+			addXMLTagAndAttribute(sb, "dc:title", encodeXML(firstAudioTrack.songname + (player != null && !PMS.getConfiguration().isHideEngineNames() ? (" [" + player.name() + "]") : "")));
 		} else // Ditlew - org
 		//addXMLTagAndAttribute(sb, "dc:title", encodeXML((isFolder()||player==null)?getDisplayName():mediaRenderer.getUseSameExtension(getDisplayName())));
 		// Ditlew
 		{
 			addXMLTagAndAttribute(sb, "dc:title", encodeXML((isFolder() || player == null) ? getDisplayName() : mediaRenderer.getUseSameExtension(getDisplayName(mediaRenderer))));
 		}
-
-		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().album)) {
-			addXMLTagAndAttribute(sb, "upnp:album", encodeXML(media.getFirstAudioTrack().album));
-		}
-		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().artist)) {
-			addXMLTagAndAttribute(sb, "upnp:artist", encodeXML(media.getFirstAudioTrack().artist));
-			addXMLTagAndAttribute(sb, "dc:creator", encodeXML(media.getFirstAudioTrack().artist));
-		}
-		if (media != null && media.getFirstAudioTrack() != null && StringUtils.isNotBlank(media.getFirstAudioTrack().genre)) {
-			addXMLTagAndAttribute(sb, "upnp:genre", encodeXML(media.getFirstAudioTrack().genre));
-		}
-		if (media != null && media.getFirstAudioTrack() != null && media.getFirstAudioTrack().track > 0) {
-			addXMLTagAndAttribute(sb, "upnp:originalTrackNumber", "" + media.getFirstAudioTrack().track);
+		if (firstAudioTrack != null) {
+			if (StringUtils.isNotBlank(firstAudioTrack.album)) {
+				addXMLTagAndAttribute(sb, "upnp:album", encodeXML(firstAudioTrack.album));
+			}
+			if (StringUtils.isNotBlank(firstAudioTrack.artist)) {
+				addXMLTagAndAttribute(sb, "upnp:artist", encodeXML(firstAudioTrack.artist));
+				addXMLTagAndAttribute(sb, "dc:creator", encodeXML(firstAudioTrack.artist));
+			}
+			if (StringUtils.isNotBlank(firstAudioTrack.genre)) {
+				addXMLTagAndAttribute(sb, "upnp:genre", encodeXML(firstAudioTrack.genre));
+			}
+			if (firstAudioTrack.track > 0) {
+				addXMLTagAndAttribute(sb, "upnp:originalTrackNumber", "" + firstAudioTrack.track);
+			}
 		}
 
 		if (!isFolder()) {
