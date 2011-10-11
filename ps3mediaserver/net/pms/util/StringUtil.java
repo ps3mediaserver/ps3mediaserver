@@ -45,5 +45,37 @@ public class StringUtil {
             sb.append("&gt;");
     }
 
+    /**Does basic transformations between characters and their HTML representation with ampersands.
+     * @param s String to be encoded
+     * @return Encoded String
+     */
+    public static String encodeXML(String s) {
+
+            s = s.replace("&", "&amp;");
+            s = s.replace("<", "&lt;");
+            s = s.replace(">", "&gt;");
+            s = s.replace("\"", "&quot;");
+            s = s.replace("'", "&apos;");
+            s = s.replace("&", "&amp;");
+
+            return s;
+    }
+
+    /**Converts an URL string to it more canonical form
+     * @param url String to be converted
+     * @return Converted String.
+     */
+    public static String convertURLToFileName(String url) {
+            url = url.replace('/', '\u00b5');
+            url = url.replace('\\', '\u00b5');
+            url = url.replace(':', '\u00b5');
+            url = url.replace('?', '\u00b5');
+            url = url.replace('*', '\u00b5');
+            url = url.replace('|', '\u00b5');
+            url = url.replace('<', '\u00b5');
+            url = url.replace('>', '\u00b5');
+            return url;
+    }
+
 
 }
