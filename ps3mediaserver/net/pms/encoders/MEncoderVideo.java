@@ -1422,32 +1422,7 @@ public class MEncoderVideo extends Player {
 
 		String cmdArray[] = new String[18 + args().length];
 
-		// Use the normal MEncoder build by default
 		cmdArray[0] = executable();
-
-		boolean isMultiCore = configuration.getNumberOfCpuCores() > 1;
-
-		// Figure out which version of MEncoder we want to use
-		if (
-			(media.muxingMode != null && media.muxingMode.equals("Header stripping")) ||
-			(params.sid != null && params.sid.type == DLNAMediaSubtitle.VOBSUB)
-		) {
-			// Use the newer version of MEncoder
-			if (isMultiCore && configuration.getMencoderMT()) {
-				if (new File(configuration.getMencoderAlternateMTPath()).exists()) {
-					cmdArray[0] = configuration.getMencoderAlternateMTPath();
-				}
-			} else {
-				if (new File(configuration.getMencoderAlternatePath()).exists()) {
-					cmdArray[0] = configuration.getMencoderAlternatePath();
-				}
-			}
-		} else if (isMultiCore && configuration.getMencoderMT()) {
-			// Use the older MEncoder with multithreading
-			if (new File(configuration.getMencoderMTPath()).exists()) {
-				cmdArray[0] = configuration.getMencoderMTPath();
-			}
-		}
 
 		// Choose which time to seek to
 		cmdArray[1] = "-ss";
@@ -1833,7 +1808,7 @@ public class MEncoderVideo extends Player {
 				// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
 				// -mc 0.1 make the DTS-HD extraction works better with latest mencoder builds, and makes no impact on the regular DTS one
 				String ffmpegLPCMextract[] = new String[]{
-					configuration.getMencoderPath(),
+					executable(), 
 					"-ss", "0",
 					fileName,
 					"-really-quiet",

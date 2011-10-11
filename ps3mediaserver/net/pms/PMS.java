@@ -147,6 +147,7 @@ public class PMS {
 		}
 		return renderer.getRootFolder();
 	}
+
 	/**
 	 * Pointer to a running PMS server.
 	 */
@@ -156,6 +157,7 @@ public class PMS {
 		sdfHour = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
 		sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 	}
+
 	/**
 	 * Array of {@link RendererConfiguration} that have been found by PMS.
 	 */
@@ -183,15 +185,19 @@ public class PMS {
 	 * HTTP server that serves the XML files needed by UPnP server and the media files.
 	 */
 	private HTTPServer server;
+
 	/**
 	 * User friendly name for the server.
 	 */
 	private String serverName;
+
 	private ArrayList<Format> extensions;
+
 	/**
 	 * List of registered {@link Player}s.
 	 */
 	private ArrayList<Player> players;
+
 	private ArrayList<Player> allPlayers;
 
 	/**
@@ -200,17 +206,20 @@ public class PMS {
 	public ArrayList<Player> getAllPlayers() {
 		return allPlayers;
 	}
+
 	private ProxyServer proxyServer;
 
 	public ProxyServer getProxy() {
 		return proxyServer;
 	}
+
 	public static SimpleDateFormat sdfDate;
 	public static SimpleDateFormat sdfHour;
 	public ArrayList<Process> currentProcesses = new ArrayList<Process>();
 
 	private PMS() {
 	}
+
 	/**
 	 * {@link IFrame} object that represents PMS GUI.
 	 */
@@ -222,7 +231,9 @@ public class PMS {
 	public boolean isWindows() {
 		return Platform.isWindows();
 	}
+
 	private int proxy;
+
 	/**Interface to Windows specific functions, like Windows Registry. registry is set by {@link #init()}.
 	 * @see WinUtils
 	 */
