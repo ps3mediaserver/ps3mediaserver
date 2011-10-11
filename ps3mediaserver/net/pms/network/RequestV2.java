@@ -132,7 +132,6 @@ public class RequestV2 extends HTTPResource {
 		this.contentFeatures = contentFeatures;
 	}
 
-
 	public void setTimeRangeStart(Double timeseek) {
 		this.range.setStart(timeseek);
 	}
