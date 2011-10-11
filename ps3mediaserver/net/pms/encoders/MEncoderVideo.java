@@ -1287,7 +1287,7 @@ public class MEncoderVideo extends Player {
 			int cbr_bitrate = params.mediaRenderer.getCBRVideoBitrate();
 			String cbr_settings = (cbr_bitrate > 0) ? ":vrc_buf_size=1835:vrc_minrate=" + cbr_bitrate + ":vrc_maxrate=" + cbr_bitrate + ":vbitrate=" + cbr_bitrate : "";
 			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec +
-				(wmv ? ":acodec=wmav2:abitrate=256" : (cbr_settings + ":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") +
+				(wmv ? ":acodec=wmav2:abitrate=448" : (cbr_settings + ":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") +
 				":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid))) +
 				":threads=" + (wmv ? 1 : configuration.getMencoderMaxThreads()) + ":" + mainConfig;
 
