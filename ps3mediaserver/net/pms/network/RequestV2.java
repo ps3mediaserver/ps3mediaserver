@@ -31,6 +31,7 @@ import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
+import net.pms.dlna.Range;
 import net.pms.external.StartStopListenerDelegate;
 
 import org.apache.commons.lang.StringUtils;
@@ -53,8 +54,8 @@ public class RequestV2 extends HTTPResource {
 	private final static String CRLF = "\r\n";
 	private static SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
 	private static int BUFFER_SIZE = 8 * 1024;
-	int sendB = 0;
-	private String method;
+	private static final int[] MULTIPLIER = new int[] { 1, 60, 3600, 24*3600}; 
+	private final String method;
 
 	/**
 	 * A {@link String} that contains the argument with which this {@link RequestV2} was
@@ -62,7 +63,7 @@ public class RequestV2 extends HTTPResource {
 	 * separated by slashes. For example: "get/0$0$2$17/big_buck_bunny_1080p_h264.mov" or
 	 * "get/0$0$2$13/thumbnail0000Sintel.2010.1080p.mkv"
 	 */
-	private String argument;
+	private final String argument;
 	private String soapaction;
 	private String content;
 	private String objectID;
@@ -78,7 +79,7 @@ public class RequestV2 extends HTTPResource {
 	private RendererConfiguration mediaRenderer;
 	private String transferMode;
 	private String contentFeatures;
-	private double timeseek;
+	private final Range.Time range = new Range.Time();
 
 	/**
 	 * When sending an input stream, the highRange indicates which byte to stop at.  
@@ -131,13 +132,22 @@ public class RequestV2 extends HTTPResource {
 		this.contentFeatures = contentFeatures;
 	}
 
-	public double getTimeseek() {
-		return timeseek;
+
+	public void setTimeRangeStart(Double timeseek) {
+		this.range.setStart(timeseek);
+	}
+	
+        public void setTimeRangeStartString(String str) {
+            setTimeRangeStart(convertTime(str));
+        }
+
+        public void setTimeRangeEnd(Double rangeEnd) {
+	    this.range.setEnd(rangeEnd);
 	}
 
-	public void setTimeseek(double timeseek) {
-		this.timeseek = timeseek;
-	}
+        public void setTimeRangeEndString(String str) {
+            setTimeRangeEnd(convertTime(str));
+        }
 
 	/**
 	 * When sending an input stream, the highRange indicates which byte to stop at.
@@ -275,7 +285,7 @@ public class RequestV2 extends HTTPResource {
 					inputStream = dlna.getThumbnailInputStream();
 				} else {
 					// This is a request for a regular file.
-					inputStream = dlna.getInputStream(lowRange, highRange, timeseek, mediaRenderer);
+					inputStream = dlna.getInputStream(Range.create(lowRange, highRange, range.getStart(), range.getEnd()), mediaRenderer);
 					String name = dlna.getDisplayName(mediaRenderer);
 
 					if (inputStream == null) {
@@ -676,12 +686,13 @@ public class RequestV2 extends HTTPResource {
 				output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + cl);
 			}
 
-			if (timeseek > 0 && dlna != null) {
+			if (range.isStartOffsetExists() && dlna != null) {
 				// Add timeseek information headers.
-				String timeseekValue = DLNAMediaInfo.getDurationString(timeseek);
+				String timeseekValue = DLNAMediaInfo.getDurationString(range.getStartOrZero());
 				String timetotalValue = dlna.getMedia().getDurationString();
-				output.setHeader("TimeSeekRange.dlna.org", "npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
-				output.setHeader("X-Seek-Range", "npt=" + timeseekValue + "-" + timetotalValue + "/" + timetotalValue);
+				String timeEndValue = range.isEndLimitExists() ? DLNAMediaInfo.getDurationString(range.getEnd()) : timetotalValue;
+				output.setHeader("TimeSeekRange.dlna.org", "npt=" + timeseekValue + "-" + timeEndValue + "/" + timetotalValue);
+				output.setHeader("X-Seek-Range", "npt=" + timeseekValue + "-" + timeEndValue + "/" + timetotalValue);
 			}
 
 			// Send the response headers to the client.
@@ -693,6 +704,7 @@ public class RequestV2 extends HTTPResource {
 
 				// Add a listener to clean up after sending the entire response body.
 				chunkWriteFuture.addListener(new ChannelFutureListener() {
+					@Override
 					public void operationComplete(ChannelFuture future) {
 						try {
 							PMS.get().getRegistry().reenableGoToSleep();
@@ -750,7 +762,7 @@ public class RequestV2 extends HTTPResource {
 		return future;
 	}
 
-	/**
+    /**
 	 * Returns a date somewhere in the far future.
 	 * @return The {@link String} containing the date
 	 */
@@ -777,5 +789,25 @@ public class RequestV2 extends HTTPResource {
 			result = content.substring(leftTagPos + leftTag.length(), rightTagPos);
 		}
 		return result;
+	}
+	
+	/**
+	 * Parse as double, or if it's not just one number, handles {hour}:{minute}:{seconds}
+	 * @param time
+	 * @return
+	 */
+	private double convertTime(String time) {
+            try {
+                return Double.parseDouble(time);
+            } catch (NumberFormatException e) {
+                String[] arrs = time.split(":");
+                double value, sum = 0;
+                for (int i = 0; i < arrs.length; i++) {
+                    value = Double.parseDouble(arrs[arrs.length - i - 1]);
+                    sum += value * MULTIPLIER[i];
+                }
+                return sum;
+            }
+	    
 	}
 }

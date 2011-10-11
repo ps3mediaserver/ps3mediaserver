@@ -75,7 +75,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
 	protected static final String TRANSCODE_FOLDER = "#--TRANSCODE--#";
-	private Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
+	private final Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
 	private static final int STOP_PLAYING_DELAY = 4000;
 
 	protected int specificType;
@@ -115,8 +115,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private int nametruncate;
 	private DLNAResource first;
 	private DLNAResource second;
-	protected double splitStart;
-	protected double splitLength;
+	protected Range.Time splitRange = new Range.Time();
 	protected int splitTrack;
 	protected String fakeParentId;
 	// Ditlew - needs this in one of the derived classes
@@ -762,8 +761,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			name = (player != null ? ("[" + player.name()) : "") + " + AviSynth]";
 		}
 
-		if (splitStart > 0 && splitLength > 0) {
-			name = ">> " + DLNAMediaInfo.getDurationString(splitStart);
+		if (splitRange.isEndLimitExists()) {
+			 name = ">> " + DLNAMediaInfo.getDurationString(splitRange.getDuration());
 		}
 
 		return name;
@@ -1028,8 +1027,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						}
 					}
 					if (media.getDuration() != null) {
-						if (splitStart > 0 && splitLength > 0) {
-							addAttribute(sb, "duration", DLNAMediaInfo.getDurationString(splitLength));
+						if (splitRange.isEndLimitExists()) {
+							addAttribute(sb, "duration", DLNAMediaInfo.getDurationString(splitRange.getDuration()));
 						} else {
 							addAttribute(sb, "duration", media.getDurationString());
 						}
@@ -1185,7 +1184,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public void startPlaying(final String rendererId) {
 		final String requestId = getRequestId(rendererId);
 		synchronized (requestIdToRefcount) {
-			Integer temp = (Integer) requestIdToRefcount.get(requestId);
+			Integer temp = requestIdToRefcount.get(requestId);
 			if (temp == null) {
 				temp = 0;
 			}
@@ -1278,43 +1277,49 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @return
 	 * @throws IOException
 	 */
-	public InputStream getInputStream(long low, long high, double timeseek, RendererConfiguration mediarenderer) throws IOException {
-
-		logger.trace("Asked stream chunk [" + low + "-" + high + "] timeseek: " + timeseek + " of " + getName() + " and player " + player);
+	public InputStream getInputStream(Range range, RendererConfiguration mediarenderer) throws IOException {
+		logger.trace("Asked stream chunk : " + range + " of " + getName() + " and player " + player);
 
 		// shagrath: small fix, regression on chapters
 		boolean timeseek_auto = false;
 		// Ditlew - WDTV Live
 		// Ditlew - We convert byteoffset to timeoffset here. This needs the stream to be CBR!
 		int cbr_video_bitrate = mediarenderer.getCBRVideoBitrate();
+		long low = range.isByteRange() && range.isStartOffsetExists() ? range.asByteRange().getStart() : 0;
+		long high = range.isByteRange() && range.isEndLimitExists() ? range.asByteRange().getEnd() : -1;
+		Range.Time timeRange = range.createTimeRange();
+
 		if (player != null && low > 0 && cbr_video_bitrate > 0) {
 			int used_bit_rated = (int) ((cbr_video_bitrate + 256) * 1024 / 8 * 1.04); // 1.04 = container overhead
 			if (low > used_bit_rated) {
-				timeseek = low / (used_bit_rated);
+				timeRange.setStart((double) (low / (used_bit_rated)));
 				low = 0;
 
 				// WDTV Live - if set to TS it asks multiple times and ends by
 				// asking for an invalid offset which kills mencoder
-				if (timeseek > media.getDurationInSeconds()) {
+				if (timeRange.getStartOrZero() > media.getDurationInSeconds()) {
 					return null;
 				}
 
 				// Should we rewind a little (in case our overhead isn't accurate enough)
 				int rewind_secs = mediarenderer.getByteToTimeseekRewindSeconds();
-				timeseek = (timeseek > rewind_secs) ? timeseek - rewind_secs : 0;
+				timeRange.rewindStart(rewind_secs);
 
 				//shagrath:
-				timeseek_auto = true;		
+				timeseek_auto = true;
 			}
 		}
 
 		if (player == null) {
 			if (this instanceof IPushOutput) {
 				PipedOutputStream out = new PipedOutputStream();
-				PipedInputStream fis = new PipedInputStream(out);
+				InputStream fis = new PipedInputStream(out);
 				((IPushOutput) this).push(out);
-				if (low > 0 && fis != null) {
-					fis.skip(low);
+				if (fis != null) {
+					if (low > 0) {
+						fis.skip(low);
+					}
+					fis = wrap(fis, high, low);
 				}
 
 				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=12035
@@ -1340,20 +1345,17 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			} else {
 				fis = getInputStream();
 			}
-			if (low > 0 && fis != null) {
-				fis.skip(low);
-			}
+			if (fis != null) {
+				if (low > 0) {
+					fis.skip(low);
+				}
 
-			// http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=12035
-			if (high > low && fis != null) {
-				long bytes = (high - (low < 0 ? 0 : low)) + 1;
-				
-				PMS.debug("Using size-limiting stream (" + bytes + " bytes)");
-				fis = new SizeLimitInputStream(fis, bytes);
-			}
-			
-			if (timeseek != 0 && this instanceof RealFile) {
-				fis.skip(MpegUtil.getPossitionForTimeInMpeg(((RealFile) this).getFile(), (int) timeseek));
+				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=12035
+				fis = wrap(fis, high, low);
+
+				if (timeRange.getStartOrZero() > 0  && this instanceof RealFile) {
+					fis.skip(MpegUtil.getPossitionForTimeInMpeg(((RealFile) this).getFile(), (int) timeRange.getStartOrZero() ));
+				}
 			}
 			return fis;
 		} else {
@@ -1361,8 +1363,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			params.aid = media_audio;
 			params.sid = media_subtitle;
 			params.mediaRenderer = mediarenderer;
-			params.timeseek = timeseek_auto ? timeseek : splitStart;
-			params.timeend = splitLength;
+//			params.timeseek = timeseek_auto ? timeseek : splitStart;
+//			params.timeend = timeRangeEnd > 0 ? timeRangeEnd : splitLength;
+			timeRange.limit(splitRange);
+			params.timeseek = timeRange.getStartOrZero();
+			params.timeend = timeRange.getEndOrZero();
 			params.shift_scr = timeseek_auto;
 
 			if (this instanceof IPushOutput) {
@@ -1385,13 +1390,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					}
 					logger.trace("Finished sleeping for " + params.waitbeforestart + " milliseconds");
 				}
-			} else if (timeseek > 0 && media != null && media.mediaparsed) {
+			} else if (params.timeseek > 0 && media != null && media.mediaparsed) {
 				if (media.getDurationInSeconds() > 0) {
-					logger.debug("Requesting time seek: " + timeseek + " seconds");
-					params.timeseek = timeseek;
+					logger.debug("Requesting time seek: " + params.timeseek + " seconds");
 					params.minBufferSize = 1;
 					Runnable r = new Runnable() {
 
+						@Override
 						public void run() {
 							externalProcess.stopProcess();
 						}
@@ -1446,6 +1451,15 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			}
 			return is;
 		}
+	}
+
+	private static InputStream wrap(InputStream input, long high, long low) {
+		if (input != null && high > low) {
+			long bytes = (high - (low < 0 ? 0 : low)) + 1;
+			logger.debug("Using size-limiting stream (" + bytes + " bytes)");
+			return new SizeLimitInputStream(input, bytes);
+		}
+		return input;
 	}
 
 	public Player getPlayer() {
@@ -1528,5 +1542,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return this.getClass().getSimpleName() + " [id=" + id + ", name=" + getName() + ", full path=" + getId() + ", ext=" + ext + ", discovered="
 				+ discovered + "]";
 	}
+
+	public Range.Time getSplitRange() {
+		return splitRange;
+	}
+
 
 }

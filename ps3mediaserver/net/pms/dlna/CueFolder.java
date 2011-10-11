@@ -99,9 +99,9 @@ public class CueFolder extends DLNAResource {
 								prec = addedResources.get(i + count);
 								count++;
 							}
-							prec.splitLength = end - prec.splitStart;
-							prec.media.setDuration(prec.splitLength);
-							logger.debug("Track #" + i + " split range: " + prec.splitStart + " - " + prec.splitLength);
+							prec.getSplitRange().setEnd(end);
+							prec.media.setDuration(prec.getSplitRange().getDuration());
+							logger.debug("Track #" + i + " split range: " + prec.getSplitRange().getStartOrZero() + " - " + prec.getSplitRange().getDuration());
 						}
 						Position start = track.getIndices().get(0).getPosition();
 						RealFile r = new RealFile(new File(playlistfile.getParentFile(), f.getFile()));
@@ -115,7 +115,7 @@ public class CueFolder extends DLNAResource {
 						if (i == 0) {
 							originalMedia = r.media;
 						}
-						r.splitStart = getTime(start);
+						r.getSplitRange().setStart(getTime(start));
 						r.splitTrack = i + 1;
 						if (r.player == null) { // assign a splitter engine if file is natively supported by renderer
 							if (defaultPlayer == null) {
@@ -159,9 +159,9 @@ public class CueFolder extends DLNAResource {
 					if (tracks.size() > 0 && addedResources.size() > 0) {
 						// last track
 						DLNAResource prec = addedResources.get(addedResources.size() - 1);
-						prec.splitLength = prec.media.getDurationInSeconds() - prec.splitStart;
-						prec.media.setDuration(prec.splitLength);
-						logger.debug("Track #" + childrenNumber() + " split range: " + prec.splitStart + " - " + prec.splitLength);
+						prec.getSplitRange().setEnd(prec.media.getDurationInSeconds());
+						prec.media.setDuration(prec.getSplitRange().getDuration());
+						logger.debug("Track #" + childrenNumber() + " split range: " + prec.getSplitRange().getStartOrZero() + " - " + prec.getSplitRange().getDuration());
 					}
 
 					PMS.get().storeFileInCache(playlistfile, Format.PLAYLIST);

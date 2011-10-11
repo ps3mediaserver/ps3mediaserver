@@ -44,8 +44,8 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 				newChildNoSub.noName = true;
 				newChildNoSub.media_audio = child.media_audio;
 				newChildNoSub.media_subtitle = child.media_subtitle;
-				newChildNoSub.splitStart = 60 * i * interval;
-				newChildNoSub.splitLength = newChildNoSub.media.getDurationInSeconds() - newChildNoSub.splitStart;
+				newChildNoSub.getSplitRange().setStart((double) (60 * i * interval));
+				newChildNoSub.getSplitRange().setEnd(newChildNoSub.media.getDurationInSeconds());
 				addChildInternal(newChildNoSub);
 			}
 		}
