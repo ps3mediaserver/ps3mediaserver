@@ -134,12 +134,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * List of children objects associated with this DLNAResource. This is only valid when the DLNAResource is of the container type.
 	 */
 	protected List<DLNAResource> children;
-	
+
 	/**
 	 * the id which the last child got, so the next child can get unique id with incrementing this value.
 	 */
 	protected int lastChildrenId;
-	
+
 	/**
 	 * The last time when refresh is called.
 	 */
@@ -160,7 +160,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public String getId() {
 		return parent != null ? parent.getId() + '$' + id : id;
 	}
-	
+
 	/**
 	 * Set the id based on the index in their parent container. Main purpose
 	 * is to be unique in the parent container, it's called automaticly 
@@ -367,25 +367,25 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 				// Try to determine a player to use for transcoding. 
 				Player pl = null;
-				
+
 				if (child.ext.getProfiles() != null && child.ext.getProfiles().size() > 0) {
 					// First try to match a player based on the format profiles.
 					int i = 0;
-					
+
 					while (pl == null && i < child.ext.getProfiles().size()) {
 						pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
 						i++;
 					}
-					
+
 					// Next, try to match a player based on the name of the DLNAResource.
 					// When a match is found it overrules the result of the first try.
 					String name = getName();
-					
+
 					for (Class<? extends Player> clazz : child.ext.getProfiles()) {
 						for (Player p : PMS.get().getPlayers()) {
 							if (p.getClass().equals(clazz)) {
 								String end = "[" + p.id() + "]";
-								
+
 								if (name.endsWith(end)) {
 									nametruncate = name.lastIndexOf(end);
 									pl = p;
@@ -408,7 +408,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 					boolean hasEmbeddedSubs = false;
 					if (child.media != null) {
-						for(DLNAMediaSubtitle s:child.media.subtitlesCodes) {
+						for (DLNAMediaSubtitle s : child.media.subtitlesCodes) {
 							hasEmbeddedSubs |= s.getSubType().equals("Embedded");
 						}
 					}
@@ -490,7 +490,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Add to the internal list of child nodes, and sets the parent to the
 	 * current node.
@@ -522,7 +522,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		logger.trace("Searching for objectId: " + objectId + " with children option: " + children);
 		ArrayList<DLNAResource> resources = new ArrayList<DLNAResource>();
 		DLNAResource resource = search(objectId, count, renderer);
-		logger.trace("looking up "+objectId+" found:"+resource);
+		logger.trace("looking up " + objectId + " found:" + resource);
 
 		if (resource != null) {
 			resource.defaultRenderer = renderer;
@@ -669,7 +669,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	public void refreshChildren() {
 	}
-	
 
 	/**
 	 * 
@@ -696,7 +695,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	public void resolve() {
 	}
-
 
 	// Ditlew
 	/**Returns the DisplayName for the default renderer.
@@ -763,7 +761,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		if (splitRange.isEndLimitExists()) {
-			 name = ">> " + DLNAMediaInfo.getDurationString(splitRange.getDuration());
+			name = ">> " + DLNAMediaInfo.getDurationString(splitRange.getDuration());
 		}
 
 		return name;
@@ -876,7 +874,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		addAttribute(sb, "id", getId());
-		
+
 		if (isFolder()) {
 			if (!discovered && childrenNumber() == 0) {
 				//  When a folder has not been scanned for resources, it will automatically have zero children.
@@ -1344,7 +1342,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=12035
 				fis = wrap(fis, high, low);
 
-				if (timeRange.getStartOrZero() > 0  && this instanceof RealFile) {
+				if (timeRange.getStartOrZero() > 0 && this instanceof RealFile) {
 					fis.skip(MpegUtil.getPossitionForTimeInMpeg(((RealFile) this).getFile(), (int) timeRange.getStartOrZero() ));
 				}
 			}
@@ -1386,7 +1384,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					logger.debug("Requesting time seek: " + params.timeseek + " seconds");
 					params.minBufferSize = 1;
 					Runnable r = new Runnable() {
-
 						@Override
 						public void run() {
 							externalProcess.stopProcess();
@@ -1432,7 +1429,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			// instead of exiting
 			if (is == null && externalProcess != null && !externalProcess.isDestroyed()) {
 				Runnable r = new Runnable() {
-
 					@Override
 					public void run() {
 						logger.trace("External input stream instance is null... stopping process");
@@ -1531,8 +1527,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + " [id=" + id + ", name=" + getName() + ", full path=" + getId() + ", ext=" + ext + ", discovered="
-				+ discovered + "]";
+		return this.getClass().getSimpleName() + " [id=" + id + ", name=" + getName() + ", full path=" + getId() + ", ext=" + ext + ", discovered=" + discovered + "]";
 	}
 
 	public Range.Time getSplitRange() {
@@ -1542,5 +1537,4 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public boolean isDiscovered() {
 		return discovered;
 	}
-
 }
