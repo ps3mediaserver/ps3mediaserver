@@ -1193,6 +1193,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			if (refCount == 0) {
 				final DLNAResource self = this;
 				Runnable r = new Runnable() {
+					@Override
 					public void run() {
 						logger.trace("StartStopListener: event:    start");
 						logger.trace("StartStopListener: renderer: " + rendererId);
@@ -1202,6 +1203,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							if (listener instanceof StartStopListener) {
 								// run these asynchronously for slow handlers (e.g. logging, scrobbling) 
 								Runnable fireStartStopEvent = new Runnable() {
+									@Override
 									public void run() {
 										((StartStopListener) listener).nowPlaying(media, self);
 									}
@@ -1226,6 +1228,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		final DLNAResource self = this;
 		final String requestId = getRequestId(rendererId);
 		Runnable defer = new Runnable() {
+			@Override
 			public void run() {
 				try {
 					Thread.sleep(STOP_PLAYING_DELAY);
@@ -1234,12 +1237,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				}
 
 				synchronized (requestIdToRefcount) {
-					final Integer refCount = (Integer) requestIdToRefcount.get(requestId);
+					final Integer refCount = requestIdToRefcount.get(requestId);
 					assert refCount != null;
 					assert refCount > 0;
 					requestIdToRefcount.put(requestId, refCount - 1);
 
 					Runnable r = new Runnable() {
+						@Override
 						public void run() {
 							if (refCount == 1) {
 								logger.trace("StartStopListener: event:    stop");
@@ -1250,6 +1254,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 									if (listener instanceof StartStopListener) {
 										// run these asynchronously for slow handlers (e.g. logging, scrobbling) 
 										Runnable fireStartStopEvent = new Runnable() {
+											@Override
 											public void run() {
 												((StartStopListener) listener).donePlaying(media, self);
 											}
@@ -1442,6 +1447,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			if (is == null && externalProcess != null && !externalProcess.isDestroyed()) {
 				Runnable r = new Runnable() {
 
+					@Override
 					public void run() {
 						logger.trace("External input stream instance is null... stopping process");
 						externalProcess.stopProcess();
