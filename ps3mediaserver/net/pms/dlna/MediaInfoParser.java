@@ -379,9 +379,9 @@ public class MediaInfoParser {
 		}
 		value = value.trim();
 
-		// Audio is DTS-ES (6.1 channels) but MEncoder only supports either 6 or 2 for channel values so we use 6
+		// Audio is DTS-ES (6.1 channels) but MEncoder only supports either 2, 4, 6 or 8 for channel values so we use 8
 		if (value.equals("7 / 6")) {
-			value = "6";
+			value = "8";
 		}
 
 		try {
