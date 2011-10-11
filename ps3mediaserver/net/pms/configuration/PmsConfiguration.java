@@ -27,7 +27,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -210,14 +209,11 @@ public class PmsConfiguration {
 	 * The set of the keys, which change needs reload.
 	 */
 	public static final Set<String> NEED_RELOAD_FLAGS = new HashSet<String>(Arrays.asList(
-	        KEY_ALTERNATE_THUMB_FOLDER,KEY_NETWORK_INTERFACE,KEY_IP_FILTER,KEY_SORT_METHOD,
-	        KEY_HIDE_EMPTY_FOLDERS, KEY_HIDE_TRANSCODE_FOLDER,  
-	        KEY_HIDE_MEDIA_LIBRARY_FOLDER, KEY_OPEN_ARCHIVES, KEY_USE_CACHE,
-	        KEY_HIDE_ENGINENAMES, KEY_ITUNES_ENABLED, KEY_IPHOTO_ENABLED,
-	        KEY_APERTURE_ENABLED, KEY_ENGINES,KEY_FOLDERS, KEY_HIDE_VIDEO_SETTINGS,
-	        KEY_AUDIO_THUMBNAILS_METHOD, KEY_NOTRANSCODE, KEY_FORCETRANSCODE, KEY_SERVER_PORT,
-	        KEY_SERVER_HOSTNAME, KEY_CHAPTER_SUPPORT, KEY_HIDE_EXTENSIONS 
-	        ));
+			KEY_ALTERNATE_THUMB_FOLDER, KEY_NETWORK_INTERFACE, KEY_IP_FILTER,
+			KEY_SORT_METHOD, KEY_HIDE_EMPTY_FOLDERS, KEY_HIDE_TRANSCODE_FOLDER, KEY_HIDE_MEDIA_LIBRARY_FOLDER, KEY_OPEN_ARCHIVES, KEY_USE_CACHE,
+			KEY_HIDE_ENGINENAMES, KEY_ITUNES_ENABLED, KEY_IPHOTO_ENABLED, KEY_APERTURE_ENABLED, KEY_ENGINES, KEY_FOLDERS, KEY_HIDE_VIDEO_SETTINGS,
+			KEY_AUDIO_THUMBNAILS_METHOD, KEY_NOTRANSCODE, KEY_FORCETRANSCODE, KEY_SERVER_PORT, KEY_SERVER_HOSTNAME, KEY_CHAPTER_SUPPORT,
+			KEY_HIDE_EXTENSIONS));
 
 	/*
 		The following code enables a single setting - PMS_PROFILE - to be used to
@@ -583,19 +579,19 @@ public class PmsConfiguration {
 	 * @return The list of value strings configured for the key.
 	 */
 	private List<String> getStringList(String key, String def) {
-	    String value = getString(key, def);
-	    if (value != null) {
-	        String[] arr = value.split(",");
-	        List<String> result = new ArrayList<String> (arr.length);
-	        for (String str : arr) {
-	            if (str.trim().length()>0) {
-	                result.add(str.trim());
-	            }
-	        }
-	        return result;
-	    } else {
-	        return Collections.emptyList();
-	    }
+		String value = getString(key, def);
+		if (value != null) {
+			String[] arr = value.split(",");
+			List<String> result = new ArrayList<String>(arr.length);
+			for (String str : arr) {
+				if (str.trim().length() > 0) {
+					result.add(str.trim());
+				}
+			}
+			return result;
+		} else {
+			return Collections.emptyList();
+		}
 	}
 
 	/**

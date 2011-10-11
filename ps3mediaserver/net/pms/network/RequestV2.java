@@ -135,18 +135,18 @@ public class RequestV2 extends HTTPResource {
 	public void setTimeRangeStart(Double timeseek) {
 		this.range.setStart(timeseek);
 	}
-	
-        public void setTimeRangeStartString(String str) {
-            setTimeRangeStart(convertTime(str));
-        }
 
-        public void setTimeRangeEnd(Double rangeEnd) {
-	    this.range.setEnd(rangeEnd);
+	public void setTimeRangeStartString(String str) {
+		setTimeRangeStart(convertTime(str));
 	}
 
-        public void setTimeRangeEndString(String str) {
-            setTimeRangeEnd(convertTime(str));
-        }
+	public void setTimeRangeEnd(Double rangeEnd) {
+		this.range.setEnd(rangeEnd);
+	}
+
+	public void setTimeRangeEndString(String str) {
+		setTimeRangeEnd(convertTime(str));
+	}
 
 	/**
 	 * When sending an input stream, the highRange indicates which byte to stop at.
@@ -796,17 +796,17 @@ public class RequestV2 extends HTTPResource {
 	 * @return
 	 */
 	private double convertTime(String time) {
-            try {
-                return Double.parseDouble(time);
-            } catch (NumberFormatException e) {
-                String[] arrs = time.split(":");
-                double value, sum = 0;
-                for (int i = 0; i < arrs.length; i++) {
-                    value = Double.parseDouble(arrs[arrs.length - i - 1]);
-                    sum += value * MULTIPLIER[i];
-                }
-                return sum;
-            }
-	    
+		try {
+			return Double.parseDouble(time);
+		} catch (NumberFormatException e) {
+			String[] arrs = time.split(":");
+			double value, sum = 0;
+			for (int i = 0; i < arrs.length; i++) {
+				value = Double.parseDouble(arrs[arrs.length - i - 1]);
+				sum += value * MULTIPLIER[i];
+			}
+			return sum;
+		}
+
 	}
 }
