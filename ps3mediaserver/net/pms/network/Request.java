@@ -49,8 +49,8 @@ public class Request extends HTTPResource {
 	private final static String CONTENT_TYPE_UTF8 = "CONTENT-TYPE: text/xml; charset=\"utf-8\"";
 	private final static String CONTENT_TYPE = "Content-Type: text/xml; charset=\"utf-8\"";
 	private static SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
-	private String method;
-	private String argument;
+	private final String method;
+	private final String argument;
 	private String soapaction;
 	private String content;
 	private OutputStream output;
@@ -111,10 +111,10 @@ public class Request extends HTTPResource {
 	public void setTimeseek(double timeseek) {
 		this.timeseek = timeseek;
 	}
-	
+
 	public void setTimeRangeEnd(double timeRangeEnd) {
-            this.timeRangeEnd = timeRangeEnd;
-        }
+		this.timeRangeEnd = timeRangeEnd;
+	}
 
 	public long getHighRange() {
 		return highRange;
