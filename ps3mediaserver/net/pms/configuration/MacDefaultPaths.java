@@ -22,21 +22,6 @@ class MacDefaultPaths implements ProgramPaths {
 	}
 
 	@Override
-	public String getMencoderMTPath() {
-		return "osx/mencoder";
-	}
-
-	@Override
-	public String getMencoderAlternatePath() {
-		return "osx/mencoder";
-	}
-
-	@Override
-	public String getMencoderAlternateMTPath() {
-		return "osx/mencoder";
-	}
-
-	@Override
 	public String getMplayerPath() {
 		return "osx/mplayer";
 	}

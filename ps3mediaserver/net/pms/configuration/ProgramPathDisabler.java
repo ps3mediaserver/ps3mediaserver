@@ -37,21 +37,6 @@ class ProgramPathDisabler implements ProgramPaths {
 	}
 
 	@Override
-	public String getMencoderMTPath() {
-		return disableMencoderMT ? null : ifEnabled.getMencoderMTPath();
-	}
-
-	@Override
-	public String getMencoderAlternatePath() {
-		return disableMencoderAlternate ? null : ifEnabled.getMencoderAlternatePath();
-	}
-
-	@Override
-	public String getMencoderAlternateMTPath() {
-		return disableMencoderAlternateMT ? null : ifEnabled.getMencoderAlternateMTPath();
-	}
-
-	@Override
 	public String getMplayerPath() {
 		return disableMplayer ? null : ifEnabled.getMplayerPath();
 	}

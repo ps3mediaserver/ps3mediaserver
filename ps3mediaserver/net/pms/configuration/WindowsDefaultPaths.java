@@ -22,21 +22,6 @@ class WindowsDefaultPaths implements ProgramPaths {
 	}
 
 	@Override
-	public String getMencoderMTPath() {
-		return "win32/mencoder_mt.exe";
-	}
-
-	@Override
-	public String getMencoderAlternatePath() {
-		return "win32/mencoder-alternate.exe";
-	}
-
-	@Override
-	public String getMencoderAlternateMTPath() {
-		return "win32/mencoder-alternate_mt.exe";
-	}
-
-	@Override
 	public String getMplayerPath() {
 		return "win32/mplayer.exe";
 	}

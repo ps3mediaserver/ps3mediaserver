@@ -159,32 +159,6 @@ public class TSMuxerVideo extends Player {
 			params.manageFastStart();
 
 			String mencoderPath = configuration.getMencoderPath();
-			boolean isMultiCore = configuration.getNumberOfCpuCores() > 1;
-
-			// Figure out which version of MEncoder we want to use
-			if ((media.muxingMode != null && media.muxingMode.equals("Header stripping"))
-				|| (media.getFirstAudioTrack() != null && media.getFirstAudioTrack().muxingModeAudio != null && media.getFirstAudioTrack().muxingModeAudio.equals("Header stripping"))) {
-				// Use the newer version of MEncoder
-				if (isMultiCore && configuration.getMencoderMT()) {
-					if (new File(configuration.getMencoderAlternateMTPath()).exists()) {
-						mencoderPath = configuration.getMencoderAlternateMTPath();
-					}
-				} else {
-					if (new File(configuration.getMencoderAlternatePath()).exists()) {
-						mencoderPath = configuration.getMencoderAlternatePath();
-					}
-				}
-			} else if (isMultiCore && configuration.getMencoderMT()) {
-				// Use the older MEncoder with multithreading
-				if (new File(configuration.getMencoderMTPath()).exists()) {
-					mencoderPath = configuration.getMencoderMTPath();
-				}
-			} else {
-				// Use the older MEncoder
-				if (new File(configuration.getMencoderPath()).exists()) {
-					mencoderPath = configuration.getMencoderPath();
-				}
-			}
 
 			ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegvideo", System.currentTimeMillis() + "videoout", false, true);
 			String ffmpegLPCMextract[] = new String[]{mencoderPath, "-ss", "0", fileName, "-quiet", "-quiet", "-really-quiet", "-msglevel", "statusline=2", "-ovc", "copy", "-nosound", "-mc", "0", "-noskip", "-of", "rawvideo", "-o", ffVideoPipe.getInputPipe()};

@@ -46,21 +46,6 @@ class ConfigurationProgramPaths implements ProgramPaths {
 	}
 
 	@Override
-	public String getMencoderMTPath() {
-		return stringFromConfigFile(KEY_MENCODERMT_PATH, defaults.getMencoderMTPath());
-	}
-
-	@Override
-	public String getMencoderAlternatePath() {
-		return stringFromConfigFile(KEY_MENCODERALTERNATE_PATH, defaults.getMencoderAlternatePath());
-	}
-
-	@Override
-	public String getMencoderAlternateMTPath() {
-		return stringFromConfigFile(KEY_MENCODERALTERNATEMT_PATH, defaults.getMencoderAlternateMTPath());
-	}
-
-	@Override
 	public String getMplayerPath() {
 		return stringFromConfigFile(KEY_MPLAYER_PATH, defaults.getMplayerPath());
 	}

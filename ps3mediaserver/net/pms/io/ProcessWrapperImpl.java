@@ -69,26 +69,26 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	public ProcessWrapperImpl(String cmdArray[], OutputParams params, boolean keepStdout, boolean keepStderr) {
 		super(cmdArray[0]);
 		File exec = new File(cmdArray[0]);
-		
+
 		if (exec.exists() && exec.isFile()) {
 			cmdArray[0] = exec.getAbsolutePath();
 		}
-		
+
 		this.cmdArray = cmdArray;
 		StringBuilder sb = new StringBuilder("");
-		
+
 		for (int i = 0; i < cmdArray.length; i++) {
 			if (i > 0) {
 				sb.append(" ");
 			}
-			
+
 			if (cmdArray[i] != null && cmdArray[i].indexOf(" ") >= 0) {
 				sb.append("\"" + cmdArray[i] + "\"");
 			} else {
 				sb.append(cmdArray[i]);
 			}
 		}
-		
+
 		cmdLine = sb.toString();
 		this.params = params;
 		this.keepStdout = keepStdout;

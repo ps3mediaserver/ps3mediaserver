@@ -378,18 +378,6 @@ public class PmsConfiguration {
 		return programPaths.getMencoderPath();
 	}
 
-	public String getMencoderMTPath() {
-		return programPaths.getMencoderMTPath();
-	}
-
-	public String getMencoderAlternatePath() {
-		return programPaths.getMencoderAlternatePath();
-	}
-
-	public String getMencoderAlternateMTPath() {
-		return programPaths.getMencoderAlternateMTPath();
-	}
-
 	public int getMencoderMaxThreads() {
 		return Math.min(getInt(KEY_MENCODER_MAX_THREADS, getNumberOfCpuCores()), MENCODER_MAX_THREADS);
 	}
