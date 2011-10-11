@@ -75,6 +75,8 @@ public class NavigationShareTab {
 	private JCheckBox iphoto;
 	private JCheckBox aperture;
 	private JCheckBox itunes;
+	private JButton select;
+	private JButton cachereset;
 
 	public DefaultListModel getDf() {
 		return df;
@@ -105,14 +107,70 @@ public class NavigationShareTab {
 	}
 
 	public JComponent build() {
+		
+		// Set basic layout
 		FormLayout layout = new FormLayout(
-			"left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref, 25dlu, pref, default:grow",
-			"p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 15dlu, p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 15dlu, fill:default:grow");
+				"left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref, 25dlu, pref, default:grow", //columns			
+				"p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 10dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 10dlu, fill:default:grow" //rows
+			);
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.DLU4_BORDER);
 		builder.setOpaque(true);
 
 		CellConstraints cc = new CellConstraints();
+
+		// Init all gui components
+		initSimpleComponents(cc);
+		PanelBuilder builderSharedFolder = initSharedFoldersGuiComponents(cc);
+		
+		// Build gui with initialized components
+		JComponent cmp = builder.addSeparator(Messages.getString("FoldTab.13"), cc.xyw(1, 1, 10));
+		cmp = (JComponent) cmp.getComponent(0);
+		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+		
+		builder.add(tncheckBox, cc.xyw(1, 3, 3));
+		builder.addLabel(Messages.getString("NetworkTab.16"), cc.xyw(4, 3, 3));
+		builder.add(seekpos, cc.xyw(6, 3, 2));
+		
+		builder.add(mplayer_thumb, cc.xyw(1, 5, 3));
+		builder.add(dvdiso_thumb, cc.xyw(3, 5, 3));
+
+		builder.add(image_thumb, cc.xyw(1, 7, 3));
+
+		builder.addLabel(Messages.getString("FoldTab.26"), cc.xyw(1, 9, 3));
+		builder.add(audiothumbnail, cc.xyw(4, 9, 4));
+
+		builder.addLabel(Messages.getString("FoldTab.27"), cc.xyw(1, 11, 1));
+		builder.add(defaultThumbFolder, cc.xyw(4, 11, 3));
+		builder.add(select, cc.xyw(7, 11, 1));
+
+		cmp = builder.addSeparator(Messages.getString("NetworkTab.15"), cc.xyw(1, 13, 10));
+		cmp = (JComponent) cmp.getComponent(0);
+		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+		
+		builder.add(archive, cc.xyw(1, 15, 3));
+		builder.add(hidevideosettings, cc.xyw(4, 15, 3));
+		builder.add(hidetranscode, cc.xyw(8, 15, 3));
+		
+		builder.add(hideextensions, cc.xyw(1, 17, 3));
+		builder.add(hideengines, cc.xyw(4, 17, 3));
+		builder.add(hideemptyfolders, cc.xyw(8, 17, 3));
+
+		builder.add(itunes, cc.xyw(1, 19, 3));
+		builder.add(iphoto, cc.xyw(4, 19, 3));
+		builder.add(aperture, cc.xyw(8, 19, 3));
+		
+		builder.add(cacheenable, cc.xy(1, 21));
+		builder.add(cachereset, cc.xyw(4, 21, 4));
+		builder.add(hidemedialibraryfolder, cc.xyw(8, 21, 3));
+
+		builder.addLabel(Messages.getString("FoldTab.18"), cc.xyw(1, 23, 3));
+		builder.add(sortmethod, cc.xyw(4, 23, 4));
+
+
+		cmp = builderSharedFolder.addSeparator(Messages.getString("FoldTab.7"), cc.xyw(1, 1, 6));
+		cmp = (JComponent) cmp.getComponent(0);
+		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		df = new DefaultListModel();
 		File[] folders = PMS.get().getFoldersConf(false);
@@ -126,11 +184,22 @@ public class NavigationShareTab {
 		FList = new JList();
 		FList.setModel(df);
 		JScrollPane pane = new JScrollPane(FList);
-
-		JComponent cmp = builder.addSeparator(Messages.getString("FoldTab.13"), cc.xyw(1, 1, 10));
-		cmp = (JComponent) cmp.getComponent(0);
-		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-
+		builderSharedFolder.add(pane, cc.xyw(1, 5, 6));
+		
+		builder.add(builderSharedFolder.getPanel(), cc.xyw(1, 27, 10));
+		
+		
+		JPanel panel = builder.getPanel();
+		JScrollPane scrollPane = new JScrollPane(
+			panel,
+			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		return scrollPane;
+	}
+	
+	private void initSimpleComponents(CellConstraints cc)
+	{
+		// Generate thumbnails
 		tncheckBox = new JCheckBox(Messages.getString("NetworkTab.2"));
 		tncheckBox.setContentAreaFilled(false);
 		tncheckBox.addItemListener(new ItemListener() {
@@ -141,8 +210,8 @@ public class NavigationShareTab {
 		if (configuration.getThumbnailsEnabled()) {
 			tncheckBox.setSelected(true);
 		}
-		builder.add(tncheckBox, cc.xyw(1, 3, 3));
 
+		//ThumbnailSeekPos
 		seekpos = new JTextField("" + configuration.getThumbnailSeekPos());
 		seekpos.addKeyListener(new KeyListener() {
 			@Override
@@ -164,9 +233,7 @@ public class NavigationShareTab {
 			}
 		});
 
-		builder.addLabel(Messages.getString("NetworkTab.16"), cc.xyw(4, 3, 3));
-		builder.add(seekpos, cc.xyw(6, 3, 2));
-
+		// UseMplayerForVideoThumbs
 		mplayer_thumb = new JCheckBox(Messages.getString("FoldTab.14"));
 		mplayer_thumb.setContentAreaFilled(false);
 		mplayer_thumb.addItemListener(new ItemListener() {
@@ -177,8 +244,8 @@ public class NavigationShareTab {
 		if (configuration.isUseMplayerForVideoThumbs()) {
 			mplayer_thumb.setSelected(true);
 		}
-		builder.add(mplayer_thumb, cc.xyw(1, 5, 3));
 
+		// DvdIsoThumbnails
 		dvdiso_thumb = new JCheckBox(Messages.getString("FoldTab.19"));
 		dvdiso_thumb.setContentAreaFilled(false);
 		dvdiso_thumb.addItemListener(new ItemListener() {
@@ -189,8 +256,8 @@ public class NavigationShareTab {
 		if (configuration.isDvdIsoThumbnails()) {
 			dvdiso_thumb.setSelected(true);
 		}
-		builder.add(dvdiso_thumb, cc.xyw(3, 5, 3));
 
+		// ImageThumbnailsEnabled
 		image_thumb = new JCheckBox(Messages.getString("FoldTab.21"));
 		image_thumb.setContentAreaFilled(false);
 		image_thumb.addItemListener(new ItemListener() {
@@ -201,8 +268,8 @@ public class NavigationShareTab {
 		if (configuration.getImageThumbnailsEnabled()) {
 			image_thumb.setSelected(true);
 		}
-		builder.add(image_thumb, cc.xyw(1, 7, 3));
 
+		// AudioThumbnailMethod
 		final KeyedComboBoxModel thumbKCBM = new KeyedComboBoxModel(new Object[]{"0", "1", "2"}, new Object[]{Messages.getString("FoldTab.15"), Messages.getString("FoldTab.23"), Messages.getString("FoldTab.24")});
 		audiothumbnail = new JComboBox(thumbKCBM);
 		audiothumbnail.setEditable(false);
@@ -221,10 +288,8 @@ public class NavigationShareTab {
 				}
 			}
 		});
-		builder.addLabel(Messages.getString("FoldTab.26"), cc.xyw(1, 9, 3));
-		builder.add(audiothumbnail, cc.xyw(4, 9, 4));
 
-		builder.addLabel(Messages.getString("FoldTab.27"), cc.xyw(1, 10, 3));
+		// AlternateThumbFolder
 		defaultThumbFolder = new JTextField(configuration.getAlternateThumbFolder());
 		defaultThumbFolder.addKeyListener(new KeyListener() {
 			@Override
@@ -240,9 +305,10 @@ public class NavigationShareTab {
 				configuration.setAlternateThumbFolder(defaultThumbFolder.getText());
 			}
 		});
-		builder.add(defaultThumbFolder, cc.xyw(4, 10, 3));
 
-		JButton select = new JButton("...");
+
+		// AlternateThumbFolder: select
+		select = new JButton("...");
 		select.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -260,12 +326,8 @@ public class NavigationShareTab {
 				}
 			}
 		});
-		builder.add(select, cc.xyw(7, 10, 1));
-
-		cmp = builder.addSeparator(Messages.getString("NetworkTab.15"), cc.xyw(1, 11, 10));
-		cmp = (JComponent) cmp.getComponent(0);
-		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-
+		
+		// HideVideoSettings
 		hidevideosettings = new JCheckBox(Messages.getString("FoldTab.6"));
 		hidevideosettings.setContentAreaFilled(false);
 		if (configuration.getHideVideoSettings()) {
@@ -310,9 +372,7 @@ public class NavigationShareTab {
 			archive.setSelected(true);
 		}
 
-		builder.add(archive, cc.xyw(1, 13, 3));
-
-		final JButton cachereset = new JButton(Messages.getString("NetworkTab.18"));
+		cachereset = new JButton(Messages.getString("NetworkTab.18"));
 
 		cacheenable = new JCheckBox(Messages.getString("NetworkTab.17"));
 		cacheenable.setContentAreaFilled(false);
@@ -326,8 +386,6 @@ public class NavigationShareTab {
 				}
 			}
 		});
-
-		builder.add(cacheenable, cc.xy(1, 19));
 
 		cachereset.addActionListener(new ActionListener() {
 			@Override
@@ -343,16 +401,9 @@ public class NavigationShareTab {
 
 			}
 		});
-		builder.add(cachereset, cc.xyw(4, 19, 4));
-
 		cachereset.setEnabled(configuration.getUseCache());
-
-		builder.add(hidevideosettings, cc.xyw(4, 13, 3));
-
-		builder.add(hidetranscode, cc.xyw(8, 13, 3));
-
-		builder.add(hidemedialibraryfolder, cc.xyw(8, 19, 3));
-
+		
+		// HideExtensions
 		hideextensions = new JCheckBox(Messages.getString("FoldTab.5"));
 		hideextensions.setContentAreaFilled(false);
 		if (configuration.isHideExtensions()) {
@@ -363,8 +414,8 @@ public class NavigationShareTab {
 				configuration.setHideExtensions((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		builder.add(hideextensions, cc.xyw(1, 15, 3));
 
+		// HideEngineNames
 		hideengines = new JCheckBox(Messages.getString("FoldTab.8"));
 		hideengines.setContentAreaFilled(false);
 		if (configuration.isHideEngineNames()) {
@@ -375,8 +426,8 @@ public class NavigationShareTab {
 				configuration.setHideEngineNames((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		builder.add(hideengines, cc.xyw(4, 15, 3));
 
+		// HideEmptyFolders
 		hideemptyfolders = new JCheckBox(Messages.getString("FoldTab.31"));
 		hideemptyfolders.setContentAreaFilled(false);
 		if (configuration.isHideEmptyFolders()) {
@@ -387,8 +438,8 @@ public class NavigationShareTab {
 				configuration.setHideEmptyFolders((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		builder.add(hideemptyfolders, cc.xyw(8, 15, 3));
 
+		// ItunesEnabled
 		itunes = new JCheckBox(Messages.getString("FoldTab.30"));
 		itunes.setContentAreaFilled(false);
 		if (configuration.getItunesEnabled()) {
@@ -402,8 +453,8 @@ public class NavigationShareTab {
 				configuration.setItunesEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		builder.add(itunes, cc.xyw(1, 17, 3));
 
+		// IphotoEnabled
 		iphoto = new JCheckBox(Messages.getString("FoldTab.29"));
 		iphoto.setContentAreaFilled(false);
 		if (configuration.getIphotoEnabled()) {
@@ -417,9 +468,8 @@ public class NavigationShareTab {
 				configuration.setIphotoEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		builder.add(iphoto, cc.xyw(4, 17, 3));
 
-		// Add Aperture selection
+		// ApertureEnabled
 		aperture = new JCheckBox(Messages.getString("FoldTab.34"));
 		aperture.setContentAreaFilled(false);
 		if (configuration.getApertureEnabled()) {
@@ -433,8 +483,8 @@ public class NavigationShareTab {
 				configuration.setApertureEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		builder.add(aperture, cc.xyw(8, 17, 3));
 
+		// sortmethod
 		final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[]{"0", "3", "1", "2"}, new Object[]{Messages.getString("FoldTab.15"), Messages.getString("FoldTab.20"), Messages.getString("FoldTab.16"), Messages.getString("FoldTab.17")});
 		sortmethod = new JComboBox(kcbm);
 		sortmethod.setEditable(false);
@@ -453,20 +503,16 @@ public class NavigationShareTab {
 				}
 			}
 		});
-
-		builder.addLabel(Messages.getString("FoldTab.18"), cc.xyw(1, 21, 3));
-		builder.add(sortmethod, cc.xyw(4, 21, 4));
-
+	}
+	
+	
+	private PanelBuilder initSharedFoldersGuiComponents(CellConstraints cc)
+	{
 		FormLayout layoutFolders = new FormLayout(
-			"left:pref, left:pref, pref, pref, pref, 0:grow",
-			"p, 3dlu, p, 3dlu, fill:default:grow");
+				"left:pref, left:pref, pref, pref, pref, 0:grow",
+				"p, 3dlu, p, 3dlu, fill:default:grow");
 		PanelBuilder builderFolder = new PanelBuilder(layoutFolders);
 		builderFolder.setOpaque(true);
-
-
-		cmp = builderFolder.addSeparator(Messages.getString("FoldTab.7"), cc.xyw(1, 1, 6));
-		cmp = (JComponent) cmp.getComponent(0);
-		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		JButton but = new JButton(LooksFrame.readImageIcon("folder_new-32.png"));
 		but.addActionListener(new java.awt.event.ActionListener() {
@@ -578,20 +624,11 @@ public class NavigationShareTab {
 				}
 			}
 		});
-
+		
 		builderFolder.add(but5, cc.xy(5, 3));
 		but5.setEnabled(configuration.getUseCache());
-
-		builderFolder.add(pane, cc.xyw(1, 5, 6));
-
-		builder.add(builderFolder.getPanel(), cc.xyw(1, 25, 10));
-
-		JPanel panel = builder.getPanel();
-		JScrollPane scrollPane = new JScrollPane(
-			panel,
-			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		return scrollPane;
+		
+		return builderFolder;
 	}
 
 	public void setScanLibraryEnabled(boolean enabled) {
