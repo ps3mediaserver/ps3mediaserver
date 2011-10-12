@@ -1,4 +1,4 @@
-package net.pms.configuration;
+package net.pms.network;
 
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import net.pms.configuration.RendererConfiguration;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 
