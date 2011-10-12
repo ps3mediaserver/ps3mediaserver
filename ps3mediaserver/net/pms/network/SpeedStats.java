@@ -1,3 +1,21 @@
+/*
+ * PS3 Media Server, for streaming any medias to your PS3.
+ * Copyright (C) 2008  A.Brochard
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package net.pms.network;
 
 import java.net.InetAddress;
@@ -18,6 +36,16 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.jna.Platform;
 
+/**
+ * Network speed tester class. This can be used in an asynchronous way, as it returns Future objects.
+ * 
+ * Future<Integer> speed = SpeedStats.getInstance().getSpeedInMBits(addr);
+ * 
+ *  @see Future
+ * 
+ * @author zsombor <gzsombor@gmail.com>
+ *
+ */
 public class SpeedStats {
 	private static SpeedStats instance = new SpeedStats();
 	private static ExecutorService executor = Executors.newCachedThreadPool();
@@ -29,6 +57,12 @@ public class SpeedStats {
 
 	private final Map<String, Future<Integer>> speedStats = new HashMap<String, Future<Integer>>();
 
+	/**
+	 * Return the network throughput for the given IP address in MBits. It is calculated in the background, and cached, 
+	 * so only a reference is given to the result, which can be retrieved with calling get() method on it.
+	 * @param addr
+	 * @return 
+	 */
 	public synchronized Future<Integer> getSpeedInMBits(InetAddress addr) {
 		Future<Integer> value = speedStats.get(addr.getHostAddress());
 		if (value != null) {
