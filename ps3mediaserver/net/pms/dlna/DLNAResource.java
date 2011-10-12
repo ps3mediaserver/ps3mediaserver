@@ -760,7 +760,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			name = (player != null ? ("[" + player.name()) : "") + " + AviSynth]";
 		}
 
-		if (splitRange.isEndLimitExists()) {
+		if (splitRange.isEndLimitAvailable()) {
 			name = ">> " + DLNAMediaInfo.getDurationString(splitRange.getDuration());
 		}
 
@@ -1011,7 +1011,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						}
 					}
 					if (media.getDuration() != null) {
-						if (splitRange.isEndLimitExists()) {
+						if (splitRange.isEndLimitAvailable()) {
 							addAttribute(sb, "duration", DLNAMediaInfo.getDurationString(splitRange.getDuration()));
 						} else {
 							addAttribute(sb, "duration", media.getDurationString());
@@ -1274,8 +1274,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		// Ditlew - WDTV Live
 		// Ditlew - We convert byteoffset to timeoffset here. This needs the stream to be CBR!
 		int cbr_video_bitrate = mediarenderer.getCBRVideoBitrate();
-		long low = range.isByteRange() && range.isStartOffsetExists() ? range.asByteRange().getStart() : 0;
-		long high = range.isByteRange() && range.isEndLimitExists() ? range.asByteRange().getEnd() : -1;
+		long low = range.isByteRange() && range.isStartOffsetAvailable() ? range.asByteRange().getStart() : 0;
+		long high = range.isByteRange() && range.isEndLimitAvailable() ? range.asByteRange().getEnd() : -1;
 		Range.Time timeRange = range.createTimeRange();
 
 		if (player != null && low > 0 && cbr_video_bitrate > 0) {

@@ -10,9 +10,9 @@ public abstract class Range implements Cloneable {
 		return !isByteRange();
 	}
 
-	public abstract boolean isStartOffsetExists();
+	public abstract boolean isStartOffsetAvailable();
 
-	public abstract boolean isEndLimitExists();
+	public abstract boolean isEndLimitAvailable();
 
 	public double getDuration() {
 		return 0;
@@ -138,12 +138,12 @@ public abstract class Range implements Cloneable {
 		}
 
 		@Override
-		public boolean isStartOffsetExists() {
+		public boolean isStartOffsetAvailable() {
 			return start != null;
 		}
 
 		@Override
-		public boolean isEndLimitExists() {
+		public boolean isEndLimitAvailable() {
 			return end != null;
 		}
 
@@ -242,12 +242,12 @@ public abstract class Range implements Cloneable {
 		}
 
 		@Override
-		public boolean isStartOffsetExists() {
+		public boolean isStartOffsetAvailable() {
 			return start != null;
 		}
 
 		@Override
-		public boolean isEndLimitExists() {
+		public boolean isEndLimitAvailable() {
 			return end != null;
 		}
 

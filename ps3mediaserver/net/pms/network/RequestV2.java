@@ -685,11 +685,11 @@ public class RequestV2 extends HTTPResource {
 				output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + cl);
 			}
 
-			if (range.isStartOffsetExists() && dlna != null) {
+			if (range.isStartOffsetAvailable() && dlna != null) {
 				// Add timeseek information headers.
 				String timeseekValue = DLNAMediaInfo.getDurationString(range.getStartOrZero());
 				String timetotalValue = dlna.getMedia().getDurationString();
-				String timeEndValue = range.isEndLimitExists() ? DLNAMediaInfo.getDurationString(range.getEnd()) : timetotalValue;
+				String timeEndValue = range.isEndLimitAvailable() ? DLNAMediaInfo.getDurationString(range.getEnd()) : timetotalValue;
 				output.setHeader("TimeSeekRange.dlna.org", "npt=" + timeseekValue + "-" + timeEndValue + "/" + timetotalValue);
 				output.setHeader("X-Seek-Range", "npt=" + timeseekValue + "-" + timeEndValue + "/" + timetotalValue);
 			}
