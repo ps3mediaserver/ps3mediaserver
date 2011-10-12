@@ -173,7 +173,6 @@ public class PmsConfiguration {
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
 	private static final String KEY_HDAUDIO_PASSTHROUGH = "hdaudio_passthrough";
 	private static final String KEY_UPNP_PORT = "upnp_port";
-	private static final String UNLIMITED_BITRATE = "0";
 	private static final String KEY_UUID = "uuid";
 	private static final String KEY_MENCODER_FORCED_SUB_LANG = "forced_sub_lang";
 	private static final String KEY_MENCODER_FORCED_SUB_TAGS = "forced_sub_tags";
@@ -1059,7 +1058,7 @@ public class PmsConfiguration {
 	}
 
 	public String getMaximumBitrate() {
-		return getString(KEY_MAX_BITRATE, UNLIMITED_BITRATE);
+		return getString(KEY_MAX_BITRATE, "110");
 	}
 
 	public void setMaximumBitrate(String value) {
