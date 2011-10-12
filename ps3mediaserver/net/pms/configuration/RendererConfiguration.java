@@ -13,6 +13,7 @@ import net.pms.dlna.MediaInfoParser;
 import net.pms.dlna.RootFolder;
 import net.pms.formats.Format;
 import net.pms.network.HTTPResource;
+import net.pms.network.SpeedStats;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
