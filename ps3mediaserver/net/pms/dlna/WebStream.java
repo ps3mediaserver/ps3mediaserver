@@ -20,6 +20,10 @@ package net.pms.dlna;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import net.pms.network.HTTPResourceAuthenticator;
 
 public class WebStream extends DLNAResource {
 	@Override
@@ -27,14 +31,30 @@ public class WebStream extends DLNAResource {
 		checktype();
 		return ext != null;
 	}
-	protected String URL;
+
+	protected String url;
 	protected String fluxName;
 	protected String thumbURL;
 
-	public WebStream(String fluxName, String URL, String thumbURL, int type) {
+	public WebStream(String fluxName, String url, String thumbURL, int type) {
 		super(type);
-		this.URL = URL;
-		this.thumbURL = thumbURL;
+
+		try {
+			URL tmpUrl = new URL(url);
+			tmpUrl = HTTPResourceAuthenticator.concatenateUserInfo(tmpUrl);
+			this.url = tmpUrl.toString();
+		} catch (MalformedURLException e) {
+			this.url = url;
+		}
+
+		try {
+			URL tmpUrl = new URL(thumbURL);
+			tmpUrl = HTTPResourceAuthenticator.concatenateUserInfo(tmpUrl);
+			this.thumbURL = tmpUrl.toString();
+		} catch (MalformedURLException e) {
+			this.thumbURL = thumbURL;
+		}
+		
 		this.fluxName = fluxName;
 	}
 
@@ -69,6 +89,6 @@ public class WebStream extends DLNAResource {
 
 	@Override
 	public String getSystemName() {
-		return URL;
+		return url;
 	}
 }
