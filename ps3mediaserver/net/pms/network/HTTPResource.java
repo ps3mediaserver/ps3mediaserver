@@ -18,6 +18,8 @@
  */
 package net.pms.network;
 
+import static net.pms.util.StringUtil.convertURLToFileName;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Authenticator;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -32,7 +35,6 @@ import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
-import static net.pms.util.StringUtil.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,6 +150,11 @@ public class HTTPResource {
 	 */
 	protected static byte[] downloadAndSendBinary(String u, boolean saveOnDisk, File f) throws IOException {
 		URL url = new URL(u);
+		
+		// The URL may contain user authentication information
+		Authenticator.setDefault(new HTTPResourceAuthenticator());
+		HTTPResourceAuthenticator.addURL(url);
+		
 		logger.debug("Retrieving " + url.toString());
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		URLConnection conn = url.openConnection();
