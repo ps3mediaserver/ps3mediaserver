@@ -362,6 +362,12 @@ public class MediaInfoParser {
 			value = value.substring(0, value.indexOf("pixel"));
 		}
 		value = value.trim();
+
+		// Value can look like "512 / 512" at this point
+		if (value.contains("/")) {
+			value = value.substring(0, value.indexOf("/")).trim();
+		}
+
 		int pixels = Integer.parseInt(value);
 		return pixels;
 	}
