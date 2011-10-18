@@ -39,6 +39,7 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 			int nbIntervals = nbMinutes / interval;
 			for (int i = 1; i <= nbIntervals; i++) {
 				DLNAResource newChildNoSub = (DLNAResource) child.clone();
+				newChildNoSub.id = null;
 				newChildNoSub.player = child.player;
 				newChildNoSub.media = child.media;
 				newChildNoSub.noName = true;
