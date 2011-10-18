@@ -48,6 +48,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					Player pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
 					if (pl != null && !child.player.equals(pl)) {
 						DLNAResource avisnewChild = (DLNAResource) child.clone();
+						avisnewChild.id = null;
 						avisnewChild.player = pl;
 						avisnewChild.noName = true;
 						avisnewChild.media = child.media;
@@ -63,6 +64,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 				}
 				for (int i = 0; i < child.media.audioCodes.size(); i++) {
 					DLNAResource newChildNoSub = (DLNAResource) ref.clone();
+					newChildNoSub.id = null;
 					newChildNoSub.player = ref.player;
 					newChildNoSub.media = ref.media;
 					newChildNoSub.noName = true;
@@ -75,6 +77,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 
 					for (int j = 0; j < child.media.subtitlesCodes.size(); j++) {
 						DLNAResource newChild = (DLNAResource) ref.clone();
+						newChild.id = null;
 						newChild.player = ref.player;
 						newChild.media = ref.media;
 						newChild.noName = true;
@@ -90,6 +93,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 				if (tsMuxer != null) {
 					for (int i = 0; i < child.media.audioCodes.size(); i++) {
 						DLNAResource newChildNoSub = (DLNAResource) ref.clone();
+						newChildNoSub.id = null;
 						newChildNoSub.player = tsMuxer;
 						newChildNoSub.media = ref.media;
 						newChildNoSub.noName = true;
@@ -103,6 +107,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 				// meskibob: I think it'd be a good idea to add a "Stream" option (for PS3 compatible containers) to the #Transcode# folder in addition to the current options already in there.
 				DLNAResource justStreamed = (DLNAResource) ref.clone();
 				if (justStreamed.ext != null && (justStreamed.ext.ps3compatible() || justStreamed.skipTranscode)) {
+					justStreamed.id = null;
 					justStreamed.player = null;
 					justStreamed.media = ref.media;
 					justStreamed.noName = true;
@@ -118,6 +123,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 		if (PMS.getConfiguration().getChapterInterval() > 0 && PMS.getConfiguration().isChapterSupport()) {
 			ChapterFileTranscodeVirtualFolder chapterFolder = new ChapterFileTranscodeVirtualFolder("Chapters:" + source.getDisplayName(), null, PMS.getConfiguration().getChapterInterval());
 			DLNAResource newSeekChild = (DLNAResource) source.clone();
+			newSeekChild.id = null;
 			newSeekChild.noName = true;
 			chapterFolder.addChildInternal(newSeekChild);
 			addChildInternal(chapterFolder);
