@@ -141,7 +141,7 @@ public class TranscodingTab {
 		tabbedPane = new JPanel(cl);
 		tabbedPane.setBorder(BorderFactory.createEmptyBorder());
 		JScrollPane scrollPane = new JScrollPane(tabbedPane);
-		scrollPane.setBorder(null);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		return scrollPane;
 	}
 

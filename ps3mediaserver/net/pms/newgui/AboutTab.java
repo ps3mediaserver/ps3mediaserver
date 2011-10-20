@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
@@ -100,7 +101,7 @@ public class AboutTab {
 				cc.xy(2, 15, "center, fill")).addMouseListener(ImageMagickLink);
 
 		JScrollPane scrollPane = new JScrollPane(builder.getPanel());
-		scrollPane.setBorder(null);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		return scrollPane;
 	}
 
