@@ -18,6 +18,7 @@
  */
 package net.pms.newgui;
 
+import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -67,7 +68,9 @@ public class AboutTab {
 
 		final LinkMouseListener pms3Link = new LinkMouseListener("PS3 Media Server " + PMS.VERSION,
 			"http://www.ps3mediaserver.org/");
-		builder.addLabel(pms3Link.getLabel(), cc.xy(2, 1, "center, fill")).addMouseListener(pms3Link);
+		JLabel lPms3Link = builder.addLabel(pms3Link.getLabel(), cc.xy(2, 1, "center, fill"));
+		lPms3Link.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lPms3Link.addMouseListener(pms3Link);
 
 		imagePanel = buildImagePanel();
 		builder.add(imagePanel, cc.xy(2, 3, "center, fill"));
@@ -77,28 +80,33 @@ public class AboutTab {
 
 		final LinkMouseListener tsMuxerLink = new LinkMouseListener("tsMuxeR (c) Smartlabs",
 			"http://www.smlabs.net/en/products/tsmuxer/");
-		builder.addLabel(tsMuxerLink.getLabel(),
-			cc.xy(2, 7, "center, fill")).addMouseListener(tsMuxerLink);
+		JLabel lTsMuxerLink = builder.addLabel(tsMuxerLink.getLabel(), cc.xy(2, 7, "center, fill"));
+		lTsMuxerLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lTsMuxerLink.addMouseListener(tsMuxerLink);
 
 		final LinkMouseListener ffmpegLink = new LinkMouseListener("FFmpeg",
 			"http://ffmpeg.mplayerhq.hu");
-		builder.addLabel(ffmpegLink.getLabel(),
-			cc.xy(2, 9, "center, fill")).addMouseListener(ffmpegLink);
+		JLabel lFfmpegLink = builder.addLabel(ffmpegLink.getLabel(), cc.xy(2, 9, "center, fill"));
+		lFfmpegLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lFfmpegLink.addMouseListener(ffmpegLink);
 
 		final LinkMouseListener mplayerLink = new LinkMouseListener("MPlayer",
 			"http://www.mplayerhq.hu");
-		builder.addLabel(mplayerLink.getLabel(),
-			cc.xy(2, 11, "center, fill")).addMouseListener(mplayerLink);
+		JLabel lMplayerLink = builder.addLabel(mplayerLink.getLabel(), cc.xy(2, 11, "center, fill"));
+		lMplayerLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lMplayerLink.addMouseListener(mplayerLink);
 
 		final LinkMouseListener mplayerSherpiaBuildsLink = new LinkMouseListener("MPlayer's Sherpya Builds",
 			"http://oss.netfarm.it/mplayer-win32.php");
-		builder.addLabel(mplayerSherpiaBuildsLink.getLabel(),
-			cc.xy(2, 13, "center, fill")).addMouseListener(mplayerSherpiaBuildsLink);
+		JLabel lMplayerSherpiaBuildsLink = builder.addLabel(mplayerSherpiaBuildsLink.getLabel(), cc.xy(2, 13, "center, fill"));
+		lMplayerSherpiaBuildsLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lMplayerSherpiaBuildsLink.addMouseListener(mplayerSherpiaBuildsLink);
 
-		final LinkMouseListener ImageMagickLink = new LinkMouseListener("ImageMagick",
+		final LinkMouseListener imageMagickLink = new LinkMouseListener("ImageMagick",
 			"http://www.imagemagick.org");
-		builder.addLabel(ImageMagickLink.getLabel(),
-				cc.xy(2, 15, "center, fill")).addMouseListener(ImageMagickLink);
+		JLabel lImageMagickLink = builder.addLabel(imageMagickLink.getLabel(), cc.xy(2, 15, "center, fill"));
+		lImageMagickLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lImageMagickLink.addMouseListener(imageMagickLink);
 
 		JScrollPane scrollPane = new JScrollPane(builder.getPanel());
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
