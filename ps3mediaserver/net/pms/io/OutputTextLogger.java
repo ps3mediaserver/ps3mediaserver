@@ -27,7 +27,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// A version of OutputTextConsumer that a) logs all output and b) doesn't store the output
+/**
+ *  A version of OutputTextConsumer that a) logs all output to the debug.log and b) doesn't store the output
+ */
 public class OutputTextLogger extends OutputConsumer {
 	private static final Logger logger = LoggerFactory.getLogger(OutputTextLogger.class);
 
@@ -43,7 +45,7 @@ public class OutputTextLogger extends OutputConsumer {
 			String line = null;
 
 			while ((line = br.readLine()) != null) {
-				logger.trace(line);
+				logger.debug(line);
 			}
 		} catch (IOException ioe) {
 			logger.debug("Error consuming stream of spawned process: " + ioe.getMessage());
