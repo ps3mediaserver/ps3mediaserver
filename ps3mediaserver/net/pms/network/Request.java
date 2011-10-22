@@ -216,58 +216,62 @@ public class Request extends HTTPResource {
 						}
 						PMS.get().getFrame().setStatusLine("Serving " + name);
 
-						// Response modes:
-						//   Default          - Content-Length refers to total media size.
-						//   Chunked          - Content-Length refers to chunk size.
-						// We use -1 for arithmetic convenience but don't send it as a value. 
+						// Response generation:
+						// We use -1 for arithmetic convenience but don't send it as a value.
 						// If Content-Length < 0 we omit it, for Content-Range we use '*' to signify unspecified.
-						
+
 						boolean chunked = mediaRenderer.isChunkedTransfer();
-						
+
 						// Determine the total size. Note: when transcoding the length is
 						// not known in advance, so DLNAMediaInfo.TRANS_SIZE will be returned instead.
-						
-						long totalsize = dlna.length();
-						
+
+						long totalsize = dlna.length(mediaRenderer);
+
 						if (chunked && totalsize == DLNAMediaInfo.TRANS_SIZE) {
 							// In chunked mode we try to avoid arbitrary values.
 							totalsize = -1;
 						}
-						
-						long available = inputStream.available();
 
-						if (chunked) {
-							long requested = highRange - lowRange;
+						long remaining = totalsize - lowRange;
+						long requested = highRange - lowRange;
+
+						if (requested != 0) {
+							// Determine the range (i.e. smaller of known or requested bytes)
+							long bytes = remaining > -1 ? remaining : inputStream.available();
 							
-							if (requested < 0) {
-								CLoverride = (totalsize > 0 ? available : -1);
+							if (requested > 0 && bytes > requested) {
+								bytes = requested + 1;
+							}
+
+							// Calculate the corresponding highRange (this is usually redundant).
+							highRange = lowRange + bytes - (bytes > 0 ? 1 : 0);
+
+							logger.trace((chunked ? "Using chunked response. " : "") + "Sending " + bytes + " bytes.");
+
+							output(output, "Content-Range: bytes " + lowRange
+									+ "-" + (highRange > -1 ? highRange : "*")
+									+ "/" + (totalsize > -1 ? totalsize : "*"));
+
+							// Content-Length refers to the current chunk size here, though in chunked
+							// mode if the request is open-ended and totalsize is unknown we omit it.
+							if (chunked && requested < 0 && totalsize < 0) {
+								CLoverride = -1;
 							} else {
-								requested += (requested > 0 ? 1 : 0);
-								CLoverride = (available < requested ? available : requested);
+								CLoverride = bytes;
 							}
 						} else {
-							CLoverride = available;
+							// Content-Length refers to the total remaining size of the stream here.
+							CLoverride = remaining;
 						}
-						
-						// Calculate the corresponding highRange (this is usually redundant).
-						highRange = lowRange + CLoverride - (CLoverride > 0 ? 1 : 0);
-						
-						if (!chunked) {
-							CLoverride = totalsize;
-						}
-					
-						logger.trace((chunked ? "Using chunked response. " : "")  + "Available Content-Length: " + available);
-
-						output(output, "Content-Range: bytes " + lowRange + "-" 
-							+ (highRange > -1 ? highRange : "*") + "/" + (totalsize > -1 ? totalsize : "*"));
 
 						if (contentFeatures != null) {
 							output(output, "ContentFeatures.DLNA.ORG: " + dlna.getDlnaContentFeatures());
 						}
-						if (dlna.getPlayer() == null || xbox) {
 
+						if (dlna.getPlayer() == null || xbox) {
 							output(output, "Accept-Ranges: bytes");
 						}
+
 						output(output, "Connection: keep-alive");
 					}
 				}
