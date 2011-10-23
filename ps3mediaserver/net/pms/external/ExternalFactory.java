@@ -36,7 +36,7 @@ public class ExternalFactory {
 
 	public static void lookup() {
 		File pluginDirectory = new File(PMS.getConfiguration().getPluginDirectory());
-		logger.info("Loading plugins from " + pluginDirectory.getAbsolutePath());
+		logger.info("Searching for plugins in " + pluginDirectory.getAbsolutePath());
 
 		if (!pluginDirectory.exists()) {
 			logger.warn("Plugin directory doesn't exist: " + pluginDirectory);

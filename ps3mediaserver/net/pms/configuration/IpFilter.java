@@ -254,20 +254,20 @@ public class IpFilter {
 		boolean log = isFirstDecision(addr);
 		if (matchers.size() == 0) {
 			if (log) {
-				LOGGER.info("no IP filter specified, access granted: " + addr);
+				LOGGER.info("No IP filter specified, access granted to " + addr);
 			}
 			return true;
 		}
 		for (Predicate p : matchers) {
 			if (p.match(addr)) {
 				if (log) {
-					LOGGER.info("Access granted to :'" + addr + "' by rule :" + p);
+					LOGGER.info("Access granted to " + addr + " by rule: " + p);
 				}
 				return true;
 			}
 		}
 		if (log) {
-			LOGGER.info("Access denied :'" + addr + '\'');
+			LOGGER.info("Access denied to " + addr);
 		}
 		return false;
 	}
