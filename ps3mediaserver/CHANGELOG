@@ -20,7 +20,7 @@ Changelog:
 	Maximum bandwidth setting works
 	Limit bandwidth to 110Mb/s by default which should solve a lot of "stuttering playback" reports
 	Speeds displayed in Mb/s instead of Kb/s
-	Recognise forced subtitles
+	Recognise forced subtitles (thanks, ExSport!)
 	Clarified English language labels
 	Updated MPlayer and MEncoder on Windows from Sherpya's old builds to SubJunk's new builds which fixes many playback issues, colour-conversion bugs and more (but possibly has drawbacks for some files, too)
 	Main (Status) tab displays a large tick when it's connected to a renderer instead of a PS3 or warning image
