@@ -346,7 +346,7 @@ public class GeneralTab {
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		pPlugins = new JPanel(new GridLayout());
-		builder.add(pPlugins, cc.xyw(1, 39, 9));
+		builder.add(pPlugins, cc.xyw(1, 41, 9));
 
 		JPanel panel = builder.getPanel();
 		JScrollPane scrollPane = new JScrollPane(
