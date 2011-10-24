@@ -124,13 +124,17 @@ public abstract class Player {
 			List<String> cmdList = new ArrayList<String>(Arrays.asList(cmdArgs));
 
 			for (FinalizeTranscoderArgsListener listener : finalizeTranscodeArgsListeners) {
-				cmdList = listener.finalizeTranscoderArgs(
-					player,
-					filename,
-					dlna,
-					media,
-					params,
-					cmdList);
+				try {
+					cmdList = listener.finalizeTranscoderArgs(
+							player,
+							filename,
+							dlna,
+							media,
+							params,
+							cmdList);
+				} catch (Throwable t) {
+					logger.error(String.format("Failed to call finalizeTranscoderArgs on listener of type=%s", listener.getClass()), t);
+				}
 			}
 
 			String[] cmdArray = new String[cmdList.size()];

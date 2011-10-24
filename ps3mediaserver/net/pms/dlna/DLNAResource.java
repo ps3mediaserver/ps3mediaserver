@@ -319,149 +319,160 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param child DLNAResource to add to a container type.
 	 */
 	public void addChild(DLNAResource child) {
-		// child may be null (spotted - via rootFolder.addChild() - in a misbehaving plugin
-
+		// child may be null (spotted - via rootFolder.addChild() - in a misbehaving plugin	
 		if (child == null) {
 			logger.error("Attempt to add a null child to " + getName(), new NullPointerException("Invalid DLNA resource"));
 			return;
 		}
 
 		child.parent = this;
-
+		
 		if (parent != null) {
 			defaultRenderer = parent.defaultRenderer;
 		}
-		if (child.isValid()) {
-			logger.trace("Adding " + child.getName() + " / class: " + child.getClass().getName());
-			VirtualFolder vf = null;
-			//VirtualFolder vfCopy = null;
-
-			if (allChildrenAreFolders && !child.isFolder()) {
-				allChildrenAreFolders = false;
-			}
-			addChildInternal(child);
-
-			boolean forceTranscodeV2 = false;
-			boolean parserV2 = child.media != null && defaultRenderer != null && defaultRenderer.isMediaParserV2();
-			if (parserV2) {
-				// We already have useful info, just need to layout folders
-				String mimeType = defaultRenderer.getFormatConfiguration().match(child.media);
-				if (mimeType != null) {
-					// This is streamable
-					child.media.mimeType = mimeType.equals(FormatConfiguration.MIMETYPE_AUTO) ? child.media.mimeType : mimeType;
-				} else {
-					// This is transcodable
-					forceTranscodeV2 = true;
+		
+		try {
+			if (child.isValid()) {
+				logger.trace("Adding " + child.getName() + " / class: " + child.getClass().getName());
+				VirtualFolder vf = null;
+				//VirtualFolder vfCopy = null;
+	
+				if (allChildrenAreFolders && !child.isFolder()) {
+					allChildrenAreFolders = false;
 				}
-			}
-
-			if (child.ext != null) {
-				skipTranscode = child.ext.skip(PMS.getConfiguration().getNoTranscode(), defaultRenderer != null ? defaultRenderer.getStreamedExtensions() : null);
-			}
-
-			if (child.ext != null && (child.ext.transcodable() || parserV2) && (child.media == null || parserV2)) {
-
-				if (!parserV2) {
-					child.media = new DLNAMediaInfo();
-				}
-
-				// Try to determine a player to use for transcoding. 
-				Player pl = null;
-
-				if (child.ext.getProfiles() != null && child.ext.getProfiles().size() > 0) {
-					// First try to match a player based on the format profiles.
-					int i = 0;
-
-					while (pl == null && i < child.ext.getProfiles().size()) {
-						pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
-						i++;
+				addChildInternal(child);
+	
+				boolean forceTranscodeV2 = false;
+				boolean parserV2 = child.media != null && defaultRenderer != null && defaultRenderer.isMediaParserV2();
+				if (parserV2) {
+					// We already have useful info, just need to layout folders
+					String mimeType = defaultRenderer.getFormatConfiguration().match(child.media);
+					if (mimeType != null) {
+						// This is streamable
+						child.media.mimeType = mimeType.equals(FormatConfiguration.MIMETYPE_AUTO) ? child.media.mimeType : mimeType;
+					} else {
+						// This is transcodable
+						forceTranscodeV2 = true;
 					}
-
-					// Next, try to match a player based on the name of the DLNAResource.
-					// When a match is found it overrules the result of the first try.
-					String name = getName();
-
-					for (Class<? extends Player> clazz : child.ext.getProfiles()) {
-						for (Player p : PMS.get().getPlayers()) {
-							if (p.getClass().equals(clazz)) {
-								String end = "[" + p.id() + "]";
-
-								if (name.endsWith(end)) {
-									nametruncate = name.lastIndexOf(end);
-									pl = p;
-									break;
-								} else if (getParent() != null && getParent().getName().endsWith(end)) {
-									getParent().nametruncate = getParent().getName().lastIndexOf(end);
-									pl = p;
-									break;
+				}
+	
+				if (child.ext != null) {
+					skipTranscode = child.ext.skip(PMS.getConfiguration().getNoTranscode(), defaultRenderer != null ? defaultRenderer.getStreamedExtensions() : null);
+				}
+	
+				if (child.ext != null && (child.ext.transcodable() || parserV2) && (child.media == null || parserV2)) {
+	
+					if (!parserV2) {
+						child.media = new DLNAMediaInfo();
+					}
+	
+					// Try to determine a player to use for transcoding. 
+					Player pl = null;
+	
+					if (child.ext.getProfiles() != null && child.ext.getProfiles().size() > 0) {
+						// First try to match a player based on the format profiles.
+						int i = 0;
+	
+						while (pl == null && i < child.ext.getProfiles().size()) {
+							pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
+							i++;
+						}
+	
+						// Next, try to match a player based on the name of the DLNAResource.
+						// When a match is found it overrules the result of the first try.
+						String name = getName();
+	
+						for (Class<? extends Player> clazz : child.ext.getProfiles()) {
+							for (Player p : PMS.get().getPlayers()) {
+								if (p.getClass().equals(clazz)) {
+									String end = "[" + p.id() + "]";
+	
+									if (name.endsWith(end)) {
+										nametruncate = name.lastIndexOf(end);
+										pl = p;
+										break;
+									} else if (getParent() != null && getParent().getName().endsWith(end)) {
+										getParent().nametruncate = getParent().getName().lastIndexOf(end);
+										pl = p;
+										break;
+									}
 								}
 							}
 						}
 					}
+	
+					if (pl != null && !allChildrenAreFolders) {
+						boolean forceTranscode = false;
+						if (child.ext != null) {
+							forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode(), defaultRenderer != null ? defaultRenderer.getTranscodedExtensions() : null);
+						}
+	
+						boolean hasEmbeddedSubs = false;
+						if (child.media != null) {
+							for (DLNAMediaSubtitle s : child.media.subtitlesCodes) {
+								hasEmbeddedSubs |= s.getSubType().equals("Embedded");
+							}
+						}
+	
+						// Force transcoding if
+						// 1- MediaInfo support detected the file was not matched with supported codec configs and no SkipTranscode extension forced by user
+						// or 2- ForceTranscode extension forced by user
+						// or 3- FFmpeg support and the file is not ps3 compatible (need to remove this ?) and no SkipTranscode extension forced by user
+						// or 4- There's some sub files or embedded subs to deal with and no SkipTranscode extension forced by user
+						if (forceTranscode || !skipTranscode && (forceTranscodeV2 || (!parserV2 && !child.ext.ps3compatible()) || (PMS.getConfiguration().getUseSubtitles() && child.srtFile) || hasEmbeddedSubs)) {
+							child.player = pl;
+							logger.trace("Switching " + child.getName() + " to player: " + pl.toString());
+						}
+	
+						if (child.ext.isVideo()) {
+							vf = getTranscodeFolder(true);
+	
+							if (vf != null) {
+								VirtualFolder fileFolder = new FileTranscodeVirtualFolder(child.getName(), null);
+	
+								DLNAResource newChild = (DLNAResource) child.clone();
+								newChild.player = pl;
+								newChild.media = child.media;
+								// newChild.original = child;
+								fileFolder.addChildInternal(newChild);
+								logger.trace("Duplicate " + child.getName() + " with player: " + pl.toString());
+	
+								vf.addChild(fileFolder);
+							}
+						}
+	
+						for (ExternalListener listener : ExternalFactory.getExternalListeners()) {
+							if (listener instanceof AdditionalResourceFolderListener) {
+								try {
+									((AdditionalResourceFolderListener) listener).addAdditionalFolder(this, child);
+								} catch (Throwable t) {
+									logger.error(String.format("Failed to add add additional folder for listener of type=%s", listener.getClass()), t);
+								}
+							}
+						}
+					} else if (!child.ext.ps3compatible() && !child.isFolder()) {
+						children.remove(child);
+					}
 				}
-
-				if (pl != null && !allChildrenAreFolders) {
-					boolean forceTranscode = false;
-					if (child.ext != null) {
-						forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode(), defaultRenderer != null ? defaultRenderer.getTranscodedExtensions() : null);
+	
+				if (child.ext != null && child.ext.getSecondaryFormat() != null && child.media != null && defaultRenderer != null && defaultRenderer.supportsFormat(child.ext.getSecondaryFormat())) {
+					DLNAResource newChild = (DLNAResource) child.clone();
+					newChild.ext = newChild.ext.getSecondaryFormat();
+					newChild.first = child;
+					child.second = newChild;
+					if (!newChild.ext.ps3compatible() && newChild.ext.getProfiles().size() > 0) {
+						newChild.player = PMS.get().getPlayer(newChild.ext.getProfiles().get(0), newChild.ext);
 					}
-
-					boolean hasEmbeddedSubs = false;
-					if (child.media != null) {
-						for (DLNAMediaSubtitle s : child.media.subtitlesCodes) {
-							hasEmbeddedSubs |= s.getSubType().equals("Embedded");
-						}
+					if (child.media != null && child.media.secondaryFormatValid) {
+						addChild(newChild);
 					}
-
-					// Force transcoding if
-					// 1- MediaInfo support detected the file was not matched with supported codec configs and no SkipTranscode extension forced by user
-					// or 2- ForceTranscode extension forced by user
-					// or 3- FFmpeg support and the file is not ps3 compatible (need to remove this ?) and no SkipTranscode extension forced by user
-					// or 4- There's some sub files or embedded subs to deal with and no SkipTranscode extension forced by user
-					if (forceTranscode || !skipTranscode && (forceTranscodeV2 || (!parserV2 && !child.ext.ps3compatible()) || (PMS.getConfiguration().getUseSubtitles() && child.srtFile) || hasEmbeddedSubs)) {
-						child.player = pl;
-						logger.trace("Switching " + child.getName() + " to player: " + pl.toString());
-					}
-
-					if (child.ext.isVideo()) {
-						vf = getTranscodeFolder(true);
-
-						if (vf != null) {
-							VirtualFolder fileFolder = new FileTranscodeVirtualFolder(child.getName(), null);
-
-							DLNAResource newChild = (DLNAResource) child.clone();
-							newChild.player = pl;
-							newChild.media = child.media;
-							// newChild.original = child;
-							fileFolder.addChildInternal(newChild);
-							logger.trace("Duplicate " + child.getName() + " with player: " + pl.toString());
-
-							vf.addChild(fileFolder);
-						}
-					}
-
-					for (ExternalListener listener : ExternalFactory.getExternalListeners()) {
-						if (listener instanceof AdditionalResourceFolderListener) {
-							((AdditionalResourceFolderListener) listener).addAdditionalFolder(this, child);
-						}
-					}
-				} else if (!child.ext.ps3compatible() && !child.isFolder()) {
-					children.remove(child);
 				}
 			}
-
-			if (child.ext != null && child.ext.getSecondaryFormat() != null && child.media != null && defaultRenderer != null && defaultRenderer.supportsFormat(child.ext.getSecondaryFormat())) {
-				DLNAResource newChild = (DLNAResource) child.clone();
-				newChild.ext = newChild.ext.getSecondaryFormat();
-				newChild.first = child;
-				child.second = newChild;
-				if (!newChild.ext.ps3compatible() && newChild.ext.getProfiles().size() > 0) {
-					newChild.player = PMS.get().getPlayer(newChild.ext.getProfiles().get(0), newChild.ext);
-				}
-				if (child.media != null && child.media.secondaryFormatValid) {
-					addChild(newChild);
-				}
-			}
+		}catch (Throwable t) {
+			logger.error(String.format("Failed to add child '%s'", child.getName()), t);
+			
+			child.parent = null;
+			children.remove(child);
 		}
 	}
 
@@ -1189,7 +1200,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								Runnable fireStartStopEvent = new Runnable() {
 									@Override
 									public void run() {
-										((StartStopListener) listener).nowPlaying(media, self);
+										try {
+											((StartStopListener) listener).nowPlaying(media, self);
+										} catch (Throwable t) {
+											logger.error(String.format("Failed to notify nowPlaying for StartStopListener of type=%s", listener.getClass()), t);
+										}
 									}
 								};
 								new Thread(fireStartStopEvent).start();
@@ -1240,7 +1255,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 										Runnable fireStartStopEvent = new Runnable() {
 											@Override
 											public void run() {
-												((StartStopListener) listener).donePlaying(media, self);
+												try {
+													((StartStopListener) listener).donePlaying(media, self);
+												} catch (Throwable t) {
+													logger.error(String.format("Failed to notify with type=%s of donePlaying", listener.getClass()), t);
+												}
 											}
 										};
 										new Thread(fireStartStopEvent).start();

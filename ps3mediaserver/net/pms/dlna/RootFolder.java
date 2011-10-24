@@ -763,11 +763,21 @@ public class RootFolder extends DLNAResource {
 		List<DLNAResource> res = new ArrayList<DLNAResource>();
 		for (ExternalListener listener : ExternalFactory.getExternalListeners()) {
 			if (listener instanceof AdditionalFolderAtRoot) {
-				res.add(((AdditionalFolderAtRoot) listener).getChild());
+				AdditionalFolderAtRoot afar = (AdditionalFolderAtRoot) listener;
+				try {
+					res.add(afar.getChild());
+				} catch (Throwable t) {
+					logger.error(String.format("Failed to append AdditionalFolderAtRoot with name=%s, class=%s", afar.name(), afar.getClass()), t);
+				}
 			} else if (listener instanceof AdditionalFoldersAtRoot) {
 				java.util.Iterator<DLNAResource> folders = ((AdditionalFoldersAtRoot) listener).getChildren();
 				while (folders.hasNext()) {
-					res.add(folders.next());
+					DLNAResource resource = folders.next();
+					try {
+						res.add(resource);
+					} catch (Throwable t) {
+						logger.error(String.format("Failed to append AdditionalFolderAtRoots with class=%s for DLNAResource=%s", listener.getClass(), resource.getClass()), t);
+					}
 				}
 			}
 		}
@@ -778,5 +788,4 @@ public class RootFolder extends DLNAResource {
 	public String toString() {
 		return "RootFolder["+children+"]";
 	}
-}
- 
+} 
