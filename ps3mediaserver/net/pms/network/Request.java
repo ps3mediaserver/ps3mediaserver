@@ -63,8 +63,8 @@ public class Request extends HTTPResource {
 	private RendererConfiguration mediaRenderer;
 	private String transferMode;
 	private String contentFeatures;
-	private Double timeseek;
-	private Double timeRangeEnd;
+	private double timeseek;
+	private double timeRangeEnd;
 	private long highRange;
 	private boolean http10;
 
