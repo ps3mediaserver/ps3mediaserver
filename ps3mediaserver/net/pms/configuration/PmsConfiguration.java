@@ -1439,10 +1439,33 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_OVERSCAN, value);
 	}
 
+	/**
+	 * Returns sort method to use for ordering lists of files. One of the
+	 * following values is returned:
+	 * <ul>
+	 * <li>0: Locale-sensitive A-Z</li>
+	 * <li>1: Sort by modified date, newest first</li>
+	 * <li>2: Sort by modified date, oldest first</li>
+	 * <li>3: Case-insensitive ASCIIbetical sort</li>
+	 * </ul>
+	 * Default value is 0.
+	 * @return The sort method
+	 */
 	public int getSortMethod() {
 		return getInt(KEY_SORT_METHOD, 0);
 	}
 
+	/**
+	 * Set the sort method to use for ordering lists of files. The following
+	 * values are recognized:
+	 * <ul>
+	 * <li>0: Locale-sensitive A-Z</li>
+	 * <li>1: Sort by modified date, newest first</li>
+	 * <li>2: Sort by modified date, oldest first</li>
+	 * <li>3: Case-insensitive ASCIIbetical sort</li>
+	 * </ul>
+	 * @param value The sort method to use
+	 */
 	public void setSortMethod(int value) {
 		configuration.setProperty(KEY_SORT_METHOD, value);
 	}
