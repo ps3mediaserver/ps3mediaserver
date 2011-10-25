@@ -20,24 +20,48 @@ package net.pms.dlna;
 
 import net.pms.dlna.virtual.VirtualFolder;
 
+/**
+ * The ChapterFileTranscodeVirtualFolder is a {@link DLNAResource} container that
+ * examines the media to be transcoded and creates several virtual children. This
+ * is done by taking the full length of the media and creating virtual chapters
+ * by means of a specified interval length. These virtual chapters are presented
+ * to the user in the "#Transcode#" folder when the option "Chapter #Transcode#
+ * folder support" is activated in the settings.
+ */
 public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 	private boolean resolved;
 	private int interval;
 
+	/**
+	 * Constructor for a {@link ChapterFileTranscodeVirtualFolder}. The constructor
+	 * does not create the children for this instance, it only sets the name, the
+	 * icon for a thumbnail and the interval at which chapter markers must be placed
+	 * when the children are created by {@link #resolve()}. 
+	 * @param name The name of this instance.
+	 * @param thumbnailIcon The thumbnail for this instance.
+	 * @param interval The interval (in minutes) at which a chapter marker will be
+	 * 			placed.
+	 */
 	public ChapterFileTranscodeVirtualFolder(String name, String thumbnailIcon, int interval) {
 		super(name, thumbnailIcon);
 		this.interval = interval;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.DLNAResource#resolve()
+	 */
 	@Override
 	public void resolve() {
 		super.resolve();
+		
 		if (!resolved && children.size() == 1) { //OK
 			DLNAResource child = children.get(0);
 			child.resolve();
 			int nbMinutes = (int) (child.media.getDurationInSeconds() / 60);
 			int nbIntervals = nbMinutes / interval;
+			
 			for (int i = 1; i <= nbIntervals; i++) {
+				// TODO: Remove clone(), instead create a new object from scratch to avoid unwanted cross references.
 				DLNAResource newChildNoSub = (DLNAResource) child.clone();
 				newChildNoSub.id = null;
 				newChildNoSub.player = child.player;
@@ -45,8 +69,8 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 				newChildNoSub.noName = true;
 				newChildNoSub.media_audio = child.media_audio;
 				newChildNoSub.media_subtitle = child.media_subtitle;
-				newChildNoSub.getSplitRange().setStart((double) (60 * i * interval));
-				newChildNoSub.getSplitRange().setEnd(newChildNoSub.media.getDurationInSeconds());
+				newChildNoSub.splitRange = new Range.Time(60.0 * i * interval, newChildNoSub.media.getDurationInSeconds());
+
 				addChildInternal(newChildNoSub);
 			}
 		}
