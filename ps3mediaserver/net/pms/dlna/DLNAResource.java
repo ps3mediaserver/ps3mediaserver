@@ -116,7 +116,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private int nametruncate;
 	private DLNAResource first;
 	private DLNAResource second;
+	
+	/**
+	 * The time range for the file containing the start and end time in seconds.
+	 */
 	protected Range.Time splitRange = new Range.Time();
+	
 	protected int splitTrack;
 	protected String fakeParentId;
 	// Ditlew - needs this in one of the derived classes
@@ -335,7 +340,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			if (child.isValid()) {
 				logger.trace("Adding " + child.getName() + " / class: " + child.getClass().getName());
 				VirtualFolder vf = null;
-				//VirtualFolder vfCopy = null;
 	
 				if (allChildrenAreFolders && !child.isFolder()) {
 					allChildrenAreFolders = false;
@@ -516,12 +520,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 
-	/**First thing it does it searches for an item matching the given objectID.
+	/**
+	 * First thing it does it searches for an item matching the given objectID.
 	 * If children is false, then it returns the found object as the only object in the list.
 	 * If item or children have not been discovered already, then the {@link #closeChildren(int, boolean)} is called.<p>
 	 * TODO: (botijo) This function does a lot more than this!
 	 * @param objectId ID to search for.
-	 * @param children State if you want all the children in the returned list.
+	 * @param returnChildren State if you want all the children in the returned list.
 	 * @param start
 	 * @param count
 	 * @param renderer Renderer for which to do the actions.
@@ -529,16 +534,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @throws IOException
 	 * @see #closeChildren(int, boolean)
 	 */
-	public synchronized List<DLNAResource> getDLNAResources(String objectId, boolean children, int start, int count, RendererConfiguration renderer) throws IOException {
-		logger.trace("Searching for objectId: " + objectId + " with children option: " + children);
+	public synchronized List<DLNAResource> getDLNAResources(String objectId, boolean returnChildren, int start, int count, RendererConfiguration renderer) throws IOException {
 		ArrayList<DLNAResource> resources = new ArrayList<DLNAResource>();
 		DLNAResource resource = search(objectId, count, renderer);
-		logger.trace("looking up " + objectId + " found:" + resource);
 
 		if (resource != null) {
 			resource.defaultRenderer = renderer;
 
-			if (!children) {
+			if (!returnChildren) {
 				resources.add(resource);
 				resource.refreshChildrenIfNeeded();
 			} else {
@@ -579,7 +582,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	protected void refreshChildrenIfNeeded() {
-		logger.trace("refreshChildrenIfNeeded() : discovered= " + discovered + ", name:" + getName() + ", id :" + getId());
 		if (discovered) {
 			if (isRefreshNeeded()) {
 				refreshChildren();
@@ -701,8 +703,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**
-	 * TODO: (botijo) What is the intention of this function? Looks like a prototype to be overloaded.
-	 * 
+	 * Determine all properties for this DLNAResource that are relevant for playback
+	 * or hierarchy traversal. This can be a costly operation, so when the method is
+	 * finished the property <code>resolved</code> is set to <code>true</code>.
 	 */
 	public void resolve() {
 	}
@@ -772,7 +775,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		if (splitRange.isEndLimitAvailable()) {
-			name = ">> " + DLNAMediaInfo.getDurationString(splitRange.getDuration());
+			name = ">> " + DLNAMediaInfo.getDurationString(splitRange.getStart());
 		}
 
 		return name;
@@ -1287,7 +1290,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	public InputStream getInputStream(Range range, RendererConfiguration mediarenderer) throws IOException {
 		logger.trace("Asked stream chunk : " + range + " of " + getName() + " and player " + player);
-
+		
 		// shagrath: small fix, regression on chapters
 		boolean timeseek_auto = false;
 		// Ditlew - WDTV Live
@@ -1371,8 +1374,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			params.aid = media_audio;
 			params.sid = media_subtitle;
 			params.mediaRenderer = mediarenderer;
-//			params.timeseek = timeseek_auto ? timeseek : splitStart;
-//			params.timeend = timeRangeEnd > 0 ? timeRangeEnd : splitLength;
 			timeRange.limit(splitRange);
 			params.timeseek = timeRange.getStartOrZero();
 			params.timeend = timeRange.getEndOrZero();

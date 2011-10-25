@@ -284,6 +284,20 @@ public class RequestV2 extends HTTPResource {
 					inputStream = dlna.getThumbnailInputStream();
 				} else {
 					// This is a request for a regular file.
+					
+					// If range has not been initialized yet and the DLNAResource has its
+					// own start and end defined, initialize range with those values before
+					// requesting the input stream.
+					Range.Time splitRange = dlna.getSplitRange();
+					
+					if (range.getStart() == null && splitRange.getStart() != null) {
+						range.setStart(splitRange.getStart());
+					}
+
+					if (range.getEnd() == null && splitRange.getEnd() != null) {
+						range.setEnd(splitRange.getEnd());
+					}
+					
 					inputStream = dlna.getInputStream(Range.create(lowRange, highRange, range.getStart(), range.getEnd()), mediaRenderer);
 					String name = dlna.getDisplayName(mediaRenderer);
 
