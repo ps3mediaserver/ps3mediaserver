@@ -53,13 +53,13 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 	@Override
 	public void resolve() {
 		super.resolve();
-		
+
 		if (!resolved && children.size() == 1) { //OK
 			DLNAResource child = children.get(0);
 			child.resolve();
 			int nbMinutes = (int) (child.media.getDurationInSeconds() / 60);
 			int nbIntervals = nbMinutes / interval;
-			
+
 			for (int i = 1; i <= nbIntervals; i++) {
 				// TODO: Remove clone(), instead create a new object from scratch to avoid unwanted cross references.
 				DLNAResource newChildNoSub = (DLNAResource) child.clone();

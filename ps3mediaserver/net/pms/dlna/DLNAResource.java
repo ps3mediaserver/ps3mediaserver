@@ -121,7 +121,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * The time range for the file containing the start and end time in seconds.
 	 */
 	protected Range.Time splitRange = new Range.Time();
-	
+
 	protected int splitTrack;
 	protected String fakeParentId;
 	// Ditlew - needs this in one of the derived classes
@@ -324,28 +324,28 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param child DLNAResource to add to a container type.
 	 */
 	public void addChild(DLNAResource child) {
-		// child may be null (spotted - via rootFolder.addChild() - in a misbehaving plugin	
+		// child may be null (spotted - via rootFolder.addChild() - in a misbehaving plugin
 		if (child == null) {
 			logger.error("Attempt to add a null child to " + getName(), new NullPointerException("Invalid DLNA resource"));
 			return;
 		}
 
 		child.parent = this;
-		
+
 		if (parent != null) {
 			defaultRenderer = parent.defaultRenderer;
 		}
-		
+
 		try {
 			if (child.isValid()) {
 				logger.trace("Adding " + child.getName() + " / class: " + child.getClass().getName());
 				VirtualFolder vf = null;
-	
+
 				if (allChildrenAreFolders && !child.isFolder()) {
 					allChildrenAreFolders = false;
 				}
 				addChildInternal(child);
-	
+
 				boolean forceTranscodeV2 = false;
 				boolean parserV2 = child.media != null && defaultRenderer != null && defaultRenderer.isMediaParserV2();
 				if (parserV2) {
@@ -359,38 +359,37 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						forceTranscodeV2 = true;
 					}
 				}
-	
+
 				if (child.ext != null) {
 					skipTranscode = child.ext.skip(PMS.getConfiguration().getNoTranscode(), defaultRenderer != null ? defaultRenderer.getStreamedExtensions() : null);
 				}
-	
+
 				if (child.ext != null && (child.ext.transcodable() || parserV2) && (child.media == null || parserV2)) {
-	
 					if (!parserV2) {
 						child.media = new DLNAMediaInfo();
 					}
-	
+
 					// Try to determine a player to use for transcoding. 
 					Player pl = null;
-	
+
 					if (child.ext.getProfiles() != null && child.ext.getProfiles().size() > 0) {
 						// First try to match a player based on the format profiles.
 						int i = 0;
-	
+
 						while (pl == null && i < child.ext.getProfiles().size()) {
 							pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
 							i++;
 						}
-	
+
 						// Next, try to match a player based on the name of the DLNAResource.
 						// When a match is found it overrules the result of the first try.
 						String name = getName();
-	
+
 						for (Class<? extends Player> clazz : child.ext.getProfiles()) {
 							for (Player p : PMS.get().getPlayers()) {
 								if (p.getClass().equals(clazz)) {
 									String end = "[" + p.id() + "]";
-	
+
 									if (name.endsWith(end)) {
 										nametruncate = name.lastIndexOf(end);
 										pl = p;
@@ -404,20 +403,20 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							}
 						}
 					}
-	
+
 					if (pl != null && !allChildrenAreFolders) {
 						boolean forceTranscode = false;
 						if (child.ext != null) {
 							forceTranscode = child.ext.skip(PMS.getConfiguration().getForceTranscode(), defaultRenderer != null ? defaultRenderer.getTranscodedExtensions() : null);
 						}
-	
+
 						boolean hasEmbeddedSubs = false;
 						if (child.media != null) {
 							for (DLNAMediaSubtitle s : child.media.subtitlesCodes) {
 								hasEmbeddedSubs |= s.getSubType().equals("Embedded");
 							}
 						}
-	
+
 						// Force transcoding if
 						// 1- MediaInfo support detected the file was not matched with supported codec configs and no SkipTranscode extension forced by user
 						// or 2- ForceTranscode extension forced by user
@@ -427,24 +426,24 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							child.player = pl;
 							logger.trace("Switching " + child.getName() + " to player: " + pl.toString());
 						}
-	
+
 						if (child.ext.isVideo()) {
 							vf = getTranscodeFolder(true);
-	
+
 							if (vf != null) {
 								VirtualFolder fileFolder = new FileTranscodeVirtualFolder(child.getName(), null);
-	
+
 								DLNAResource newChild = (DLNAResource) child.clone();
 								newChild.player = pl;
 								newChild.media = child.media;
 								// newChild.original = child;
 								fileFolder.addChildInternal(newChild);
 								logger.trace("Duplicate " + child.getName() + " with player: " + pl.toString());
-	
+
 								vf.addChild(fileFolder);
 							}
 						}
-	
+
 						for (ExternalListener listener : ExternalFactory.getExternalListeners()) {
 							if (listener instanceof AdditionalResourceFolderListener) {
 								try {
@@ -458,7 +457,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						children.remove(child);
 					}
 				}
-	
+
 				if (child.ext != null && child.ext.getSecondaryFormat() != null && child.media != null && defaultRenderer != null && defaultRenderer.supportsFormat(child.ext.getSecondaryFormat())) {
 					DLNAResource newChild = (DLNAResource) child.clone();
 					newChild.ext = newChild.ext.getSecondaryFormat();
@@ -474,7 +473,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			}
 		}catch (Throwable t) {
 			logger.error(String.format("Failed to add child '%s'", child.getName()), t);
-			
+
 			child.parent = null;
 			children.remove(child);
 		}
@@ -1290,7 +1289,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	public InputStream getInputStream(Range range, RendererConfiguration mediarenderer) throws IOException {
 		logger.trace("Asked stream chunk : " + range + " of " + getName() + " and player " + player);
-		
+
 		// shagrath: small fix, regression on chapters
 		boolean timeseek_auto = false;
 		// Ditlew - WDTV Live
