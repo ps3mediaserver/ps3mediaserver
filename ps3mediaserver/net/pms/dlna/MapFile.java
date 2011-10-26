@@ -214,7 +214,9 @@ public class MapFile extends DLNAResource {
 	public boolean isRefreshNeeded() {
 		long lastModif = 0;
 		for (File f : this.conf.getFiles()) {
-			lastModif = Math.max(lastModif, f.lastModified());
+			if (f != null) {
+				lastModif = Math.max(lastModif, f.lastModified());
+			}
 		}
 		return getLastRefreshTime() < lastModif;
 	}
