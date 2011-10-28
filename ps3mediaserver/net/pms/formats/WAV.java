@@ -20,30 +20,38 @@ package net.pms.formats;
 
 import java.util.ArrayList;
 
+import net.pms.PMS;
+import net.pms.encoders.FFMpegAudio;
+import net.pms.encoders.MPlayerAudio;
 import net.pms.encoders.Player;
 
-public class MP3 extends Format {
-	public MP3() {
-		type = AUDIO;
-	}
-
+public class WAV extends MP3 {
 	@Override
-	public String[] getId() {
-		return new String[]{"mp3"};
-	}
-
-	@Override
-	public boolean ps3compatible() {
+	public boolean transcodable() {
 		return true;
 	}
 
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
-		return null;
+		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
+		PMS r = PMS.get();
+		for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
+			if (engine.equals(MPlayerAudio.ID)) {
+				a.add(MPlayerAudio.class);
+			} else if (engine.equals(FFMpegAudio.ID)) {
+				a.add(FFMpegAudio.class);
+			}
+		}
+		return a;
 	}
 
 	@Override
-	public boolean transcodable() {
-		return false;
+	public String[] getId() {
+		return new String[]{"wav"};
+	}
+
+	@Override
+	public boolean ps3compatible() {
+		return true;
 	}
 }

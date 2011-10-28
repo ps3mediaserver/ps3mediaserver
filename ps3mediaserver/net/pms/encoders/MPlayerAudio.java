@@ -92,9 +92,10 @@ public class MPlayerAudio extends Player {
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
 		PipeProcess audioP = new PipeProcess("mplayer_aud" + System.currentTimeMillis());
 
-		String mPlayerdefaultAudioArgs[] = new String[]{PMS.getConfiguration().getMplayerPath(), fileName, "-prefer-ipv4", "-nocache", "-af", "channels=2", "-srate", "48000", "-vo", "null", "-ao", "pcm:nowaveheader:fast:file=" + audioP.getInputPipe(), "-quiet"};
+		String mPlayerdefaultAudioArgs[] = new String[]{PMS.getConfiguration().getMplayerPath(), fileName, "-prefer-ipv4", "-nocache", "-af", "channels=2", "-srate", "48000", "-vo", "null", "-ao", "pcm:nowaveheader:fast:file=" + audioP.getInputPipe(), "-quiet", "-format", "s16be"};
 		if (params.mediaRenderer.isTranscodeToWAV()) {
 			mPlayerdefaultAudioArgs[11] = "pcm:waveheader:fast:file=" + audioP.getInputPipe();
+			mPlayerdefaultAudioArgs[11] = "s16le";
 		}
 		if (params.mediaRenderer.isTranscodeAudioTo441()) {
 			mPlayerdefaultAudioArgs[7] = "44100";

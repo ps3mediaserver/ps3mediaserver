@@ -71,6 +71,7 @@ import net.pms.formats.JPG;
 import net.pms.formats.M4A;
 import net.pms.formats.MKV;
 import net.pms.formats.MP3;
+import net.pms.formats.WAV;
 import net.pms.formats.MPG;
 import net.pms.formats.OGG;
 import net.pms.formats.PNG;
@@ -612,6 +613,7 @@ public class PMS {
 		extensions.add(new MP3());
 		extensions.add(new ISO());
 		extensions.add(new MPG());
+		extensions.add(new WAV());
 		extensions.add(new JPG());
 		extensions.add(new OGG());
 		extensions.add(new PNG());
