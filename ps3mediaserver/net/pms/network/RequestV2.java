@@ -310,7 +310,7 @@ public class RequestV2 extends HTTPResource {
 
 						// Try to determine the content type of the file
 						String rendererMimeType = getRendererMimeType(files.get(0).mimeType(), mediaRenderer);
-						
+
 						if (rendererMimeType != null && !"".equals(rendererMimeType)) {
 							output.setHeader(HttpHeaders.Names.CONTENT_TYPE, rendererMimeType);
 						}
@@ -320,49 +320,49 @@ public class RequestV2 extends HTTPResource {
 							if (StringUtils.isNotBlank(media.container)) {
 								name += " [container: " + media.container + "]";
 							}
-	
+
 							if (StringUtils.isNotBlank(media.codecV)) {
 								name += " [video: " + media.codecV + "]";
 							}
 						}
-	
+
 						PMS.get().getFrame().setStatusLine("Serving " + name);
-	
+
 						// Response generation:
 						// We use -1 for arithmetic convenience but don't send it as a value. 
 						// If Content-Length < 0 we omit it, for Content-Range we use '*' to signify unspecified.
-						
+
 						boolean chunked = mediaRenderer.isChunkedTransfer();
-						
+
 						// Determine the total size. Note: when transcoding the length is
 						// not known in advance, so DLNAMediaInfo.TRANS_SIZE will be returned instead.
-						
+
 						long totalsize = dlna.length(mediaRenderer);
-						
+
 						if (chunked && totalsize == DLNAMediaInfo.TRANS_SIZE) {
 							// In chunked mode we try to avoid arbitrary values.
 							totalsize = -1;
 						}
-	
+
 						long remaining = totalsize - lowRange;
 						long requested = highRange - lowRange;
-						
+
 						if (requested != 0) {
 							// Determine the range (i.e. smaller of known or requested bytes)
 							long bytes = remaining > -1 ? remaining : inputStream.available();
-							
+
 							if (requested > 0 && bytes > requested) {
 								bytes = requested + 1;
 							}
-							
+
 							// Calculate the corresponding highRange (this is usually redundant).
 							highRange = lowRange + bytes - (bytes > 0 ? 1 : 0);
-								
+
 							logger.trace((chunked ? "Using chunked response. " : "")  + "Sending " + bytes + " bytes.");
-											
+
 							output.setHeader(HttpHeaders.Names.CONTENT_RANGE, "bytes " + lowRange + "-" 
 								+ (highRange > -1 ? highRange : "*") + "/" + (totalsize > -1 ? totalsize : "*"));
-											
+
 							// Content-Length refers to the current chunk size here, though in chunked
 							// mode if the request is open-ended and totalsize is unknown we omit it.
 							if (chunked && requested < 0 && totalsize < 0) {
@@ -374,18 +374,14 @@ public class RequestV2 extends HTTPResource {
 							// Content-Length refers to the total remaining size of the stream here.
 							CLoverride = remaining;
 						}
-	
+
 						// Calculate the corresponding highRange (this is usually redundant).
 						highRange = lowRange + CLoverride - (CLoverride > 0 ? 1 : 0);
-	
-						if (!chunked) {
-							CLoverride = totalsize;
-						}
-						
+
 						if (contentFeatures != null) {
 							output.setHeader("ContentFeatures.DLNA.ORG", files.get(0).getDlnaContentFeatures());
 						}
-	
+
 						output.setHeader(HttpHeaders.Names.ACCEPT_RANGES, "bytes");
 						output.setHeader(HttpHeaders.Names.CONNECTION, "keep-alive");
 					}
