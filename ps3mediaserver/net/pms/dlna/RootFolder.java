@@ -607,26 +607,30 @@ public class RootFolder extends DLNAResource {
 			ArrayList<?> Playlists;
 			HashMap<?, ?> Playlist;
 			HashMap<?, ?> Tracks;
-			HashMap<?, ?> Track;
+			HashMap<?, ?> track;
 			ArrayList<?> PlaylistTracks;
 
 			try {
 				String iTunesFile = getiTunesFile();
+				
 				if (iTunesFile != null && (new File(iTunesFile)).exists()) {
 					iTunesLib = Plist.load(URLDecoder.decode(iTunesFile, System.getProperty("file.encoding"))); // loads the (nested) properties.
 					Tracks = (HashMap<?, ?>) iTunesLib.get("Tracks"); // the list of tracks
 					Playlists = (ArrayList<?>) iTunesLib.get("Playlists"); // the list of Playlists
 					res = new VirtualFolder("iTunes Library", null);
+					
 					for (Object item : Playlists) {
 						Playlist = (HashMap<?, ?>) item;
 						VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(), null);
 						PlaylistTracks = (ArrayList<?>) Playlist.get("Playlist Items"); // list of tracks in a playlist
+						
 						if (PlaylistTracks != null) {
 							for (Object t : PlaylistTracks) {
 								HashMap<?, ?> td = (HashMap<?, ?>) t;
-								Track = (HashMap<?, ?>) Tracks.get(td.get("Track ID").toString());
-								if (Track.get("Location").toString().startsWith("file://")) {
-									URI tURI2 = new URI(Track.get("Location").toString());
+								track = (HashMap<?, ?>) Tracks.get(td.get("Track ID").toString());
+								
+								if (track != null && track.get("Location").toString().startsWith("file://")) {
+									URI tURI2 = new URI(track.get("Location").toString());
 									RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
 									pf.addChild(file);
 								}
