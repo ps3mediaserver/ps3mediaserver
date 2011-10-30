@@ -29,7 +29,7 @@ public class WebStream extends DLNAResource {
 	@Override
 	public boolean isValid() {
 		checktype();
-		return ext != null;
+		return getExt() != null;
 	}
 
 	protected String url;

@@ -26,9 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import net.pms.PMS;
 import net.pms.configuration.MapFileConfiguration;
@@ -53,12 +51,12 @@ public class MapFile extends DLNAResource {
 
 	public MapFile() {
 		this.conf = new MapFileConfiguration();
-		lastmodified = 0;
+		setLastmodified(0);
 	}
 
 	public MapFile(MapFileConfiguration conf) {
 		this.conf = conf;
-		lastmodified = 0;
+		setLastmodified(0);
 	}
 
 	private boolean isFileRelevant(File f) {
@@ -138,9 +136,9 @@ public class MapFile extends DLNAResource {
 
 	@Override
 	public boolean analyzeChildren(int count) {
-		int currentChildrenCount = children.size();
+		int currentChildrenCount = getChildren().size();
 		int vfolder = 0;
-		while ((children.size() - currentChildrenCount) < count || count == -1) {
+		while ((getChildren().size() - currentChildrenCount) < count || count == -1) {
 			if (vfolder < conf.getChildren().size()) {
 				addChild(new MapFile(conf.getChildren().get(vfolder)));
 				++vfolder;
@@ -226,7 +224,7 @@ public class MapFile extends DLNAResource {
 		List<File> files = getFileList();
 		List<File> addedFiles = new ArrayList<File>();
 		List<DLNAResource> removedFiles = new ArrayList<DLNAResource>();
-		for (DLNAResource d : children) {
+		for (DLNAResource d : getChildren()) {
 			boolean isNeedMatching = !(d.getClass() == MapFile.class ||  (d instanceof VirtualFolder && !(d instanceof DVDISOFile)) );
 			if (isNeedMatching) {
 				if (!foundInList(files, d)) {
@@ -254,11 +252,11 @@ public class MapFile extends DLNAResource {
 		TranscodeVirtualFolder vf = getTranscodeFolder(false);
 
 		for (DLNAResource f : removedFiles) {
-			children.remove(f);
+			getChildren().remove(f);
 			if (vf != null) {
-				for (int j = vf.children.size() - 1; j >= 0; j--) {
-					if (vf.children.get(j).getName().equals(f.getName())) {
-						vf.children.remove(j);
+				for (int j = vf.getChildren().size() - 1; j >= 0; j--) {
+					if (vf.getChildren().get(j).getName().equals(f.getName())) {
+						vf.getChildren().remove(j);
 					}
 				}
 			}
@@ -286,7 +284,7 @@ public class MapFile extends DLNAResource {
 	}
 
 	private boolean isSameLastModified(File f, DLNAResource d) {
-		return d.lastmodified == f.lastModified();
+		return d.getLastmodified() == f.lastModified();
 	}
 
 	private boolean isRealFolder(DLNAResource d) {
@@ -352,6 +350,6 @@ public class MapFile extends DLNAResource {
 	 */
 	@Override
 	public String toString() {
-		return "MapFile [name=" + getName() + ", id=" + getId() + ", ext=" + ext + ", children=" + children + "]";
+		return "MapFile [name=" + getName() + ", id=" + getResourceId() + ", ext=" + getExt() + ", children=" + getChildren() + "]";
 	}
 }

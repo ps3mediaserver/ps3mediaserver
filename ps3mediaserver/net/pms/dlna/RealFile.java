@@ -40,13 +40,13 @@ public class RealFile extends MapFile {
 
 	public RealFile(File file) {
 		conf.getFiles().add(file);
-		lastmodified = file.lastModified();
+		setLastmodified(file.lastModified());
 	}
 
 	public RealFile(File file, String name) {
 		conf.getFiles().add(file);
 		conf.setName(name);
-		lastmodified = file.lastModified();
+		setLastmodified(file.lastModified());
 	}
 
 	@Override
@@ -55,27 +55,27 @@ public class RealFile extends MapFile {
 		File file = this.getFile();
 		checktype();
 		if (getType() == Format.VIDEO && file.exists() && PMS.getConfiguration().getUseSubtitles() && file.getName().length() > 4) {
-			srtFile = FileUtil.doesSubtitlesExists(file, null);
+			setSrtFile(FileUtil.doesSubtitlesExists(file, null));
 		}
-		boolean valid = file.exists() && (ext != null || file.isDirectory());
+		boolean valid = file.exists() && (getExt() != null || file.isDirectory());
 
-		if (valid && parent.defaultRenderer != null && parent.defaultRenderer.isMediaParserV2()) {
+		if (valid && getParent().getDefaultRenderer() != null && getParent().getDefaultRenderer().isMediaParserV2()) {
 			// we need to resolve the dlna resource now
 			run();
-			if (media != null && media.thumb == null && getType() != Format.AUDIO) // MediaInfo retrieves cover art now
+			if (getMedia() != null && getMedia().thumb == null && getType() != Format.AUDIO) // MediaInfo retrieves cover art now
 			{
-				media.thumbready = false;
+				getMedia().thumbready = false;
 			}
-			if (media != null && (media.encrypted || media.container == null || media.container.equals(DLNAMediaLang.UND))) {
+			if (getMedia() != null && (getMedia().encrypted || getMedia().container == null || getMedia().container.equals(DLNAMediaLang.UND))) {
 				// fine tuning: bad parsing = no file !
 				valid = false;
-				if (media.encrypted) {
+				if (getMedia().encrypted) {
 					logger.info("The file " + file.getAbsolutePath() + " is encrypted. It will be hidden");
 				} else {
 					logger.info("The file " + file.getAbsolutePath() + " was badly parsed. It will be hidden");
 				}
 			}
-			if (parent.defaultRenderer.isMediaParserV2ThumbnailGeneration()) {
+			if (getParent().getDefaultRenderer().isMediaParserV2ThumbnailGeneration()) {
 				checkThumbnail();
 			}
 		}
@@ -93,10 +93,10 @@ public class RealFile extends MapFile {
 
 	@Override
 	public long length() {
-		if (player != null && player.type() != Format.IMAGE) {
+		if (getPlayer() != null && getPlayer().type() != Format.IMAGE) {
 			return DLNAMediaInfo.TRANS_SIZE;
-		} else if (media != null && media.mediaparsed) {
-			return media.size;
+		} else if (getMedia() != null && getMedia().mediaparsed) {
+			return getMedia().size;
 		}
 		return getFile().length();
 	}
@@ -133,8 +133,8 @@ public class RealFile extends MapFile {
 
 	@Override
 	protected void checktype() {
-		if (ext == null) {
-			ext = PMS.get().getAssociatedExtension(getFile().getAbsolutePath());
+		if (getExt() == null) {
+			setExt(PMS.get().getAssociatedExtension(getFile().getAbsolutePath()));
 		}
 
 		super.checktype();
@@ -148,13 +148,13 @@ public class RealFile extends MapFile {
 	@Override
 	public void resolve() {
 		File file = getFile();
-		if (file.isFile() && file.exists() && (media == null || !media.mediaparsed)) {
+		if (file.isFile() && file.exists() && (getMedia() == null || !getMedia().mediaparsed)) {
 			boolean found = false;
 			InputFile input = new InputFile();
 			input.file = file;
 			String fileName = file.getAbsolutePath();
-			if (splitTrack > 0) {
-				fileName += "#SplitTrack" + splitTrack;
+			if (getSplitTrack() > 0) {
+				fileName += "#SplitTrack" + getSplitTrack();
 			}
 			
 			if (PMS.getConfiguration().getUseCache()) {
@@ -164,29 +164,29 @@ public class RealFile extends MapFile {
 					ArrayList<DLNAMediaInfo> medias = database.getData(fileName, file.lastModified());
 
 					if (medias != null && medias.size() == 1) {
-						media = medias.get(0);
-						media.finalize(getType(), input);
+						setMedia(medias.get(0));
+						getMedia().finalize(getType(), input);
 						found = true;
 					}
 				}
 			}
 
 			if (!found) {
-				if (media == null) {
-					media = new DLNAMediaInfo();
+				if (getMedia() == null) {
+					setMedia(new DLNAMediaInfo());
 				}
-				found = !media.mediaparsed && !media.parsing;
-				if (ext != null) {
-					ext.parse(media, input, getType(), parent.defaultRenderer);
+				found = !getMedia().mediaparsed && !getMedia().parsing;
+				if (getExt() != null) {
+					getExt().parse(getMedia(), input, getType(), getParent().getDefaultRenderer());
 				} else //don't think that will ever happen
 				{
-					media.parse(input, ext, getType(), false);
+					getMedia().parse(input, getExt(), getType(), false);
 				}
 				if (found && PMS.getConfiguration().getUseCache()) {
 					DLNAMediaDatabase database = PMS.get().getDatabase();
 
 					if (database != null) {
-						database.insertData(fileName, file.lastModified(), getType(), media);
+						database.insertData(fileName, file.lastModified(), getType(), getMedia());
 					}
 				}
 			}
@@ -241,11 +241,11 @@ public class RealFile extends MapFile {
 			}
 
 		}
-		boolean hasAlreadyEmbeddedCoverArt = getType() == Format.AUDIO && media != null && media.thumb != null;
+		boolean hasAlreadyEmbeddedCoverArt = getType() == Format.AUDIO && getMedia() != null && getMedia().thumb != null;
 		if (cachedThumbnail != null && (!hasAlreadyEmbeddedCoverArt || file.isDirectory())) {
 			return new FileInputStream(cachedThumbnail);
-		} else if (media != null && media.thumb != null) {
-			return media.getThumbnailInputStream();
+		} else if (getMedia() != null && getMedia().thumb != null) {
+			return getMedia().getThumbnailInputStream();
 		} else {
 			return super.getThumbnailInputStream();
 		}
@@ -267,7 +267,7 @@ public class RealFile extends MapFile {
 		StringBuilder sb = new StringBuilder();
 		sb.append(PMS.get().getServer().getURL());
 		sb.append("/");
-		if (media != null && media.thumb != null) {
+		if (getMedia() != null && getMedia().thumb != null) {
 			return super.getThumbnailURL();
 		} else if (getType() == Format.AUDIO) {
 			if (getParent() != null && getParent() instanceof RealFile && ((RealFile) getParent()).potentialCover != null) {

@@ -62,7 +62,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 	}
 
 	public long length() {
-		if (player != null && player.type() != Format.IMAGE) {
+		if (getPlayer() != null && getPlayer().type() != Format.IMAGE) {
 			return DLNAMediaInfo.TRANS_SIZE;
 		}
 		return length;
@@ -84,8 +84,8 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 	@Override
 	public boolean isValid() {
 		checktype();
-		srtFile = FileUtil.doesSubtitlesExists(z, null);
-		return ext != null;
+		setSrtFile(FileUtil.doesSubtitlesExists(z, null));
+		return getExt() != null;
 	}
 
 	@Override
@@ -123,20 +123,20 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 
 	@Override
 	public void resolve() {
-		if (ext == null || !ext.isVideo()) {
+		if (getExt() == null || !getExt().isVideo()) {
 			return;
 		}
 		boolean found = false;
 		if (!found) {
-			if (media == null) {
-				media = new DLNAMediaInfo();
+			if (getMedia() == null) {
+				setMedia(new DLNAMediaInfo());
 			}
-			found = !media.mediaparsed && !media.parsing;
-			if (ext != null) {
+			found = !getMedia().mediaparsed && !getMedia().parsing;
+			if (getExt() != null) {
 				InputFile input = new InputFile();
 				input.push = this;
 				input.size = length();
-				ext.parse(media, input, getType());
+				getExt().parse(getMedia(), input, getType());
 			}
 		}
 		super.resolve();
@@ -144,8 +144,8 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 
 	@Override
 	public InputStream getThumbnailInputStream() throws IOException {
-		if (media != null && media.thumb != null) {
-			return media.getThumbnailInputStream();
+		if (getMedia() != null && getMedia().thumb != null) {
+			return getMedia().getThumbnailInputStream();
 		} else {
 			return super.getThumbnailInputStream();
 		}

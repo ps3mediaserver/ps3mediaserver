@@ -38,66 +38,66 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 	@Override
 	public void resolve() {
 		super.resolve();
-		if (!resolved && children.size() == 1) { //OK
-			DLNAResource child = children.get(0);
+		if (!resolved && getChildren().size() == 1) { //OK
+			DLNAResource child = getChildren().get(0);
 			child.resolve();
-			if (child.ext.getProfiles() != null) {
+			if (child.getExt().getProfiles() != null) {
 				DLNAResource ref = child;
 				Player tsMuxer = null;
-				for (int i = 0; i < child.ext.getProfiles().size(); i++) {
-					Player pl = PMS.get().getPlayer(child.ext.getProfiles().get(i), child.ext);
-					if (pl != null && !child.player.equals(pl)) {
+				for (int i = 0; i < child.getExt().getProfiles().size(); i++) {
+					Player pl = PMS.get().getPlayer(child.getExt().getProfiles().get(i), child.getExt());
+					if (pl != null && !child.getPlayer().equals(pl)) {
 						DLNAResource avisnewChild = (DLNAResource) child.clone();
-						avisnewChild.id = null;
-						avisnewChild.player = pl;
-						avisnewChild.noName = true;
-						avisnewChild.media = child.media;
-						if (avisnewChild.player.id().equals(MEncoderVideo.ID)) {
+						avisnewChild.setId(null);
+						avisnewChild.setPlayer(pl);
+						avisnewChild.setNoName(true);
+						avisnewChild.setMedia(child.getMedia());
+						if (avisnewChild.getPlayer().id().equals(MEncoderVideo.ID)) {
 							ref = avisnewChild;
 						}
-						if (avisnewChild.player.id().equals(TSMuxerVideo.ID)) {
+						if (avisnewChild.getPlayer().id().equals(TSMuxerVideo.ID)) {
 							tsMuxer = pl;
 						}
 						addChildInternal(avisnewChild);
 						addChapterFile(avisnewChild);
 					}
 				}
-				for (int i = 0; i < child.media.audioCodes.size(); i++) {
+				for (int i = 0; i < child.getMedia().audioCodes.size(); i++) {
 					DLNAResource newChildNoSub = (DLNAResource) ref.clone();
-					newChildNoSub.id = null;
-					newChildNoSub.player = ref.player;
-					newChildNoSub.media = ref.media;
-					newChildNoSub.noName = true;
-					newChildNoSub.media_audio = ref.media.audioCodes.get(i);
-					newChildNoSub.media_subtitle = new DLNAMediaSubtitle();
-					newChildNoSub.media_subtitle.id = -1;
+					newChildNoSub.setId(null);
+					newChildNoSub.setPlayer(ref.getPlayer());
+					newChildNoSub.setMedia(ref.getMedia());
+					newChildNoSub.setNoName(true);
+					newChildNoSub.setMediaAudio(ref.getMedia().audioCodes.get(i));
+					newChildNoSub.setMediaSubtitle(new DLNAMediaSubtitle());
+					newChildNoSub.getMediaSubtitle().id = -1;
 					addChildInternal(newChildNoSub);
 
 					addChapterFile(newChildNoSub);
 
-					for (int j = 0; j < child.media.subtitlesCodes.size(); j++) {
+					for (int j = 0; j < child.getMedia().subtitlesCodes.size(); j++) {
 						DLNAResource newChild = (DLNAResource) ref.clone();
-						newChild.id = null;
-						newChild.player = ref.player;
-						newChild.media = ref.media;
-						newChild.noName = true;
-						newChild.media_audio = ref.media.audioCodes.get(i);
-						newChild.media_subtitle = ref.media.subtitlesCodes.get(j);
+						newChild.setId(null);
+						newChild.setPlayer(ref.getPlayer());
+						newChild.setMedia(ref.getMedia());
+						newChild.setNoName(true);
+						newChild.setMediaAudio(ref.getMedia().audioCodes.get(i));
+						newChild.setMediaSubtitle(ref.getMedia().subtitlesCodes.get(j));
 						addChildInternal(newChild);
 						addChapterFile(newChild);
 
-						logger.debug("Duplicate " + ref.getName() + " with player: " + ref.player.toString() + " and aid: " + newChild.media_audio.id + " and sid: " + newChild.media_subtitle);
+						logger.debug("Duplicate " + ref.getName() + " with player: " + ref.getPlayer().toString() + " and aid: " + newChild.getMediaAudio().id + " and sid: " + newChild.getMediaSubtitle());
 					}
 				}
 
 				if (tsMuxer != null) {
-					for (int i = 0; i < child.media.audioCodes.size(); i++) {
+					for (int i = 0; i < child.getMedia().audioCodes.size(); i++) {
 						DLNAResource newChildNoSub = (DLNAResource) ref.clone();
-						newChildNoSub.id = null;
-						newChildNoSub.player = tsMuxer;
-						newChildNoSub.media = ref.media;
-						newChildNoSub.noName = true;
-						newChildNoSub.media_audio = ref.media.audioCodes.get(i);
+						newChildNoSub.setId(null);
+						newChildNoSub.setPlayer(tsMuxer);
+						newChildNoSub.setMedia(ref.getMedia());
+						newChildNoSub.setNoName(true);
+						newChildNoSub.setMediaAudio(ref.getMedia().audioCodes.get(i));
 						addChildInternal(newChildNoSub);
 						addChapterFile(newChildNoSub);
 
@@ -106,11 +106,11 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 
 				// meskibob: I think it'd be a good idea to add a "Stream" option (for PS3 compatible containers) to the #Transcode# folder in addition to the current options already in there.
 				DLNAResource justStreamed = (DLNAResource) ref.clone();
-				if (justStreamed.ext != null && (justStreamed.ext.ps3compatible() || justStreamed.skipTranscode)) {
-					justStreamed.id = null;
-					justStreamed.player = null;
-					justStreamed.media = ref.media;
-					justStreamed.noName = true;
+				if (justStreamed.getExt() != null && (justStreamed.getExt().ps3compatible() || justStreamed.isSkipTranscode())) {
+					justStreamed.setId(null);
+					justStreamed.setPlayer(null);
+					justStreamed.setMedia(ref.getMedia());
+					justStreamed.setNoName(true);
 					addChildInternal(justStreamed);
 					addChapterFile(justStreamed);
 				}
@@ -123,8 +123,8 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 		if (PMS.getConfiguration().getChapterInterval() > 0 && PMS.getConfiguration().isChapterSupport()) {
 			ChapterFileTranscodeVirtualFolder chapterFolder = new ChapterFileTranscodeVirtualFolder("Chapters:" + source.getDisplayName(), null, PMS.getConfiguration().getChapterInterval());
 			DLNAResource newSeekChild = (DLNAResource) source.clone();
-			newSeekChild.id = null;
-			newSeekChild.noName = true;
+			newSeekChild.setId(null);
+			newSeekChild.setNoName(true);
 			chapterFolder.addChildInternal(newSeekChild);
 			addChildInternal(chapterFolder);
 		}

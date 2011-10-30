@@ -99,7 +99,7 @@ public class RootFolder extends DLNAResource {
 
 	@Override
 	public void discoverChildren() {
-		if(discovered) {
+		if(isDiscovered()) {
 			return;
 		}
 		
@@ -146,15 +146,15 @@ public class RootFolder extends DLNAResource {
 				addChild(videoSettingsRes);
 			}
 		}
-		discovered = true;
+		setDiscovered(true);
 	}
 
 	public void scan() {
 		running = true;
-		if(!discovered) {
+		if(!isDiscovered()) {
 			discoverChildren();
 		}
-		defaultRenderer = RendererConfiguration.getDefaultConf();
+		setDefaultRenderer(RendererConfiguration.getDefaultConf());
 		scan(this);
 		IFrame frame = PMS.get().getFrame();
 		frame.setScanLibraryEnabled(true);
@@ -168,9 +168,9 @@ public class RootFolder extends DLNAResource {
 
 	private synchronized void scan(DLNAResource resource) {
 		if (running) {
-			for (DLNAResource child : resource.children) {
+			for (DLNAResource child : resource.getChildren()) {
 				if (running && child.allowScan()) {
-					child.defaultRenderer = resource.defaultRenderer;
+					child.setDefaultRenderer(resource.getDefaultRenderer());
 					String trace = null;
 					if (child instanceof RealFile) {
 						trace = "Scanning Folder: " + child.getName();
@@ -179,7 +179,7 @@ public class RootFolder extends DLNAResource {
 						logger.debug(trace);
 						PMS.get().getFrame().setStatusLine(trace);
 					}
-					if (child.discovered) {
+					if (child.isDiscovered()) {
 						child.refreshChildren();
 					} else {
 						if (child instanceof DVDISOFile || child instanceof DVDISOTitle) // ugly hack
@@ -188,14 +188,14 @@ public class RootFolder extends DLNAResource {
 						}
 						child.discoverChildren();
 						child.analyzeChildren(-1);
-						child.discovered = true;
+						child.setDiscovered(true);
 					}
-					int count = child.children.size();
+					int count = child.getChildren().size();
 					if (count == 0) {
 						continue;
 					}
 					scan(child);
-					child.children.clear();
+					child.getChildren().clear();
 				}
 			}
 		}
@@ -790,6 +790,6 @@ public class RootFolder extends DLNAResource {
 
 	@Override
 	public String toString() {
-		return "RootFolder["+children+"]";
+		return "RootFolder[" + getChildren() + "]";
 	}
 } 

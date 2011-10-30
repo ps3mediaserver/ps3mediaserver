@@ -54,22 +54,22 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 	public void resolve() {
 		super.resolve();
 
-		if (!resolved && children.size() == 1) { //OK
-			DLNAResource child = children.get(0);
+		if (!resolved && getChildren().size() == 1) { //OK
+			DLNAResource child = getChildren().get(0);
 			child.resolve();
-			int nbMinutes = (int) (child.media.getDurationInSeconds() / 60);
+			int nbMinutes = (int) (child.getMedia().getDurationInSeconds() / 60);
 			int nbIntervals = nbMinutes / interval;
 
 			for (int i = 1; i <= nbIntervals; i++) {
 				// TODO: Remove clone(), instead create a new object from scratch to avoid unwanted cross references.
 				DLNAResource newChildNoSub = (DLNAResource) child.clone();
-				newChildNoSub.id = null;
-				newChildNoSub.player = child.player;
-				newChildNoSub.media = child.media;
-				newChildNoSub.noName = true;
-				newChildNoSub.media_audio = child.media_audio;
-				newChildNoSub.media_subtitle = child.media_subtitle;
-				newChildNoSub.splitRange = new Range.Time(60.0 * i * interval, newChildNoSub.media.getDurationInSeconds());
+				newChildNoSub.setId(null);
+				newChildNoSub.setPlayer(child.getPlayer());
+				newChildNoSub.setMedia(child.getMedia());
+				newChildNoSub.setNoName(true);
+				newChildNoSub.setMediaAudio(child.getMediaAudio());
+				newChildNoSub.setMediaSubtitle(child.getMediaSubtitle());
+				newChildNoSub.setSplitRange(new Range.Time(60.0 * i * interval, newChildNoSub.getMedia().getDurationInSeconds()));
 
 				addChildInternal(newChildNoSub);
 			}
