@@ -53,7 +53,7 @@ public class FeedItem extends DLNAResource {
 		this.title = title;
 		this.itemURL = itemURL;
 		this.thumbURL = thumbURL;
-		this.media = media;
+		this.setMedia(media);
 	}
 
 	public InputStream getInputStream() throws IOException {
@@ -95,6 +95,6 @@ public class FeedItem extends DLNAResource {
 	@Override
 	public boolean isValid() {
 		checktype();
-		return ext != null;
+		return getExt() != null;
 	}
 }

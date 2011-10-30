@@ -85,13 +85,13 @@ public class MediaLibraryFolder extends VirtualFolder {
 	private String transformSQL(String sql) {
 
 		sql = sql.replace("${0}", transformName(getName()));
-		if (parent != null) {
+		if (getParent() != null) {
 			sql = sql.replace("${1}", transformName(getParent().getName()));
-			if (parent.getParent() != null) {
+			if (getParent().getParent() != null) {
 				sql = sql.replace("${2}", transformName(getParent().getParent().getName()));
-				if (parent.getParent().getParent() != null) {
+				if (getParent().getParent().getParent() != null) {
 					sql = sql.replace("${3}", transformName(getParent().getParent().getParent().getName()));
-					if (parent.getParent().getParent().getParent() != null) {
+					if (getParent().getParent().getParent().getParent() != null) {
 						sql = sql.replace("${4}", transformName(getParent().getParent().getParent().getParent().getName()));
 					}
 				}
@@ -138,7 +138,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 		if (list != null) {
 			for (File f : list) {
 				boolean present = false;
-				for (DLNAResource d : children) {
+				for (DLNAResource d : getChildren()) {
 					if (i == 0 && (!(d instanceof VirtualFolder) || (d instanceof MediaLibraryFolder))) {
 						removedFiles.add(d);
 					}
@@ -160,7 +160,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 		if (strings != null) {
 			for (String f : strings) {
 				boolean present = false;
-				for (DLNAResource d : children) {
+				for (DLNAResource d : getChildren()) {
 					if (i == 0 && (!(d instanceof VirtualFolder) || (d instanceof MediaLibraryFolder))) {
 						removedString.add(d);
 					}
@@ -178,10 +178,10 @@ public class MediaLibraryFolder extends VirtualFolder {
 		}
 
 		for (DLNAResource f : removedFiles) {
-			children.remove(f);
+			getChildren().remove(f);
 		}
 		for (DLNAResource s : removedString) {
-			children.remove(s);
+			getChildren().remove(s);
 		}
 		for (File f : addedFiles) {
 			if (expectedOutput == FILES) {

@@ -24,7 +24,7 @@ public class PlaylistFolder extends DLNAResource {
 
 	public PlaylistFolder(File f) {
 		playlistfile = f;
-		lastmodified = playlistfile.lastModified();
+		setLastmodified(playlistfile.lastModified());
 	}
 
 	@Override
@@ -161,7 +161,7 @@ public class PlaylistFolder extends DLNAResource {
 				}
 			}
 			PMS.get().storeFileInCache(playlistfile, Format.PLAYLIST);
-			for (DLNAResource r : children) {
+			for (DLNAResource r : getChildren()) {
 				r.resolve();
 			}
 		}

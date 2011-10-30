@@ -355,7 +355,7 @@ public class Request extends HTTPResource {
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.GETSYSTEMUPDATEID_HEADER);
 				response.append(CRLF);
-				response.append("<Id>").append(DLNAResource.systemUpdateId).append("</Id>");
+				response.append("<Id>").append(DLNAResource.getSystemUpdateId()).append("</Id>");
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.GETSYSTEMUPDATEID_FOOTER);
 				response.append(CRLF);
@@ -424,19 +424,19 @@ public class Request extends HTTPResource {
 				String searchCriteria = null;
 				if (xbox && PMS.getConfiguration().getUseCache() && PMS.get().getLibrary() != null && containerID != null) {
 					if (containerID.equals("7") && PMS.get().getLibrary().getAlbumFolder() != null) {
-						objectID = PMS.get().getLibrary().getAlbumFolder().getId();
+						objectID = PMS.get().getLibrary().getAlbumFolder().getResourceId();
 					} else if (containerID.equals("6") && PMS.get().getLibrary().getArtistFolder() != null) {
-						objectID = PMS.get().getLibrary().getArtistFolder().getId();
+						objectID = PMS.get().getLibrary().getArtistFolder().getResourceId();
 					} else if (containerID.equals("5") && PMS.get().getLibrary().getGenreFolder() != null) {
-						objectID = PMS.get().getLibrary().getGenreFolder().getId();
+						objectID = PMS.get().getLibrary().getGenreFolder().getResourceId();
 					} else if (containerID.equals("F") && PMS.get().getLibrary().getPlaylistFolder() != null) {
-						objectID = PMS.get().getLibrary().getPlaylistFolder().getId();
+						objectID = PMS.get().getLibrary().getPlaylistFolder().getResourceId();
 					} else if (containerID.equals("4") && PMS.get().getLibrary().getAllFolder() != null) {
-						objectID = PMS.get().getLibrary().getAllFolder().getId();
+						objectID = PMS.get().getLibrary().getAllFolder().getResourceId();
 					} else if (containerID.equals("1")) {
 						String artist = getEnclosingValue(content, "upnp:artist = &quot;", "&quot;)");
 						if (artist != null) {
-							objectID = PMS.get().getLibrary().getArtistFolder().getId();
+							objectID = PMS.get().getLibrary().getArtistFolder().getResourceId();
 							searchCriteria = artist;
 						}
 					}

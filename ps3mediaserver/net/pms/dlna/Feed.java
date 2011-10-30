@@ -105,7 +105,7 @@ public class Feed extends DLNAResource {
 				manageItem();
 			}
 		}
-		lastmodified = System.currentTimeMillis();
+		setLastmodified(System.currentTimeMillis());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -164,19 +164,19 @@ public class Feed extends DLNAResource {
 	}
 
 	protected void manageItem() {
-		FeedItem fi = new FeedItem(tempItemTitle, tempItemLink, tempItemThumbURL, null, specificType);
+		FeedItem fi = new FeedItem(tempItemTitle, tempItemLink, tempItemThumbURL, null, getSpecificType());
 		addChild(fi);
 	}
 
 	@Override
 	public boolean isRefreshNeeded() {
-	    return (System.currentTimeMillis() - lastmodified > 3600000);
+	    return (System.currentTimeMillis() - getLastmodified() > 3600000);
 	}
 
 	@Override
 	public void refreshChildren() {
 		try {
-			children.clear();
+			getChildren().clear();
 			parse();
 		} catch (Exception e) {
 			logger.error("Error in parsing stream: " + url, e);

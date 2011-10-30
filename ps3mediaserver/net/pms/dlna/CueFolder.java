@@ -32,7 +32,7 @@ public class CueFolder extends DLNAResource {
 
 	public CueFolder(File f) {
 		playlistfile = f;
-		lastmodified = playlistfile.lastModified();
+		setLastmodified(playlistfile.lastModified());
 	}
 
 	@Override
@@ -100,55 +100,55 @@ public class CueFolder extends DLNAResource {
 								count++;
 							}
 							prec.getSplitRange().setEnd(end);
-							prec.media.setDuration(prec.getSplitRange().getDuration());
+							prec.getMedia().setDuration(prec.getSplitRange().getDuration());
 							logger.debug("Track #" + i + " split range: " + prec.getSplitRange().getStartOrZero() + " - " + prec.getSplitRange().getDuration());
 						}
 						Position start = track.getIndices().get(0).getPosition();
 						RealFile r = new RealFile(new File(playlistfile.getParentFile(), f.getFile()));
 						addChild(r);
 						addedResources.add(r);
-						if (i > 0 && r.media == null) {
-							r.media = new DLNAMediaInfo();
-							r.media.mediaparsed = true;
+						if (i > 0 && r.getMedia() == null) {
+							r.setMedia(new DLNAMediaInfo());
+							r.getMedia().mediaparsed = true;
 						}
 						r.resolve();
 						if (i == 0) {
-							originalMedia = r.media;
+							originalMedia = r.getMedia();
 						}
 						r.getSplitRange().setStart(getTime(start));
-						r.splitTrack = i + 1;
-						if (r.player == null) { // assign a splitter engine if file is natively supported by renderer
+						r.setSplitTrack(i + 1);
+						if (r.getPlayer() == null) { // assign a splitter engine if file is natively supported by renderer
 							if (defaultPlayer == null) {
-								if (r.ext.isAudio()) {
+								if (r.getExt().isAudio()) {
 									defaultPlayer = new MPlayerAudio(PMS.getConfiguration());
 								} else {
 									defaultPlayer = new MEncoderVideo(PMS.getConfiguration());
 								}
 							}
-							r.player = defaultPlayer;
+							r.setPlayer(defaultPlayer);
 						}
-						if (r.media != null) {
+						if (r.getMedia() != null) {
 							try {
-								r.media = (DLNAMediaInfo) originalMedia.clone();
+								r.setMedia((DLNAMediaInfo) originalMedia.clone());
 							} catch (CloneNotSupportedException e) {
 								logger.info("Error in cloning media info: " + e.getMessage());
 							}
-							if (r.media != null && r.media.getFirstAudioTrack() != null) {
-								if (r.ext.isAudio()) {
-									r.media.getFirstAudioTrack().songname = track.getTitle();
+							if (r.getMedia() != null && r.getMedia().getFirstAudioTrack() != null) {
+								if (r.getExt().isAudio()) {
+									r.getMedia().getFirstAudioTrack().songname = track.getTitle();
 								} else {
-									r.media.getFirstAudioTrack().songname = "Chapter #" + (i + 1);
+									r.getMedia().getFirstAudioTrack().songname = "Chapter #" + (i + 1);
 								}
-								r.media.getFirstAudioTrack().track = i + 1;
-								r.media.size = -1;
+								r.getMedia().getFirstAudioTrack().track = i + 1;
+								r.getMedia().size = -1;
 								if (StringUtils.isNotBlank(sheet.getTitle())) {
-									r.media.getFirstAudioTrack().album = sheet.getTitle();
+									r.getMedia().getFirstAudioTrack().album = sheet.getTitle();
 								}
 								if (StringUtils.isNotBlank(sheet.getPerformer())) {
-									r.media.getFirstAudioTrack().artist = sheet.getPerformer();
+									r.getMedia().getFirstAudioTrack().artist = sheet.getPerformer();
 								}
 								if (StringUtils.isNotBlank(track.getPerformer())) {
-									r.media.getFirstAudioTrack().artist = track.getPerformer();
+									r.getMedia().getFirstAudioTrack().artist = track.getPerformer();
 								}
 							}
 
@@ -159,8 +159,8 @@ public class CueFolder extends DLNAResource {
 					if (tracks.size() > 0 && addedResources.size() > 0) {
 						// last track
 						DLNAResource prec = addedResources.get(addedResources.size() - 1);
-						prec.getSplitRange().setEnd(prec.media.getDurationInSeconds());
-						prec.media.setDuration(prec.getSplitRange().getDuration());
+						prec.getSplitRange().setEnd(prec.getMedia().getDurationInSeconds());
+						prec.getMedia().setDuration(prec.getSplitRange().getDuration());
 						logger.debug("Track #" + childrenNumber() + " split range: " + prec.getSplitRange().getStartOrZero() + " - " + prec.getSplitRange().getDuration());
 					}
 

@@ -38,7 +38,7 @@ public class RarredFile extends DLNAResource {
 
 	public RarredFile(File f) {
 		this.f = f;
-		lastmodified = f.lastModified();
+		setLastmodified(f.lastModified());
 		try {
 			rarFile = new Archive(f);
 			List<FileHeader> headers = rarFile.getFileHeaders();

@@ -147,8 +147,8 @@ public class DVDISOTitle extends DLNAResource {
 					InputStream is = new FileInputStream(jpg);
 					int sz = is.available();
 					if (sz > 0) {
-						media.thumb = new byte[sz];
-						is.read(media.thumb);
+						getMedia().thumb = new byte[sz];
+						is.read(getMedia().thumb);
 					}
 					is.close();
 					if (!jpg.delete()) {
@@ -179,23 +179,23 @@ public class DVDISOTitle extends DLNAResource {
 			d = Double.parseDouble(duration);
 		}
 
-		media.audioCodes = audio;
-		media.subtitlesCodes = subs;
+		getMedia().audioCodes = audio;
+		getMedia().subtitlesCodes = subs;
 
 		if (duration != null) {
-			media.setDuration(d);
+			getMedia().setDuration(d);
 		}
-		media.frameRate = fps;
-		media.aspect = aspect;
-		media.dvdtrack = title;
-		media.container = "iso";
-		media.codecV = "mpeg2video";
+		getMedia().frameRate = fps;
+		getMedia().aspect = aspect;
+		getMedia().dvdtrack = title;
+		getMedia().container = "iso";
+		getMedia().codecV = "mpeg2video";
 		try {
-			media.width = Integer.parseInt(width);
-			media.height = Integer.parseInt(height);
+			getMedia().width = Integer.parseInt(width);
+			getMedia().height = Integer.parseInt(height);
 		} catch (NumberFormatException nfe) {
 		}
-		media.mediaparsed = true;
+		getMedia().mediaparsed = true;
 
 		super.resolve();
 	}
@@ -207,7 +207,7 @@ public class DVDISOTitle extends DLNAResource {
 	public DVDISOTitle(File f, int title) {
 		this.f = f;
 		this.title = title;
-		lastmodified = f.lastModified();
+		setLastmodified(f.lastModified());
 	}
 
 	@Override
@@ -233,8 +233,8 @@ public class DVDISOTitle extends DLNAResource {
 
 	@Override
 	public boolean isValid() {
-		if (ext == null) {
-			ext = PMS.get().getAssociatedExtension("dummy.iso");
+		if (getExt() == null) {
+			setExt(PMS.get().getAssociatedExtension("dummy.iso"));
 		}
 		return true;
 	}
@@ -247,8 +247,8 @@ public class DVDISOTitle extends DLNAResource {
 	// Ditlew
 	public long length(RendererConfiguration mediaRenderer) {
 		// WDTV Live at least, needs a realistic size for stop/resume to works proberly. 2030879 = ((15000 + 256) * 1024 / 8 * 1.04) : 1.04 = overhead
-		int cbr_video_bitrate = defaultRenderer.getCBRVideoBitrate();
-		return (cbr_video_bitrate > 0) ? (long) (((cbr_video_bitrate + 256) * 1024 / 8 * 1.04) * media.getDurationInSeconds()) : length();
+		int cbr_video_bitrate = getDefaultRenderer().getCBRVideoBitrate();
+		return (cbr_video_bitrate > 0) ? (long) (((cbr_video_bitrate + 256) * 1024 / 8 * 1.04) * getMedia().getDurationInSeconds()) : length();
 	}
 
 	@Override
@@ -284,8 +284,8 @@ public class DVDISOTitle extends DLNAResource {
 		}
 		if (cachedThumbnail != null) {
 			return new FileInputStream(cachedThumbnail);
-		} else if (media != null && media.thumb != null) {
-			return media.getThumbnailInputStream();
+		} else if (getMedia() != null && getMedia().thumb != null) {
+			return getMedia().getThumbnailInputStream();
 		} else {
 			return getResourceInputStream("images/cdrwblank-256.png");
 		}
