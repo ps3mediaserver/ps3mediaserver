@@ -612,18 +612,18 @@ public class RootFolder extends DLNAResource {
 
 			try {
 				String iTunesFile = getiTunesFile();
-				
+
 				if (iTunesFile != null && (new File(iTunesFile)).exists()) {
 					iTunesLib = Plist.load(URLDecoder.decode(iTunesFile, System.getProperty("file.encoding"))); // loads the (nested) properties.
 					Tracks = (HashMap<?, ?>) iTunesLib.get("Tracks"); // the list of tracks
 					Playlists = (ArrayList<?>) iTunesLib.get("Playlists"); // the list of Playlists
 					res = new VirtualFolder("iTunes Library", null);
-					
+
 					for (Object item : Playlists) {
 						Playlist = (HashMap<?, ?>) item;
 						VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(), null);
 						PlaylistTracks = (ArrayList<?>) Playlist.get("Playlist Items"); // list of tracks in a playlist
-						
+
 						if (PlaylistTracks != null) {
 							for (Object t : PlaylistTracks) {
 								HashMap<?, ?> td = (HashMap<?, ?>) t;

@@ -89,7 +89,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	@Deprecated
 	protected int specificType;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable. 
 	 */
@@ -107,27 +107,27 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	@Deprecated
 	protected Format ext;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	protected DLNAMediaInfo media;
-	
+
 	/**
 	 * @deprecated Use {@link #getMediaAudio()} and {@link
 	 * #setMediaAudio(DLNAMediaAudio)} to access this variable.
 	 */
 	@Deprecated
 	protected DLNAMediaAudio media_audio;
-	
+
 	/**
 	 * @deprecated Use {@link #getMediaSubtitle()} and {@link
 	 * #setMediaSubtitle(DLNAMediaSubtitle)} to access this variable.
 	 */
 	@Deprecated
 	protected DLNAMediaSubtitle media_subtitle;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
@@ -150,7 +150,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected boolean discovered = false;
 
 	private ProcessWrapper externalProcess;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
@@ -162,13 +162,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	@Deprecated
 	protected int updateId = 1;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public static int systemUpdateId = 1;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
@@ -255,7 +255,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @return Parent object.
 	 */
 	public DLNAResource getParent() {
-		
 		return parent;
 	}
 
@@ -269,7 +268,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public void setParent(DLNAResource parent) {
 		this.parent = parent;
 	}
-	
+
 	/**
 	 * Returns the id of this resource based on the index in its parent
 	 * container. Its main purpose is to be unique in the parent container.
@@ -318,7 +317,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			return getId();
 		}
 	}
-	
+
 	/**
 	 * @see #setId()
 	 * @param id
@@ -635,7 +634,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected synchronized void addChildInternal(DLNAResource res) {
 		getChildren().add(res);
 		res.setParent(this);
-		
+
 		if (res.getInternalId() == null) {
 			setLastChildrenId(getLastChildrenId() + 1);
 			res.setIndexId(getLastChildrenId());
@@ -1689,7 +1688,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public Format getExt() {
 		return ext;
 	}
-	
+
 	/**
 	 * Sets the {@link Format} of this resource, thereby defining its capabilities.
 	 * 
@@ -1708,7 +1707,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public DLNAMediaInfo getMedia() {
 		return media;
 	}
-	
+
 	/**
 	 * Sets the the {@link DLNAMediaInfo} object that contains all specifics for
 	 * this resource.
@@ -1772,7 +1771,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public long getLastmodified() {
 		return lastmodified;
 	}
-	
+
 	/**
 	 * Sets the timestamp at which this resource was last modified.
 	 * 
@@ -1782,7 +1781,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected void setLastmodified(long lastmodified) {
 		this.lastmodified = lastmodified;
 	}
-	
+
 	/**
 	 * Returns the {@link Player} object that is used to encode this resource
 	 * for the renderer. Can be null.
@@ -1845,7 +1844,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected void setSrtFile(boolean srtFile) {
 		this.srtFile = srtFile;
 	}
-	
+
 	/**
 	 * Returns the update counter for this resource. When the resource needs
 	 * to be refreshed, its counter is updated.
@@ -1898,7 +1897,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public boolean isNoName() {
 		return noName;
 	}
-	
+
 	/**
 	 * Sets whether or not this is a nameless resource.
 	 * 
@@ -1917,7 +1916,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public Range.Time getSplitRange() {
 		return splitRange;
 	}
-	
+
 	/**
 	 * Sets the from - to time range for this resource.
 	 * 
@@ -2008,7 +2007,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected void setSkipTranscode(boolean skipTranscode) {
 		this.skipTranscode = skipTranscode;
 	}
-	
+
 	/**
 	 * Returns the list of children for this resource.
 	 * 
@@ -2066,6 +2065,5 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected void setLastRefreshTime(long lastRefreshTime) {
 		this.lastRefreshTime = lastRefreshTime;
 	}
-
 }
 
