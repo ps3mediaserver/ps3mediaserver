@@ -25,7 +25,11 @@ import net.pms.encoders.FFMpegAudio;
 import net.pms.encoders.MPlayerAudio;
 import net.pms.encoders.Player;
 
-public class WAV extends MP3 {
+public class WAV extends Format {
+	public WAV() {
+		type = AUDIO;
+	}
+	
 	@Override
 	public boolean transcodable() {
 		return true;
