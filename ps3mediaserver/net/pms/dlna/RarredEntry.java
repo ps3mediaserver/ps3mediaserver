@@ -137,11 +137,11 @@ public class RarredEntry extends DLNAResource implements IPushOutput {
 			if (getMedia() == null) {
 				setMedia(new DLNAMediaInfo());
 			}
-			found = !getMedia().mediaparsed && !getMedia().parsing;
+			found = !getMedia().isMediaparsed() && !getMedia().isParsing();
 			if (getExt() != null) {
 				InputFile input = new InputFile();
-				input.push = this;
-				input.size = length();
+				input.setPush(this);
+				input.setSize(length());
 				getExt().parse(getMedia(), input, getType());
 			}
 		}
@@ -150,7 +150,7 @@ public class RarredEntry extends DLNAResource implements IPushOutput {
 
 	@Override
 	public InputStream getThumbnailInputStream() throws IOException {
-		if (getMedia() != null && getMedia().thumb != null) {
+		if (getMedia() != null && getMedia().getThumb() != null) {
 			return getMedia().getThumbnailInputStream();
 		} else {
 			return super.getThumbnailInputStream();

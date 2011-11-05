@@ -53,8 +53,8 @@ public class RAW extends JPG {
 			cmdArray[0] = PMS.getConfiguration().getDCRawPath();
 			cmdArray[1] = "-i";
 			cmdArray[2] = "-v";
-			if (file.file != null) {
-				cmdArray[3] = file.file.getAbsolutePath();
+			if (file.getFile() != null) {
+				cmdArray[3] = file.getFile().getAbsolutePath();
 			}
 
 			params.log = true;
@@ -65,24 +65,24 @@ public class RAW extends JPG {
 			for (String s : list) {
 				if (s.startsWith("Thumb size:  ")) {
 					String sz = s.substring(13);
-					media.width = Integer.parseInt(sz.substring(0, sz.indexOf("x")).trim());
-					media.height = Integer.parseInt(sz.substring(sz.indexOf("x") + 1).trim());
+					media.setWidth(Integer.parseInt(sz.substring(0, sz.indexOf("x")).trim()));
+					media.setHeight(Integer.parseInt(sz.substring(sz.indexOf("x") + 1).trim()));
 				}
 			}
 
-			if (media.width > 0) {
+			if (media.getWidth() > 0) {
 
-				media.thumb = RAWThumbnailer.getThumbnail(params, file.file.getAbsolutePath());
-				if (media.thumb != null) {
-					media.size = media.thumb.length;
+				media.setThumb(RAWThumbnailer.getThumbnail(params, file.getFile().getAbsolutePath()));
+				if (media.getThumb() != null) {
+					media.setSize(media.getThumb().length);
 				}
 
-				media.codecV = "jpg";
-				media.container = "jpg";
+				media.setCodecV("jpg");
+				media.setContainer("jpg");
 			}
 
 			media.finalize(type, file);
-			media.mediaparsed = true;
+			media.setMediaparsed(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
