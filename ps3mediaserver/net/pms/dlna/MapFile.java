@@ -47,13 +47,13 @@ import org.slf4j.LoggerFactory;
 public class MapFile extends DLNAResource {
 	private static final Logger logger = LoggerFactory.getLogger(MapFile.class);
 	private List<File> discoverable;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public File potentialCover;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */

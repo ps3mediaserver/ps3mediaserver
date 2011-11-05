@@ -84,135 +84,134 @@ public class DLNAMediaInfo implements Cloneable {
 
 	// Stored in database
 	private Double durationSec;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int bitrate;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int width;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int height;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public long size;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String codecV;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String frameRate;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String aspect;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public byte thumb[];
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String mimeType;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int bitsPerPixel;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public ArrayList<DLNAMediaSubtitle> subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String model;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int exposure;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int orientation;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int iso;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String muxingMode;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String muxingModeAudio;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String container;
-	
+
 	/**
 	 * @deprecated Use {@link #getH264AnnexB()} and {@link #setH264AnnexB(byte[])} to access this variable.
 	 */
 	@Deprecated
 	public byte[] h264_annexB;
 
-	
 	/**
 	 * Not stored in database.
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public boolean mediaparsed;
-	
+
 	/**
 	 * isMediaParserV2 related, used to manage thumbnail management separated
 	 * from the main parsing process.
@@ -220,19 +219,19 @@ public class DLNAMediaInfo implements Cloneable {
 	 */
 	@Deprecated
 	public boolean thumbready; 
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int dvdtrack;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public boolean secondaryFormatValid = true;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
@@ -243,7 +242,7 @@ public class DLNAMediaInfo implements Cloneable {
 	private boolean ffmpeg_annexb_failure;
 	private boolean muxable;
 	private Map<String, String> extras;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
@@ -962,7 +961,7 @@ public class DLNAMediaInfo implements Cloneable {
 		int m = ((int) (d / 60)) % 60;
 		return String.format("%02d:%02d:%02d.00", h, m, s);
 	}
-	
+
 	public static Double parseDurationString(String duration) {
 		if (duration == null) {
 			return null;
