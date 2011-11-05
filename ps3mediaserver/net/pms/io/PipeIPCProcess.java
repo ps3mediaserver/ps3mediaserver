@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import net.pms.util.DTSAudioOutputStream;
 import net.pms.util.H264AnnexBInputStream;
 import net.pms.util.PCMAudioOutputStream;
-import net.pms.util.IEC61937AudioOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +64,6 @@ public class PipeIPCProcess extends Thread implements ProcessWrapper {
 
 			if (modifier != null && modifier.isH264_annexb()) {
 				in = new H264AnnexBInputStream(in, modifier.getHeader());
-			} else if (modifier != null && modifier.isEncodedAudioPassthrough()) {
-				out = new IEC61937AudioOutputStream(new PCMAudioOutputStream(out, modifier.getNbchannels(), modifier.getSampleFrequency(), modifier.getBitspersample()));
 			} else if (modifier != null && modifier.isDtsembed()) {
 				out = new DTSAudioOutputStream(new PCMAudioOutputStream(out, modifier.getNbchannels(), modifier.getSampleFrequency(), modifier.getBitspersample()));
 			} else if (modifier != null && modifier.isPcm()) {

@@ -130,7 +130,6 @@ public class MEncoderVideo extends Player {
 	private final PmsConfiguration configuration;
 	public static final int MENCODER_MAX_THREADS = 8;
 	protected boolean dts;
-	protected boolean encodedaudiopassthrough;
 	public static final String ID = "mencoder";
 	protected boolean pcm;
 	protected boolean mux;
@@ -1000,7 +999,15 @@ public class MEncoderVideo extends Player {
 	}
 
 	protected String[] getDefaultArgs() {
-		return new String[]{"-quiet", "-oac", oaccopy ? "copy" : (pcm ? "pcm" : "lavc"), "-of", (wmv || mpegts) ? "lavf" : (pcm && avisynth()) ? "avi" : (((pcm || dts || encodedaudiopassthrough || mux) ? "rawvideo" : "mpeg")), (wmv || mpegts) ? "-lavfopts" : "-quiet", wmv ? "format=asf" : (mpegts ? "format=mpegts" : "-quiet"), "-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64", "-ovc", (mux || ovccopy) ? "copy" : "lavc"};
+		return new String[]{
+			"-quiet",
+			"-oac", oaccopy ? "copy" : (pcm ? "pcm" : "lavc"),
+			"-of", (wmv || mpegts) ? "lavf" : (pcm && avisynth()) ? "avi" : (((pcm || dts || mux) ? "rawvideo" : "mpeg")),
+			(wmv || mpegts) ? "-lavfopts" : "-quiet",
+			wmv ? "format=asf" : (mpegts ? "format=mpegts" : "-quiet"),
+			"-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64",
+			"-ovc", (mux || ovccopy) ? "copy" : "lavc"
+		};
 	}
 
 	@Override
@@ -1212,12 +1219,11 @@ public class MEncoderVideo extends Player {
 			oaccopy = true;
 		}
 
-		encodedaudiopassthrough = configuration.isHDAudioPassthrough() && (!dvd || configuration.isMencoderRemuxMPEG2()) && params.aid != null && params.aid.isNonPCMEncodedAudio() && !avisynth() && params.mediaRenderer.isMuxLPCMToMpeg();
 		dts = configuration.isDTSEmbedInPCM() && (!dvd || configuration.isMencoderRemuxMPEG2()) && params.aid != null && params.aid.isDTS() && !avisynth() && params.mediaRenderer.isDTSPlayable();
 		pcm = configuration.isMencoderUsePcm() && (!dvd || configuration.isMencoderRemuxMPEG2()) && (params.aid != null && (params.aid.isDTS() || params.aid.isLossless())) && params.mediaRenderer.isMuxLPCMToMpeg();
 
-		if (dts || pcm || encodedaudiopassthrough) {
-			if (dts || encodedaudiopassthrough) {
+		if (dts || pcm) {
+			if (dts) {
 				oaccopy = true;
 			}
 			params.losslessaudio = true;
@@ -1225,7 +1231,7 @@ public class MEncoderVideo extends Player {
 		}
 
 		// mpeg2 remux still buggy with mencoder :\
-		if (!pcm && !dts && !encodedaudiopassthrough && !mux && ovccopy) {
+		if (!pcm && !dts && !mux && ovccopy) {
 			ovccopy = false;
 		}
 
@@ -1292,7 +1298,7 @@ public class MEncoderVideo extends Player {
 			String audioType = "ac3";
 			if (dts) {
 				audioType = "dts";
-			} else if (pcm || encodedaudiopassthrough) {
+			} else if (pcm) {
 				audioType = "pcm";
 			}
 
@@ -1459,7 +1465,7 @@ public class MEncoderVideo extends Player {
 		cmdArray[cmdArray.length - 11] = "-quiet";
 		cmdArray[cmdArray.length - 10] = "-quiet";
 		cmdArray[cmdArray.length - 9] = "-quiet";
-		if (!dts && !encodedaudiopassthrough && !pcm && !avisynth() && params.aid != null && media.getAudioCodes().size() > 1) {
+		if (!dts && !pcm && !avisynth() && params.aid != null && media.getAudioCodes().size() > 1) {
 			cmdArray[cmdArray.length - 12] = "-aid";
 			boolean lavf = false; // Need to add support for LAVF demuxing
 			cmdArray[cmdArray.length - 11] = "" + (lavf ? params.aid.getId() + 1 : params.aid.getId());
@@ -1664,7 +1670,7 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
-		if ((pcm || dts || encodedaudiopassthrough || mux) || (configuration.isMencoderNoOutOfSync() && !noMC0NoSkip) || dvd) {
+		if ((pcm || dts || mux) || (configuration.isMencoderNoOutOfSync() && !noMC0NoSkip) || dvd) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 3);
 			cmdArray[cmdArray.length - 5] = "-mc";
 			cmdArray[cmdArray.length - 4] = "0";
@@ -1687,7 +1693,7 @@ public class MEncoderVideo extends Player {
 		}
 
 		// force srate -> cause ac3's mencoder doesn't like anything other than 48khz
-		if (media != null && !pcm && !dts && !encodedaudiopassthrough && !mux) {
+		if (media != null && !pcm && !dts && !mux) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 4);
 			cmdArray[cmdArray.length - 6] = "-af";
 			cmdArray[cmdArray.length - 5] = "lavcresample=" + rate;
@@ -1709,8 +1715,7 @@ public class MEncoderVideo extends Player {
 
 		ProcessWrapperImpl pw = null;
 
-		if (pcm || dts || encodedaudiopassthrough || mux) {
-
+		if (pcm || dts || mux) {
 			boolean channels_filter_present = false;
 			for (String s : cmdArray) {
 				if (StringUtils.isNotBlank(s) && s.startsWith("channels")) {
@@ -1720,8 +1725,7 @@ public class MEncoderVideo extends Player {
 			}
 
 			if (params.avidemux) {
-
-				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dts || encodedaudiopassthrough || mux) ? null : params);
+				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dts || mux) ? null : params);
 				params.input_pipes[0] = pipe;
 				cmdArray[cmdArray.length - 1] = pipe.getInputPipe();
 
@@ -1752,9 +1756,7 @@ public class MEncoderVideo extends Player {
 				}
 				videoPipe.deleteLater();
 				audioPipe.deleteLater();
-
 			} else {
-
 				// remove the -oac switch, otherwise too many video packets errors appears again
 				for (int s = 0; s < cmdArray.length; s++) {
 					if (cmdArray[s].equals("-oac")) {
@@ -1797,11 +1799,10 @@ public class MEncoderVideo extends Player {
 				StreamModifier sm = new StreamModifier();
 				sm.setPcm(pcm);
 				sm.setDtsembed(dts);
-				sm.setEncodedAudioPassthrough(encodedaudiopassthrough);
-				sm.setNbchannels(sm.isDtsembed() || sm.isEncodedAudioPassthrough() ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid));
+				sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid));
 				sm.setSampleFrequency(48000);
 				sm.setBitspersample(16);
-				String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed() && !sm.isEncodedAudioPassthrough(), sm.getNbchannels());
+				String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());
 
 				// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
 				// -mc 0.1 make the DTS-HD extraction works better with latest mencoder builds, and makes no impact on the regular DTS one
@@ -1814,10 +1815,10 @@ public class MEncoderVideo extends Player {
 					"-channels", "" + sm.getNbchannels(),
 					"-ovc", "copy",
 					"-of", "rawaudio",
-					"-mc", (dts || encodedaudiopassthrough) ? "0.1" : "0",
+					"-mc", dts ? "0.1" : "0",
 					"-noskip",
 					(aid == null) ? "-quiet" : "-aid", (aid == null) ? "-quiet" : aid,
-					"-oac", sm.isDtsembed() || sm.isEncodedAudioPassthrough() ? "copy" : "pcm",
+					"-oac", sm.isDtsembed() ? "copy" : "pcm",
 					(mixer != null && !channels_filter_present) ? "-af" : "-quiet", (mixer != null && !channels_filter_present) ? mixer : "-quiet",
 					"-srate", "48000",
 					"-o", ffAudioPipe.getInputPipe()
@@ -1904,7 +1905,7 @@ public class MEncoderVideo extends Player {
 				cmdArray[cmdArray.length - 4] = "-";
 				params.input_pipes = new PipeProcess[2];
 			} else {
-				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dts || encodedaudiopassthrough || mux) ? null : params);
+				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dts || mux) ? null : params);
 				params.input_pipes[0] = pipe;
 				cmdArray[cmdArray.length - 1] = pipe.getInputPipe();
 			}

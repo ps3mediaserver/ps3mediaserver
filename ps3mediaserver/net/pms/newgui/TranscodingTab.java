@@ -84,7 +84,6 @@ public class TranscodingTab {
 	private JTextField abitrate;
 	private JTree tree;
 	private JCheckBox forcePCM;
-	private JCheckBox hdaudiopass;
 	private JCheckBox forceDTSinPCM;
 	private JComboBox channels;
 	private JComboBox vq;
@@ -340,7 +339,7 @@ public class TranscodingTab {
 	public JComponent buildCommon() {
 		FormLayout layout = new FormLayout(
 			"left:pref, 2dlu, pref:grow",
-			"p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu,  p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p");
+			"p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.EMPTY_BORDER);
 		builder.setOpaque(false);
@@ -474,27 +473,6 @@ public class TranscodingTab {
 
 		builder.addLabel(Messages.getString("TrTab2.29"), cc.xy(1, 15));
 		builder.add(abitrate, cc.xy(3, 15));
-		
-		hdaudiopass = new JCheckBox(Messages.getString("TrTab2.53") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
-		hdaudiopass.setContentAreaFilled(false);
-		if (configuration.isHDAudioPassthrough()) {
-			hdaudiopass.setSelected(true);
-		}
-		hdaudiopass.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				configuration.setHDAudioPassthrough(hdaudiopass.isSelected());
-				if (configuration.isHDAudioPassthrough()) {
-					JOptionPane.showMessageDialog(
-						(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-						Messages.getString("TrTab2.10"),
-						"Information",
-						JOptionPane.INFORMATION_MESSAGE);
-				}
-			}
-		});
-
-		builder.add(hdaudiopass, cc.xyw(1, 19, 3));
 
 		forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
 		forceDTSinPCM.setContentAreaFilled(false);
@@ -528,7 +506,7 @@ public class TranscodingTab {
 			}
 		});
 
-		builder.add(forcePCM, cc.xyw(1, 21, 3));
+		builder.add(forcePCM, cc.xyw(1, 19, 3));
 
 		ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
 		ac3remux.setContentAreaFilled(false);
@@ -541,7 +519,7 @@ public class TranscodingTab {
 			}
 		});
 
-		builder.add(ac3remux, cc.xyw(1, 23, 3));
+		builder.add(ac3remux, cc.xyw(1, 21, 3));
 
 		mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
 		mpeg2remux.setContentAreaFilled(false);
@@ -554,13 +532,13 @@ public class TranscodingTab {
 			}
 		});
 
-		builder.add(mpeg2remux, cc.xyw(1, 25, 3));
+		builder.add(mpeg2remux, cc.xyw(1, 23, 3));
 
-		cmp = builder.addSeparator(Messages.getString("TrTab2.4"), cc.xyw(1, 27, 3));
+		cmp = builder.addSeparator(Messages.getString("TrTab2.4"), cc.xyw(1, 25, 3));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 31, 3));
+		builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 29, 3));
 
 		Object data[] = new Object[]{configuration.getMencoderMainSettings(),
 			"keyint=5:vqscale=1:vqmin=2  /* Great Quality */",
@@ -598,7 +576,7 @@ public class TranscodingTab {
 			}
 		});
 		vq.setEditable(true);
-		builder.add(vq, cc.xyw(1, 33, 3));
+		builder.add(vq, cc.xyw(1, 31, 3));
 
 		String help1 = Messages.getString("TrTab2.39");
 		help1 += Messages.getString("TrTab2.40");
@@ -611,18 +589,18 @@ public class TranscodingTab {
 		decodeTips.setEditable(false);
 		decodeTips.setBorder(BorderFactory.createEtchedBorder());
 		decodeTips.setBackground(new Color(255, 255, 192));
-		builder.add(decodeTips, cc.xyw(1, 43, 3));
+		builder.add(decodeTips, cc.xyw(1, 41, 3));
 
 		disableSubs = new JCheckBox(Messages.getString("TrTab2.51"));
 		disableSubs.setContentAreaFilled(false);
 
-		cmp = builder.addSeparator(Messages.getString("TrTab2.7"), cc.xyw(1, 35, 3));
+		cmp = builder.addSeparator(Messages.getString("TrTab2.7"), cc.xyw(1, 33, 3));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		builder.add(disableSubs, cc.xy(1, 37));
+		builder.add(disableSubs, cc.xy(1, 35));
 
-		builder.addLabel(Messages.getString("TrTab2.8"), cc.xy(1, 39));
+		builder.addLabel(Messages.getString("TrTab2.8"), cc.xy(1, 37));
 
 		notranscode = new JTextField(configuration.getNoTranscode());
 		notranscode.addKeyListener(new KeyListener() {
@@ -639,9 +617,9 @@ public class TranscodingTab {
 				configuration.setNoTranscode(notranscode.getText());
 			}
 		});
-		builder.add(notranscode, cc.xy(3, 39));
+		builder.add(notranscode, cc.xy(3, 37));
 
-		builder.addLabel(Messages.getString("TrTab2.9"), cc.xy(1, 41));
+		builder.addLabel(Messages.getString("TrTab2.9"), cc.xy(1, 39));
 
 		forcetranscode = new JTextField(configuration.getForceTranscode());
 		forcetranscode.addKeyListener(new KeyListener() {
@@ -658,7 +636,7 @@ public class TranscodingTab {
 				configuration.setForceTranscode(forcetranscode.getText());
 			}
 		});
-		builder.add(forcetranscode, cc.xy(3, 41));
+		builder.add(forcetranscode, cc.xy(3, 39));
 
 		return builder.getPanel();
 	}
