@@ -53,21 +53,21 @@ public class RAWThumbnailer extends Player {
 		params.maxBufferSize = 5;
 		params.hidebuffer = true;
 
-		if (media == null || media.thumb == null) {
+		if (media == null || media.getThumb() == null) {
 			return null;
 		}
 
-		if (media.thumb.length == 0) {
+		if (media.getThumb().length == 0) {
 			try {
-				media.thumb = getThumbnail(params, fileName);
+				media.setThumb(getThumbnail(params, fileName));
 			} catch (Exception e) {
 				return null;
 			}
 		}
 
-		byte copy[] = new byte[media.thumb.length];
-		System.arraycopy(media.thumb, 0, copy, 0, media.thumb.length);
-		media.thumb = new byte[0];
+		byte copy[] = new byte[media.getThumb().length];
+		System.arraycopy(media.getThumb(), 0, copy, 0, media.getThumb().length);
+		media.setThumb(new byte[0]);
 
 		ProcessWrapper pw = new InternalJavaProcessImpl(new ByteArrayInputStream(copy));
 		return pw;

@@ -285,16 +285,16 @@ public class MEncoderVideo extends Player {
 					String newCodecparam = textArea.getText();
 					DLNAMediaInfo fakemedia = new DLNAMediaInfo();
 					DLNAMediaAudio audio = new DLNAMediaAudio();
-					audio.codecA = "ac3";
-					fakemedia.codecV = "mpeg4";
-					fakemedia.container = "matroska";
+					audio.setCodecA("ac3");
+					fakemedia.setCodecV("mpeg4");
+					fakemedia.setContainer("matroska");
 					fakemedia.setDuration(45d*60);
-					audio.nrAudioChannels = 2;
-					fakemedia.width = 1280;
-					fakemedia.height = 720;
-					audio.sampleFrequency = "48000";
-					fakemedia.frameRate = "23.976";
-					fakemedia.audioCodes.add(audio);
+					audio.setNrAudioChannels(2);
+					fakemedia.setWidth(1280);
+					fakemedia.setHeight(720);
+					audio.setSampleFrequency("48000");
+					fakemedia.setFrameRate("23.976");
+					fakemedia.getAudioCodes().add(audio);
 					String result[] = getSpecificCodecOptions(newCodecparam, fakemedia, new OutputParams(configuration), "dummy.mpg", "dummy.srt", false, true);
 					if (result.length > 0 && result[0].startsWith("@@")) {
 						String errorMessage = result[0].substring(2);
@@ -1127,11 +1127,11 @@ public class MEncoderVideo extends Player {
 		}
 
 		InputFile newInput = new InputFile();
-		newInput.filename = fileName;
-		newInput.push = params.stdin;
+		newInput.setFilename(fileName);
+		newInput.setPush(params.stdin);
 
 		dvd = false;
-		if (media != null && media.dvdtrack > 0) {
+		if (media != null && media.getDvdtrack() > 0) {
 			dvd = true;
 		}
 
@@ -1172,11 +1172,11 @@ public class MEncoderVideo extends Player {
 			if (!nomux) {
 				TSMuxerVideo tv = new TSMuxerVideo(configuration);
 				params.forceFps = media.getValidFps(false);
-				if (media.codecV.equals("h264")) {
+				if (media.getCodecV().equals("h264")) {
 					params.forceType = "V_MPEG4/ISO/AVC";
-				} else if (media.codecV.startsWith("mpeg2")) {
+				} else if (media.getCodecV().startsWith("mpeg2")) {
 					params.forceType = "V_MPEG-2";
-				} else if (media.codecV.equals("vc1")) {
+				} else if (media.getCodecV().equals("vc1")) {
 					params.forceType = "V_MS/VFW/WVC1";
 				}
 				return tv.launchTranscode(fileName, dlna, media, params);
@@ -1324,9 +1324,9 @@ public class MEncoderVideo extends Player {
 		// Note: The MP4 container with SRT rule is a workaround for MEncoder r30369. If there is ever a later version of MEncoder that supports external srt subs we should use that. As of r32848 that isn't the case
 		if (
 			params.sid != null &&
-			params.sid.type != DLNAMediaSubtitle.EMBEDDED &&
-			params.sid.type != DLNAMediaSubtitle.VOBSUB &&
-			!(params.sid.type == DLNAMediaSubtitle.SUBRIP && media.container.equals("mp4")) &&
+			params.sid.getType() != DLNAMediaSubtitle.EMBEDDED &&
+			params.sid.getType() != DLNAMediaSubtitle.VOBSUB &&
+			!(params.sid.getType() == DLNAMediaSubtitle.SUBRIP && media.getContainer().equals("mp4")) &&
 			!configuration.isMencoderDisableSubs() &&
 			configuration.isMencoderAss() &&
 			!foundNoassParam &&
@@ -1340,7 +1340,7 @@ public class MEncoderVideo extends Player {
 		}
 
 		// Apply DVD/VOBsub subtitle quality
-		if (params.sid != null && params.sid.type == DLNAMediaSubtitle.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
+		if (params.sid != null && params.sid.getType() == DLNAMediaSubtitle.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
 			String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
 
 			sb.append("-spuaa ").append(subtitleQuality).append(" ");
@@ -1352,14 +1352,14 @@ public class MEncoderVideo extends Player {
 		if (intOCW > 0 || intOCH > 0) {
 			String scaleAppend = "";
 
-			if (media != null && media.width > 0 && media.height > 0) {
-				scaleAppend = ",scale=" + media.width + ":" + media.height;
+			if (media != null && media.getWidth() > 0 && media.getHeight() > 0) {
+				scaleAppend = ",scale=" + media.getWidth() + ":" + media.getHeight();
 			}
 
 			sb.append("-vf softskip,expand=-").append(intOCW).append(":-").append(intOCH).append(scaleAppend).append(",harddup ");
 		}
 
-		if (params.sid != null && !params.sid.is_file_utf8 && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
+		if (params.sid != null && !params.sid.isFileUtf8() && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
 			sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" ");
 			if (configuration.isMencoderSubFribidi()) {
 				sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" ");
@@ -1376,7 +1376,7 @@ public class MEncoderVideo extends Player {
 				}
 			}
 			if (configuration.isMencoderAss() && !foundNoassParam) {
-				if (!configuration.isMencoderAssDefaultStyle() || (subString != null && params.sid.type != DLNAMediaSubtitle.ASS)) {
+				if (!configuration.isMencoderAssDefaultStyle() || (subString != null && params.sid.getType() != DLNAMediaSubtitle.ASS)) {
 					String assSubColor = "ffffff00";
 					if (configuration.getSubsColor() != 0) {
 						assSubColor = Integer.toHexString(configuration.getSubsColor());
@@ -1431,7 +1431,7 @@ public class MEncoderVideo extends Player {
 		}
 
 		cmdArray[3] = "-quiet";
-		if (media != null && media.dvdtrack > 0) {
+		if (media != null && media.getDvdtrack() > 0) {
 			cmdArray[3] = "-dvd-device";
 		}
 		if (avisynth && !fileName.toLowerCase().endsWith(".iso")) {
@@ -1444,13 +1444,13 @@ public class MEncoderVideo extends Player {
 			}
 		}
 		cmdArray[5] = "-quiet";
-		if (media != null && media.dvdtrack > 0) {
-			cmdArray[5] = "dvd://" + media.dvdtrack;
+		if (media != null && media.getDvdtrack() > 0) {
+			cmdArray[5] = "dvd://" + media.getDvdtrack();
 		}
 		String arguments[] = args();
 		for (i = 0; i < arguments.length; i++) {
 			cmdArray[6 + i] = arguments[i];
-			if (arguments[i].contains("format=mpeg2") && media.aspect != null && media.getValidAspect(true) != null) {
+			if (arguments[i].contains("format=mpeg2") && media.getAspect() != null && media.getValidAspect(true) != null) {
 				cmdArray[6 + i] += ":vaspect=" + media.getValidAspect(true);
 			}
 		}
@@ -1459,15 +1459,15 @@ public class MEncoderVideo extends Player {
 		cmdArray[cmdArray.length - 11] = "-quiet";
 		cmdArray[cmdArray.length - 10] = "-quiet";
 		cmdArray[cmdArray.length - 9] = "-quiet";
-		if (!dts && !encodedaudiopassthrough && !pcm && !avisynth() && params.aid != null && media.audioCodes.size() > 1) {
+		if (!dts && !encodedaudiopassthrough && !pcm && !avisynth() && params.aid != null && media.getAudioCodes().size() > 1) {
 			cmdArray[cmdArray.length - 12] = "-aid";
 			boolean lavf = false; // Need to add support for LAVF demuxing
-			cmdArray[cmdArray.length - 11] = "" + (lavf ? params.aid.id + 1 : params.aid.id);
+			cmdArray[cmdArray.length - 11] = "" + (lavf ? params.aid.getId() + 1 : params.aid.getId());
 		}
 
 		if (subString == null && params.sid != null) {
 			cmdArray[cmdArray.length - 10] = "-sid";
-			cmdArray[cmdArray.length - 9] = "" + params.sid.id;
+			cmdArray[cmdArray.length - 9] = "" + params.sid.getId();
 		} else if (subString != null && !avisynth()) { // Trick necessary for mencoder to skip the internal embedded track ?
 			cmdArray[cmdArray.length - 10] = "-sid";
 			cmdArray[cmdArray.length - 9] = "100";
@@ -1503,16 +1503,16 @@ public class MEncoderVideo extends Player {
 		}
 
 		if (subString != null && !configuration.isMencoderDisableSubs() && !avisynth()) {
-			if (params.sid.type == DLNAMediaSubtitle.VOBSUB) {
+			if (params.sid.getType() == DLNAMediaSubtitle.VOBSUB) {
 				cmdArray[cmdArray.length - 4] = "-vobsub";
 				cmdArray[cmdArray.length - 3] = subString.substring(0, subString.length() - 4);
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 				cmdArray[cmdArray.length - 4] = "-slang";
-				cmdArray[cmdArray.length - 3] = "" + params.sid.lang;
+				cmdArray[cmdArray.length - 3] = "" + params.sid.getLang();
 			} else {
 				cmdArray[cmdArray.length - 4] = "-sub";
 				cmdArray[cmdArray.length - 3] = subString.replace(",", "\\,"); // commas in mencoder separates multiple subtitles files
-				if (params.sid.is_file_utf8 && params.sid.getPlayableFile() != null) {
+				if (params.sid.isFileUtf8() && params.sid.getPlayableFile() != null) {
 					cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 1);
 					cmdArray[cmdArray.length - 3] = "-utf8";
 				}
@@ -1536,7 +1536,7 @@ public class MEncoderVideo extends Player {
 
 		boolean deinterlace = configuration.isMencoderYadif();
 		// check if the media renderer supports this resolution
-		boolean mediaRendererScaler = params.mediaRenderer.isVideoRescale() && media != null && (media.width > params.mediaRenderer.getMaxVideoWidth() || (media.height > params.mediaRenderer.getMaxVideoHeight()));
+		boolean mediaRendererScaler = params.mediaRenderer.isVideoRescale() && media != null && (media.getWidth() > params.mediaRenderer.getMaxVideoWidth() || (media.getHeight() > params.mediaRenderer.getMaxVideoHeight()));
 		// use scaler?
 		boolean scaleBool = mediaRendererScaler || (configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0));
 		if ((deinterlace || scaleBool) && !avisynth()) {
@@ -1549,7 +1549,7 @@ public class MEncoderVideo extends Player {
 			cmdArray[cmdArray.length - 3] = (deinterlace ? "yadif" : "") + (scaleBool ? scalerString : "");
 		}
 
-		if (configuration.getMencoderMT() && !avisynth && !dvd && !(media.codecV != null && (media.codecV.equals("mpeg2video")))) {
+		if (configuration.getMencoderMT() && !avisynth && !dvd && !(media.getCodecV() != null && (media.getCodecV().equals("mpeg2video")))) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-lavdopts";
 			cmdArray[cmdArray.length - 3] = "fast";
@@ -1789,8 +1789,8 @@ public class MEncoderVideo extends Player {
 				ffVideo.runInNewThread();
 
 				String aid = null;
-				if (media != null && media.audioCodes.size() > 1 && params.aid != null) {
-					aid = params.aid.id + "";
+				if (media != null && media.getAudioCodes().size() > 1 && params.aid != null) {
+					aid = params.aid.getId() + "";
 				}
 
 				PipeIPCProcess ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true);
@@ -1828,10 +1828,10 @@ public class MEncoderVideo extends Player {
 					ffAudioPipe.setModifier(sm);
 				}
 
-				if (media != null && media.dvdtrack > 0) {
+				if (media != null && media.getDvdtrack() > 0) {
 					ffmpegLPCMextract[3] = "-dvd-device";
 					ffmpegLPCMextract[4] = fileName;
-					ffmpegLPCMextract[5] = "dvd://" + media.dvdtrack;
+					ffmpegLPCMextract[5] = "dvd://" + media.getDvdtrack();
 				} else if (params.stdin != null) {
 					ffmpegLPCMextract[3] = "-";
 				}
@@ -1986,11 +1986,11 @@ public class MEncoderVideo extends Player {
 						secondaryType = "mpeg1";
 						interpreter.set(secondaryType, r);
 					}
-					if (media.container != null && (media.container.equals(type) || media.container.equals(secondaryType))) {
+					if (media.getContainer() != null && (media.getContainer().equals(type) || media.getContainer().equals(secondaryType))) {
 						interpreter.set("container", r);
-					} else if (media.codecV != null && (media.codecV.equals(type) || media.codecV.equals(secondaryType))) {
+					} else if (media.getCodecV() != null && (media.getCodecV().equals(type) || media.getCodecV().equals(secondaryType))) {
 						interpreter.set("vcodec", r);
-					} else if (params.aid != null && params.aid.codecA != null && params.aid.codecA.equals(type)) {
+					} else if (params.aid != null && params.aid.getCodecA() != null && params.aid.getCodecA().equals(type)) {
 						interpreter.set("acodec", r);
 					}
 				}
@@ -2014,10 +2014,10 @@ public class MEncoderVideo extends Player {
 			}
 			interpreter.set("duration", media.getDurationInSeconds());
 			if (params.aid != null) {
-				interpreter.set("channels", params.aid.nrAudioChannels);
+				interpreter.set("channels", params.aid.getNrAudioChannels());
 			}
-			interpreter.set("height", media.height);
-			interpreter.set("width", media.width);
+			interpreter.set("height", media.getHeight());
+			interpreter.set("width", media.getWidth());
 			while (stLines.hasMoreTokens()) {
 				String line = stLines.nextToken();
 				if (!line.startsWith("#") && line.trim().length() > 0) {

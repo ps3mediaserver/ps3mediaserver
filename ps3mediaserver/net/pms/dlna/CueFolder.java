@@ -109,7 +109,7 @@ public class CueFolder extends DLNAResource {
 						addedResources.add(r);
 						if (i > 0 && r.getMedia() == null) {
 							r.setMedia(new DLNAMediaInfo());
-							r.getMedia().mediaparsed = true;
+							r.getMedia().setMediaparsed(true);
 						}
 						r.resolve();
 						if (i == 0) {
@@ -135,20 +135,20 @@ public class CueFolder extends DLNAResource {
 							}
 							if (r.getMedia() != null && r.getMedia().getFirstAudioTrack() != null) {
 								if (r.getExt().isAudio()) {
-									r.getMedia().getFirstAudioTrack().songname = track.getTitle();
+									r.getMedia().getFirstAudioTrack().setSongname(track.getTitle());
 								} else {
-									r.getMedia().getFirstAudioTrack().songname = "Chapter #" + (i + 1);
+									r.getMedia().getFirstAudioTrack().setSongname("Chapter #" + (i + 1));
 								}
-								r.getMedia().getFirstAudioTrack().track = i + 1;
-								r.getMedia().size = -1;
+								r.getMedia().getFirstAudioTrack().setTrack(i + 1);
+								r.getMedia().setSize(-1);
 								if (StringUtils.isNotBlank(sheet.getTitle())) {
-									r.getMedia().getFirstAudioTrack().album = sheet.getTitle();
+									r.getMedia().getFirstAudioTrack().setAlbum(sheet.getTitle());
 								}
 								if (StringUtils.isNotBlank(sheet.getPerformer())) {
-									r.getMedia().getFirstAudioTrack().artist = sheet.getPerformer();
+									r.getMedia().getFirstAudioTrack().setArtist(sheet.getPerformer());
 								}
 								if (StringUtils.isNotBlank(track.getPerformer())) {
-									r.getMedia().getFirstAudioTrack().artist = track.getPerformer();
+									r.getMedia().getFirstAudioTrack().setArtist(track.getPerformer());
 								}
 							}
 

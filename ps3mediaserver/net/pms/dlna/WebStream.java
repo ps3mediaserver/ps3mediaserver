@@ -25,6 +25,13 @@ import java.net.URL;
 
 import net.pms.network.HTTPResourceAuthenticator;
 
+/**
+ * TODO: Change all instance variables to private. For backwards compatibility
+ * with external plugin code the variables have all been marked as deprecated
+ * instead of changed to private, but this will surely change in the future.
+ * When everything has been changed to private, the deprecated note can be
+ * removed.
+ */
 public class WebStream extends DLNAResource {
 	@Override
 	public boolean isValid() {
@@ -32,8 +39,23 @@ public class WebStream extends DLNAResource {
 		return getExt() != null;
 	}
 
+	
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	protected String url;
+	
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	protected String fluxName;
+	
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	protected String thumbURL;
 
 	public WebStream(String fluxName, String url, String thumbURL, int type) {
@@ -42,26 +64,26 @@ public class WebStream extends DLNAResource {
 		try {
 			URL tmpUrl = new URL(url);
 			tmpUrl = HTTPResourceAuthenticator.concatenateUserInfo(tmpUrl);
-			this.url = tmpUrl.toString();
+			setUrl(tmpUrl.toString());
 		} catch (MalformedURLException e) {
-			this.url = url;
+			setUrl(url);
 		}
 
 		try {
 			URL tmpUrl = new URL(thumbURL);
 			tmpUrl = HTTPResourceAuthenticator.concatenateUserInfo(tmpUrl);
-			this.thumbURL = tmpUrl.toString();
+			setThumbURL(tmpUrl.toString());
 		} catch (MalformedURLException e) {
-			this.thumbURL = thumbURL;
+			setThumbURL(thumbURL);
 		}
 		
-		this.fluxName = fluxName;
+		setFluxName(fluxName);
 	}
 
 	@Override
 	public InputStream getThumbnailInputStream() throws IOException {
-		if (thumbURL != null) {
-			return downloadAndSend(thumbURL, true);
+		if (getThumbURL() != null) {
+			return downloadAndSend(getThumbURL(), true);
 		} else {
 			return super.getThumbnailInputStream();
 		}
@@ -76,7 +98,7 @@ public class WebStream extends DLNAResource {
 	}
 
 	public String getName() {
-		return fluxName;
+		return getFluxName();
 	}
 
 	public boolean isFolder() {
@@ -89,6 +111,54 @@ public class WebStream extends DLNAResource {
 
 	@Override
 	public String getSystemName() {
+		return getUrl();
+	}
+
+	/**
+	 * @return the url
+	 * @since 1.50
+	 */
+	protected String getUrl() {
 		return url;
+	}
+
+	/**
+	 * @param url the url to set
+	 * @since 1.50
+	 */
+	protected void setUrl(String url) {
+		this.url = url;
+	}
+
+	/**
+	 * @return the fluxName
+	 * @since 1.50
+	 */
+	protected String getFluxName() {
+		return fluxName;
+	}
+
+	/**
+	 * @param fluxName the fluxName to set
+	 * @since 1.50
+	 */
+	protected void setFluxName(String fluxName) {
+		this.fluxName = fluxName;
+	}
+
+	/**
+	 * @return the thumbURL
+	 * @since 1.50
+	 */
+	protected String getThumbURL() {
+		return thumbURL;
+	}
+
+	/**
+	 * @param thumbURL the thumbURL to set
+	 * @since 1.50
+	 */
+	protected void setThumbURL(String thumbURL) {
+		this.thumbURL = thumbURL;
 	}
 }

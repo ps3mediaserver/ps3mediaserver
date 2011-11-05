@@ -1,3 +1,21 @@
+/*
+ * PS3 Media Server, for streaming any medias to your PS3.
+ * Copyright (C) 2008  A.Brochard
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package net.pms.dlna;
 
 import java.io.File;
@@ -12,6 +30,15 @@ import net.pms.PMS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class keeps track of the subtitle information for media.
+ * 
+ * TODO: Change all instance variables to private. For backwards compatibility
+ * with external plugin code the variables have all been marked as deprecated
+ * instead of changed to private, but this will surely change in the future.
+ * When everything has been changed to private, the deprecated note can be
+ * removed.
+ */
 public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaSubtitle.class);
 	public static final int SUBRIP = 1;
@@ -22,10 +49,30 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	public static final int VOBSUB = 6;
 	public static final int EMBEDDED = 7;
 	public static String subExtensions[] = new String[]{"srt", "txt", "sub", "smi", "ass", "idx"};
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	public int type;
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	public String flavor;
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	public File file;
 	private File utf8_file;
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	public boolean is_file_utf8;
 
 	public File getPlayableFile() {
@@ -56,7 +103,7 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	}
 
 	public String toString() {
-		return "Sub: " + getSubType() + " / lang: " + lang + " / flavor: " + flavor + " / ID: " + id + " / FILE: " + (file != null ? file.getAbsolutePath() : "-");
+		return "Sub: " + getSubType() + " / lang: " + getLang() + " / flavor: " + flavor + " / ID: " + getId() + " / FILE: " + (file != null ? file.getAbsolutePath() : "-");
 	}
 
 	public void checkUnicode() {
@@ -108,5 +155,61 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	/**
+	 * @return the type
+	 */
+	public int getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	/**
+	 * @return the flavor
+	 */
+	public String getFlavor() {
+		return flavor;
+	}
+
+	/**
+	 * @param flavor the flavor to set
+	 */
+	public void setFlavor(String flavor) {
+		this.flavor = flavor;
+	}
+
+	/**
+	 * @return the file
+	 */
+	public File getFile() {
+		return file;
+	}
+
+	/**
+	 * @param file the file to set
+	 */
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	/**
+	 * @return the is_file_utf8
+	 */
+	public boolean isFileUtf8() {
+		return is_file_utf8;
+	}
+
+	/**
+	 * @param isFileUtf8 the is_file_utf8 to set
+	 */
+	public void setFileUtf8(boolean isFileUtf8) {
+		is_file_utf8 = isFileUtf8;
 	}
 }

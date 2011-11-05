@@ -38,14 +38,56 @@ import com.sun.syndication.io.XmlReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * TODO: Change all instance variables to private. For backwards compatibility
+ * with external plugin code the variables have all been marked as deprecated
+ * instead of changed to private, but this will surely change in the future.
+ * When everything has been changed to private, the deprecated note can be
+ * removed.
+ */
 public class Feed extends DLNAResource {
 	private static final Logger logger = LoggerFactory.getLogger(Feed.class);
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	protected String name;
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	protected String url;
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	protected String tempItemTitle;
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	protected String tempItemLink;
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	protected String tempFeedLink;
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	protected String tempCategory;
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
 	protected String tempItemThumbURL;
 
 	@Override
@@ -60,8 +102,8 @@ public class Feed extends DLNAResource {
 
 	public Feed(String name, String url, int type) {
 		super(type);
-		this.url = url;
-		this.name = name;
+		setUrl(url);
+		setName(name);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -72,17 +114,17 @@ public class Feed extends DLNAResource {
 			String content = new String(b, "UTF-8");
 			content = stripNonValidXMLCharacters(content);
 			SyndFeed feed = input.build(new XmlReader(new ByteArrayInputStream(b)));
-			name = feed.getTitle();
+			setName(feed.getTitle());
 			if (feed.getCategories() != null && feed.getCategories().size() > 0) {
 				SyndCategory category = (SyndCategory) feed.getCategories().get(0);
-				tempCategory = category.getName();
+				setTempCategory(category.getName());
 			}
 			List<SyndEntry> entries = feed.getEntries();
 			for (SyndEntry entry : entries) {
-				tempItemTitle = entry.getTitle();
-				tempItemLink = entry.getLink();
-				tempFeedLink = entry.getUri();
-				tempItemThumbURL = null;
+				setTempItemTitle(entry.getTitle());
+				setTempItemLink(entry.getLink());
+				setTempFeedLink(entry.getUri());
+				setTempItemThumbURL(null);
 
 				ArrayList<Element> elements = (ArrayList<Element>) entry.getForeignMarkup();
 				for (Element elt : elements) {
@@ -99,7 +141,7 @@ public class Feed extends DLNAResource {
 				List<SyndEnclosure> enclosures = entry.getEnclosures();
 				for (SyndEnclosure enc : enclosures) {
 					if (StringUtils.isNotBlank(enc.getUrl())) {
-						tempItemLink = enc.getUrl();
+						setTempItemLink(enc.getUrl());
 					}
 				}
 				manageItem();
@@ -112,7 +154,7 @@ public class Feed extends DLNAResource {
 	private void parseElement(Element elt, boolean parseLink) {
 		if ("content".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())) {
 			if (parseLink) {
-				tempItemLink = elt.getAttribute("url").getValue();
+				setTempItemLink(elt.getAttribute("url").getValue());
 			}
 			List<Content> subElts = elt.getContent();
 			for (Content subelt : subElts) {
@@ -122,13 +164,13 @@ public class Feed extends DLNAResource {
 			}
 		}
 		if ("thumbnail".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())) {
-			if (tempItemThumbURL == null) {
-				tempItemThumbURL = elt.getAttribute("url").getValue();
+			if (getTempItemThumbURL() == null) {
+				setTempItemThumbURL(elt.getAttribute("url").getValue());
 			}
 		}
 		if ("image".equals(elt.getName()) && "exInfo".equals(elt.getNamespacePrefix())) {
-			if (tempItemThumbURL == null) {
-				tempItemThumbURL = elt.getValue();
+			if (getTempItemThumbURL() == null) {
+				setTempItemThumbURL(elt.getValue());
 			}
 		}
 	}
@@ -164,7 +206,7 @@ public class Feed extends DLNAResource {
 	}
 
 	protected void manageItem() {
-		FeedItem fi = new FeedItem(tempItemTitle, tempItemLink, tempItemThumbURL, null, getSpecificType());
+		FeedItem fi = new FeedItem(getTempItemTitle(), getTempItemLink(), getTempItemThumbURL(), null, getSpecificType());
 		addChild(fi);
 	}
 
@@ -213,5 +255,109 @@ public class Feed extends DLNAResource {
 			}
 		}
 		return out.toString();
+	}
+
+	/**
+	 * @return the url
+	 * @since 1.50
+	 */
+	protected String getUrl() {
+		return url;
+	}
+
+	/**
+	 * @param url the url to set
+	 * @since 1.50
+	 */
+	protected void setUrl(String url) {
+		this.url = url;
+	}
+
+	/**
+	 * @return the tempItemTitle
+	 * @since 1.50
+	 */
+	protected String getTempItemTitle() {
+		return tempItemTitle;
+	}
+
+	/**
+	 * @param tempItemTitle the tempItemTitle to set
+	 * @since 1.50
+	 */
+	protected void setTempItemTitle(String tempItemTitle) {
+		this.tempItemTitle = tempItemTitle;
+	}
+
+	/**
+	 * @return the tempItemLink
+	 * @since 1.50
+	 */
+	protected String getTempItemLink() {
+		return tempItemLink;
+	}
+
+	/**
+	 * @param tempItemLink the tempItemLink to set
+	 * @since 1.50
+	 */
+	protected void setTempItemLink(String tempItemLink) {
+		this.tempItemLink = tempItemLink;
+	}
+
+	/**
+	 * @return the tempFeedLink
+	 * @since 1.50
+	 */
+	protected String getTempFeedLink() {
+		return tempFeedLink;
+	}
+
+	/**
+	 * @param tempFeedLink the tempFeedLink to set
+	 * @since 1.50
+	 */
+	protected void setTempFeedLink(String tempFeedLink) {
+		this.tempFeedLink = tempFeedLink;
+	}
+
+	/**
+	 * @return the tempCategory
+	 * @since 1.50
+	 */
+	protected String getTempCategory() {
+		return tempCategory;
+	}
+
+	/**
+	 * @param tempCategory the tempCategory to set
+	 * @since 1.50
+	 */
+	protected void setTempCategory(String tempCategory) {
+		this.tempCategory = tempCategory;
+	}
+
+	/**
+	 * @return the tempItemThumbURL
+	 * @since 1.50
+	 */
+	protected String getTempItemThumbURL() {
+		return tempItemThumbURL;
+	}
+
+	/**
+	 * @param tempItemThumbURL the tempItemThumbURL to set
+	 * @since 1.50
+	 */
+	protected void setTempItemThumbURL(String tempItemThumbURL) {
+		this.tempItemThumbURL = tempItemThumbURL;
+	}
+
+	/**
+	 * @param name the name to set
+	 * @since 1.50
+	 */
+	protected void setName(String name) {
+		this.name = name;
 	}
 }

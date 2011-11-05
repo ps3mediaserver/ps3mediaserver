@@ -331,12 +331,12 @@ public class FFMpegVideo extends Player {
 		String subLine = null;
 		if (subTrack != null && PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
 			logger.trace("Avisynth script: Using sub track: " + subTrack);
-			if (subTrack.file != null) {
+			if (subTrack.getFile() != null) {
 				String function = "TextSub";
-				if (subTrack.type == DLNAMediaSubtitle.VOBSUB) {
+				if (subTrack.getType() == DLNAMediaSubtitle.VOBSUB) {
 					function = "VobSub";
 				}
-				subLine = "clip=" + function + "(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(subTrack.file.getAbsolutePath()) + "\")";
+				subLine = "clip=" + function + "(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(subTrack.getFile().getAbsolutePath()) + "\")";
 			}
 		}
 

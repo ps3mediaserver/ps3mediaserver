@@ -207,11 +207,11 @@ public class Request extends HTTPResource {
 						output(output, "Content-Type: " + getRendererMimeType(dlna.mimeType(), mediaRenderer));
 					    final DLNAMediaInfo media = dlna.getMedia();
 						if (media != null) {
-							if (StringUtils.isNotBlank(media.container)) {
-								name += " [container: " + media.container + "]";
+							if (StringUtils.isNotBlank(media.getContainer())) {
+								name += " [container: " + media.getContainer() + "]";
 							}
-							if (StringUtils.isNotBlank(media.codecV)) {
-								name += " [video: " + media.codecV + "]";
+							if (StringUtils.isNotBlank(media.getCodecV())) {
+								name += " [video: " + media.getCodecV() + "]";
 							}
 						}
 						PMS.get().getFrame().setStatusLine("Serving " + name);

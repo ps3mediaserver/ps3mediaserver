@@ -62,42 +62,42 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 						addChapterFile(avisnewChild);
 					}
 				}
-				for (int i = 0; i < child.getMedia().audioCodes.size(); i++) {
+				for (int i = 0; i < child.getMedia().getAudioCodes().size(); i++) {
 					DLNAResource newChildNoSub = (DLNAResource) ref.clone();
 					newChildNoSub.setId(null);
 					newChildNoSub.setPlayer(ref.getPlayer());
 					newChildNoSub.setMedia(ref.getMedia());
 					newChildNoSub.setNoName(true);
-					newChildNoSub.setMediaAudio(ref.getMedia().audioCodes.get(i));
+					newChildNoSub.setMediaAudio(ref.getMedia().getAudioCodes().get(i));
 					newChildNoSub.setMediaSubtitle(new DLNAMediaSubtitle());
-					newChildNoSub.getMediaSubtitle().id = -1;
+					newChildNoSub.getMediaSubtitle().setId(-1);
 					addChildInternal(newChildNoSub);
 
 					addChapterFile(newChildNoSub);
 
-					for (int j = 0; j < child.getMedia().subtitlesCodes.size(); j++) {
+					for (int j = 0; j < child.getMedia().getSubtitlesCodes().size(); j++) {
 						DLNAResource newChild = (DLNAResource) ref.clone();
 						newChild.setId(null);
 						newChild.setPlayer(ref.getPlayer());
 						newChild.setMedia(ref.getMedia());
 						newChild.setNoName(true);
-						newChild.setMediaAudio(ref.getMedia().audioCodes.get(i));
-						newChild.setMediaSubtitle(ref.getMedia().subtitlesCodes.get(j));
+						newChild.setMediaAudio(ref.getMedia().getAudioCodes().get(i));
+						newChild.setMediaSubtitle(ref.getMedia().getSubtitlesCodes().get(j));
 						addChildInternal(newChild);
 						addChapterFile(newChild);
 
-						logger.debug("Duplicate " + ref.getName() + " with player: " + ref.getPlayer().toString() + " and aid: " + newChild.getMediaAudio().id + " and sid: " + newChild.getMediaSubtitle());
+						logger.debug("Duplicate " + ref.getName() + " with player: " + ref.getPlayer().toString() + " and aid: " + newChild.getMediaAudio().getId() + " and sid: " + newChild.getMediaSubtitle());
 					}
 				}
 
 				if (tsMuxer != null) {
-					for (int i = 0; i < child.getMedia().audioCodes.size(); i++) {
+					for (int i = 0; i < child.getMedia().getAudioCodes().size(); i++) {
 						DLNAResource newChildNoSub = (DLNAResource) ref.clone();
 						newChildNoSub.setId(null);
 						newChildNoSub.setPlayer(tsMuxer);
 						newChildNoSub.setMedia(ref.getMedia());
 						newChildNoSub.setNoName(true);
-						newChildNoSub.setMediaAudio(ref.getMedia().audioCodes.get(i));
+						newChildNoSub.setMediaAudio(ref.getMedia().getAudioCodes().get(i));
 						addChildInternal(newChildNoSub);
 						addChapterFile(newChildNoSub);
 

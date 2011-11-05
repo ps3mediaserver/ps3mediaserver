@@ -317,12 +317,12 @@ public class RequestV2 extends HTTPResource {
 
 						final DLNAMediaInfo media = dlna.getMedia();
 						if (media != null) {
-							if (StringUtils.isNotBlank(media.container)) {
-								name += " [container: " + media.container + "]";
+							if (StringUtils.isNotBlank(media.getContainer())) {
+								name += " [container: " + media.getContainer() + "]";
 							}
 
-							if (StringUtils.isNotBlank(media.codecV)) {
-								name += " [video: " + media.codecV + "]";
+							if (StringUtils.isNotBlank(media.getCodecV())) {
+								name += " [video: " + media.getCodecV() + "]";
 							}
 						}
 

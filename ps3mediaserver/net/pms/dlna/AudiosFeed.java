@@ -23,7 +23,7 @@ import net.pms.formats.Format;
 public class AudiosFeed extends Feed {
 	@Override
 	protected void manageItem() {
-		WebAudioStream fi = new WebAudioStream(tempItemTitle, tempItemLink, tempItemThumbURL);
+		WebAudioStream fi = new WebAudioStream(getTempItemTitle(), getTempItemLink(), getTempItemThumbURL());
 		addChild(fi);
 	}
 

@@ -23,7 +23,7 @@ import net.pms.formats.Format;
 public class VideosFeed extends Feed {
 	@Override
 	protected void manageItem() {
-		WebVideoStream fi = new WebVideoStream(tempItemTitle, tempItemLink, tempItemThumbURL);
+		WebVideoStream fi = new WebVideoStream(getTempItemTitle(), getTempItemLink(), getTempItemThumbURL());
 		addChild(fi);
 	}
 

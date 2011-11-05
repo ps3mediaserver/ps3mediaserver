@@ -251,46 +251,46 @@ public class DLNAMediaDatabase implements Runnable {
 				DLNAMediaInfo media = new DLNAMediaInfo();
 				int id = rs.getInt("ID");
 				media.setDuration(toDouble(rs,"DURATION"));
-				media.bitrate = rs.getInt("BITRATE");
-				media.width = rs.getInt("WIDTH");
-				media.height = rs.getInt("HEIGHT");
-				media.size = rs.getLong("SIZE");
-				media.codecV = rs.getString("CODECV");
-				media.frameRate = rs.getString("FRAMERATE");
-				media.aspect = rs.getString("ASPECT");
-				media.bitsPerPixel = rs.getInt("BITSPERPIXEL");
-				media.thumb = rs.getBytes("THUMB");
-				media.container = rs.getString("CONTAINER");
-				media.model = rs.getString("MODEL");
-				if (media.model != null && !FormatConfiguration.JPG.equals(media.container)) {
-					media.setExtrasAsString(media.model);
+				media.setBitrate(rs.getInt("BITRATE"));
+				media.setWidth(rs.getInt("WIDTH"));
+				media.setHeight(rs.getInt("HEIGHT"));
+				media.setSize(rs.getLong("SIZE"));
+				media.setCodecV(rs.getString("CODECV"));
+				media.setFrameRate(rs.getString("FRAMERATE"));
+				media.setAspect(rs.getString("ASPECT"));
+				media.setBitsPerPixel(rs.getInt("BITSPERPIXEL"));
+				media.setThumb(rs.getBytes("THUMB"));
+				media.setContainer(rs.getString("CONTAINER"));
+				media.setModel(rs.getString("MODEL"));
+				if (media.getModel() != null && !FormatConfiguration.JPG.equals(media.getContainer())) {
+					media.setExtrasAsString(media.getModel());
 				}
-				media.exposure = rs.getInt("EXPOSURE");
-				media.orientation = rs.getInt("ORIENTATION");
-				media.iso = rs.getInt("ISO");
-				media.muxingMode = rs.getString("MUXINGMODE");
-				media.mediaparsed = true;
+				media.setExposure(rs.getInt("EXPOSURE"));
+				media.setOrientation(rs.getInt("ORIENTATION"));
+				media.setIso(rs.getInt("ISO"));
+				media.setMuxingMode(rs.getString("MUXINGMODE"));
+				media.setMediaparsed(true);
 				PreparedStatement audios = conn.prepareStatement("SELECT * FROM AUDIOTRACKS WHERE FILEID = ?");
 				audios.setInt(1, id);
 				ResultSet subrs = audios.executeQuery();
 				while (subrs.next()) {
 					DLNAMediaAudio audio = new DLNAMediaAudio();
-					audio.id = subrs.getInt("ID");
-					audio.lang = subrs.getString("LANG");
-					audio.flavor = subrs.getString("FLAVOR");
-					audio.nrAudioChannels = subrs.getInt("NRAUDIOCHANNELS");
-					audio.sampleFrequency = subrs.getString("SAMPLEFREQ");
-					audio.codecA = subrs.getString("CODECA");
-					audio.bitsperSample = subrs.getInt("BITSPERSAMPLE");
-					audio.album = subrs.getString("ALBUM");
-					audio.artist = subrs.getString("ARTIST");
-					audio.songname = subrs.getString("SONGNAME");
-					audio.genre = subrs.getString("GENRE");
-					audio.year = subrs.getInt("YEAR");
-					audio.track = subrs.getInt("TRACK");
-					audio.delay = subrs.getInt("DELAY");
-					audio.muxingModeAudio = subrs.getString("MUXINGMODE");
-					media.audioCodes.add(audio);
+					audio.setId(subrs.getInt("ID"));
+					audio.setLang(subrs.getString("LANG"));
+					audio.setFlavor(subrs.getString("FLAVOR"));
+					audio.setNrAudioChannels(subrs.getInt("NRAUDIOCHANNELS"));
+					audio.setSampleFrequency(subrs.getString("SAMPLEFREQ"));
+					audio.setCodecA(subrs.getString("CODECA"));
+					audio.setBitsperSample(subrs.getInt("BITSPERSAMPLE"));
+					audio.setAlbum(subrs.getString("ALBUM"));
+					audio.setArtist(subrs.getString("ARTIST"));
+					audio.setSongname(subrs.getString("SONGNAME"));
+					audio.setGenre(subrs.getString("GENRE"));
+					audio.setYear(subrs.getInt("YEAR"));
+					audio.setTrack(subrs.getInt("TRACK"));
+					audio.setDelay(subrs.getInt("DELAY"));
+					audio.setMuxingModeAudio(subrs.getString("MUXINGMODE"));
+					media.getAudioCodes().add(audio);
 				}
 				subrs.close();
 				audios.close();
@@ -300,11 +300,11 @@ public class DLNAMediaDatabase implements Runnable {
 				subrs = subs.executeQuery();
 				while (subrs.next()) {
 					DLNAMediaSubtitle sub = new DLNAMediaSubtitle();
-					sub.id = subrs.getInt("ID");
-					sub.lang = subrs.getString("LANG");
-					sub.flavor = subrs.getString("FLAVOR");
-					sub.type = subrs.getInt("TYPE");
-					media.subtitlesCodes.add(sub);
+					sub.setId(subrs.getInt("ID"));
+					sub.setLang(subrs.getString("LANG"));
+					sub.setFlavor(subrs.getString("FLAVOR"));
+					sub.setType(subrs.getInt("TYPE"));
+					media.getSubtitlesCodes().add(sub);
 				}
 				subrs.close();
 				subs.close();
@@ -345,25 +345,25 @@ public class DLNAMediaDatabase implements Runnable {
 				} else {
 					ps.setNull(4, Types.DOUBLE);
 				}
-				ps.setInt(5, media.bitrate);
-				ps.setInt(6, media.width);
-				ps.setInt(7, media.height);
-				ps.setLong(8, media.size);
-				ps.setString(9, media.codecV);
-				ps.setString(10, media.frameRate);
-				ps.setString(11, media.aspect);
-				ps.setInt(12, media.bitsPerPixel);
-				ps.setBytes(13, media.thumb);
-				ps.setString(14, media.container);
+				ps.setInt(5, media.getBitrate());
+				ps.setInt(6, media.getWidth());
+				ps.setInt(7, media.getHeight());
+				ps.setLong(8, media.getSize());
+				ps.setString(9, media.getCodecV());
+				ps.setString(10, media.getFrameRate());
+				ps.setString(11, media.getAspect());
+				ps.setInt(12, media.getBitsPerPixel());
+				ps.setBytes(13, media.getThumb());
+				ps.setString(14, media.getContainer());
 				if (media.getExtras() != null) {
 					ps.setString(15, media.getExtrasAsString());
 				} else {
-					ps.setString(15, media.model);
+					ps.setString(15, media.getModel());
 				}
-				ps.setInt(16, media.exposure);
-				ps.setInt(17, media.orientation);
-				ps.setInt(18, media.iso);
-				ps.setString(19, media.muxingModeAudio);
+				ps.setInt(16, media.getExposure());
+				ps.setInt(17, media.getOrientation());
+				ps.setInt(18, media.getIso());
+				ps.setString(19, media.getMuxingModeAudio());
 
 			} else {
 				ps.setString(4, null);
@@ -392,41 +392,41 @@ public class DLNAMediaDatabase implements Runnable {
 			rs.close();
 			if (media != null && id > -1) {
 				PreparedStatement insert = null;
-				if (media.audioCodes.size() > 0) {
+				if (media.getAudioCodes().size() > 0) {
 					insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				}
-				for (DLNAMediaAudio audio : media.audioCodes) {
+				for (DLNAMediaAudio audio : media.getAudioCodes()) {
 					insert.clearParameters();
 					insert.setInt(1, id);
-					insert.setInt(2, audio.id);
-					insert.setString(3, audio.lang);
-					insert.setString(4, audio.flavor);
-					insert.setInt(5, audio.nrAudioChannels);
-					insert.setString(6, audio.sampleFrequency);
-					insert.setString(7, audio.codecA);
-					insert.setInt(8, audio.bitsperSample);
-					insert.setString(9, StringUtils.trimToEmpty(audio.album));
-					insert.setString(10, StringUtils.trimToEmpty(audio.artist));
-					insert.setString(11, StringUtils.trimToEmpty(audio.songname));
-					insert.setString(12, StringUtils.trimToEmpty(audio.genre));
-					insert.setInt(13, audio.year);
-					insert.setInt(14, audio.track);
-					insert.setInt(15, audio.delay);
-					insert.setString(16, StringUtils.trimToEmpty(audio.muxingModeAudio));
+					insert.setInt(2, audio.getId());
+					insert.setString(3, audio.getLang());
+					insert.setString(4, audio.getFlavor());
+					insert.setInt(5, audio.getNrAudioChannels());
+					insert.setString(6, audio.getSampleFrequency());
+					insert.setString(7, audio.getCodecA());
+					insert.setInt(8, audio.getBitsperSample());
+					insert.setString(9, StringUtils.trimToEmpty(audio.getAlbum()));
+					insert.setString(10, StringUtils.trimToEmpty(audio.getArtist()));
+					insert.setString(11, StringUtils.trimToEmpty(audio.getSongname()));
+					insert.setString(12, StringUtils.trimToEmpty(audio.getGenre()));
+					insert.setInt(13, audio.getYear());
+					insert.setInt(14, audio.getTrack());
+					insert.setInt(15, audio.getDelay());
+					insert.setString(16, StringUtils.trimToEmpty(audio.getMuxingModeAudio()));
 					insert.executeUpdate();
 				}
 
-				if (media.subtitlesCodes.size() > 0) {
+				if (media.getSubtitlesCodes().size() > 0) {
 					insert = conn.prepareStatement("INSERT INTO SUBTRACKS VALUES (?, ?, ?, ?, ?)");
 				}
-				for (DLNAMediaSubtitle sub : media.subtitlesCodes) {
-					if (sub.file == null) { // no save of external subtitles
+				for (DLNAMediaSubtitle sub : media.getSubtitlesCodes()) {
+					if (sub.getFile() == null) { // no save of external subtitles
 						insert.clearParameters();
 						insert.setInt(1, id);
-						insert.setInt(2, sub.id);
-						insert.setString(3, sub.lang);
-						insert.setString(4, sub.flavor);
-						insert.setInt(5, sub.type);
+						insert.setInt(2, sub.getId());
+						insert.setString(3, sub.getLang());
+						insert.setString(4, sub.getFlavor());
+						insert.setInt(5, sub.getType());
 						insert.executeUpdate();
 					}
 				}
@@ -453,7 +453,7 @@ public class DLNAMediaDatabase implements Runnable {
 			ps.setString(2, name);
 			ps.setTimestamp(3, new Timestamp(modified));
 			if (media != null) {
-				ps.setBytes(1, media.thumb);
+				ps.setBytes(1, media.getThumb());
 			} else {
 				ps.setNull(1, Types.BINARY);
 			}

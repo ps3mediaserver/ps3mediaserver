@@ -72,8 +72,8 @@ public class FormatConfiguration {
 
 	public void parse(DLNAMediaInfo media, InputFile file, Format ext, int type) {
 		boolean force_v1 = false;
-		if (file.file != null) {
-			String fName = file.file.getName().toLowerCase();
+		if (file.getFile() != null) {
+			String fName = file.getFile().getName().toLowerCase();
 			for (String e : PARSER_V1_EXTENSIONS) {
 				if (fName.endsWith(e)) {
 					force_v1 = true;
@@ -316,11 +316,11 @@ public class FormatConfiguration {
 	public String match(DLNAMediaInfo media) {
 		if (media.getFirstAudioTrack() == null) {
 			// no sound
-			return match(media.container, media.codecV, null, 0, 0, media.bitrate, media.width, media.height, media.getExtras());
+			return match(media.getContainer(), media.getCodecV(), null, 0, 0, media.getBitrate(), media.getWidth(), media.getHeight(), media.getExtras());
 		} else {
 			String finalMimeType = null;
-			for (DLNAMediaAudio audio : media.audioCodes) {
-				String mimeType = match(media.container, media.codecV, audio.codecA, audio.nrAudioChannels, audio.getSampleRate(), media.bitrate, media.width, media.height, media.getExtras());
+			for (DLNAMediaAudio audio : media.getAudioCodes()) {
+				String mimeType = match(media.getContainer(), media.getCodecV(), audio.getCodecA(), audio.getNrAudioChannels(), audio.getSampleRate(), media.getBitrate(), media.getWidth(), media.getHeight(), media.getExtras());
 				finalMimeType = mimeType;
 				if (mimeType == null) // if at least one audio track is not compatible, the file must be transcoded.
 				{

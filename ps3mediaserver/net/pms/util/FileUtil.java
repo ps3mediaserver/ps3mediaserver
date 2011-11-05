@@ -125,44 +125,44 @@ public class FileUtil {
 
 							boolean exists = false;
 							if (media != null) {
-								for (DLNAMediaSubtitle sub : media.subtitlesCodes) {
-									if (f.equals(sub.file)) {
+								for (DLNAMediaSubtitle sub : media.getSubtitlesCodes()) {
+									if (f.equals(sub.getFile())) {
 										exists = true;
-									} else if (ext.equals("idx") && sub.type == DLNAMediaSubtitle.MICRODVD) { // VOBSUB
-										sub.type = DLNAMediaSubtitle.VOBSUB;
+									} else if (ext.equals("idx") && sub.getType() == DLNAMediaSubtitle.MICRODVD) { // VOBSUB
+										sub.setType(DLNAMediaSubtitle.VOBSUB);
 										exists = true;
-									} else if (ext.equals("sub") && sub.type == DLNAMediaSubtitle.VOBSUB) { // VOBSUB
-										sub.file = f;
+									} else if (ext.equals("sub") && sub.getType() == DLNAMediaSubtitle.VOBSUB) { // VOBSUB
+										sub.setFile(f);
 										exists = true;
 									}
 								}
 							}
 							if (!exists) {
 								DLNAMediaSubtitle sub = new DLNAMediaSubtitle();
-								sub.id = 100 + (media == null ? 0 : media.subtitlesCodes.size()); // fake id, not used
-								sub.file = f;
+								sub.setId(100 + (media == null ? 0 : media.getSubtitlesCodes().size())); // fake id, not used
+								sub.setFile(f);
 								sub.checkUnicode();
 								if (code.length() == 0 || !Iso639.getCodeList().contains(code)) {
-									sub.lang = DLNAMediaSubtitle.UND;
-									sub.type = i + 1;
+									sub.setLang(DLNAMediaSubtitle.UND);
+									sub.setType(i + 1);
 									if (code.length() > 0) {
-										sub.flavor = code;
-										if (sub.flavor.contains("-")) {
-											String flavorLang = sub.flavor.substring(0, sub.flavor.indexOf("-"));
-											String flavorTitle = sub.flavor.substring(sub.flavor.indexOf("-") + 1);
+										sub.setFlavor(code);
+										if (sub.getFlavor().contains("-")) {
+											String flavorLang = sub.getFlavor().substring(0, sub.getFlavor().indexOf("-"));
+											String flavorTitle = sub.getFlavor().substring(sub.getFlavor().indexOf("-") + 1);
 											if (Iso639.getCodeList().contains(flavorLang)) {
-												sub.lang = flavorLang;
-												sub.flavor = flavorTitle;
+												sub.setLang(flavorLang);
+												sub.setFlavor(flavorTitle);
 											}
 										}
 									}
 								} else {
-									sub.lang = code;
-									sub.type = i + 1;
+									sub.setLang(code);
+									sub.setType(i + 1);
 								}
 								found = true;
 								if (media != null) {
-									media.subtitlesCodes.add(sub);
+									media.getSubtitlesCodes().add(sub);
 								}
 							}
 						}
