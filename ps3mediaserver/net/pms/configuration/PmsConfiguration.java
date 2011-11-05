@@ -171,7 +171,6 @@ public class PmsConfiguration {
 	private static final String KEY_USE_SUBTITLES = "autoloadsrt";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
-	private static final String KEY_HDAUDIO_PASSTHROUGH = "hdaudio_passthrough";
 	private static final String KEY_UPNP_PORT = "upnp_port";
 	private static final String KEY_UUID = "uuid";
 	private static final String KEY_MENCODER_FORCED_SUB_LANG = "forced_sub_lang";
@@ -1500,14 +1499,6 @@ public class PmsConfiguration {
 
 	public boolean isDTSEmbedInPCM() {
 		return getBoolean(KEY_EMBED_DTS_IN_PCM, false);
-	}
-	
-	public void setHDAudioPassthrough(boolean value) {
-		configuration.setProperty(KEY_HDAUDIO_PASSTHROUGH, value);
-	}
-
-	public boolean isHDAudioPassthrough() {
-		return getBoolean(KEY_HDAUDIO_PASSTHROUGH, false);
 	}
 
 	public void setMencoderMuxWhenCompatible(boolean value) {
