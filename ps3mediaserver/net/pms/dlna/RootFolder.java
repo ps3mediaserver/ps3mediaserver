@@ -102,7 +102,7 @@ public class RootFolder extends DLNAResource {
 		if(isDiscovered()) {
 			return;
 		}
-		
+
 		for (DLNAResource r : getConfiguredFolders()) {
 			addChild(r);
 		}
@@ -442,26 +442,26 @@ public class RootFolder extends DLNAResource {
 		}
 		return res;
 	}
-	
+
 	private VirtualFolder createApertureDlnaLibrary(String url) throws UnsupportedEncodingException, MalformedURLException, XmlParseException, IOException, URISyntaxException {
 		VirtualFolder res = null;
-		
+
 		if (url != null) {
 			Map<String, Object> iPhotoLib;
 			// every project is a album, too
 			ArrayList<?> listOfAlbums;
 			HashMap<?, ?> album;
 			HashMap<?, ?> photoList;
-			
+
 			URI tURI = new URI(url);
 			iPhotoLib = Plist.load(URLDecoder.decode(tURI.toURL().getFile(), System.getProperty("file.encoding"))); // loads the (nested) properties.
 			photoList = (HashMap<?, ?>) iPhotoLib.get("Master Image List"); // the list of photos
 			final Object mediaPath = iPhotoLib.get("Archive Path");
 			String mediaName;
-			
+
 			if (mediaPath != null) {
 				mediaName = mediaPath.toString();
-				
+
 				if (mediaName != null && mediaName.lastIndexOf("/") != -1 && mediaName.lastIndexOf(".aplibrary") != -1) {
 					mediaName = mediaName.substring(mediaName.lastIndexOf("/"), mediaName.lastIndexOf(".aplibrary"));
 				} else {
@@ -470,19 +470,19 @@ public class RootFolder extends DLNAResource {
 			} else {
 				mediaName = "unknown library";
 			}
-			
+
 			logger.info("Going to parse aperture library: " + mediaName);
 			res  = new VirtualFolder(mediaName, null);
 			listOfAlbums = (ArrayList<?>) iPhotoLib.get("List of Albums"); // the list of events (rolls)
-			
+
 			for (Object item : listOfAlbums) {
 				album = (HashMap<?, ?>) item;
-				
+
 				if (album.get("Parent") == null) {
 					VirtualFolder vAlbum = createApertureAlbum(photoList, album, listOfAlbums);
 					res.addChild(vAlbum);
 				}
-			}			
+			}
 		} else {
 			logger.info("No Aperture library found.");
 		}
@@ -492,45 +492,45 @@ public class RootFolder extends DLNAResource {
 
 	private VirtualFolder createApertureAlbum(HashMap<?, ?> photoList,
 							HashMap<?, ?> album, ArrayList<?> listOfAlbums) {
-		
-		ArrayList<?> albumPhotos;		
+
+		ArrayList<?> albumPhotos;
 		int albumId = (Integer)album.get("AlbumId");
 		VirtualFolder vAlbum = new VirtualFolder(album.get("AlbumName").toString(), null);
-		
+
 		for (Object item : listOfAlbums) {
 			HashMap<?, ?> sub = (HashMap<?, ?>) item;
-			
+
 			if (sub.get("Parent") != null) {
 				// recursive album creation
 				int parent = (Integer)sub.get("Parent");
-				
+
 				if (parent == albumId) {
 					VirtualFolder subAlbum = createApertureAlbum(photoList, sub, listOfAlbums);
 					vAlbum.addChild(subAlbum);
 				}
 			}
 		}
-				
+
 		albumPhotos = (ArrayList<?>) album.get("KeyList");
-		
+
 		if (albumPhotos == null) {
 			return vAlbum;
 		}
-		
+
 		boolean firstPhoto = true;
-		
+
 		for (Object photoKey : albumPhotos) {
 			HashMap<?, ? > photo = (HashMap<?, ?>) photoList.get(photoKey);
-			
+
 			if (firstPhoto) {
 				Object x = photoList.get("ThumbPath");
-				
+
 				if (x!=null) {
 					vAlbum.setThumbnail(x.toString());
 				}
 				firstPhoto = false;
 			}
-			
+
 			RealFile file = new RealFile(new File(photo.get("ImagePath").toString()));
 			vAlbum.addChild(file);
 		}

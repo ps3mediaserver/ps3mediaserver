@@ -39,19 +39,18 @@ public class WebStream extends DLNAResource {
 		return getExt() != null;
 	}
 
-	
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	protected String url;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	protected String fluxName;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
@@ -76,7 +75,7 @@ public class WebStream extends DLNAResource {
 		} catch (MalformedURLException e) {
 			setThumbURL(thumbURL);
 		}
-		
+
 		setFluxName(fluxName);
 	}
 

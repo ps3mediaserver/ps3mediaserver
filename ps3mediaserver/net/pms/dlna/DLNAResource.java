@@ -178,7 +178,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private int nametruncate;
 	private DLNAResource first;
 	private DLNAResource second;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 * 
@@ -310,7 +310,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		if (getId() == null) {
 			return null;
 		}
-		
+
 		if (getParent() != null) {
 			return getParent().getResourceId() + '$' + getId();
 		} else {

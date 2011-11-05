@@ -39,67 +39,67 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 */
 	@Deprecated
 	public String sampleFrequency;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int nrAudioChannels;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String codecA;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String album;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String artist;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String songname;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String genre;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int year;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int track;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public int delay;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
 	public String flavor;
-	
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
@@ -155,7 +155,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	public boolean isDTS() {
 		return getCodecA() != null && (getCodecA().startsWith("dts") || getCodecA().equalsIgnoreCase("dca") || getCodecA().equalsIgnoreCase("dca (dts)"));
 	}
-	
+
 	/**
 	 * Returns true if this media uses an AC3, DTS or TrueHD codec, false otherwise.
 	 * 
