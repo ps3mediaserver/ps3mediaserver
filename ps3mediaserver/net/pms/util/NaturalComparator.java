@@ -23,7 +23,7 @@
 
 // XXX original: http://www.eekboom.com/java/compareNatural/src/com/eekboom/utils/Strings.java
 
-package net.pms.utils;
+package net.pms.util;
 
 import java.text.Collator;
 import java.util.Comparator;
