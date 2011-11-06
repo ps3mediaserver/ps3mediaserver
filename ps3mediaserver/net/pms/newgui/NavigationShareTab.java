@@ -484,8 +484,23 @@ public class NavigationShareTab {
 			}
 		});
 
-		// sortmethod
-		final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[]{"0", "3", "1", "2"}, new Object[]{Messages.getString("FoldTab.15"), Messages.getString("FoldTab.20"), Messages.getString("FoldTab.16"), Messages.getString("FoldTab.17")});
+		// sort method
+		final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(
+			new Object[]{
+				"0", // alphabetical
+				"4", // natural sort
+				"3", // ASCIIbetical
+				"1", // newest first
+				"2"  // oldest first
+			},
+			new Object[]{
+				Messages.getString("FoldTab.15"),
+				Messages.getString("FoldTab.22"),
+				Messages.getString("FoldTab.20"),
+				Messages.getString("FoldTab.16"),
+				Messages.getString("FoldTab.17")
+			}
+		);
 		sortmethod = new JComboBox(kcbm);
 		sortmethod.setEditable(false);
 

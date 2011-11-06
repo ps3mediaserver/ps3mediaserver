@@ -19,8 +19,8 @@
 package net.pms.dlna;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,11 +28,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import net.pms.PMS;
 import net.pms.configuration.MapFileConfiguration;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.network.HTTPResource;
+import net.pms.PMS;
+import net.pms.utils.NaturalComparator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,46 +180,57 @@ public class MapFile extends DLNAResource {
 		} else {
 			return;
 		}
+
 		List<File> files = getFileList();
+
 		switch (PMS.getConfiguration().getSortMethod()) {
+			case 4: // Locale-sensitive natural sort
+				Collections.sort(files, new Comparator<File>() {
+					public int compare(File f1, File f2) {
+						return NaturalComparator.compareNatural(collator, f1.getName(), f2.getName());
+					}
+				});
+				break;
 			case 3: // Case-insensitive ASCIIbetical sort
 				Collections.sort(files, new Comparator<File>() {
 
-					public int compare(File o1, File o2) {
-						return o1.getName().compareToIgnoreCase(o2.getName());
+					public int compare(File f1, File f2) {
+						return f1.getName().compareToIgnoreCase(f2.getName());
 					}
 				});
 				break;
 			case 2: // Sort by modified date, oldest first
 				Collections.sort(files, new Comparator<File>() {
 
-					public int compare(File o1, File o2) {
-						return new Long(o1.lastModified()).compareTo(new Long(o2.lastModified()));
+					public int compare(File f1, File f2) {
+						return new Long(f1.lastModified()).compareTo(new Long(f2.lastModified()));
 					}
 				});
 				break;
 			case 1: // Sort by modified date, newest first
 				Collections.sort(files, new Comparator<File>() {
 
-					public int compare(File o1, File o2) {
-						return new Long(o2.lastModified()).compareTo(new Long(o1.lastModified()));
+					public int compare(File f1, File f2) {
+						return new Long(f2.lastModified()).compareTo(new Long(f1.lastModified()));
 					}
 				});
 				break;
-			default: // locale-sensitive A-Z
+			default: // Locale-sensitive A-Z
 				Collections.sort(files, new Comparator<File>() {
 
-					public int compare(File o1, File o2) {
-						return collator.compare(o1.getName(), o2.getName());
+					public int compare(File f1, File f2) {
+						return collator.compare(f1.getName(), f2.getName());
 					}
 				});
 				break;
 		}
+
 		for (File f : files) {
 			if (f.isDirectory()) {
 				discoverable.add(f); //manageFile(f);
 			}
 		}
+
 		for (File f : files) {
 			if (f.isFile()) {
 				discoverable.add(f); //manageFile(f);
