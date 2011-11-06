@@ -83,16 +83,8 @@ public class RendererConfiguration {
 	}
 
 	public void associateIP(InetAddress sa) {
-		String ip = sa.getHostAddress();
-		String hostname = sa.getCanonicalHostName();
-
-		if (!ip.equals(hostname)) {
-			logger.info("Renderer " + this + " found on this address: " + hostname + " (" + ip + ")");
-		} else {
-			logger.info("Renderer " + this + " found on this address: " + ip);
-		}
 		addressAssociation.put(sa, this);
-		SpeedStats.getInstance().getSpeedInMBits(sa);
+		SpeedStats.getInstance().getSpeedInMBits(sa, getRendererName());
 	}
 
 	public static RendererConfiguration getRendererConfigurationBySocketAddress(InetAddress sa) {

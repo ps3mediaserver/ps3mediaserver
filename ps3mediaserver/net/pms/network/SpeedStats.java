@@ -23,9 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import net.pms.configuration.RendererConfiguration;
 import net.pms.io.OutputParams;
@@ -63,31 +66,67 @@ public class SpeedStats {
 	 * @param addr
 	 * @return 
 	 */
-	public synchronized Future<Integer> getSpeedInMBits(InetAddress addr) {
-		Future<Integer> value = speedStats.get(addr.getHostAddress());
-		if (value != null) {
+	public Future<Integer> getSpeedInMBits(InetAddress addr, String rendererName) {
+		synchronized(speedStats) { 
+			Future<Integer> value = speedStats.get(addr.getHostAddress());
+			if (value != null) {
+				return value;
+			}
+			value = executor.submit(new MeasureSpeed(addr, rendererName));
+			speedStats.put(addr.getHostAddress(), value);
 			return value;
 		}
-		value = speedStats.get(addr.getCanonicalHostName());
-		if (value != null) {
-			return value;
-		}
-		value = executor.submit(new MeasureSpeed(addr));
-		speedStats.put(addr.getHostAddress(), value);
-		speedStats.put(addr.getCanonicalHostName(), value);
-
-		return value;
 	}
 
 	class MeasureSpeed implements Callable<Integer> {
 		InetAddress addr;
-
-		public MeasureSpeed(InetAddress addr) {
+		String rendererName;
+		
+		public MeasureSpeed(InetAddress addr, String rendererName) {
 			this.addr = addr;
+			this.rendererName = rendererName != null ? rendererName : "Unknown";
 		}
 
 		@Override
 		public Integer call() throws Exception {
+			try {
+				return doCall();
+			} catch (Exception e) {
+				logger.warn("error during measuring network throughput : "+e.getMessage(), e);
+				throw e;
+			}
+		}
+		
+		private Integer doCall() throws Exception {
+			String ip = addr.getHostAddress();
+			logger.info("Checking ip:" + ip + " for " + rendererName);
+			// calling canonical host name at the first time is slow, so we call it in a separate thread
+			String hostname = addr.getCanonicalHostName();
+			synchronized(speedStats) {
+				Future<Integer> otherTask = speedStats.get(hostname);
+				if (otherTask != null) {
+					// wait a little bit
+					try {
+						// probably we are waiting for ourself, to finishing the work ...  
+						Integer value = otherTask.get(100, TimeUnit.MILLISECONDS);
+						// if the other task already calculated, the speed, we get the result, 
+						// unless we will do it now 
+						if (value != null) {
+							return value;
+						}
+					} catch (TimeoutException e) {
+						logger.trace("we couldn't get the value based on canonical name");
+					}
+				}
+			}
+
+			
+			if (!ip.equals(hostname)) {
+				logger.info("Renderer " + rendererName + " found on this address: " + hostname + " (" + ip + ")");
+			} else {
+				logger.info("Renderer " + rendererName + " found on this address: " + ip);
+			}
+
 			// let's get that speed
 			OutputParams op = new OutputParams(null);
 			op.log = true;
@@ -126,13 +165,55 @@ public class SpeedStats {
 			if (c > 0) {
 				time = (int) (time / c);
 			}
+			
 			if (time > 0) {
 				int speedInMbits = (int) (1024 / time);
 				logger.info("Address " + addr + " has an estimated network speed of: " + speedInMbits + " Mb/s");
+				synchronized(speedStats) {
+					CompletedFuture<Integer> result = new CompletedFuture<Integer>(speedInMbits);
+					// change the statistics with a computed future values
+					speedStats.put(ip, result);
+					speedStats.put(hostname, result);
+				}
 				return speedInMbits;
 			}
 			return -1;
 		}
+	}
+	
+	static class CompletedFuture<X> implements Future<X> {
+
+		X value;
+		
+		public CompletedFuture(X value) {
+			this.value = value;
+		}
+
+		@Override
+		public boolean cancel(boolean mayInterruptIfRunning) {
+			return false;
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return false;
+		}
+
+		@Override
+		public boolean isDone() {
+			return true;
+		}
+
+		@Override
+		public X get() throws InterruptedException, ExecutionException {
+			return value;
+		}
+
+		@Override
+		public X get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+			return value;
+		}
+		
 	}
 
 }
