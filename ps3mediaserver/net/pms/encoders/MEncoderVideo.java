@@ -1670,7 +1670,7 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
-		if ((pcm || dts || mux) || (configuration.isMencoderNoOutOfSync() && !noMC0NoSkip) || dvd) {
+		if ((pcm || dts || mux) || (configuration.isMencoderNoOutOfSync() && !noMC0NoSkip)) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 3);
 			cmdArray[cmdArray.length - 5] = "-mc";
 			cmdArray[cmdArray.length - 4] = "0";
