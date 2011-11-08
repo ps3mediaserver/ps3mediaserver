@@ -81,7 +81,7 @@ public class SpeedStats {
 	class MeasureSpeed implements Callable<Integer> {
 		InetAddress addr;
 		String rendererName;
-		
+
 		public MeasureSpeed(InetAddress addr, String rendererName) {
 			this.addr = addr;
 			this.rendererName = rendererName != null ? rendererName : "Unknown";
@@ -96,7 +96,7 @@ public class SpeedStats {
 				throw e;
 			}
 		}
-		
+
 		private Integer doCall() throws Exception {
 			String ip = addr.getHostAddress();
 			logger.info("Checking ip:" + ip + " for " + rendererName);
@@ -165,7 +165,7 @@ public class SpeedStats {
 			if (c > 0) {
 				time = (int) (time / c);
 			}
-			
+
 			if (time > 0) {
 				int speedInMbits = (int) (1024 / time);
 				logger.info("Address " + addr + " has an estimated network speed of: " + speedInMbits + " Mb/s");
@@ -180,9 +180,8 @@ public class SpeedStats {
 			return -1;
 		}
 	}
-	
-	static class CompletedFuture<X> implements Future<X> {
 
+	static class CompletedFuture<X> implements Future<X> {
 		X value;
 		
 		public CompletedFuture(X value) {
@@ -213,7 +212,5 @@ public class SpeedStats {
 		public X get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
 			return value;
 		}
-		
 	}
-
 }
