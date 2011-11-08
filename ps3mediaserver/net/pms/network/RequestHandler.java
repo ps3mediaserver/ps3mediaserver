@@ -75,6 +75,7 @@ public class RequestHandler implements Runnable {
 						PMS.get().setRendererfound(renderer);
 						request.setMediaRenderer(renderer);
 						useragentfound = true;
+						logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
 					}
 				}
 				if (!useragentfound && headerLine != null && request != null) {
@@ -83,6 +84,7 @@ public class RequestHandler implements Runnable {
 						PMS.get().setRendererfound(renderer);
 						request.setMediaRenderer(renderer);
 						useragentfound = true;
+						logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
 					}
 				}
 				try {
