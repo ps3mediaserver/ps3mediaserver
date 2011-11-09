@@ -128,7 +128,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 					alternateRenderer.associateIP(ia);
 					PMS.get().setRendererfound(alternateRenderer);
 					useragentfound = true;
-					logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
+					logger.trace("Matched media renderer \"" + alternateRenderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
 				}
 			}
 
