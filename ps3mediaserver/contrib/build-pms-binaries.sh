@@ -2,8 +2,8 @@
 #
 # build-pms-osx.sh
 #
-# Version: 2.0.0
-# Last updated: 2011-10-01
+# Version: 2.0.1
+# Last updated: 2011-11-09
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -123,13 +123,13 @@ VERSION_EXPAT=2.0.1
 VERSION_FAAD2=2.7
 VERSION_FLAC=1.2.1
 VERSION_FONTCONFIG=2.8.0
-VERSION_FFMPEG=2011-09-25
-VERSION_FREETYPE=2.4.6
+VERSION_FFMPEG=2011-11-09
+VERSION_FREETYPE=2.4.7
 VERSION_FRIBIDI=0.19.2
 VERSION_GIFLIB=4.1.6
 VERSION_ICONV=1.13.1
 VERSION_JPEG=8c
-VERSION_LAME=3.98.4
+VERSION_LAME=3.99
 VERSION_LIBDCA=0.0.5
 VERSION_LIBDV=1.0.0
 VERSION_LIBDVDCSS=1.2.9
@@ -137,17 +137,17 @@ VERSION_LIBDVDNAV=1226
 VERSION_LIBDVDREAD=1226
 VERSION_LIBMAD=0.15.1b
 VERSION_LIBMEDIAINFO=0.7.50
-VERSION_LIBPNG=1.5.5
+VERSION_LIBPNG=1.5.6
 VERSION_LIBOGG=1.2.2
 VERSION_LIBVORBIS=1.3.2
 VERSION_LIBTHEORA=1.1.1
 VERSION_LIBZEN=0.4.19
 VERSION_LZO=2.04
-VERSION_MPLAYER=34132
+VERSION_MPLAYER=34332
 VERSION_NCURSES=5.9
 VERSION_PS3MEDIASERVER=832
 VERSION_TSMUXER=1.10.6
-VERSION_X264=2011-04-24
+VERSION_X264=2011-11-09
 VERSION_XVID=1.3.1
 VERSION_ZLIB=1.2.5
 
@@ -698,12 +698,11 @@ build_ffmpeg() {
 
         set_flags
 
-        # Theora/vorbis disabled for mplayer, also disabled here to avoid build errors
+        # VDA disabled for mplayer, also disabled here to avoid build errors
         ./configure --enable-gpl --enable-version3 --enable-nonfree --disable-doc --disable-debug \
               --enable-libmp3lame --enable-libx264 --enable-libxvid --enable-libfreetype \
-              --cc=$GCC2 \
+              --cc=$GCC2 --disable-vda \
               --disable-devices --disable-ffplay --disable-ffserver --disable-ffprobe \
-              --disable-libtheora --disable-libvorbis \
               --disable-shared --enable-static --prefix=$TARGET
     else
         set_flags
@@ -1353,9 +1352,11 @@ build_mplayer() {
         # /usr/bin/gcc gives compile errors for MPlayer on OSX Lion.
         # See https://svn.macports.org/ticket/30279
 
+        # Apply SB patch that was used for the Windows version
+        patch -p0 < ./../../mplayer-r34332-SB17.patch
+
         # Theora and vorbis support seems broken in this revision, disable it for now
         ./configure --cc=$GCC2 --disable-x11 --disable-gl --disable-qtx \
-              --disable-theora --disable-libvorbis \
               --with-freetype-config=$TARGET/bin/freetype-config --prefix=$TARGET
 
         # Somehow -I/usr/X11/include still made it into the config.mak, regardless of the --disable-x11
@@ -1558,13 +1559,13 @@ build_x264() {
         $GIT pull git://git.videolan.org/x264.git
         exit_on_error
     else
-        $GIT clone git://git.videolan.org/x264.git x264
+        $GIT clone git://git.videolan.org/x264.git x264 -b stable
         exit_on_error
         cd x264
     fi
 
     if [ "$FIXED_REVISIONS" == "yes" ]; then
-        $GIT checkout "`$GIT rev-list master -n 1 --first-parent --before=$VERSION_X264`"
+        $GIT checkout "`$GIT rev-list stable -n 1 --first-parent --before=$VERSION_X264`"
         exit_on_error
     fi
 
@@ -1572,7 +1573,7 @@ build_x264() {
 
     if is_osx; then
       if [ "$ARCHITECTURE" == "i386" ]; then
-       ./configure --prefix=$TARGET --host=x86-apple-darwin10 --disable-asm
+       ./configure --prefix=$TARGET --host=i386-apple-darwin10 --disable-asm
       else
         ./configure --prefix=$TARGET
       fi

@@ -22,7 +22,7 @@ Changelog:
 	Speeds displayed in Mb/s instead of Kb/s
 	Recognise forced subtitles (thanks, ExSport!)
 	Clarified English language labels
-	Updated MPlayer and MEncoder on Windows from Sherpya's old builds to SubJunk's new builds which fixes many playback issues, colour-conversion bugs and more (but possibly has drawbacks for some files, too)
+	Updated MPlayer and MEncoder on Windows and OSX from Sherpya's old builds to SubJunk's new builds which fixes many playback issues, colour-conversion bugs and more (but possibly has drawbacks for some files, too)
 	Main (Status) tab displays a large tick when it's connected to a renderer instead of a PS3 or warning image
 	Updated MediaInfo to 0.7.50 from 0.7.47
 	New natural sort option for file order: Alphanumeric (e.g. Season 2 before Season 10)
