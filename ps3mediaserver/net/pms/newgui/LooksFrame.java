@@ -311,7 +311,6 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		toolBar.add(save);
 		toolBar.addSeparator();
 		reload = createToolBarButton(Messages.getString("LooksFrame.12"), "reload_page-48.png", Messages.getString("LooksFrame.12"));
-		reload.setEnabled(false);
 		reload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -407,7 +406,13 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 
 	@Override
 	public void setReloadable(boolean b) {
-		reload.setEnabled(b);
+		if(b) {
+			reload.setIcon(readImageIcon("reload_page_required-48.png"));
+			reload.setToolTipText(Messages.getString("LooksFrame.13"));
+		} else {
+			reload.setIcon(readImageIcon("reload_page-48.png"));
+			reload.setToolTipText(Messages.getString("LooksFrame.12"));
+		}
 	}
 
 	@Override
