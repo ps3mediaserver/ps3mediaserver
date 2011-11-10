@@ -25,9 +25,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import net.pms.io.SystemUtils;
 
@@ -35,6 +38,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.event.ConfigurationListener;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -198,6 +202,16 @@ public class PmsConfiguration {
 	private final ProgramPathDisabler programPaths;
 
 	private final IpFilter filter = new IpFilter();
+	
+	/**
+	 * The set of the keys, which change needs reload.
+	 */
+	public static final Set<String> NEED_RELOAD_FLAGS = new HashSet<String>(Arrays.asList(
+			KEY_ALTERNATE_THUMB_FOLDER, KEY_NETWORK_INTERFACE, KEY_IP_FILTER,
+			KEY_SORT_METHOD, KEY_HIDE_EMPTY_FOLDERS, KEY_HIDE_TRANSCODE_FOLDER, KEY_HIDE_MEDIA_LIBRARY_FOLDER, KEY_OPEN_ARCHIVES, KEY_USE_CACHE,
+			KEY_HIDE_ENGINENAMES, KEY_ITUNES_ENABLED, KEY_IPHOTO_ENABLED, KEY_APERTURE_ENABLED, KEY_ENGINES, KEY_FOLDERS, KEY_HIDE_VIDEO_SETTINGS,
+			KEY_AUDIO_THUMBNAILS_METHOD, KEY_NOTRANSCODE, KEY_FORCETRANSCODE, KEY_SERVER_PORT, KEY_SERVER_HOSTNAME, KEY_CHAPTER_SUPPORT,
+			KEY_HIDE_EXTENSIONS));
 
 	/*
 		The following code enables a single setting - PMS_PROFILE - to be used to
@@ -1713,5 +1727,13 @@ public class PmsConfiguration {
 
 	public void setUuid(String value){
 		configuration.setProperty(KEY_UUID, value);
+	}
+
+	public void addConfigurationListener(ConfigurationListener l) {
+		configuration.addConfigurationListener(l);
+	}
+
+	public void removeConfigurationListener(ConfigurationListener l) {
+		configuration.removeConfigurationListener(l);
 	}
 }

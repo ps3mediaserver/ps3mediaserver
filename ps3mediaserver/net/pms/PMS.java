@@ -351,8 +351,17 @@ public class PMS {
 			System.out.println("Switching to console mode");
 			frame = new DummyFrame();
 		}
+		configuration.addConfigurationListener(new ConfigurationListener() {
 
-		frame.setReloadable(true);
+			@Override
+			public void configurationChanged(ConfigurationEvent event) {
+				if (!event.isBeforeUpdate()) {
+					if (PmsConfiguration.NEED_RELOAD_FLAGS.contains(event.getPropertyName())) {
+						frame.setReloadable(true);
+					}
+				}
+			}
+		});
 
 		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-220.png");
 		proxy = -1;
@@ -752,6 +761,7 @@ public class PMS {
 		server = new HTTPServer(configuration.getServerPort());
 		server.start();
 		UPNPHelper.sendAlive();
+		frame.setReloadable(false);
 	}
 
 	// Cannot remove these methods because of backwards compatibility;
