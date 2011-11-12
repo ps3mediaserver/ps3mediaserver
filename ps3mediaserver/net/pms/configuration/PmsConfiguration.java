@@ -639,7 +639,7 @@ public class PmsConfiguration {
 	 * Some versions of mencoder produce garbled audio because the "ac3" codec is used
 	 * instead of the "ac3_fixed" codec. Returns true if "ac3_fixed" should be used.
 	 * Default is false.
-	 * @see https://code.google.com/p/ps3mediaserver/issues/detail?id=1092#c1
+	 * See https://code.google.com/p/ps3mediaserver/issues/detail?id=1092#c1
 	 * @return True if "ac3_fixed" should be used. 
 	 */
 	public boolean isMencoderAc3Fixed() {
@@ -717,7 +717,7 @@ public class PmsConfiguration {
 	/**
 	 * Some versions of mencoder produce garbled audio because the "ac3" codec is used
 	 * instead of the "ac3_fixed" codec.
-	 * @see https://code.google.com/p/ps3mediaserver/issues/detail?id=1092#c1
+	 * See https://code.google.com/p/ps3mediaserver/issues/detail?id=1092#c1
 	 * @param value Set to true if "ac3_fixed" should be used.
 	 */
 	public void setMencoderAc3Fixed(boolean value) {
@@ -822,7 +822,7 @@ public class PmsConfiguration {
 	 * Older versions of mencoder do not support ASS/SSA subtitles on all
 	 * platforms. Returns true if mencoder supports them. Default is true
 	 * on Windows and OS X, false otherwise.
-	 * @see https://code.google.com/p/ps3mediaserver/issues/detail?id=1097
+	 * See https://code.google.com/p/ps3mediaserver/issues/detail?id=1097
 	 * @return True if mencoder supports ASS/SSA subtitles.
 	 */
 	public boolean isMencoderAss() {

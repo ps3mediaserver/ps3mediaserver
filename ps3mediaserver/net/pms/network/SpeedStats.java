@@ -64,7 +64,7 @@ public class SpeedStats {
 	 * Return the network throughput for the given IP address in MBits. It is calculated in the background, and cached, 
 	 * so only a reference is given to the result, which can be retrieved with calling get() method on it.
 	 * @param addr
-	 * @return 
+	 * @return  The network throughput
 	 */
 	public Future<Integer> getSpeedInMBits(InetAddress addr, String rendererName) {
 		synchronized(speedStats) { 

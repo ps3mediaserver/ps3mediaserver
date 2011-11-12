@@ -88,7 +88,7 @@ public abstract class VirtualVideoAction extends DLNAResource {
 	 * The main purpose of this function is toggle a boolean variable somewhere. 
 	 * The value of that boolean variable is shown then as either a green tick mark or a red cross.
 	 * However, this is just a cosmetic thing. Any Java code can be executed in this function, not only toggling a boolean variable.
-	 * Recommended way to instantiate this class is as follows (taken from {@link PMS#addVideoSettingssFolder(net.pms.configuration.RendererConfiguration)}:
+	 * Recommended way to instantiate this class is as follows:
 	 * <pre> VirtualFolder vf;
 	 * [...]
 	 * vf.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) {

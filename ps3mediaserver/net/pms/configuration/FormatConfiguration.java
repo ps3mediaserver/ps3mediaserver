@@ -309,9 +309,12 @@ public class FormatConfiguration {
 	}
 
 	/**
-	 * Return NULL = It's not natively supported by the renderer.
-	 * @param media media informations
-	 * @return
+	 * Match a media information to available audio codes for the renderer
+	 * and return its mimetype if the match is successful. Returns null if
+	 * the media is not natively supported by the renderer, which means it
+	 * has to be transcoded.
+	 * @param media The media information
+	 * @return The mimetype or null if no match was found.
 	 */
 	public String match(DLNAMediaInfo media) {
 		if (media.getFirstAudioTrack() == null) {

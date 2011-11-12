@@ -87,7 +87,7 @@ public class DLNAMediaLang {
 
 	/**
 	 * Returns the IS0 639 language code for this language object. If you
-	 * require the full language name, use {@link #getIso639Lang()} instead.
+	 * require the full language name, use {@link #getLangFullName()} instead.
 	 * Special return values are "und" (for "undetermined") and "off" 
 	 * (indicates an audio track or subtitle should be disabled).
 	 * 

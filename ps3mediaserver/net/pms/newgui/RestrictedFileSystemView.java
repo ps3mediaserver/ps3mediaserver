@@ -174,7 +174,7 @@ public class RestrictedFileSystemView extends FileSystemView {
 	/**
 	 * Is dir the root of a tree in the file system, such as a drive or partition.
 	 * 
-	 * @param f a <code>File</code> object representing a directory
+	 * @param dir a <code>File</code> object representing a directory
 	 * @return <code>true</code> if <code>f</code> is a root of a filesystem
 	 * @see #isRoot
 	 */

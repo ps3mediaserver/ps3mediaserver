@@ -225,12 +225,12 @@ public class RequestV2 extends HTTPResource {
 	 * See <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html">RFC-2616</a>
 	 * for HTTP header field definitions. 
 	 * @param output The {@link HttpResponse} object that will be used to construct the response.
-	 * @param event The {@link MessageEvent} object used to communicate with the client that sent
+	 * @param e The {@link MessageEvent} object used to communicate with the client that sent
 	 * 			the request.
 	 * @param close Set to true to close the channel after sending the response. By default the
 	 * 			channel is not closed after sending.
 	 * @param startStopListenerDelegate The {@link StartStopListenerDelegate} object that is used
-	 * 			to notify plugins that the {@link DNLAResource} is about to start playing.
+	 * 			to notify plugins that the {@link DLNAResource} is about to start playing.
 	 * @return The {@link ChannelFuture} object via which the response was sent.
 	 * @throws IOException
 	 */

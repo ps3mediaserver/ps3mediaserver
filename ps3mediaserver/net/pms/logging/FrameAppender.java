@@ -116,7 +116,7 @@ public class FrameAppender<E> extends UnsynchronizedAppenderBase<E> {
 	 * Needs to be called (via the <encoder class="..."> element in the
 	 * logback.xml config file) before the appender can be started.
 	 * 
-	 * @param
+	 * @param encoder
 	 */
 	public void setEncoder(Encoder<E> encoder) {
 		this.encoder = encoder;
