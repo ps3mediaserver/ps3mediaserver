@@ -110,7 +110,7 @@ public class HTTPResource {
 	 * @param saveOnDisk If true, the file is first downloaded in the harddisk in the temporary folder.
 	 * @return InputStream that can be used for sending to the UPNP Media Renderer.
 	 * @throws IOException
-	 * @see downloadAndSendBinary
+	 * @see #downloadAndSendBinary(String)
 	 */
 	protected static InputStream downloadAndSend(String u, boolean saveOnDisk) throws IOException {
 		URL url = new URL(u);
@@ -145,7 +145,7 @@ public class HTTPResource {
 	 * @param saveOnDisk If true, store the file in the harddisk.
 	 * @param f If saveOnDisk is true, then store the contents of the file represented by u into the associated File. f needs to be opened before
 	 * calling this function.
-	 * @return
+	 * @return The byte array
 	 * @throws IOException
 	 */
 	protected static byte[] downloadAndSendBinary(String u, boolean saveOnDisk, File f) throws IOException {
@@ -185,7 +185,7 @@ public class HTTPResource {
 	/**Returns an associated MIME type related to the Media Renderer. Some Media Renderer might need that the MIME type is not the correct one.
 	 * @param mimetype MIME type to transform.
 	 * @param mediarenderer Specific Media Renderer.
-	 * @return
+	 * @return The MIME type
 	 */
 	public String getRendererMimeType(String mimetype, RendererConfiguration mediarenderer) {
 		return mediarenderer.getMimeType(mimetype);

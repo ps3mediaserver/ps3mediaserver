@@ -698,7 +698,6 @@ public class PMS {
 	 * @param log whether to output log information
 	 * @return {@link File}[] Array of directories.
 	 * @throws IOException
-	 * @see {@link PMS#manageRoot(RendererConfiguration)}
 	 */
 
 	// this is called *way* too often (e.g. a dozen times with 1 renderer and 1 shared folder),
@@ -742,7 +741,7 @@ public class PMS {
 	}
 
 	/**Restarts the server. The trigger is either a button on the main PMS window or via
-	 * an action item added via {@link PMS#addVideoSettingssFolder(RendererConfiguration).
+	 * an action item.
 	 * @throws IOException
 	 */
 	// XXX: don't try to optimize this by reusing the same server instance.
@@ -911,7 +910,7 @@ public class PMS {
 
 	/**
 	 * @param filename
-	 * @return
+	 * @return The format.
 	 */
 	public Format getAssociatedExtension(String filename) {
 		logger.trace("Search extension for " + filename);

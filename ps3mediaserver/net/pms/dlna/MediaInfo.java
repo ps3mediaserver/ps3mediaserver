@@ -192,7 +192,7 @@ public class MediaInfo {
 	/**
 	 * Open a file and collect information about it (technical information and tags).
 	 *
-	 * @param file full name of the file to open
+	 * @param File_Name full name of the file to open
 	 * @return 1 if file was opened, 0 if file was not not opened
 	 */
 	public int Open(String File_Name) {
@@ -239,7 +239,6 @@ public class MediaInfo {
 	 *            in string format ("Codec", "Width"...)
 	 * @param infoKind Kind of information you want about the parameter (the text, the measure,
 	 *            the help...)
-	 * @param searchKind Where to look for the parameter
 	 */
 	public String Get(StreamKind StreamKind, int StreamNumber, String parameter, InfoKind infoKind) {
 		return Get(StreamKind, StreamNumber, parameter, infoKind, InfoKind.Name);
@@ -272,7 +271,7 @@ public class MediaInfo {
 	 *
 	 * @param StreamKind Kind of Stream (general, video, audio...)
 	 * @param StreamNumber Stream number in Kind of Stream (first, second...)
-	 * @param parameter Parameter you are looking for in the Stream (Codec, width, bitrate...),
+	 * @param parameterIndex Parameter you are looking for in the Stream (Codec, width, bitrate...),
 	 *            in integer format (first parameter, second parameter...)
 	 * @return a string about information you search, an empty string if there is a problem
 	 */
@@ -285,7 +284,7 @@ public class MediaInfo {
 	 *
 	 * @param StreamKind Kind of Stream (general, video, audio...)
 	 * @param StreamNumber Stream number in Kind of Stream (first, second...)
-	 * @param parameter Parameter you are looking for in the Stream (Codec, width, bitrate...),
+	 * @param parameterIndex Parameter you are looking for in the Stream (Codec, width, bitrate...),
 	 *            in integer format (first parameter, second parameter...)
 	 * @param infoKind Kind of information you want about the parameter (the text, the measure,
 	 *            the help...)

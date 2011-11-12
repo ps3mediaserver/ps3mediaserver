@@ -32,7 +32,7 @@ import ch.qos.logback.core.PropertyDefinerBase;
  * This is equivalent to the old behavior of PMS.
  * </p>
  * 
- * @see System.getProperty("java.io.tmpdir");
+ * @see System#getProperty(String)
  * @author thomas@innot.de
  * 
  */

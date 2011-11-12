@@ -60,7 +60,7 @@ public abstract class Range implements Cloneable {
 		}
 
 		/**
-		 * @param the start to set
+		 * @param start the start to set
 		 */
 		public Time setStart(Double start) {
 			this.start = start;
@@ -93,7 +93,7 @@ public abstract class Range implements Cloneable {
 		}
 
 		/**
-		 * @param the end to set
+		 * @param end the end to set
 		 */
 		public Time setEnd(Double end) {
 			this.end = end;

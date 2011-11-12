@@ -41,8 +41,9 @@ import org.slf4j.LoggerFactory;
  * typically used to hold data piped by a transcoding process in one thread until a request
  * for data comes in from another thread.
  * 
- * @see {@link ProcessWrapperImpl}, {@link net.pms.network.Request Request},
- * {@link net.pms.network.RequestV2 RequestV2}
+ * @see ProcessWrapperImpl
+ * @see net.pms.network.Request Request
+ * @see net.pms.network.RequestV2 RequestV2
  */
 public class BufferedOutputFileImpl extends OutputStream implements BufferedOutputFile {
 	private static final Logger logger = LoggerFactory.getLogger(BufferedOutputFileImpl.class);

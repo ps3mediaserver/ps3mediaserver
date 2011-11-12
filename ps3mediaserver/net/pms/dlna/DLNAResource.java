@@ -301,7 +301,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * format used is <i>number($number)+</i>. A common client that expects a
 	 * different format than the one used here is the XBox360. PMS translates
 	 * the XBox360 queries on the fly. For more info, check
-	 * {@link http://www.mperfect.net/whsUpnp360/} . 
+	 * http://www.mperfect.net/whsUpnp360/ . 
 	 * 
 	 * @return The resource id.
 	 * @since 1.50
@@ -319,7 +319,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**
-	 * @see #setId()
+	 * @see #setId(String)
 	 * @param id
 	 */
 	protected void setIndexId(int id) {
@@ -407,12 +407,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/** Recursive function that searchs through all of the children until it finds
-	 * a {@link DLNAResource} that matches the name.<p> Only used by {@link PMS#manageRoot(RendererConfiguration)}
-	 * while parsing the web.conf file.
+	 * a {@link DLNAResource} that matches the name.<p> Only used by
+	 * {@link net.pms.dlna.RootFolder#addWebFolder(File webConf)
+	 * addWebFolder(File webConf)} while parsing the web.conf file.
 	 * @param name String to be compared the name to.
 	 * @return Returns a {@link DLNAResource} whose name matches the parameter name
 	 * @see #getName()
-	 * @see PMS#manageRoot(RendererConfiguration)
 	 */
 	public DLNAResource searchByName(String name) {
 		for (DLNAResource child : getChildren()) {
@@ -425,8 +425,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 	/**
 	 * @param renderer Renderer for which to check if file is supported.
-	 * @return true if the given {@see RendererConfiguration} can understand type of media. Returns also true
-	 * if this DLNAResource is a container.
+	 * @return true if the given {@link net.pms.configuration.RendererConfiguration
+	 *		RendererConfiguration} can understand type of media. Also returns true
+	 *		if this DLNAResource is a container.
 	 */
 	public boolean isCompatible(RendererConfiguration renderer) {
 		return getExt() == null
@@ -644,7 +645,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	/**
 	 * First thing it does it searches for an item matching the given objectID.
 	 * If children is false, then it returns the found object as the only object in the list.
-	 * If item or children have not been discovered already, then the {@link #closeChildren(int, boolean)} is called.<p>
 	 * TODO: (botijo) This function does a lot more than this!
 	 * @param objectId ID to search for.
 	 * @param returnChildren State if you want all the children in the returned list.
@@ -653,7 +653,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param renderer Renderer for which to do the actions.
 	 * @return List of DLNAResource items. 
 	 * @throws IOException
-	 * @see #closeChildren(int, boolean)
 	 */
 	public synchronized List<DLNAResource> getDLNAResources(String objectId, boolean returnChildren, int start, int count, RendererConfiguration renderer) throws IOException {
 		ArrayList<DLNAResource> resources = new ArrayList<DLNAResource>();
@@ -791,7 +790,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	/**
 	 * TODO: (botijo) What is the intention of this function? Looks like a prototype to be overloaded.
 	 * @param count
-	 * @return
+	 * @return Returns true
 	 */
 	public boolean analyzeChildren(int count) {
 		return true;
@@ -799,7 +798,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 	/**
 	 * Reload the list of children
-	 * @return
 	 */
 	public void refreshChildren() {
 	}
@@ -833,7 +831,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 	// Ditlew
 	/**Returns the DisplayName for the default renderer.
-	 * @return
+	 * @return The display name.
 	 * @see #getDisplayName(RendererConfiguration)
 	 */
 	public String getDisplayName() {
@@ -903,7 +901,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**Prototype for returning URLs.
-	 * @return
+	 * @return An empty URL
 	 */
 	protected String getFileURL() {
 		return getURL("");
@@ -1402,11 +1400,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**Returns an InputStream of this DLNAResource that starts at a given time, if possible. Very useful if video chapters are being used.
-	 * @param low
-	 * @param high
-	 * @param timeseek
+	 * @param range
 	 * @param mediarenderer
-	 * @return
+	 * @return The inputstream
 	 * @throws IOException
 	 */
 	public InputStream getInputStream(Range range, RendererConfiguration mediarenderer) throws IOException {
@@ -1624,7 +1620,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**TODO: (botijo) Prototype function?
-	 * @return
+	 * @return The inputstream
 	 * @throws IOException
 	 */
 	public InputStream getThumbnailInputStream() throws IOException {

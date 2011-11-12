@@ -1601,7 +1601,7 @@ public class DLNAMediaInfo implements Cloneable {
 	}
 
 	/**
-	 * @param h264_annexB the h264_annexB to set
+	 * @param h264AnnexB the h264_annexB to set
 	 * @since 1.50
 	 */
 	public void setH264AnnexB(byte[] h264AnnexB) {
