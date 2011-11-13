@@ -82,6 +82,13 @@ public class RendererConfiguration {
 		return rootFolder;
 	}
 
+	/**
+	 * Associate an IP address with this renderer. The association will
+	 * persist between requests, allowing the renderer to be recognized
+	 * by its address in later requests.
+	 * @param sa The IP address to associate.
+	 * @see #getRendererConfigurationBySocketAddress(InetAddress)
+	 */
 	public void associateIP(InetAddress sa) {
 		addressAssociation.put(sa, this);
 		SpeedStats.getInstance().getSpeedInMBits(sa, getRendererName());
@@ -102,6 +109,12 @@ public class RendererConfiguration {
 
 	private static RendererConfiguration manageRendererMatch(RendererConfiguration r) {
 		if (addressAssociation.values().contains(r)) {
+			// FIXME: This cannot ever ever happen because of how renderer matching
+			// is implemented in RequestHandler and RequestHandlerV2. The first header
+			// match will associate the IP address with the renderer and from then on
+			// all other requests from the same IP address will be recognized based on
+			// that association. Headers will be ignored and unfortunately they happen
+			// to be the only way to get here.
 			logger.info("Another renderer like " + r.getRendererName() + " was found!");
 		}
 		return r;

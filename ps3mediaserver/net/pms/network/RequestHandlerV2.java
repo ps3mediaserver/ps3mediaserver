@@ -72,6 +72,8 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 		throws Exception {
 		RequestV2 request = null;
+		RendererConfiguration renderer = null;
+		String userAgentString = null;
 		StringBuilder unknownHeaders = new StringBuilder();
 		String separator = "";
 		
@@ -79,15 +81,17 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 
 		InetSocketAddress remoteAddress = (InetSocketAddress) e.getChannel().getRemoteAddress();
 		InetAddress ia = remoteAddress.getAddress();
+
+		// Apply the IP filter
 		if (filterIp(ia)) {
 			e.getChannel().close();
+			logger.trace("Access denied for address " + ia + " based on IP filter");
 			return;
 		}
-		RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(ia);
-		logger.trace("Opened request handler on socket " + remoteAddress + (renderer != null ? (" // " + renderer) : ""));
+
+		logger.trace("Opened request handler on socket " + remoteAddress);
 		PMS.get().getRegistry().disableGoToSleep();
-		boolean useragentfound = renderer != null;
-		String userAgentString = null;
+
 		if (HttpMethod.GET.equals(nettyRequest.getMethod())) {
 			request = new RequestV2("GET", nettyRequest.getUri().substring(1));
 		} else if (HttpMethod.POST.equals(nettyRequest.getMethod())) {
@@ -97,38 +101,56 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		} else {
 			request = new RequestV2(nettyRequest.getMethod().getName(), nettyRequest.getUri().substring(1));
 		}
+
 		logger.trace("Request: " + nettyRequest.getProtocolVersion().getText() + " : " + request.getMethod() + " : " + request.getArgument());
+
 		if (nettyRequest.getProtocolVersion().getMinorVersion() == 0) {
 			request.setHttp10(true);
 		}
-		if (useragentfound) {
+
+		// The handler makes a couple of attempts to recognize a renderer from its requests.
+		// IP address matches from previous requests are preferred, when that fails request
+		// header matches are attempted and if those fail as well we're stuck with the
+		// default renderer.
+
+		// Attempt 1: try to recognize the renderer by its socket address from previous requests
+		renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(ia);
+
+		if (renderer != null) {
 			PMS.get().setRendererfound(renderer);
 			request.setMediaRenderer(renderer);
+			logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on address " + ia);
 		}
+		
 		for (String name : nettyRequest.getHeaderNames()) {
 			String headerLine = name + ": " + nettyRequest.getHeader(name);
 			logger.trace("Received on socket: " + headerLine);
-			if (!useragentfound && headerLine != null
-				&& headerLine.toUpperCase().startsWith("USER-AGENT")
-				&& request != null) {
+
+			if (renderer == null && headerLine != null
+					&& headerLine.toUpperCase().startsWith("USER-AGENT")
+					&& request != null) {
 				userAgentString = headerLine.substring(headerLine.indexOf(":") + 1).trim();
+
+				// Attempt 2: try to recognize the renderer by matching the "User-Agent" header
 				renderer = RendererConfiguration.getRendererConfigurationByUA(userAgentString);
+
 				if (renderer != null) {
 					request.setMediaRenderer(renderer);
-					renderer.associateIP(ia);
+					renderer.associateIP(ia);	// Associate IP address for later requests
 					PMS.get().setRendererfound(renderer);
-					useragentfound = true;
 					logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
 				}
 			}
-			if (!useragentfound && headerLine != null && request != null) {
-				RendererConfiguration alternateRenderer = RendererConfiguration.getRendererConfigurationByUAAHH(headerLine);
-				if (alternateRenderer != null) {
-					request.setMediaRenderer(alternateRenderer);
-					alternateRenderer.associateIP(ia);
-					PMS.get().setRendererfound(alternateRenderer);
-					useragentfound = true;
-					logger.trace("Matched media renderer \"" + alternateRenderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
+
+			if (renderer == null && headerLine != null && request != null) {
+				// Attempt 3: try to recognize the renderer by matching an additional header
+				renderer = RendererConfiguration.getRendererConfigurationByUAAHH(headerLine);
+
+				if (renderer != null) {
+					request.setMediaRenderer(renderer);
+					renderer.associateIP(ia);	// Associate IP address for later requests
+					PMS.get().setRendererfound(renderer);
+					logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
 				}
 			}
 
@@ -192,14 +214,18 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 
 		}
 
-		// if client not recognized, take a default renderer config
 		if (request != null) {
+			// Still no media renderer recognized?
 			if (request.getMediaRenderer() == null) {
+
+				// Attempt 4: Not really an attempt; all other attempts to recognize
+				// the renderer have failed. The only option left is to assume the
+				// default renderer.
 				request.setMediaRenderer(RendererConfiguration.getDefaultConf());
 				logger.trace("Using default media renderer " + request.getMediaRenderer().getRendererName());
 
 				if (userAgentString != null && !userAgentString.equals("FDSSDP")) {
-					// we have found an unknown renderer
+					// We have found an unknown renderer
 					logger.info("Media renderer was not recognized. Possible identifying HTTP headers: User-Agent: " + userAgentString
 							+ ("".equals(unknownHeaders.toString()) ? "" : ", " + unknownHeaders.toString()));
 					PMS.get().setRendererfound(request.getMediaRenderer());
@@ -227,8 +253,15 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 		writeResponse(e, request, ia);
 	}
 
-	private boolean filterIp(InetAddress ia) {
-		return !PMS.getConfiguration().getIpFiltering().allowed(ia);
+	/**
+	 * Applies the IP filter to the specified internet address. Returns true
+	 * if the address is not allowed and therefore should be filtered out,
+	 * false otherwise.
+	 * @param inetAddress The internet address to verify.
+	 * @return True when not allowed, false otherwise.
+	 */
+	private boolean filterIp(InetAddress inetAddress) {
+		return !PMS.getConfiguration().getIpFiltering().allowed(inetAddress);
 	}
 
 	private void writeResponse(MessageEvent e, RequestV2 request, InetAddress ia) {
