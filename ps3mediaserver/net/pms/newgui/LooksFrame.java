@@ -404,6 +404,16 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		st.getJpb().setString(msg);
 	}
 
+	/**
+	 * This method is being called when a configuration change requiring
+	 * a restart of the HTTP server has been done by the user. It should notify the user
+	 * to restart the server.<br>
+	 * Currently the icon as well as the tool tip text of the restart button is being 
+	 * changed.<br>
+	 * The actions requiring a server restart are defined by {@link PmsConfiguration#NEED_RELOAD_FLAGS}
+	 * 
+	 * @param b true if the server has to be restarted, false otherwise
+	 */
 	@Override
 	public void setReloadable(boolean b) {
 		if(b) {
