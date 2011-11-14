@@ -18,8 +18,6 @@
  */
 package net.pms.configuration;
 
-import java.awt.Color;
-import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -1637,11 +1635,7 @@ public class PmsConfiguration {
 	}
 
 	public int getSubsColor() {
-		if (!GraphicsEnvironment.isHeadless()) {
-			return getInt(KEY_SUBS_COLOR, Color.WHITE.getRGB());
-		} else {
-			return 0xffffff;
-		}
+		return getInt(KEY_SUBS_COLOR, 0xffffffff);
 	}
 
 	public void setSubsColor(int value) {
