@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.LogManager;
 
@@ -117,10 +118,13 @@ public class PMS {
 	 * Update URL used in the {@link AutoUpdater}.
 	 */
 	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update2.data";
+
 	/**
-	 * Version showed in the UPnP XML descriptor and logs.
+	 * @deprecated The version has moved to the resources/project.properties file. Use {@link #getVersion()} instead. 
 	 */
-	public static final String VERSION = "1.50.0";
+	@Deprecated
+	public static String VERSION;
+
 	public static final String AVS_SEPARATOR = "\1";
 
 	// (innot): The logger used for all logging.
@@ -128,6 +132,11 @@ public class PMS {
 	// TODO(tcox):  This shouldn't be static
 	private static PmsConfiguration configuration;
 
+	/**
+	 * General properties for the PMS project.
+	 */
+	private static Properties projectProperties = new Properties();
+	
 	/**Returns a pointer to the main PMS GUI.
 	 * @return {@link IFrame} Main PMS window.
 	 */
@@ -337,9 +346,12 @@ public class PMS {
 	private boolean init() throws Exception {
 		AutoUpdater autoUpdater = null;
 
+		// Read the project properties resource file.
+		initProjectProperties();
+		
 		if (Build.isUpdatable()) {
 			String serverURL = Build.getUpdateServerURL();
-			autoUpdater = new AutoUpdater(serverURL, VERSION);
+			autoUpdater = new AutoUpdater(serverURL, getVersion());
 		}
 
 		registry = createSystemUtils();
@@ -366,7 +378,7 @@ public class PMS {
 		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-220.png");
 		proxy = -1;
 
-		logger.info("Starting PS3 Media Server " + VERSION);
+		logger.info("Starting PS3 Media Server " + getVersion());
 		logger.info("by shagrath / 2008-2011");
 		logger.info("http://ps3mediaserver.org");
 		logger.info("http://code.google.com/p/ps3mediaserver");
@@ -872,7 +884,7 @@ public class PMS {
 			sb.append(System.getProperty("os.arch").replace(" ", "_"));
 			sb.append("-");
 			sb.append(System.getProperty("os.version").replace(" ", "_"));
-			sb.append(", UPnP/1.0, PMS/" + VERSION);
+			sb.append(", UPnP/1.0, PMS/" + getVersion());
 			serverName = sb.toString();
 		}
 		return serverName;
@@ -1035,5 +1047,38 @@ public class PMS {
 	 */
 	public static PmsConfiguration getConfiguration() {
 		return configuration;
+	}
+
+	/**
+	 * Returns the project properties object.
+	 * 
+	 * @return The properties object.
+	 */
+	private static Properties getProjectProperties() {
+		return projectProperties;
+	}
+
+	/**
+	 * Returns the project version for PMS.
+	 * 
+	 * @return The project version.
+	 */
+	public static String getVersion() {
+		return getProjectProperties().getProperty("project.version");
+	}
+
+	/**
+	 * Reads the properties file with project specific settings.
+	 */
+	private void initProjectProperties() {
+		try {
+			// Read project properties resource file.
+			getProjectProperties().load(getClass().getResourceAsStream("/resources/project.properties"));
+			
+			// Temporary fix for backwards compatibility
+			VERSION = getProjectProperties().getProperty("project.version");
+		} catch (IOException e) {
+			logger.error("Could not load project.properties");
+		}
 	}
 }
