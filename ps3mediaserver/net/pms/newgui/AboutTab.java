@@ -66,7 +66,7 @@ public class AboutTab {
 		builder.setOpaque(true);
 		CellConstraints cc = new CellConstraints();
 
-		final LinkMouseListener pms3Link = new LinkMouseListener("PS3 Media Server " + PMS.VERSION,
+		final LinkMouseListener pms3Link = new LinkMouseListener("PS3 Media Server " + PMS.getVersion(),
 			"http://www.ps3mediaserver.org/");
 		JLabel lPms3Link = builder.addLabel(pms3Link.getLabel(), cc.xy(2, 1, "center, fill"));
 		lPms3Link.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
