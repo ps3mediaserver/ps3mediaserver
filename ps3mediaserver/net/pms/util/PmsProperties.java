@@ -1,6 +1,7 @@
 package net.pms.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
@@ -24,6 +25,17 @@ public class PmsProperties {
 		} catch (UnsupportedEncodingException e) {
 			throw new IOException("Could not decode " + ENCODING);
 		}
+	}
+
+	/**
+	 * Initialize from a properties file.
+	 * @param filename The properties file.
+	 * @throws IOException
+	 */
+	public void loadFromResourceFile(String filename) throws IOException {
+		InputStream inputStream = getClass().getResourceAsStream(filename);
+		properties.load(inputStream);
+		inputStream.close();
 	}
 
 	public void clear() {
