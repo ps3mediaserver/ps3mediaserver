@@ -72,12 +72,12 @@ import net.pms.formats.JPG;
 import net.pms.formats.M4A;
 import net.pms.formats.MKV;
 import net.pms.formats.MP3;
-import net.pms.formats.WAV;
 import net.pms.formats.MPG;
 import net.pms.formats.OGG;
 import net.pms.formats.PNG;
 import net.pms.formats.RAW;
 import net.pms.formats.TIF;
+import net.pms.formats.WAV;
 import net.pms.formats.WEB;
 import net.pms.gui.DummyFrame;
 import net.pms.gui.IFrame;
@@ -96,6 +96,7 @@ import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
 import net.pms.update.AutoUpdater;
 import net.pms.util.PMSUtil;
+import net.pms.util.PmsProperties;
 import net.pms.util.ProcessUtil;
 import net.pms.util.SystemErrWrapper;
 
@@ -135,7 +136,7 @@ public class PMS {
 	/**
 	 * General properties for the PMS project.
 	 */
-	private static Properties projectProperties = new Properties();
+	private static PmsProperties projectProperties = new PmsProperties();
 	
 	/**Returns a pointer to the main PMS GUI.
 	 * @return {@link IFrame} Main PMS window.
@@ -1051,20 +1052,20 @@ public class PMS {
 
 	/**
 	 * Returns the project properties object.
-	 * 
+	 *
 	 * @return The properties object.
 	 */
-	private static Properties getProjectProperties() {
+	private static PmsProperties getProjectProperties() {
 		return projectProperties;
 	}
 
 	/**
 	 * Returns the project version for PMS.
-	 * 
+	 *
 	 * @return The project version.
 	 */
 	public static String getVersion() {
-		return getProjectProperties().getProperty("project.version");
+		return getProjectProperties().get("project.version");
 	}
 
 	/**
@@ -1073,10 +1074,10 @@ public class PMS {
 	private void initProjectProperties() {
 		try {
 			// Read project properties resource file.
-			getProjectProperties().load(getClass().getResourceAsStream("/resources/project.properties"));
-			
+			getProjectProperties().loadFromResourceFile("/resources/project.properties");
+
 			// Temporary fix for backwards compatibility
-			VERSION = getProjectProperties().getProperty("project.version");
+			VERSION = getVersion();
 		} catch (IOException e) {
 			logger.error("Could not load project.properties");
 		}
