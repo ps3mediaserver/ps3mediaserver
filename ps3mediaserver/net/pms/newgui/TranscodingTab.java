@@ -115,7 +115,9 @@ public class TranscodingTab {
 
 	private void handleCardComponentChange(Component component) {
 		tabbedPane.setPreferredSize(component.getPreferredSize());
-		SwingUtilities.updateComponentTreeUI(tabbedPane);
+		tabbedPane.getParent().invalidate();
+		tabbedPane.getParent().validate();
+		tabbedPane.getParent().repaint();
 	}
 
 	public JComponent build() {
