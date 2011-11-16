@@ -119,10 +119,16 @@ public class CueFolder extends DLNAResource {
 						r.setSplitTrack(i + 1);
 						if (r.getPlayer() == null) { // assign a splitter engine if file is natively supported by renderer
 							if (defaultPlayer == null) {
-								if (r.getExt().isAudio()) {
-									defaultPlayer = new MPlayerAudio(PMS.getConfiguration());
-								} else {
+								if (r.getExt() == null) {
+									logger.error("No file format known for file \"" + r.getName()
+											+ "\", assuming it is a video for now.");
 									defaultPlayer = new MEncoderVideo(PMS.getConfiguration());
+								} else {
+									if (r.getExt().isAudio()) {
+										defaultPlayer = new MPlayerAudio(PMS.getConfiguration());
+									} else {
+										defaultPlayer = new MEncoderVideo(PMS.getConfiguration());
+									}
 								}
 							}
 							r.setPlayer(defaultPlayer);
