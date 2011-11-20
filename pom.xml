@@ -1180,7 +1180,8 @@
 		</profile>
 
 		<!--
-			This profile allows running PMS from inside Eclipse 
+			This profile allows running PMS from inside Eclipse
+			(Requires a "mvn clean package" to download the binaries first)
 		-->
 		<profile>
 			<id>run-from-eclipse</id>
