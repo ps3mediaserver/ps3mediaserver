@@ -130,6 +130,7 @@ public class PMS {
 
 	// (innot): The logger used for all logging.
 	private static final Logger logger = LoggerFactory.getLogger(PMS.class);
+
 	// TODO(tcox):  This shouldn't be static
 	private static PmsConfiguration configuration;
 
@@ -349,7 +350,7 @@ public class PMS {
 
 		// Read the project properties resource file.
 		initProjectProperties();
-		
+
 		if (Build.isUpdatable()) {
 			String serverURL = Build.getUpdateServerURL();
 			autoUpdater = new AutoUpdater(serverURL, getVersion());
@@ -365,7 +366,6 @@ public class PMS {
 			frame = new DummyFrame();
 		}
 		configuration.addConfigurationListener(new ConfigurationListener() {
-
 			@Override
 			public void configurationChanged(ConfigurationEvent event) {
 				if (!event.isBeforeUpdate()) {

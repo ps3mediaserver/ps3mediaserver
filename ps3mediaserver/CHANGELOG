@@ -1,7 +1,7 @@
 Changelog:
 ==========
 
-2011-??-?? - 1.50.0
+2011-11-20 - 1.50.0
 
 	Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3qtgk5k for more details
 	Updated binaries build script to include Linux support (thanks, happy.neko!)
@@ -24,8 +24,12 @@ Changelog:
 	Clarified English language labels
 	Updated MPlayer and MEncoder on Windows and OSX from Sherpya's old builds to SubJunk's new builds which fixes many playback issues, colour-conversion bugs and more (but possibly has drawbacks for some files, too)
 	Main (Status) tab displays a large tick when it's connected to a renderer instead of a PS3 or warning image
-	Updated MediaInfo to 0.7.50 from 0.7.47
+	Updated MediaInfo to 0.7.51 from 0.7.47
 	New natural sort option for file order: Alphanumeric (e.g. Season 2 before Season 10)
+	Always allow "Restart Server" button (#1186)
+	Updated FFmpeg for Windows to r31564 from r30656
+	We now support Samsung AllShare, along with our existing support for Samsung WiseLink
+	Allow to configure subtitle color if using PMS in headless mode (#1280)
 
 2011-09-22 - 1.40.0
 
