@@ -6,9 +6,12 @@ Changelog:
 	Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3qtgk5k for more details
 	Updated binaries build script to include Linux support (thanks, happy.neko!)
 	Updated OS X MPlayer to include fontconfig support
-	Updated Bulgarian translation (thanks, JORDITO!)
-	Updated German translation (thanks, smo!)
-	Updated Dutch translation
+	Language updates:
+		Updated Bulgarian translation (thanks, JORDITO!)
+		Updated German translation (thanks, smo!)
+		Updated Dutch translation
+		Clarified English language labels
+		Speeds displayed in Mb/s instead of Kb/s
 	Added full featured IP filter with support for wildcards and ranges
 	Improved network interface choosing algorithm now skips virtual interfaces
 	Updated libraries (configuration, jgoodies and slf4j)
@@ -19,9 +22,7 @@ Changelog:
 	Improvements to tab layouts
 	Maximum bandwidth setting works
 	Limit bandwidth to 110Mb/s by default which should solve a lot of "stuttering playback" reports
-	Speeds displayed in Mb/s instead of Kb/s
 	Recognise forced subtitles (thanks, ExSport!)
-	Clarified English language labels
 	Updated MPlayer and MEncoder on Windows and OSX from Sherpya's old builds to SubJunk's new builds which fixes many playback issues, colour-conversion bugs and more (but possibly has drawbacks for some files, too)
 	Main (Status) tab displays a large tick when it's connected to a renderer instead of a PS3 or warning image
 	Updated MediaInfo to 0.7.51 from 0.7.47
