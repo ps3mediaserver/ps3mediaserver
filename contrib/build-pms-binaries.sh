@@ -2,8 +2,8 @@
 #
 # build-pms-osx.sh
 #
-# Version: 2.0.1
-# Last updated: 2011-11-09
+# Version: 2.0.2
+# Last updated: 2011-11-20
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -129,7 +129,8 @@ VERSION_FRIBIDI=0.19.2
 VERSION_GIFLIB=4.1.6
 VERSION_ICONV=1.13.1
 VERSION_JPEG=8c
-VERSION_LAME=3.99
+VERSION_LAME=3.99.2
+VERSION_LIBBLURAY=2011-11-20
 VERSION_LIBDCA=0.0.5
 VERSION_LIBDV=1.0.0
 VERSION_LIBDVDCSS=1.2.9
@@ -143,7 +144,7 @@ VERSION_LIBVORBIS=1.3.2
 VERSION_LIBTHEORA=1.1.1
 VERSION_LIBZEN=0.4.19
 VERSION_LZO=2.04
-VERSION_MPLAYER=34332
+VERSION_MPLAYER=34354
 VERSION_NCURSES=5.9
 VERSION_PS3MEDIASERVER=832
 VERSION_TSMUXER=1.10.6
@@ -932,13 +933,43 @@ build_lame() {
     cd $SRC
 
     if [ ! -d lame-$VERSION_LAME ]; then
-        download http://downloads.sourceforge.net/project/lame/lame/$VERSION_LAME/lame-$VERSION_LAME.tar.gz
+        #download http://downloads.sourceforge.net/project/lame/lame/$VERSION_LAME/lame-$VERSION_LAME.tar.gz
+	# Blah! 3.99.2 resides in the directory 3.99. Hardcoding that for now.
+        download http://downloads.sourceforge.net/project/lame/lame/3.99/lame-$VERSION_LAME.tar.gz
         exit_on_error
         $TAR xzf lame-$VERSION_LAME.tar.gz
     fi
 
     cd lame-$VERSION_LAME
     set_flags
+    ./configure --disable-shared --disable-dependency-tracking --prefix=$TARGET
+    $MAKE -j$THREADS
+    exit_on_error
+    $MAKE install
+    cd $WORKDIR
+}
+
+
+##########################################
+# LIBBLURAY
+# http://www.videolan.org/developers/libbluray.html
+#
+build_libbluray() {
+    start_build libbluray
+    cd $SRC
+
+    rm -rf libbluray
+    $GIT clone git://git.videolan.org/libbluray.git libbluray
+    exit_on_error
+    cd libbluray
+
+
+    if [ "$FIXED_REVISIONS" == "yes" ]; then
+        $GIT checkout "`$GIT rev-list master -n 1 --first-parent --before=$VERSION_LIBBLURAY`"
+        exit_on_error
+    fi
+
+    ./bootstrap
     ./configure --disable-shared --disable-dependency-tracking --prefix=$TARGET
     $MAKE -j$THREADS
     exit_on_error
@@ -1353,7 +1384,7 @@ build_mplayer() {
         # See https://svn.macports.org/ticket/30279
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../mplayer-r34332-SB17.patch
+        patch -p0 < ./../../mplayer-r34354-SB18.patch
 
         # Theora and vorbis support seems broken in this revision, disable it for now
         ./configure --cc=$GCC2 --disable-x11 --disable-gl --disable-qtx \
@@ -1690,6 +1721,7 @@ build_giflib
 build_jpeg
 build_ncurses
 build_lame
+build_libbluray
 build_libdca
 build_libdv
 build_libdvdcss
