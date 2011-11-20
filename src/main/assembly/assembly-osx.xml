@@ -34,7 +34,7 @@
 
 		<!-- Include unzipped libmediainfo.dylib -->
 		<fileSet>
-			<directory>${project.binaries}</directory>
+			<directory>${project.binaries}/osx</directory>
 			<outputDirectory>${project.name}.app/Contents/Resources/Java</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>

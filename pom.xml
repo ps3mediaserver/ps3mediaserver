@@ -750,13 +750,10 @@
 		</plugins>
 	</build>
 
-	<!--
-		Separate profiles take care of building the final package for each operating system.
-	-->
 	<profiles>
 
 		<!--
-			Windows profile 
+			Windows profile: takes care of building the final package for Microsoft Windows
 		-->
 		<profile>
 			<id>windows</id>
@@ -958,7 +955,7 @@
 
 
 		<!--
-			Linux profile
+			Linux profile: takes care of building the final package for Linux
 		-->
 		<profile>
 			<id>linux</id>
@@ -1048,7 +1045,7 @@
 
 
 		<!--
-			Mac OSX profile
+			Mac OSX profile: takes care of building the final package for Mac OSX
 		-->
 		<profile>
 			<id>osx</id>
@@ -1076,19 +1073,19 @@
 								<configuration>
 									<tasks>
 										<!-- Make sure the binaries folder exists -->
-										<mkdir dir="${project.binaries}" />
+										<mkdir dir="${project.binaries}/osx" />
 
 										<!-- Download binaries -->
-										<get src="${project.binaries-base}/osx/dcraw" dest="${project.binaries}/dcraw" />
-										<get src="${project.binaries-base}/osx/ffmpeg" dest="${project.binaries}/ffmpeg" />
-										<get src="${project.binaries-base}/osx/flac" dest="${project.binaries}/flac" />
+										<get src="${project.binaries-base}/osx/dcraw" dest="${project.binaries}/osx/dcraw" />
+										<get src="${project.binaries-base}/osx/ffmpeg" dest="${project.binaries}/osx/ffmpeg" />
+										<get src="${project.binaries-base}/osx/flac" dest="${project.binaries}/osx/flac" />
 										<get src="${project.binaries-base}/osx/libmediainfo.dylib" dest="${project.binaries}/libmediainfo.dylib" />
-										<get src="${project.binaries-base}/osx/mencoder" dest="${project.binaries}/mencoder" />
-										<get src="${project.binaries-base}/osx/mplayer" dest="${project.binaries}/mplayer" />
-										<get src="${project.binaries-base}/osx/tsMuxeR" dest="${project.binaries}/tsMuxeR" />
+										<get src="${project.binaries-base}/osx/mencoder" dest="${project.binaries}/osx/mencoder" />
+										<get src="${project.binaries-base}/osx/mplayer" dest="${project.binaries}/osx/mplayer" />
+										<get src="${project.binaries-base}/osx/tsMuxeR" dest="${project.binaries}/osx/tsMuxeR" />
 
 										<!-- Make all downloaded binaries executable -->
-										<chmod dir="${project.binaries}" perm="a+x" includes="*" />
+										<chmod dir="${project.binaries}/osx" perm="a+x" includes="*" />
 
 										<copy file="${project.external-resources}/osx/pms.icns"
 											todir="${project.binaries}" overwrite="true" />
@@ -1181,7 +1178,34 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
+		<!--
+			This profile allows running PMS from inside Eclipse 
+		-->
+		<profile>
+			<id>run-from-eclipse</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.1.1</version>
+						<executions>
+							<execution>
+								<phase>test</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+								<configuration>
+									<classpathScope>test</classpathScope>
+									<mainClass>net.pms.PMS</mainClass>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile> 		
 	</profiles>
 
 </project>
