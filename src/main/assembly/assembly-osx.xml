@@ -19,7 +19,7 @@
 	<fileSets>
 		<!-- Include the unzipped binaries -->
 		<fileSet>
-			<directory>${project.binaries}</directory>
+			<directory>${project.binaries}/osx</directory>
 			<outputDirectory>${project.name}.app/Contents/Resources/Java/osx</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<fileMode>0755</fileMode>
