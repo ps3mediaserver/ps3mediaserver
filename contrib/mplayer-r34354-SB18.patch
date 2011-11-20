@@ -1,6 +1,6 @@
 Index: configure
 ===================================================================
---- configure	(revision 34332)
+--- configure	(revision 34354)
 +++ configure	(working copy)
 @@ -563,6 +563,7 @@
    --with-install=PATH    path to a custom install program
@@ -119,7 +119,7 @@ Index: configure
  echores "$_memalign"
  
  
-@@ -7716,6 +7794,10 @@
+@@ -7673,6 +7751,10 @@
  done
  libs_mplayer=$ld_tmp
  
@@ -132,7 +132,7 @@ Index: configure
  
 Index: libao2/ao_sdl.c
 ===================================================================
---- libao2/ao_sdl.c	(revision 34332)
+--- libao2/ao_sdl.c	(revision 34354)
 +++ libao2/ao_sdl.c	(working copy)
 @@ -142,7 +142,7 @@
  	mp_msg(MSGT_AO,MSGL_INFO,MSGTR_AO_SDL_INFO, rate, (channels > 1) ? "Stereo" : "Mono", af_fmt2str_short(format));
@@ -145,7 +145,7 @@ Index: libao2/ao_sdl.c
  
 Index: libvo/vo_sdl.c
 ===================================================================
---- libvo/vo_sdl.c	(revision 34332)
+--- libvo/vo_sdl.c	(revision 34354)
 +++ libvo/vo_sdl.c	(working copy)
 @@ -1427,17 +1427,17 @@
      mp_msg(MSGT_VO,MSGL_DBG3, "SDL: Opening Plugin\n");
@@ -172,7 +172,7 @@ Index: libvo/vo_sdl.c
      priv->fullmode = -2;
 Index: mencoder.c
 ===================================================================
---- mencoder.c	(revision 34332)
+--- mencoder.c	(revision 34354)
 +++ mencoder.c	(working copy)
 @@ -139,6 +139,7 @@
  int benchmark=0;
@@ -182,50 +182,7 @@ Index: mencoder.c
  static float default_max_pts_correction=-1;//0.01f;
  static float max_pts_correction=0;//default_max_pts_correction;
  static float c_total=0;
-@@ -380,13 +381,23 @@
- 	return timeleft;
- }
- 
-+/// Returns a_pts
-+static float calc_a_pts(demux_stream_t *d_audio)
-+{
-+    sh_audio_t * sh_audio = d_audio ? d_audio->sh : NULL;
-+    float a_pts = 0.;
-+    if (sh_audio)
-+        a_pts = d_audio->pts + (ds_tell_pts(d_audio) - sh_audio->a_in_buffer_len)/(float)sh_audio->i_bps;
-+    return a_pts;
-+}
-+
- /** \brief Seeks audio forward to pts by dumping audio packets
-  *  \return The current audio pts. */
- static float forward_audio(float pts, demux_stream_t *d_audio, muxer_stream_t* mux_a)
- {
-     sh_audio_t * sh_audio = d_audio ? d_audio->sh : NULL;
-     int samplesize, avg;
--    float a_pts = calc_a_pts(sh_audio, d_audio);
-+    float a_pts = calc_a_pts(d_audio);
- 
-     if (!sh_audio) return a_pts;
- 
-@@ -398,7 +409,7 @@
-     // carefully checking if a_pts is truely correct by reading tiniest amount of data possible.
-     if (pts > a_pts && a_pts == 0.0 && samplesize) {
-         if (demux_read_data(sh_audio->ds,mux_a->buffer,samplesize) <= 0) return a_pts; // EOF
--        a_pts = calc_a_pts(sh_audio, d_audio);
-+        a_pts = calc_a_pts(d_audio);
-     }
- 
-     while (pts > a_pts) {
-@@ -413,7 +424,7 @@
-             len = ds_get_packet(sh_audio->ds, &crap);
-         }
-         if (len <= 0) break; // EOF of audio.
--        a_pts = calc_a_pts(sh_audio, d_audio);
-+        a_pts = calc_a_pts(d_audio);
-     }
-     return a_pts;
- }
-@@ -1532,11 +1543,14 @@
+@@ -1532,11 +1533,18 @@
            ((ds_tell(d_audio)-sh_audio->a_in_buffer_len)/sh_audio->audio.dwSampleSize) :
            (d_audio->block_no); // <- used for VBR audio
          a_pts=samples*(float)sh_audio->audio.dwScale/(float)sh_audio->audio.dwRate;
@@ -233,17 +190,22 @@ Index: mencoder.c
      } else
  #endif
      {
-       // PTS = (last timestamp) + (bytes after last timestamp)/(bytes per sec)
+-      // PTS = (last timestamp) + (bytes after last timestamp)/(bytes per sec)
 -      a_pts=calc_a_pts(sh_audio, d_audio);
-+      a_pts=d_audio->pts;
-+      if(!delay_corrected) if(a_pts) delay_corrected=1;
-+      a_pts+=(ds_tell_pts(d_audio)-sh_audio->a_in_buffer_len)/(float)sh_audio->i_bps;
++        // PTS = (last timestamp) + (bytes after last timestamp)/(bytes per sec)
++        #ifdef CONFIG_DVDREAD
++            a_pts=d_audio->pts;
++            if(!delay_corrected) if(a_pts) delay_corrected=1;
++            a_pts+=(ds_tell_pts(d_audio)-sh_audio->a_in_buffer_len)/(float)sh_audio->i_bps;
++        #else
++            a_pts=calc_a_pts(sh_audio, d_audio);
++        #endif
      }
      v_pts=sh_video ? sh_video->pts : d_video->pts;
      // av = compensated (with out buffering delay) A-V diff
 Index: mp_msg.c
 ===================================================================
---- mp_msg.c	(revision 34332)
+--- mp_msg.c	(revision 34354)
 +++ mp_msg.c	(working copy)
 @@ -34,6 +34,26 @@
  /* maximum message length of mp_msg */
@@ -333,16 +295,12 @@ Index: mp_msg.c
  }
 Index: mpcommon.c
 ===================================================================
---- mpcommon.c	(revision 34332)
+--- mpcommon.c	(revision 34354)
 +++ mpcommon.c	(working copy)
-@@ -534,44 +534,3 @@
- #endif
-     return 1;
- }
--
--/// Returns a_pts
--double calc_a_pts(sh_audio_t *sh_audio, demux_stream_t *d_audio)
--{
+@@ -538,40 +538,46 @@
+ /// Returns a_pts
+ double calc_a_pts(sh_audio_t *sh_audio, demux_stream_t *d_audio)
+ {
 -    double a_pts;
 -    if(!sh_audio || !d_audio)
 -        return MP_NOPTS_VALUE;
@@ -369,7 +327,38 @@ Index: mpcommon.c
 -        // divided by input bps. This will be inaccurate if the input/output
 -        // ratio is not constant for every audio packet or if it is constant
 -        // but not accurately known in sh_audio->i_bps.
--
++    #ifdef CONFIG_DVDREAD
++        float a_pts = 0.;
++        if (sh_audio)
++            a_pts = d_audio->pts + (ds_tell_pts(d_audio) - sh_audio->a_in_buffer_len)/(float)sh_audio->i_bps;
++    #else
++        double a_pts;
++        if(!sh_audio || !d_audio)
++            return MP_NOPTS_VALUE;
++        // first calculate the end pts of audio that has been output by decoder
++        a_pts = sh_audio->pts;
++        // If we cannot get any useful information at all from the demuxer layer
++        // just count the decoded bytes. This is still better than constantly
++        // resetting to 0.
++        if (sh_audio->pts_bytes && a_pts == MP_NOPTS_VALUE &&
++            !d_audio->pts && !sh_audio->i_bps)
++            a_pts = 0;
++        if (a_pts != MP_NOPTS_VALUE)
++            // Good, decoder supports new way of calculating audio pts.
++            // sh_audio->pts is the timestamp of the latest input packet with
++            // known pts that the decoder has decoded. sh_audio->pts_bytes is
++            // the amount of bytes the decoder has written after that timestamp.
++            a_pts += sh_audio->pts_bytes / (double) sh_audio->o_bps;
++        else {
++            // Decoder doesn't support new way of calculating pts (or we're
++            // being called before it has decoded anything with known timestamp).
++            // Use the old method of audio pts calculation: take the timestamp
++            // of last packet with known pts the decoder has read data from,
++            // and add amount of bytes read after the beginning of that packet
++            // divided by input bps. This will be inaccurate if the input/output
++            // ratio is not constant for every audio packet or if it is constant
++            // but not accurately known in sh_audio->i_bps.
+ 
 -        a_pts = d_audio->pts;
 -        // ds_tell_pts returns bytes read after last timestamp from
 -        // demuxing layer, decoder might use sh_audio->a_in_buffer for bytes
@@ -378,30 +367,20 @@ Index: mpcommon.c
 -            a_pts += (ds_tell_pts(d_audio) - sh_audio->a_in_buffer_len) /
 -                     (double)sh_audio->i_bps;
 -    }
--    return a_pts;
--}
-Index: mpcommon.h
-===================================================================
---- mpcommon.h	(revision 34332)
-+++ mpcommon.h	(working copy)
-@@ -28,7 +28,6 @@
- #define ROUND(x) ((int)((x) < 0 ? (x) - 0.5 : (x) + 0.5))
- 
- struct stream;
--struct sh_audio;
- struct sh_video;
- struct sh_sub;
- 
-@@ -83,6 +82,4 @@
- void common_preinit(void);
- int common_init(void);
- 
--double calc_a_pts(struct sh_audio *sh_audio, demux_stream_t *d_audio);
--
- #endif /* MPLAYER_MPCOMMON_H */
++            a_pts = d_audio->pts;
++            // ds_tell_pts returns bytes read after last timestamp from
++            // demuxing layer, decoder might use sh_audio->a_in_buffer for bytes
++            // it has read but not decoded
++            if (sh_audio->i_bps)
++                a_pts += (ds_tell_pts(d_audio) - sh_audio->a_in_buffer_len) /
++                         (double)sh_audio->i_bps;
++        }
++    #endif
+     return a_pts;
+ }
 Index: mplayer.c
 ===================================================================
---- mplayer.c	(revision 34332)
+--- mplayer.c	(revision 34354)
 +++ mplayer.c	(working copy)
 @@ -145,6 +145,12 @@
  float start_volume = -1;
@@ -427,40 +406,7 @@ Index: mplayer.c
      mp_msg(MSGT_IDENTIFY, MSGL_INFO, "ID_LENGTH=%.2f\n", demuxer_get_time_length(mpctx->demuxer));
      mp_msg(MSGT_IDENTIFY, MSGL_INFO, "ID_SEEKABLE=%d\n",
             mpctx->stream->seek && (!mpctx->demuxer || mpctx->demuxer->seekable));
-@@ -1718,7 +1720,31 @@
- {
-     double buffered_output;
-     // first calculate the end pts of audio that has been output by decoder
--    double a_pts = calc_a_pts(sh_audio, d_audio);
-+    double a_pts = sh_audio->pts;
-+    if (a_pts != MP_NOPTS_VALUE)
-+	// Good, decoder supports new way of calculating audio pts.
-+	// sh_audio->pts is the timestamp of the latest input packet with
-+	// known pts that the decoder has decoded. sh_audio->pts_bytes is
-+	// the amount of bytes the decoder has written after that timestamp.
-+	a_pts += sh_audio->pts_bytes / (double) sh_audio->o_bps;
-+    else {
-+	// Decoder doesn't support new way of calculating pts (or we're
-+	// being called before it has decoded anything with known timestamp).
-+	// Use the old method of audio pts calculation: take the timestamp
-+	// of last packet with known pts the decoder has read data from,
-+	// and add amount of bytes read after the beginning of that packet
-+	// divided by input bps. This will be inaccurate if the input/output
-+	// ratio is not constant for every audio packet or if it is constant
-+	// but not accurately known in sh_audio->i_bps.
-+
-+	a_pts = d_audio->pts;
-+	// ds_tell_pts returns bytes read after last timestamp from
-+	// demuxing layer, decoder might use sh_audio->a_in_buffer for bytes
-+	// it has read but not decoded
-+	if (sh_audio->i_bps)
-+	    a_pts += (ds_tell_pts(d_audio) - sh_audio->a_in_buffer_len) /
-+		(double)sh_audio->i_bps;
-+    }
-     // Now a_pts hopefully holds the pts for end of audio from decoder.
-     // Substract data in buffers between decoder and audio out.
- 
-@@ -3020,7 +3046,15 @@
+@@ -3019,7 +3021,15 @@
          gui(GUI_SET_CONTEXT, mpctx);
          gui(GUI_SET_STATE, (void *)(filename ? GUI_PLAY : GUI_STOP));
      }
@@ -669,14 +615,14 @@ Index: osdep/alloc-win.c
 \ No newline at end of file
 Index: version.sh
 ===================================================================
---- version.sh	(revision 34332)
+--- version.sh	(revision 34354)
 +++ version.sh	(working copy)
 @@ -17,9 +17,9 @@
  version=$svn_revision
  fi
  
 -NEW_REVISION="#define VERSION \"${version}${extra}\""
-+NEW_REVISION="#define VERSION \"SB17\""
++NEW_REVISION="#define VERSION \"SB18\""
  OLD_REVISION=$(head -n 1 version.h 2> /dev/null)
 -TITLE='#define MP_TITLE "%s "VERSION" (C) 2000-2011 MPlayer Team\n"'
 +TITLE='#define MP_TITLE "%s "VERSION" (C) 2000-2011 MPlayer Team\nCustom build by SubJunk, http://www.spirton.com\n\n"'
