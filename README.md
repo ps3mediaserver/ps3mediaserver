@@ -8,22 +8,11 @@ Originally written to support the PlayStation 3, PS3 Media Server has been
 expanded to support a range of other media renderers, including smartphones,
 televisions, music players and more.
 
-Notice
-------
-
-We are currently in the process of moving the source from Google Code to GitHub.
-At the same time the source is modified to be built with Maven instead of Ant.
-As a result, the source at GitHub is currently under development and possibly unstable;
-use it at your own risk.
-
-You will find the most recent stable PMS source code on Google Code:
-
-* http://code.google.com/p/ps3mediaserver/
-
 Links
 -----
 
 * Website:       http://www.ps3mediaserver.org/
+* Source code:   https://github.com/ps3mediaserver/ps3mediaserver
 * Issue tracker: https://code.google.com/p/ps3mediaserver/issues/list
 
 Thanks
