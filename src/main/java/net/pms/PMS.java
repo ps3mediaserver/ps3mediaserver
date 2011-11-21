@@ -95,11 +95,10 @@ import net.pms.newgui.GeneralTab;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
 import net.pms.update.AutoUpdater;
-import net.pms.util.PMSUtil;
-import net.pms.util.PmsProperties;
 import net.pms.util.ProcessUtil;
 import net.pms.util.PropertiesUtil;
 import net.pms.util.SystemErrWrapper;
+import net.pms.util.TaskRunner;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.event.ConfigurationEvent;
@@ -759,21 +758,29 @@ public class PMS {
 	 */
 	// XXX: don't try to optimize this by reusing the same server instance.
 	// see the comment above HTTPServer.stop()
-	public void reset() throws IOException {
-		logger.trace("Waiting 1 second...");
-		UPNPHelper.sendByeBye();
-		server.stop();
-		server = null;
-		RendererConfiguration.resetAllRenderers();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		server = new HTTPServer(configuration.getServerPort());
-		server.start();
-		UPNPHelper.sendAlive();
-		frame.setReloadable(false);
+	public void reset() {
+		TaskRunner.getInstance().submitNamed("restart", true, new Runnable() {
+			public void run() {
+				try {
+					logger.trace("Waiting 1 second...");
+					UPNPHelper.sendByeBye();
+					server.stop();
+					server = null;
+					RendererConfiguration.resetAllRenderers();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					server = new HTTPServer(configuration.getServerPort());
+					server.start();
+					UPNPHelper.sendAlive();
+					frame.setReloadable(false);
+				} catch (IOException e) {
+					logger.error("error during restart :" +e.getMessage(), e);
+				}
+			}
+		});
 	}
 
 	// Cannot remove these methods because of backwards compatibility;
