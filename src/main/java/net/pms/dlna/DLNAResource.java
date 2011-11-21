@@ -571,8 +571,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							if (vf != null) {
 								VirtualFolder fileFolder = new FileTranscodeVirtualFolder(child.getName(), null);
 
-								DLNAResource newChild = (DLNAResource) child.clone();
-								newChild.setId(null);
+								DLNAResource newChild = child.clone();
 								newChild.setPlayer(pl);
 								newChild.setMedia(child.getMedia());
 								// newChild.original = child;
@@ -599,7 +598,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				}
 
 				if (child.getExt() != null && child.getExt().getSecondaryFormat() != null && child.getMedia() != null && getDefaultRenderer() != null && getDefaultRenderer().supportsFormat(child.getExt().getSecondaryFormat())) {
-					DLNAResource newChild = (DLNAResource) child.clone();
+					DLNAResource newChild = child.clone();
 					newChild.setExt(newChild.getExt().getSecondaryFormat());
 					newChild.first = child;
 					child.second = newChild;
@@ -654,13 +653,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param res
 	 */
 	protected synchronized void addChildInternal(DLNAResource res) {
+		if (res.getInternalId() != null) {
+			LOGGER.info("Node({}) already has an ID={}, which is overriden now. The previous parent node was:{}", new Object[] { res.getClass().getName(), res.getResourceId(), res.getParent()});
+		}
 		getChildren().add(res);
 		res.setParent(this);
 
-		if (res.getInternalId() == null) {
-			setLastChildrenId(getLastChildrenId() + 1);
-			res.setIndexId(getLastChildrenId());
-		}
+		setLastChildrenId(getLastChildrenId() + 1);
+		res.setIndexId(getLastChildrenId());
 	}
 
 	/**
@@ -1024,10 +1024,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 
 	@Override
-	protected Object clone() {
-		Object o = null;
+	protected DLNAResource clone() {
+		DLNAResource o = null;
 		try {
-			o = super.clone();
+			o = (DLNAResource) super.clone();
+			o.setId(null);
 		} catch (CloneNotSupportedException e) {
 			LOGGER.error(null, e);
 		}
