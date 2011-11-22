@@ -33,8 +33,6 @@ import javax.swing.JScrollPane;
 
 import net.pms.Messages;
 import net.pms.PMS;
-import net.pms.util.PMSUtil;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -114,8 +112,8 @@ public class AboutTab {
 	}
 
 	private static class LinkMouseListener implements MouseListener {
-		private String name;
-		private String link;
+		private final String name;
+		private final String link;
 
 		public LinkMouseListener(String n, String l) {
 			name = n;
@@ -137,7 +135,7 @@ public class AboutTab {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			try {
-				PMSUtil.browseURI(link);
+				PMS.get().getRegistry().browseURI(link);
 			} catch (Exception e1) {
 			}
 		}
