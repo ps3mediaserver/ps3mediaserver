@@ -77,6 +77,7 @@
 		<jgoodies-looks-version>2.4.2</jgoodies-looks-version>
 		<junrar-version>0.5</junrar-version>
 		<mediautil-version>1.0</mediautil-version>
+		<slf4j-version>1.6.3</slf4j-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.external-resources>${project.basedir}/src/main/external-resources</project.external-resources>
 		<project.binaries>${project.basedir}/target/bin</project.binaries>
@@ -142,6 +143,13 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+
+		<!-- apple stub code -->		
+		<repository>
+			<id>ooo-maven-repo</id>
+			<url>http://ooo-maven.googlecode.com/hg/repository</url>
+		</repository>
+		
 	</repositories>
 
 	<dependencies>
@@ -167,12 +175,26 @@
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>1.7</version>
+			<exclusions>
+				<!--  no need for commons-logging, as jcl-over-slf4j provides the impl -->
+				<exclusion>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
+			<exclusions>
+				<!--  no need for commons-logging, as jcl-over-slf4j provides the impl -->
+				<exclusion>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -184,13 +206,7 @@
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
-			<version>2.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging-api</artifactId>
-			<version>1.1</version>
+			<version>2.6</version>
 		</dependency>
 
 		<dependency>
@@ -220,7 +236,13 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.2</version>
+			<version>${slf4j-version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j-version}</version>
 		</dependency>
 
 		<dependency>
@@ -257,11 +279,12 @@
 		</dependency>
 
 		<!-- FIXME: verify if needed -->
+		<!-- no, rome already provides jdom
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
 			<version>1.1</version>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.jvnet.winp</groupId>
@@ -321,6 +344,15 @@
 			<groupId>mediautil</groupId>
 			<artifactId>mediautil</artifactId>
 			<version>${mediautil-version}</version>
+		</dependency>
+
+
+		<dependency>
+			<!-- Stub required by PMSUtil.java -->
+			<groupId>com.apple</groupId>
+			<artifactId>applejavaextensions</artifactId>
+			<version>1.5.4</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -600,7 +632,7 @@
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
 						<artifactId>doxia-module-docbook-simple</artifactId>
-						<version>1.1.5-SNAPSHOT</version>
+						<version>1.2</version>
 					</dependency>
 				</dependencies>
 				
@@ -767,21 +799,6 @@
 				</os>
 			</activation>
 			
-			<dependencies>
-				<!-- Stub required by PMSUtil.java -->
-				<dependency>
-					<groupId>com.apple</groupId>
-					<artifactId>applejavaextensions</artifactId>
-					<version>1.5.4</version>
-				</dependency>
-			</dependencies>
-
-			<repositories>
-				<repository>
-					<id>ooo-maven-repo</id>
-					<url>http://ooo-maven.googlecode.com/hg/repository</url>
-				</repository>
-			</repositories>
 
 			<pluginRepositories>
 				<pluginRepository>
@@ -970,22 +987,6 @@
 				</os>
 			</activation>
 			
-			<dependencies>
-				<!-- Stub required by PMSUtil.java -->
-				<dependency>
-					<groupId>com.apple</groupId>
-					<artifactId>applejavaextensions</artifactId>
-					<version>1.5.4</version>
-				</dependency>
-			</dependencies>
-			
-			<repositories>
-				<repository>
-					<id>ooo-maven-repo</id>
-					<url>http://ooo-maven.googlecode.com/hg/repository</url>
-				</repository>
-			</repositories>
-
 			<build>
 				<plugins>
 					<!--
