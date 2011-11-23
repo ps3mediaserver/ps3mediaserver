@@ -555,6 +555,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								VirtualFolder fileFolder = new FileTranscodeVirtualFolder(child.getName(), null);
 
 								DLNAResource newChild = (DLNAResource) child.clone();
+								newChild.setId(null);
 								newChild.setPlayer(pl);
 								newChild.setMedia(child.getMedia());
 								// newChild.original = child;
