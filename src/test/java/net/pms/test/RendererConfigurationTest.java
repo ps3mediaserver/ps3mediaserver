@@ -72,12 +72,18 @@ public class RendererConfigurationTest {
     	testCases.put("User-Agent: RealtekVOD neon/0.27.2", "Realtek");
 
     	// From iPad-iPhone.conf:
+    	// # User-Agent: 8player lite 2.2.3 (iPad; iPhone OS 5.0.1; nl_NL)
     	// # User agent: yxplayer2%20lite/1.2.7 CFNetwork/485.13.9 Darwin/11.0.0
     	// # User-Agent: MPlayer 1.0rc4-4.2.1
     	// # User-Agent: NSPlayer/4.1.0.3856
+    	testCases.put("User-Agent: 8player lite 2.2.3 (iPad; iPhone OS 5.0.1; nl_NL)", "iPad / iPhone");
     	testCases.put("User-Agent: yxplayer2%20lite/1.2.7 CFNetwork/485.13.9 Darwin/11.0.0", "iPad / iPhone");
     	testCases.put("User-Agent: MPlayer 1.0rc4-4.2.1", "iPad / iPhone");
     	testCases.put("User-Agent: NSPlayer/4.1.0.3856", "iPad / iPhone");
+
+    	// From XBMC.conf:
+    	testCases.put("User-Agent: XBMC/10.0 r35648 (Mac OS X; 11.2.0 x86_64; http://www.xbmc.org)", "XBMC");
+    	testCases.put("User-Agent: Platinum/0.5.3.0, DLNADOC/1.50", "XBMC");
 
     	// Initialize the RendererConfiguration
     	RendererConfiguration.loadRendererConfigurations();
@@ -90,9 +96,6 @@ public class RendererConfigurationTest {
      */
     @Test
     public void testKnownHeaders() {
-    	
-
-    	
     	// Test all headers
     	Set<Entry<String, String>> set = testCases.entrySet();
     	Iterator<Entry<String, String>> i = set.iterator();
