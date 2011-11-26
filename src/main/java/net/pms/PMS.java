@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.LogManager;
 
@@ -96,8 +95,8 @@ import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
 import net.pms.update.AutoUpdater;
 import net.pms.util.PMSUtil;
-import net.pms.util.PmsProperties;
 import net.pms.util.ProcessUtil;
+import net.pms.util.PropertiesUtil;
 import net.pms.util.SystemErrWrapper;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -134,11 +133,6 @@ public class PMS {
 	// TODO(tcox):  This shouldn't be static
 	private static PmsConfiguration configuration;
 
-	/**
-	 * General properties for the PMS project.
-	 */
-	private static PmsProperties projectProperties = new PmsProperties();
-	
 	/**Returns a pointer to the main PMS GUI.
 	 * @return {@link IFrame} Main PMS window.
 	 */
@@ -348,8 +342,8 @@ public class PMS {
 	private boolean init() throws Exception {
 		AutoUpdater autoUpdater = null;
 
-		// Read the project properties resource file.
-		initProjectProperties();
+		// Temporary fix for backwards compatibility
+		VERSION = getVersion();
 
 		if (Build.isUpdatable()) {
 			String serverURL = Build.getUpdateServerURL();
@@ -1051,35 +1045,11 @@ public class PMS {
 	}
 
 	/**
-	 * Returns the project properties object.
-	 *
-	 * @return The properties object.
-	 */
-	private static PmsProperties getProjectProperties() {
-		return projectProperties;
-	}
-
-	/**
 	 * Returns the project version for PMS.
 	 *
 	 * @return The project version.
 	 */
 	public static String getVersion() {
-		return getProjectProperties().get("project.version");
-	}
-
-	/**
-	 * Reads the properties file with project specific settings.
-	 */
-	private void initProjectProperties() {
-		try {
-			// Read project properties resource file.
-			getProjectProperties().loadFromResourceFile("/resources/project.properties");
-
-			// Temporary fix for backwards compatibility
-			VERSION = getVersion();
-		} catch (IOException e) {
-			logger.error("Could not load project.properties");
-		}
+		return PropertiesUtil.getProjectProperties().get("project.version");
 	}
 }
