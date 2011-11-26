@@ -629,7 +629,8 @@ public class RootFolder extends DLNAResource {
 								HashMap<?, ?> td = (HashMap<?, ?>) t;
 								track = (HashMap<?, ?>) Tracks.get(td.get("Track ID").toString());
 								
-								if (track != null && track.get("Location").toString().startsWith("file://")) {
+								if (track != null && track.get("Location") != null
+										&& track.get("Location").toString().startsWith("file://")) {
 									URI tURI2 = new URI(track.get("Location").toString());
 									RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
 									pf.addChild(file);
