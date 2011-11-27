@@ -59,8 +59,6 @@ import net.pms.gui.IFrame;
 import net.pms.io.WindowsNamedPipe;
 import net.pms.newgui.update.AutoUpdateDialog;
 import net.pms.update.AutoUpdater;
-import net.pms.util.PMSUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -287,7 +285,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		if (!configuration.isMinimized() && System.getProperty(START_SERVICE) == null) {
 			setVisible(true);
 		}
-		PMSUtil.addSystemTray(this);
+		PMS.get().getRegistry().addSystemTray(this);
 	}
 
 	protected static ImageIcon readImageIcon(String filename) {

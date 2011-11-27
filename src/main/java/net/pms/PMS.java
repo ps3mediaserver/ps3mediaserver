@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.LogManager;
 
@@ -82,6 +81,7 @@ import net.pms.formats.WEB;
 import net.pms.gui.DummyFrame;
 import net.pms.gui.IFrame;
 import net.pms.io.BasicSystemUtils;
+import net.pms.io.MacSystemUtils;
 import net.pms.io.OutputParams;
 import net.pms.io.OutputTextConsumer;
 import net.pms.io.ProcessWrapperImpl;
@@ -95,7 +95,6 @@ import net.pms.newgui.GeneralTab;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
 import net.pms.update.AutoUpdater;
-import net.pms.util.PMSUtil;
 import net.pms.util.PmsProperties;
 import net.pms.util.ProcessUtil;
 import net.pms.util.SystemErrWrapper;
@@ -593,7 +592,11 @@ public class PMS {
 		if (Platform.isWindows()) {
 			return new WinUtils();
 		} else {
-			return new BasicSystemUtils();
+			if (Platform.isMac()) {
+				return new MacSystemUtils();
+			} else {
+				return new BasicSystemUtils();
+			}
 		}
 	}
 
@@ -785,6 +788,7 @@ public class PMS {
 	 * debug stream has not been set up yet.
 	 * @param msg {@link String} to be added to the debug stream.
 	 */
+	@Deprecated
 	public static void debug(String msg) {
 		logger.trace(msg);
 	}
@@ -794,6 +798,7 @@ public class PMS {
 	 * Adds a message to the info stream.
 	 * @param msg {@link String} to be added to the info stream.
 	 */
+	@Deprecated
 	public static void info(String msg) {
 		logger.debug(msg);
 	}
@@ -804,6 +809,7 @@ public class PMS {
 	 * shown in the Trace tab.
 	 * @param msg {@link String} to be added to the minimal stream.
 	 */
+	@Deprecated
 	public static void minimal(String msg) {
 		logger.info(msg);
 	}
@@ -815,6 +821,7 @@ public class PMS {
 	 * @param msg {@link String} to be added to the error stream
 	 * @param t {@link Throwable} comes from an {@link Exception} 
 	 */
+	@Deprecated
 	public static void error(String msg, Throwable t) {
 		logger.error(msg, t);
 	}
@@ -844,7 +851,7 @@ public class PMS {
 					}
 
 					if (ni != null) {
-						byte[] addr = PMSUtil.getHardwareAddress(ni); // return null when java.net.preferIPv4Stack=true
+						byte[] addr = getRegistry().getHardwareAddress(ni); // return null when java.net.preferIPv4Stack=true
 						if (addr != null) {
 							uuid = UUID.nameUUIDFromBytes(addr).toString();
 							logger.info(String.format("Generated new UUID based on the MAC address of the network adapter '%s'", ni.getDisplayName()));
