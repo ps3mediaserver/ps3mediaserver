@@ -900,10 +900,15 @@
 										<get src="${project.binaries-base}/win32/service/wrapper.dll" dest="${project.binaries}/win32/service/wrapper.dll" />
 										<get src="${project.binaries-base}/win32/service/wrapper.exe" dest="${project.binaries}/win32/service/wrapper.exe" />
 										<get src="${project.binaries-base}/win32/service/wrapper.jar" dest="${project.binaries}/win32/service/wrapper.jar" />
-										
+
 										<!-- Rename the pms-x.x.x-jar-with-dependencies.jar to pms.jar -->
 										<move file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
+
+										<!-- MediaInfo library needs to be in the standard library path to be found -->
+										<copy file="${project.binaries}/MediaInfo.dll" todir="${project.basedir}" />
+										<copy file="${project.binaries}/MediaInfo64.dll" todir="${project.basedir}" />
+
 									</tasks>
 								</configuration>
 							</execution>
@@ -1083,6 +1088,9 @@
 										<get src="${project.binaries-base}/osx/mencoder" dest="${project.binaries}/osx/mencoder" />
 										<get src="${project.binaries-base}/osx/mplayer" dest="${project.binaries}/osx/mplayer" />
 										<get src="${project.binaries-base}/osx/tsMuxeR" dest="${project.binaries}/osx/tsMuxeR" />
+
+										<!-- MediaInfo library needs to be in the standard library path to be found -->
+										<copy file="${project.binaries}/libmediainfo.dylib" todir="${project.basedir}" />
 
 										<!-- Make all downloaded binaries executable -->
 										<chmod dir="${project.binaries}/osx" perm="a+x" includes="*" />

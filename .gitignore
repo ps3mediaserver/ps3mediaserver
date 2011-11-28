@@ -1,4 +1,9 @@
+.classpath
+.project
 .settings
 database
 debug.log
+libmediainfo.dylib
+MediaInfo.dll
+MediaInfo64.dll
 target
