@@ -45,9 +45,9 @@ public class RendererConfiguration {
 		} catch (ConfigurationException e) {
 		}
 
-		File renderersDir = new File(PropertiesUtil.getProjectProperties().get("project.renderers.dir"));
+		File renderersDir = getRenderersDir();
 
-		if (renderersDir.exists() && renderersDir.isDirectory()) {
+		if (renderersDir != null) {
 			logger.info("Loading renderer configurations from " + renderersDir.getAbsolutePath());
 
 			File[] confs = renderersDir.listFiles();
@@ -66,6 +66,19 @@ public class RendererConfiguration {
 				}
 			}
 		}
+	}
+
+	protected static File getRenderersDir() {
+		final String[] pathList = PropertiesUtil.getProjectProperties().get("project.renderers.dir").split(",");
+		for (String path : pathList) {
+			if (path.trim().length()>0) {
+				File f = new File(path.trim());
+				if (f.exists() && f.isDirectory() && f.canRead()) {
+					return f;
+				}
+			}
+		}
+		return null;
 	}
 
 	private RootFolder rootFolder;
