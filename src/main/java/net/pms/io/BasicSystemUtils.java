@@ -1,3 +1,21 @@
+/*
+ * PS3 Media Server, for streaming any medias to your PS3.
+ * Copyright (C) 2011 G.Zsombor
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package net.pms.io;
 
 import java.awt.AWTException;
@@ -117,6 +135,7 @@ public class BasicSystemUtils implements SystemUtils {
 		return ni.isLoopback();
 	}
 
+	@Override
 	public void addSystemTray(final LooksFrame frame) {
 
 		if (SystemTray.isSupported()) {
@@ -168,8 +187,21 @@ public class BasicSystemUtils implements SystemUtils {
 	 *             This won't happen on Mac OS, since the NetworkInterface is
 	 *             only used to get a name.
 	 */
+	@Override
 	public byte[] getHardwareAddress(NetworkInterface ni) throws SocketException {
 		return ni.getHardwareAddress();
+	}
+	
+	/**
+	 * Return the platform specific ping command. 
+	 * @param hostAddress
+	 * @param count
+	 * @param packetSize
+	 * @return
+	 */
+	@Override
+	public String[] getPingCommand(String hostAddress, int count, int packetSize) {
+		return new String[] { "ping", /* count */ "-c" , Integer.toString(count), /* size */ "-s", Integer.toString(packetSize), hostAddress };
 	}
 
 }

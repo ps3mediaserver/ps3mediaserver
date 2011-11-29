@@ -49,6 +49,15 @@ public interface SystemUtils {
 	 *             only used to get a name.
 	 */
 	public byte[] getHardwareAddress(NetworkInterface ni) throws SocketException;
+
+	/**
+	 * Return the platform specific ping command. 
+	 * @param hostAddress
+	 * @param count
+	 * @param packetSize
+	 * @return
+	 */
+	String[] getPingCommand(String hostAddress, int count, int packetSize);
 	
 
 }
