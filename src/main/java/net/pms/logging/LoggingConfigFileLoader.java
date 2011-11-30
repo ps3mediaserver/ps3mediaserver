@@ -22,6 +22,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.pms.util.PropertiesUtil;
+
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +42,6 @@ import ch.qos.logback.core.util.StatusPrinter;
  * @author thomas@innot.de
  */
 public class LoggingConfigFileLoader {
-	private static final String DEFAULT_CONFIGFILENAME = "logback.xml";
-	private static final String HEADLESS_CONFIGFILENAME = "logback.headless.xml";
 	private static String filepath = null;
 	private static HashMap<String, String> logFilePaths = new HashMap<String, String>(); // key=appender name, value, log file path
 
@@ -90,11 +90,11 @@ public class LoggingConfigFileLoader {
 		File file = null;
 
 		if (headless) {
-			file = new File(HEADLESS_CONFIGFILENAME);
+			file = new File(PropertiesUtil.getProjectProperties().get("project.logback.headless"));
 		}
 
 		if (file == null || !file.exists()) {
-			file = new File(DEFAULT_CONFIGFILENAME);
+			file = new File(PropertiesUtil.getProjectProperties().get("project.logback"));
 		}
 
 		if (!file.exists()) {
