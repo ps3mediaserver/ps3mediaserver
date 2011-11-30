@@ -85,6 +85,7 @@ import net.pms.io.MacSystemUtils;
 import net.pms.io.OutputParams;
 import net.pms.io.OutputTextConsumer;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.io.SolarisUtils;
 import net.pms.io.SystemUtils;
 import net.pms.io.WinUtils;
 import net.pms.logging.LoggingConfigFileLoader;
@@ -591,7 +592,11 @@ public class PMS {
 			if (Platform.isMac()) {
 				return new MacSystemUtils();
 			} else {
-				return new BasicSystemUtils();
+				if (Platform.isSolaris()) {
+					return new SolarisUtils();
+				} else {
+					return new BasicSystemUtils();
+				}
 			}
 		}
 	}
