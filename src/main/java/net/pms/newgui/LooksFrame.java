@@ -297,7 +297,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		if (!configuration.isMinimized() && System.getProperty(START_SERVICE) == null) {
 			setVisible(true);
 		}
-		PMSUtil.addSystemTray(this);
+		PMS.get().getRegistry().addSystemTray(this);
 	}
 
 	protected static ImageIcon readImageIcon(String filename) {
@@ -323,11 +323,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		reload = createToolBarButton(Messages.getString("LooksFrame.12"), "reload_page-48.png", Messages.getString("LooksFrame.12"));
 		reload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					PMS.get().reset();
-				} catch (IOException e1) {
-					logger.error(null, e1);
-				}
+				PMS.get().reset();
 			}
 		});
 		toolBar.add(reload);

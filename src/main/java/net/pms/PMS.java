@@ -81,9 +81,11 @@ import net.pms.formats.WEB;
 import net.pms.gui.DummyFrame;
 import net.pms.gui.IFrame;
 import net.pms.io.BasicSystemUtils;
+import net.pms.io.MacSystemUtils;
 import net.pms.io.OutputParams;
 import net.pms.io.OutputTextConsumer;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.io.SolarisUtils;
 import net.pms.io.SystemUtils;
 import net.pms.io.WinUtils;
 import net.pms.logging.LoggingConfigFileLoader;
@@ -94,10 +96,10 @@ import net.pms.newgui.GeneralTab;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
 import net.pms.update.AutoUpdater;
-import net.pms.util.PMSUtil;
 import net.pms.util.ProcessUtil;
 import net.pms.util.PropertiesUtil;
 import net.pms.util.SystemErrWrapper;
+import net.pms.util.TaskRunner;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.event.ConfigurationEvent;
@@ -587,7 +589,15 @@ public class PMS {
 		if (Platform.isWindows()) {
 			return new WinUtils();
 		} else {
-			return new BasicSystemUtils();
+			if (Platform.isMac()) {
+				return new MacSystemUtils();
+			} else {
+				if (Platform.isSolaris()) {
+					return new SolarisUtils();
+				} else {
+					return new BasicSystemUtils();
+				}
+			}
 		}
 	}
 
@@ -753,21 +763,29 @@ public class PMS {
 	 */
 	// XXX: don't try to optimize this by reusing the same server instance.
 	// see the comment above HTTPServer.stop()
-	public void reset() throws IOException {
-		logger.trace("Waiting 1 second...");
-		UPNPHelper.sendByeBye();
-		server.stop();
-		server = null;
-		RendererConfiguration.resetAllRenderers();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		server = new HTTPServer(configuration.getServerPort());
-		server.start();
-		UPNPHelper.sendAlive();
-		frame.setReloadable(false);
+	public void reset() {
+		TaskRunner.getInstance().submitNamed("restart", true, new Runnable() {
+			public void run() {
+				try {
+					logger.trace("Waiting 1 second...");
+					UPNPHelper.sendByeBye();
+					server.stop();
+					server = null;
+					RendererConfiguration.resetAllRenderers();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					server = new HTTPServer(configuration.getServerPort());
+					server.start();
+					UPNPHelper.sendAlive();
+					frame.setReloadable(false);
+				} catch (IOException e) {
+					logger.error("error during restart :" +e.getMessage(), e);
+				}
+			}
+		});
 	}
 
 	// Cannot remove these methods because of backwards compatibility;
@@ -779,6 +797,7 @@ public class PMS {
 	 * debug stream has not been set up yet.
 	 * @param msg {@link String} to be added to the debug stream.
 	 */
+	@Deprecated
 	public static void debug(String msg) {
 		logger.trace(msg);
 	}
@@ -788,6 +807,7 @@ public class PMS {
 	 * Adds a message to the info stream.
 	 * @param msg {@link String} to be added to the info stream.
 	 */
+	@Deprecated
 	public static void info(String msg) {
 		logger.debug(msg);
 	}
@@ -798,6 +818,7 @@ public class PMS {
 	 * shown in the Trace tab.
 	 * @param msg {@link String} to be added to the minimal stream.
 	 */
+	@Deprecated
 	public static void minimal(String msg) {
 		logger.info(msg);
 	}
@@ -809,6 +830,7 @@ public class PMS {
 	 * @param msg {@link String} to be added to the error stream
 	 * @param t {@link Throwable} comes from an {@link Exception} 
 	 */
+	@Deprecated
 	public static void error(String msg, Throwable t) {
 		logger.error(msg, t);
 	}
@@ -838,7 +860,7 @@ public class PMS {
 					}
 
 					if (ni != null) {
-						byte[] addr = PMSUtil.getHardwareAddress(ni); // return null when java.net.preferIPv4Stack=true
+						byte[] addr = getRegistry().getHardwareAddress(ni); // return null when java.net.preferIPv4Stack=true
 						if (addr != null) {
 							uuid = UUID.nameUUIDFromBytes(addr).toString();
 							logger.info(String.format("Generated new UUID based on the MAC address of the network adapter '%s'", ni.getDisplayName()));
