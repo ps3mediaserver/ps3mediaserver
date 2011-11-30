@@ -27,10 +27,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JButton;
@@ -46,10 +43,11 @@ import javax.swing.SwingUtilities;
 
 import net.pms.Messages;
 import net.pms.PMS;
-import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.Build;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
+import net.pms.network.NetworkConfiguration;
 import net.pms.util.KeyedComboBoxModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -241,30 +239,7 @@ public class GeneralTab {
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		ArrayList<String> names = new ArrayList<String>();
-		names.add("");
-		ArrayList<String> interfaces = new ArrayList<String>();
-		interfaces.add("");
-		Enumeration<NetworkInterface> enm;
-		try {
-			enm = NetworkInterface.getNetworkInterfaces();
-			while (enm.hasMoreElements()) {
-				NetworkInterface ni = enm.nextElement();
-				// check for interface has at least one ip address.
-				if (ni.getInetAddresses().hasMoreElements()) {
-					names.add(ni.getName());
-					String displayName = ni.getDisplayName();
-					if (displayName == null) {
-						displayName = ni.getName();
-					}
-					interfaces.add(displayName.trim());
-				}
-			}
-		} catch (SocketException e1) {
-			logger.error(null, e1);
-		}
-
-		final KeyedComboBoxModel networkInterfaces = new KeyedComboBoxModel(names.toArray(), interfaces.toArray());
+		final KeyedComboBoxModel networkInterfaces = createNetworkInterfacesModel();
 		networkinterfacesCBX = new JComboBox(networkInterfaces);
 		networkInterfaces.setSelectedKey(configuration.getNetworkInterface());
 		networkinterfacesCBX.addItemListener(new ItemListener() {
@@ -355,6 +330,17 @@ public class GeneralTab {
 			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		return scrollPane;
 	}
+
+	private KeyedComboBoxModel createNetworkInterfacesModel() {
+
+		List<String> keys = NetworkConfiguration.getInstance().getKeys();
+		List<String> names = NetworkConfiguration.getInstance().getDisplayNames();
+		keys.add(0, "");
+		names.add(0, "");
+		final KeyedComboBoxModel networkInterfaces = new KeyedComboBoxModel(keys.toArray(), names.toArray());
+		return networkInterfaces;
+	}
+
 
 	public void addPlugins() {
 		FormLayout layout = new FormLayout(
