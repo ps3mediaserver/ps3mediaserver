@@ -55,6 +55,8 @@ PMS can be built using the following commands:
     mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
     mvn clean package
 
+See the `INSTALL` for more extensive documentation.
+
 Development
 -----------
 
