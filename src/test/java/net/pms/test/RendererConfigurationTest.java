@@ -85,6 +85,11 @@ public class RendererConfigurationTest {
     	testCases.put("User-Agent: XBMC/10.0 r35648 (Mac OS X; 11.2.0 x86_64; http://www.xbmc.org)", "XBMC");
     	testCases.put("User-Agent: Platinum/0.5.3.0, DLNADOC/1.50", "XBMC");
 
+    	// Cases that are too generic should not match anything
+    	// FIXME: Actual conflict here! SonyBluray.conf matches... 
+    	//testCases.put("User-Agent: UPnP/1.0 DLNADOC/1.50", null);
+    	testCases.put("User-Agent: Unknown Renderer", null);
+
     	// Initialize the RendererConfiguration
     	RendererConfiguration.loadRendererConfigurations();
     }
@@ -108,24 +113,46 @@ public class RendererConfigurationTest {
     
     /**
      * Test one particular header line to see if it returns the correct
-     * renderer.
+     * renderer. Set the correct renderer name to <code>null</code> to
+     * require that nothing matches at all.
      *
      * @param headerLine The header line to recognize.
-     * @param correctRendererName The name of the renderer.
+     * @param correctRendererName The name of the renderer. 
      */
     private void testHeader(String headerLine, String correctRendererName) {
-    	if (headerLine != null && headerLine.toLowerCase().startsWith("user-agent")) {
-			RendererConfiguration rc = RendererConfiguration.getRendererConfigurationByUA(headerLine);
-			assertNotNull("No renderer recognized for header \"" + headerLine + "\"", rc);
-			assertEquals("Expected renderer \"" + correctRendererName + "\", "
-					+ "instead renderer \"" + rc.getRendererName() + "\" was returned for header \""
-					+ headerLine + "\"", correctRendererName, rc.getRendererName());
+    	if (correctRendererName != null) {
+    		// Header is supposed to match a particular renderer
+	    	if (headerLine != null && headerLine.toLowerCase().startsWith("user-agent")) {
+	    		// Match by User-Agent
+				RendererConfiguration rc = RendererConfiguration.getRendererConfigurationByUA(headerLine);
+				assertNotNull("No renderer recognized for header \"" + headerLine + "\"", rc);
+				assertEquals("Expected renderer \"" + correctRendererName + "\", "
+						+ "instead renderer \"" + rc.getRendererName() + "\" was returned for header \""
+						+ headerLine + "\"", correctRendererName, rc.getRendererName());
+	    	} else {
+	    		// Match by additional header
+				RendererConfiguration rc = RendererConfiguration.getRendererConfigurationByUAAHH(headerLine);
+				assertNotNull("No renderer recognized for header \"" + headerLine + "\"", rc);
+				assertEquals("Expected renderer \"" + correctRendererName + "\" to be recognized, "
+						+ "instead renderer \"" + rc.getRendererName() + "\" was returned for header \""
+						+ headerLine + "\"", correctRendererName, rc.getRendererName());
+	    	}
     	} else {
-			RendererConfiguration rc = RendererConfiguration.getRendererConfigurationByUAAHH(headerLine);
-			assertNotNull("No renderer recognized for header \"" + headerLine + "\"", rc);
-			assertEquals("Expected renderer \"" + correctRendererName + "\" to be recognized, "
-					+ "instead renderer \"" + rc.getRendererName() + "\" was returned for header \""
-					+ headerLine + "\"", correctRendererName, rc.getRendererName());
+    		// Header is supposed to match no renderer at all
+	    	if (headerLine != null && headerLine.toLowerCase().startsWith("user-agent")) {
+	    		// Match by User-Agent
+				RendererConfiguration rc = RendererConfiguration.getRendererConfigurationByUA(headerLine);
+				assertEquals("Expected no matching renderer to be found for header \"" + headerLine
+						+ "\", instead renderer \"" + (rc != null ? rc.getRendererName() : "")
+						+ "\" was recognized.", null,
+						rc);
+	    	} else {
+	    		// Match by additional header
+				RendererConfiguration rc = RendererConfiguration.getRendererConfigurationByUAAHH(headerLine);
+				assertEquals("Expected no matching renderer to be found for header \"" + headerLine
+						+ "\", instead renderer \"" + rc.getRendererName() + "\" was recognized.", null,
+						rc);
+	    	}
     	}
     }
 }
