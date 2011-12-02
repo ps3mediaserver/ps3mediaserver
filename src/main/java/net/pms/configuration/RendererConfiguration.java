@@ -112,6 +112,16 @@ public class RendererConfiguration {
 		return addressAssociation.get(sa);
 	}
 
+	/**
+	 * Tries to find a matching renderer configuration based on a request
+	 * header line with a User-Agent header. These matches are made using
+	 * the "UserAgentSearch" configuration option in a renderer.conf.
+	 * Returns the matched configuration or <code>null</code> if no match
+	 * could be found.
+	 *
+	 * @param userAgentString The request header line.
+	 * @return The matching renderer configuration or <code>null</code>.
+	 */
 	public static RendererConfiguration getRendererConfigurationByUA(String userAgentString) {
 		for (RendererConfiguration r : renderersConfs) {
 			if (r.matchUserAgent(userAgentString)) {
@@ -134,6 +144,17 @@ public class RendererConfiguration {
 		return r;
 	}
 
+	/**
+	 * Tries to find a matching renderer configuration based on a request
+	 * header line with an additional, non-User-Agent header. These matches
+	 * are made based on the "UserAgentAdditionalHeader" and
+	 * "UserAgentAdditionalHeaderSearch" configuration options in a
+	 * renderer.conf. Returns the matched configuration or <code>null</code>
+	 * if no match could be found.
+	 *
+	 * @param header The request header line.
+	 * @return The matching renderer configuration or <code>null</code>.
+	 */
 	public static RendererConfiguration getRendererConfigurationByUAAHH(String header) {
 		for (RendererConfiguration r : renderersConfs) {
 			if (StringUtils.isNotBlank(r.getUserAgentAdditionalHttpHeader()) && header.startsWith(r.getUserAgentAdditionalHttpHeader())) {
