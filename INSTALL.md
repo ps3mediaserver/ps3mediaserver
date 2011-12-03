@@ -3,7 +3,7 @@ Installation instructions
 
 The latest release of PS3 Media Server can be downloaded from:
 
-    http://www.ps3mediaserver.org/
+ - http://www.ps3mediaserver.org/
 
 This document describes how to install PS3 Media Server from the source files.
 To build PMS from the source some software packages are required:
@@ -13,7 +13,7 @@ To build PMS from the source some software packages are required:
   - Maven
   - External libraries
 
-Read the section with full instructions for a complete explanation of how to
+Read the section "Full instructions" for a complete explanation of how to
 install all required software and how to build PMS for each operating system.
 
 
@@ -41,42 +41,40 @@ First all required software has to be installed:
 
  1. Download and install Java JDK (JRE is not enough):
 
-        (Windows) http://www.oracle.com/technetwork/java/javase/downloads/index.html 
-                    - Be sure to remember the install location. 
-        (Linux)   sudo apt-get install sun-java6-jdk
-        (Mac OSX) http://developer.apple.com/technologies/xcode.html
+    * (Windows) http://www.oracle.com/technetwork/java/javase/downloads/index.html 
+        - Be sure to remember the install location. 
+    * (Linux)   `sudo apt-get install sun-java6-jdk`
+    * (Mac OSX) http://developer.apple.com/technologies/xcode.html
 
 
  2. Download and install Git:
 
-        (Windows) http://code.google.com/p/msysgit/downloads/list
-                    - For the "Adjusting your PATH environment" section, select
-                      "Run Git from the Windows Command Prompt".
-                    - For the "Configuring the line ending conversions" section,
-                      select "Checkout Windows-style, commit Unix-style line
-                      endings".
-        (Linux)   sudo apt-get install git-core git-gui git-doc
-        (Mac OSX) http://git-scm.com/
+    * (Windows) http://code.google.com/p/msysgit/downloads/list
+        - For the "Adjusting your PATH environment" section, select
+          "Run Git from the Windows Command Prompt".
+        - For the "Configuring the line ending conversions" section,
+          select "Checkout Windows-style, commit Unix-style line endings".
+    * (Linux)   `sudo apt-get install git-core git-gui git-doc`
+    * (Mac OSX) http://git-scm.com/
 
  3. Download and extract Maven:
 
-        (Windows) http://maven.apache.org/download.html
-                    - Be sure to remember the install location. 
-        (Linux)   sudo apt-get install maven3
-        (Mac OSX) (nothing to do, automatically installed with XCode in step 1)
+    * (Windows) http://maven.apache.org/download.html
+    * (Linux)   `sudo apt-get install maven3`
+    * (Mac OSX) (nothing to do, automatically installed with XCode in step 1)
 
     Be sure to remember the extract location.
 
  4. Set environment variables (create new variables or append the value if the
     variable already exists):
 
-        (Windows)
-            Level: System, variable: "JAVA_HOME", value: JDK install location
-            Level: User, variable "M2_HOME", value: Maven extract location
-            Level: User, variable "M2", value: "%M2_HOME%\bin"
-            Level: User, variable "Path", value "%M2%"
-        (Linux)   (nothing to do)
-        (Mac OSX) (nothing to do)
+    * (Windows)
+        - Level: System, variable: "JAVA_HOME", value: JDK install location
+        - Level: User, variable "M2_HOME", value: Maven extract location
+        - Level: User, variable "M2", value: `%M2_HOME%\bin`
+        - Level: User, variable "Path", value `%M2%`
+    * (Linux) (nothing to do)
+    * (Mac OSX) (nothing to do)
 
  5. Download the PMS source code by cloning the GitHub repository:
 
@@ -112,12 +110,14 @@ Automatic builds
 These last two commands can easily be automated using a script:
 
 (Windows)
+
     rem build-pms.bat
     start /D ps3mediaserver /wait /b git pull
     start /D ps3mediaserver /wait /b mvn clean package
 
-(Linux)
-(Mac OSX)
+
+(Linux, Mac OSX)
+
     #!/bin/sh
     # build-pms.sh
     cd ps3mediaserver
@@ -138,54 +138,54 @@ the official PMS development team.
 This section describes how to set up your own fork and how to work with it from
 Eclipse (other IDEs should require similar configuration).
 
- 1. Create a GitHub account (https://github.com/).
+ * Create a GitHub account (https://github.com/).
 
- 2. Set up your machine for GitHub development (http://help.github.com/).
+ * Set up your machine for GitHub development (http://help.github.com/).
 
- 3. Fix the Git line endings on your machine (http://help.github.com/line-endings/).
+ * Fix the Git line endings on your machine (http://help.github.com/line-endings/).
 
- 4. Go to the GitHub PMS repo (https://github.com/ps3mediaserver/ps3mediaserver)
-    and press the "Fork" button on the top right of the page to create your own
-    forked repository of the official sources. 
+ * Go to the GitHub PMS repo (https://github.com/ps3mediaserver/ps3mediaserver)
+   and press the "Fork" button on the top right of the page to create your own
+   forked repository of the official sources. 
 
- 5. Clone the new GitHub repo to your local machine. The clone URL can be seen
-    on the main page of your repository. It should be something like this
-    (replace YOURNAME with your actual GitHub name):
+ * Clone the new GitHub repo to your local machine. The clone URL can be seen
+   on the main page of your repository. It should be something like this
+   (replace YOURNAME with your actual GitHub name):
  
-     git clone git@github.com:YOURNAME/ps3mediaserver.git YOURNAME
+        git clone git@github.com:YOURNAME/ps3mediaserver.git YOURNAME
 
 You now have the new repository on your local machine. It is time to set up an
 integrated development environment to work with it. The steps below explain how
 to set up Eclipse for development with Maven and Git. 
 
- 6. Download and install the Eclipse IDE for Java Developers (http://www.eclipse.org/downloads/).
+ * Download and install the Eclipse IDE for Java Developers (http://www.eclipse.org/downloads/).
 
- 7. Install the m2e Eclipse plugin (http://eclipse.org/m2e/)
+ * Install the m2e Eclipse plugin (http://eclipse.org/m2e/)
 
- 8. Install the EGit Eclipse plugin (http://eclipse.org/egit/)
+ * Install the EGit Eclipse plugin (http://eclipse.org/egit/)
 
- 9. In Eclipse, select the menu "Window > Show View > Git Repositories". Then
-    select "Window > Navigation > Show View Menu", choose "Add a Repository".
-    Browse for the directory where you cloned your repository and press the
-    "Search" button. Select your forked repository and press "OK".
-    The repository should appear in the Git Repositories view.
+ * In Eclipse, select the menu "Window > Show View > Git Repositories". Then
+   select "Window > Navigation > Show View Menu", choose "Add a Repository".
+   Browse for the directory where you cloned your repository and press the
+   "Search" button. Select your forked repository and press "OK".
+   The repository should appear in the Git Repositories view.
  
-10. Press the right mouse button on the repository and select "Import Maven
-    Projects" from the menu. Select the project "/pom.xml" and press "Finish".
+ * Press the right mouse button on the repository and select "Import Maven
+   Projects" from the menu. Select the project "/pom.xml" and press "Finish".
 
-    Note: if a project with the same name already exists, click "Advanced" and
-    set the "Name template" to "[artifactId]-YOURNAME" (replace YOURNAME with
-    your GitHub name). Then press "Finish".
+   Note: if a project with the same name already exists, click "Advanced" and
+   set the "Name template" to `[artifactId]-YOURNAME` (replace YOURNAME with
+   your GitHub name). Then press "Finish".
 
 You now see the sources in Eclipse, but the project is still missing the "Git"
 nature. In other words, it is not tied to the local repository yet. This means
 you cannot perform any Git actions from Eclipse yet. Add the missing connection
 by sharing the project:
 
-11. Press the right mouse button on the newly created project and select the
-    menu "Team > Share Project...". Select "Git" and press "Next >".
-    Check the checkbox "Use or create repository in parent folder of project"
-    and make sure the project is selected. Then press "Finish".
+ * Press the right mouse button on the newly created project and select the
+   menu "Team > Share Project...". Select "Git" and press "Next >".
+   Check the checkbox "Use or create repository in parent folder of project"
+   and make sure the project is selected. Then press "Finish".
 
 Verify that your project is now under Git control. Press the right mouse
 button on the project and under "Team" you now see all options to work with
@@ -193,28 +193,28 @@ Git.
 
 You can build PMS from Eclipse:
 
-12. Create a new run configuration under "Run > Run Configurations...", right
-    mouse button on "Maven Build", select "New", Name: "Package PMS", Goals:
-    "clean package". Select the tab "JRE" and add the following VM arguments
-    "-Xmx1500m -XX:MaxPermSize=256m". Finally, press the "Apply" button.
+ * Create a new run configuration under "Run > Run Configurations...", right
+   mouse button on "Maven Build", select "New", Name: `Build PMS`, Goals:
+   `clean package`. Select the tab "JRE" and add the following VM arguments
+   `-Xmx1500m -XX:MaxPermSize=256m`. Finally, press the "Apply" button.
 
 You will want to run PMS from Eclipse while developing. This is how you do it:
 
-12. Create a new run configuration under "Run > Run Configurations...", right
-    mouse button on "Maven Build", select "New", Name: "Run PMS", Base
-    directory: "${project_loc}", Goals: "test", Profiles: "run-from-eclipse".
-    Select the tab "JRE" and add VM arguments "-Xmx1500m -XX:MaxPermSize=256m".
-    Finally, press the "Apply" button. (Note: this will not download the
-    binaries. Build PMS once to download them before you try to run PMS)
+ * Create a new run configuration under "Run > Run Configurations...", right
+   mouse button on "Maven Build", select "New", Name: `Run PMS`, Base
+   directory: `${project_loc}`, Goals: "test", Profiles: `run-from-eclipse`.
+   Select the tab "JRE" and add VM arguments `-Xmx1500m -XX:MaxPermSize=256m`.
+   Finally, press the "Apply" button. (Note: this will not download the
+   binaries. Build PMS once to download them before you try to run PMS)
 
 You are now ready to start developing!
 
 When you are happy with your changes, you can commit them to your local
 repository from Eclipse using right mouse button, "Team > Commit...".
 
-When you are content with your commits and want to publish them to GitHub, you
-can press the right mouse button on the project and select "Team > Push to
-Upstream".
+When you are satisfied with your commits and want to publish them to your
+repository at GitHub, you can press the right mouse button on the project and
+select "Team > Push to Upstream".
 
 If you would like to contribute to the PMS project, you can send a "Pull
 Request" to the development team. See the help on GitHub for more details
