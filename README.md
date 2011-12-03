@@ -55,7 +55,7 @@ PMS can be built using the following commands:
     mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
     mvn clean package
 
-See the `INSTALL` for more extensive documentation.
+See [INSTALL.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/INSTALL.md) for more extensive documentation.
 
 Development
 -----------
@@ -72,4 +72,7 @@ On Windows:
     git config --global core.autocrlf true
 
 For more information, see http://help.github.com/line-endings/
+
+See [INSTALL.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/INSTALL.md) for instructions on how to set up your local development
+environment.
 
