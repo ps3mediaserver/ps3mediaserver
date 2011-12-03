@@ -909,10 +909,20 @@ public class PmsConfiguration {
 		return getString(KEY_MENCODER_SUB_LANGS, getDefaultLanguages());
 	}
 
+	/**
+	 * Returns the ISO 639 language code for the subtitle language that should
+	 * be forced upon MEncoder. 
+	 * @return The subtitle language code.
+	 */
 	public String getMencoderForcedSubLanguage() {
 		return getString(KEY_MENCODER_FORCED_SUB_LANG, getLanguage());
 	}
 
+	/**
+	 * Returns the tag string that identifies the subtitle language that
+	 * should be forced upon MEncoder.
+	 * @return The tag string.
+	 */
 	public String getMencoderForcedSubTags() {
   		return getString(KEY_MENCODER_FORCED_SUB_TAGS, "forced");
   	}
@@ -959,82 +969,189 @@ public class PmsConfiguration {
 		return getBoolean(KEY_MENCODER_FONT_CONFIG, false);
 	}
 
+	/**
+	 * Set to true if MEncoder should be forced to use the framerate that is
+	 * parsed by FFmpeg.
+	 * @param value Set to true if the framerate should be forced, false
+	 * 			otherwise.
+	 */
 	public void setMencoderForceFps(boolean value) {
 		configuration.setProperty(KEY_MENCODER_FORCE_FPS, value);
 	}
 
+	/**
+	 * Returns true if MEncoder should be forced to use the framerate that is
+	 * parsed by FFmpeg.
+	 * @return True if the framerate should be forced, false otherwise.
+	 */
 	public boolean isMencoderForceFps() {
 		return getBoolean(KEY_MENCODER_FORCE_FPS, false);
 	}
 
+	/**
+	 * Sets the audio language priority for MEncoder as a comma separated
+	 * string. For example: <code>"eng,fre,jpn,ger,und"</code>, where "und"
+	 * stands for "undefined".
+	 * @param value The audio language priority string.
+	 */
 	public void setMencoderAudioLanguages(String value) {
 		configuration.setProperty(KEY_MENCODER_AUDIO_LANGS, value);
 	}
 
+	/**
+	 * Sets the subtitle language priority for MEncoder as a comma
+	 * separated string. For example: <code>"eng,fre,jpn,ger,und"</code>,
+	 * where "und" stands for "undefined".
+	 * @param value The subtitle language priority string.
+	 */
 	public void setMencoderSubLanguages(String value) {
 		configuration.setProperty(KEY_MENCODER_SUB_LANGS, value);
 	}
 
+	/**
+	 * Sets the ISO 639 language code for the subtitle language that should
+	 * be forced upon MEncoder. 
+	 * @param value The subtitle language code.
+	 */
 	public void setMencoderForcedSubLanguage(String value) {
 		configuration.setProperty(KEY_MENCODER_FORCED_SUB_LANG, value);
 	}
 
+	/**
+	 * Sets the tag string that identifies the subtitle language that
+	 * should be forced upon MEncoder.
+	 * @param value The tag string.
+	 */
 	public void setMencoderForcedSubTags(String value) {
 		configuration.setProperty(KEY_MENCODER_FORCED_SUB_TAGS, value);
 	}
 
+	/**
+	 * Sets a string of audio language and subtitle language pairs
+	 * ordered by priority for MEncoder to try to match. Audio language
+	 * and subtitle language should be comma separated as a pair,
+	 * individual pairs should be semicolon separated. "*" can be used to
+	 * match any language. Subtitle language can be defined as "off". For
+	 * example: <code>"en,off;jpn,eng;*,eng;*;*"</code>.
+	 * @param value The audio and subtitle languages priority string.
+	 */
 	public void setMencoderAudioSubLanguages(String value) {
 		configuration.setProperty(KEY_MENCODER_AUDIO_SUB_LANGS, value);
 	}
 
+	/**
+	 * Returns custom commandline options to pass on to MEncoder.
+	 * @return The custom options string.
+	 */
 	public String getMencoderDecode() {
 		return getString(KEY_MENCODER_DECODE, "");
 	}
 
+	/**
+	 * Sets custom commandline options to pass on to MEncoder.
+	 * @param value The custom options string.
+	 */
 	public void setMencoderDecode(String value) {
 		configuration.setProperty(KEY_MENCODER_DECODE, value);
 	}
 
+	/**
+	 * Sets the character encoding (or code page) that MEncoder should use
+	 * for displaying subtitles. Default is "cp1252".
+	 * @param value The character encoding.
+	 */
 	public void setMencoderSubCp(String value) {
 		configuration.setProperty(KEY_MENCODER_SUB_CP, value);
 	}
 
+	/**
+	 * Sets whether or not MEncoder should use FriBiDi mode, which
+	 * is needed to display subtitles in languages that read from right to
+	 * left, like Arabic, Farsi, Hebrew, Urdu, etc. Default value is false.
+	 * @param value Set to true if FriBiDi mode should be used.
+	 */
 	public void setMencoderSubFribidi(boolean value) {
 		configuration.setProperty(KEY_MENCODER_SUB_FRIBIDI, value);
 	}
 
+	/**
+	 * Sets the name of a TrueType font to use for MEncoder subtitles.
+	 * @param value The font name.
+	 */
 	public void setMencoderFont(String value) {
 		configuration.setProperty(KEY_MENCODER_FONT, value);
 	}
 
+	/**
+	 * Older versions of mencoder do not support ASS/SSA subtitles on all
+	 * platforms. Set to true if mencoder supports them. Default should be
+	 * true on Windows and OS X, false otherwise.
+	 * See https://code.google.com/p/ps3mediaserver/issues/detail?id=1097
+	 * @param value Set to true if mencoder supports ASS/SSA subtitles.
+	 */
 	public void setMencoderAss(boolean value) {
 		configuration.setProperty(KEY_MENCODER_ASS, value);
 	}
 
+	/**
+	 * Sets whether or not MEncoder should use fontconfig for displaying
+	 * subtitles.
+	 * @param value Set to true if fontconfig should be used.
+	 */
 	public void setMencoderFontConfig(boolean value) {
 		configuration.setProperty(KEY_MENCODER_FONT_CONFIG, value);
 	}
 
+	/**
+	 * Set whether or not subtitles should be disabled when using MEncoder
+	 * as transcoding engine.
+	 * @param value Set to true if subtitles should be disabled.
+	 */
 	public void setMencoderDisableSubs(boolean value) {
 		configuration.setProperty(KEY_MENCODER_DISABLE_SUBS, value);
 	}
 
+	/**
+	 * Sets whether or not the Pulse Code Modulation audio format should be
+	 * forced when using MEncoder as transcoding engine.
+	 * @param value Set to true if PCM should be forced.
+	 */
 	public void setMencoderUsePcm(boolean value) {
 		configuration.setProperty(KEY_MENCODER_USE_PCM, value);
 	}
 
+	/**
+	 * Returns true if archives (e.g. .zip or .rar) should be browsable by
+	 * PMS, false otherwise.
+	 * @return True if archives should be browsable.
+	 */
 	public boolean isArchiveBrowsing() {
 		return getBoolean(KEY_OPEN_ARCHIVES, false);
 	}
 
+	/**
+	 * Set to true if archives (e.g. .zip or .rar) should be browsable by
+	 * PMS, false otherwise.
+	 * @param value Set to true if archives should be browsable.
+	 */
 	public void setArchiveBrowsing(boolean value) {
 		configuration.setProperty(KEY_OPEN_ARCHIVES, value);
 	}
 
+	/**
+	 * Returns true if MEncoder should use the deinterlace filter, false
+	 * otherwise.
+	 * @return True if the deinterlace filter should be used.
+	 */
 	public boolean isMencoderYadif() {
 		return getBoolean(KEY_MENCODER_YADIF, false);
 	}
 
+	/**
+	 * Set to true if MEncoder should use the deinterlace filter, false
+	 * otherwise.
+	 * @param value Set ot true if the deinterlace filter should be used.
+	 */
 	public void setMencoderYadif(boolean value) {
 		configuration.setProperty(KEY_MENCODER_YADIF, value);
 	}
