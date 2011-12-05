@@ -161,10 +161,15 @@ public class PMS {
 	 */
 	private static PMS instance = null;
 
-	static {
-		sdfHour = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
-		sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-	}
+	/**
+	 * @deprecated This field is not used and will be removed in the future. 
+	 */
+	public final static SimpleDateFormat sdfDate = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
+
+	/**
+	 * @deprecated This field is not used and will be removed in the future. 
+	 */
+	public final static SimpleDateFormat sdfHour = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
 	/**
 	 * Array of {@link RendererConfiguration} that have been found by PMS.
@@ -215,8 +220,6 @@ public class PMS {
 		return proxyServer;
 	}
 
-	public static SimpleDateFormat sdfDate;
-	public static SimpleDateFormat sdfHour;
 	public ArrayList<Process> currentProcesses = new ArrayList<Process>();
 
 	private PMS() {
