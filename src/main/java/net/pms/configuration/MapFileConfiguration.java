@@ -83,13 +83,12 @@ public class MapFileConfiguration {
 			return null;
 		}
 
-		List<MapFileConfiguration> out = new ArrayList<MapFileConfiguration>();
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(File.class, new FileSerializer());
 		Gson gson = gsonBuilder.create();
 		Type listType = new TypeToken<ArrayList<MapFileConfiguration>>() {
 		}.getType();
-		out = gson.fromJson(conf, listType);
+		List<MapFileConfiguration> out = gson.fromJson(conf, listType);
 		return out;
 	}
 }
