@@ -31,10 +31,12 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -83,6 +85,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected static final String TRANSCODE_FOLDER = "#--TRANSCODE--#";
 	private final Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
 	private static final int STOP_PLAYING_DELAY = 4000;
+	private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
+
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
@@ -1250,7 +1254,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		if (getLastmodified() > 0) {
-			addXMLTagAndAttribute(sb, "dc:date", PMS.sdfDate.format(new Date(getLastmodified())));
+			addXMLTagAndAttribute(sb, "dc:date", SDF_DATE.format(new Date(getLastmodified())));
 		}
 
 		String uclass = null;
