@@ -32,7 +32,7 @@ import net.pms.util.Iso639;
  * removed.
  */
 public class DLNAMediaLang {
-	public static String UND = "und";
+	public static final String UND = "und";
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
