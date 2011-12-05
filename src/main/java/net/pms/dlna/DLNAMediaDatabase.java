@@ -9,9 +9,11 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
+import net.pms.configuration.MapFileConfiguration;
 
 import org.apache.commons.lang.StringUtils;
 import org.h2.jdbcx.JdbcConnectionPool;
@@ -28,7 +30,7 @@ public class DLNAMediaDatabase implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaDatabase.class);
 	private String url;
 	private String dir;
-	public static String NONAME = "###";
+	public static final String NONAME = "###";
 	private Thread scanner;
 	private JdbcConnectionPool cp;
 
@@ -502,19 +504,25 @@ public class DLNAMediaDatabase implements Runnable {
 
 	public void cleanup() {
 		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
 		try {
 			conn = getConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) FROM FILES");
-			ResultSet rs = ps.executeQuery();
+			ps = conn.prepareStatement("SELECT COUNT(*) FROM FILES");
+			rs = ps.executeQuery();
 			int count = 0;
+
 			if (rs.next()) {
 				count = rs.getInt(1);
 			}
+
 			rs.close();
 			ps.close();
 			PMS.get().getFrame().setStatusLine("Cleanup database... 0%");
 			int i = 0;
 			int oldpercent = 0;
+
 			if (count > 0) {
 				ps = conn.prepareStatement("SELECT FILENAME, MODIFIED, ID FROM FILES", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
 				rs = ps.executeQuery();
@@ -532,13 +540,12 @@ public class DLNAMediaDatabase implements Runnable {
 						oldpercent = newpercent;
 					}
 				}
-				rs.close();
-				ps.close();
 			}
-			conn.close();
 		} catch (SQLException se) {
 			logger.error(null, se);
 		} finally {
+			close(rs);
+			close(ps);
 			close(conn);
 		}
 	}
