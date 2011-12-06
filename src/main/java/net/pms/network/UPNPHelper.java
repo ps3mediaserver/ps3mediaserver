@@ -227,8 +227,6 @@ public class UPNPHelper {
 							socket.receive(packet_r);
 
 							String s = new String(packet_r.getData());
-							/* Does it come from me ? */
-							//String lines[] = s.split(CRLF);
 
 							InetAddress address = packet_r.getAddress();
 							if (s.startsWith("M-SEARCH")) {
@@ -237,9 +235,7 @@ public class UPNPHelper {
 
 								if (PMS.getConfiguration().getIpFiltering().allowed(address)) {
 									logger.trace("Receiving a M-SEARCH from [" + remoteAddr + ":" + remotePort + "]");
-									//logger.trace("Data: " + s);
 
-									/*logger.info( "Receiving search request from " + packet_r.getAddress().getHostAddress() + "! Sending DISCOVER message...");*/
 									if (StringUtils.indexOf(s, "urn:schemas-upnp-org:service:ContentDirectory:1") > 0) {
 										sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:service:ContentDirectory:1");
 									}
@@ -261,15 +257,15 @@ public class UPNPHelper {
 								int remotePort = packet_r.getPort();
 
 								logger.trace("Receiving a NOTIFY from [" + remoteAddr + ":" + remotePort + "]");
-								//logger.trace("Data: " + s);
 							}
 						}
 					} catch (BindException e) {
 						if (!bindErrorReported) {
 							logger.error("Unable to bind to " + PMS.getConfiguration().getUpnpPort()
-									+ ", this means, that PMS wont appear automaticly on Your renderers ! "
-									+ "Please stop the other program, which occupies the port. "
-									+ "PMS will try to bind to that port ...[" + e.getMessage() + ']');
+									+ ", which means that PMS will not automatically appear on your renderer! "
+									+ "This usually means that another program occupies the port. Please "
+									+ "stop the other program and free up the port. "
+									+ "PMS will keep trying to bind to it...[" + e.getMessage() + "]");
 						}
 						bindErrorReported = true;
 						sleep(5000);
