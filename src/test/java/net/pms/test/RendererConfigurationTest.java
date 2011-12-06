@@ -86,8 +86,7 @@ public class RendererConfigurationTest {
     	testCases.put("User-Agent: Platinum/0.5.3.0, DLNADOC/1.50", "XBMC");
 
     	// Cases that are too generic should not match anything
-    	// FIXME: Actual conflict here! SonyBluray.conf matches... 
-    	//testCases.put("User-Agent: UPnP/1.0 DLNADOC/1.50", null);
+    	testCases.put("User-Agent: UPnP/1.0 DLNADOC/1.50", null);
     	testCases.put("User-Agent: Unknown Renderer", null);
 
     	// Initialize the RendererConfiguration
