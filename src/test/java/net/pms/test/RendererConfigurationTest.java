@@ -32,50 +32,44 @@ import net.pms.configuration.RendererConfiguration;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.LoggerContext;
+
 
 /**
- * Test the RendererConfiguration class 
+ * Test the RendererConfiguration class
  */
 public class RendererConfigurationTest {
 	private final Map<String, String> testCases = new HashMap<String, String>();
 
     @Before
     public void setUp() {
+        // Silence all log messages from the PMS code that is being tested
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        context.reset(); 
+
+    	// Cases that are too generic should not match anything
+    	testCases.put("User-Agent: UPnP/1.0 DLNADOC/1.50", null);
+    	testCases.put("User-Agent: Unknown Renderer", null);
+
     	// From PS3.conf:
-    	// # PlayStation 3 uses the following strings:
-    	// #
-    	// # User-Agent: PLAYSTATION 3
-    	// # ---
-    	// # User-Agent: UPnP/1.0
-    	// # X-AV-Client-Info: av=5.0; cn="Sony Computer Entertainment Inc."; mn="PLAYSTATION 3"; mv="1.0";
-    	// # ---
-    	// # User-Agent: UPnP/1.0 DLNADOC/1.50
-    	// # X-AV-Client-Info: av=5.0; cn="Sony Computer Entertainment Inc."; mn="PLAYSTATION 3"; mv="1.0";
     	testCases.put("User-Agent: PLAYSTATION 3", "Playstation 3");
     	testCases.put("X-AV-Client-Info: av=5.0; cn=\"Sony Computer Entertainment Inc.\"; mn=\"PLAYSTATION 3\"; mv=\"1.0\"", "Playstation 3");
 
     	// From AirPlayer.conf:
-    	// # User-Agent: AirPlayer/1.0.09 CFNetwork/485.13.9 Darwin/11.0.0
-    	// # User-Agent: Lavf52.54.0
     	testCases.put("User-Agent: AirPlayer/1.0.09 CFNetwork/485.13.9 Darwin/11.0.0", "AirPlayer");
     	testCases.put("User-Agent: Lavf52.54.0", "AirPlayer");
 
     	// From Philips.conf:
-    	// # Renderer name string:  Allegro-Software-WebClient/4.61 DLNADOC/1.00
     	testCases.put("User-Agent: Allegro-Software-WebClient/4.61 DLNADOC/1.00", "Philips Aurea");
 
     	// From Realtek.conf:
-    	// #[New I/O server worker #1-2] TRACE 22:46:50.077 Media renderer was not recognized. HTTP User agent :POSIX UPnP/1.0 Intel MicroStack/1.0.2718, RealtekMediaCenter, DLNADOC/1.50
-    	// #[New I/O server worker #1-2] TRACE 23:01:12.406 Media renderer was not recognized. HTTP User agent :RealtekVOD neon/0.27.2
     	// FIXME: Actual conflict here! Popcorn Hour is returned...
     	//testCases.put("User-Agent: POSIX UPnP/1.0 Intel MicroStack/1.0.2718, RealtekMediaCenter, DLNADOC/1.50", "Realtek");
     	testCases.put("User-Agent: RealtekVOD neon/0.27.2", "Realtek");
 
     	// From iPad-iPhone.conf:
-    	// # User-Agent: 8player lite 2.2.3 (iPad; iPhone OS 5.0.1; nl_NL)
-    	// # User agent: yxplayer2%20lite/1.2.7 CFNetwork/485.13.9 Darwin/11.0.0
-    	// # User-Agent: MPlayer 1.0rc4-4.2.1
-    	// # User-Agent: NSPlayer/4.1.0.3856
     	testCases.put("User-Agent: 8player lite 2.2.3 (iPad; iPhone OS 5.0.1; nl_NL)", "iPad / iPhone");
     	testCases.put("User-Agent: yxplayer2%20lite/1.2.7 CFNetwork/485.13.9 Darwin/11.0.0", "iPad / iPhone");
     	testCases.put("User-Agent: MPlayer 1.0rc4-4.2.1", "iPad / iPhone");
@@ -85,22 +79,18 @@ public class RendererConfigurationTest {
     	testCases.put("User-Agent: XBMC/10.0 r35648 (Mac OS X; 11.2.0 x86_64; http://www.xbmc.org)", "XBMC");
     	testCases.put("User-Agent: Platinum/0.5.3.0, DLNADOC/1.50", "XBMC");
 
-    	// Cases that are too generic should not match anything
-    	testCases.put("User-Agent: UPnP/1.0 DLNADOC/1.50", null);
-    	testCases.put("User-Agent: Unknown Renderer", null);
-
     	// Initialize the RendererConfiguration
     	RendererConfiguration.loadRendererConfigurations();
     }
 
     /**
-     * Test the RendererConfiguration class for recognizing headers.
-     *
-     * From PS3.conf:
+     * Test the RendererConfiguration class and the consistency of the
+     * renderer .conf files it reads. This is done by feeding it known
+     * headers and checking whether it recognizes the correct renderer.
      */
     @Test
     public void testKnownHeaders() {
-    	// Test all headers
+    	// Test all header test cases
     	Set<Entry<String, String>> set = testCases.entrySet();
     	Iterator<Entry<String, String>> i = set.iterator();
     	
