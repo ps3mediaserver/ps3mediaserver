@@ -92,6 +92,7 @@ public class RendererConfiguration {
 	public RootFolder getRootFolder() {
 		if (rootFolder == null) {
 			rootFolder = new RootFolder();
+			rootFolder.discoverChildren();
 		}
 		return rootFolder;
 	}
