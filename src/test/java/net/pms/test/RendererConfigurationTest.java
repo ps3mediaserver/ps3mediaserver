@@ -49,35 +49,38 @@ public class RendererConfigurationTest {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         context.reset(); 
 
-    	// Cases that are too generic should not match anything
-    	testCases.put("User-Agent: UPnP/1.0 DLNADOC/1.50", null);
-    	testCases.put("User-Agent: Unknown Renderer", null);
-
-    	// From PS3.conf:
-    	testCases.put("User-Agent: PLAYSTATION 3", "Playstation 3");
-    	testCases.put("X-AV-Client-Info: av=5.0; cn=\"Sony Computer Entertainment Inc.\"; mn=\"PLAYSTATION 3\"; mv=\"1.0\"", "Playstation 3");
-
-    	// From AirPlayer.conf:
-    	testCases.put("User-Agent: AirPlayer/1.0.09 CFNetwork/485.13.9 Darwin/11.0.0", "AirPlayer");
-    	testCases.put("User-Agent: Lavf52.54.0", "AirPlayer");
-
-    	// From Philips.conf:
-    	testCases.put("User-Agent: Allegro-Software-WebClient/4.61 DLNADOC/1.00", "Philips Aurea");
-
-    	// From Realtek.conf:
-    	// FIXME: Actual conflict here! Popcorn Hour is returned...
-    	//testCases.put("User-Agent: POSIX UPnP/1.0 Intel MicroStack/1.0.2718, RealtekMediaCenter, DLNADOC/1.50", "Realtek");
-    	testCases.put("User-Agent: RealtekVOD neon/0.27.2", "Realtek");
-
-    	// From iPad-iPhone.conf:
-    	testCases.put("User-Agent: 8player lite 2.2.3 (iPad; iPhone OS 5.0.1; nl_NL)", "iPad / iPhone");
-    	testCases.put("User-Agent: yxplayer2%20lite/1.2.7 CFNetwork/485.13.9 Darwin/11.0.0", "iPad / iPhone");
-    	testCases.put("User-Agent: MPlayer 1.0rc4-4.2.1", "iPad / iPhone");
-    	testCases.put("User-Agent: NSPlayer/4.1.0.3856", "iPad / iPhone");
-
-    	// From XBMC.conf:
-    	testCases.put("User-Agent: XBMC/10.0 r35648 (Mac OS X; 11.2.0 x86_64; http://www.xbmc.org)", "XBMC");
-    	testCases.put("User-Agent: Platinum/0.5.3.0, DLNADOC/1.50", "XBMC");
+		// Cases that are too generic should not match anything
+		testCases.put("User-Agent: UPnP/1.0 DLNADOC/1.50", null);
+		testCases.put("User-Agent: Unknown Renderer", null);
+		
+		// From PS3.conf:
+		testCases.put("User-Agent: PLAYSTATION 3", "Playstation 3");
+		testCases.put("X-AV-Client-Info: av=5.0; cn=\"Sony Computer Entertainment Inc.\"; mn=\"PLAYSTATION 3\"; mv=\"1.0\"", "Playstation 3");
+		
+		// From AirPlayer.conf:
+		testCases.put("User-Agent: AirPlayer/1.0.09 CFNetwork/485.13.9 Darwin/11.0.0", "AirPlayer");
+		testCases.put("User-Agent: Lavf52.54.0", "AirPlayer");
+		
+		// From Philips.conf:
+		testCases.put("User-Agent: Allegro-Software-WebClient/4.61 DLNADOC/1.00", "Philips Aurea");
+		
+		// From PhilipsPFL.conf:
+		testCases.put("User-Agent: Windows2000/0.0 UPnP/1.0 PhilipsIntelSDK/1.4 DLNADOC/1.50", "Philips TV");
+		
+		// From Realtek.conf:
+		// FIXME: Actual conflict here! Popcorn Hour is returned...
+		//testCases.put("User-Agent: POSIX UPnP/1.0 Intel MicroStack/1.0.2718, RealtekMediaCenter, DLNADOC/1.50", "Realtek");
+		testCases.put("User-Agent: RealtekVOD neon/0.27.2", "Realtek");
+		
+		// From iPad-iPhone.conf:
+		testCases.put("User-Agent: 8player lite 2.2.3 (iPad; iPhone OS 5.0.1; nl_NL)", "iPad / iPhone");
+		testCases.put("User-Agent: yxplayer2%20lite/1.2.7 CFNetwork/485.13.9 Darwin/11.0.0", "iPad / iPhone");
+		testCases.put("User-Agent: MPlayer 1.0rc4-4.2.1", "iPad / iPhone");
+		testCases.put("User-Agent: NSPlayer/4.1.0.3856", "iPad / iPhone");
+		
+		// From XBMC.conf:
+		testCases.put("User-Agent: XBMC/10.0 r35648 (Mac OS X; 11.2.0 x86_64; http://www.xbmc.org)", "XBMC");
+		testCases.put("User-Agent: Platinum/0.5.3.0, DLNADOC/1.50", "XBMC");
 
     	// Initialize the RendererConfiguration
     	RendererConfiguration.loadRendererConfigurations();

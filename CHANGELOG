@@ -1,6 +1,9 @@
 Changelog:
 ==========
 
+????-??-?? - 1.50.1
+    Added renderer configuration file for Philips TV (thanks, leroy!)
+
 2011-11-20 - 1.50.0
 
 	Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3qtgk5k for more details
