@@ -43,6 +43,7 @@ import javax.swing.JTextField;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.dlna.DLNAMediaDatabase;
 import net.pms.util.KeyedComboBoxModel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -614,26 +615,30 @@ public class NavigationShareTab {
 		but5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (configuration.getUseCache()) {
-					if (!PMS.get().getDatabase().isScanLibraryRunning()) {
-						int option = JOptionPane.showConfirmDialog(
-							(Component) PMS.get().getFrame(),
-							Messages.getString("FoldTab.3") + Messages.getString("FoldTab.4"),
-							"Question",
-							JOptionPane.YES_NO_OPTION);
-						if (option == JOptionPane.YES_OPTION) {
-							PMS.get().getDatabase().scanLibrary();
-							but5.setIcon(LooksFrame.readImageIcon("viewmagfit-32.png"));
-						}
-					} else {
-						int option = JOptionPane.showConfirmDialog(
-							(Component) PMS.get().getFrame(),
-							Messages.getString("FoldTab.10"),
-							"Question",
-							JOptionPane.YES_NO_OPTION);
-						if (option == JOptionPane.YES_OPTION) {
-							PMS.get().getDatabase().stopScanLibrary();
-							PMS.get().getFrame().setStatusLine(null);
-							but5.setIcon(LooksFrame.readImageIcon("search-32.png"));
+					DLNAMediaDatabase database = PMS.get().getDatabase();
+					
+					if (database != null) {
+						if (!database.isScanLibraryRunning()) {
+							int option = JOptionPane.showConfirmDialog(
+								(Component) PMS.get().getFrame(),
+								Messages.getString("FoldTab.3") + Messages.getString("FoldTab.4"),
+								"Question",
+								JOptionPane.YES_NO_OPTION);
+							if (option == JOptionPane.YES_OPTION) {
+								database.scanLibrary();
+								but5.setIcon(LooksFrame.readImageIcon("viewmagfit-32.png"));
+							}
+						} else {
+							int option = JOptionPane.showConfirmDialog(
+								(Component) PMS.get().getFrame(),
+								Messages.getString("FoldTab.10"),
+								"Question",
+								JOptionPane.YES_NO_OPTION);
+							if (option == JOptionPane.YES_OPTION) {
+								database.stopScanLibrary();
+								PMS.get().getFrame().setStatusLine(null);
+								but5.setIcon(LooksFrame.readImageIcon("search-32.png"));
+							}
 						}
 					}
 				}
