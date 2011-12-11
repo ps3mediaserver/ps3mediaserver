@@ -2,8 +2,8 @@
 #
 # build-pms-osx.sh
 #
-# Version: 2.0.2
-# Last updated: 2011-11-20
+# Version: 2.0.3
+# Last updated: 2011-12-11
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -123,14 +123,14 @@ VERSION_EXPAT=2.0.1
 VERSION_FAAD2=2.7
 VERSION_FLAC=1.2.1
 VERSION_FONTCONFIG=2.8.0
-VERSION_FFMPEG=2011-11-09
-VERSION_FREETYPE=2.4.7
+VERSION_FFMPEG=2011-12-09
+VERSION_FREETYPE=2.4.8
 VERSION_FRIBIDI=0.19.2
 VERSION_GIFLIB=4.1.6
 VERSION_ICONV=1.13.1
 VERSION_JPEG=8c
-VERSION_LAME=3.99.2
-VERSION_LIBBLURAY=2011-11-20
+VERSION_LAME=3.99.3
+VERSION_LIBBLURAY=2011-12-02
 VERSION_LIBDCA=0.0.5
 VERSION_LIBDV=1.0.0
 VERSION_LIBDVDCSS=1.2.9
@@ -144,9 +144,9 @@ VERSION_LIBVORBIS=1.3.2
 VERSION_LIBTHEORA=1.1.1
 VERSION_LIBZEN=0.4.19
 VERSION_LZO=2.04
-VERSION_MPLAYER=34354
+VERSION_MPLAYER=34393
 VERSION_NCURSES=5.9
-VERSION_PS3MEDIASERVER=832
+VERSION_PS3MEDIASERVER=2011-12-11
 VERSION_TSMUXER=1.10.6
 VERSION_X264=2011-11-09
 VERSION_XVID=1.3.1
@@ -243,6 +243,26 @@ It seems you are missing libtool.
 You can install libtool with following command on Debian based systems (Debian, Ubuntu, etc):
 
     sudo apt-get install libtool
+
+EOM
+            fi
+            exit;;
+
+        mvn)
+            if is_osx; then
+                cat >&2 << EOM
+It seems you are missing Xcode from Apple ("mvn"), which is required to run this script.
+
+Please go to http://developer.apple.com/technologies/xcode.html, create a free
+Apple developer account and download Xcode and install it.
+
+EOM
+            else
+                cat >&2 << EOM
+It seems you are missing "mvn", which is required to run this script.
+You can install Maven with following command on Debian based systems (Debian, Ubuntu, etc):
+
+    sudo apt-get install maven3
 
 EOM
             fi
@@ -370,6 +390,7 @@ GPP=`check_binary g++`
 JAVAC=`check_binary javac`
 LIBTOOL=`check_binary libtool`
 MAKE=`check_binary make`
+MVN=`check_binary mvn`
 SED=`check_binary sed`
 SVN=`check_binary svn`
 TAR=`check_binary tar`
@@ -1384,7 +1405,7 @@ build_mplayer() {
         # See https://svn.macports.org/ticket/30279
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../mplayer-r34354-SB18.patch
+        patch -p0 < ./../../mplayer-r34393-SB19.patch
 
         # Theora and vorbis support seems broken in this revision, disable it for now
         ./configure --cc=$GCC2 --disable-x11 --disable-gl --disable-qtx \
@@ -1459,49 +1480,42 @@ build_ncurses() {
 
 ##########################################
 # PS3MEDIASERVER
-# http://code.google.com/p/ps3mediaserver/
+# https://github.com/ps3mediaserver/ps3mediaserver
 #
 build_ps3mediaserver() {
     start_build ps3mediaserver
     cd $SRC
 
+    rm -rf ps3mediaserver
+    $GIT clone git://github.com/ps3mediaserver/ps3mediaserver.git ps3mediaserver
+    exit_on_error
+    cd ps3mediaserver
+
     if [ "$FIXED_REVISIONS" == "yes" ]; then
-        REVISION="-r $VERSION_PS3MEDIASERVER"
-    else
-        REVISION=""
-    fi
-
-    if [ -d ps3mediaserver ]; then
-        cd ps3mediaserver
-        $SVN update $REVISION
+        $GIT checkout "`$GIT rev-list master -n 1 --first-parent --before=$VERSION_PS3MEDIASERVER`"
         exit_on_error
-    else
-        $SVN checkout $REVISION http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver ps3mediaserver
-        exit_on_error
-        cd ps3mediaserver
     fi
 
-    if is_osx; then
-        cd osx
-    else
-        cd linux
-    fi
-   
-    # Overwrite with the home built tools
-    cp $TARGET/bin/dcraw .
-    cp $TARGET/bin/ffmpeg .
-    cp $TARGET/bin/flac .
-    cp $TARGET/bin/mplayer .
-    cp $TARGET/bin/mencoder .
+    $MVN clean package
+    cd target
 
+# TODO: Figure out a way to use the newly built binaries in the official distribution
+#
+#    # Overwrite with the home built tools
+#    cp $TARGET/bin/dcraw .
+#    cp $TARGET/bin/ffmpeg .
+#    cp $TARGET/bin/flac .
+#    cp $TARGET/bin/mplayer .
+#    cp $TARGET/bin/mencoder .
+#
     if is_osx; then
         # OSX
-        cp $TARGET/bin/tsMuxeR .
-
-        set_flags
-        $ANT DMG
-        exit_on_error
-
+#        cp $TARGET/bin/tsMuxeR .
+#
+#        set_flags
+#        $ANT DMG
+#        exit_on_error
+#
         # Add the architecture name to the final file
         PMS_FILENAME_ORIG=`ls pms-macosx-*.dmg | head -1`
         PMS_FILENAME_NEW=`echo $PMS_FILENAME_ORIG | $SED -e "s/-macosx-/-macosx-$ARCHITECTURE-/"`
@@ -1509,25 +1523,25 @@ build_ps3mediaserver() {
         cp $PMS_FILENAME_NEW $WORKDIR
     else
         # Linux
-        # turn libmediainfo.a into a shared library
-        set_flags
-        mkdir tmp-libmediainfo
-        cd tmp-libmediainfo
-        cp $TARGET/lib/libmediainfo.a .
-        ar x libmediainfo.a
-        rm libmediainfo.a
-        $GPP -shared -static-libstdc++ -static-libgcc -o ./../libmediainfo.so ./*.o  -Wl,--whole-archive -L./ -lzen -Wl,--no-whole-archive
-        exit_on_error
-        cd ..
-        rm -rf ./tmp-libmediainfo
-        # tsMuxeR is already included
-        #cp $TARGET/bin/tsMuxeR .
-    
-        cd ..    
-        $ANT 
-        exit_on_error
-
-        cd dist
+#        # turn libmediainfo.a into a shared library
+#        set_flags
+#        mkdir tmp-libmediainfo
+#        cd tmp-libmediainfo
+#        cp $TARGET/lib/libmediainfo.a .
+#        ar x libmediainfo.a
+#        rm libmediainfo.a
+#        $GPP -shared -static-libstdc++ -static-libgcc -o ./../libmediainfo.so ./*.o  -Wl,--whole-archive -L./ -lzen -Wl,--no-whole-archive
+#        exit_on_error
+#        cd ..
+#        rm -rf ./tmp-libmediainfo
+#        # tsMuxeR is already included
+#        #cp $TARGET/bin/tsMuxeR .
+#    
+#        cd ..    
+#        $ANT 
+#        exit_on_error
+#
+#        cd dist
         PMS_FILENAME=`ls pms-generic-linux-*.tgz | head -1`
         mv $PMS_FILENAME $WORKDIR
     fi
