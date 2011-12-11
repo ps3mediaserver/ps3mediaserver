@@ -27,14 +27,13 @@
 				<include>*</include>
 			</includes>
 			<excludes>
-				<exclude>libmediainfo.dylib</exclude>
 				<exclude>pms.icns</exclude>
 			</excludes>
 		</fileSet>
 
 		<!-- Include unzipped libmediainfo.dylib -->
 		<fileSet>
-			<directory>${project.binaries}/osx</directory>
+			<directory>${project.binaries}</directory>
 			<outputDirectory>${project.name}.app/Contents/Resources/Java</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
