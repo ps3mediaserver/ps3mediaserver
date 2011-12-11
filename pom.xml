@@ -473,7 +473,7 @@
 				<executions>
 					<execution>
 						<id>make-jar-with-dependencies</id>
-						<phase>package</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
