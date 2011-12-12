@@ -473,7 +473,7 @@
 				<executions>
 					<execution>
 						<id>make-jar-with-dependencies</id>
-						<phase>package</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
@@ -821,8 +821,8 @@
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>prepare-binaries</id>
-								<phase>package</phase>
+								<id>prepare-package</id>
+								<phase>prepare-package</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
@@ -999,8 +999,8 @@
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>prepare-binaries</id>
-								<phase>package</phase>
+								<id>prepare-package</id>
+								<phase>prepare-package</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
@@ -1027,7 +1027,7 @@
 						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>make-assembly</id>
+								<id>build-pms</id>
 								<phase>package</phase>
 								<goals>
 									<goal>single</goal>
@@ -1072,7 +1072,8 @@
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
 							<execution>
-								<phase>package</phase>
+								<id>prepare-package</id>
+								<phase>prepare-package</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
@@ -1115,7 +1116,6 @@
 											<arg value="-e" />
 											<arg value="end tell" />
 										</exec>
-
 									</tasks>
 								</configuration>
 							</execution>
