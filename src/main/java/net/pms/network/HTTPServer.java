@@ -19,17 +19,23 @@
 package net.pms.network;
 
 import java.io.IOException;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ServerSocketChannel;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 import net.pms.PMS;
-import net.pms.configuration.PmsConfiguration;
+import net.pms.util.PMSUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -43,7 +49,8 @@ import org.slf4j.LoggerFactory;
 
 public class HTTPServer implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(HTTPServer.class);
-	private final int port;
+	private ArrayList<String> ips;
+	private int port;
 	private String hostName;
 	private ServerSocketChannel serverSocketChannel;
 	private ServerSocket serverSocket;
@@ -65,12 +72,30 @@ public class HTTPServer implements Runnable {
 
 	public HTTPServer(int port) {
 		this.port = port;
+		ips = new ArrayList<String>();
 	}
 
 	public boolean start() throws IOException {
-		final PmsConfiguration configuration = PMS.getConfiguration();
+		boolean found = false;
+		String fixedNetworkInterfaceName = PMS.getConfiguration().getNetworkInterface();
+		NetworkInterface fixedNI = NetworkInterface.getByName(fixedNetworkInterfaceName);
 
-		hostName = configuration.getServerHostname();
+		if (fixedNI != null) {
+			if (checkNetworkInterface(fixedNI)) {
+				ni = fixedNI;
+			}
+		} else {
+			Enumeration<NetworkInterface> enm = NetworkInterface.getNetworkInterfaces();
+			while (enm.hasMoreElements()) {
+				ni = enm.nextElement();
+				found = checkNetworkInterface(ni);
+				if (found) {
+					break;
+				}
+			}
+		}
+
+		hostName = PMS.getConfiguration().getServerHostname();
 		InetSocketAddress address = null;
 		if (hostName != null && hostName.length() > 0) {
 			logger.info("Using forced address " + hostName);
@@ -80,7 +105,7 @@ public class HTTPServer implements Runnable {
 			} else {
 				address = new InetSocketAddress(hostName, port);
 			}
-		} else if (isAddressFromInterfaceFound(configuration.getNetworkInterface())) {
+		} else if (iafinal != null) {
 			logger.info("Using address " + iafinal + " found on network interface: " + ni.toString().trim().replace('\n', ' '));
 			address = new InetSocketAddress(iafinal, port);
 		} else {
@@ -89,7 +114,7 @@ public class HTTPServer implements Runnable {
 		}
 		logger.info("Created socket: " + address);
 
-		if (!configuration.isHTTPEngineV2()) {
+		if (!PMS.getConfiguration().isHTTPEngineV2()) {
 			serverSocketChannel = ServerSocketChannel.open();
 
 			serverSocket = serverSocketChannel.socket();
@@ -130,18 +155,62 @@ public class HTTPServer implements Runnable {
 		return true;
 	}
 
-	private boolean isAddressFromInterfaceFound(String networkInterfaceName) {
-		NetworkConfiguration.InterfaceAssociation ia = !StringUtils.isEmpty(networkInterfaceName) ? NetworkConfiguration.getInstance()
-				.getAddressForNetworkInterfaceName(networkInterfaceName)
-				: null;
-		if (ia == null) {
-			ia = NetworkConfiguration.getInstance().getDefaultNetworkInterfaceAddress();
+	private boolean checkNetworkInterface(NetworkInterface net) throws SocketException, UnknownHostException {
+		InetAddress ia;
+		boolean found = false;
+		boolean skip = false;
+		String name = net.getName();
+		String displayName = net.getDisplayName();
+
+		// Should we skip this particular network interface?
+		if (PMSUtil.isNetworkInterfaceLoopback(net)) {
+			skip = true;
+		} else {
+			skip = skipNetworkInterface(name, displayName);
 		}
-		if (ia != null) {
-			iafinal = ia.getAddr();
-			ni = ia.getIface();
+
+		if (skip) {
+			logger.info("Skipping network interface " + displayName + " (" + name + ")");
+		} else {
+			logger.info("Scanning network interface " + displayName + " (" + name + ")");
+			Enumeration<InetAddress> addrs = net.getInetAddresses();
+
+			while (addrs.hasMoreElements()) {
+				ia = addrs.nextElement();
+
+				if (!(ia instanceof Inet6Address) && !ia.isLoopbackAddress()) {
+					iafinal = ia;
+					found = true;
+
+					if (StringUtils.isNotEmpty(PMS.getConfiguration().getServerHostname())) {
+						found = iafinal.equals(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
+					}
+					break;
+				}
+			}
 		}
-		return ia != null;
+		return found;
+	}
+
+	private boolean skipNetworkInterface(String name, String displayName) {
+		// Try to match all configured blacklisted network interfaces
+		List<String> skipNetworkInterfaces = PMS.getConfiguration().getSkipNetworkInterfaces();
+
+		for (String current : skipNetworkInterfaces) {
+
+			if (name != null && lcontains(name, current)) {
+				return true;
+			}
+
+			if (displayName != null && lcontains(displayName, current)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean lcontains(String txt, String substr) {
+		return txt.toLowerCase().contains(substr);
 	}
 
 	public void stop() {
@@ -162,7 +231,6 @@ public class HTTPServer implements Runnable {
 				factory.releaseExternalResources();
 			}
 		}
-		NetworkConfiguration.forgetConfiguration();
 	}
 
 	public void run() {

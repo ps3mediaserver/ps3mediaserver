@@ -31,12 +31,10 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -85,8 +83,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected static final String TRANSCODE_FOLDER = "#--TRANSCODE--#";
 	private final Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
 	private static final int STOP_PLAYING_DELAY = 4000;
-	private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
-
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
@@ -294,7 +290,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @since 1.50
 	 * @see #addChildInternal(DLNAResource)
 	 */
-	protected void setId(String id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -559,7 +555,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								VirtualFolder fileFolder = new FileTranscodeVirtualFolder(child.getName(), null);
 
 								DLNAResource newChild = (DLNAResource) child.clone();
-								newChild.setId(null);
 								newChild.setPlayer(pl);
 								newChild.setMedia(child.getMedia());
 								// newChild.original = child;
@@ -984,7 +979,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 
 	@Override
-	protected Object clone() {
+	public Object clone() {
 		Object o = null;
 		try {
 			o = super.clone();
@@ -1254,7 +1249,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		if (getLastmodified() > 0) {
-			addXMLTagAndAttribute(sb, "dc:date", SDF_DATE.format(new Date(getLastmodified())));
+			addXMLTagAndAttribute(sb, "dc:date", PMS.sdfDate.format(new Date(getLastmodified())));
 		}
 
 		String uclass = null;
@@ -1716,7 +1711,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param media The object containing detailed information.
 	 * @since 1.50
 	 */
-	protected void setMedia(DLNAMediaInfo media) {
+	public void setMedia(DLNAMediaInfo media) {
 		this.media = media;
 	}
 
@@ -1738,7 +1733,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param mediaAudio The audio object containing detailed information.
 	 * @since 1.50
 	 */
-	protected void setMediaAudio(DLNAMediaAudio mediaAudio) {
+	public void setMediaAudio(DLNAMediaAudio mediaAudio) {
 		this.media_audio = mediaAudio;
 	}
 
@@ -1749,7 +1744,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @return The subtitle object containing detailed information.
 	 * @since 1.50
 	 */
-	protected DLNAMediaSubtitle getMediaSubtitle() {
+	public DLNAMediaSubtitle getMediaSubtitle() {
 		return media_subtitle;
 	}
 
@@ -1760,7 +1755,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param mediaSubtitle The subtitle object containing detailed information.
 	 * @since 1.50
 	 */
-	protected void setMediaSubtitle(DLNAMediaSubtitle mediaSubtitle) {
+	public void setMediaSubtitle(DLNAMediaSubtitle mediaSubtitle) {
 		this.media_subtitle = mediaSubtitle;
 	}
 
@@ -1800,7 +1795,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param player The player object to set.
 	 * @since 1.50
 	 */
-	protected void setPlayer(Player player) {
+	public void setPlayer(Player player) {
 		this.player = player;
 	}
 
@@ -1905,7 +1900,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param noName Set to true if the resource is nameless.
 	 * @since 1.50
 	 */
-	protected void setNoName(boolean noName) {
+	public void setNoName(boolean noName) {
 		this.noName = noName;
 	}
 
@@ -1994,7 +1989,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @return True if transcoding should be skipped, false otherwise.
 	 * @since 1.50
 	 */
-	protected boolean isSkipTranscode() {
+	public boolean isSkipTranscode() {
 		return skipTranscode;
 	}
 

@@ -3,6 +3,9 @@ package net.pms.configuration;
 class ProgramPathDisabler implements ProgramPaths {
 	private boolean disableVlc = false;
 	private boolean disableMencoder = false;
+	private boolean disableMencoderMT = false;
+	private boolean disableMencoderAlternate = false;
+	private boolean disableMencoderAlternateMT = false;
 	private boolean disableFfmpeg = false;
 	private boolean disableMplayer = false;
 	private boolean disableDCraw = false;

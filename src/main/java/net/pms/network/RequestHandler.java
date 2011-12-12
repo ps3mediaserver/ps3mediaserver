@@ -43,8 +43,8 @@ public class RequestHandler implements Runnable {
 	private BufferedReader br;
 	
 	// Used to filter out known headers when the renderer is not recognized
-	private final static String[] KNOWN_HEADERS = { "Accept", "Accept-Language", "Accept-Encoding", "Callback",
-		"Connection", "Content-Length", "Content-Type", "Date", "Host", "Nt", "Sid", "Timeout", "User-Agent" };
+	private final static String[] KNOWN_HEADERS = { "Accept", "Accept-Language", "Accept-Encoding", "Connection",
+		"Content-Length", "Content-Type", "Date", "Host", "User-Agent" };
 
 
 	public RequestHandler(Socket socket) throws IOException {

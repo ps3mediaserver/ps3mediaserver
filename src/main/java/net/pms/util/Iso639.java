@@ -1,22 +1,3 @@
-/*
- * PS3 Media Server, for streaming any medias to your PS3.
- * Copyright (C) 2008  A.Brochard
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; version 2
- * of the License only.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- */
 package net.pms.util;
 
 import java.util.ArrayList;
@@ -26,53 +7,19 @@ import java.util.Map.Entry;
 
 import net.pms.dlna.DLNAMediaLang;
 
-/**
- * This class provides a list of languages mapped to ISO 639 language codes
- * and some methods to verify which language matches which ISO code.
- */
 public class Iso639 {
-	/**
-	 * Hashmap that contains full language names and their ISO codes.
-	 */
-	private static HashMap<String, String[]> links = new HashMap<String, String[]>();
+	private static HashMap<String, String[]> links;
+	private static ArrayList<String> languages;
+	private static ArrayList<String> codes;
 
-	/**
-	 * List that contains all known language names.
-	 */
-	private static ArrayList<String> languages = new ArrayList<String>();
-
-	/**
-	 * List that contains all known ISO language codes.
-	 */
-	private static ArrayList<String> codes = new ArrayList<String>();
-
-	static {
-		// Make sure everything is initialized before it is retrieved.
-		initLinks();
-		initLanguages();
-		initCodes();
-	}
-
-	/**
-	 * Returns the full language name for a given ISO language code. Will return
-	 * null when the language name cannot be determined.
-	 *
-	 * @param code
-	 *            The ISO language code.
-	 * @return The full language name.
-	 */
 	public static String getLanguage(String code) {
 		if (code == null) {
 			return null;
 		}
-
 		String lang = null;
-		Iterator<Entry<String, String[]>> iterator = links.entrySet()
-				.iterator();
-
+		Iterator<Entry<String, String[]>> iterator = links.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, String[]> entry = iterator.next();
-
 			for (String c : entry.getValue()) {
 				if (code.equalsIgnoreCase(c)) {
 					return entry.getKey();
@@ -82,50 +29,28 @@ public class Iso639 {
 		return lang;
 	}
 
-	/**
-	 * Returns the ISO 639_2 code for an ISO code. Will return null if no
-	 * match can be found.
-	 *
-	 * @param code The ISO code.
-	 * @return The ISO 639_2 code.
-	 */
 	public static String getISO639_2Code(String code) {
 		if (code == null) {
 			return null;
 		}
-
 		String lang = null;
-		Iterator<Entry<String, String[]>> iterator = links.entrySet()
-				.iterator();
-
+		Iterator<Entry<String, String[]>> iterator = links.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, String[]> entry = iterator.next();
 			for (String c : entry.getValue()) {
 				if (code.equalsIgnoreCase(c)) {
-					return entry.getValue()[entry.getValue().length - 1]
-							.toLowerCase();
+					return entry.getValue()[entry.getValue().length - 1].toLowerCase();
 				}
 			}
 		}
-
 		return lang;
 	}
 
-	/**
-	 * Verifies that a full language name is matching an ISO code. Returns true
-	 * if a match can be made, false otherwise.
-	 * 
-	 * @param language The full language name.
-	 * @param code The ISO code.
-	 * @return True if both match, false otherwise.
-	 */
 	public static boolean isCodeMatching(String language, String code) {
 		if (language == null || code == null) {
 			return false;
 		}
-
 		String codes[] = links.get(language);
-
 		for (String c : codes) {
 			if (c.equalsIgnoreCase(code)) {
 				return true;
@@ -134,25 +59,13 @@ public class Iso639 {
 		return false;
 	}
 
-	/**
-	 * Verifies that two ISO codes match the same language. Returns true if a
-	 * match can be made, false otherwise.
-	 *
-	 * @param code1 The first ISO code.
-	 * @param code2 The second ISO code.
-	 * @return True if both match, false otherwise.
-	 */
 	public static boolean isCodesMatching(String code1, String code2) {
 		if (code1 == null || code2 == null) {
 			return false;
 		}
-
-		Iterator<Entry<String, String[]>> iterator = links.entrySet()
-				.iterator();
-
+		Iterator<Entry<String, String[]>> iterator = links.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, String[]> entry = iterator.next();
-
 			for (String c : entry.getValue()) {
 				if (code1.equalsIgnoreCase(c)) {
 					for (String c2 : entry.getValue()) {
@@ -166,82 +79,51 @@ public class Iso639 {
 		return false;
 	}
 
-	/**
-	 * Returns the list of known full language names.
-	 * 
-	 * @return The list of languages.
-	 */
 	public static ArrayList<String> getLanguageList() {
+		if (languages == null) {
+			languages = new ArrayList<String>();
+			Iterator<String> iterator = links.keySet().iterator();
+			while (iterator.hasNext()) {
+				languages.add(iterator.next());
+			}
+		}
 		return languages;
 	}
 
-	/**
-	 * Returns the list of known ISO language codes.
-	 * 
-	 * @return The list of codes.
-	 */
 	public static ArrayList<String> getCodeList() {
+		if (codes == null) {
+			codes = new ArrayList<String>();
+			Iterator<String[]> iterator = links.values().iterator();
+			while (iterator.hasNext()) {
+				for (String s : iterator.next()) {
+					codes.add(s);
+				}
+			}
+		}
 		return codes;
 	}
 
-	/**
-	 * Add a full language name and up to three language codes to the mapping.
-	 * The language codes can be null.
-	 *
-	 * @param language The full language name.
-	 * @param iso6391 The first ISO code
-	 * @param iso6392 The second ISO code
-	 * @param iso6392bis The third ISO code
-	 */
 	private static void putCode(String language, String iso6391,
-			String iso6392, String iso6392bis) {
+		String iso6392, String iso6392bis) {
+		if (links == null) {
+			links = new HashMap<String, String[]>();
+		}
 		ArrayList<String> codeArray = new ArrayList<String>();
-
 		if (iso6391 != null) {
 			codeArray.add(iso6391);
 		}
-
 		if (iso6392 != null) {
 			codeArray.add(iso6392);
 		}
-
 		if (iso6392bis != null) {
 			codeArray.add(iso6392bis);
 		}
-
-		String[] newCodes = new String[codeArray.size()];
+		String newCodes[] = new String[codeArray.size()];
 		codeArray.toArray(newCodes);
 		links.put(language, newCodes);
 	}
 
-	/**
-	 * Initialize the list of language strings.
-	 */
-	private static void initLanguages() {
-		Iterator<String> iterator = links.keySet().iterator();
-		while (iterator.hasNext()) {
-			languages.add(iterator.next());
-		}
-	}
-
-	/**
-	 * Initialize the list of language codes.
-	 */
-	private static void initCodes() {
-		codes = new ArrayList<String>();
-		Iterator<String[]> iterator = links.values().iterator();
-
-		while (iterator.hasNext()) {
-			for (String s : iterator.next()) {
-				codes.add(s);
-			}
-		}
-	}
-
-	/**
-	 * Initialize the hashmap containing languages and their codes.
-	 */
-	private static void initLinks() {
+	static {
 		putCode("Abkhazian", "ab", "abk", "abk");
 		putCode("Achinese", null, "ace", "ace");
 		putCode("Acoli", null, "ach", "ach");
@@ -331,11 +213,10 @@ public class Iso639 {
 		putCode("Creek", null, "mus", "mus");
 		putCode("Creoles and pidgins (Other)", null, "crp", "crp");
 		putCode("Creoles and pidgins, English-based (Other)", null, "cpe",
-				"cpe");
-		putCode("Creoles and pidgins, French-based (Other)", null, "cpf",
-				"cpf");
+			"cpe");
+		putCode("Creoles and pidgins, French-based (Other)", null, "cpf", "cpf");
 		putCode("Creoles and pidgins, Portuguese-based (Other)", null, "cpp",
-				"cpp");
+			"cpp");
 		putCode("Croatian", "hr", "hrv", "scr");
 		putCode("Cushitic (Other)", null, "cus", "cus");
 		putCode("Czech", "cs", "ces", "cze");
@@ -387,7 +268,7 @@ public class Iso639 {
 		putCode("Georgian", "ka", "kat", "geo");
 		putCode("German", "de", "deu", "ger");
 		putCode("German, Low; Saxon, Low; Low German; Low Saxon", null, "nds",
-				"nds");
+			"nds");
 		putCode("German, Middle High (ca.1050-1500)", null, "gmh", "gmh");
 		putCode("German, Old High (ca.750-1050)", null, "goh", "goh");
 		putCode("Germanic (Other)", null, "gem", "gem");
@@ -423,7 +304,7 @@ public class Iso639 {
 		putCode("Indo-European (Other)", null, "ine", "ine");
 		putCode("Indonesian", "id", "ind", "ind");
 		putCode("Interlingua (International Auxiliary Language Association)",
-				"ia", "ina", "ina");
+			"ia", "ina", "ina");
 		putCode("Interlingue", "ie", "ile", "ile");
 		putCode("Inuktitut", "iu", "iku", "iku");
 		putCode("Inupiaq", "ik", "ipk", "ipk");
@@ -479,9 +360,9 @@ public class Iso639 {
 		putCode("Lingala", "ln", "lin", "lin");
 		putCode("Lithuanian", "lt", "lit", "lit");
 		putCode("Low German; Low Saxon; German, Low; Saxon, Low", null, "nds",
-				"nds");
+			"nds");
 		putCode("Low Saxon; Low German; Saxon, Low; German, Low", null, "nds",
-				"nds");
+			"nds");
 		putCode("Lozi", null, "loz", "loz");
 		putCode("Luba-Katanga", null, "lub", "lub");
 		putCode("Luba-Lulua", null, "lua", "lua");
@@ -592,8 +473,7 @@ public class Iso639 {
 		putCode("Santali", null, "sat", "sat");
 		putCode("Sardinian", "sc", "srd", "srd");
 		putCode("Sasak", null, "sas", "sas");
-		putCode("Saxon, Low; German, Low; Low Saxon; Low German", null, "nds",
-				"nds");
+		putCode("Saxon, Low; German, Low; Low Saxon; Low German", null, "nds", "nds");
 		putCode("Scots", null, "sco", "sco");
 		putCode("Selkup", null, "sel", "sel");
 		putCode("Semitic (Other)", null, "sem", "sem");

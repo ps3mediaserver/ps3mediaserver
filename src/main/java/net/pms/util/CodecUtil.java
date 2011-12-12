@@ -1,22 +1,3 @@
-/*
- * PS3 Media Server, for streaming any medias to your PS3.
- * Copyright (C) 2008  A.Brochard
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; version 2
- * of the License only.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- */
 package net.pms.util;
 
 import java.io.BufferedReader;
@@ -37,44 +18,32 @@ import com.sun.jna.Platform;
 
 public class CodecUtil {
 	private static final Logger logger = LoggerFactory.getLogger(CodecUtil.class);
-	private static final ArrayList<String> codecs = new ArrayList<String>();
+	private static ArrayList<String> codecs;
 
-	static {
-		// Make sure the list of codecs is initialized before other threads start retrieving it
-		initCodecs();
-	}
-
-	/**
-	 * Initialize the list of codec formats that are recognized by ffmpeg by
-	 * parsing the "ffmpeg_formats.txt" resource. 
-	 */
-	private static void initCodecs() {
-		InputStream is = CodecUtil.class.getClassLoader().getResourceAsStream("resources/ffmpeg_formats.txt");
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		String line = null;
-
-		try {
-			while ((line = br.readLine()) != null) {
-				if (line.contains(" ")) {
-					codecs.add(line.substring(0, line.indexOf(" ")));
-				} else {
-					codecs.add(line);
+	public static ArrayList<String> getPossibleCodecs() {
+		if (codecs == null) {
+			codecs = new ArrayList<String>();
+			
+			// Multiple threads can call this at the same time and initializing takes a while
+			synchronized (codecs) {
+				InputStream is = CodecUtil.class.getClassLoader().getResourceAsStream("resources/ffmpeg_formats.txt");
+				BufferedReader br = new BufferedReader(new InputStreamReader(is));
+				String line = null;
+				try {
+					while ((line = br.readLine()) != null) {
+						if (line.contains(" ")) {
+							codecs.add(line.substring(0, line.indexOf(" ")));
+						} else {
+							codecs.add(line);
+						}
+					}
+					br.close();
+					codecs.add("iso");
+				} catch (IOException e) {
+					logger.error("Error while retrieving codec list", e);
 				}
 			}
-
-			br.close();
-			codecs.add("iso");
-		} catch (IOException e) {
-			logger.error("Error while retrieving codec list", e);
 		}
-	}
-
-
-	/**
-	 * Return the list of codec formats that will be recognized.
-	 * @return The list of codecs.
-	 */
-	public static ArrayList<String> getPossibleCodecs() {
 		return codecs;
 	}
 
