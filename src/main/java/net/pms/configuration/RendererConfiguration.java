@@ -1,7 +1,6 @@
 package net.pms.configuration;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,11 +10,11 @@ import java.util.regex.Pattern;
 
 import net.pms.Messages;
 import net.pms.dlna.MediaInfoParser;
-import net.pms.medialibrary.dlna.RootFolder;
+import net.pms.dlna.RootFolder;
 import net.pms.formats.Format;
 import net.pms.network.HTTPResource;
 import net.pms.network.SpeedStats;
-import net.pms.util.PmsProperties;
+import net.pms.util.PropertiesUtil;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
@@ -34,7 +33,6 @@ public class RendererConfiguration {
 	private static ArrayList<RendererConfiguration> renderersConfs;
 	private static RendererConfiguration defaultConf;
 	private static Map<InetAddress, RendererConfiguration> addressAssociation = new HashMap<InetAddress, RendererConfiguration>();
-	private static PmsProperties projectProperties = new PmsProperties();
 
 	public static RendererConfiguration getDefaultConf() {
 		return defaultConf;
@@ -47,17 +45,9 @@ public class RendererConfiguration {
 		} catch (ConfigurationException e) {
 		}
 
-		try {
-			// Read project properties resource file.
-			projectProperties.loadFromResourceFile("/resources/project.properties");
-		} catch (IOException e) {
-			logger.error("Error loading renderer configurations: could not load project.properties");
-			return;
-		}
+		File renderersDir = getRenderersDir();
 
-		File renderersDir = new File(projectProperties.get("project.renderers.dir"));
-
-		if (renderersDir.exists() && renderersDir.isDirectory()) {
+		if (renderersDir != null) {
 			logger.info("Loading renderer configurations from " + renderersDir.getAbsolutePath());
 
 			File[] confs = renderersDir.listFiles();
@@ -78,6 +68,19 @@ public class RendererConfiguration {
 		}
 	}
 
+	protected static File getRenderersDir() {
+		final String[] pathList = PropertiesUtil.getProjectProperties().get("project.renderers.dir").split(",");
+		for (String path : pathList) {
+			if (path.trim().length()>0) {
+				File f = new File(path.trim());
+				if (f.exists() && f.isDirectory() && f.canRead()) {
+					return f;
+				}
+			}
+		}
+		return null;
+	}
+
 	private RootFolder rootFolder;
 
 	public static void resetAllRenderers() {
@@ -89,6 +92,7 @@ public class RendererConfiguration {
 	public RootFolder getRootFolder() {
 		if (rootFolder == null) {
 			rootFolder = new RootFolder();
+			rootFolder.discoverChildren();
 		}
 		return rootFolder;
 	}
@@ -109,6 +113,16 @@ public class RendererConfiguration {
 		return addressAssociation.get(sa);
 	}
 
+	/**
+	 * Tries to find a matching renderer configuration based on a request
+	 * header line with a User-Agent header. These matches are made using
+	 * the "UserAgentSearch" configuration option in a renderer.conf.
+	 * Returns the matched configuration or <code>null</code> if no match
+	 * could be found.
+	 *
+	 * @param userAgentString The request header line.
+	 * @return The matching renderer configuration or <code>null</code>.
+	 */
 	public static RendererConfiguration getRendererConfigurationByUA(String userAgentString) {
 		for (RendererConfiguration r : renderersConfs) {
 			if (r.matchUserAgent(userAgentString)) {
@@ -131,6 +145,17 @@ public class RendererConfiguration {
 		return r;
 	}
 
+	/**
+	 * Tries to find a matching renderer configuration based on a request
+	 * header line with an additional, non-User-Agent header. These matches
+	 * are made based on the "UserAgentAdditionalHeader" and
+	 * "UserAgentAdditionalHeaderSearch" configuration options in a
+	 * renderer.conf. Returns the matched configuration or <code>null</code>
+	 * if no match could be found.
+	 *
+	 * @param header The request header line.
+	 * @return The matching renderer configuration or <code>null</code>.
+	 */
 	public static RendererConfiguration getRendererConfigurationByUAAHH(String header) {
 		for (RendererConfiguration r : renderersConfs) {
 			if (StringUtils.isNotBlank(r.getUserAgentAdditionalHttpHeader()) && header.startsWith(r.getUserAgentAdditionalHttpHeader())) {

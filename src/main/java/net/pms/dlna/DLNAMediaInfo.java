@@ -241,17 +241,7 @@ public class DLNAMediaInfo implements Cloneable {
 	private boolean ffmpeg_failure;
 	private boolean ffmpeg_annexb_failure;
 	private boolean muxable;
-	private Map<String, String> extras;	
-	
-	private int thumbnailSeekPos = PMS.getConfiguration().getThumbnailSeekPos();
-	
-	public int getThumbnailSeekPos() {
-		return thumbnailSeekPos;
-	}
-	
-	public void setThumbnailSeekPos(int value) {
-		thumbnailSeekPos = value;
-	}
+	private Map<String, String> extras;
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
@@ -330,7 +320,7 @@ public class DLNAMediaInfo implements Cloneable {
 			args[0] = PMS.getConfiguration().getFfmpegAlternativePath();
 		}
 		args[1] = "-ss";
-		args[2] = "" + getThumbnailSeekPos();
+		args[2] = "" + PMS.getConfiguration().getThumbnailSeekPos();
 		args[3] = "-i";
 		if (media.getFile() != null) {
 			args[4] = ProcessUtil.getShortFileNameIfWideChars(media.getFile().getAbsolutePath());
@@ -383,8 +373,8 @@ public class DLNAMediaInfo implements Cloneable {
 		String args[] = new String[14];
 		args[0] = PMS.getConfiguration().getMplayerPath();
 		args[1] = "-ss";
-		boolean toolong = getDurationInSeconds() < getThumbnailSeekPos();
-		args[2] = "" + (toolong ? (getDurationInSeconds() / 2) : getThumbnailSeekPos());
+		boolean toolong = getDurationInSeconds() < PMS.getConfiguration().getThumbnailSeekPos();
+		args[2] = "" + (toolong ? (getDurationInSeconds() / 2) : PMS.getConfiguration().getThumbnailSeekPos());
 		args[3] = "-quiet";
 		if (media.getFile() != null) {
 			args[4] = ProcessUtil.getShortFileNameIfWideChars(media.getFile().getAbsolutePath());
@@ -1111,7 +1101,7 @@ public class DLNAMediaInfo implements Cloneable {
 		String validFrameRate = null;
 		if (getFrameRate() != null && getFrameRate().length() > 0) {
 			try {
-				double fr = Double.parseDouble(getFrameRate());
+				double fr = Double.parseDouble(getFrameRate().replace(',', '.'));
 				if (fr > 23.9 && fr < 23.99) {
 					validFrameRate = ratios ? "24000/1001" : "23.976";
 				} else if (fr > 23.99 && fr < 24.1) {

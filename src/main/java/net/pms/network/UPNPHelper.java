@@ -19,6 +19,7 @@
 package net.pms.network;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet6Address;
@@ -154,22 +155,22 @@ public class UPNPHelper {
 
 	}
 
+	private static void sleep(int delay) {
+		try {
+			Thread.sleep(delay);
+		} catch (InterruptedException e) {
+		}
+	}
 	private static void sendMessage(DatagramSocket socket, String nt, String message) throws IOException {
 		String msg = buildMsg(nt, message);
 		Random rand = new Random();
 		//logger.trace( "Sending this SSDP packet: " + CRLF + msg);// StringUtils.replace(msg, CRLF, "<CRLF>"));
 		DatagramPacket ssdpPacket = new DatagramPacket(msg.getBytes(), msg.length(), getUPNPAddress(), UPNP_PORT);
 		socket.send(ssdpPacket);
-		try {
-			Thread.sleep(rand.nextInt(1800 / 2));
-		} catch (InterruptedException e) {
-		}
-		socket.send(ssdpPacket);
-		try {
-			Thread.sleep(rand.nextInt(1800 / 2));
-		} catch (InterruptedException e) {
-		}
+		sleep(rand.nextInt(1800 / 2));
 
+		socket.send(ssdpPacket);
+		sleep(rand.nextInt(1800 / 2));
 	}
 	private static int delay = 10000;
 
@@ -194,15 +195,19 @@ public class UPNPHelper {
 				}
 			}
 		};
-		aliveThread = new Thread(rAlive);
+		aliveThread = new Thread(rAlive, "UPNP-AliveMessageSender");
 		aliveThread.start();
 
 		Runnable r = new Runnable() {
 			public void run() {
+				boolean bindErrorReported = false;
 				while (true) {
 					try {
 						// Use configurable source port as per http://code.google.com/p/ps3mediaserver/issues/detail?id=1166
 						MulticastSocket socket = new MulticastSocket(PMS.getConfiguration().getUpnpPort());
+						if (bindErrorReported) {
+							logger.warn("Finally, acquiring port " + PMS.getConfiguration().getUpnpPort() + " was successful!");
+						}
 						if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
 							logger.trace("Searching network interface for " + PMS.getConfiguration().getServerHostname());
 							NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
@@ -222,8 +227,6 @@ public class UPNPHelper {
 							socket.receive(packet_r);
 
 							String s = new String(packet_r.getData());
-							/* Does it come from me ? */
-							//String lines[] = s.split(CRLF);
 
 							InetAddress address = packet_r.getAddress();
 							if (s.startsWith("M-SEARCH")) {
@@ -232,9 +235,7 @@ public class UPNPHelper {
 
 								if (PMS.getConfiguration().getIpFiltering().allowed(address)) {
 									logger.trace("Receiving a M-SEARCH from [" + remoteAddr + ":" + remotePort + "]");
-									//logger.trace("Data: " + s);
 
-									/*logger.info( "Receiving search request from " + packet_r.getAddress().getHostAddress() + "! Sending DISCOVER message...");*/
 									if (StringUtils.indexOf(s, "urn:schemas-upnp-org:service:ContentDirectory:1") > 0) {
 										sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:service:ContentDirectory:1");
 									}
@@ -256,20 +257,26 @@ public class UPNPHelper {
 								int remotePort = packet_r.getPort();
 
 								logger.trace("Receiving a NOTIFY from [" + remoteAddr + ":" + remotePort + "]");
-								//logger.trace("Data: " + s);
 							}
 						}
-					} catch (IOException e) {
-						//logger.error("UPNP network exception", e);
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e1) {
+					} catch (BindException e) {
+						if (!bindErrorReported) {
+							logger.error("Unable to bind to " + PMS.getConfiguration().getUpnpPort()
+									+ ", which means that PMS will not automatically appear on your renderer! "
+									+ "This usually means that another program occupies the port. Please "
+									+ "stop the other program and free up the port. "
+									+ "PMS will keep trying to bind to it...[" + e.getMessage() + "]");
 						}
+						bindErrorReported = true;
+						sleep(5000);
+					} catch (IOException e) {
+						logger.error("UPNP network exception", e);
+						sleep(1000);
 					}
 				}
 			}
 		};
-		listener = new Thread(r);
+		listener = new Thread(r, "UPNPHelper");
 		listener.start();
 	}
 

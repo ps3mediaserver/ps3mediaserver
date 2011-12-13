@@ -1,6 +1,6 @@
 /*
  * PS3 Media Server, for streaming any medias to your PS3.
- * Copyright (C) 2008  A.Brochard
+ * Copyright (C) 2011 G. Zsombor
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,14 +30,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.io.SystemUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.jna.Platform;
 
 /**
  * Network speed tester class. This can be used in an asynchronous way, as it returns Future objects.
@@ -131,9 +131,8 @@ public class SpeedStats {
 			OutputParams op = new OutputParams(null);
 			op.log = true;
 			op.maxBufferSize = 1;
-			String count = Platform.isWindows() ? "-n" : "-c";
-			String size = Platform.isWindows() ? "-l" : "-s";
-			final ProcessWrapperImpl pw = new ProcessWrapperImpl(new String[] { "ping", count, "3", size, "64000", addr.getHostAddress() }, op,
+			SystemUtils sysUtil = PMS.get().getRegistry();
+			final ProcessWrapperImpl pw = new ProcessWrapperImpl(sysUtil.getPingCommand(addr.getHostAddress(), 3, 64000), op,
 					true, false);
 			Runnable r = new Runnable() {
 				public void run() {

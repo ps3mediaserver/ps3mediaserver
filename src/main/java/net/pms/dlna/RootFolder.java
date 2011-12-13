@@ -60,7 +60,7 @@ import com.sun.jna.Platform;
 
 public class RootFolder extends DLNAResource {
 	private static final Logger logger = LoggerFactory.getLogger(RootFolder.class);
-	private PmsConfiguration configuration = PMS.getConfiguration();
+	private final PmsConfiguration configuration = PMS.getConfiguration();
 	private boolean running;
 
 	public RootFolder() {
@@ -629,7 +629,8 @@ public class RootFolder extends DLNAResource {
 								HashMap<?, ?> td = (HashMap<?, ?>) t;
 								track = (HashMap<?, ?>) Tracks.get(td.get("Track ID").toString());
 								
-								if (track != null && track.get("Location").toString().startsWith("file://")) {
+								if (track != null && track.get("Location") != null
+										&& track.get("Location").toString().startsWith("file://")) {
 									URI tURI2 = new URI(track.get("Location").toString());
 									RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
 									pf.addChild(file);
@@ -748,10 +749,7 @@ public class RootFolder extends DLNAResource {
 			res.addChild(new VirtualVideoAction(Messages.getString("LooksFrame.12"), true) {
 				@Override
 				public boolean enable() {
-					try {
-						PMS.get().reset();
-					} catch (IOException e) {
-					}
+					PMS.get().reset();
 					return true;
 				}
 			});

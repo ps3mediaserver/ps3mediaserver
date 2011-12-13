@@ -16,7 +16,7 @@ public class Build {
 	private static final String UPDATE_SERVER_URL = REPO + "/update/update_2.properties";
 
 	// if false, manual and automatic update checks are unconditionally disabled
-	private static final boolean IS_UPDATABLE = false;
+	private static final boolean IS_UPDATABLE = true;
 
 	/*
 	 * the name of the subdirectory under which PMS config files are stored for this build.
@@ -44,7 +44,7 @@ public class Build {
 	 * value in nsis/setup.nsi
 	 */
 
-	private static final String PROFILE_DIRECTORY_NAME = "pms-mlx";
+	private static final String PROFILE_DIRECTORY_NAME = "PMS";
 
 	public static boolean isUpdatable() {
 		return IS_UPDATABLE && Platform.isWindows() && getUpdateServerURL() != null;

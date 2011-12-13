@@ -1,6 +1,13 @@
 package net.pms.configuration;
 
+import net.pms.util.PropertiesUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 class LinuxDefaultPaths implements ProgramPaths {
+	private static final Logger logger = LoggerFactory.getLogger(MacDefaultPaths.class);
+	
 	@Override
 	public String getEac3toPath() {
 		return "eac3to";
@@ -28,7 +35,7 @@ class LinuxDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getTsmuxerPath() {
-		return "linux/tsMuxeR";
+		return getBinariesPath() + "linux/tsMuxeR";
 	}
 
 	@Override
@@ -44,5 +51,26 @@ class LinuxDefaultPaths implements ProgramPaths {
 	@Override
 	public String getIMConvertPath() {
 		return "convert";
+	}
+
+	/**
+	 * Returns the path where binaries can be found. This path differs between
+	 * the build phase and the test phase. The path will end with a slash unless
+	 * it is empty.
+	 *
+	 * @return The path for binaries.
+	 */
+	private String getBinariesPath() {
+		String path = PropertiesUtil.getProjectProperties().get("project.binaries");
+		
+		if (path != null && !"".equals(path)) {
+			if (path.endsWith("/")) {
+				return path;
+			} else {
+				return path + "/";
+			}
+		} else {
+			return "";
+		}
 	}
 }

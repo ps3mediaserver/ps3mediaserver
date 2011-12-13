@@ -1,83 +1,60 @@
 package net.pms.util;
 
-import java.awt.AWTException;
-import java.awt.Desktop;
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.URI;
 import java.util.Arrays;
 
-import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.newgui.LooksFrame;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PMSUtil {
+	private static final Logger logger = LoggerFactory.getLogger(PMSUtil.class);
+
+	
+	@Deprecated
 	public static <T> T[] copyOf(T[] original, int newLength) {
+		logger.info("deprecated PMSUtil.copyOf called");
 		return Arrays.copyOf(original, newLength);
 	}
 
-	public static boolean isNetworkInterfaceLoopback(NetworkInterface ni) throws SocketException {
-		return ni.isLoopback();
-	}
-
+	/**
+	 * Open HTTP URLs in the default browser.
+	 * @param uri URI string to open externally.
+	 * @deprecated call SystemUtils.browseURI
+	 */	
+	@Deprecated
 	public static void browseURI(String uri) {
-		try {
-			Desktop.getDesktop().browse(new URI(uri));
-		} catch (Exception e1) {
-		}
+		logger.info("deprecated PMSUtil.browseURI called");
+		PMS.get().getRegistry().browseURI(uri);
 	}
 
+	@Deprecated
 	public static void addSystemTray(final LooksFrame frame) {
-		if (SystemTray.isSupported()) {
-			SystemTray tray = SystemTray.getSystemTray();
-
-			Image image = Toolkit.getDefaultToolkit().getImage(frame.getClass().getResource("/resources/images/icon-16.png"));
-
-			PopupMenu popup = new PopupMenu();
-			MenuItem defaultItem = new MenuItem(Messages.getString("LooksFrame.5"));
-			MenuItem traceItem = new MenuItem(Messages.getString("LooksFrame.6"));
-
-			defaultItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					frame.quit();
-				}
-			});
-
-			traceItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					frame.setVisible(true);
-				}
-			});
-
-			popup.add(traceItem);
-			popup.add(defaultItem);
-
-			final TrayIcon trayIcon = new TrayIcon(image, "PS3 Media Server " + PMS.getVersion(), popup);
-
-			trayIcon.setImageAutoSize(true);
-			trayIcon.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					frame.setVisible(true);
-					frame.setFocusable(true);
-				}
-			});
-			try {
-				tray.add(trayIcon);
-			} catch (AWTException e) {
-				e.printStackTrace();
-			}
-		}
+		logger.info("deprecated PMSUtil.addSystemTray called");
+		PMS.get().getRegistry().addSystemTray(frame);
 	}
 
+	@Deprecated
+	public static boolean isNetworkInterfaceLoopback(NetworkInterface ni) throws SocketException {
+		logger.info("deprecated PMSUtil.isNetworkInterfaceLoopback called");
+		return PMS.get().getRegistry().isNetworkInterfaceLoopback(ni);
+	}
+	
+	/**
+	 * Fetch the hardware address for a network interface.
+	 * 
+	 * @param ni Interface to fetch the mac address for
+	 * @return the mac address as bytes, or null if it couldn't be fetched.
+	 * @throws SocketException
+	 *             This won't happen on Mac OS, since the NetworkInterface is
+	 *             only used to get a name.
+	 */
+	@Deprecated
 	public static byte[] getHardwareAddress(NetworkInterface ni) throws SocketException {
-		return ni.getHardwareAddress();
+		logger.info("deprecated PMSUtil.getHardwareAddress called");
+		return PMS.get().getRegistry().getHardwareAddress(ni);
 	}
 }
