@@ -72,6 +72,7 @@
 		<project.version.short>1.50.0</project.version.short>
 	
 		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
+		<jgoodies-binding-version>2.5.0</jgoodies-binding-version>
 		<jgoodies-common-version>1.2.1</jgoodies-common-version>
 		<jgoodies-forms-version>1.4.2</jgoodies-forms-version>
 		<jgoodies-looks-version>2.4.2</jgoodies-looks-version>
@@ -307,6 +308,13 @@
 		<!-- XXX: not Mavenized: http://www.jgoodies.com/downloads/libraries.html -->
 		<dependency>
 			<groupId>com.jgoodies</groupId>
+			<artifactId>binding</artifactId>
+			<version>${jgoodies-binding-version}</version>
+		</dependency>
+
+		<!-- XXX: not Mavenized: http://www.jgoodies.com/downloads/libraries.html -->
+		<dependency>
+			<groupId>com.jgoodies</groupId>
 			<artifactId>common</artifactId>
 			<version>${jgoodies-common-version}</version>
 		</dependency>
@@ -519,6 +527,19 @@
 					<force>false</force>
 					<artifactItems>
 
+						<artifactItem>
+							<groupId>com.jgoodies</groupId>
+							<artifactId>binding</artifactId>
+							<version>${jgoodies-binding-version}</version>
+							<packaging>jar</packaging>
+							<install>true</install>
+							<force>false</force>
+							<downloadUrl>http://www.jgoodies.com/download/libraries/{artifactId}/jgoodies-{artifactId}-{_version}.zip</downloadUrl>
+							<checksum>7936f7254085889cccfcc54c96a5ed52245a677b</checksum>
+							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
+							<extractFileChecksum>11619aad3676b9e877b783babe9d4a291c7aea45</extractFileChecksum>
+						</artifactItem>
+		
 						<artifactItem>
 							<groupId>com.jgoodies</groupId>
 							<artifactId>common</artifactId>
