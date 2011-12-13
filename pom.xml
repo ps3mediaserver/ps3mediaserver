@@ -29,9 +29,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.pms</groupId>
 	<artifactId>pms</artifactId>
-	<name>PS3 Media Server</name>
+	<name>PS3 Media Server MLX</name>
 	<packaging>jar</packaging>
-	<version>1.50.1-SNAPSHOT</version>
+	<version>1.50.1_mlx_v0.7-SNAPSHOT</version>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
 	
@@ -56,8 +56,8 @@
     </description>
 
 	<scm>
-		<connection>scm:git:git://github.com/ps3mediaserver/ps3mediaserver.git</connection>
-		<developerConnection>scm:git:git@github.com:ps3mediaserver/ps3mediaserver.git</developerConnection>
+		<connection>scm:git:git://github.com/taconaut/pms-mlx.git</connection>
+		<developerConnection>scm:git:git://github.com/taconaut/pms-mlx.git</developerConnection>
 		<tag>master</tag>
 		<url>https://github.com/ps3mediaserver/ps3mediaserver</url>
 	</scm>
