@@ -72,10 +72,12 @@
 		<project.version.short>1.50.0</project.version.short>
 	
 		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
+		<jcalendar-version>1.1.1</jcalendar-version>
 		<jgoodies-binding-version>2.5.0</jgoodies-binding-version>
 		<jgoodies-common-version>1.2.1</jgoodies-common-version>
 		<jgoodies-forms-version>1.4.2</jgoodies-forms-version>
 		<jgoodies-looks-version>2.4.2</jgoodies-looks-version>
+		<jtmdb-version>1.9.15</jtmdb-version>
 		<junrar-version>0.5</junrar-version>
 		<mediautil-version>1.0</mediautil-version>
 		<slf4j-version>1.6.3</slf4j-version>
@@ -288,6 +290,12 @@
 		</dependency> -->
 
 		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.jvnet.winp</groupId>
 			<artifactId>winp</artifactId>
 			<version>1.14</version>
@@ -354,6 +362,19 @@
 			<version>${mediautil-version}</version>
 		</dependency>
 
+		<!-- XXX: not Mavenized: http://jtmdb.sourceforge.net/ -->
+		<dependency>
+			<groupId>net.sf</groupId>
+			<artifactId>jtmdb</artifactId>
+			<version>${jtmdb-version}</version>
+		</dependency>
+
+		<!-- XXX: not Mavenized: http://flib.sourceforge.net/JCalendar/doc/index.html -->
+		<dependency>
+			<groupId>org.freixas</groupId>
+			<artifactId>jcalendar</artifactId>
+			<version>${jcalendar-version}</version>
+		</dependency>
 
 		<dependency>
 			<!-- Stub required by PMSUtil.java -->
@@ -578,7 +599,7 @@
 							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
 							<extractFileChecksum>535745c08e342f7ea78556baad44a4a52ffb7863</extractFileChecksum>
 						</artifactItem>
-		
+
 						<artifactItem>
 							<groupId>jwbroek.cuelib</groupId>
 							<artifactId>cuelib</artifactId>
@@ -612,6 +633,24 @@
 							<checksum>aa7ae51bb24a9268a8e57c6afe478c4293f84fda</checksum>
 							<extractFile>mediautil-${mediautil-version}/mediautil-${mediautil-version}.jar</extractFile>
 							<extractFileChecksum>e843cd55def75dce57123c79b7f36caca4841466</extractFileChecksum>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>net.sf</groupId>
+							<artifactId>jtmdb</artifactId>
+							<version>${jtmdb-version}</version>
+							<packaging>jar</packaging>
+							<downloadUrl>http://downloads.sourceforge.net/project/{artifactId}/{artifactId}-{version}.{packaging}</downloadUrl>
+							<checksum>fe0c543233f5c0249f37349f5733886c8633bd39</checksum>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>org.freixas</groupId>
+							<artifactId>jcalendar</artifactId>
+							<version>${jcalendar-version}</version>
+							<packaging>jar</packaging>
+							<downloadUrl>http://downloads.sourceforge.net/project/flib/flib/FLib%20{version}/{artifactId}.{packaging}</downloadUrl>
+							<checksum>83eb4b1a4823daf3b5bea61958cf6097930f74fb</checksum>
 						</artifactItem>
 
 					</artifactItems>
