@@ -29,8 +29,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.ListIterator;
 import java.util.HashMap;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -248,7 +248,14 @@ public class DLNAMediaInfo implements Cloneable {
 	 */
 	@Deprecated
 	public boolean encrypted;
+	private int thumbnailSeekPos = -1;
+	
 
+	/**
+	 * Configure this media info based on the renderer possibilities. It should have been named as 'configureMuxable'.
+	 * @param mediaRenderer
+	 * @return
+	 */
 	public boolean isMuxable(RendererConfiguration mediaRenderer) {
 		// temporary fix, MediaInfo support will take care of that in the future
 
@@ -263,6 +270,14 @@ public class DLNAMediaInfo implements Cloneable {
 
 		return muxable;
 	}
+	
+	public boolean isMuxable() {
+	    return muxable;
+	}
+	
+	public void setMuxable(boolean muxable) {
+            this.muxable = muxable;
+        }
 
 	public Map<String, String> getExtras() {
 		return extras;
@@ -320,7 +335,7 @@ public class DLNAMediaInfo implements Cloneable {
 			args[0] = PMS.getConfiguration().getFfmpegAlternativePath();
 		}
 		args[1] = "-ss";
-		args[2] = "" + PMS.getConfiguration().getThumbnailSeekPos();
+		args[2] = "" + getThumbnailSeekPos();
 		args[3] = "-i";
 		if (media.getFile() != null) {
 			args[4] = ProcessUtil.getShortFileNameIfWideChars(media.getFile().getAbsolutePath());
@@ -373,8 +388,9 @@ public class DLNAMediaInfo implements Cloneable {
 		String args[] = new String[14];
 		args[0] = PMS.getConfiguration().getMplayerPath();
 		args[1] = "-ss";
-		boolean toolong = getDurationInSeconds() < PMS.getConfiguration().getThumbnailSeekPos();
-		args[2] = "" + (toolong ? (getDurationInSeconds() / 2) : PMS.getConfiguration().getThumbnailSeekPos());
+		int th = getThumbnailSeekPos();
+		boolean toolong = getDurationInSeconds() < th;
+		args[2] = "" + (toolong ? (getDurationInSeconds() / 2) : th);
 		args[3] = "-quiet";
 		if (media.getFile() != null) {
 			args[4] = ProcessUtil.getShortFileNameIfWideChars(media.getFile().getAbsolutePath());
@@ -1011,7 +1027,7 @@ public class DLNAMediaInfo implements Cloneable {
 		} else if (getCodecV() == null && codecA != null && (codecA.startsWith("pcm") || codecA.contains("wav"))) {
 			setMimeType(HTTPResource.AUDIO_WAV_TYPEMIME);
 		} else {
-			setMimeType(new HTTPResource().getDefaultMimeType(type));
+			setMimeType(HTTPResource.getDefaultMimeType(type));
 		}
 
 		if (getFirstAudioTrack() == null || !(type == Format.AUDIO && getFirstAudioTrack().getBitsperSample() == 24 && getFirstAudioTrack().getSampleRate() > 48000)) {
@@ -1268,6 +1284,14 @@ public class DLNAMediaInfo implements Cloneable {
 		} catch (IOException e) {
 		}
 		return returnData;
+	}
+	
+	int getThumbnailSeekPos() {
+	    return thumbnailSeekPos >= 0 ? thumbnailSeekPos : PMS.getConfiguration().getThumbnailSeekPos();	    
+	}
+	
+	public void setThumbnailSeekPos(int thumbnailSeekPos) {
+		this.thumbnailSeekPos = thumbnailSeekPos;
 	}
 
 	@Override

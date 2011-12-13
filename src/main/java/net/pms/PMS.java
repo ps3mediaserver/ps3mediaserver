@@ -43,7 +43,10 @@ import net.pms.configuration.Build;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaDatabase;
-import net.pms.dlna.RootFolder;
+import net.pms.medialibrary.commons.MediaLibraryConfiguration;
+import net.pms.medialibrary.dlna.RootFolder;
+import net.pms.medialibrary.scanner.FullDataCollector;
+import net.pms.medialibrary.storage.MediaLibraryStorage;
 import net.pms.dlna.virtual.MediaLibrary;
 import net.pms.encoders.FFMpegAudio;
 import net.pms.encoders.FFMpegDVRMSRemux;
@@ -354,6 +357,10 @@ public class PMS {
 			String serverURL = Build.getUpdateServerURL();
 			autoUpdater = new AutoUpdater(serverURL, getVersion());
 		}
+		
+		RendererConfiguration.loadRendererConfigurations();
+		
+		initMediaLibrary();
 
 		registry = createSystemUtils();
 
@@ -431,8 +438,6 @@ public class PMS {
 
 		logger.info("Profile name: " + configuration.getProfileName());
 		logger.info("");
-
-		RendererConfiguration.loadRendererConfigurations();
 
 		logger.info("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
@@ -578,6 +583,33 @@ public class PMS {
 
 		return true;
 	}
+	
+	private void initMediaLibrary() {
+		//Initialize media library (only let pms start if the media library is working)
+		MediaLibraryStorage.configure("pms_media_library.db");
+	    if (!MediaLibraryStorage.getInstance().isFunctional()) {
+	        logger.error("Failed to properly initialize MediaLibraryStorage");
+	        JOptionPane.showMessageDialog(null, Messages.getString("PMS.100"), Messages.getString("PMS.101"), JOptionPane.ERROR_MESSAGE);
+	        System.exit(1);
+	    }
+		
+		FullDataCollector.configure(MediaLibraryConfiguration.getInstance().getPictureSaveFolderPath());
+		try {
+	        net.pms.medialibrary.external.ExternalFactory.lookup();
+        } catch (Exception e) {
+	        logger.error("Failed to load media library plugins", e);
+        }
+		
+		//delete thumbnails for every session
+		File thumbFolder = new File(MediaLibraryConfiguration.getInstance().getPictureSaveFolderPath() + "thumbnails");
+		if(!thumbFolder.isDirectory()){
+			thumbFolder.mkdirs();
+		} else {
+			for(File f : thumbFolder.listFiles()){
+				f.delete();
+			}
+		}
+    }
 	
 	private MediaLibrary mediaLibrary;
 

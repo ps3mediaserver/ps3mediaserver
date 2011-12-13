@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 
 import net.pms.Messages;
 import net.pms.dlna.MediaInfoParser;
-import net.pms.dlna.RootFolder;
 import net.pms.formats.Format;
+import net.pms.medialibrary.dlna.RootFolder;
 import net.pms.network.HTTPResource;
 import net.pms.network.SpeedStats;
 import net.pms.util.PropertiesUtil;
