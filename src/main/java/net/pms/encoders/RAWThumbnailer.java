@@ -102,7 +102,7 @@ public class RAWThumbnailer extends Player {
 		cmdArray[2] = "-c";
 		cmdArray[3] = fileName;
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
-		pw.run();
+		pw.runInSameThread();
 
 
 		InputStream is = pw.getInputStream(0);

@@ -77,7 +77,7 @@ public class DVDISOTitle extends DLNAResource {
 		};
 		Thread failsafe = new Thread(r);
 		failsafe.start();
-		pw.run();
+		pw.runInSameThread();
 		List<String> lines = pw.getOtherResults();
 
 		String duration = null;

@@ -191,8 +191,22 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 		}
 	}
 
+	/**
+	 * Same as {@link #start()}, merely making the intention explicit in the
+	 * method name.
+	 * @see #runInSameThread()
+	 */
 	public void runInNewThread() {
 		this.start();
+	}
+
+	/**
+	 * Same as {@link #run()}, merely making the intention explicit in the
+	 * method name.
+	 * @see #runInNewThread()
+	 */
+	public void runInSameThread() {
+		this.run();
 	}
 
 	public InputStream getInputStream(long seek) throws IOException {
