@@ -59,7 +59,7 @@ public class RAW extends JPG {
 
 			params.log = true;
 			ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params, true, false);
-			pw.run();
+			pw.runInSameThread();
 
 			List<String> list = pw.getOtherResults();
 			for (String s : list) {

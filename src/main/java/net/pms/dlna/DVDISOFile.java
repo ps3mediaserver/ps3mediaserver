@@ -50,7 +50,7 @@ public class DVDISOFile extends VirtualFolder {
 		};
 		Thread failsafe = new Thread(r);
 		failsafe.start();
-		pw.run();
+		pw.runInSameThread();
 		List<String> lines = pw.getOtherResults();
 		if (lines != null) {
 			for (String line : lines) {

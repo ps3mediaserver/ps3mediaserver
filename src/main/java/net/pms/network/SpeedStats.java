@@ -145,7 +145,7 @@ public class SpeedStats {
 			};
 			Thread failsafe = new Thread(r);
 			failsafe.start();
-			pw.run();
+			pw.runInSameThread();
 			List<String> ls = pw.getOtherResults();
 			int time = 0;
 			int c = 0;
