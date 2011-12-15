@@ -72,7 +72,7 @@ public abstract class Format implements Cloneable {
 	public abstract ArrayList<Class<? extends Player>> getProfiles();
 
 	public String mimeType() {
-		return new HTTPResource().getDefaultMimeType(type);
+		return HTTPResource.getDefaultMimeType(type);
 	}
 
 	public boolean match(String filename) {

@@ -29,7 +29,6 @@ import java.util.StringTokenizer;
 
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
-import net.pms.dlna.DLNAMediaInfo;
 import net.pms.external.StartStopListenerDelegate;
 
 import org.slf4j.Logger;

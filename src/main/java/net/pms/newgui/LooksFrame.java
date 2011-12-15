@@ -59,7 +59,6 @@ import net.pms.gui.IFrame;
 import net.pms.io.WindowsNamedPipe;
 import net.pms.newgui.update.AutoUpdateDialog;
 import net.pms.update.AutoUpdater;
-import net.pms.util.PMSUtil;
 import net.pms.util.PropertiesUtil;
 
 import org.slf4j.Logger;

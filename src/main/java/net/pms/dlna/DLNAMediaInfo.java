@@ -1011,7 +1011,7 @@ public class DLNAMediaInfo implements Cloneable {
 		} else if (getCodecV() == null && codecA != null && (codecA.startsWith("pcm") || codecA.contains("wav"))) {
 			setMimeType(HTTPResource.AUDIO_WAV_TYPEMIME);
 		} else {
-			setMimeType(new HTTPResource().getDefaultMimeType(type));
+			setMimeType(HTTPResource.getDefaultMimeType(type));
 		}
 
 		if (getFirstAudioTrack() == null || !(type == Format.AUDIO && getFirstAudioTrack().getBitsperSample() == 24 && getFirstAudioTrack().getSampleRate() > 48000)) {

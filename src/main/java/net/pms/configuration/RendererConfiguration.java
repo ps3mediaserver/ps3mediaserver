@@ -167,10 +167,6 @@ public class RendererConfiguration {
 		}
 		return null;
 	}
-	/*
-	 * 
-	 */
-	private final File configurationFile;
 	private final PropertiesConfiguration configuration;
 	private FormatConfiguration formatConfiguration;
 
@@ -286,7 +282,6 @@ public class RendererConfiguration {
 	public RendererConfiguration(File f) throws ConfigurationException {
 		configuration = new PropertiesConfiguration();
 		configuration.setListDelimiter((char) 0);
-		configurationFile = f;
 		if (f != null) {
 			configuration.load(f);
 		}
