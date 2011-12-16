@@ -74,7 +74,7 @@
 				<include>logback.headless.xml</include>
 				<include>logback.xml</include>
 				<include>documentation/**</include>
-				<include>plugins/*</include>
+				<include>plugins/**</include>
 				<include>renderers/*</include>
 			</includes>
 		</fileSet>
