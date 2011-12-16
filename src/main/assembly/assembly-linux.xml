@@ -68,7 +68,7 @@
 				<include>logback.xml</include>
 				<include>documentation/**</include>
 				<include>linux/*.txt</include>
-				<include>plugins/*.txt</include>
+				<include>plugins/**</include>
 				<include>renderers/*</include>
 			</includes>
 		</fileSet>
