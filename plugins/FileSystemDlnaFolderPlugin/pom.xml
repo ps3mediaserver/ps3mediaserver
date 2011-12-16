@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.pms.plugin.dlnatreefolder</groupId>
+  <artifactId>FileSystemFolderPlugin</artifactId>
+	<name>FileSystemFolderPlugin</name>
+	<packaging>jar</packaging>
+	<version>2.0-SNAPSHOT</version>
+	<url>http://www.ps3mediaserver.org/</url>
+	<inceptionYear>2010</inceptionYear>
+	
+	<organization>
+		<name>PS3 Media Server</name>
+		<url>http://www.ps3mediaserver.org/</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License version 2</name>
+			<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+			<distribution>manual</distribution>
+		</license>
+	</licenses>
+
+	<description>
+        Plugin which can be added to the DLNA tree which
+        will add DLNA folders corresponding to the file system
+  </description>
+  
+	<properties>
+		<jgoodies-forms-version>1.4.2</jgoodies-forms-version>
+		<slf4j-version>1.6.3</slf4j-version>
+	</properties>
+  
+  <dependencies>
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>forms</artifactId>
+			<version>${jgoodies-forms-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j-version}</version>
+		</dependency>
+    <dependency>
+			<groupId>net.pms</groupId>
+			<artifactId>pms</artifactId>
+			<version>1.50.1_mlx_v0.7-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>  
+  </dependencies>    
+		
+		<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+		</build>
+</project>
