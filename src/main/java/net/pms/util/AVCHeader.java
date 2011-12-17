@@ -18,22 +18,46 @@
  */
 package net.pms.util;
 
+import net.pms.encoders.MEncoderVideo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author shagrath
  * Derived from the mpeg4ip project and the ToNMT tool
  */
 public class AVCHeader {
-	private byte buffer[];
+	private static final Logger LOGGER = LoggerFactory.getLogger(MEncoderVideo.class);
+
+	private byte[] buffer;
 	private int currentBit;
 	private int profile;
 	private int level;
 	private int ref_frames;
+	
+	/**
+	 *  Fix for ArrayOutOfBoundsException in getBit(); keeping an eye on the
+	 *  buffer size. This will be set to true when the buffer is smaller than
+	 *  expected.
+	 *  See: http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=12933
+	 */
+	private boolean parseFailed = false;
 
+	/**
+	 * Constructor for the AVC header parser, allows to retrieve information
+	 * from the header.
+	 *
+	 * @param buffer The byte buffer to parse.
+	 */
 	public AVCHeader(byte buffer[]) {
 		this.buffer = buffer;
 		currentBit = 0;
 	}
 
+	/**
+	 * Parses the AVC header buffer passed to {@link #AVCHeader(byte[])}.
+	 */
 	public void parse() {
 		profile = getValue(8);
 		skipBit(8);
@@ -78,17 +102,50 @@ public class AVCHeader {
 		}
 	}
 
+	/**
+	 * Returns the value of one particular bit in the header buffer and
+	 * automatically increases the bit counter field to point at the next bit.
+	 * <p>
+	 * If the bit counter is too high and the buffer is too small to retrieve
+	 * a proper bit value, <code>0</code> is returned.
+	 *
+	 * @return The bit value.
+	 */
 	private int getBit() {
 		int pos = (int) (currentBit / 8);
 		int modulo = currentBit % 8;
 		currentBit++;
-		return (buffer[pos] & (1 << (7 - modulo))) >> (7 - modulo);
+		
+		if (buffer != null && pos < buffer.length) {
+			return (buffer[pos] & (1 << (7 - modulo))) >> (7 - modulo);
+		} else {
+			if (!parseFailed) {
+				LOGGER.error("Cannot parse AVC header, buffer length is " + buffer.length);
+
+				// Do not log consecutive errors.
+				parseFailed = true;
+			}
+
+			return 0;
+		}
 	}
 
+	/**
+	 * Increase the bit counter field to skip a number of bits.
+	 * 
+	 * @param number The number of bits to skip.
+	 */
 	private void skipBit(int number) {
 		currentBit += number;
 	}
 
+	/**
+	 * Returns the integer value determined by a number of bits forming a
+	 * binary string at the bit counter field position.
+	 *
+	 * @param length The number of bits that together form the binary value.
+	 * @return The integer value.
+	 */
 	private int getValue(int length) {
 		int total = 0;
 		for (int i = 0; i < length; i++) {
@@ -97,26 +154,48 @@ public class AVCHeader {
 		return total;
 	}
 
+	/**
+	 * Returns the ExpGolombCode.
+	 *
+	 * @return the ExpGolombCode.
+	 */
 	private int getExpGolombCode() {
 		int bits = 0;
-		while (getBit() == 0) {
+
+		while (getBit() == 0 && !parseFailed) {
 			bits++;
 		}
-		if (bits > 0) {
+		
+		if (bits > 0 && !parseFailed) {
 			return (1 << bits) - 1 + getValue(bits);
 		} else {
 			return 0;
 		}
 	}
 
+	/**
+	 * Returns the AVC profile parsed from the header.
+	 *
+	 * @return The profile
+	 */
 	public int getProfile() {
 		return profile;
 	}
 
+	/**
+	 * Returns the AVC compliancy level parsed from the header.
+	 * 
+	 * @return The level.
+	 */
 	public int getLevel() {
 		return level;
 	}
 
+	/**
+	 * Returns the AVC ref frames parsed from the header.
+	 *
+	 * @return The ref frames
+	 */
 	public int getRef_frames() {
 		return ref_frames;
 	}
