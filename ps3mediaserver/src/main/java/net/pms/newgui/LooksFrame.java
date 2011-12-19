@@ -60,7 +60,6 @@ import net.pms.io.WindowsNamedPipe;
 import net.pms.medialibrary.gui.tab.MediaLibraryTab;
 import net.pms.newgui.update.AutoUpdateDialog;
 import net.pms.update.AutoUpdater;
-import net.pms.util.PMSUtil;
 import net.pms.util.PropertiesUtil;
 
 import org.slf4j.Logger;

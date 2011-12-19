@@ -1,14 +1,8 @@
 package net.pms.configuration;
 
-import java.io.IOException;
-
 import net.pms.util.PropertiesUtil;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 class WindowsDefaultPaths implements ProgramPaths {
-	private static final Logger logger = LoggerFactory.getLogger(MacDefaultPaths.class);
 	
 	@Override
 	public String getEac3toPath() {

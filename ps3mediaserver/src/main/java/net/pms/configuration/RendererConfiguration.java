@@ -167,10 +167,6 @@ public class RendererConfiguration {
 		}
 		return null;
 	}
-	/*
-	 * 
-	 */
-	private final File configurationFile;
 	private final PropertiesConfiguration configuration;
 	private FormatConfiguration formatConfiguration;
 
@@ -280,25 +276,25 @@ public class RendererConfiguration {
 	private RendererConfiguration() throws ConfigurationException {
 		this(null);
 	}
-	private Pattern userAgentPattern = null;
-	private Pattern userAgentAddtionalPattern = null;
 
 	public RendererConfiguration(File f) throws ConfigurationException {
 		configuration = new PropertiesConfiguration();
 		configuration.setListDelimiter((char) 0);
-		configurationFile = f;
+
 		if (f != null) {
 			configuration.load(f);
 		}
-		userAgentPattern = Pattern.compile(getUserAgent(), Pattern.CASE_INSENSITIVE);
-		userAgentAddtionalPattern = Pattern.compile(getUserAgentAdditionalHttpHeaderSearch(), Pattern.CASE_INSENSITIVE);
+		
 		mimes = new HashMap<String, String>();
 		String mimeTypes = configuration.getString(MIME_TYPES_CHANGES, null);
+
 		if (StringUtils.isNotBlank(mimeTypes)) {
 			StringTokenizer st = new StringTokenizer(mimeTypes, "|");
+
 			while (st.hasMoreTokens()) {
 				String mime_change = st.nextToken().trim();
 				int equals = mime_change.indexOf("=");
+
 				if (equals > -1) {
 					String old = mime_change.substring(0, equals).trim().toLowerCase();
 					String nw = mime_change.substring(equals + 1).trim().toLowerCase();
@@ -306,11 +302,14 @@ public class RendererConfiguration {
 				}
 			}
 		}
+
 		DLNAPN = new HashMap<String, String>();
 		String DLNAPNchanges = configuration.getString(DLNA_PN_CHANGES, null);
+
 		if (DLNAPNchanges != null) {
 			logger.trace("Config DLNAPNchanges: " + DLNAPNchanges);
 		}
+
 		if (StringUtils.isNotBlank(DLNAPNchanges)) {
 			StringTokenizer st = new StringTokenizer(DLNAPNchanges, "|");
 			while (st.hasMoreTokens()) {
@@ -323,12 +322,14 @@ public class RendererConfiguration {
 				}
 			}
 		}
+
 		if (f == null) {
 			// the default renderer supports everything !
 			configuration.addProperty(MEDIAPARSERV2, true);
 			configuration.addProperty(MEDIAPARSERV2_THUMB, true);
 			configuration.addProperty(SUPPORTED, "f:.+");
 		}
+
 		if (isMediaParserV2()) {
 			formatConfiguration = new FormatConfiguration(configuration.getList(SUPPORTED));
 		}
@@ -468,32 +469,99 @@ public class RendererConfiguration {
 		return mimetype;
 	}
 
-	public boolean matchUserAgent(String userAgent) {
-		return userAgentPattern.matcher(userAgent).find();
+	/**
+	 * Pattern match a user agent header string to the "UserAgentSearch"
+	 * expression for this renderer. Will return false when the pattern is
+	 * empty or when no match can be made.
+	 *
+	 * @param header The header containing the user agent.
+	 * @return True if the pattern matches.
+	 */
+	public boolean matchUserAgent(String header) {
+		String userAgent = getUserAgent();
+		Pattern userAgentPattern = null;
+
+		if (userAgent != null && !"".equals(userAgent)) {
+			userAgentPattern = Pattern.compile(userAgent, Pattern.CASE_INSENSITIVE);
+
+			return userAgentPattern.matcher(header).find();
+		} else {
+			return false;
+		}
 	}
 
-	public boolean matchAdditionalUserAgent(String userAgent) {
-		return userAgentAddtionalPattern.matcher(userAgent).find();
+	/**
+	 * Pattern match a header string to the "UserAgentAdditionalHeaderSearch"
+	 * expression for this renderer. Will return false when the pattern is
+	 * empty or when no match can be made.
+	 *
+	 * @param header The additional header string.
+	 * @return True if the pattern matches.
+	 */
+	public boolean matchAdditionalUserAgent(String header) {
+		String userAgentAdditionalHeader = getUserAgentAdditionalHttpHeaderSearch();
+		Pattern userAgentAddtionalPattern = null;
+
+		if (userAgentAdditionalHeader != null && !"".equals(userAgentAdditionalHeader)) {
+			userAgentAddtionalPattern = Pattern.compile(userAgentAdditionalHeader, Pattern.CASE_INSENSITIVE);
+
+			return userAgentAddtionalPattern.matcher(header).find();
+		} else {
+			return false;
+		}
 	}
 
+	/**
+	 * Returns the pattern to match the User-Agent header to as defined in the
+	 * renderer configuration. Default value is "".
+	 *
+	 * @return The User-Agent search pattern.
+	 */
 	public String getUserAgent() {
-		return getString(USER_AGENT, "^DefaultUserAgent");
+		return getString(USER_AGENT, "");
 	}
 
+	/**
+	 * RendererName: Determines the name that is displayed in the PMS user
+	 * interface when this renderer connects. Default value is "Unknown
+	 * renderer".
+	 *
+	 * @return The renderer name.
+	 */
 	public String getRendererName() {
 		return getString(RENDERER_NAME, Messages.getString("PMS.17"));
 	}
 
+	/**
+	 * Returns the icon to use for displaying this renderer in PMS as defined
+	 * in the renderer configurations. Default value is "unknown.png".
+	 *
+	 * @return The renderer icon.
+	 */
 	public String getRendererIcon() {
 		return getString(RENDERER_ICON, "unknown.png");
 	}
 
+	/**
+	 * Returns the the name of an additional HTTP header whose value should
+	 * be matched with the additional header search pattern. The header name
+	 * must be an exact match (read: the header has to start with the exact
+	 * same case sensitive string). Default value is <code>null</code>.
+	 * 
+	 * @return The additional HTTP header name.
+	 */
 	public String getUserAgentAdditionalHttpHeader() {
 		return getString(USER_AGENT_ADDITIONAL_HEADER, null);
 	}
 
+	/**
+	 * Returns the pattern to match additional headers to as defined in the
+	 * renderer configuration. Default value is "".
+	 *
+	 * @return The User-Agent search pattern.
+	 */
 	public String getUserAgentAdditionalHttpHeaderSearch() {
-		return getString(USER_AGENT_ADDITIONAL_SEARCH, "DefaultUserAgent");
+		return getString(USER_AGENT_ADDITIONAL_SEARCH, "");
 	}
 
 	public String getUseSameExtension(String file) {
@@ -550,30 +618,72 @@ public class RendererConfiguration {
 		return isPS3();
 	}
 
+	/**
+	 * Returns the codec to use for video transcoding for this renderer as
+	 * defined in the renderer configuration. Default value is "MPEGAC3".
+	 *
+	 * @return The codec name.
+	 */
 	public String getVideoTranscode() {
 		return getString(TRANSCODE_VIDEO, MPEGPSAC3);
 	}
 
+	/**
+	 * Returns the codec to use for audio transcoding for this renderer as
+	 * defined in the renderer configuration. Default value is "LPCM".
+	 *
+	 * @return The codec name.
+	 */
 	public String getAudioTranscode() {
 		return getString(TRANSCODE_AUDIO, LPCM);
 	}
 
+	/**
+	 * Returns whether or not to use the default DVD buffer size for this
+	 * renderer as defined in the renderer configuration. Default is false.
+	 *
+	 * @return True if the default size should be used.
+	 */
 	public boolean isDefaultVBVSize() {
 		return getBoolean(DEFAULT_VBV_BUFSIZE, false);
 	}
 
+	/**
+	 * Returns the maximum bit rate supported by the media renderer as defined
+	 * in the renderer configuration. Default is empty.
+	 *
+	 * @return The bit rate.
+	 */
 	public String getMaxVideoBitrate() {
 		return getString(MAX_VIDEO_BITRATE, null);
 	}
 
+	/**
+	 * Returns the override settings for MEncoder quality settings in PMS as
+	 * defined in the renderer configuration. Default is empty.
+	 *
+	 * @return The MEncoder quality settings.
+	 */
 	public String getCustomMencoderQualitySettings() {
 		return getString(CUSTOM_MENCODER_QUALITYSETTINGS, null);
 	}
 
+	/**
+	 * Returns the maximum video width supported by the renderer as defined in
+	 * the renderer configuration. The default value 0 means unlimited.
+	 *
+	 * @return The maximum video width.
+	 */
 	public int getMaxVideoWidth() {
 		return getInt(MAX_VIDEO_WIDTH, 0);
 	}
 
+	/**
+	 * Returns the maximum video height supported by the renderer as defined
+	 * in the renderer configuration. The default value 0 means unlimited.
+	 *
+	 * @return The maximum video height.
+	 */
 	public int getMaxVideoHeight() {
 		return getInt(MAX_VIDEO_HEIGHT, 0);
 	}
@@ -586,14 +696,34 @@ public class RendererConfiguration {
 		return getBoolean(DLNA_ORGPN_USE, true);
 	}
 
+	/**
+	 * Returns the comma separated list of file extensions that are forced to
+	 * be transcoded and never streamed, as defined in the renderer
+	 * configuration. Default value is "".
+	 *
+	 * @return The file extensions.
+	 */
 	public String getTranscodedExtensions() {
 		return getString(TRANSCODE_EXT, "");
 	}
 
+	/**
+	 * Returns the comma separated list of file extensions that are forced to
+	 * be streamed and never transcoded, as defined in the renderer
+	 * configuration. Default value is "".
+	 *
+	 * @return The file extensions.
+	 */
 	public String getStreamedExtensions() {
 		return getString(STREAM_EXT, "");
 	}
 
+	/**
+	 * Returns the size to report back to the renderer when transcoding media
+	 * as defined in the renderer configuration. Default value is 0.
+	 * 
+	 * @return The size to report.
+	 */
 	public long getTranscodedSize() {
 		return getLong(TRANSCODED_SIZE, 0);
 	}
@@ -658,6 +788,18 @@ public class RendererConfiguration {
 		return getBoolean(DLNA_TREE_HACK, false) && MediaInfoParser.isValid();
 	}
 
+	/**
+	 * Returns whether or not to omit sending a content length header when the
+	 * length is unknown, as defined in the renderer configuration. Default
+	 * value is false.
+	 * <p>
+	 * Some renderers are particular about the "Content-Length" headers in
+	 * requests (e.g. Sony blu-ray players). By default, PMS will send a
+	 * "Content-Length" that refers to the total media size, even if the exact
+	 * length is unknown.
+	 *
+	 * @return True if sending the content length header should be omitted.
+	 */
 	public boolean isChunkedTransfer() {
 		return getBoolean(CHUNKED_TRANSFER, false);
 	}

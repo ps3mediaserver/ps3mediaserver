@@ -9,8 +9,6 @@ import net.pms.io.Gob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jna.Platform;
-
 // see https://code.google.com/p/ps3mediaserver/issues/detail?id=680
 // for background/issues/discussion related to this class
 public class ProcessUtil {
