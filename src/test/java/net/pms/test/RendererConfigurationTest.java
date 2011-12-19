@@ -78,6 +78,15 @@ public class RendererConfigurationTest {
 		//testCases.put("User-Agent: POSIX UPnP/1.0 Intel MicroStack/1.0.2718, RealtekMediaCenter, DLNADOC/1.50", "Realtek");
 		testCases.put("User-Agent: RealtekVOD neon/0.27.2", "Realtek");
 		
+		// From SamsungAllShare.conf:
+		testCases.put("User-Agent: SEC_HHP_[HT]D5500/1.0", "Samsung AllShare");
+		testCases.put("User-Agent: SEC_HHP_[TV]UE32D5000/1.0", "Samsung AllShare");
+		testCases.put("User-Agent: SEC_HHP_ Family TV/1.0", "Samsung AllShare");
+		testCases.put("User-Agent: SEC_HHP_[TV]PS51D6900/1.0", "Samsung AllShare");
+		testCases.put("User-Agent: DLNADOC/1.50 SEC_HHP_[TV]UE32D5000/1.0", "Samsung AllShare");
+		testCases.put("User-Agent: DLNADOC/1.50 SEC_HHP_[TV]UN55D6050/1.0", "Samsung AllShare");
+		testCases.put("User-Agent: DLNADOC/1.50 SEC_HHP_ Family TV/1.0", "Samsung AllShare");
+		
 		// From WDTVLive.conf:
 		testCases.put("User-Agent: INTEL_NMPR/2.1 DLNADOC/1.50 Intel MicroStack/1.0.1423", "WD TV Live");
 		

@@ -7,9 +7,6 @@ class ConfigurationProgramPaths implements ProgramPaths {
 	private static final String KEY_VLC_PATH                 = "vlc_path";
 	private static final String KEY_EAC3TO_PATH              = "eac3to_path";
 	private static final String KEY_MENCODER_PATH            = "mencoder_path";
-	private static final String KEY_MENCODERMT_PATH          = "mencodermt_path";
-	private static final String KEY_MENCODERALTERNATE_PATH   = "mencoderalternate_path";
-	private static final String KEY_MENCODERALTERNATEMT_PATH = "mencoderalternatemt_path";
 	private static final String KEY_FFMPEG_PATH              = "ffmpeg_path";
 	private static final String KEY_MPLAYER_PATH             = "mplayer_path";
 	private static final String KEY_TSMUXER_PATH             = "tsmuxer_path";

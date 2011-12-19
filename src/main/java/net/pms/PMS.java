@@ -120,11 +120,6 @@ public class PMS {
 	private static final String PROFILES = "profiles";
 
 	/**
-	 * Update URL used in the {@link AutoUpdater}.
-	 */
-	private static final String UPDATE_SERVER_URL = "http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver/update2.data";
-
-	/**
 	 * @deprecated The version has moved to the resources/project.properties file. Use {@link #getVersion()} instead. 
 	 */
 	@Deprecated
