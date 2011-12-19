@@ -73,7 +73,7 @@ public class FileDisplayTable extends JPanel {
 		handleEvents = false;
 		this.files = files;
 		ArrayListModel<DOFileInfo> arrayListModel = new ArrayListModel<DOFileInfo>(files);
-		SelectionInList selectionInList = new SelectionInList((ListModel) arrayListModel);
+		SelectionInList<DOFileInfo> selectionInList = new SelectionInList<DOFileInfo>((ListModel) arrayListModel);
 		table.setModel(new FileDisplayTableAdapter(selectionInList, getFileType()));
 		
 		for(DOTableColumnConfiguration cConf : FileDisplayTableAdapter.getColumnConfigurations(getFileType())){
