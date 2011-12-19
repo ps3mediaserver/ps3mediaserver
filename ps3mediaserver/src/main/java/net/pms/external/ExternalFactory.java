@@ -76,7 +76,10 @@ public class ExternalFactory {
 		URL[] jarURLs = new URL[jarURLList.size()];
 		jarURLList.toArray(jarURLs);
 
-		URLClassLoader classLoader = new URLClassLoader(jarURLs);
+		// specify the parent classloader being PMS to include the required plugin interface definitions
+		// for the classloader. If this isn't being set, a ClassNotFoundException is being raised
+		// because the interface implemented by the plugin can't be resolved.
+		URLClassLoader classLoader = new URLClassLoader(jarURLs, PMS.class.getClassLoader());
 		Enumeration<URL> resources;
 
 		try {
@@ -95,7 +98,17 @@ public class ExternalFactory {
 				in.close();
 				String pluginMainClassName = new String(name).trim();
 				logger.info("Found plugin: " + pluginMainClassName);
-				Object instance = classLoader.loadClass(pluginMainClassName).newInstance();
+				Object instance;
+				try {
+					instance = classLoader.loadClass(pluginMainClassName).newInstance();
+				} catch (ClassNotFoundException ex) {
+					// this can happen if a plugin created for a custom build is being dropped inside
+					// the plugins directory of pms. The plugin might implement an interface only
+					// available in the custom build, but not in pms.
+					logger.warn(String.format("The plugin '%s' couldn't be loaded because %s"
+							, pluginMainClassName, ex.getMessage()));
+					continue;
+				}
 				if (instance instanceof ExternalListener) {
 					registerListener((ExternalListener) instance);
 				}

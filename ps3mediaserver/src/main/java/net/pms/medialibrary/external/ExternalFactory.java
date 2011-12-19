@@ -102,9 +102,9 @@ public class ExternalFactory {
 		}
 	}
 
-	public static void lookup() throws Exception {
+	public static void lookup() {
 		File pluginDirectory = new File(PMS.getConfiguration().getPluginDirectory());
-		log.info("Loading media library plugins from " + pluginDirectory.getAbsolutePath());
+		log.info("Searching for plugins in " + pluginDirectory.getAbsolutePath());
 
 		if (!pluginDirectory.exists()) {
 			log.warn("Plugin directory doesn't exist: " + pluginDirectory);
@@ -115,7 +115,7 @@ public class ExternalFactory {
 			log.warn("Plugin directory is not a directory: " + pluginDirectory);
 			return;
 		}
-		   
+
 		File[] jarFiles = pluginDirectory.listFiles(
 			new FileFilter() {
 				public boolean accept(File file) {
@@ -127,7 +127,7 @@ public class ExternalFactory {
 		int nJars = jarFiles.length;
 
 		if (nJars == 0) {
-			log.info("No media library plugins found");
+			log.info("No plugins found");
 			return;
 		}
 
@@ -144,13 +144,13 @@ public class ExternalFactory {
 		URL[] jarURLs = new URL[jarURLList.size()];
 		jarURLList.toArray(jarURLs);
 
-		classLoader = new URLClassLoader(jarURLs);
+		classLoader = new URLClassLoader(jarURLs, PMS.class.getClassLoader());
 		Enumeration<URL> resources;
 
 		try {
 			resources = classLoader.getResources(DESCRIPTOR_FILE_NAME);
 		} catch (IOException e) {
-			log.error("Can't load media library plugins resources", e);
+			log.error("Can't load plugin resources", e);
 			return;
 		}
 
@@ -158,12 +158,22 @@ public class ExternalFactory {
 			URL url = resources.nextElement();
 			try {
 				InputStreamReader in = new InputStreamReader(url.openStream());
-				char[] name = new char [512]; 
+				char[] name = new char[512];
 				in.read(name);
 				in.close();
 				String pluginMainClassName = new String(name).trim();
-				log.debug("Found plugin: " + pluginMainClassName);
-				Object instance = classLoader.loadClass(pluginMainClassName).newInstance();
+				log.info("Found plugin: " + pluginMainClassName);
+				Object instance;
+				try {
+					instance = classLoader.loadClass(pluginMainClassName).newInstance();
+				} catch (ClassNotFoundException ex) {
+					// this can happen if a plugin created for a custom build is being dropped inside
+					// the plugins directory of pms. The plugin might implement an interface only
+					// available in the custom build, but not in pms.
+					log.warn(String.format("The plugin '%s' couldn't be loaded because %s"
+							, pluginMainClassName, ex.getMessage()));
+					continue;
+				}
 				
 				if (instance instanceof DlnaTreeFolderPlugin) {
 					if(((DlnaTreeFolderPlugin)instance).isAvailable()){
@@ -184,7 +194,7 @@ public class ExternalFactory {
 	    			if (log.isInfoEnabled()) log.info("Registered FileImportPlugin plugin type " + pluginMainClassName);
 				}
 			} catch (Exception e) {
-				log.error("Error loading media library plugin", e);
+				log.error("Error loading plugin", e);
 			}
 		}
 	}

@@ -23,7 +23,7 @@ import net.pms.medialibrary.storage.MediaLibraryStorage;
 
 import com.jgoodies.binding.adapter.AbstractTableAdapter;
 
-public class FileDisplayTableAdapter extends AbstractTableAdapter {
+public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 	private static final long serialVersionUID = 1369478633722749585L;
 	private FileType fileType;
 
