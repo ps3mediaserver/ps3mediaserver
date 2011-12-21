@@ -220,8 +220,8 @@ public class NetworkConfiguration {
 	 */
 	public InterfaceAssociation getDefaultNetworkInterfaceAddress() {
 		LOG.info("default network interface address from {}", interfaces);
-		if (interfaces.size() > 0) {
-			InterfaceAssociation association = interfaces.get(0);
+		InterfaceAssociation association = getFirstInterfaceWithAddress();
+		if (association != null) {
 			if (association.getParentName() != null) {
 				InterfaceAssociation ia = getAddressForNetworkInterfaceName(association.getParentName());
 				LOG.debug("first association has parent : {} -> {}", association, ia);
@@ -229,6 +229,15 @@ public class NetworkConfiguration {
 			} else {
 				LOG.debug("first network interface : {}", association);
 				return association;
+			}
+		}
+		return null;
+	}
+	
+	private InterfaceAssociation getFirstInterfaceWithAddress() {
+		for (InterfaceAssociation ia : interfaces) {
+			if (ia.getAddr() != null) {
+				return ia;
 			}
 		}
 		return null;
