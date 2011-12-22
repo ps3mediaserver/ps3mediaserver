@@ -1279,9 +1279,13 @@ public class MEncoderVideo extends Player {
 
 		if (configuration.getMencoderMainSettings() != null) {
 			String mainConfig = configuration.getMencoderMainSettings();
-			if (params.mediaRenderer.getCustomMencoderQualitySettings() != null) {
-				mainConfig = params.mediaRenderer.getCustomMencoderQualitySettings();
+			String customSettings = params.mediaRenderer.getCustomMencoderQualitySettings();
+
+			// Custom settings in PMS may override the settings of the saved configuration
+			if (customSettings != null && !"".equals(customSettings.trim())) {
+				mainConfig = customSettings;
 			}
+
 			if (mainConfig.contains("/*")) // in case of
 			{
 				mainConfig = mainConfig.substring(mainConfig.indexOf("/*"));
@@ -1293,7 +1297,8 @@ public class MEncoderVideo extends Player {
 			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec +
 				(wmv ? ":acodec=wmav2:abitrate=448" : (cbr_settings + ":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") +
 				":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid))) +
-				":threads=" + (wmv ? 1 : configuration.getMencoderMaxThreads()) + ":" + mainConfig;
+				":threads=" + (wmv ? 1 : configuration.getMencoderMaxThreads()) +
+				("".equals(mainConfig) ? "" : ":" + mainConfig);
 
 			String audioType = "ac3";
 			if (dts) {
