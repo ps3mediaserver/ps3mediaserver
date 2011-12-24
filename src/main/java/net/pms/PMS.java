@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.BindException;
-import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -65,6 +64,7 @@ import net.pms.io.SystemUtils;
 import net.pms.io.WinUtils;
 import net.pms.logging.LoggingConfigFileLoader;
 import net.pms.network.HTTPServer;
+import net.pms.network.NetworkConfiguration;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
 import net.pms.newgui.GeneralTab;
@@ -732,9 +732,9 @@ public class PMS {
 				//create a new UUID based on the MAC address of the used network adapter
 				NetworkInterface ni = null;
 				try {
-					if (configuration.getServerHostname() != null && configuration.getServerHostname().length() > 0) {
-						ni = NetworkInterface.getByInetAddress(InetAddress.getByName(configuration.getServerHostname()));
-					} else if (get().getServer().getNi() != null) {
+					ni = NetworkConfiguration.getInstance().getNetworkInterfaceByServerName();
+					// if no ni comes from the server host name, we should get the default.
+					if (ni != null) {
 						ni = get().getServer().getNi();
 					}
 

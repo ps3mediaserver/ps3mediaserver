@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -305,6 +306,21 @@ public class NetworkConfiguration {
 		return txt.toLowerCase().contains(substr);
 	}
 
+	/**
+	 * @return a network interface, if a server hostname is configured.
+	 * @throws SocketException
+	 * @throws UnknownHostException
+	 */
+	public NetworkInterface getNetworkInterfaceByServerName() throws SocketException, UnknownHostException {
+		String hostname = PMS.getConfiguration().getServerHostname();
+		if (hostname != null) {
+			LOG.trace("Searching network interface for " + hostname);
+			return NetworkInterface.getByInetAddress(InetAddress.getByName(hostname));
+		}
+		return null;
+	}
+	
+	
 	private static NetworkConfiguration config;
 
 	/**
