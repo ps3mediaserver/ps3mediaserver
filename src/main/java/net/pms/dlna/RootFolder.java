@@ -146,6 +146,11 @@ public class RootFolder extends DLNAResource {
 				addChild(videoSettingsRes);
 			}
 		}
+
+		if (!configuration.getHideComputerShutdownFolder()) {
+			addChild(getComputerShutdownFolder());
+		}
+
 		setDiscovered(true);
 	}
 
@@ -762,6 +767,109 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 		}
+		return res;
+	}
+
+	/**
+	 * Returns the Computer Shutdown folder and its contents.
+	 *
+	 * @return The folder
+	 */
+	private DLNAResource getComputerShutdownFolder() {
+		DLNAResource res = new VirtualFolder(Messages.getString("PMS.42"), null);
+
+		// Power off menu item
+		res.addChild(new VirtualVideoAction(Messages.getString("PMS.43"), true) {
+			@Override
+			public boolean enable() {
+				ProcessBuilder pb;
+				
+				if (Platform.isWindows()) {
+					pb = new ProcessBuilder("shutdown", "-s", "-f");
+				} else {
+					pb = new ProcessBuilder("shutdown", "-h", "now");
+				}
+
+				pb.redirectErrorStream(true);
+
+                try {
+                	// Start the command process
+                	Process process = pb.start();
+
+                	// Capture the output
+                	InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    StringBuffer commandResult = new StringBuffer();
+                    String line = null;
+
+                    while ((line = br.readLine()) != null) {
+                    	commandResult.append(line);
+                    }
+
+                    try {
+                    	process.waitFor();
+                    } catch (InterruptedException ie) {
+                    	// Just waiting for completion of the command process
+                    }
+                    
+                    if (process.exitValue() != 0) {
+                		logger.error("Failed to execute power off command: \"" + commandResult + "\"");
+                	}
+                } catch (IOException e) {
+            		logger.error("Failed to execute power off command.");
+                }
+
+                return true;
+			}
+		});
+
+		// Restart menu item
+		res.addChild(new VirtualVideoAction(Messages.getString("PMS.44"), true) {
+			@Override
+			public boolean enable() {
+				ProcessBuilder pb;
+				
+				if (Platform.isWindows()) {
+					pb = new ProcessBuilder("shutdown", "-r", "-f");
+				} else {
+					pb = new ProcessBuilder("shutdown", "-r", "now");
+				}
+
+				pb.redirectErrorStream(true);
+
+                try {
+                	// Start the command process
+                	Process process = pb.start();
+
+                	// Capture the output
+                	InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    StringBuffer commandResult = new StringBuffer();
+                    String line = null;
+
+                    while ((line = br.readLine()) != null) {
+                    	commandResult.append(line);
+                    }
+
+                    try {
+                    	process.waitFor();
+                    } catch (InterruptedException ie) {
+                    	// Just waiting for completion of the command process
+                    }
+                    
+                    if (process.exitValue() != 0) {
+                		logger.error("Failed to execute restart command: \"" + commandResult + "\"");
+                	}
+                } catch (IOException e) {
+            		logger.error("Failed to execute restart command.");
+                }
+
+                return true;
+			}
+		});
+
 		return res;
 	}
 
