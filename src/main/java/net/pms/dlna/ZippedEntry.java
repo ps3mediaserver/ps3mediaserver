@@ -118,7 +118,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 				}
 			}
 		};
-		new Thread(r).start();
+		new Thread(r, "Zip Extractor").start();
 	}
 
 	@Override

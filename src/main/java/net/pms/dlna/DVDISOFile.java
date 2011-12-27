@@ -48,7 +48,7 @@ public class DVDISOFile extends VirtualFolder {
 				pw.stopProcess();
 			}
 		};
-		Thread failsafe = new Thread(r);
+		Thread failsafe = new Thread(r, "DVDISO Failsafe");
 		failsafe.start();
 		pw.runInSameThread();
 		List<String> lines = pw.getOtherResults();

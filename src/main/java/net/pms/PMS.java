@@ -277,7 +277,7 @@ public class PMS {
 				}
 			};
 
-			Thread checkThread = new Thread(r);
+			Thread checkThread = new Thread(r, "PMS Checker");
 			checkThread.start();
 			checkThread.join(60000);
 			checkThread.interrupt();
@@ -502,7 +502,7 @@ public class PMS {
 			logger.info("Maybe another process is running or the hostname is wrong.");
 		}
 
-		new Thread() {
+		new Thread("Connection Checker") {
 			@Override
 			public void run() {
 				try {
@@ -541,7 +541,7 @@ public class PMS {
 		frame.serverReady();
 
 		//UPNPHelper.sendByeBye();
-		Runtime.getRuntime().addShutdownHook(new Thread() {
+		Runtime.getRuntime().addShutdownHook(new Thread("PMS Listeners Stopper") {
 			@Override
 			public void run() {
 				try {

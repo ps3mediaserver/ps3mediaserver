@@ -124,7 +124,7 @@ public class RarredEntry extends DLNAResource implements IPushOutput {
 				}
 			}
 		};
-		new Thread(r).start();
+		new Thread(r, "Rar Extractor").start();
 	}
 
 	@Override

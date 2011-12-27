@@ -132,7 +132,7 @@ public class ProcessUtil {
 					}
 				};
 
-				Thread failsafe = new Thread(r);
+				Thread failsafe = new Thread(r, "Process Destroyer");
 				failsafe.start();
 			}
 

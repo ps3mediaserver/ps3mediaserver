@@ -57,6 +57,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	private BufferedOutputFile bo = null;
 	private boolean keepStdout;
 	private boolean keepStderr;
+	private static int processCounter = 0;
 
 	public ProcessWrapperImpl(String cmdArray[], OutputParams params) {
 		this(cmdArray, params, false, false);
@@ -67,7 +68,22 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	}
 
 	public ProcessWrapperImpl(String cmdArray[], OutputParams params, boolean keepStdout, boolean keepStderr) {
-		super(cmdArray[0]);
+		super();
+
+		// Determine a suitable thread name for this process:
+		// use the command name, but remove its path first.
+		String threadName = cmdArray[0];
+
+		if (threadName.indexOf("/") >= 0) {
+			threadName = threadName.substring(threadName.lastIndexOf("/") + 1);
+		}
+
+		if (threadName.indexOf("\\") >= 0) {
+			threadName = threadName.substring(threadName.lastIndexOf("\\") + 1);
+		}
+
+		setName(threadName + "-" + getProcessCounter());
+
 		File exec = new File(cmdArray[0]);
 
 		if (exec.exists() && exec.isFile()) {
@@ -94,6 +110,10 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 		this.keepStdout = keepStdout;
 		this.keepStderr = keepStderr;
 		attachedProcesses = new ArrayList<ProcessWrapper>();
+	}
+
+	private synchronized int getProcessCounter() {
+		return processCounter++;
 	}
 
 	public void attachProcess(ProcessWrapper process) {

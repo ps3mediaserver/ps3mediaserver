@@ -1334,13 +1334,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 										}
 									}
 								};
-								new Thread(fireStartStopEvent).start();
+								new Thread(fireStartStopEvent, "StartPlaying Event for " + listener.name()).start();
 							}
 						}
 					}
 				};
 
-				new Thread(r).start();
+				new Thread(r, "StartPlaying Event").start();
 			}
 		}
 	}
@@ -1389,19 +1389,19 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 												}
 											}
 										};
-										new Thread(fireStartStopEvent).start();
+										new Thread(fireStartStopEvent, "StopPlaying Event for " + listener.name()).start();
 									}
 								}
 							}
 						}
 					};
 
-					new Thread(r).start();
+					new Thread(r, "StopPlaying Event").start();
 				}
 			}
 		};
 
-		new Thread(defer).start();
+		new Thread(defer, "StopPlaying Event Deferer").start();
 	}
 
 	/**Returns an InputStream of this DLNAResource that starts at a given time, if possible. Very useful if video chapters are being used.
@@ -1531,7 +1531,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							externalProcess.stopProcess();
 						}
 					};
-					new Thread(r).start();
+					new Thread(r, "External Process Stopper").start();
 					ProcessWrapper newExternalProcess = getPlayer().launchTranscode(
 						getSystemName(),
 						this,
@@ -1577,7 +1577,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						externalProcess.stopProcess();
 					}
 				};
-				new Thread(r).start();
+				new Thread(r, "Hanging External Process Stopper").start();
 			}
 			return is;
 		}
