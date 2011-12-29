@@ -429,7 +429,7 @@ public class TSMuxerVideo extends Player {
 					type = "A_DTS";
 				}
 			}
-			if (params.aid != null && params.aid.getDelay() != 0) {
+			if (params.aid != null && params.aid.getDelay() != 0 && params.timeseek == 0) {
 				timeshift = "timeshift=" + params.aid.getDelay() + "ms, ";
 			}
 			pw.println(type + ", \"" + ffAudioPipe[0].getOutputPipe() + "\", " + timeshift + "track=2");
@@ -448,7 +448,7 @@ public class TSMuxerVideo extends Player {
 						type = "A_DTS";
 					}
 				}
-				if (lang.getDelay() != 0) {
+				if (lang.getDelay() != 0 && params.timeseek == 0) {
 					timeshift = "timeshift=" + lang.getDelay() + "ms, ";
 				}
 				pw.println(type + ", \"" + ffAudioPipe[i].getOutputPipe() + "\", " + timeshift + "track=" + (2 + i));
