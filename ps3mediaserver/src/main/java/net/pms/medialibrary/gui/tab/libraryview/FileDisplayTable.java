@@ -19,17 +19,15 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListModel;
 import javax.swing.SpringLayout;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 
 import com.jgoodies.binding.list.SelectionInList;
-import com.jgoodies.common.collect.ArrayListModel;
-
 import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOTableColumnConfiguration;
@@ -49,16 +47,18 @@ public class FileDisplayTable extends JPanel {
 	private FileType fileType;
 	private ETable table;
 	private JPopupMenu columnSelectorMenu;
-	private boolean handleEvents;
-	private boolean columnDragging;
-	private List<DOFileInfo> files;
+	
+	private boolean isUpdating = false;
+	private boolean isColumnDragging = false;
+	private int colMoveToIndex;
+	private int colMoveFromIndex;
+	
+	private SelectionInList<DOFileInfo> selectionInList = new SelectionInList<DOFileInfo>();
 
 	public FileDisplayTable(FileType fileType) {
 		super(new BorderLayout());
-		handleEvents = false;
 		setFileType(fileType);
 		init();
-		handleEvents = true;
 	}
 
 	public void setFileType(FileType fileType) {
@@ -70,22 +70,12 @@ public class FileDisplayTable extends JPanel {
 	}
 
 	public void setContent(List<DOFileInfo> files) {
-		handleEvents = false;
-		this.files = files;
-		ArrayListModel<DOFileInfo> arrayListModel = new ArrayListModel<DOFileInfo>(files);
-		SelectionInList<DOFileInfo> selectionInList = new SelectionInList<DOFileInfo>((ListModel) arrayListModel);
-		table.setModel(new FileDisplayTableAdapter(selectionInList, getFileType()));
-		
-		for(DOTableColumnConfiguration cConf : FileDisplayTableAdapter.getColumnConfigurations(getFileType())){
-			table.getColumn(cConf).setPreferredWidth(cConf.getWidth());
-		}
-		handleEvents = true;
+		selectionInList.setList(files);
 	}
 
 	private void init() {
 		//configure the table
 		table = new ETable();
-		table.setColumnModel(new FileDisplayTableColumnModel());
 		table.setDefaultRenderer(Integer.class, new FileDisplayTableCellRenderer());
 		table.setDefaultRenderer(Double.class, new FileDisplayTableCellRenderer());
 		table.setDefaultRenderer(Date.class, new DateCellRenderer());
@@ -108,58 +98,51 @@ public class FileDisplayTable extends JPanel {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				//Trick: when changing column order, only refresh the data (to have the correct 
-				//values for a column) once it has been put into its new location
-				if(columnDragging) {
-					refreshData();
-					columnDragging = false;
-				}
+				handleColumnMoved();
 			}
-		});
-
-		//listen to column moves in order to store them and restore them later
-		table.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
-			@Override
-			public void columnMoved(TableColumnModelEvent e) {
-				columnDragging = true;
-				//Trick: store the ordering on every index change, but only reload the data 
-				//on final repositioning (above mouse listener)
-				if(e.getFromIndex() != e.getToIndex()){
-					storeColumnState();
-				}
-			}
-			
-			@Override
-			public void columnRemoved(TableColumnModelEvent e) {
-				storeColumnState();
-				refreshData();
-			}
-			
-			@Override
-			public void columnAdded(TableColumnModelEvent e) { 
-				storeColumnState();
-				
-				TableColumn c = table.getColumnModel().getColumn(e.getToIndex());
-				DOTableColumnConfiguration cConf = (DOTableColumnConfiguration) c.getIdentifier();
-				handleAddColumn(c, cConf);
-				
-				refreshData();
-			}
-
-			@Override
-			public void columnSelectionChanged(ListSelectionEvent e) { }	
-			@Override
-			public void columnMarginChanged(ChangeEvent e) { }		
 		});
 		
-		//configure default column properties
-		//and listen to header resizes in order to store them and restore them later
-		for(int i = 0; i < table.getColumnCount(); i++) {
-			TableColumn c = table.getColumnModel().getColumn(i);
-			DOTableColumnConfiguration cConf = (DOTableColumnConfiguration) c.getIdentifier();
-			c.setIdentifier(MediaLibraryStorage.getInstance().getTableColumnConfiguration(getFileType(), i));
-			handleAddColumn(c, cConf);
-		}
+		//listen to column events like move, resize or add
+		table.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
+					
+			@Override
+			public void columnMoved(TableColumnModelEvent arg0) {
+				if(arg0.getFromIndex() != (colMoveFromIndex > 0 ? colMoveFromIndex : arg0.getToIndex())) {
+					if(!isColumnDragging) {
+						colMoveFromIndex = arg0.getFromIndex();
+						isColumnDragging = true;
+					}
+					colMoveToIndex = arg0.getToIndex();
+				}
+			}
+
+			@Override
+			public void columnSelectionChanged(ListSelectionEvent arg0) { }			
+			@Override
+			public void columnRemoved(TableColumnModelEvent arg0) { }	
+			@Override
+			public void columnMarginChanged(ChangeEvent arg0) { }			
+			@Override
+			public void columnAdded(TableColumnModelEvent arg0) {
+				TableColumn c = ((DefaultTableColumnModel)arg0.getSource()).getColumn(arg0.getToIndex());
+				c.addPropertyChangeListener(new PropertyChangeListener() {
+					@Override
+					public void propertyChange(PropertyChangeEvent e) {
+						TableColumn c = (TableColumn) e.getSource();
+						if(!isUpdating && e.getPropertyName().equals("preferredWidth")) {
+							for(ConditionType ct : ConditionType.values()) {
+								if(c.getHeaderValue().equals(Messages.getString("ML.Condition.Header.Type." + ct.toString()))) {
+									MediaLibraryStorage.getInstance().updateTableColumnWidth(ct, c.getWidth(), fileType);
+									break;
+								}
+							}
+						}
+					}
+				});
+			}
+		});
+		
+		updateTableModel();
 		
 		//configure the context menu
 		columnSelectorMenu = new JPopupMenu();
@@ -171,25 +154,12 @@ public class FileDisplayTable extends JPanel {
 		add(scrollPane);
 	}
 	
-	private void handleAddColumn(TableColumn c, DOTableColumnConfiguration cConf){
-		c.setIdentifier(cConf);
-		c.setHeaderValue(cConf);
-		c.setPreferredWidth(cConf.getWidth());
-		
-		c.addPropertyChangeListener(new PropertyChangeListener() {	
-			@Override
-			public void propertyChange(PropertyChangeEvent e) {
-				if(handleEvents && e.getPropertyName().equals("preferredWidth")){
-					TableColumn c = (TableColumn) e.getSource();
-					DOTableColumnConfiguration cConf = (DOTableColumnConfiguration) c.getIdentifier();
-
-					if (c.getWidth() != cConf.getWidth()) {
-						cConf.setWidth(c.getWidth());
-						MediaLibraryStorage.getInstance().updateTableColumnConfiguration(cConf, getFileType());
-					}
-				}
-			}
-		});
+	private void handleColumnMoved() {
+		if(colMoveFromIndex != colMoveToIndex) {
+			MediaLibraryStorage.getInstance().moveTableColumnConfiguration(colMoveFromIndex, colMoveToIndex, getFileType());		
+			colMoveFromIndex = colMoveToIndex = 0;
+		}
+		isColumnDragging = false;
 	}
 
 	private void refreshContextMenu() {
@@ -207,6 +177,8 @@ public class FileDisplayTable extends JPanel {
 				sortedItems.add(new ConditionTypeCBItem(ct, Messages.getString("ML.Condition.Header.Type." + ct.toString())));
 			}
 		}
+		
+		//sort the items by their localized name
 		Collections.sort(sortedItems, new Comparator<ConditionTypeCBItem>() {
 			@Override
 			public int compare(ConditionTypeCBItem o1, ConditionTypeCBItem o2) {
@@ -214,7 +186,7 @@ public class FileDisplayTable extends JPanel {
 			}
 		});
 
-		//compute the deminsions of the final layout
+		//compute the dimension of the final layout
 		int nbItemsMin = sortedItems.size() + 3;
 		int rows = nbItemsMin > MAX_MENUITEMS_PER_COLUMN ? MAX_MENUITEMS_PER_COLUMN : nbItemsMin;
 		int cols = (nbItemsMin > MAX_MENUITEMS_PER_COLUMN ? (int)Math.ceil((double)nbItemsMin / MAX_MENUITEMS_PER_COLUMN) : 1);
@@ -251,33 +223,43 @@ public class FileDisplayTable extends JPanel {
 			columnSelectorMenu.addSeparator();
 		}
 		
-		//add all elements to menu and set them selected if needed
-		for(ConditionTypeCBItem ctItem : sortedItems){			
+		//add all elements to menu, attach the listener handling the click event and set them selected if needed
+		for(ConditionTypeCBItem ctItem : sortedItems) {
 			DOTableColumnConfiguration cConf = MediaLibraryStorage.getInstance().getTableColumnConfiguration(getFileType(), ctItem.getConditionType());
 			boolean isVisible = cConf != null;
 			JCheckBoxMenuItem mi = new JCustomCheckBoxMenuItem(ctItem, isVisible);
 			mi.addActionListener(new ActionListener() {				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if(handleEvents){
 						JCustomCheckBoxMenuItem mi = (JCustomCheckBoxMenuItem) e.getSource();
 						ConditionType conditionType = ((ConditionTypeCBItem)mi.getUserObject()).getConditionType();
 						
 						if(mi.isSelected()){
-							int index = MediaLibraryStorage.getInstance().getTableConfigurationMaxColumnIndex(getFileType()) - 1;
-							int columnWidth = 75;
-							TableColumn newColumn = new TableColumn();
-							newColumn.setIdentifier(new DOTableColumnConfiguration(conditionType, index, columnWidth));
-							newColumn.setHeaderValue(new DOTableColumnConfiguration(conditionType, index, columnWidth));
-							newColumn.setPreferredWidth(columnWidth);
-							table.addColumn(newColumn);
-						}else{
+							//add the column
+							int colIndex = MediaLibraryStorage.getInstance().getTableConfigurationMaxColumnIndex(getFileType()) + 1;
+							int rowWidth = 75;
+							
+							TableColumn newCol = new TableColumn();
+							newCol.setHeaderValue(Messages.getString("ML.Condition.Header.Type." + conditionType.toString()));
+							newCol.setWidth(rowWidth);
+							newCol.setModelIndex(colIndex);
+
+							//insert the column into the db before triggering the update to load the data properly
+							MediaLibraryStorage.getInstance().insertTableColumnConfiguration(new DOTableColumnConfiguration(conditionType, colIndex, rowWidth), fileType);
+
+							updateTableModel();
+						} else {
+							//remove the column
 							if(table.getColumnCount() > 1){
 								for(int i = 0; i < table.getColumnCount(); i++){
-									TableColumn c = table.getColumnModel().getColumn(i);
-									DOTableColumnConfiguration cConf = (DOTableColumnConfiguration) c.getIdentifier();
-									if(cConf.getConditionType() == conditionType){
-										table.getColumnModel().removeColumn(c);
+									TableColumn c = table.getColumn(table.getColumnName(i));
+
+									if(c.getHeaderValue().equals(Messages.getString("ML.Condition.Header.Type." + conditionType.toString()))) {
+										//delete the column from the db before triggering the update to remove the row properly
+										MediaLibraryStorage.getInstance().deleteTableColumnConfiguration(new DOTableColumnConfiguration(conditionType, c.getModelIndex(), 0), fileType);
+
+										updateTableModel();
+										
 										break;
 									}
 								}
@@ -286,14 +268,13 @@ public class FileDisplayTable extends JPanel {
 								mi.setSelected(true);
 							}
 						}
-					}
 				}
 			});
 			
 			columnSelectorMenu.add(mi);	
 		}
 		
-		//add some invisible menu items to fill up the remaining spaces
+		//add some invisible menu items to fill up the remaining spaces if required
 		while(rows * cols - cols >= columnSelectorMenu.getComponentCount()){
 			rows--;
 		}
@@ -311,73 +292,56 @@ public class FileDisplayTable extends JPanel {
 		                                3, 3); //xPad, yPad
 	}
 
-	private void showAllColumns() {
-		handleEvents = false;
+	private void updateTableModel() {
+		isUpdating = true;
 		
-		boolean hasChanged = false;
+		//rebuild the entire adapter, because their is no way to change the column names after initialization
+		//table.removeColumn and table.getColumnModel().removeColumn have no effect
+		table.setModel(new FileDisplayTableAdapter(selectionInList, getFileType()));										
+		for(DOTableColumnConfiguration cConf : FileDisplayTableAdapter.getColumnConfigurations(getFileType())){
+			table.getColumn(cConf.toString()).setPreferredWidth(cConf.getWidth());
+		}
+		
+		isUpdating = false;
+	}
+
+	private void showAllColumns() {
 		List<DOTableColumnConfiguration> configuredColumns = MediaLibraryStorage.getInstance().getTableColumnConfiguration(getFileType());
 		for(ConditionType ct : ConditionType.values()){
-			if(ct == ConditionType.UNKNOWN) continue;
+			//don't show an entry for the type unkown
+			if(ct == ConditionType.UNKNOWN){
+				continue;
+			}
+			
+			//only add entries for the current file type
 			if((getFileType() == FileType.FILE && ct.toString().startsWith("FILE"))
 					|| (getFileType() == FileType.VIDEO && (ct.toString().startsWith("FILE") || ct.toString().startsWith("VIDEO")))
 					|| (getFileType() == FileType.AUDIO && (ct.toString().startsWith("FILE") || ct.toString().startsWith("AUDIO")))
 					|| (getFileType() == FileType.PICTURES && (ct.toString().startsWith("FILE") || ct.toString().startsWith("IMAGE")))){
 				boolean alreadyConfigured = false;
+				
+				//only add columns which aren't displayed yet
 				for(DOTableColumnConfiguration cConf : configuredColumns){
 					if(cConf.getConditionType() == ct){
 						alreadyConfigured = true;
 						break;
 					}
 				}
-				if(!alreadyConfigured){
-					DOTableColumnConfiguration newCConf = new DOTableColumnConfiguration(ct, -1, 75);
-					TableColumn newCol = new TableColumn();
-					newCol.setIdentifier(newCConf);
-					newCol.setHeaderValue(newCConf);
-					table.addColumn(newCol);
-					hasChanged = true;
+				
+				if(!alreadyConfigured) {
+					int columnWidth = 75;
+					int columnIndex = MediaLibraryStorage.getInstance().getTableConfigurationMaxColumnIndex(getFileType()) + 1;
+					MediaLibraryStorage.getInstance().insertTableColumnConfiguration(new DOTableColumnConfiguration(ct, columnIndex, columnWidth), getFileType());
 				}
 			}
-		}		
-		handleEvents = true;
-		if(hasChanged){
-			storeColumnState();
-			refreshData();
 		}
+		refreshContextMenu();
+		updateTableModel();
 	}
 	
-	private void hideAllColumns(){
-		handleEvents = false;
-		while(table.getColumnCount() > 1){
-			table.getColumnModel().removeColumn(table.getColumnModel().getColumn(1));
-		}
-		handleEvents = true;
-		storeColumnState();
-	}
-	
-	private void storeColumnState() {
-		if(handleEvents){ 
-			//clear all column configurations for the current type
-			MediaLibraryStorage.getInstance().clearTableColumnConfiguration(getFileType());
-			
-			//save the state of the displayed columns
-			for(int i = 0; i< table.getColumnCount(); i++){
-				TableColumn c = table.getColumnModel().getColumn(i);
-				DOTableColumnConfiguration cConf = (DOTableColumnConfiguration) c.getIdentifier();
-				cConf.setColumnIndex(i);
-				cConf.setWidth(c.getWidth());
-				MediaLibraryStorage.getInstance().insertTableColumnConfiguration(cConf, getFileType());
-			}
-			refreshContextMenu();
-		}
-	}
-	
-	//Trick: this method is needed to reload all data once either
-	//columns have been added/removed or re-ordered because the fields
-	//get messed up otherwise. Any better mechanism is very welcome!
-	private void refreshData() {
-		if(handleEvents){
-			setContent(files);
-		}
+	private void hideAllColumns() {
+		MediaLibraryStorage.getInstance().deleteAllTableColumnConfiguration(getFileType());
+		refreshContextMenu();
+		updateTableModel();
 	}
 }

@@ -1,6 +1,5 @@
 package net.pms.medialibrary.storage;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -104,14 +103,9 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 	 */
 	public void dipose(){
 		if(cp != null){
-			try {
-	            cp.dispose();
-	            if(log.isInfoEnabled()) log.info("Disposed of the JDBC connection pool while disposing MediaLibraryStorage");
-            } catch (SQLException e) {
-            	log.error("Failed to dispose properly of the JDBC connection pool while disposing MediaLibraryStorage", e);
-            } finally  {
-            	cp = null;
-            }
+	        cp.dispose();
+            cp = null;
+	        if(log.isInfoEnabled()) log.info("Disposed of the JDBC connection pool while disposing MediaLibraryStorage");
 		}
 	}
 	
@@ -226,6 +220,95 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 		} catch (StorageException e) {
 			log.error("Storage error (update)", e);
 		}
+	}
+
+	@Override
+	public void updateTableColumnWidth(ConditionType ct, int width, FileType fileType) {
+		try {
+			dbTableColumn.updateTableColumnConfiguration(ct, width, fileType);
+			if(log.isDebugEnabled()) log.debug(String.format("Updated table column width for conditionType=%s, fileType=%s, width=%s", ct, fileType, width));
+		} catch (StorageException e) {
+			log.error("Storage error (update)", e);
+		}
+	}
+
+	@Override
+	public void deleteTableColumnConfiguration(DOTableColumnConfiguration cConf, FileType fileType) {
+		try {
+			//get the existing columns
+			List<DOTableColumnConfiguration> existingColumns = getTableColumnConfiguration(fileType);
+			
+			//clear the existing columns
+			dbTableColumn.clearTableColumnConfiguration(fileType);
+			
+			//insert all columns with updated indexes except the deleted one
+			int index = 0;
+			for(DOTableColumnConfiguration c : existingColumns) {
+				if(!cConf.equals(c)) {
+					c.setColumnIndex(index++);
+					dbTableColumn.insertTableColumnConfiguration(c, fileType);
+				}
+			}
+			
+			if(log.isDebugEnabled()) log.debug(String.format("Deleted table column configuration for file type=%s, column index=%s", fileType, cConf.getColumnIndex()));
+		} catch (StorageException e) {
+			log.error("Storage error (delete)", e);
+		}
+	}
+
+	@Override
+	public void deleteAllTableColumnConfiguration(FileType fileType) {
+		try {
+			//clear the existing columns
+			dbTableColumn.deleteAllTableColumnConfiguration(fileType);
+			
+			if(log.isDebugEnabled()) log.debug(String.format("Deleted all table column configuration for file type=%s", fileType));
+		} catch (StorageException e) {
+			log.error("Storage error (delete)", e);
+		}
+	}
+
+	@Override
+	public void moveTableColumnConfiguration(int fromIndex, int toIndex, FileType fileType) {
+		try {
+			//get the existing columns
+			List<DOTableColumnConfiguration> existingColumns = getTableColumnConfiguration(fileType);
+			
+			//get the column to move
+			DOTableColumnConfiguration cMove = null;
+			for(DOTableColumnConfiguration c : existingColumns) {
+				if(c.getColumnIndex() == fromIndex) {
+					cMove = c;
+					break;
+				}
+			}
+			
+			//clear the existing columns
+			dbTableColumn.clearTableColumnConfiguration(fileType);
+			
+			//insert all columns with updated indexes. Create new objects to avoid modifying the indexes of the existing ones
+			int index = 0;
+			for(DOTableColumnConfiguration c : existingColumns) {
+				if(c.getColumnIndex() == fromIndex) {
+					//don't add the column we're moving where it previously was
+					continue;
+				} else if(index == toIndex) {
+					//insert the moved column
+					dbTableColumn.insertTableColumnConfiguration(new DOTableColumnConfiguration(cMove.getConditionType(), index++, cMove.getWidth()), fileType);
+				}
+				
+				dbTableColumn.insertTableColumnConfiguration(new DOTableColumnConfiguration(c.getConditionType(), index++, c.getWidth()), fileType);
+			}
+			
+			//special case where the column moves to the last position
+			if(toIndex == index) {
+				dbTableColumn.insertTableColumnConfiguration(new DOTableColumnConfiguration(cMove.getConditionType(), index++, cMove.getWidth()), fileType);				
+			}
+			
+			if(log.isDebugEnabled()) log.debug(String.format("Moved table column configuration for file type=%s, from=%s, to=%s", fileType, fromIndex, toIndex));
+		} catch (StorageException e) {
+			log.error("Storage error (delete)", e);
+		}		
 	}
 
 	@Override

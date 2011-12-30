@@ -2,7 +2,9 @@ package net.pms.medialibrary.gui.tab.libraryview;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.ListModel;
 
@@ -25,10 +27,11 @@ import com.jgoodies.binding.adapter.AbstractTableAdapter;
 
 public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 	private static final long serialVersionUID = 1369478633722749585L;
+	private static Map<FileType, DOTableColumnConfiguration[]> columnConfigurations = new HashMap<FileType, DOTableColumnConfiguration[]>();
 	private FileType fileType;
 
 	public FileDisplayTableAdapter(ListModel listModel, FileType fileType) {
-		super(listModel, getColumnNames(fileType));
+		super(listModel, getColumnNames(fileType, true));
 		setFileType(fileType);
 	}
 
@@ -37,12 +40,6 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 		DOFileInfo fileInfo = (DOFileInfo)getRow(rowIndex);
 		DOTableColumnConfiguration[] cConfs = getColumnConfigurations(getFileType());
 		
-		//this is a trick to avoid a null pointer for a column that doesn't exist.
-		//it happens when a column which isn't the last is being removed.
-		//i've got no clue why this is actually needed!?!?!?
-//		while(columnIndex >= cConfs.length){
-//			columnIndex--;
-//		}
 		DOTableColumnConfiguration cd = cConfs[columnIndex];	
 		
 		Object res = null;
@@ -101,7 +98,7 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 					res = Messages.getString("ML.FileType." + file.getType());
 					break;
 				case FILEPLAYS_DATEPLAYEND:
-					res = file.getPlayHistory().size()> 0 ? file.getPlayHistory().get(0) : Messages.getString("ML.Condition.NeverPlayed");
+					res = file.getPlayHistory().size() > 0 ? file.getPlayHistory().get(0) : null;
 					break;
 				case FILE_THUMBNAILPATH:
 					res = file.getThumbnailPath();
@@ -153,7 +150,7 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 				case VIDEO_CONTAINS_SUBTITLES:
 					tmpRes = "";
 					for(DLNAMediaSubtitle sub : video.getSubtitlesCodes()){
-						tmpRes += sub.getLang() + ", ";
+						tmpRes += sub.getLangFullName() + ", ";
 					}
 					if(tmpRes.length() > 0){
 						tmpRes = tmpRes.substring(0, tmpRes.length() - 2);
@@ -163,7 +160,7 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 				case VIDEO_CONTAINS_VIDEOAUDIO:
 					tmpRes = "";
 					for(DLNAMediaAudio audio : video.getAudioCodes()){
-						tmpRes += audio.getLang() + " (" + audio.getAudioCodec() + "), ";
+						tmpRes += audio.getLangFullName() + " (" + audio.getAudioCodec() + "), ";
 					}
 					if(tmpRes.length() > 0){
 						tmpRes = tmpRes.substring(0, tmpRes.length() - 2);
@@ -251,12 +248,6 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
     public Class<?> getColumnClass(int c) {
 		DOTableColumnConfiguration[] cConfs = getColumnConfigurations(getFileType());
 		
-		//this is a trick to avoid a null pointer for a column that doesn't exist.
-		//it happens when a column which isn't the last is being removed.
-		//i've got no clue why this is actually needed!?!?!?
-//		while(c >= cConfs.length){
-//			c--;
-//		}
 		DOTableColumnConfiguration cd = cConfs[c];
 		ConditionValueType vt = FolderHelper.getHelper().getConditionValueType(cd.getConditionType(), ConditionOperator.IS);
 		
@@ -373,8 +364,18 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 		return columnNames.toArray(new String[columnNames.size()]);
 	}
 	
-	public static DOTableColumnConfiguration[] getColumnConfigurations(FileType fileType){
-		List<DOTableColumnConfiguration> columnConfigs = MediaLibraryStorage.getInstance().getTableColumnConfiguration(fileType);
-		return columnConfigs.toArray(new DOTableColumnConfiguration[columnConfigs.size()]);
+	public static DOTableColumnConfiguration[] getColumnConfigurations(FileType fileType) {
+		if(!columnConfigurations.containsKey(fileType)) {
+			List<DOTableColumnConfiguration> columnConfigsList = MediaLibraryStorage.getInstance().getTableColumnConfiguration(fileType);
+			columnConfigurations.put(fileType, columnConfigsList.toArray(new DOTableColumnConfiguration[columnConfigsList.size()]));
+		}
+		return columnConfigurations.get(fileType);
+	}
+
+	private static String[] getColumnNames(FileType fileType, boolean reinit) {
+		if(reinit) {
+			columnConfigurations.remove(fileType);
+		}
+		return getColumnNames(fileType);
 	}
 }

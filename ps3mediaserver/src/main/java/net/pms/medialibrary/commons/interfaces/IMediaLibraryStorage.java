@@ -30,11 +30,15 @@ public interface IMediaLibraryStorage {
 	//Table column configurations
 	List<DOTableColumnConfiguration> getTableColumnConfiguration(FileType fileType);
 	void insertTableColumnConfiguration(DOTableColumnConfiguration c, FileType fileType);
-	void updateTableColumnConfiguration(DOTableColumnConfiguration c, FileType fileType);	
+	void updateTableColumnConfiguration(DOTableColumnConfiguration c, FileType fileType);
+	void updateTableColumnWidth(ConditionType ct, int width, FileType fileType);
 	DOTableColumnConfiguration getTableColumnConfiguration(FileType fileType, int columnIndex);
 	void clearTableColumnConfiguration(FileType fileType);
 	DOTableColumnConfiguration getTableColumnConfiguration(FileType fileType, ConditionType ct);
 	int getTableConfigurationMaxColumnIndex(FileType fileType);
+	void deleteTableColumnConfiguration(DOTableColumnConfiguration doTableColumnConfiguration, FileType fileType);
+	void deleteAllTableColumnConfiguration(FileType fileType);
+	void moveTableColumnConfiguration(int fromIndex, int toIndex, FileType fileType);
 	
 	//FileInfo (global for video, audio and pictures)
 	void deleteAllFileInfo();	

@@ -109,6 +109,28 @@ class DBTableColumn extends DBFileInfo {
 		}
 	}
 
+	public void updateTableColumnConfiguration(ConditionType ct, int width, FileType fileType) throws StorageException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+			
+		try {
+			conn = cp.getConnection();
+			stmt = conn.prepareStatement("UPDATE TABLECOLUMNCONFIGURATION"
+					+ " SET WIDTH = ? WHERE FILETYPE = ? AND CONDITIONTYPE = ?");
+			stmt.clearParameters();
+			stmt.setInt(1, width);
+			stmt.setString(2, fileType.toString());
+			stmt.setString(3, ct.toString());
+			stmt.executeUpdate();
+		} catch (SQLException se) {
+			throw new StorageException(String.format("Failed to update table column width for conditionType=%s, width=%s, fileType=%s", 
+					ct, width, fileType), se);
+		} finally {
+			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
+			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+		}
+	}
+
 	public DOTableColumnConfiguration getTableColumnConfiguration(FileType fileType, int columnIndex) throws StorageException {
 		DOTableColumnConfiguration res = null;
 		Connection conn = null;
@@ -212,5 +234,42 @@ class DBTableColumn extends DBFileInfo {
 			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
 		}
 		return res;
+	}
+
+	public void deleteTableColumnConfiguration(int columnIndex, FileType fileType) throws StorageException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+			
+		try {
+			conn = cp.getConnection();
+			stmt = conn.prepareStatement("DELETE FROM TABLECOLUMNCONFIGURATION"
+					+ " WHERE FILETYPE = ? AND COLUMNINDEX = ?");
+			stmt.setString(1, fileType.toString());
+			stmt.setInt(2, columnIndex);
+			stmt.executeUpdate();
+		} catch (SQLException se) {
+			throw new StorageException(String.format("Failed to delete table column configuration for fileType=%s", fileType), se);
+		} finally {
+			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
+			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+		}
+	}
+
+	public void deleteAllTableColumnConfiguration(FileType fileType) throws StorageException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+			
+		try {
+			conn = cp.getConnection();
+			stmt = conn.prepareStatement("DELETE FROM TABLECOLUMNCONFIGURATION"
+					+ " WHERE FILETYPE = ? AND COLUMNINDEX > 0");
+			stmt.setString(1, fileType.toString());
+			stmt.executeUpdate();
+		} catch (SQLException se) {
+			throw new StorageException(String.format("Failed to delete table column configuration for fileType=%s", fileType), se);
+		} finally {
+			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
+			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+		}
 	}
 }
