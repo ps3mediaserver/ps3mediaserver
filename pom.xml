@@ -819,11 +819,11 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
-                                                <version>1.7</version>
+						<version>1.7</version>
 						<executions>
 							<execution>
-								<id>prepare-package</id>
-								<phase>prepare-package</phase>
+								<id>process-resources</id>
+								<phase>process-resources</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
@@ -918,7 +918,17 @@
 										<get src="${project.binaries-base}/win32/service/wrapper.dll" dest="${project.binaries}/win32/service/wrapper.dll" skipexisting="true" />
 										<get src="${project.binaries-base}/win32/service/wrapper.exe" dest="${project.binaries}/win32/service/wrapper.exe" skipexisting="true" />
 										<get src="${project.binaries-base}/win32/service/wrapper.jar" dest="${project.binaries}/win32/service/wrapper.jar" skipexisting="true" />
-
+									</tasks>
+								</configuration>
+							</execution>
+							<execution>
+								<id>prepare-package</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
 										<!-- Rename the pms-x.x.x-jar-with-dependencies.jar to pms.jar -->
 										<move file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
@@ -926,7 +936,6 @@
 										<!-- MediaInfo library needs to be in the standard library path to be found -->
 										<copy file="${project.binaries}/MediaInfo.dll" todir="${project.basedir}" />
 										<copy file="${project.binaries}/MediaInfo64.dll" todir="${project.basedir}" />
-
 									</tasks>
 								</configuration>
 							</execution>
@@ -957,6 +966,7 @@
 									<goal>compile</goal>
 								</goals>
 							</execution>
+
 							<execution>
 								<id>build-setup</id>
 								<configuration>
@@ -998,11 +1008,11 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
-                                                <version>1.7</version>
+						<version>1.7</version>
 						<executions>
 							<execution>
-								<id>prepare-package</id>
-								<phase>prepare-package</phase>
+								<id>process-resources</id>
+								<phase>process-resources</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
@@ -1013,7 +1023,18 @@
 
 										<!-- Download binaries -->
 										<get src="${project.binaries-base}/linux/tsMuxeR" dest="${project.binaries}/tsMuxeR" skipexisting="true" />
+									</tasks>
+								</configuration>
+							</execution>
 									
+							<execution>
+								<id>prepare-package</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
 										<move file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
 									</tasks>
@@ -1072,17 +1093,19 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
-                                                <version>1.7</version>
+						<version>1.7</version>
 						<executions>
 							<execution>
-								<id>prepare-package</id>
-								<phase>prepare-package</phase>
+								<id>process-resources</id>
+								<phase>process-resources</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
+
 								<configuration>
 									<tasks>
 										<!-- Make sure the binaries folder exists -->
+										<mkdir dir="${project.binaries}" />
 										<mkdir dir="${project.binaries}/osx" />
 
 										<!-- Download binaries -->
@@ -1102,7 +1125,18 @@
 
 										<copy file="${project.external-resources}/osx/pms.icns"
 											todir="${project.binaries}" overwrite="true" />
+									</tasks>
+								</configuration>
+							</execution>
 
+							<execution>
+								<id>prepare-package</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
 										<!-- Make sure the target folder exists -->
 										<mkdir dir="${project.build.directory}/${project.build.finalName}-distribution" />
 
