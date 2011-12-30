@@ -735,6 +735,14 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
+			res.addChild(new VirtualVideoAction(Messages.getString("TrTab2.28"), configuration.isDTSEmbedInPCM()) {
+				@Override
+				public boolean enable() {
+					configuration.setDTSEmbedInPCM(!configuration.isDTSEmbedInPCM());
+					return configuration.isDTSEmbedInPCM();
+				}
+			});
+
 			res.addChild(new VirtualVideoAction(Messages.getString("PMS.27"), true) {
 				@Override
 				public boolean enable() {
