@@ -376,9 +376,15 @@ public class PMS {
 		logger.info("Starting PS3 Media Server " + getVersion());
 		logger.info("by shagrath / 2008-2011");
 		logger.info("http://ps3mediaserver.org");
-		logger.info("http://code.google.com/p/ps3mediaserver");
+		logger.info("https://github.com/ps3mediaserver/ps3mediaserver");
 		logger.info("http://ps3mediaserver.blogspot.com");
 		logger.info("");
+
+		String commitId = PropertiesUtil.getProjectProperties().get("git.commit.id");
+		String commitTime = PropertiesUtil.getProjectProperties().get("git.commit.time");
+		String shortCommitId = commitId.substring(0,  9);
+
+		logger.info("Build: " + shortCommitId + " (" + commitTime + ")");
 		logger.info("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor"));
 		logger.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
 		logger.info("Encoding: " + System.getProperty("file.encoding"));
