@@ -249,6 +249,7 @@ public class RendererConfiguration {
 	private static final String SHOW_SUB_METADATA = "ShowSubMetadata";
 	private static final String DLNA_TREE_HACK = "CreateDLNATreeFaster";
 	private static final String CHUNKED_TRANSFER = "ChunkedTransfer";
+	private static final String SUBTITLE_HTTP_HEADER = "SubtitleHttpHeader";
 
 	// Sony devices require JPG thumbnails
 	private static final String FORCE_JPG_THUMBNAILS = "ForceJPGThumbnails";
@@ -726,6 +727,17 @@ public class RendererConfiguration {
 	 */
 	public long getTranscodedSize() {
 		return getLong(TRANSCODED_SIZE, 0);
+	}
+
+	/**
+	 * Some devices (e.g. Samsung) recognize a custom HTTP header for retrieving
+	 * the contents of a subtitles file. This method will return the name of that
+	 * custom HTTP header, or "" if no such header exists. Default value is "".
+	 *
+	 * @return The name of the custom HTTP header.
+	 */
+	public String getSubtitleHttpHeader() {
+		return getString(SUBTITLE_HTTP_HEADER, "");
 	}
 
 	private int getInt(String key, int def) {
