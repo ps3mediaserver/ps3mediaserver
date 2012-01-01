@@ -204,4 +204,19 @@ public class BasicSystemUtils implements SystemUtils {
 		return new String[] { "ping", /* count */ "-c" , Integer.toString(count), /* size */ "-s", Integer.toString(packetSize), hostAddress };
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String[] getPowerOffCommand() {
+		return new String[] { "shutdown", "-h", "now" };
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String[] getRestartCommand() {
+		return new String[] { "shutdown", "-r", "now" };
+	}
 }
