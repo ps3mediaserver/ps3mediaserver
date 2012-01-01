@@ -785,7 +785,7 @@ public class RootFolder extends DLNAResource {
 			@Override
 			public boolean enable() {
 				ProcessBuilder pb;
-				
+
 				if (Platform.isWindows()) {
 					pb = new ProcessBuilder("shutdown", "-s", "-f");
 				} else {
@@ -794,26 +794,26 @@ public class RootFolder extends DLNAResource {
 
 				pb.redirectErrorStream(true);
 
-                try {
-                	// Start the command process
-                	Process process = pb.start();
+				try {
+					// Start the command process
+					Process process = pb.start();
 
-                	// Capture the output, but discard it.
+					// Capture the output, but discard it.
 					new Gob(process.getErrorStream()).start();
 					new Gob(process.getInputStream()).start();
 
 					// Interesting conundrum: waiting for the power off to finish?
 					// I guess we're waiting for it to fail to finish. ;-)
 					ProcessUtil.waitFor(process);
-                    
-                    if (process.exitValue() != 0) {
-                		logger.error("Failed to execute power off command.");
-                	}
-                } catch (IOException e) {
-            		logger.error("Failed to execute power off command.");
-                }
 
-                return true;
+					if (process.exitValue() != 0) {
+						logger.error("Failed to execute power off command.");
+					}
+				} catch (IOException e) {
+					logger.error("Failed to execute power off command.");
+				}
+
+				return true;
 			}
 		});
 
@@ -822,7 +822,7 @@ public class RootFolder extends DLNAResource {
 			@Override
 			public boolean enable() {
 				ProcessBuilder pb;
-				
+
 				if (Platform.isWindows()) {
 					pb = new ProcessBuilder("shutdown", "-r", "-f");
 				} else {
@@ -831,26 +831,26 @@ public class RootFolder extends DLNAResource {
 
 				pb.redirectErrorStream(true);
 
-                try {
-                	// Start the command process
-                	Process process = pb.start();
+				try {
+					// Start the command process
+					Process process = pb.start();
 
-                	// Capture the output, but discard it.
+					// Capture the output, but discard it.
 					new Gob(process.getErrorStream()).start();
 					new Gob(process.getInputStream()).start();
 
 					// Interesting conundrum: waiting for the restart to finish?
 					// I guess we're waiting for it to fail to finish. ;-)
 					ProcessUtil.waitFor(process);
-                    
-                    if (process.exitValue() != 0) {
-                		logger.error("Failed to execute restart command.");
-                	}
-                } catch (IOException e) {
-            		logger.error("Failed to execute restart command.");
-                }
 
-                return true;
+					if (process.exitValue() != 0) {
+						logger.error("Failed to execute restart command.");
+					}
+				} catch (IOException e) {
+					logger.error("Failed to execute restart command.");
+				}
+
+				return true;
 			}
 		});
 
