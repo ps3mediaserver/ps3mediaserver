@@ -48,6 +48,8 @@ import net.pms.external.AdditionalFoldersAtRoot;
 import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.gui.IFrame;
+import net.pms.io.Gob;
+import net.pms.util.ProcessUtil;
 import net.pms.xmlwise.Plist;
 import net.pms.xmlwise.XmlParseException;
 
@@ -796,25 +798,16 @@ public class RootFolder extends DLNAResource {
                 	// Start the command process
                 	Process process = pb.start();
 
-                	// Capture the output
-                	InputStream is = process.getInputStream();
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
-                    StringBuffer commandResult = new StringBuffer();
-                    String line = null;
+                	// Capture the output, but discard it.
+					new Gob(process.getErrorStream()).start();
+					new Gob(process.getInputStream()).start();
 
-                    while ((line = br.readLine()) != null) {
-                    	commandResult.append(line);
-                    }
-
-                    try {
-                    	process.waitFor();
-                    } catch (InterruptedException ie) {
-                    	// Just waiting for completion of the command process
-                    }
+					// Interesting conundrum: waiting for the power off to finish?
+					// I guess we're waiting for it to fail to finish. ;-)
+					ProcessUtil.waitFor(process);
                     
                     if (process.exitValue() != 0) {
-                		logger.error("Failed to execute power off command: \"" + commandResult + "\"");
+                		logger.error("Failed to execute power off command.");
                 	}
                 } catch (IOException e) {
             		logger.error("Failed to execute power off command.");
@@ -842,25 +835,16 @@ public class RootFolder extends DLNAResource {
                 	// Start the command process
                 	Process process = pb.start();
 
-                	// Capture the output
-                	InputStream is = process.getInputStream();
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
-                    StringBuffer commandResult = new StringBuffer();
-                    String line = null;
+                	// Capture the output, but discard it.
+					new Gob(process.getErrorStream()).start();
+					new Gob(process.getInputStream()).start();
 
-                    while ((line = br.readLine()) != null) {
-                    	commandResult.append(line);
-                    }
-
-                    try {
-                    	process.waitFor();
-                    } catch (InterruptedException ie) {
-                    	// Just waiting for completion of the command process
-                    }
+					// Interesting conundrum: waiting for the restart to finish?
+					// I guess we're waiting for it to fail to finish. ;-)
+					ProcessUtil.waitFor(process);
                     
                     if (process.exitValue() != 0) {
-                		logger.error("Failed to execute restart command: \"" + commandResult + "\"");
+                		logger.error("Failed to execute restart command.");
                 	}
                 } catch (IOException e) {
             		logger.error("Failed to execute restart command.");
