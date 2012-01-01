@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>net.pms.plugin.dlnatreefolder</groupId>
-  <artifactId>FileSystemFolderPlugin</artifactId>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.pms.plugin.dlnatreefolder</groupId>
+	<artifactId>FileSystemFolderPlugin</artifactId>
 	<name>FileSystemFolderPlugin</name>
 	<packaging>jar</packaging>
 	<version>2.0-SNAPSHOT</version>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2010</inceptionYear>
-	
+
 	<organization>
 		<name>PS3 Media Server</name>
 		<url>http://www.ps3mediaserver.org/</url>
@@ -28,13 +28,13 @@
         Plugin which can be added to the DLNA tree which
         will add DLNA folders corresponding to the file system
   </description>
-  
+
 	<properties>
 		<jgoodies-forms-version>1.4.2</jgoodies-forms-version>
 		<slf4j-version>1.6.3</slf4j-version>
 	</properties>
-  
-  <dependencies>
+
+	<dependencies>
 		<dependency>
 			<groupId>com.jgoodies</groupId>
 			<artifactId>forms</artifactId>
@@ -45,15 +45,15 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j-version}</version>
 		</dependency>
-    <dependency>
+		<dependency>
 			<groupId>net.pms</groupId>
 			<artifactId>pms</artifactId>
 			<version>1.50.1_mlx_v0.7-SNAPSHOT</version>
 			<scope>compile</scope>
-		</dependency>  
-  </dependencies>    
-		
-		<build>
+		</dependency>
+	</dependencies>
+
+	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -64,5 +64,5 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		</build>
+	</build>
 </project>

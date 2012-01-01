@@ -1,6 +1,7 @@
 package net.pms.medialibrary.gui.tab.libraryview;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -13,6 +14,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -20,6 +22,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
@@ -27,6 +30,7 @@ import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 
+import com.jgoodies.binding.adapter.AbstractTableAdapter;
 import com.jgoodies.binding.list.SelectionInList;
 import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
@@ -34,6 +38,8 @@ import net.pms.medialibrary.commons.dataobjects.DOTableColumnConfiguration;
 import net.pms.medialibrary.commons.dataobjects.comboboxitems.ConditionTypeCBItem;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.enumarations.FileType;
+import net.pms.medialibrary.commons.helpers.GUIHelper;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.FileEditDialog;
 import net.pms.medialibrary.gui.shared.DateCellRenderer;
 import net.pms.medialibrary.gui.shared.ETable;
 import net.pms.medialibrary.gui.shared.JCustomCheckBoxMenuItem;
@@ -47,6 +53,9 @@ public class FileDisplayTable extends JPanel {
 	private FileType fileType;
 	private ETable table;
 	private JPopupMenu columnSelectorMenu;
+	
+	private JPopupMenu fileEditMenu;
+	private DOFileInfo selectedFileInfo;
 	
 	private boolean isUpdating = false;
 	private boolean isColumnDragging = false;
@@ -142,16 +151,68 @@ public class FileDisplayTable extends JPanel {
 			}
 		});
 		
+		//listen to mouse events to select a row on right click and show the context menu
+		//http://www.stupidjavatricks.com/?p=12
+		table.addMouseListener( new MouseAdapter()
+		{
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void mouseClicked( MouseEvent e )
+			{
+				if (SwingUtilities.isRightMouseButton(e))
+				{
+					int rowNumber = table.rowAtPoint(e.getPoint());
+		 
+					// select the clicked row
+					table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);
+					
+					//set the selected item which will be used on menu item clicks
+					selectedFileInfo = ((AbstractTableAdapter<DOFileInfo>) table.getModel()).getRow(rowNumber);
+
+					//show the context menu
+					fileEditMenu.show(table, e.getX(), e.getY());
+
+					//make it look a bit nicer
+					table.requestFocus();
+				}
+			}
+		});
+		
 		updateTableModel();
 		
-		//configure the context menu
+		//configure the context menu for column selection
 		columnSelectorMenu = new JPopupMenu();
 		columnSelectorMenu.setLayout(new SpringLayout());
-		refreshContextMenu();
+		refreshColumnSelectorMenu();
+		
+		//configure the context menu for file edition
+		initFileEditMenu(); 
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setPreferredSize(table.getPreferredSize());
 		add(scrollPane);
+	}
+	
+	private void initFileEditMenu() {
+		String iconsFolder = "/resources/images/";
+		
+		fileEditMenu = new JPopupMenu();
+		
+		JMenuItem editMenuItem = new JMenuItem(Messages.getString("ML.ContextMenu.EDIT"));
+		editMenuItem.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "edit-16.png")));
+		editMenuItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				FileEditDialog fed = new FileEditDialog(selectedFileInfo, selectionInList);
+				fed.setSize(new Dimension(400, 200));
+				fed.setLocation(GUIHelper.getCenterDialogOnParentLocation(fed.getSize(), table));
+				fed.setModal(true);
+				fed.setVisible(true);
+			}
+		});
+		fileEditMenu.add(editMenuItem);
 	}
 	
 	private void handleColumnMoved() {
@@ -162,7 +223,7 @@ public class FileDisplayTable extends JPanel {
 		isColumnDragging = false;
 	}
 
-	private void refreshContextMenu() {
+	private void refreshColumnSelectorMenu() {
 		//clear all the menu items
 		columnSelectorMenu.removeAll();
 		
@@ -335,13 +396,13 @@ public class FileDisplayTable extends JPanel {
 				}
 			}
 		}
-		refreshContextMenu();
+		refreshColumnSelectorMenu();
 		updateTableModel();
 	}
 	
 	private void hideAllColumns() {
 		MediaLibraryStorage.getInstance().deleteAllTableColumnConfiguration(getFileType());
-		refreshContextMenu();
+		refreshColumnSelectorMenu();
 		updateTableModel();
 	}
 }
