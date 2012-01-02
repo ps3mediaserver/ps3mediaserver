@@ -3,6 +3,8 @@ package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
@@ -14,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -57,8 +60,17 @@ public class VideoFileInfoPanel extends JPanel {
 		builder.setOpaque(true);
 		
 		//Add title
-		JLabel lTitle = new JLabel(String.format("%s (%s)", fileInfo.getName(), DLNAHelper.formatSecToHHMMSS((int)fileInfo.getDurationSec())));
-		builder.add(lTitle, cc.xyw(2, 2, 3));
+		JLabel lTitle = new JLabel(fileInfo.getName());
+		lTitle.setFont(lTitle.getFont().deriveFont(lTitle.getFont().getStyle(), lTitle.getFont().getSize() + 3));
+		JLabel lDuration = new JLabel(String.format("(%s)", DLNAHelper.formatSecToHHMMSS((int)fileInfo.getDurationSec())));
+		FlowLayout fl = new FlowLayout(FlowLayout.LEFT);
+		fl.setAlignOnBaseline(true);
+		JPanel pTitle = new JPanel(fl);
+		pTitle.setAlignmentX(BOTTOM_ALIGNMENT);
+		pTitle.setAlignmentY(LEFT_ALIGNMENT);
+		pTitle.add(lTitle);
+		pTitle.add(lDuration);
+		builder.add(pTitle, cc.xyw(2, 2, 3, CellConstraints.LEFT, CellConstraints.BOTTOM));
 
 		// Add cover
 		final JLabel lCover = new JLabel();
@@ -106,7 +118,9 @@ public class VideoFileInfoPanel extends JPanel {
 		builder.setOpaque(true);
 		
 		//add file properties
-		builder.addSeparator(Messages.getString("ML.VideoFileInfoPanel.lFileProperties"), cc.xyw(2, 2, 7));
+		JComponent cmp = builder.addSeparator(Messages.getString("ML.VideoFileInfoPanel.lFileProperties"), cc.xyw(2, 2, 7));
+		cmp = (JComponent) cmp.getComponent(0);
+		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 		
 		builder.add(new PropertyInfoTitleLabel(Messages.getString("ML.Condition.Type.FILE_SIZEBYTE")), cc.xy(2, 4));
 		builder.addLabel((fileInfo.getSize() / (1024 * 1024)) + Messages.getString("ML.Condition.Unit.FILESIZE_MEGABYTE"), cc.xy(4, 4));
@@ -130,8 +144,10 @@ public class VideoFileInfoPanel extends JPanel {
 		builder.addLabel(fileInfo.getFilePath(), cc.xyw(4, 10, 5));
 		
 		//add video properties
-		builder.addSeparator(Messages.getString("ML.VideoFileInfoPanel.lVideoProperties"), cc.xyw(2, 12, 7));
-
+		cmp = builder.addSeparator(Messages.getString("ML.VideoFileInfoPanel.lVideoProperties"), cc.xyw(2, 12, 7));
+		cmp = (JComponent) cmp.getComponent(0);
+		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+		
 		builder.add(new PropertyInfoTitleLabel(Messages.getString("ML.VideoFileInfoPane.lResolution")), cc.xy(2, 14));
 		builder.addLabel(String.format("%sx%s", fileInfo.getWidth(), fileInfo.getHeight()),  cc.xy(4, 14));
 
@@ -145,7 +161,7 @@ public class VideoFileInfoPanel extends JPanel {
 		builder.addLabel(fileInfo.getContainer(), cc.xy(8, 16));
 
 		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_BITRATE), cc.xy(2, 18));
-		builder.addLabel(String.valueOf((double)fileInfo.getBitrate() / 1024) + " kbit/s",  cc.xy(4, 18));
+		builder.addLabel(String.valueOf(fileInfo.getBitrate() / 1024) + " kbit/s",  cc.xy(4, 18));
 
 		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_MIMETYPE), cc.xy(6, 18));
 		builder.addLabel(fileInfo.getMimeType(), cc.xy(8, 18));

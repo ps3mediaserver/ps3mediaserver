@@ -78,7 +78,7 @@ public class FileEditDialog extends JDialog {
 		CellConstraints cc = new CellConstraints();
 
 		FormLayout layout = new FormLayout("3px, p, 3px, p, fill:10:grow, p, 3px, p, 3px", // columns
-		        "3px, fill:p:grow, 3px, p"); // raws
+		        "3px, fill:p:grow, 3px, p, 3px"); // raws
 		builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 
