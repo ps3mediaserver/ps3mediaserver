@@ -1150,8 +1150,22 @@ public class MEncoderVideo extends Player {
 
 		ovccopy = false;
 
-		int intOCW = Integer.parseInt(configuration.getMencoderOverscanCompensationWidth());
-		int intOCH = Integer.parseInt(configuration.getMencoderOverscanCompensationHeight());
+		int intOCW = 0;
+		int intOCH = 0;
+
+		try {
+			intOCW = Integer.parseInt(configuration.getMencoderOverscanCompensationWidth());
+		} catch (NumberFormatException e) {
+			logger.error("Cannot parse configured MEncoder overscan compensation width: \""
+					+ configuration.getMencoderOverscanCompensationWidth() + "\"");
+		}
+
+		try {
+			intOCH = Integer.parseInt(configuration.getMencoderOverscanCompensationHeight());
+		} catch (NumberFormatException e) {
+			logger.error("Cannot parse configured MEncoder overscan compensation height: \""
+					+ configuration.getMencoderOverscanCompensationHeight() + "\"");
+		}
 
 		if (
 			!forceMencoder &&
