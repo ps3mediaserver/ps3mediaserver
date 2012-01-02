@@ -66,11 +66,9 @@ public class VideoFileInfoPanel extends JPanel {
 		FlowLayout fl = new FlowLayout(FlowLayout.LEFT);
 		fl.setAlignOnBaseline(true);
 		JPanel pTitle = new JPanel(fl);
-		pTitle.setAlignmentX(BOTTOM_ALIGNMENT);
-		pTitle.setAlignmentY(LEFT_ALIGNMENT);
 		pTitle.add(lTitle);
 		pTitle.add(lDuration);
-		builder.add(pTitle, cc.xyw(2, 2, 3, CellConstraints.LEFT, CellConstraints.BOTTOM));
+		builder.add(pTitle, cc.xyw(2, 2, 3));
 
 		// Add cover
 		final JLabel lCover = new JLabel();

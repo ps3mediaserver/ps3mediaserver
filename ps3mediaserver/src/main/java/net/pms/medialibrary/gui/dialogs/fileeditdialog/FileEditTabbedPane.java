@@ -14,7 +14,15 @@ public class FileEditTabbedPane extends JTabbedPane {
 	private DOFileInfo fileInfo;
 
 	public FileEditTabbedPane(DOFileInfo fileInfo) {
-		setFileInfo(fileInfo);
+		setContent(fileInfo);
+	}
+
+	public DOFileInfo getFileInfo() {
+		return fileInfo;
+	}
+
+	public void setContent(DOFileInfo fileInfo) {
+		this.fileInfo = fileInfo;
 		
 		JPanel infoPanel = new JPanel();
 		JPanel propertiesPanel = new JPanel();
@@ -27,16 +35,9 @@ public class FileEditTabbedPane extends JTabbedPane {
 			//TODO: implement
 		}
 		
+		removeAll();
 		addTab(Messages.getString("ML.FileEditTabbedPane.tInfo"), infoPanel);
 		addTab(Messages.getString("ML.FileEditTabbedPane.tProperties"), propertiesPanel);
 		addTab(Messages.getString("ML.FileEditTabbedPane.tTags"), tagsPanel);
-	}
-
-	public DOFileInfo getFileInfo() {
-		return fileInfo;
-	}
-
-	public void setFileInfo(DOFileInfo fileInfo) {
-		this.fileInfo = fileInfo;
 	}
 }

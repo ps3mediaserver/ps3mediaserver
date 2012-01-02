@@ -40,6 +40,7 @@ import net.pms.medialibrary.commons.dataobjects.comboboxitems.ConditionTypeCBIte
 import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
+import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.FileEditDialog;
 import net.pms.medialibrary.gui.shared.DateCellRenderer;
 import net.pms.medialibrary.gui.shared.ETable;
@@ -216,7 +217,40 @@ public class FileDisplayTable extends JPanel {
 				//create the edit dialog
 				if(table.getSelectionModel().getMinSelectionIndex() == table.getSelectionModel().getMaxSelectionIndex()) {
 					@SuppressWarnings("unchecked")
-					FileEditDialog fed = new FileEditDialog(((AbstractTableAdapter<DOFileInfo>) table.getModel()).getRow(table.convertRowIndexToModel(table.getSelectionModel().getLeadSelectionIndex())), getSelectedFiles());
+					FileEditLinkedList fel = new FileEditLinkedList() {
+						AbstractTableAdapter<DOFileInfo> tm = (AbstractTableAdapter<DOFileInfo>) table.getModel();
+						
+						@Override
+						public boolean hasPreviousFile() {
+							return table.getSelectionModel().getLeadSelectionIndex() > 0;
+						}
+						
+						@Override
+						public boolean hasNextFile() {
+							return table.getSelectionModel().getLeadSelectionIndex() + 1 < tm.getRowCount();
+						}
+						
+						@Override
+						public DOFileInfo getSelected() {
+							return tm.getRow(table.convertRowIndexToModel(table.getSelectionModel().getLeadSelectionIndex()));
+						}
+						
+						@Override
+						public DOFileInfo selectPreviousFile() {
+							int rowNumber = table.getSelectionModel().getLeadSelectionIndex() - 1;
+							table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);
+							return getSelected();
+						}
+						
+						@Override
+						public DOFileInfo selectNextFile() {
+							int rowNumber = table.getSelectionModel().getLeadSelectionIndex() + 1;
+							table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);
+							return getSelected();
+						}
+					};
+					
+					FileEditDialog fed = new FileEditDialog(fel);
 					fed.setModal(true);
 					fed.setResizable(false);
 					fed.pack();
