@@ -48,6 +48,8 @@ import net.pms.external.AdditionalFoldersAtRoot;
 import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.gui.IFrame;
+import net.pms.io.Gob;
+import net.pms.util.ProcessUtil;
 import net.pms.xmlwise.Plist;
 import net.pms.xmlwise.XmlParseException;
 
@@ -146,6 +148,11 @@ public class RootFolder extends DLNAResource {
 				addChild(videoSettingsRes);
 			}
 		}
+
+		if (!configuration.getHideComputerShutdownFolder()) {
+			addChild(getComputerShutdownFolder());
+		}
+
 		setDiscovered(true);
 	}
 
@@ -762,6 +769,91 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 		}
+		return res;
+	}
+
+	/**
+	 * Returns the Computer Shutdown folder and its contents.
+	 *
+	 * @return The folder
+	 */
+	private DLNAResource getComputerShutdownFolder() {
+		DLNAResource res = new VirtualFolder(Messages.getString("PMS.42"), null);
+
+		// Power off menu item
+		res.addChild(new VirtualVideoAction(Messages.getString("PMS.43"), true) {
+			@Override
+			public boolean enable() {
+				ProcessBuilder pb;
+
+				if (Platform.isWindows()) {
+					pb = new ProcessBuilder("shutdown", "-s", "-f");
+				} else {
+					pb = new ProcessBuilder("shutdown", "-h", "now");
+				}
+
+				pb.redirectErrorStream(true);
+
+				try {
+					// Start the command process
+					Process process = pb.start();
+
+					// Capture the output, but discard it.
+					new Gob(process.getErrorStream()).start();
+					new Gob(process.getInputStream()).start();
+
+					// Interesting conundrum: waiting for the power off to finish?
+					// I guess we're waiting for it to fail to finish. ;-)
+					ProcessUtil.waitFor(process);
+
+					if (process.exitValue() != 0) {
+						logger.error("Failed to execute power off command.");
+					}
+				} catch (IOException e) {
+					logger.error("Failed to execute power off command.");
+				}
+
+				return true;
+			}
+		});
+
+		// Restart menu item
+		res.addChild(new VirtualVideoAction(Messages.getString("PMS.44"), true) {
+			@Override
+			public boolean enable() {
+				ProcessBuilder pb;
+
+				if (Platform.isWindows()) {
+					pb = new ProcessBuilder("shutdown", "-r", "-f");
+				} else {
+					pb = new ProcessBuilder("shutdown", "-r", "now");
+				}
+
+				pb.redirectErrorStream(true);
+
+				try {
+					// Start the command process
+					Process process = pb.start();
+
+					// Capture the output, but discard it.
+					new Gob(process.getErrorStream()).start();
+					new Gob(process.getInputStream()).start();
+
+					// Interesting conundrum: waiting for the restart to finish?
+					// I guess we're waiting for it to fail to finish. ;-)
+					ProcessUtil.waitFor(process);
+
+					if (process.exitValue() != 0) {
+						logger.error("Failed to execute restart command.");
+					}
+				} catch (IOException e) {
+					logger.error("Failed to execute restart command.");
+				}
+
+				return true;
+			}
+		});
+
 		return res;
 	}
 

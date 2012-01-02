@@ -2,8 +2,10 @@ Changelog:
 ==========
 
 ????-??-?? - 1.50.1
+
 	Fixed DLNAResource cloning problem (#1274)
 	Added renderer configuration file for Philips TV (thanks, leroy!)
+	Added Computer Shutdown folder
 	Fixed bug in RootFolder (#1243)
 	Improved child discovery for the root folder
 	Enhanced network interface handling (#659)

@@ -88,6 +88,7 @@ public class PmsConfiguration {
 	private static final String KEY_HIDE_MEDIA_LIBRARY_FOLDER = "hide_media_library_folder";
 	private static final String KEY_HIDE_TRANSCODE_FOLDER = "hide_transcode_folder";
 	private static final String KEY_HIDE_VIDEO_SETTINGS = "hidevideosettings";
+	private static final String KEY_HIDE_COMPUTER_SHUTDOWN_FOLDER = "hide_computer_shutdown_folder";
 	private static final String KEY_HTTP_ENGINE_V2 = "http_engine_v2";
 	private static final String KEY_IP_FILTER = "ip_filter";
 	private static final String KEY_IPHOTO_ENABLED = "iphoto";
@@ -1258,6 +1259,27 @@ public class PmsConfiguration {
 
 	public void setHideVideoSettings(boolean value) {
 		configuration.setProperty(KEY_HIDE_VIDEO_SETTINGS, value);
+	}
+
+	/**
+	 * Returns whether or not the Computer Shutdown folder with shutdown
+	 * options should be present in the root folder.
+	 * 
+	 * @return True if the Computer Shutdown folder should be hidden.
+	 */
+	public boolean getHideComputerShutdownFolder() {
+		return getBoolean(KEY_HIDE_COMPUTER_SHUTDOWN_FOLDER, false);
+	}
+
+	/**
+	 * Set whether or not the Computer Shutdown folder with shutdown
+	 * options should be present in the root folder. 
+	 *
+	 * @param value Set to true if the folder should be hidden, false
+	 * 			otherwise.
+	 */
+	public void setHideComputerShutdownFolder(boolean value) {
+		configuration.setProperty(KEY_HIDE_COMPUTER_SHUTDOWN_FOLDER, value);
 	}
 
 	public boolean getUseCache() {

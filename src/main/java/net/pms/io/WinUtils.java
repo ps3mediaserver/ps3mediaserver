@@ -308,4 +308,19 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 		return new String[] { "ping", /* count */ "-n" , Integer.toString(count), /* size */ "-l", Integer.toString(packetSize), hostAddress };
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String[] getPowerOffCommand() {
+		return new String[] { "shutdown", "-s", "-f" };
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String[] getRestartCommand() {
+		return new String[] { "shutdown", "-r", "-f" };
+	}
 }

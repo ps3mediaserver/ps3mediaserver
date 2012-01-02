@@ -59,5 +59,15 @@ public interface SystemUtils {
 	 */
 	String[] getPingCommand(String hostAddress, int count, int packetSize);
 	
-
+	/**
+	 * Return the platform specific command to power off the system.
+	 * @return The command and its arguments.
+	 */
+	String[] getPowerOffCommand();
+	
+	/**
+	 * Return the platform specific command to restart the system.
+	 * @return The command and its arguments.
+	 */
+	String[] getRestartCommand();	
 }
