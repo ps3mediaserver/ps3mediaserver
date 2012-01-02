@@ -79,7 +79,7 @@ public class DOVideoFileInfo extends DOFileInfo {
 			String audiosString = "";
 			if(audioCodes != null){
 				for(DLNAMediaAudio audio : audioCodes){
-					audiosString += String.format("%s (%s), ", audio.getLang(), audio.getCodecA());
+					audiosString += String.format("%s (%s), ", audio.getLangFullName(), audio.getCodecA());
 				}
 				if(audiosString.endsWith(", ")){
 					audiosString = audiosString.substring(0, audiosString.length() - 2);
@@ -92,7 +92,7 @@ public class DOVideoFileInfo extends DOFileInfo {
 			if(subtitlesCodes != null){
 				for(DLNAMediaSubtitle subtitle : subtitlesCodes){
 					if(subtitle.getLang() != null){
-						subtitlesString += subtitle.getLang() + ", ";
+						subtitlesString += subtitle.getLangFullName() + ", ";
 					}
 				}
 				if(subtitlesString.endsWith(", ")){

@@ -32,7 +32,6 @@ import net.pms.medialibrary.commons.enumarations.AutoFolderType;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.events.AutoFolderDialogActionEvent;
 import net.pms.medialibrary.commons.events.AutoFolderDialogActionListener;
-import net.pms.medialibrary.gui.dialogs.folderdialog.FolderDialog;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -63,7 +62,7 @@ public class AddAutoFolderDialog extends JDialog {
 
 
 	public AddAutoFolderDialog(List<AutoFolderType> autoFolderTypes) {
-		((java.awt.Frame) getOwner()).setIconImage(new ImageIcon(FolderDialog.class.getResource("/resources/images/icon-32.png")).getImage());
+		((java.awt.Frame) getOwner()).setIconImage(new ImageIcon(getClass().getResource("/resources/images/icon-16.png")).getImage());
 		this.autoFolderTypes = autoFolderTypes;
 		initDialog();
 	}

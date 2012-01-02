@@ -1,7 +1,6 @@
 package net.pms.medialibrary.gui.tab.libraryview;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -21,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -55,7 +55,7 @@ public class FileDisplayTable extends JPanel {
 	private JPopupMenu columnSelectorMenu;
 	
 	private JPopupMenu fileEditMenu;
-	private DOFileInfo selectedFileInfo;
+	private DOFileInfo fileToEdit;
 	
 	private boolean isUpdating = false;
 	private boolean isColumnDragging = false;
@@ -94,6 +94,7 @@ public class FileDisplayTable extends JPanel {
 		table.setColumnSelectionAllowed(false);
 		table.setAutoCreateRowSorter(true);
 		table.setRowHeight(table.getRowHeight() + 4);
+		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		
 		//listen to mouse events on header in order to show the context menu
 		table.getTableHeader().addMouseListener(new MouseAdapter() {
@@ -155,20 +156,32 @@ public class FileDisplayTable extends JPanel {
 		//http://www.stupidjavatricks.com/?p=12
 		table.addMouseListener( new MouseAdapter()
 		{
-
 			@SuppressWarnings("unchecked")
 			@Override
 			public void mouseClicked( MouseEvent e )
 			{
 				if (SwingUtilities.isRightMouseButton(e))
 				{
+					AbstractTableAdapter<DOFileInfo> tm = ((AbstractTableAdapter<DOFileInfo>) table.getModel());
 					int rowNumber = table.rowAtPoint(e.getPoint());
-		 
-					// select the clicked row
-					table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);
+
+					//store for use on menu item click
+					fileToEdit = tm.getRow(rowNumber);
 					
-					//set the selected item which will be used on menu item clicks
-					selectedFileInfo = ((AbstractTableAdapter<DOFileInfo>) table.getModel()).getRow(rowNumber);
+					// select the clicked row
+					boolean doSelect = true;
+					if(table.getSelectedRowCount() > 0) {
+						for(DOFileInfo fi : getSelectedFiles()) {
+							if(fi.equals(fileToEdit)) {
+								doSelect = false;
+								break;
+							}
+						}
+					}
+					
+					if(doSelect) {
+						table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);
+					}
 
 					//show the context menu
 					fileEditMenu.show(table, e.getX(), e.getY());
@@ -204,15 +217,27 @@ public class FileDisplayTable extends JPanel {
 		editMenuItem.addActionListener(new ActionListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				FileEditDialog fed = new FileEditDialog(selectedFileInfo, selectionInList);
-				fed.setSize(new Dimension(400, 200));
-				fed.setLocation(GUIHelper.getCenterDialogOnParentLocation(fed.getSize(), table));
+			public void actionPerformed(ActionEvent arg0) {				
+				//create the edit dialog
+				FileEditDialog fed = new FileEditDialog(fileToEdit, getSelectedFiles());
 				fed.setModal(true);
+				fed.setResizable(false);
+				fed.pack();
+				fed.setLocation(GUIHelper.getCenterDialogOnParentLocation(fed.getSize(), table));
 				fed.setVisible(true);
 			}
 		});
 		fileEditMenu.add(editMenuItem);
+	}
+	
+	private List<DOFileInfo> getSelectedFiles() {
+		List<DOFileInfo> selectedFiles = new ArrayList<DOFileInfo>();
+		@SuppressWarnings("unchecked")
+		AbstractTableAdapter<DOFileInfo> tm = ((AbstractTableAdapter<DOFileInfo>) table.getModel());
+		for(int rowNumber : table.getSelectedRows()) {
+			selectedFiles.add(tm.getRow(rowNumber));
+		}
+		return selectedFiles;
 	}
 	
 	private void handleColumnMoved() {
