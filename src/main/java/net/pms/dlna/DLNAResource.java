@@ -542,14 +542,27 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							}
 						}
 
+						boolean hasSubsToTranscode = false;
+
+						if (!PMS.getConfiguration().isMencoderDisableSubs()) {
+						    hasSubsToTranscode = (PMS.getConfiguration().getUseSubtitles() && child.isSrtFile()) || hasEmbeddedSubs;
+						}
+
+						boolean isIncompatible = false;
+
+						// FIXME: Remove PS3 specific logic to support other renderers
+						if (!parserV2 && !child.getExt().ps3compatible()) {
+							isIncompatible = true;
+						}
+
 						// Force transcoding if
 						// 1- MediaInfo support detected the file was not matched with supported codec configs and no SkipTranscode extension forced by user
 						// or 2- ForceTranscode extension forced by user
 						// or 3- FFmpeg support and the file is not ps3 compatible (need to remove this ?) and no SkipTranscode extension forced by user
 						// or 4- There's some sub files or embedded subs to deal with and no SkipTranscode extension forced by user
-						if (forceTranscode || !isSkipTranscode() && (forceTranscodeV2 || (!parserV2 && !child.getExt().ps3compatible()) || (PMS.getConfiguration().getUseSubtitles() && child.isSrtFile()) || hasEmbeddedSubs)) {
-							child.setPlayer(pl);
-							LOGGER.trace("Switching " + child.getName() + " to player: " + pl.toString());
+						if (forceTranscode || !isSkipTranscode() && (forceTranscodeV2 || isIncompatible || hasSubsToTranscode)) {
+						    child.setPlayer(pl);
+						    LOGGER.trace("Switching " + child.getName() + " to player " + pl.toString() + " for transcoding");
 						}
 
 						if (child.getExt().isVideo()) {
@@ -580,6 +593,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							}
 						}
 					} else if (!child.getExt().ps3compatible() && !child.isFolder()) {
+						// FIXME: Remove PS3 specific logic to support other renderers
 						getChildren().remove(child);
 					}
 				}
@@ -589,6 +603,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					newChild.setExt(newChild.getExt().getSecondaryFormat());
 					newChild.first = child;
 					child.second = newChild;
+
+					// FIXME: Remove PS3 specific logic to support other renderers
 					if (!newChild.getExt().ps3compatible() && newChild.getExt().getProfiles().size() > 0) {
 						newChild.setPlayer(PMS.get().getPlayer(newChild.getExt().getProfiles().get(0), newChild.getExt()));
 					}

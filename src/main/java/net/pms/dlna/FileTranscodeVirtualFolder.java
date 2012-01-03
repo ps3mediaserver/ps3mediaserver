@@ -106,6 +106,8 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 
 				// meskibob: I think it'd be a good idea to add a "Stream" option (for PS3 compatible containers) to the #Transcode# folder in addition to the current options already in there.
 				DLNAResource justStreamed = (DLNAResource) ref.clone();
+
+				// FIXME: Remove PS3 specific logic to support other renderers
 				if (justStreamed.getExt() != null && (justStreamed.getExt().ps3compatible() || justStreamed.isSkipTranscode())) {
 					justStreamed.setId(null);
 					justStreamed.setPlayer(null);
