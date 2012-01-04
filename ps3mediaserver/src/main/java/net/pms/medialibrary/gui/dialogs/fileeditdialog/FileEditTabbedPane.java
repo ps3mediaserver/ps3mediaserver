@@ -1,5 +1,8 @@
 package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
@@ -8,6 +11,7 @@ import net.pms.medialibrary.commons.dataobjects.DOAudioFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOImageFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
+import net.pms.medialibrary.commons.interfaces.IBuildable;
 
 public class FileEditTabbedPane extends JTabbedPane {
 	private static final long serialVersionUID = -4181083393313495546L;
@@ -19,6 +23,13 @@ public class FileEditTabbedPane extends JTabbedPane {
 
 	public FileEditTabbedPane(DOFileInfo fileInfo) {
 		setContent(fileInfo);
+		
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent paramComponentEvent) {
+				((IBuildable) propertiesPanel).build();
+			}
+		});
 	}
 
 	public DOFileInfo getFileInfo() {
