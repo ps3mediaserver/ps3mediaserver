@@ -445,7 +445,7 @@ public class DOVideoFileInfo extends DOFileInfo {
 	@Override
 	public int hashCode(){
 		int hashCode = 24 + super.hashCode();
-		getOriginalName().hashCode();
+		hashCode *= 24 + getOriginalName().hashCode();
 		hashCode *= 24 + getName().hashCode();
 		hashCode *= 24 + getSortName().hashCode();
 		hashCode *= 24 + getTmdbId();

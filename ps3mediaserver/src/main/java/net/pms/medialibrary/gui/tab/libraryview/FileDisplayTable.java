@@ -1,6 +1,8 @@
 package net.pms.medialibrary.gui.tab.libraryview;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -239,6 +241,7 @@ public class FileDisplayTable extends JPanel {
 						public DOFileInfo selectPreviousFile() {
 							int rowNumber = table.getSelectionModel().getLeadSelectionIndex() - 1;
 							table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);
+							table.scrollRectToVisible(new Rectangle(table.getCellRect(rowNumber, 0, true)));
 							return getSelected();
 						}
 						
@@ -246,14 +249,14 @@ public class FileDisplayTable extends JPanel {
 						public DOFileInfo selectNextFile() {
 							int rowNumber = table.getSelectionModel().getLeadSelectionIndex() + 1;
 							table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);
+							table.scrollRectToVisible(new Rectangle(table.getCellRect(rowNumber, 0, true)));
 							return getSelected();
 						}
 					};
 					
 					FileEditDialog fed = new FileEditDialog(fel);
 					fed.setModal(true);
-					fed.setResizable(false);
-					fed.pack();
+					fed.setSize(new Dimension(750, 435));
 					fed.setLocation(GUIHelper.getCenterDialogOnParentLocation(fed.getSize(), table));
 					fed.setVisible(true);
 				} else {
@@ -269,7 +272,7 @@ public class FileDisplayTable extends JPanel {
 		@SuppressWarnings("unchecked")
 		AbstractTableAdapter<DOFileInfo> tm = ((AbstractTableAdapter<DOFileInfo>) table.getModel());
 		for(int rowNumber : table.getSelectedRows()) {
-			selectedFiles.add(tm.getRow(rowNumber));
+			selectedFiles.add(tm.getRow(table.convertRowIndexToModel(rowNumber)));
 		}
 		return selectedFiles;
 	}

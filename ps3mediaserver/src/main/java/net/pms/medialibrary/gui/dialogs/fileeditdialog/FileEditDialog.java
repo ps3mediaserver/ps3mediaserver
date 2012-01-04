@@ -29,8 +29,9 @@ public class FileEditDialog extends JDialog {
 
 	public FileEditDialog(FileEditLinkedList fel) {
 		((java.awt.Frame) getOwner()).setIconImage(new ImageIcon(getClass().getResource("/resources/images/icon-16.png")).getImage());
-		setTitle(fel.getSelected().getFilePath());
 		setFileEditList(fel);
+		setTitle(fileEditList.getSelected().getFilePath());
+		setMinimumSize(new Dimension(400, 300));
 		
 		build();
 	}
@@ -56,8 +57,8 @@ public class FileEditDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				//TODO: save changes
 				tpFileEdit.setContent(fileEditList.selectPreviousFile());
+				setTitle(fileEditList.getSelected().getFilePath());
 				refreshButtonStates();
-				pack();
 			}
 		});
 		
@@ -69,8 +70,8 @@ public class FileEditDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				//TODO: save changes
 				tpFileEdit.setContent(fileEditList.selectNextFile());
+				setTitle(fileEditList.getSelected().getFilePath());
 				refreshButtonStates();
-				pack();
 			}
 		});
 		
@@ -104,7 +105,7 @@ public class FileEditDialog extends JDialog {
 		CellConstraints cc = new CellConstraints();
 
 		FormLayout layout = new FormLayout("3px, p, 3px, p, fill:10:grow, p, 3px, p, 3px", // columns
-		        "3px, fill:p:grow, 3px, p, 3px"); // raws
+		        "3px, fill:10:grow, 3px, p, 3px"); // rows
 		builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 
