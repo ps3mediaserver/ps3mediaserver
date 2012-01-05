@@ -585,7 +585,7 @@ class DBVideoFileInfo extends DBFileInfo {
 
 			stmt = conn.prepareStatement("INSERT INTO VIDEO (FILEID, AGERATINGLEVEL, AGERATINGREASON, RATINGPERCENT, RATINGVOTERS"
 			        + ", DIRECTOR, TAGLINE, ASPECTRATIO, BITRATE, BITSPERPIXEL, CODECV, DURATIONSEC, CONTAINER, DVDTRACK, FRAMERATE, MIMETYPE, MODEL, MUXABLE"
-			        + ", WIDTH, YEAR, HEIGHT, ORIGINALNAME, NAME, TMDBID, IMDBID, OVERVIEW, BUDGET, REVENUE, HOMEPAGEURL, TRAILERURL, SORTNAME, MUXINGMODE)"
+			        + ", WIDTH, YEAR, HEIGHT, ORIGINALNAME, NAME, TMDBID, IMDBID, OVERVIEW, BUDGET, REVENUE, HOMEPAGEURL, TRAILERURL, SORTNAME, MUXINGMODE"
 			        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			stmt.clearParameters();
 			stmt.setInt(1, fileInfo.getId());
@@ -623,7 +623,7 @@ class DBVideoFileInfo extends DBFileInfo {
 			stmt.setString(32, fileInfo.getMuxingMode());
 			stmt.executeUpdate();
 
-			insertVideoPropertyLists(fileInfo, stmt, conn);
+			insertOrUpdateVideoPropertyLists(fileInfo, stmt, conn);
 		} catch (Exception e) {
 			throw new StorageException("Failed to insert video file info " + fileInfo.getFilePath(), e);
 		} finally {
@@ -637,10 +637,12 @@ class DBVideoFileInfo extends DBFileInfo {
 		PreparedStatement stmt = null;
 
 		try {
-			conn = cp.getConnection();    
-    		stmt = conn.prepareStatement("UPDATE VIDEO SET (AGERATINGLEVEL = ?, AGERATINGREASON = ?, RATINGPERCENT = ?, RATINGVOTERS = ?"
+			conn = cp.getConnection();
+			
+			//update video properties
+    		stmt = conn.prepareStatement("UPDATE VIDEO SET AGERATINGLEVEL = ?, AGERATINGREASON = ?, RATINGPERCENT = ?, RATINGVOTERS = ?"
     		        + ", DIRECTOR = ?, TAGLINE = ?, ASPECTRATIO = ?, BITRATE = ?, BITSPERPIXEL = ?, CODECV = ?, DURATIONSEC = ?, CONTAINER = ?, DVDTRACK = ?, FRAMERATE = ?, MIMETYPE = ?, MODEL = ?, MUXABLE = ?"
-    		        + ", WIDTH = ?, YEAR = ?, HEIGHT = ?, ORIGINALNAME = ?, NAME = ?, TMDBID = ?, IMDBID = ?, OVERVIEW = ?, BUDGET = ?, REVENUE = ?, HOMEPAGEURL = ?, TRAILERURL = ?, SORTNAME = ?, MUXINGMODE = ?)"
+    		        + ", WIDTH = ?, YEAR = ?, HEIGHT = ?, ORIGINALNAME = ?, NAME = ?, TMDBID = ?, IMDBID = ?, OVERVIEW = ?, BUDGET = ?, REVENUE = ?, HOMEPAGEURL = ?, TRAILERURL = ?, SORTNAME = ?, MUXINGMODE = ?"
     		        + " WHERE FILEID = ?");
     		stmt.clearParameters();
     		stmt.setString(1, fileInfo.getAgeRating().getLevel());
@@ -673,11 +675,20 @@ class DBVideoFileInfo extends DBFileInfo {
     		stmt.setInt(27, fileInfo.getRevenue());
     		stmt.setString(28, fileInfo.getHomepageUrl());
     		stmt.setString(29, fileInfo.getTrailerUrl());
-    		stmt.setString(30, fileInfo.getMuxingMode());
-    		stmt.setInt(31, fileInfo.getId());
+    		stmt.setString(30, fileInfo.getSortName());
+    		stmt.setString(31, fileInfo.getMuxingMode());
+    		stmt.setInt(32, fileInfo.getId());
     		stmt.executeUpdate();
 
-			insertVideoPropertyLists(fileInfo, stmt, conn);
+    		//update the enabled flag for the file
+    		stmt = conn.prepareStatement("UPDATE FILE SET ENABLED = ?"
+    		        + " WHERE ID = ?");
+    		stmt.clearParameters();
+    		stmt.setBoolean(1, fileInfo.isActif());
+    		stmt.setInt(2, fileInfo.getId());
+    		stmt.executeUpdate();
+
+    		insertOrUpdateVideoPropertyLists(fileInfo, stmt, conn);
     	} catch (Exception e) {
 			throw new StorageException("Failed to update video file info " + fileInfo.getFilePath(), e);
     	} finally {
@@ -686,8 +697,23 @@ class DBVideoFileInfo extends DBFileInfo {
     	}	    
     }
 	
-	private void insertVideoPropertyLists(DOVideoFileInfo videoFileInfo, PreparedStatement stmt, Connection conn) throws StorageException{
-
+	private void insertOrUpdateVideoPropertyLists(DOVideoFileInfo videoFileInfo, PreparedStatement stmt, Connection conn) throws StorageException{
+		insertOrUpdateAudioTracks(videoFileInfo, stmt, conn);
+		insertOrUpdateSubtitles(videoFileInfo, stmt, conn);
+		insertOrUpdateGenres(videoFileInfo, stmt, conn);
+	}
+	
+	private void insertOrUpdateAudioTracks(DOVideoFileInfo videoFileInfo, PreparedStatement stmt, Connection conn) throws StorageException {
+		//delete all audio tracks that might be linked to the video file
+		try {
+			stmt = conn.prepareStatement("DELETE FROM VIDEOAUDIO WHERE FILEID = ?");
+			stmt.clearParameters();
+			stmt.setInt(1, videoFileInfo.getId());
+			stmt.executeUpdate();
+		} catch (Exception e) {
+			throw new StorageException("Failed to delete all audio tracks linked to video with id=" + videoFileInfo.getId(), e);
+		}
+		
 		// Insert audio tracks for video
 		for (DLNAMediaAudio media : videoFileInfo.getAudioCodes()) {
 			try {
@@ -706,6 +732,18 @@ class DBVideoFileInfo extends DBFileInfo {
 			} catch (Exception e) {
 				throw new StorageException("Failed to insert audio file with lang=" + media.getLang() + " for file " + videoFileInfo.getFileName(false), e);
 			}
+		}
+	}
+	
+	private void insertOrUpdateSubtitles(DOVideoFileInfo videoFileInfo, PreparedStatement stmt, Connection conn) throws StorageException {
+		//delete all subtitles that might be linked to the video file
+		try {
+			stmt = conn.prepareStatement("DELETE FROM SUBTITLES WHERE FILEID = ?");
+			stmt.clearParameters();
+			stmt.setInt(1, videoFileInfo.getId());
+			stmt.executeUpdate();
+		} catch (Exception e) {
+			throw new StorageException("Failed to delete all subtitles linked to video with id=" + videoFileInfo.getId(), e);
 		}
 
 		// Insert subtitles for video
@@ -726,6 +764,18 @@ class DBVideoFileInfo extends DBFileInfo {
 			} catch (Exception e) {
 				throw new StorageException("Failed to insert subtitles lang=" + subtitle.getLang() + " for file " + videoFileInfo.getFileName(false), e);
 			}
+		}
+	}
+	
+	private void insertOrUpdateGenres(DOVideoFileInfo videoFileInfo, PreparedStatement stmt, Connection conn) throws StorageException {
+		//delete all genres that might be linked to the video file
+		try {
+			stmt = conn.prepareStatement("DELETE FROM FILETAGS WHERE FILEID = ?");
+			stmt.clearParameters();
+			stmt.setInt(1, videoFileInfo.getId());
+			stmt.executeUpdate();
+		} catch (Exception e) {
+			throw new StorageException("Failed to delete all genres linked to video with id=" + videoFileInfo.getId(), e);
 		}
 
 		// Insert genres for video

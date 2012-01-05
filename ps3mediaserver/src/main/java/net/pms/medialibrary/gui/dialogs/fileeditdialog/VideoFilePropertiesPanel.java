@@ -16,11 +16,15 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
+import net.pms.medialibrary.commons.dataobjects.DOCertification;
+import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
+import net.pms.medialibrary.commons.dataobjects.DORating;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
-import net.pms.medialibrary.commons.interfaces.IBuildable;
+import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
+import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
 
-public class VideoFilePropertiesPanel extends JPanel implements IBuildable {
+public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesEditor {
 	private static final long serialVersionUID = -2983607076103804005L;
 	
 	private JTextField tfName;
@@ -169,5 +173,66 @@ public class VideoFilePropertiesPanel extends JPanel implements IBuildable {
 		
 		removeAll();
 		add(sp);
+	}
+
+	@Override
+	public void updateFileInfo(DOFileInfo fileInfo) throws ConditionTypeException {
+		if(!(fileInfo instanceof DOVideoFileInfo)) {
+			return;
+		}
+		
+		//try to parse all numerical values first to avoid modifying the fileinfo
+		//if a value can't be set
+		int year;
+		int tmdbId;
+		int budget;
+		int revenue;
+		int rating;
+		int voters;
+		
+		try { year = Integer.parseInt(tfYear.getText().trim()); } 
+		catch(NumberFormatException ex) {
+			throw new ConditionTypeException(ConditionType.VIDEO_YEAR, tfYear.getText());
+		}
+		try { tmdbId = Integer.parseInt(tfTmdbId.getText().trim()); } 
+		catch(NumberFormatException ex) {
+			throw new ConditionTypeException(ConditionType.VIDEO_TMDBID, tfTmdbId.getText());
+		}
+		try { budget = Integer.parseInt(tfBudget.getText().trim()); } 
+		catch(NumberFormatException ex) {
+			throw new ConditionTypeException(ConditionType.VIDEO_BUDGET, tfBudget.getText());
+		}
+		try { revenue = Integer.parseInt(tfRevenue.getText().trim()); } 
+		catch(NumberFormatException ex) {
+			throw new ConditionTypeException(ConditionType.VIDEO_REVENUE, tfRevenue.getText());
+		}
+		try { rating = Integer.parseInt(tfRating.getText().trim()); } 
+		catch(NumberFormatException ex) {
+			throw new ConditionTypeException(ConditionType.VIDEO_RATINGPERCENT, tfRating.getText());
+		}
+		try { voters = Integer.parseInt(tfRatingVoters.getText().trim()); } 
+		catch(NumberFormatException ex) {
+			throw new ConditionTypeException(ConditionType.VIDEO_RATINGVOTERS, tfRatingVoters.getText());
+		}
+
+		DOVideoFileInfo fiVideo = (DOVideoFileInfo) fileInfo;
+		fiVideo.setActif(cbActive.isSelected());
+		
+		fiVideo.setYear(year);
+		fiVideo.setTmdbId(tmdbId);
+		fiVideo.setBudget(budget);
+		fiVideo.setRevenue(revenue);
+		fiVideo.setRating(new DORating(rating, voters));		
+		
+		fiVideo.setName(tfName.getText().trim());
+		fiVideo.setOriginalName(tfOriginalName.getText().trim());
+		fiVideo.setSortName(tfSortName.getText().trim());
+		fiVideo.setDirector(tfDirector.getText().trim());
+		fiVideo.setImdbId(tfImdbId.getText().trim());
+		fiVideo.setHomepageUrl(tfHomePage.getText().trim());
+		fiVideo.setTrailerUrl(tfTrailer.getText().trim());
+		fiVideo.setAgeRating(new DOCertification(tfCertification.getText().trim(), tfCertificationReason.getText().trim()));
+		fiVideo.setTagLine(tfTagLine.getText().trim());
+		fiVideo.setOverview(taOverview.getText().trim());
 	}
 }

@@ -11,34 +11,36 @@ import net.pms.medialibrary.commons.dataobjects.DOAudioFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOImageFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
-import net.pms.medialibrary.commons.interfaces.IBuildable;
+import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
+import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
 
 public class FileEditTabbedPane extends JTabbedPane {
 	private static final long serialVersionUID = -4181083393313495546L;
-	private DOFileInfo fileInfo;
 
 	private JPanel infoPanel;
 	private JPanel propertiesPanel;
 	private JPanel tagsPanel;
+	
+	private DOFileInfo fileInfo;
 
 	public FileEditTabbedPane(DOFileInfo fileInfo) {
-		setContent(fileInfo);
+		this.fileInfo = fileInfo;
+		setContent();
 		
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent paramComponentEvent) {
-				((IBuildable) propertiesPanel).build();
+				((IFilePropertiesEditor) propertiesPanel).build();
 			}
 		});
 	}
 
-	public DOFileInfo getFileInfo() {
-		return fileInfo;
+	public void setContent(DOFileInfo fileInfo) {	
+		this.fileInfo = fileInfo;
+		setContent();
 	}
 
-	public void setContent(DOFileInfo fileInfo) {
-		this.fileInfo = fileInfo;
-		
+	private void setContent() {		
 		infoPanel = new JPanel();
 		propertiesPanel = new JPanel();
 		tagsPanel = new JPanel();
@@ -62,5 +64,10 @@ public class FileEditTabbedPane extends JTabbedPane {
 		if(selectedIndex > 0) {
 			setSelectedIndex(selectedIndex);
 		}
+	}
+
+	public DOFileInfo getUpdatedFileInfo() throws ConditionTypeException {
+			((IFilePropertiesEditor) propertiesPanel).updateFileInfo(fileInfo);
+		return fileInfo;
 	}
 }

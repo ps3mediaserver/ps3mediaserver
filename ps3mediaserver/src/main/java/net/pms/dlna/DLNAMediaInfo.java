@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
@@ -149,13 +150,13 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
-	public ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
+	public List<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
-	public ArrayList<DLNAMediaSubtitle> subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
+	public List<DLNAMediaSubtitle> subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
@@ -1476,7 +1477,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @return the audioCodes
 	 * @since 1.50
 	 */
-	public ArrayList<DLNAMediaAudio> getAudioCodes() {
+	public List<DLNAMediaAudio> getAudioCodes() {
 		return audioCodes;
 	}
 
@@ -1484,7 +1485,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @param audioCodes the audioCodes to set
 	 * @since 1.50
 	 */
-	public void setAudioCodes(ArrayList<DLNAMediaAudio> audioCodes) {
+	public void setAudioCodes(List<DLNAMediaAudio> audioCodes) {
 		this.audioCodes = audioCodes;
 	}
 
@@ -1492,7 +1493,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @return the subtitlesCodes
 	 * @since 1.50
 	 */
-	public ArrayList<DLNAMediaSubtitle> getSubtitlesCodes() {
+	public List<DLNAMediaSubtitle> getSubtitlesCodes() {
 		return subtitlesCodes;
 	}
 
@@ -1500,7 +1501,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @param subtitlesCodes the subtitlesCodes to set
 	 * @since 1.50
 	 */
-	public void setSubtitlesCodes(ArrayList<DLNAMediaSubtitle> subtitlesCodes) {
+	public void setSubtitlesCodes(List<DLNAMediaSubtitle> subtitlesCodes) {
 		this.subtitlesCodes = subtitlesCodes;
 	}
 

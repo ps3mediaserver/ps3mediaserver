@@ -7,13 +7,17 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
+import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
+import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
+import net.pms.medialibrary.storage.MediaLibraryStorage;
 
 public class FileEditDialog extends JDialog {
 	private static final long serialVersionUID = 2921067184273978956L;
@@ -55,10 +59,12 @@ public class FileEditDialog extends JDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//TODO: save changes
-				tpFileEdit.setContent(fileEditList.selectPreviousFile());
-				setTitle(fileEditList.getSelected().getFilePath());
-				refreshButtonStates();
+				boolean success = saveUpdatedFileInfo();
+				if(success) {
+					tpFileEdit.setContent(fileEditList.selectPreviousFile());
+					setTitle(fileEditList.getSelected().getFilePath());
+					refreshButtonStates();
+				}
 			}
 		});
 		
@@ -68,10 +74,12 @@ public class FileEditDialog extends JDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//TODO: save changes
-				tpFileEdit.setContent(fileEditList.selectNextFile());
-				setTitle(fileEditList.getSelected().getFilePath());
-				refreshButtonStates();
+				boolean success = saveUpdatedFileInfo();
+				if(success) {
+					tpFileEdit.setContent(fileEditList.selectNextFile());
+					setTitle(fileEditList.getSelected().getFilePath());
+					refreshButtonStates();
+				}
 			}
 		});
 		
@@ -82,8 +90,10 @@ public class FileEditDialog extends JDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//TODO: save changes
-				dispose();
+				boolean success = saveUpdatedFileInfo();
+				if(success) {
+					dispose();
+				}
 			}
 		});
 		
@@ -93,7 +103,6 @@ public class FileEditDialog extends JDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//TODO: save changes
 				dispose();
 			}
 		});
@@ -121,5 +130,19 @@ public class FileEditDialog extends JDialog {
 	private void refreshButtonStates() {
 		bPrevious.setEnabled(fileEditList.hasPreviousFile());
 		bNext.setEnabled(fileEditList.hasNextFile());
+	}
+
+	private boolean saveUpdatedFileInfo() {
+		DOFileInfo fileInfo;
+		try {
+			fileInfo = tpFileEdit.getUpdatedFileInfo();
+		} catch(ConditionTypeException ex) {
+			String msg = String.format(Messages.getString("ML.FileEditDialog.InvalidInt"),Messages.getString("ML.Condition.Header.Type." + ex.getConditionType()), System.getProperty("line.separator"));
+			JOptionPane.showMessageDialog(this, msg, "Save error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		
+		MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
+		return true;
 	}
 }

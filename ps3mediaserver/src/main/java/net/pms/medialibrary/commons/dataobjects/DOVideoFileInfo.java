@@ -41,8 +41,8 @@ public class DOVideoFileInfo extends DOFileInfo {
 	private boolean muxable = false;
 	private int width = 0;
 	private String muxingMode;
-	private ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
-	private ArrayList<DLNAMediaSubtitle> subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
+	private List<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
+	private List<DLNAMediaSubtitle> subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
 	
 	public String getDisplayString(String displayNameMask){
 		String retVal = super.getDisplayString(displayNameMask);
@@ -395,11 +395,11 @@ public class DOVideoFileInfo extends DOFileInfo {
 	    return year;
     }
 
-	public void setAudioCodes(ArrayList<DLNAMediaAudio> audioCodes) {
+	public void setAudioCodes(List<DLNAMediaAudio> audioCodes) {
 	    this.audioCodes = audioCodes;
     }
 
-	public ArrayList<DLNAMediaAudio> getAudioCodes() {
+	public List<DLNAMediaAudio> getAudioCodes() {
 		if(audioCodes == null) audioCodes = new ArrayList<DLNAMediaAudio>();
 		Collections.sort(audioCodes, new Comparator<DLNAMediaAudio>() {
 
@@ -411,11 +411,11 @@ public class DOVideoFileInfo extends DOFileInfo {
 	    return audioCodes;
     }
 
-	public void setSubtitlesCodes(ArrayList<DLNAMediaSubtitle> subtitlesCodes) {
+	public void setSubtitlesCodes(List<DLNAMediaSubtitle> subtitlesCodes) {
 	    this.subtitlesCodes = subtitlesCodes;
     }
 
-	public ArrayList<DLNAMediaSubtitle> getSubtitlesCodes() {
+	public List<DLNAMediaSubtitle> getSubtitlesCodes() {
 		if(subtitlesCodes == null) subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
 		Collections.sort(subtitlesCodes, new Comparator<DLNAMediaSubtitle>() {
 
