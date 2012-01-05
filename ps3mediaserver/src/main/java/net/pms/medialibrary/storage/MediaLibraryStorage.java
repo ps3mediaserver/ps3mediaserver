@@ -416,7 +416,6 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 
 	@Override
 	public void updateFileInfo(DOFileInfo fileInfo) {
-		String statusMsg = null;
 		switch(fileInfo.getType()){
 			case AUDIO:
 				dbAudioFileInfo.updateAudioFileInfo((DOAudioFileInfo)fileInfo);
@@ -429,15 +428,9 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 			case VIDEO:
 			try {
 				dbVideoFileInfo.updateVideoFileInfo((DOVideoFileInfo)fileInfo);
-				if(log.isInfoEnabled()) log.info(String.format("Updated video file %s", fileInfo.getFilePath()));
-				statusMsg = Messages.getString("ML.Messages.VideoUpdated") + " " + fileInfo.toString();
+				if(log.isDebugEnabled()) log.debug(String.format("Updated video file %s", fileInfo.getFilePath()));
 			} catch (StorageException e) {
 				log.error("Storage error (update)", e);
-			}
-			
-			// notify of the insert in the GUI
-			if(statusMsg != null) {
-				PMS.get().getFrame().setStatusLine(statusMsg);
 			}
 			break;
 		}
@@ -519,10 +512,10 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 	}
 
 	@Override
-	public List<DOVideoFileInfo> getVideoFileInfo(DOFilter filter, boolean sortAscending, ConditionType sortField, int maxResults, SortOption sortOption) {
+	public List<DOVideoFileInfo> getVideoFileInfo(DOFilter filter, boolean sortAscending, ConditionType sortField, int maxResults, SortOption sortOption, boolean onlyActive) {
 		List<DOVideoFileInfo> res = null;
 		try {
-			res = dbVideoFileInfo.getVideoFileInfo(filter, sortAscending, sortField, sortOption, maxResults);
+			res = dbVideoFileInfo.getVideoFileInfo(filter, sortAscending, sortField, sortOption, maxResults, onlyActive);
 		} catch (StorageException e) {
 			log.error("Storage error (get)", e);
 		}

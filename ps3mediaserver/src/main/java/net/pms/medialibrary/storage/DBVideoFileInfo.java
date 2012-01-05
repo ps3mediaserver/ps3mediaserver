@@ -186,7 +186,7 @@ class DBVideoFileInfo extends DBFileInfo {
         return res;
 	}
 	
-	List<DOVideoFileInfo> getVideoFileInfo(DOFilter filter, boolean sortAscending, final ConditionType sortField, SortOption sortOption, int maxResults) throws StorageException {
+	List<DOVideoFileInfo> getVideoFileInfo(DOFilter filter, boolean sortAscending, final ConditionType sortField, SortOption sortOption, int maxResults, boolean onlyActive) throws StorageException {
 		HashMap<Integer, DOVideoFileInfo> videos = new LinkedHashMap<Integer, DOVideoFileInfo>();
 
 		Connection conn = null;
@@ -199,6 +199,9 @@ class DBVideoFileInfo extends DBFileInfo {
 			
 			// create the where clause
 			String whereClause = "VIDEO.FILEID = FILE.ID";
+			if(onlyActive) {
+				whereClause += " AND FILE.ENABLED = 1";
+			}
 			if (filter.getConditions().size() > 0) {
 				whereClause += " AND (" + formatEquation(filter) + ")";
 			}
@@ -585,7 +588,7 @@ class DBVideoFileInfo extends DBFileInfo {
 
 			stmt = conn.prepareStatement("INSERT INTO VIDEO (FILEID, AGERATINGLEVEL, AGERATINGREASON, RATINGPERCENT, RATINGVOTERS"
 			        + ", DIRECTOR, TAGLINE, ASPECTRATIO, BITRATE, BITSPERPIXEL, CODECV, DURATIONSEC, CONTAINER, DVDTRACK, FRAMERATE, MIMETYPE, MODEL, MUXABLE"
-			        + ", WIDTH, YEAR, HEIGHT, ORIGINALNAME, NAME, TMDBID, IMDBID, OVERVIEW, BUDGET, REVENUE, HOMEPAGEURL, TRAILERURL, SORTNAME, MUXINGMODE"
+			        + ", WIDTH, YEAR, HEIGHT, ORIGINALNAME, NAME, TMDBID, IMDBID, OVERVIEW, BUDGET, REVENUE, HOMEPAGEURL, TRAILERURL, SORTNAME, MUXINGMODE)"
 			        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			stmt.clearParameters();
 			stmt.setInt(1, fileInfo.getId());

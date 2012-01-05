@@ -124,7 +124,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 
 		List<DOFileInfo> files = new ArrayList<DOFileInfo>();
 		if(getFolder().isDisplayItems() && getFolder().getFileType() == FileType.VIDEO){
-			List<DOVideoFileInfo> videoFiles = MediaLibraryStorage.getInstance().getVideoFileInfo(getFolder().getInheritedFilter(), fdp.isSortAscending(), fdp.getSortType(), folder.getMaxFiles(), fdp.getSortOption());
+			List<DOVideoFileInfo> videoFiles = MediaLibraryStorage.getInstance().getVideoFileInfo(getFolder().getInheritedFilter(), fdp.isSortAscending(), fdp.getSortType(), folder.getMaxFiles(), fdp.getSortOption(), true);
 			files = Arrays.asList(videoFiles.toArray(new DOFileInfo[videoFiles.size()]));
 		}
 		

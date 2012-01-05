@@ -77,6 +77,7 @@ public class ScanFolderDialog extends JDialog {
 		f.setPicturesEnabled(cbScanPictures.isSelected());
 		f.setSubFoldersEnabled(cbScanSubFolders.isSelected());
 		f.setFileImportTemplate(pFileImport.getDisplayedTemplate());
+		f.setFileImportEnabled(cbUseFileImportPlugins.isSelected());
 		f.setWatchEnabled(false);
 
 		return f;

@@ -55,7 +55,7 @@ public interface IMediaLibraryStorage {
 	
 	//VideoFileInfo
 	void deleteVideoFileInfo();
-	List<DOVideoFileInfo> getVideoFileInfo(DOFilter filter, boolean sortAscending, ConditionType sortField, int maxResults, SortOption sortOption);
+	List<DOVideoFileInfo> getVideoFileInfo(DOFilter filter, boolean sortAscending, ConditionType sortField, int maxResults, SortOption sortOption, boolean onlyActive);
 	List<String> getVideoProperties(ConditionType conditionType, boolean isAscending, int minOccurences);
 	int getFilteredVideoCount(DOFilter filter);
 	int getVideoCount();	

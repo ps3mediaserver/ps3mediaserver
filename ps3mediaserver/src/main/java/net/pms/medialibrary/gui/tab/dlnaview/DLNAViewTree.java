@@ -649,7 +649,7 @@ public class DLNAViewTree extends JTree {
 					break;
 				case VIDEO:
 					FileDisplayProperties fdp = folder.getDisplayProperties();
-					List<DOVideoFileInfo> videos = mediaLibraryStorage.getVideoFileInfo(folder.getInheritedFilter(), fdp.isSortAscending(), fdp.getSortType(), folder.getMaxFiles(), fdp.getSortOption());
+					List<DOVideoFileInfo> videos = mediaLibraryStorage.getVideoFileInfo(folder.getInheritedFilter(), fdp.isSortAscending(), fdp.getSortType(), folder.getMaxFiles(), fdp.getSortOption(), true);
 
 					int insertPos;
 					int endPos;

@@ -123,7 +123,7 @@ public class FileDisplayer extends JPanel {
 		
 		List<DOFileInfo> files = new ArrayList<DOFileInfo>();
 		if(fileType == FileType.VIDEO){
-			List<DOVideoFileInfo> vFiles = MediaLibraryStorage.getInstance().getVideoFileInfo(filter, true, ConditionType.VIDEO_NAME, 0, SortOption.FileProperty);
+			List<DOVideoFileInfo> vFiles = MediaLibraryStorage.getInstance().getVideoFileInfo(filter, true, ConditionType.VIDEO_NAME, 0, SortOption.FileProperty, false);
 			files = (List<DOFileInfo>)(List<?>)vFiles;
 		} else if(fileType == FileType.FILE){
 			files = MediaLibraryStorage.getInstance().getFileInfo(filter, true, ConditionType.FILE_FILENAME, 0, SortOption.FileProperty);
