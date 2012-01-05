@@ -686,7 +686,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				resources.add(resource);
 				resource.refreshChildrenIfNeeded();
 			} else {
-				resource.discoverWithRenderer(renderer, count);
+				resource.discoverWithRenderer(renderer, count, true);
 
 				if (count == 0) {
 					count = resource.getChildren().size();
@@ -740,7 +740,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		setSystemUpdateId(getSystemUpdateId() + 1);
 	}
 
-	protected void discoverWithRenderer(RendererConfiguration renderer, int count) {
+	final protected void discoverWithRenderer(RendererConfiguration renderer, int count, boolean forced) {
 		// Discovering if not already done.
 		if (!isDiscovered()) {
 			discoverChildren();
@@ -755,9 +755,18 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			}
 			notifyRefresh();
 		} else {
-			if (isRefreshNeeded()) {
-				refreshChildren();
-				notifyRefresh();
+			// if forced, then call the old 'refreshChildren' method
+			LOGGER.trace("discover {} refresh forced: {}", getResourceId(), forced);
+			if (forced) {
+				if (refreshChildren()) {
+					notifyRefresh();
+				}
+			} else {
+				// if not, then the regular isRefreshNeeded/doRefreshChildren pair.
+				if (isRefreshNeeded()) {
+					doRefreshChildren();
+					notifyRefresh();
+				}
 			}
 		}
 	}
@@ -787,7 +796,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				if (indexPath.length == 1 || indexPath[1].length() == 0) {
 					return this;
 				} else {
-					discoverWithRenderer(renderer, count);
+					discoverWithRenderer(renderer, count, false);
 					for (DLNAResource file : getChildren()) {
 						DLNAResource found = file.search(indexPath[1], count, renderer);
 						if (found != null) {
@@ -818,16 +827,31 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**
-	 * Reload the list of children
+	 * Reload the list of children. 
 	 */
-	public void refreshChildren() {
+	public void doRefreshChildren() {
 	}
 
 	/**
 	 * 
-	 * @return true, if the container is changed, so refresh is needed
+	 * @return true, if the container is changed, so refresh is needed. 
+	 * This could be called a lot's of times.
 	 */
 	public boolean isRefreshNeeded() {
+		return false;
+	}
+	
+	/**
+	 * This method gets called only for the browsed folder, and not for the parent folders. (And in the media library scan step too). 
+	 * Override in plugins, when you doesn't want to implement proper change tracking, and you don't care if the 
+	 * hierarchy of nodes getting invalid between.  
+	 * @return
+	 */
+	public boolean refreshChildren() {
+		if (isRefreshNeeded()) {
+			doRefreshChildren();
+			return true;
+		}
 		return false;
 	}
 

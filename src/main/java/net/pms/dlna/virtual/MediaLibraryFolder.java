@@ -114,7 +114,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 	}
 
 	@Override
-	public void refreshChildren() {
+	public void doRefreshChildren() {
 		ArrayList<File> list = null;
 		ArrayList<String> strings = null;
 		int expectedOutput = 0;

@@ -216,7 +216,7 @@ public class Feed extends DLNAResource {
 	}
 
 	@Override
-	public void refreshChildren() {
+	public void doRefreshChildren() {
 		try {
 			getChildren().clear();
 			parse();
