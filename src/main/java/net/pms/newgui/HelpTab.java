@@ -33,6 +33,8 @@ import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import net.pms.util.PropertiesUtil;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -68,7 +70,8 @@ public class HelpTab {
 
 		try {
 			// Read the HTML help file
-			File file = new File("documentation/index.html");
+			String documentationDir = PropertiesUtil.getProjectProperties().get("project.documentation.dir");
+			File file = new File(documentationDir + "/index.html");
 
 			// Display the HTML help file in the editor
 			editorPane.setPage(file.toURI().toURL());
