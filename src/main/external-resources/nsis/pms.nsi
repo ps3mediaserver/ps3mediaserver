@@ -23,10 +23,10 @@ VIProductVersion "${PROJECT_VERSION_SHORT}.0"
 !define CLASS "net.pms.PMS"
 !define PRODUCT_NAME "PMS"
  
-; Definitions for Java 6.0
-!define JRE_VERSION "6.0"
-!define JRE_URL "http://download.oracle.com/otn-pub/java/jdk/7u1-b08/jre-7u1-windows-i586-s.exe"
-!define JRE64_URL "http://download.oracle.com/otn-pub/java/jdk/7u1-b08/jre-7u1-windows-x64.exe"
+; Definitions for Java 7.0
+!define JRE_VERSION "7.0"
+!define JRE_URL "http://download.oracle.com/otn-pub/java/jdk/7u2-b13/jre-7u2-windows-i586.exe"
+!define JRE64_URL "http://download.oracle.com/otn-pub/java/jdk/7u2-b13/jre-7u2-windows-x64.exe"
  
 ; use javaw.exe to avoid dosbox.
 ; use java.exe to keep stdout/stderr
