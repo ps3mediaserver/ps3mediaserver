@@ -81,10 +81,15 @@ public class AboutTab {
 		String commitUrl = "https://github.com/ps3mediaserver/ps3mediaserver/commit/" + commitId;
 		String buildLabel = Messages.getString("LinksTab.6") + " " + shortCommitId + " (" + commitTime + ")";
 
+		// Outcommented pending a fix for the maven-git-commit-id-plugin
+		// not running on "initialize" phase in the pom.xml
+		// See: https://github.com/ktoso/maven-git-commit-id-plugin/issues/22
+		/*
 		final LinkMouseListener commitLink = new LinkMouseListener(buildLabel, commitUrl);
 		JLabel lCommitLink = builder.addLabel(commitLink.getLabel(), cc.xy(2, 3, "center, fill"));
 		lCommitLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lCommitLink.addMouseListener(commitLink);
+		*/
 
 		imagePanel = buildImagePanel();
 		builder.add(imagePanel, cc.xy(2, 5, "center, fill"));

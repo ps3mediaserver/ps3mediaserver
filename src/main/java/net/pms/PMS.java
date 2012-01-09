@@ -384,7 +384,10 @@ public class PMS {
 		String commitTime = PropertiesUtil.getProjectProperties().get("git.commit.time");
 		String shortCommitId = commitId.substring(0,  9);
 
-		logger.info("Build: " + shortCommitId + " (" + commitTime + ")");
+		// Outcommented pending a fix for the maven-git-commit-id-plugin
+		// not running on "initialize" phase in the pom.xml
+		// See: https://github.com/ktoso/maven-git-commit-id-plugin/issues/22
+		// logger.info("Build: " + shortCommitId + " (" + commitTime + ")");
 		logger.info("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor"));
 		logger.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
 		logger.info("Encoding: " + System.getProperty("file.encoding"));
