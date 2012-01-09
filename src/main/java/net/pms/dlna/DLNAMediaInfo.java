@@ -1180,14 +1180,14 @@ public class DLNAMediaInfo implements Cloneable {
 	public byte[][] getAnnexBFrameHeader(InputFile f) {
 		String cmdArray[] = new String[14];
 		cmdArray[0] = PMS.getConfiguration().getFfmpegPath();
-		cmdArray[1] = "-vframes";
-		cmdArray[2] = "1";
-		cmdArray[3] = "-i";
+		cmdArray[1] = "-i";
 		if (f.getPush() == null && f.getFilename() != null) {
-			cmdArray[4] = f.getFilename();
+			cmdArray[2] = f.getFilename();
 		} else {
-			cmdArray[4] = "-";
+			cmdArray[2] = "-";
 		}
+		cmdArray[3] = "-vframes";
+		cmdArray[4] = "1";
 		cmdArray[5] = "-vcodec";
 		cmdArray[6] = "copy";
 		cmdArray[7] = "-f";
