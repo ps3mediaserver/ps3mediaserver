@@ -227,21 +227,21 @@ public class Request extends HTTPResource {
 						
 						if (subtitleHttpHeader != null && !"".equals(subtitleHttpHeader)) {
 							// Device allows a custom subtitle HTTP header; construct it
-		                    List<DLNAMediaSubtitle> subs = dlna.getMedia().getSubtitlesCodes();
-		
-		                    if (subs != null && !subs.isEmpty()) {
-		                        DLNAMediaSubtitle sub = subs.get(0);
-		
-		                        int type = sub.getType();
-		
-		                        if (type < DLNAMediaSubtitle.subExtensions.length) {
-		                            String strType = DLNAMediaSubtitle.subExtensions[type - 1];
-		                            String subtitleUrl = "http://" + PMS.get().getServer().getHost()
-		                            		+ ':' + PMS.get().getServer().getPort() + "/get/" 
-		                            		+ id + "/subtitle0000." + strType;
-		        					output(output, subtitleHttpHeader + ": " + subtitleUrl);
-		                        }
-		                    }
+							List<DLNAMediaSubtitle> subs = dlna.getMedia().getSubtitlesCodes();
+
+							if (subs != null && !subs.isEmpty()) {
+								DLNAMediaSubtitle sub = subs.get(0);
+
+								int type = sub.getType();
+
+								if (type < DLNAMediaSubtitle.subExtensions.length) {
+									String strType = DLNAMediaSubtitle.subExtensions[type - 1];
+									String subtitleUrl = "http://" + PMS.get().getServer().getHost()
+											+ ':' + PMS.get().getServer().getPort() + "/get/" 
+											+ id + "/subtitle0000." + strType;
+									output(output, subtitleHttpHeader + ": " + subtitleUrl);
+								}
+							}
 						}
 
 						final DLNAMediaInfo media = dlna.getMedia();
