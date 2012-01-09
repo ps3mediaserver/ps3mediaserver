@@ -374,7 +374,7 @@ public class PMS {
 		proxy = -1;
 
 		logger.info("Starting PS3 Media Server " + getVersion());
-		logger.info("by shagrath / 2008-2011");
+		logger.info("by shagrath / 2008-2012");
 		logger.info("http://ps3mediaserver.org");
 		logger.info("https://github.com/ps3mediaserver/ps3mediaserver");
 		logger.info("http://ps3mediaserver.blogspot.com");
