@@ -38,8 +38,6 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.execution.ExecutionHandler;
-import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +54,6 @@ public class HTTPServer implements Runnable {
 	private Channel channel;
 	private NetworkInterface ni = null;
 	private ChannelGroup group;
-	private ExecutionHandler executionHandler = null;
 
 	public InetAddress getIafinal() {
 		return iafinal;
@@ -113,20 +110,8 @@ public class HTTPServer implements Runnable {
 			factory = new NioServerSocketChannelFactory(
 				Executors.newCachedThreadPool(),
 				Executors.newCachedThreadPool());
-
-			// The OrderedMemoryAwareThreadPoolExecutor makes that all requests
-			// are handled sequentially in the correct order. Without it hiccups
-			// and double requests may occur. (See issue 1156)
-			//
-			// Setting corePoolSize to 1 because the PMS classes involved in
-			// streaming are not thread safe. Multiple threads handling the
-			// same request unintentionally cause ArrayOutOfBoundsExceptions
-			// and NullPointerExceptions.
-			executionHandler = new ExecutionHandler(
-					new OrderedMemoryAwareThreadPoolExecutor(1, 1048576, 1048576));
-
 			ServerBootstrap bootstrap = new ServerBootstrap(factory);
-			HttpServerPipelineFactory pipeline = new HttpServerPipelineFactory(group, executionHandler);
+			HttpServerPipelineFactory pipeline = new HttpServerPipelineFactory(group);
 			bootstrap.setPipelineFactory(pipeline);
 			bootstrap.setOption("child.tcpNoDelay", true);
 			bootstrap.setOption("child.keepAlive", true);
@@ -176,9 +161,6 @@ public class HTTPServer implements Runnable {
 			if (factory != null) {
 				factory.releaseExternalResources();
 			}
-			if (executionHandler != null) {
-				executionHandler.releaseExternalResources();
-			}			
 		}
 		NetworkConfiguration.forgetConfiguration();
 	}

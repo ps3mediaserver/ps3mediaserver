@@ -21,7 +21,7 @@
  */
 package net.pms.network;
 
-import static org.jboss.netty.channel.Channels.pipeline;
+import static org.jboss.netty.channel.Channels.*;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -29,7 +29,6 @@ import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
-import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.stream.ChunkedWriteHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +40,9 @@ import org.slf4j.LoggerFactory;
 public class HttpServerPipelineFactory implements ChannelPipelineFactory {
 	private static final Logger logger = LoggerFactory.getLogger(HttpServerPipelineFactory.class);
 	private ChannelGroup group;
-	private final ExecutionHandler executionHandler;
 	
-	public HttpServerPipelineFactory(ChannelGroup group, ExecutionHandler executionHandler) {
+	public HttpServerPipelineFactory(ChannelGroup group) {
 	    this.group = group;
-	    this.executionHandler = executionHandler;
 	}
 
     public ChannelPipeline getPipeline() throws Exception {
@@ -55,7 +52,6 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory {
 		pipeline.addLast("decoder", new HttpRequestDecoder());
 		pipeline.addLast("aggregator", new HttpChunkAggregator(65536)); // eliminate the need to decode http chunks from the client
 		pipeline.addLast("encoder", new HttpResponseEncoder());
-		pipeline.addLast("executor", executionHandler); // Must be shared
 		pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
 		pipeline.addLast("handler", new RequestHandlerV2(group));
 		return pipeline;

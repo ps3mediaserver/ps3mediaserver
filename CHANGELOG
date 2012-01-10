@@ -21,7 +21,6 @@ Changelog:
 	Migrated PMS source to GitHub (https://github.com/ps3mediaserver/ps3mediaserver)
 	Added commit information
 	Added subtitle HTTP header support for SamsungAllShare (thanks, SamiMakinen!)
-	Reduced number of threads handling the same request to one (#1156)
 
 2011-11-20 - 1.50.0
 
