@@ -143,7 +143,7 @@ public class SpeedStats {
 					pw.stopProcess();
 				}
 			};
-			Thread failsafe = new Thread(r);
+			Thread failsafe = new Thread(r, "SpeedStats Failsafe");
 			failsafe.start();
 			pw.runInSameThread();
 			List<String> ls = pw.getOtherResults();

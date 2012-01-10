@@ -127,7 +127,7 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 						public void run() {
 							b2 = Kernel32.INSTANCE.ConnectNamedPipe(handle2, null);
 						}
-					});
+					}, "Forced Reconnector");
 					forced.start();
 				}
 				//debug = new FileOutputStream(n);

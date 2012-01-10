@@ -24,6 +24,7 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,6 +82,11 @@ public class NetworkConfiguration {
 		public String getDisplayName() {
 			return iface.getDisplayName().trim() + (addr != null ? " (" + addr.getHostAddress() + ")" : "");
 		}
+		
+		@Override
+		public String toString() {
+			return "InterfaceAssociation(addr=" + addr + ",iface=" + iface + ",parent=" + parentName + ')';
+		}
 	}
 
 	private final static Logger LOG = LoggerFactory.getLogger(NetworkConfiguration.class);
@@ -105,12 +111,14 @@ public class NetworkConfiguration {
 	 */
 	private Set<InetAddress> addAvailableAddresses(NetworkInterface netIface) {
 		Set<InetAddress> addrSet = new HashSet<InetAddress>();
+		LOG.debug("available addresses for {} is : {}", netIface.getName(), Collections.list(netIface.getInetAddresses()));
 		for (InterfaceAddress ia : netIface.getInterfaceAddresses()) {
 			InetAddress address = ia.getAddress();
 			if (isRelevantAddress(address)) {
 				addrSet.add(ia.getAddress());
 			}
 		}
+		LOG.debug(" non loopback/ipv4 addresses : {}", addrSet);
 		addressMap.put(netIface.getName(), addrSet);
 		return addrSet;
 	}
@@ -125,14 +133,20 @@ public class NetworkConfiguration {
 	}
 
 	private void checkNetworkInterface(Enumeration<NetworkInterface> enm, String parentName) {
-		while (enm.hasMoreElements()) {
-			NetworkInterface ni = enm.nextElement();
+		List<NetworkInterface> nis = Collections.list(enm);
+		LOG.debug("checkNetworkInterface(parent = {}, child interfaces = {})", parentName, nis);
+		for (NetworkInterface ni : nis) {
 			if (!skipNetworkInterface(ni.getName(), ni.getDisplayName())) {
 				// check for interface has at least one ip address.
 				checkNetworkInterface(ni, parentName);
+			} else {
+				LOG.debug("child network interface ({},{}) is skipped, because skip_network_interfaces='{}'", 
+					new Object[] { ni.getName(),ni.getDisplayName(), skipNetworkInterfaces });
 			}
 		}
+		LOG.debug("checkNetworkInterface(parent = {}) finished.", parentName);
 	}
+
 
 	private Set<InetAddress> getAllAvailableAddresses(Enumeration<NetworkInterface> en) {
 		Set<InetAddress> addrSet = new HashSet<InetAddress>();
@@ -147,27 +161,32 @@ public class NetworkConfiguration {
 	}
 
 	private void checkNetworkInterface(NetworkInterface netIface, String parentName) {
-		LOG.debug("checking " + netIface.getName());
+		LOG.debug("checking {}, display name : {}",netIface.getName(), netIface.getDisplayName());
 		addAvailableAddresses(netIface);
 		checkNetworkInterface(netIface.getSubInterfaces(), netIface.getName());
 		// create address / iface pairs which are not IP address of the child iface too
 		Set<InetAddress> subAddress = getAllAvailableAddresses(netIface.getSubInterfaces());
+		LOG.debug("sub address for {} is {}", netIface.getName(), subAddress);
 		boolean foundAddress = false;
 		for (InterfaceAddress ifaceAddr : netIface.getInterfaceAddresses()) {
 			InetAddress address = ifaceAddr.getAddress();
+			LOG.debug("checking {} from {} on {}", new Object[] { address, ifaceAddr, netIface.getName() });
 			if (isRelevantAddress(address)) {
 				if (!subAddress.contains(address)) {
-					LOG.debug("found " + netIface.getName() + " -> " + address.getHostAddress());
+					LOG.debug("found {} -> {}", netIface.getName(), address.getHostAddress());
 					final InterfaceAssociation ni = new InterfaceAssociation(address, netIface, parentName);
 					interfaces.add(ni);
 					mainAddress.put(netIface.getName(), ni);
 					foundAddress = true;
 				}
+			} else {
+				LOG.debug("has {}, which is skipped, because loopback={}, ipv6={}", new Object[] { 
+					address, address.isLoopbackAddress(), (address instanceof Inet6Address)} );
 			}
 		}
 		if (!foundAddress) {
 			interfaces.add(new InterfaceAssociation(null, netIface, parentName));
-			LOG.info("found " + netIface.getName() + ", without valid address");
+			LOG.info("found {}, without valid address", netIface.getName());
 		}
 	}
 
@@ -200,12 +219,25 @@ public class NetworkConfiguration {
 	 * @return the first NetworkInterface which doesn't have a parent, so defaulting will avoid using alias interfaces
 	 */
 	public InterfaceAssociation getDefaultNetworkInterfaceAddress() {
-		if (interfaces.size() > 0) {
-			InterfaceAssociation association = interfaces.get(0);
+		LOG.info("default network interface address from {}", interfaces);
+		InterfaceAssociation association = getFirstInterfaceWithAddress();
+		if (association != null) {
 			if (association.getParentName() != null) {
-				return getAddressForNetworkInterfaceName(association.getParentName());
+				InterfaceAssociation ia = getAddressForNetworkInterfaceName(association.getParentName());
+				LOG.debug("first association has parent : {} -> {}", association, ia);
+				return ia;
 			} else {
+				LOG.debug("first network interface : {}", association);
 				return association;
+			}
+		}
+		return null;
+	}
+	
+	private InterfaceAssociation getFirstInterfaceWithAddress() {
+		for (InterfaceAssociation ia : interfaces) {
+			if (ia.getAddr() != null) {
+				return ia;
 			}
 		}
 		return null;

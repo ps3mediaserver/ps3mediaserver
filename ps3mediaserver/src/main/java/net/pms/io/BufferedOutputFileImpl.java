@@ -761,7 +761,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 				}
 			}
 		};
-		new Thread(checkEnd).start();
+		new Thread(checkEnd, "Buffered IO End Checker").start();
 	}
 
 	@Override

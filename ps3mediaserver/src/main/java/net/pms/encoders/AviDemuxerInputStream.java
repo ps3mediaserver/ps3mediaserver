@@ -92,7 +92,7 @@ public class AviDemuxerInputStream extends InputStream {
 				}
 			};
 			vOut = pout;
-			new Thread(r).start();
+			new Thread(r, "Avi Demuxer").start();
 		} else {
 			vOut = params.output_pipes[0].getOutputStream();
 		}
@@ -160,8 +160,8 @@ public class AviDemuxerInputStream extends InputStream {
 		};
 
 		logger.trace("Launching tsMuxeR muxing");
-		new Thread(r).start();
-		parsing = new Thread(r2);
+		new Thread(r, "Avi Demuxer tsMuxeR").start();
+		parsing = new Thread(r2, "Avi Demuxer Header Parser");
 		logger.trace("Ready to mux");
 	}
 

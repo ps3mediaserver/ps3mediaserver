@@ -250,7 +250,7 @@ public class MapFile extends DLNAResource {
 	}
 
 	@Override
-	public void refreshChildren() {
+	public void doRefreshChildren() {
 		List<File> files = getFileList();
 		List<File> addedFiles = new ArrayList<File>();
 		List<DLNAResource> removedFiles = new ArrayList<DLNAResource>();

@@ -280,7 +280,7 @@ public class PMS {
 				}
 			};
 
-			Thread checkThread = new Thread(r);
+			Thread checkThread = new Thread(r, "PMS Checker");
 			checkThread.start();
 			checkThread.join(60000);
 			checkThread.interrupt();
@@ -381,11 +381,20 @@ public class PMS {
 		proxy = -1;
 
 		logger.info("Starting PS3 Media Server " + getVersion());
-		logger.info("by shagrath / 2008-2011");
+		logger.info("by shagrath / 2008-2012");
 		logger.info("http://ps3mediaserver.org");
-		logger.info("http://code.google.com/p/ps3mediaserver");
+		logger.info("https://github.com/ps3mediaserver/ps3mediaserver");
 		logger.info("http://ps3mediaserver.blogspot.com");
 		logger.info("");
+
+		String commitId = PropertiesUtil.getProjectProperties().get("git.commit.id");
+		String commitTime = PropertiesUtil.getProjectProperties().get("git.commit.time");
+		String shortCommitId = commitId.substring(0,  9);
+
+		// Outcommented pending a fix for the maven-git-commit-id-plugin
+		// not running on "initialize" phase in the pom.xml
+		// See: https://github.com/ktoso/maven-git-commit-id-plugin/issues/22
+		// logger.info("Build: " + shortCommitId + " (" + commitTime + ")");
 		logger.info("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor"));
 		logger.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
 		logger.info("Encoding: " + System.getProperty("file.encoding"));
@@ -507,7 +516,7 @@ public class PMS {
 			logger.info("Maybe another process is running or the hostname is wrong.");
 		}
 
-		new Thread() {
+		new Thread("Connection Checker") {
 			@Override
 			public void run() {
 				try {
@@ -546,7 +555,7 @@ public class PMS {
 		frame.serverReady();
 
 		//UPNPHelper.sendByeBye();
-		Runtime.getRuntime().addShutdownHook(new Thread() {
+		Runtime.getRuntime().addShutdownHook(new Thread("PMS Listeners Stopper") {
 			@Override
 			public void run() {
 				try {

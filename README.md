@@ -53,7 +53,7 @@ PMS can be built using the following commands:
     cd ps3mediaserver
     mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external
     mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
-    mvn clean package
+    mvn package
 
 See [INSTALL.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/INSTALL.md) for more extensive documentation.
 

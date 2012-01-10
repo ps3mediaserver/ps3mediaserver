@@ -2,7 +2,25 @@ Changelog:
 ==========
 
 ????-??-?? - 1.50.1
-    Added renderer configuration file for Philips TV (thanks, leroy!)
+	Fixed DLNAResource cloning problem (#1274)
+	Added renderer configuration file for Philips TV (thanks, leroy!)
+	Fixed bug in RootFolder (#1243)
+	Improved child discovery for the root folder
+	Enhanced network interface handling (#659)
+	Updated MPlayer and MEncoder revisions to SB19
+	Fixed bug in Navigation Share tab
+	Added Solaris specific ping command (#1277)
+	Fixed problem parsing framerates with comma (#1278)
+	Fixed bug in AVCHeader scanner
+	Fixed broken MEncoder playback on empty custom settings 
+	Updated Sony Bravia EX configuration
+	Fixed timeshift audio sync problem with tsMuxeR (thanks ExSport!)
+	Added option to disable/enable DTS passthrough in video settings folder
+	Updated Samsung AllShare configuration to recognize newest firmware
+	Added support for WDHD Live and AirAv app (thanks, ehM.Deee!)
+	Migrated PMS source to GitHub (https://github.com/ps3mediaserver/ps3mediaserver)
+	Added commit information
+	Added subtitle HTTP header support for SamsungAllShare (thanks, SamiMakinen!)
 
 2011-11-20 - 1.50.0
 

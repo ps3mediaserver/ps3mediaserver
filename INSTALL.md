@@ -25,7 +25,7 @@ download the latest sources and build PMS:
 
     git clone git://github.com/ps3mediaserver/ps3mediaserver.git
     cd ps3mediaserver
-    mvn clean package
+    mvn package
 
 The result will be built in the "target" directory:
 
@@ -95,7 +95,7 @@ PMS is now ready to be built.
 
  8. Compile the latest version of PMS:
 
-        mvn clean package
+        mvn package
 
 The resulting binaries will be built in the "target" directory:
 
@@ -113,7 +113,7 @@ These last two commands can easily be automated using a script:
 
     rem build-pms.bat
     start /D ps3mediaserver /wait /b git pull
-    start /D ps3mediaserver /wait /b mvn clean package
+    start /D ps3mediaserver /wait /b mvn package
 
 
 (Linux, Mac OSX)
@@ -122,7 +122,7 @@ These last two commands can easily be automated using a script:
     # build-pms.sh
     cd ps3mediaserver
     git pull
-    mvn clean package
+    mvn package
 
 
 Instructions for developers
@@ -195,7 +195,7 @@ You can build PMS from Eclipse:
 
  * Create a new run configuration under "Run > Run Configurations...", right
    mouse button on "Maven Build", select "New", Name: `Build PMS`, Goals:
-   `clean package`. Select the tab "JRE" and add the following VM arguments
+   `package`. Select the tab "JRE" and add the following VM arguments
    `-Xmx1500m -XX:MaxPermSize=256m`. Finally, press the "Apply" button.
 
 You will want to run PMS from Eclipse while developing. This is how you do it:
@@ -204,8 +204,7 @@ You will want to run PMS from Eclipse while developing. This is how you do it:
    mouse button on "Maven Build", select "New", Name: `Run PMS`, Base
    directory: `${project_loc}`, Goals: "test", Profiles: `run-from-eclipse`.
    Select the tab "JRE" and add VM arguments `-Xmx1500m -XX:MaxPermSize=256m`.
-   Finally, press the "Apply" button. (Note: this will not download the
-   binaries. Build PMS once to download them before you try to run PMS)
+   Finally, press the "Apply" button.
 
 You are now ready to start developing!
 

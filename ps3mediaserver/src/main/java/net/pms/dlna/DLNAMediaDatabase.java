@@ -612,12 +612,12 @@ public class DLNAMediaDatabase implements Runnable {
 
 	public synchronized void scanLibrary() {
 		if (scanner == null) {
-			scanner = new Thread(this);
+			scanner = new Thread(this, "Library Scanner");
 			scanner.start();
 		} else if (scanner.isAlive()) {
 			logger.info("Scanner is already running !");
 		} else {
-			scanner = new Thread(this);
+			scanner = new Thread(this, "Library Scanner");
 			scanner.start();
 		}
 	}

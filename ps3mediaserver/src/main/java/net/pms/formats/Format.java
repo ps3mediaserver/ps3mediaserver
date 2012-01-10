@@ -67,6 +67,18 @@ public abstract class Format implements Cloneable {
 	}
 
 	public abstract String[] getId();
+
+	/**
+	 * Returns whether or not a format can be handled by the PS3 natively.
+	 * This means the format can be streamed to PS3 instead of having to be
+	 * transcoded.
+	 * <p>
+	 * FIXME: There are many more renderers; mere PS3 compatibility doesn't
+	 * cut it any more. Come up with a better solution, for example a
+	 * RendererConfiguration.isStreamable(Format f).
+	 * 
+	 * @return True if the format can be handled by PS3, false otherwise.
+	 */
 	public abstract boolean ps3compatible();
 	public abstract boolean transcodable();
 	public abstract ArrayList<Class<? extends Player>> getProfiles();

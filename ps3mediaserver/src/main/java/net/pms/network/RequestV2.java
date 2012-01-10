@@ -30,6 +30,7 @@ import java.util.TimeZone;
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.Range;
 import net.pms.external.StartStopListenerDelegate;
@@ -271,7 +272,7 @@ public class RequestV2 extends HTTPResource {
 				String fileName = argument.substring(argument.lastIndexOf("/") + 1);
 
 				if (fileName.startsWith("thumbnail0000")) {
-					// This a is request for a thumbnail file.
+					// This is a request for a thumbnail file.
 					output.setHeader(HttpHeaders.Names.CONTENT_TYPE, files.get(0).getThumbnailContentType());
 					output.setHeader(HttpHeaders.Names.ACCEPT_RANGES, "bytes");
 					output.setHeader(HttpHeaders.Names.EXPIRES, getFUTUREDATE() + " GMT");
@@ -282,6 +283,17 @@ public class RequestV2 extends HTTPResource {
 					}
 
 					inputStream = dlna.getThumbnailInputStream();
+				} else if (fileName.indexOf("subtitle0000") > -1) {
+					// This is a request for a subtitle file
+					output.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/plain");
+					output.setHeader(HttpHeaders.Names.EXPIRES, getFUTUREDATE() + " GMT");
+					List<DLNAMediaSubtitle> subs = dlna.getMedia().getSubtitlesCodes();
+
+					if (subs != null && !subs.isEmpty()) {
+						// TODO: maybe loop subs to get the requested subtitle type instead of using the first one
+						DLNAMediaSubtitle sub = subs.get(0);
+						inputStream = new java.io.FileInputStream(sub.getFile());
+					}
 				} else {
 					// This is a request for a regular file.
 
@@ -299,6 +311,29 @@ public class RequestV2 extends HTTPResource {
 					}
 
 					inputStream = dlna.getInputStream(Range.create(lowRange, highRange, range.getStart(), range.getEnd()), mediaRenderer);
+
+					// Some renderers (like Samsung devices) allow a custom header for a subtitle URL
+					String subtitleHttpHeader = mediaRenderer.getSubtitleHttpHeader();
+					
+					if (subtitleHttpHeader != null && !"".equals(subtitleHttpHeader)) {
+						// Device allows a custom subtitle HTTP header; construct it
+						List<DLNAMediaSubtitle> subs = dlna.getMedia().getSubtitlesCodes();
+
+						if (subs != null && !subs.isEmpty()) {
+							DLNAMediaSubtitle sub = subs.get(0);
+
+							int type = sub.getType();
+
+							if (type < DLNAMediaSubtitle.subExtensions.length) {
+								String strType = DLNAMediaSubtitle.subExtensions[type - 1];
+								String subtitleUrl = "http://" + PMS.get().getServer().getHost()
+										+ ':' + PMS.get().getServer().getPort() + "/get/" 
+										+ id + "/subtitle0000." + strType;
+								output.setHeader(subtitleHttpHeader, subtitleUrl);
+							}
+						}
+					}
+
 					String name = dlna.getDisplayName(mediaRenderer);
 
 					if (inputStream == null) {

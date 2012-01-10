@@ -30,7 +30,7 @@ import net.pms.dlna.virtual.VirtualFolder;
  */
 public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 	private boolean resolved;
-	private int interval;
+	private final int interval;
 
 	/**
 	 * Constructor for a {@link ChapterFileTranscodeVirtualFolder}. The constructor
@@ -62,8 +62,7 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 
 			for (int i = 1; i <= nbIntervals; i++) {
 				// TODO: Remove clone(), instead create a new object from scratch to avoid unwanted cross references.
-				DLNAResource newChildNoSub = (DLNAResource) child.clone();
-				newChildNoSub.setId(null);
+				DLNAResource newChildNoSub = child.clone();
 				newChildNoSub.setPlayer(child.getPlayer());
 				newChildNoSub.setMedia(child.getMedia());
 				newChildNoSub.setNoName(true);
