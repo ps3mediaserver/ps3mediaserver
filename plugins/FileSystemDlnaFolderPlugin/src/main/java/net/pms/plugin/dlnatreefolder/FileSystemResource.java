@@ -67,8 +67,8 @@ public class FileSystemResource extends VirtualFolder {
 	}
 
 	@Override
-	public void refreshChildren() {
-		refreshChlidren(false);
+	public boolean refreshChildren() {
+		return refreshChlidren(false);
 	}
 
 	private boolean refreshChlidren(boolean isFirstUse) {

@@ -66,8 +66,8 @@ public class MediaLibraryFolder extends VirtualFolder {
 	}
 
 	@Override
-	public void refreshChildren() {
-		if (isUpdating) return;
+	public boolean refreshChildren() {
+		if (isUpdating) return false;
 		isUpdating = true;
 		
 		if(log.isDebugEnabled()) log.debug(String.format("Start refreshing children for folder '%s' (%s)", getName(), getId()));
@@ -181,6 +181,8 @@ public class MediaLibraryFolder extends VirtualFolder {
 		isUpdating = false;
 		
 		if(log.isDebugEnabled()) log.debug(String.format("Finished refreshing children for folder '%s' (%s). Refreshed=%s", getName(), getId(), nodeRefreshed));
+	
+		return nodeRefreshed;
 	}
 	
 	private void manageFile(DOFileInfo fileInfo) {

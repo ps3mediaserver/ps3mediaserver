@@ -52,9 +52,11 @@ public class RootFolder extends MediaLibraryFolder{
 	}
 
 	@Override
-	public void refreshChildren() {
+	public boolean refreshChildren() {
 		super.refreshChildren();
 		addAdditionalFoldersAtRoot();
+		
+		return true;
 	}
 	
 	private void addAdditionalFoldersAtRoot() {
