@@ -19,6 +19,11 @@ import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 
+/**
+ * Dialog used to visualize and edit file properties
+ * @author pw
+ *
+ */
 public class FileEditDialog extends JDialog {
 	private static final long serialVersionUID = 2921067184273978956L;
 	private final int MIN_BUTTON_WIDTH = 60;
@@ -113,7 +118,7 @@ public class FileEditDialog extends JDialog {
 		PanelBuilder builder;
 		CellConstraints cc = new CellConstraints();
 
-		FormLayout layout = new FormLayout("3px, p, 3px, p, fill:10:grow, p, 3px, p, 3px", // columns
+		FormLayout layout = new FormLayout("3px, d, 3px, d, fill:10:grow, d, 3px, d, 3px", // columns
 		        "3px, fill:10:grow, 3px, p, 3px"); // rows
 		builder = new PanelBuilder(layout);
 		builder.setOpaque(true);

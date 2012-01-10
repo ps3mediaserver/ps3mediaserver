@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.h2.jdbcx.JdbcConnectionPool;
 
@@ -204,23 +205,7 @@ class DBFileInfo {
 				fileInfo.setId(rs.getInt(1));
 			}
 
-			// Insert tags
-			for (String key : fileInfo.getTags().keySet()) {
-				List<String> values = fileInfo.getTags().get(key);
-				for(String value : values) {
-					try {
-						stmt = conn.prepareStatement("INSERT INTO FILETAGS(FILEID, KEY, VALUE)" 
-								+ " VALUES (?, ?, ?)");
-						stmt.clearParameters();
-						stmt.setInt(1, fileInfo.getId());
-						stmt.setString(2, key);
-						stmt.setString(3, value);
-						stmt.executeUpdate();
-					} catch (Exception e) {
-						log.warn("Failed to insert tag=" + key + " with value= " + value + " for file " + fileInfo.getFileName(true), e);
-					}
-				}
-			}
+			insertOrUpdateTags(fileInfo.getId(), fileInfo.getTags(), stmt, conn);
 		} catch (Exception e) {
 			throw new StorageException("Failed to insert fileinfo for file" + fileInfo.getFilePath(), e);
 		} finally {
@@ -229,6 +214,78 @@ class DBFileInfo {
 			try { if (rs != null) rs.close(); } catch (SQLException ex) { } finally { rs = null; }
 		}
     }
+	
+	void updateFileInfo(DOFileInfo fileInfo) throws StorageException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		fileInfo.setDateLastUpdatedDb(new java.util.Date());
+
+		try {
+			conn = cp.getConnection();
+			stmt = conn.prepareStatement("UPDATE FILE SET FOLDERPATH = ?, FILENAME = ?, TYPE = ?, DATELASTUPDATEDDB = ?, DATEINSERTEDDB = ?, DATEMODIFIEDOS = ?,"
+							+ " THUMBNAILPATH = ?, SIZEBYTE = ?, PLAYCOUNT = ?, ENABLED = ?"
+		    		        + " WHERE ID = ?");
+			stmt.setString(1, fileInfo.getFolderPath());
+			stmt.setString(2, fileInfo.getFileName());
+			stmt.setString(3, fileInfo.getType().toString());
+			stmt.setTimestamp(4, new Timestamp(fileInfo.getDateLastUpdatedDb().getTime()));
+			stmt.setTimestamp(5, new Timestamp(fileInfo.getDateInsertedDb().getTime()));
+			stmt.setTimestamp(6, new Timestamp(fileInfo.getDateModifiedOs().getTime()));
+			stmt.setString(7, fileInfo.getThumbnailPath());
+			stmt.setLong(8, fileInfo.getSize());
+			stmt.setInt(9, fileInfo.getPlayCount());
+			stmt.setBoolean(10, fileInfo.isActif());
+			stmt.setLong(11, fileInfo.getId());
+			stmt.executeUpdate();
+			
+			rs = stmt.getGeneratedKeys();
+			if (rs != null && rs.next()) {
+				//set the auto increment id as the file id
+				fileInfo.setId(rs.getInt(1));
+			}
+			
+			insertOrUpdateTags(fileInfo.getId(), fileInfo.getTags(), stmt, conn);
+		} catch (Exception e) {
+			throw new StorageException("Failed to insert fileinfo for file" + fileInfo.getFilePath(), e);
+		} finally {
+			try { if (stmt != null) stmt.close(); } catch (SQLException ex) { } finally { stmt = null; }
+			try { if (conn != null) conn.close(); } catch (SQLException ex) { } finally { conn = null; }
+			try { if (rs != null) rs.close(); } catch (SQLException ex) { } finally { rs = null; }
+		}
+	}
+	
+	private void insertOrUpdateTags(long filedId, Map<String, List<String>> tags, PreparedStatement stmt, Connection conn) throws SQLException, StorageException {
+		//delete all existing tags
+		try {
+			stmt = conn.prepareStatement("DELETE FROM FILETAGS WHERE FILEID = ? AND KEY != ?");
+			stmt.setLong(1, filedId);
+			stmt.setString(2, GENRE_KEY);
+		    stmt.executeUpdate();
+		} catch (Exception e) {
+			throw new StorageException("Failed to delete tags for file with id=" + filedId, e);
+		}
+		
+		// Insert tags
+		for (String key : tags.keySet()) {
+			List<String> values = tags.get(key);
+			for(String value : values) {
+				try {
+					stmt = conn.prepareStatement("INSERT INTO FILETAGS(FILEID, KEY, VALUE)" 
+							+ " VALUES (?, ?, ?)");
+					stmt.clearParameters();
+					stmt.setLong(1, filedId);
+					stmt.setString(2, key);
+					stmt.setString(3, value);
+					stmt.executeUpdate();
+				} catch (Exception e) {
+					log.warn("Failed to insert tag=" + key + " with value= " + value + " for file with id=" + filedId, e);
+				}
+			}
+		}
+		
+	}
 	
 	List<DOFileInfo> getFileInfo(DOFilter filter, boolean sortAscending, final ConditionType sortField, int maxResults, SortOption sortOption) throws StorageException {
 		HashMap<Integer, DOFileInfo> files = new LinkedHashMap<Integer, DOFileInfo>();

@@ -427,7 +427,7 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 				break;
 			case VIDEO:
 			try {
-				dbVideoFileInfo.updateVideoFileInfo((DOVideoFileInfo)fileInfo);
+				dbVideoFileInfo.updateFileInfo((DOVideoFileInfo)fileInfo);
 				if(log.isDebugEnabled()) log.debug(String.format("Updated video file %s", fileInfo.getFilePath()));
 			} catch (StorageException e) {
 				log.error("Storage error (update)", e);

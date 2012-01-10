@@ -256,7 +256,7 @@ public class FileDisplayTable extends JPanel {
 					
 					FileEditDialog fed = new FileEditDialog(fel);
 					fed.setModal(true);
-					fed.setSize(new Dimension(750, 435));
+					fed.setSize(new Dimension(750, 455));
 					fed.setLocation(GUIHelper.getCenterDialogOnParentLocation(fed.getSize(), table));
 					fed.setVisible(true);
 				} else {

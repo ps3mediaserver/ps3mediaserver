@@ -195,7 +195,6 @@ public class FullDataCollector {
 				fi.setHeight(mi.getHeight());
 				if(mi.getMimeType() != null) fi.setMimeType(mi.getMimeType());
 				if(mi.getModel() != null) fi.setModel(mi.getModel());
-//				fi.setMuxable(mi.ism);
 				fi.setSize(mi.getSize());
 				fi.setWidth(mi.getWidth());
 				fi.setMuxingMode(mi.getMuxingMode());

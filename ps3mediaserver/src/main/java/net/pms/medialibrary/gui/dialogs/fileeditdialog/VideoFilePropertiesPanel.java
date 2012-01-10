@@ -3,6 +3,9 @@ package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -27,6 +30,8 @@ import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
 public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesEditor {
 	private static final long serialVersionUID = -2983607076103804005L;
 	
+	private final String GENRES_NAME = Messages.getString("ML.Condition.Type.VIDEO_GENRES");
+	
 	private JTextField tfName;
 	private JTextField tfOriginalName;
 	private JTextField tfSortName;
@@ -45,6 +50,7 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 	private JTextField tfTagLine;
 	private JTextArea taOverview;
 	private JCheckBox cbActive;
+	private FileTagsPanel pGenres;
 
 	public VideoFilePropertiesPanel(DOVideoFileInfo fileInfo) {
 		setLayout(new GridLayout());
@@ -72,7 +78,10 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		tfRevenue = new JTextField(String.valueOf(fileInfo.getRevenue()));
 		cbActive = new JCheckBox(Messages.getString("ML.Condition.Header.Type.FILE_ISACTIF"));
 		cbActive.setFont(cbActive.getFont().deriveFont(Font.BOLD));
-		cbActive.setSelected(fileInfo.isActif());		
+		cbActive.setSelected(fileInfo.isActif());
+		Map<String, List<String>> genres = new HashMap<String, List<String>>();
+		genres.put(GENRES_NAME, fileInfo.getGenres());
+		pGenres = new FileTagsPanel(genres, false);
 	}
 
 	public void build() {
@@ -100,8 +109,8 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		PanelBuilder builder;
 		CellConstraints cc = new CellConstraints();
 
-		FormLayout layout = new FormLayout("5px, 20:grow, 10px, 20:grow, 10px, 20:grow, 10px, 20:grow, 10px, p, 5px", // columns
-		        "3px, p, 1px, p, 3px, p, 1px, p, 3px, p, 1px, p, 3px, p, 1px, p, 3px, p, 1px, p, 3px, p, 1px, p, 3px, p, 1px, p, 3px, fill:p:grow, 3px"); // rows
+		FormLayout layout = new FormLayout("5px, 20:grow, 10px, 20:grow, 10px, 20:grow, 10px, 20:grow, 10px, d, 5px", // columns
+		        "3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, fill:d:grow, 3px"); // rows
 		builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 		
@@ -168,7 +177,10 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		
 		builder.add(cbActive, cc.xy(10, 28, CellConstraints.DEFAULT, CellConstraints.TOP));
 
-		JScrollPane sp = new JScrollPane(builder.getPanel());
+		builder.add(pGenres, cc.xyw(2, 30, 9));
+
+		JPanel p = builder.getPanel();
+		JScrollPane sp = new JScrollPane(p);
 		sp.setBorder(BorderFactory.createEmptyBorder());
 		
 		removeAll();
@@ -234,5 +246,10 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		fiVideo.setAgeRating(new DOCertification(tfCertification.getText().trim(), tfCertificationReason.getText().trim()));
 		fiVideo.setTagLine(tfTagLine.getText().trim());
 		fiVideo.setOverview(taOverview.getText().trim());
+		
+		Map<String, List<String>> tags = pGenres.getTags();
+		if (tags.keySet().contains(GENRES_NAME)) {
+			fiVideo.setGenres(tags.get(GENRES_NAME));
+		}
 	}
 }

@@ -365,7 +365,10 @@ class DBVideoFileInfo extends DBFileInfo {
 						}
 					} else {
 						if(currVideo.getTags().containsKey(tagKey)) {
-							currVideo.getTags().get(tagKey).add(tagValue);
+							List<String> tagValues = currVideo.getTags().get(tagKey);
+							if(!tagValues.contains(tagValue)) {
+								tagValues.add(tagValue);
+							}
 						} else {
 							List<String> l = new ArrayList<String>();
 							l.add(tagValue);
@@ -635,7 +638,10 @@ class DBVideoFileInfo extends DBFileInfo {
 		}
 	}
 
-	void updateVideoFileInfo(DOVideoFileInfo fileInfo) throws StorageException {
+	void updateFileInfo(DOVideoFileInfo fileInfo) throws StorageException {
+		//update the properties from the super class
+		super.updateFileInfo(fileInfo);
+		
 		Connection conn = null;
 		PreparedStatement stmt = null;
 
@@ -683,14 +689,6 @@ class DBVideoFileInfo extends DBFileInfo {
     		stmt.setInt(32, fileInfo.getId());
     		stmt.executeUpdate();
 
-    		//update the enabled flag for the file
-    		stmt = conn.prepareStatement("UPDATE FILE SET ENABLED = ?"
-    		        + " WHERE ID = ?");
-    		stmt.clearParameters();
-    		stmt.setBoolean(1, fileInfo.isActif());
-    		stmt.setInt(2, fileInfo.getId());
-    		stmt.executeUpdate();
-
     		insertOrUpdateVideoPropertyLists(fileInfo, stmt, conn);
     	} catch (Exception e) {
 			throw new StorageException("Failed to update video file info " + fileInfo.getFilePath(), e);
@@ -699,7 +697,7 @@ class DBVideoFileInfo extends DBFileInfo {
     		try { if (conn != null) conn.close(); } catch (SQLException ex) { } finally { conn = null; }
     	}	    
     }
-	
+
 	private void insertOrUpdateVideoPropertyLists(DOVideoFileInfo videoFileInfo, PreparedStatement stmt, Connection conn) throws StorageException{
 		insertOrUpdateAudioTracks(videoFileInfo, stmt, conn);
 		insertOrUpdateSubtitles(videoFileInfo, stmt, conn);
@@ -773,9 +771,10 @@ class DBVideoFileInfo extends DBFileInfo {
 	private void insertOrUpdateGenres(DOVideoFileInfo videoFileInfo, PreparedStatement stmt, Connection conn) throws StorageException {
 		//delete all genres that might be linked to the video file
 		try {
-			stmt = conn.prepareStatement("DELETE FROM FILETAGS WHERE FILEID = ?");
+			stmt = conn.prepareStatement("DELETE FROM FILETAGS WHERE FILEID = ? AND KEY = ?");
 			stmt.clearParameters();
 			stmt.setInt(1, videoFileInfo.getId());
+			stmt.setString(2, GENRE_KEY);
 			stmt.executeUpdate();
 		} catch (Exception e) {
 			throw new StorageException("Failed to delete all genres linked to video with id=" + videoFileInfo.getId(), e);

@@ -11,14 +11,19 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -33,6 +38,7 @@ import net.pms.medialibrary.gui.dialogs.ImageViewer;
 
 public class VideoFileInfoPanel extends JPanel {
 	private static final long serialVersionUID = 3818830578372058006L;
+	private static final Logger log = LoggerFactory.getLogger(VideoFileInfoPanel.class);
 	private ImageIcon videoCoverImage;
 	private JLabel lCover;
 
@@ -43,13 +49,24 @@ public class VideoFileInfoPanel extends JPanel {
 	private void build(final DOVideoFileInfo fileInfo) {
 		setLayout(new GridLayout());
 		
-		videoCoverImage = new ImageIcon(fileInfo.getThumbnailPath());
+		File imageFile = new File(fileInfo.getThumbnailPath());
+		if(imageFile.isFile()) {
+			//show the cover if it exists
+			videoCoverImage = new ImageIcon(imageFile.getAbsolutePath());
+		} else {
+			//show the no image image
+			try {
+				videoCoverImage = new ImageIcon(ImageIO.read(getClass().getResource("/resources/images/cover_no_image.png")));
+			} catch (IOException e1) {
+				log.error("Failed to load default image when no cover is available", e1);
+			}
+		}
 		
 		PanelBuilder builder;
 		CellConstraints cc = new CellConstraints();
 
-		FormLayout layout = new FormLayout("3px, p, 5px, fill:20:grow, 3px", // columns
-		        "5px, p, 5px, fill:20:grow, 3px"); // rows
+		FormLayout layout = new FormLayout("3px, d, 5px, fill:20:grow, 3px", // columns
+		        "5px, d, 5px, fill:20:grow, 3px"); // rows
 		builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 		
@@ -61,13 +78,19 @@ public class VideoFileInfoPanel extends JPanel {
 		// Add cover
 		lCover = new JLabel();
 		lCover.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lCover.setTransferHandler(new ImageSelection(fileInfo, videoCoverImage));
 		lCover.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				ImageViewer iv = new ImageViewer(videoCoverImage, fileInfo.getName());
-				iv.setModal(true);
-				iv.setLocation(GUIHelper.getCenterDialogOnParentLocation(iv.getSize(), lCover));
-				iv.setVisible(true);
+				if(e.getButton() == MouseEvent.BUTTON1) {
+					//show full size image in modal dialog on left mouse click
+					ImageViewer iv = new ImageViewer(videoCoverImage, fileInfo.getName());
+					iv.setModal(true);
+					iv.setLocation(GUIHelper.getCenterDialogOnParentLocation(iv.getSize(), lCover));
+					iv.setVisible(true);
+				} else if(e.getButton() == MouseEvent.BUTTON3) {
+					//TODO: show context menu on right mouse click
+				}
 			}
 		});
 		addComponentListener(new ComponentAdapter() {
@@ -160,6 +183,10 @@ public class VideoFileInfoPanel extends JPanel {
 		return sp;
 	}
 	
+	/**
+	 * Resizes the image to the given height and sets the with to respect the images aspect ratio
+	 * @param height the height to set for the image
+	 */
 	public void resizeCover(int height) {
 		if(height > 0) {
 			lCover.setIcon(getScaledImage(videoCoverImage, height));
@@ -173,16 +200,12 @@ public class VideoFileInfoPanel extends JPanel {
 	 * @return resized image icon
 	 */
 	private static ImageIcon getScaledImage(ImageIcon srcImg, int h) {
-		int w = getImageWidth(srcImg, h);
-		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+		int w = srcImg.getIconWidth() * h / srcImg.getIconHeight();
+		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = resizedImg.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g2.drawImage(srcImg.getImage(), 0, 0, w, h, null);
 		g2.dispose();
 		return new ImageIcon(resizedImg);
-	}
-	
-	private static int getImageWidth(ImageIcon srcImg, int h) {
-		return srcImg.getIconWidth() * h / srcImg.getIconHeight();
 	}
 }

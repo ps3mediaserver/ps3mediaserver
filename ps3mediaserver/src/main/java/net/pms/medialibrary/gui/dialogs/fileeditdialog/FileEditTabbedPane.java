@@ -1,5 +1,6 @@
 package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 
+import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -14,18 +15,27 @@ import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
 
+/**
+ * Groups the info, properties and tags panels in a tabbed pane.
+ * Different panels will be created depending on the file type of the file info
+ * @author pw
+ *
+ */
 public class FileEditTabbedPane extends JTabbedPane {
 	private static final long serialVersionUID = -4181083393313495546L;
 
 	private JPanel infoPanel;
 	private JPanel propertiesPanel;
-	private JPanel tagsPanel;
+	private FileTagsPanel tagsPanel;
 	
 	private DOFileInfo fileInfo;
 
+	/**
+	 * Constructor
+	 * @param fileInfo the file info to edit
+	 */
 	public FileEditTabbedPane(DOFileInfo fileInfo) {
-		this.fileInfo = fileInfo;
-		setContent();
+		setContent(fileInfo);
 		
 		addComponentListener(new ComponentAdapter() {
 			@Override
@@ -35,18 +45,25 @@ public class FileEditTabbedPane extends JTabbedPane {
 		});
 	}
 
+	/**
+	 * Updates the GUI to show the file info
+	 * @param fileInfo the file info to edit
+	 */
 	public void setContent(DOFileInfo fileInfo) {	
 		this.fileInfo = fileInfo;
 		setContent();
 	}
 
+	/**
+	 * Initializes the components and builds the panel
+	 */
 	private void setContent() {		
 		infoPanel = new JPanel();
 		propertiesPanel = new JPanel();
-		tagsPanel = new JPanel();
+		tagsPanel = new FileTagsPanel(fileInfo.getTags(), true);
 		if(fileInfo instanceof DOVideoFileInfo) {
 			infoPanel = new VideoFileInfoPanel((DOVideoFileInfo) fileInfo);
-			propertiesPanel = new VideoFilePropertiesPanel((DOVideoFileInfo) fileInfo);
+			propertiesPanel = new VideoFilePropertiesPanel((DOVideoFileInfo) fileInfo);			
 		} else if(fileInfo instanceof DOAudioFileInfo) {
 			//TODO: implement
 		} else if(fileInfo instanceof DOImageFileInfo) {
@@ -56,18 +73,31 @@ public class FileEditTabbedPane extends JTabbedPane {
 		//store the selected tab before removing all the tabs to re-add them
 		int selectedIndex = getSelectedIndex();
 		
+		//remove all tab before restoring them
 		removeAll();
 		addTab(Messages.getString("ML.FileEditTabbedPane.tInfo"), infoPanel);
 		addTab(Messages.getString("ML.FileEditTabbedPane.tProperties"), propertiesPanel);
 		addTab(Messages.getString("ML.FileEditTabbedPane.tTags"), tagsPanel);
 		
+		//restore the selected tab
 		if(selectedIndex > 0) {
 			setSelectedIndex(selectedIndex);
 		}
+		
+		validate();
+		repaint();
 	}
 
+	/**
+	 * Updates all parameters and tags of the file info as they are configured in the GUI
+	 * @return
+	 * @throws ConditionTypeException
+	 */
 	public DOFileInfo getUpdatedFileInfo() throws ConditionTypeException {
-			((IFilePropertiesEditor) propertiesPanel).updateFileInfo(fileInfo);
+		//update the file properties
+		((IFilePropertiesEditor) propertiesPanel).updateFileInfo(fileInfo);
+		fileInfo.setTags(tagsPanel.getTags());
+		
 		return fileInfo;
 	}
 }
