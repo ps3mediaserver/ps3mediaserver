@@ -441,7 +441,7 @@
 				<version>1.9</version>
 				<executions>
 					<execution>
-						<phase>prepare-package</phase>
+						<phase>initialize</phase>
 						<goals>
 							<goal>revision</goal>
 						</goals>
