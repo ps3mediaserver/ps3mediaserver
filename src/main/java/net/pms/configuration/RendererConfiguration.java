@@ -245,6 +245,7 @@ public class RendererConfiguration {
 	private static final String MEDIAPARSERV2_THUMB = "MediaParserV2_ThumbnailGeneration";
 	private static final String SUPPORTED = "Supported";
 	private static final String CUSTOM_MENCODER_QUALITYSETTINGS = "CustomMencoderQualitySettings";
+	private static final String CUSTOM_MENCODER_OPTIONS = "CustomMencoderOptions";
 	private static final String SHOW_AUDIO_METADATA = "ShowAudioMetadata";
 	private static final String SHOW_SUB_METADATA = "ShowSubMetadata";
 	private static final String DLNA_TREE_HACK = "CreateDLNATreeFaster";
@@ -667,6 +668,16 @@ public class RendererConfiguration {
 	 */
 	public String getCustomMencoderQualitySettings() {
 		return getString(CUSTOM_MENCODER_QUALITYSETTINGS, null);
+	}
+
+	/**
+	 * Returns the override settings for MEncoder custom options in PMS as
+	 * defined in the renderer configuration. Default is empty.
+	 *
+	 * @return The MEncoder custom options.
+	 */
+	public String getCustomMencoderOptions() {
+		return getString(CUSTOM_MENCODER_OPTIONS, null);
 	}
 
 	/**
