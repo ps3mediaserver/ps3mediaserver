@@ -9,6 +9,8 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import net.pms.Messages;
+import net.pms.PMS;
+import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.MediaInfoParser;
 import net.pms.dlna.RootFolder;
 import net.pms.formats.Format;
@@ -825,5 +827,14 @@ public class RendererConfiguration {
 	 */
 	public boolean isChunkedTransfer() {
 		return getBoolean(CHUNKED_TRANSFER, false);
+	}
+	
+	public boolean isCompatible(DLNAMediaInfo media, Format ext) {
+		if (isMediaParserV2() && media != null) {
+			if (getFormatConfiguration().match(media) != null) {
+				return true;
+			}
+		}
+		return (ext != null ) ? ext.skip(PMS.getConfiguration().getNoTranscode(), getStreamedExtensions()) : false;
 	}
 }

@@ -20,6 +20,9 @@ package net.pms.formats;
 
 import java.util.ArrayList;
 
+import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
+import net.pms.dlna.DLNAMediaInfo;
 import net.pms.encoders.Player;
 
 public class MP3 extends Format {
@@ -45,5 +48,10 @@ public class MP3 extends Format {
 	@Override
 	public boolean transcodable() {
 		return false;
+	}
+	
+	@Override
+	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
+		return (renderer != null) ? renderer.isCompatible(media, this) : skip(PMS.getConfiguration().getNoTranscode(), null);
 	}
 }

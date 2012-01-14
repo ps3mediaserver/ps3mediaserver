@@ -22,6 +22,8 @@ import java.util.ArrayList;
 
 import net.pms.PMS;
 
+import net.pms.configuration.RendererConfiguration;
+import net.pms.dlna.DLNAMediaInfo;
 import net.pms.encoders.FFMpegDVRMSRemux;
 import net.pms.encoders.Player;
 
@@ -57,5 +59,10 @@ public class DVRMS extends Format {
 	@Override
 	public boolean ps3compatible() {
 		return false;
+	}
+	
+	@Override
+	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
+		return ps3compatible();
 	}
 }

@@ -21,6 +21,8 @@ package net.pms.formats;
 import java.util.ArrayList;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
+import net.pms.dlna.DLNAMediaInfo;
 import net.pms.encoders.FFMpegVideo;
 import net.pms.encoders.MEncoderAviSynth;
 import net.pms.encoders.MEncoderVideo;
@@ -70,5 +72,10 @@ public class MPG extends Format {
 	@Override
 	public boolean ps3compatible() {
 		return true;
+	}
+	
+	@Override
+	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
+		return (renderer != null) ? renderer.isCompatible(media, this) : skip(PMS.getConfiguration().getNoTranscode(), null);
 	}
 }
