@@ -30,11 +30,24 @@ public class MP3 extends Format {
 		type = AUDIO;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String[] getId() {
-		return new String[]{"mp3"};
+		return new String[] { "mp3" };
 	}
 
+	/**
+	 * @deprecated Use {@link #isCompatible(DLNAMediaInfo, RendererConfiguration)} instead.
+	 * <p>
+	 * Returns whether or not a format can be handled by the PS3 natively.
+	 * This means the format can be streamed to PS3 instead of having to be
+	 * transcoded.
+	 * 
+	 * @return True if the format can be handled by PS3, false otherwise.
+	 */
+	@Deprecated
 	@Override
 	public boolean ps3compatible() {
 		return true;
@@ -49,9 +62,16 @@ public class MP3 extends Format {
 	public boolean transcodable() {
 		return false;
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
-		return (renderer != null) ? renderer.isCompatible(media, this) : skip(PMS.getConfiguration().getNoTranscode(), null);
+		if (renderer != null) {
+			return renderer.isCompatible(media, this);
+		} else {
+			return skip(PMS.getConfiguration().getNoTranscode(), null);
+		}
 	}
 }

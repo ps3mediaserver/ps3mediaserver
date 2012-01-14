@@ -19,9 +19,13 @@
 package net.pms.formats;
 
 public class GIF extends JPG {
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String[] getId() {
-		return new String[]{"gif"};
+		return new String[] { "gif" };
 	}
 
 	@Override

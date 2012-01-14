@@ -19,9 +19,13 @@
 package net.pms.formats;
 
 public class PNG extends JPG {
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String[] getId() {
-		return new String[]{"png"};
+		return new String[] { "png" };
 	}
 
 	@Override

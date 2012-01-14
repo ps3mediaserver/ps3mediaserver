@@ -104,14 +104,22 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 				DLNAResource justStreamed = ref.clone();
 
 				// FIXME: Remove PS3 specific logic to support other renderers
-				RendererConfiguration renderer = this.getParent() != null ? this.getParent().getDefaultRenderer() : null;
+				RendererConfiguration renderer = null;
+				
+				if (this.getParent() != null) {
+					renderer = this.getParent().getDefaultRenderer();
+				}
+
 				if (justStreamed.getExt() != null && (justStreamed.getExt().isCompatible(ref.getMedia(), renderer) || justStreamed.isSkipTranscode())) {
 					justStreamed.setPlayer(null);
 					justStreamed.setMedia(ref.getMedia());
 					justStreamed.setNoName(true);
 					addChildInternal(justStreamed);
 					addChapterFile(justStreamed);
-					logger.debug("Duplicate " + ref.getName() + " for direct streaming to renderer: " + renderer.getRendererName());
+
+					if (renderer != null) {
+						logger.debug("Duplicate " + ref.getName() + " for direct streaming to renderer: " + renderer.getRendererName());
+					}
 				}
 			}
 		}

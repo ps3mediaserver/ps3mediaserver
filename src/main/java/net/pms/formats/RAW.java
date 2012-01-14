@@ -13,11 +13,26 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 
 public class RAW extends JPG {
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String[] getId() {
-		return new String[]{"arw", "cr2", "crw", "dng", "raf", "mrw", "nef", "pef", "srf", "orf"};
+		return new String[] { "arw", "cr2", "crw", "dng", "raf", "mrw", "nef",
+				"pef", "srf", "orf" };
 	}
 
+	/**
+	 * @deprecated Use {@link #isCompatible(DLNAMediaInfo, RendererConfiguration)} instead.
+	 * <p>
+	 * Returns whether or not a format can be handled by the PS3 natively.
+	 * This means the format can be streamed to PS3 instead of having to be
+	 * transcoded.
+	 * 
+	 * @return True if the format can be handled by PS3, false otherwise.
+	 */
+	@Deprecated
 	@Override
 	public boolean ps3compatible() {
 		return false;

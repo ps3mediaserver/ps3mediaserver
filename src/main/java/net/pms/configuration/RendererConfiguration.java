@@ -828,13 +828,34 @@ public class RendererConfiguration {
 	public boolean isChunkedTransfer() {
 		return getBoolean(CHUNKED_TRANSFER, false);
 	}
-	
-	public boolean isCompatible(DLNAMediaInfo media, Format ext) {
-		if (isMediaParserV2() && media != null) {
-			if (getFormatConfiguration().match(media) != null) {
+
+	/**
+	 * Returns whether or not the renderer can handle the given format
+	 * natively, based on its configuration in the renderer.conf. If it can
+	 * handle a format natively, content can be streamed to the renderer. If
+	 * not, content should be transcoded before sending it to the renderer.
+	 *
+	 * @param mediainfo The {@link DLNAMediaInfo} information parsed from the
+	 * 				media file.
+	 * @param format The {@link Format} to test compatibility for.
+	 * @return True if the renderer natively supports the format, false
+	 * 				otherwise.
+	 */
+	public boolean isCompatible(DLNAMediaInfo mediainfo, Format format) {
+		if (isMediaParserV2() && mediainfo != null) {
+			// Use the configured "Supported" lines in the renderer.conf
+			// to see if any of them match the MediaInfo library
+			if (getFormatConfiguration().match(mediainfo) != null) {
 				return true;
 			}
 		}
-		return (ext != null ) ? ext.skip(PMS.getConfiguration().getNoTranscode(), getStreamedExtensions()) : false;
+
+		if (format != null) {
+			// Is the format among the ones to be streamed?
+			return format.skip(PMS.getConfiguration().getNoTranscode(), getStreamedExtensions());
+		} else {
+			// Not natively supported.
+			return false;
+		}
 	}
 }
