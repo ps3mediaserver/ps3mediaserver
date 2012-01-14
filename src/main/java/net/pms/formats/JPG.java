@@ -61,13 +61,4 @@ public class JPG extends Format {
 	public boolean transcodable() {
 		return false;
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
-		// FIXME: This is not correct for every renderer.
-		return ps3compatible();
-	}
 }

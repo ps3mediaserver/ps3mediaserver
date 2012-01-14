@@ -21,6 +21,7 @@ package net.pms.formats;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.InputFile;
@@ -114,7 +115,15 @@ public abstract class Format implements Cloneable {
 	 *
 	 * @since 1.50.1
 	 */
-	public abstract boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer);
+	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
+		if (renderer != null) {
+			// Let the renderer configuration decide on native compatibility
+			return renderer.isCompatible(media, this);
+		} else {
+			// Is this format among the ones configured in PMS to be streamed?
+			return skip(PMS.getConfiguration().getNoTranscode(), null);
+		}
+	}
 
 	public abstract boolean transcodable();
 	public abstract ArrayList<Class<? extends Player>> getProfiles();

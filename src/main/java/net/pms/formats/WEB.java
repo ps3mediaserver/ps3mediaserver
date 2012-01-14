@@ -86,9 +86,4 @@ public class WEB extends Format {
 	public boolean transcodable() {
 		return true;
 	}
-	
-	@Override
-	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
-		return ps3compatible();
-	}
 }

@@ -88,9 +88,4 @@ public class MPG extends Format {
 	public boolean ps3compatible() {
 		return true;
 	}
-	
-	@Override
-	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
-		return (renderer != null) ? renderer.isCompatible(media, this) : skip(PMS.getConfiguration().getNoTranscode(), null);
-	}
 }

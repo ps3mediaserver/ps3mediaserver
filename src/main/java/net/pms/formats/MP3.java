@@ -62,16 +62,4 @@ public class MP3 extends Format {
 	public boolean transcodable() {
 		return false;
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
-		if (renderer != null) {
-			return renderer.isCompatible(media, this);
-		} else {
-			return skip(PMS.getConfiguration().getNoTranscode(), null);
-		}
-	}
 }

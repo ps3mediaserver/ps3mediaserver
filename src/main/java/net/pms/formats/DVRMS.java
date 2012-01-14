@@ -73,9 +73,4 @@ public class DVRMS extends Format {
 	public boolean ps3compatible() {
 		return false;
 	}
-	
-	@Override
-	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
-		return ps3compatible();
-	}
 }
