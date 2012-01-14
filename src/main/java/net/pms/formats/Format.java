@@ -115,7 +115,7 @@ public abstract class Format implements Cloneable {
 	 *
 	 * @since 1.50.1
 	 */
-	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
+	public final boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
 		if (renderer != null) {
 			// Let the renderer configuration decide on native compatibility
 			return renderer.isCompatible(media, this);
