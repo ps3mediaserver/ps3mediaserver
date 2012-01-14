@@ -106,10 +106,6 @@ public abstract class Format implements Cloneable {
 	/**
 	 * Returns whether or not a format can be handled by the renderer natively.
 	 * This means the format can be streamed instead of having to be transcoded.
-	 * <p>
-	 * FIXME: Fine-tune detection for each format.
-	 * e.g Some formats incorrectly return ps3compatible(). This is done to preserve
-	 * the PMS experience where no improvements have been made yet.
 	 * 
 	 * @return True if the format can be handled by the renderer, false otherwise.
 	 *
