@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# build-pms-osx.sh
+# build-pms-binaries.sh
 #
-# Version: 2.0.5
+# Version: 2.0.6
 # Last updated: 2012-01-15
 # Authors: Patrick Atoon, Happy-Neko
 #
@@ -138,7 +138,7 @@ VERSION_LIBDVDNAV=1226
 VERSION_LIBDVDREAD=1226
 VERSION_LIBMAD=0.15.1b
 VERSION_LIBMEDIAINFO=0.7.50
-VERSION_LIBPNG=1.5.6
+VERSION_LIBPNG=1.5.7
 VERSION_LIBOGG=1.2.2
 VERSION_LIBVORBIS=1.3.2
 VERSION_LIBTHEORA=1.1.1
@@ -148,7 +148,7 @@ VERSION_MPLAYER=34561
 VERSION_NCURSES=5.9
 VERSION_PS3MEDIASERVER=2011-12-11
 VERSION_TSMUXER=1.10.6
-VERSION_X264=2011-11-09
+VERSION_X264=2011-12-03
 VERSION_XVID=1.3.1
 VERSION_ZLIB=1.2.5
 
@@ -795,7 +795,7 @@ build_flac() {
 
 ##########################################
 # FONTCONFIG
-# http://fontconfig.org/wiki/
+# http://www.freedesktop.org/wiki/Software/fontconfig
 #
 build_fontconfig() {
     start_build fontconfig
@@ -1602,7 +1602,7 @@ build_tsMuxeR() {
 
 ##########################################
 # X264
-# svn://svn.videolan.org/x264/trunk
+# http://www.videolan.org/developers/x264.html
 #
 build_x264() {
     start_build x264
@@ -1624,6 +1624,11 @@ build_x264() {
     fi
 
     set_flags
+
+    # There is a strange circular definition here: x264 depends on FFmpeg, which
+    # depends on libx264.a. If x264 refuses to build, deleting $TARGET/lib/libav*
+    # might help.
+    # rm -f $TARGET/lib/libav*
 
     if is_osx; then
       if [ "$ARCHITECTURE" == "i386" ]; then

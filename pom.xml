@@ -1149,6 +1149,14 @@
 
 										<copy file="${project.external-resources}/osx/pms.icns"
 											todir="${project.binaries}" overwrite="true" />
+
+										<!-- Avoid notice "Fontconfig error: Cannot load default config file" -->
+										<mkdir dir="${project.basedir}/fonts" />
+										<copy file="${project.external-resources}/osx/fonts/fonts.conf"
+											todir="${project.basedir}/fonts" overwrite="true" />
+										<copy file="${project.external-resources}/osx/fonts/fonts.dtd"
+											todir="${project.basedir}/fonts" overwrite="true" />
+
 									</tasks>
 								</configuration>
 							</execution>

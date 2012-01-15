@@ -4,6 +4,7 @@
 .settings
 database
 debug.log
+fonts
 libmediainfo.dylib
 MediaInfo.dll
 MediaInfo64.dll
