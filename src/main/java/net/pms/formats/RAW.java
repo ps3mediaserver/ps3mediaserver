@@ -102,13 +102,4 @@ public class RAW extends JPG {
 			e.printStackTrace();
 		}
 	}
-
-	/* 
-	 * Force this format to be transcoded (RAW support broken in rev 409 and earlier)
-	 * @see net.pms.formats.Format#skip(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public boolean skip(String extensions, String anotherSetOfExtensions) {
-		return true;
-	}
 }
