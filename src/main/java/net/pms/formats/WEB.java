@@ -31,7 +31,6 @@ import net.pms.encoders.VideoLanAudioStreaming;
 import net.pms.encoders.VideoLanVideoStreaming;
 
 public class WEB extends Format {
-
 	/**
 	 * @deprecated Use {@link #isCompatible(DLNAMediaInfo, RendererConfiguration)} instead.
 	 * <p>
@@ -85,5 +84,14 @@ public class WEB extends Format {
 	@Override
 	public boolean transcodable() {
 		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
+		// Emulating ps3compatible()
+		return type == IMAGE;
 	}
 }
