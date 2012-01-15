@@ -2,8 +2,8 @@
 #
 # build-pms-osx.sh
 #
-# Version: 2.0.3
-# Last updated: 2011-12-11
+# Version: 2.0.4
+# Last updated: 2012-01-15
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -123,7 +123,7 @@ VERSION_EXPAT=2.0.1
 VERSION_FAAD2=2.7
 VERSION_FLAC=1.2.1
 VERSION_FONTCONFIG=2.8.0
-VERSION_FFMPEG=2011-12-09
+VERSION_FFMPEG=n0.9.1
 VERSION_FREETYPE=2.4.8
 VERSION_FRIBIDI=0.19.2
 VERSION_GIFLIB=4.1.6
@@ -709,7 +709,7 @@ build_ffmpeg() {
     fi
 
     if [ "$FIXED_REVISIONS" == "yes" ]; then
-        $GIT checkout "`$GIT rev-list master -n 1 --first-parent --before=$VERSION_FFMPEG`"
+        $GIT checkout tags/$VERSION_FFMPEG
         exit_on_error
     fi
 
@@ -1496,26 +1496,25 @@ build_ps3mediaserver() {
         exit_on_error
     fi
 
-    $MVN clean package
-    cd target
+    mkdir $SRC/target
+    mkdir $SRC/target/bin
 
-# TODO: Figure out a way to use the newly built binaries in the official distribution
-#
-#    # Overwrite with the home built tools
-#    cp $TARGET/bin/dcraw .
-#    cp $TARGET/bin/ffmpeg .
-#    cp $TARGET/bin/flac .
-#    cp $TARGET/bin/mplayer .
-#    cp $TARGET/bin/mencoder .
-#
     if is_osx; then
         # OSX
-#        cp $TARGET/bin/tsMuxeR .
-#
-#        set_flags
-#        $ANT DMG
-#        exit_on_error
-#
+
+        mkdir $SRC/target/bin/osx
+        
+        # Overwrite with the home built tools
+        cp $TARGET/bin/dcraw $SRC/target/bin/osx
+        cp $TARGET/bin/ffmpeg $SRC/target/bin/osx
+        cp $TARGET/bin/flac $SRC/target/bin/osx
+        cp $TARGET/bin/mplayer $SRC/target/bin/osx
+        cp $TARGET/bin/mencoder $SRC/target/bin/osx
+        cp $TARGET/bin/tsMuxeR $SRC/target/bin/osx
+
+        $MVN package
+        exit_on_error
+
         # Add the architecture name to the final file
         PMS_FILENAME_ORIG=`ls pms-macosx-*.dmg | head -1`
         PMS_FILENAME_NEW=`echo $PMS_FILENAME_ORIG | $SED -e "s/-macosx-/-macosx-$ARCHITECTURE-/"`
@@ -1523,29 +1522,39 @@ build_ps3mediaserver() {
         cp $PMS_FILENAME_NEW $WORKDIR
     else
         # Linux
-#        # turn libmediainfo.a into a shared library
-#        set_flags
-#        mkdir tmp-libmediainfo
-#        cd tmp-libmediainfo
-#        cp $TARGET/lib/libmediainfo.a .
-#        ar x libmediainfo.a
-#        rm libmediainfo.a
-#        $GPP -shared -static-libstdc++ -static-libgcc -o ./../libmediainfo.so ./*.o  -Wl,--whole-archive -L./ -lzen -Wl,--no-whole-archive
-#        exit_on_error
-#        cd ..
-#        rm -rf ./tmp-libmediainfo
-#        # tsMuxeR is already included
-#        #cp $TARGET/bin/tsMuxeR .
-#    
-#        cd ..    
-#        $ANT 
-#        exit_on_error
-#
-#        cd dist
+
+        mkdir $SRC/target/bin/linux
+
+        # Overwrite with the home built tools
+        cp $TARGET/bin/dcraw $SRC/target/bin/linux
+        cp $TARGET/bin/ffmpeg $SRC/target/bin/linux
+        cp $TARGET/bin/flac $SRC/target/bin/linux
+        cp $TARGET/bin/mplayer $SRC/target/bin/linux
+        cp $TARGET/bin/mencoder $SRC/target/bin/linux
+
+        # turn libmediainfo.a into a shared library
+        set_flags
+        mkdir tmp-libmediainfo
+        cd tmp-libmediainfo
+        cp $TARGET/lib/libmediainfo.a .
+        ar x libmediainfo.a
+        rm libmediainfo.a
+
+        # FIXME: not sure where libmediainfo.so resides
+        $GPP -shared -static-libstdc++ -static-libgcc -o ./../libmediainfo.so ./*.o  -Wl,--whole-archive -L./ -lzen -Wl,--no-whole-archive
+        exit_on_error
+        cd ..
+        rm -rf ./tmp-libmediainfo
+        cd ..    
+
+         $MVN package
+         exit_on_error
+
+        cd target
         PMS_FILENAME=`ls pms-generic-linux-*.tgz | head -1`
         mv $PMS_FILENAME $WORKDIR
     fi
-    
+
     cd $WORKDIR
 }
 
