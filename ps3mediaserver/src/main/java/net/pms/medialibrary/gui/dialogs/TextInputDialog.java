@@ -3,6 +3,8 @@ package net.pms.medialibrary.gui.dialogs;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -30,13 +32,27 @@ public class TextInputDialog extends JDialog {
 
 	public TextInputDialog(String description, String initialValue) {
 		((java.awt.Frame) getOwner()).setIconImage(new ImageIcon(getClass().getResource("/resources/images/icon-16.png")).getImage());
+		setTitle(Messages.getString("ML.TextInputDialog.Title"));
 		
 		//initialize components
-		tfValue = new JTextField(initialValue);
+		tfValue = new JTextField(initialValue);		
+		tfValue.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					for(ActionListener l : actionAddValueListeners) {
+						l.actionPerformed(new ActionEvent(new Object(), 0, "Add"));
+					}
+					dispose();
+				} else if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					dispose();
+				}
+			}
+		});
 
 		//build panel
 		FormLayout layout = new FormLayout("5px, r:p, 5px, 200, 5px",
-		        "3px, p, 3px, p, 3px");
+		        "3px, p, 1px, p");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 

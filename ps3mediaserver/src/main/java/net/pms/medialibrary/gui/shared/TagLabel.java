@@ -31,6 +31,7 @@ import net.pms.Messages;
 public class TagLabel extends JComponent {
 	private static final long serialVersionUID = -4117766151825252615L;
 	
+	//Action event commands
 	public static final String ACTION_COMMAND_DELETE = "Delete";
 	public static final String ACTION_COMMAND_BEGIN_EDIT = "BeginEdit";
 	public static final String ACTION_COMMAND_END_EDIT = "EndEdit";
@@ -47,7 +48,6 @@ public class TagLabel extends JComponent {
 	private String tagValue;
 	private boolean isEditing;
 	
-	//the used labels
 	private JLabel lText;
 	//used to show delete option while not in editing mode and abort while editing
 	private JLabel lDeleteAbort;
@@ -129,10 +129,7 @@ public class TagLabel extends JComponent {
 	 * Initializes all GUI components and adds required listeners
 	 */
 	private void init() {
-		FlowLayout fl = new FlowLayout();
-		fl.setHgap(3);
-		fl.setVgap(0);
-		setLayout(fl);
+		setLayout(new FlowLayout(FlowLayout.LEFT, 2, 0));
 		
 		initImageIcons();
 
@@ -141,6 +138,7 @@ public class TagLabel extends JComponent {
 		//make the editing field at least 120 wide or a bit wider then the actual text if it's bigger
 		int tfWidth = tfText.getPreferredSize().width + 20;
 		tfWidth = tfWidth < 120 ? 120 : tfWidth;
+		//set the preferred height of the text box to avoid having the components move when the editing mode changes
 		tfText.setPreferredSize(new Dimension(tfWidth, tfText.getPreferredSize().height));
 		tfText.addKeyListener(new KeyAdapter() {
 			@Override
@@ -159,6 +157,7 @@ public class TagLabel extends JComponent {
 		lText = new JLabel(addComma ? tagValue + "," : tagValue);
 		
 		lEditApply = new JLabel(iiEdit);
+		lEditApply.setSize(new Dimension(14, 12));
 		lEditApply.addMouseListener(getMouseAdapter());
 		lEditApply.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		
@@ -178,6 +177,7 @@ public class TagLabel extends JComponent {
 		});
 		
 		lDeleteAbort = new JLabel(iiDelete);
+		lDeleteAbort.setSize(new Dimension(14, 12));
 		lDeleteAbort.addMouseListener(getMouseAdapter());
 		lDeleteAbort.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		

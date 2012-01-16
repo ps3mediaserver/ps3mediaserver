@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import net.pms.medialibrary.gui.shared.TagLabel;
+import net.pms.medialibrary.gui.shared.WrapLayout;
 
 /**
  * This panel is being used to show a list of TagLabels. Besides the tags, an add button to add more tags is being 
@@ -37,7 +38,7 @@ public class TagLabelPanel extends JPanel {
 	 * @param tagValues the initial tag values
 	 */
 	public TagLabelPanel(List<String> tagValues) {
-		setLayout(new FlowLayout(FlowLayout.LEFT, 3, 0));
+		setLayout(new WrapLayout(FlowLayout.LEFT, 0, 0));
 		
 		//add add button
 		initImageIcons();

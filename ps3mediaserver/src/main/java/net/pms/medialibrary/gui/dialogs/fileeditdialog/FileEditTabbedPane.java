@@ -1,6 +1,5 @@
 package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 
-import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 

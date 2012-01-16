@@ -58,7 +58,7 @@ public class FileSystemResource extends VirtualFolder {
 			return;			
 		}
 		
-		refreshChlidren(true);
+		refreshChildren(true);
 	}
 	
 	@Override
@@ -68,10 +68,10 @@ public class FileSystemResource extends VirtualFolder {
 
 	@Override
 	public boolean refreshChildren() {
-		return refreshChlidren(false);
+		return refreshChildren(false);
 	}
 
-	private boolean refreshChlidren(boolean isFirstUse) {
+	private boolean refreshChildren(boolean isFirstUse) {
 		synchronized (this) {
 			if(isRefreshing) return false;
 			isRefreshing = true;			
