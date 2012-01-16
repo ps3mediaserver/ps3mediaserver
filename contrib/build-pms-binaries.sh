@@ -2,8 +2,8 @@
 #
 # build-pms-osx.sh
 #
-# Version: 2.0.5
-# Last updated: 2012-01-15
+# Version: 2.0.6
+# Last updated: 2012-01-16
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -144,7 +144,7 @@ VERSION_LIBVORBIS=1.3.2
 VERSION_LIBTHEORA=1.1.1
 VERSION_LIBZEN=0.4.19
 VERSION_LZO=2.04
-VERSION_MPLAYER=34561
+VERSION_MPLAYER=34577
 VERSION_NCURSES=5.9
 VERSION_PS3MEDIASERVER=2011-12-11
 VERSION_TSMUXER=1.10.6
@@ -1405,7 +1405,7 @@ build_mplayer() {
         # See https://svn.macports.org/ticket/30279
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../mplayer-r34561-SB20.patch
+        patch -p0 < ./../../mplayer-r34577-SB21.patch
 
         # Theora and vorbis support seems broken in this revision, disable it for now
         ./configure --cc=$GCC2 --disable-x11 --disable-gl --disable-qtx \
