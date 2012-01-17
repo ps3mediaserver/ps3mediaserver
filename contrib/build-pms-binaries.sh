@@ -2,8 +2,8 @@
 #
 # build-pms-binaries.sh
 #
-# Version: 2.0.6
-# Last updated: 2012-01-15
+# Version: 2.0.7
+# Last updated: 2012-01-17
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -130,7 +130,7 @@ VERSION_GIFLIB=4.1.6
 VERSION_ICONV=1.13.1
 VERSION_JPEG=8c
 VERSION_LAME=3.99.3
-VERSION_LIBBLURAY=2011-12-02
+VERSION_LIBBLURAY=2012-01-03
 VERSION_LIBDCA=0.0.5
 VERSION_LIBDV=1.0.0
 VERSION_LIBDVDCSS=1.2.9
@@ -148,7 +148,8 @@ VERSION_MPLAYER=34561
 VERSION_NCURSES=5.9
 VERSION_PS3MEDIASERVER=2011-12-11
 VERSION_TSMUXER=1.10.6
-VERSION_X264=2011-12-03
+# Translation table for SVN revision numbers: http://x264.nl/x264/changelog.txt
+VERSION_X264=0c7dab9c2a106ce3ee5d6ad7282afb49e1cc3954
 VERSION_XVID=1.3.1
 VERSION_ZLIB=1.2.5
 
@@ -1405,7 +1406,7 @@ build_mplayer() {
         # See https://svn.macports.org/ticket/30279
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../mplayer-r34561-SB20.patch
+        patch -p0 < ./../../mplayer-r34577-SB21.patch
 
         # Theora and vorbis support seems broken in this revision, disable it for now
         ./configure --cc=$GCC2 --disable-x11 --disable-gl --disable-qtx \
@@ -1619,16 +1620,16 @@ build_x264() {
     fi
 
     if [ "$FIXED_REVISIONS" == "yes" ]; then
-        $GIT checkout "`$GIT rev-list stable -n 1 --first-parent --before=$VERSION_X264`"
+        $GIT checkout $VERSION_X264
         exit_on_error
     fi
 
     set_flags
 
     # There is a strange circular definition here: x264 depends on FFmpeg, which
-    # depends on libx264.a. If x264 refuses to build, deleting $TARGET/lib/libav*
-    # might help.
-    # rm -f $TARGET/lib/libav*
+    # depends on libx264.a. If x264 or MPlayer refuses to build, deleting $TARGET/lib/libav*
+    # helps.
+    rm -f $TARGET/lib/libav*
 
     if is_osx; then
       if [ "$ARCHITECTURE" == "i386" ]; then
