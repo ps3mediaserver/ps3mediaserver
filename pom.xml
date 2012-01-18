@@ -388,8 +388,22 @@
 					to reference "/resource.name" rather than "/resources/resource.name"
 				-->
 				<targetPath>resources</targetPath>
+				<excludes>
+					<exclude>project.properties</exclude>
+				</excludes>
 
-				<!-- Enable the use of Maven properties -->
+				<!-- Avoid inadvertently filtering binaries -->
+				<filtering>false</filtering>
+			</resource>
+
+			<resource>
+				<directory>src/main/resources</directory>
+				<targetPath>resources</targetPath>
+				<includes>
+					<include>project.properties</include>
+				</includes>
+
+				<!-- Filter to replace Maven properties -->
 				<filtering>true</filtering>
 			</resource>
 
