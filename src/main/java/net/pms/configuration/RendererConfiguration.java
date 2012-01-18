@@ -9,6 +9,8 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import net.pms.Messages;
+import net.pms.PMS;
+import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.MediaInfoParser;
 import net.pms.dlna.RootFolder;
 import net.pms.formats.Format;
@@ -167,6 +169,28 @@ public class RendererConfiguration {
 		}
 		return null;
 	}
+
+	/**
+	 * Tries to find a matching renderer configuration based on the name of
+	 * the renderer. Returns true if the provided name is equal to or a
+	 * substring of the renderer name defined in a configuration, where case
+	 * does not matter.
+	 *
+	 * @param name The renderer name to match.
+	 * @return The matching renderer configuration or <code>null</code>
+	 *
+	 * @since 1.50.1
+	 */
+	public static RendererConfiguration getRendererConfigurationByName(String name) {
+		for (RendererConfiguration conf : renderersConfs) {
+			if (conf.getRendererName().toLowerCase().contains(name.toLowerCase())) {
+				return conf;
+			}
+		}
+
+		return null;
+	}
+
 	private final PropertiesConfiguration configuration;
 	private FormatConfiguration formatConfiguration;
 
@@ -825,5 +849,41 @@ public class RendererConfiguration {
 	 */
 	public boolean isChunkedTransfer() {
 		return getBoolean(CHUNKED_TRANSFER, false);
+	}
+
+	/**
+	 * Returns whether or not the renderer can handle the given format
+	 * natively, based on its configuration in the renderer.conf. If it can
+	 * handle a format natively, content can be streamed to the renderer. If
+	 * not, content should be transcoded before sending it to the renderer.
+	 *
+	 * @param mediainfo The {@link DLNAMediaInfo} information parsed from the
+	 * 				media file.
+	 * @param format The {@link Format} to test compatibility for.
+	 * @return True if the renderer natively supports the format, false
+	 * 				otherwise.
+	 */
+	public boolean isCompatible(DLNAMediaInfo mediainfo, Format format) {
+		if (isMediaParserV2() && mediainfo != null) {
+			// Use the configured "Supported" lines in the renderer.conf
+			// to see if any of them match the MediaInfo library
+			if (getFormatConfiguration().match(mediainfo) != null) {
+				return true;
+			}
+		}
+
+		if (format != null) {
+			String noTranscode = "";
+			
+			if (PMS.getConfiguration() != null) {
+				noTranscode = PMS.getConfiguration().getNoTranscode();
+			}
+
+			// Is the format among the ones to be streamed?
+			return format.skip(noTranscode, getStreamedExtensions());
+		} else {
+			// Not natively supported.
+			return false;
+		}
 	}
 }
