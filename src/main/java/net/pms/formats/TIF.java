@@ -19,9 +19,13 @@
 package net.pms.formats;
 
 public class TIF extends JPG {
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String[] getId() {
-		return new String[]{"tif", "tiff"};
+		return new String[] { "tif", "tiff" };
 	}
 
 	@Override

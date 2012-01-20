@@ -21,6 +21,7 @@ package net.pms.formats;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.InputFile;
@@ -30,6 +31,9 @@ import net.pms.network.HTTPResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Abstract class to store known information about a given format.
+ */
 public abstract class Format implements Cloneable {
 	private static final Logger logger = LoggerFactory.getLogger(Format.class);
 
@@ -44,8 +48,20 @@ public abstract class Format implements Cloneable {
 	public static final int AUDIO = 1;
 	public static final int IMAGE = 2;
 
+	/**
+	 * The identifier (filename extension or protocol) that was matched for a
+	 * particular filename or URL. Requires {@link #match(String)} to be called
+	 * first.
+	 */
 	protected String matchedId;
 
+	/**
+	 * Returns the identifier (filename extension or protocol) that was matched
+	 * for a particular filename or URL. Requires {@link #match(String)} to be
+	 * called first.
+	 *
+	 * @return The matched identifier.
+	 */
 	public String getMatchedId() {
 		return matchedId;
 	}
@@ -66,20 +82,45 @@ public abstract class Format implements Cloneable {
 		}
 	}
 
+	/**
+	 * Returns the identifiers that can be used to identify a particular
+	 * format. Valid identifiers are filename extensions or URL protocols,
+	 * e.g. "mp3" or "http". Identifiers are expected to be in lower case.
+	 *
+	 * @return An array of identifiers.
+	 */
 	public abstract String[] getId();
 
 	/**
+	 * @deprecated Use {@link #isCompatible(DLNAMediaInfo, RendererConfiguration)} instead.
+	 * <p>
 	 * Returns whether or not a format can be handled by the PS3 natively.
 	 * This means the format can be streamed to PS3 instead of having to be
 	 * transcoded.
-	 * <p>
-	 * FIXME: There are many more renderers; mere PS3 compatibility doesn't
-	 * cut it any more. Come up with a better solution, for example a
-	 * RendererConfiguration.isStreamable(Format f).
 	 * 
 	 * @return True if the format can be handled by PS3, false otherwise.
 	 */
+	@Deprecated
 	public abstract boolean ps3compatible();
+	
+	/**
+	 * Returns whether or not a format can be handled by the renderer natively.
+	 * This means the format can be streamed instead of having to be transcoded.
+	 * 
+	 * @return True if the format can be handled by the renderer, false otherwise.
+	 *
+	 * @since 1.50.1
+	 */
+	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
+		if (renderer != null) {
+			// Let the renderer configuration decide on native compatibility
+			return renderer.isCompatible(media, this);
+		} else {
+			// Is this format among the ones configured in PMS to be streamed?
+			return skip(PMS.getConfiguration().getNoTranscode(), null);
+		}
+	}
+
 	public abstract boolean transcodable();
 	public abstract ArrayList<Class<? extends Player>> getProfiles();
 
@@ -150,21 +191,36 @@ public abstract class Format implements Cloneable {
 		logger.trace("Parsing results: " + file + " / " + media);
 	}
 
-	public boolean skip(String extensions, String another_set_of_extensions) {
+	/**
+	 * Returns whether or not the matched identifier of this format is among
+	 * the list of supplied extensions.
+	 *
+	 * @param extensions String of comma separated extensions
+	 * @param moreExtensions String of comma separated extensions
+	 *
+	 * @return True if this format matches any extension, false otherwise.
+	 *
+	 * @see #match(String)
+	 */
+	public boolean skip(String extensions, String moreExtensions) {
 		if (extensions != null && extensions.length() > 0) {
 			StringTokenizer st = new StringTokenizer(extensions, ",");
+
 			while (st.hasMoreTokens()) {
 				String id = st.nextToken().toLowerCase();
+
 				if (matchedId != null && matchedId.toLowerCase().equals(id)) {
 					return true;
 				}
 			}
 		}
 
-		if (another_set_of_extensions != null && another_set_of_extensions.length() > 0) {
-			StringTokenizer st = new StringTokenizer(another_set_of_extensions, ",");
+		if (moreExtensions != null && moreExtensions.length() > 0) {
+			StringTokenizer st = new StringTokenizer(moreExtensions, ",");
+
 			while (st.hasMoreTokens()) {
 				String id = st.nextToken().toLowerCase();
+
 				if (matchedId != null && matchedId.toLowerCase().equals(id)) {
 					return true;
 				}

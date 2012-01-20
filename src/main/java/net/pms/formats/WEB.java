@@ -21,6 +21,8 @@ package net.pms.formats;
 import java.util.ArrayList;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
+import net.pms.dlna.DLNAMediaInfo;
 import net.pms.encoders.MEncoderWebVideo;
 import net.pms.encoders.MPlayerWebAudio;
 import net.pms.encoders.MPlayerWebVideoDump;
@@ -29,6 +31,16 @@ import net.pms.encoders.VideoLanAudioStreaming;
 import net.pms.encoders.VideoLanVideoStreaming;
 
 public class WEB extends Format {
+	/**
+	 * @deprecated Use {@link #isCompatible(DLNAMediaInfo, RendererConfiguration)} instead.
+	 * <p>
+	 * Returns whether or not a format can be handled by the PS3 natively.
+	 * This means the format can be streamed to PS3 instead of having to be
+	 * transcoded.
+	 * 
+	 * @return True if the format can be handled by PS3, false otherwise.
+	 */
+	@Deprecated
 	@Override
 	public boolean ps3compatible() {
 		return type == IMAGE;
@@ -61,13 +73,25 @@ public class WEB extends Format {
 		return a;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String[] getId() {
-		return new String[]{"http", "mms", "rtsp", "rtp", "udp", "screen"};
+		return new String[] { "http", "mms", "rtsp", "rtp", "udp", "screen" };
 	}
 
 	@Override
 	public boolean transcodable() {
 		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
+		// Emulating ps3compatible()
+		return type == IMAGE;
 	}
 }

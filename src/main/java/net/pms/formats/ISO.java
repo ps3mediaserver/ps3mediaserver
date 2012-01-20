@@ -20,11 +20,13 @@ package net.pms.formats;
 
 import java.util.ArrayList;
 
+import net.pms.configuration.RendererConfiguration;
+import net.pms.dlna.DLNAMediaInfo;
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
 
 public class ISO extends MPG {
-	public static final String[] ISO_EXTENSIONS = new String[]{"iso", "img", /*"bin", "mdf", "nrg", "bwt", "cif","ccd", "vcd", "fcd"*/};
+	public static final String[] ISO_EXTENSIONS = new String[] { "iso", "img", /*"bin", "mdf", "nrg", "bwt", "cif","ccd", "vcd", "fcd"*/ };
 
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
@@ -33,10 +35,23 @@ public class ISO extends MPG {
 		return list;
 	}
 
+	/**
+	 * @deprecated Use {@link #isCompatible(DLNAMediaInfo, RendererConfiguration)} instead.
+	 * <p>
+	 * Returns whether or not a format can be handled by the PS3 natively.
+	 * This means the format can be streamed to PS3 instead of having to be
+	 * transcoded.
+	 * 
+	 * @return True if the format can be handled by PS3, false otherwise.
+	 */
+	@Deprecated
 	public boolean ps3compatible() {
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String[] getId() {
 		return ISO_EXTENSIONS;
 	}
