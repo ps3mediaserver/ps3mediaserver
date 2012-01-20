@@ -2,8 +2,8 @@
 #
 # build-pms-osx.sh
 #
-# Version: 2.0.6
-# Last updated: 2012-01-16
+# Version: 2.0.7
+# Last updated: 2012-01-20
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -119,6 +119,7 @@ THREADS="2"
 # Versions
 VERSION_BZIP2=1.0.6
 VERSION_DCRAW=9.07
+VERSION_ENCA=1.13
 VERSION_EXPAT=2.0.1
 VERSION_FAAD2=2.7
 VERSION_FLAC=1.2.1
@@ -133,16 +134,13 @@ VERSION_LAME=3.99.3
 VERSION_LIBBLURAY=2011-12-02
 VERSION_LIBDCA=0.0.5
 VERSION_LIBDV=1.0.0
-VERSION_LIBDVDCSS=1.2.9
-VERSION_LIBDVDNAV=1226
-VERSION_LIBDVDREAD=1226
 VERSION_LIBMAD=0.15.1b
 VERSION_LIBMEDIAINFO=0.7.50
 VERSION_LIBPNG=1.5.6
 VERSION_LIBOGG=1.2.2
 VERSION_LIBVORBIS=1.3.2
 VERSION_LIBTHEORA=1.1.1
-VERSION_LIBZEN=0.4.19
+VERSION_LIBZEN=0.4.23
 VERSION_LZO=2.04
 VERSION_MPLAYER=34577
 VERSION_NCURSES=5.9
@@ -340,6 +338,16 @@ You can install Wget with following command on Debian based systems (Debian, Ubu
 
 EOM
             exit;;
+
+        strip)
+            cat >&2 << EOM
+It seems you are missing "strip", which is required to run this script.
+You can install strip with following command on Debian based systems (Debian, Ubuntu, etc):
+
+    sudo apt-get install binutils
+
+EOM
+            exit;;
         
         yasm)
             if is_osx; then
@@ -407,6 +415,7 @@ else
     WGET=`check_binary wget`
     AUTOMAKE=`check_binary automake`
     AUTOCONF=`check_binary autoconf`
+    STRIP=`check_binary strip`
 fi
 
 
@@ -433,7 +442,7 @@ EOM
 #
 createdir() {
     if [ ! -d $1 ]; then
-        mkdir $1
+        mkdir -p $1
     fi
 }
 
@@ -643,6 +652,31 @@ build_dcraw() {
 
 
 ##########################################
+# ENCA Extremely Naive Charset Analyser
+# http://cihar.com/software/enca/
+#
+build_enca() {
+    start_build enca
+    cd $SRC
+
+    if [ ! -d enca-$VERSION_ENCA ]; then
+        download http://dl.cihar.com/enca/enca-$VERSION_ENCA.tar.gz
+        exit_on_error
+        $TAR xzf enca-$VERSION_ENCA.tar.gz
+    fi
+
+    cd enca-$VERSION_ENCA
+    set_flags
+    ./configure --disable-shared --enable-static --disable-dependency-tracking --prefix=$TARGET
+    exit_on_error
+    $MAKE -j$THREADS
+    exit_on_error
+    $MAKE install
+    cd $WORKDIR
+}
+
+
+##########################################
 # EXPAT
 # http://expat.sourceforge.net/
 #
@@ -736,7 +770,7 @@ build_ffmpeg() {
               --extra-libs=-static \
               --disable-devices --disable-ffplay --disable-ffserver --disable-ffprobe \
               --disable-vdpau --disable-dxva2 --disable-avisynth \
-              --enable-libtheora --disable-libvorbis \
+              --disable-libtheora --disable-libvorbis \
               --disable-shared --enable-static --prefix=$TARGET
     fi
 
@@ -809,15 +843,26 @@ build_fontconfig() {
 
     cd fontconfig-$VERSION_FONTCONFIG
     set_flags
-    ./configure --with-confdir=./fonts --enable-static --disable-shared --disable-dependency-tracking --prefix=$TARGET
+    if is_linux; then
+        ./configure --sysconfdir=/etc --localstatedir=/var --enable-static --disable-shared --disable-dependency-tracking --prefix=$TARGET
+    else
+        ./configure --with-confdir=./fonts --enable-static --disable-shared --disable-dependency-tracking --prefix=$TARGET
+    fi
     $MAKE -j$THREADS
     exit_on_error
-    $MAKE install
 
-    if is_linux; then    
+    if is_linux; then
+        $MAKE install-exec && $MAKE install-pkgconfigDATA
+        exit_on_error
+        # copy freetype headers
+        mkdir $TARGET/include/fontconfig
+        cp ./fontconfig/*.h $TARGET/include/fontconfig/
         # freetype depends on bzip2
         $SED -i -e "s/^Libs\.private.*$/Libs.private: -lexpat -lfreetype -lz -liconv -lbz2/" $TARGET/lib/pkgconfig/fontconfig.pc
+    else
+        $MAKE install
     fi
+    exit_on_error
     
     cd $WORKDIR
 }
@@ -1057,95 +1102,6 @@ build_libdv() {
 
 
 ##########################################
-# LIBDVDCSS
-# http://www.videolan.org/developers/libdvdcss.html
-#
-build_libdvdcss() {
-    start_build libdvdcss
-    cd $SRC
-
-    if [ ! -d libdvdcss-$VERSION_LIBDVDCSS ]; then
-        download http://download.videolan.org/pub/libdvdcss/$VERSION_LIBDVDCSS/libdvdcss-$VERSION_LIBDVDCSS.tar.gz
-        exit_on_error
-        $TAR xzf libdvdcss-$VERSION_LIBDVDCSS.tar.gz
-    fi
-
-    cd libdvdcss-$VERSION_LIBDVDCSS
-    set_flags
-    ./configure --disable-shared --disable-dependency-tracking --prefix=$TARGET
-    $MAKE -j$THREADS
-    exit_on_error
-    $MAKE install
-    cd $WORKDIR
-}
-
-
-##########################################
-# LIBDVDNAV
-# svn://svn.mplayerhq.hu/dvdnav/trunk/libdvdnav/
-#
-build_libdvdnav() {
-    start_build libdvdnav
-    cd $SRC
-
-    if [ "$FIXED_REVISIONS" == "yes" ]; then
-        REVISION="-r $VERSION_LIBDVDNAV"
-    else
-        REVISION=""
-    fi
-
-    if [ ! -d libdvdnav ]; then
-        $SVN checkout $REVISION svn://svn.mplayerhq.hu/dvdnav/trunk/libdvdnav/ libdvdnav
-        exit_on_error
-        cd libdvdnav
-    else
-        cd libdvdnav
-        $SVN update $REVISION
-        exit_on_error
-    fi
-
-    set_flags
-    ./autogen.sh --with-dvdread-config=$TARGET/bin/dvdread-config --disable-shared --disable-dependency-tracking --prefix=$TARGET
-    $MAKE -j$THREADS
-    exit_on_error
-    $MAKE install
-    cd $WORKDIR
-}
-
-##########################################
-# LIBDVDREAD
-# svn://svn.mplayerhq.hu/dvdnav/trunk/libdvdread/
-#
-build_libdvdread() {
-    start_build libdvdread
-    cd $SRC
-
-    if [ "$FIXED_REVISIONS" == "yes" ]; then
-        REVISION="-r $VERSION_LIBDVDREAD"
-    else
-        REVISION=""
-    fi
-
-    if [ ! -d libdvdread ]; then
-        $SVN checkout $REVISION svn://svn.mplayerhq.hu/dvdnav/trunk/libdvdread/ libdvdread
-        exit_on_error
-        cd libdvdread
-    else
-        cd libdvdread
-        $SVN update $REVISION
-        exit_on_error
-    fi
-
-    set_flags
-    ./autogen.sh --disable-shared --disable-dependency-tracking --prefix=$TARGET
-    $MAKE -j$THREADS
-    exit_on_error
-    $MAKE install
-    cd $WORKDIR
-}
-
-
-##########################################
 # LIBMAD
 # http://www.underbit.com/products/mad/
 #
@@ -1195,7 +1151,7 @@ build_libmediainfo() {
 
     # Note: libmediainfo requires libzen source to compile
     ./autogen
-    ./configure --enable-static --disable-shared --disable-dependency-tracking --enable-staticlibs --prefix=$TARGET
+    ./configure --enable-shared --disable-dependency-tracking --enable-staticlibs --prefix=$TARGET
     $MAKE -j$THREADS
     exit_on_error
     $MAKE install
@@ -1212,7 +1168,7 @@ build_libpng() {
     cd $SRC
 
     if [ ! -d libpng-$VERSION_LIBPNG ]; then
-        download http://downloads.sourceforge.net/project/libpng/libpng15/$VERSION_LIBPNG/libpng-$VERSION_LIBPNG.tar.gz
+        download http://downloads.sourceforge.net/project/libpng/libpng15/older-releases/$VERSION_LIBPNG/libpng-$VERSION_LIBPNG.tar.gz
         exit_on_error
         $TAR xzf libpng-$VERSION_LIBPNG.tar.gz
     fi
@@ -1323,7 +1279,12 @@ build_libzen() {
     set_flags
 
     ./autogen
-    ./configure --disable-shared --disable-dependency-tracking --prefix=$TARGET
+    if is_osx; then
+        ./configure --disable-shared --disable-dependency-tracking --prefix=$TARGET
+    fi
+    if is_linux; then
+        ./configure --enable-shared --disable-dependency-tracking --prefix=$TARGET
+    fi
     $MAKE -j$THREADS
     exit_on_error
     $MAKE install
@@ -1422,9 +1383,14 @@ build_mplayer() {
         export CFLAGS="$CFLAGS -O4 -fomit-frame-pointer -pipe"
         export LDFLAGS="$LDFLAGS -O4 -fomit-frame-pointer -pipe"
 
-        # dirty workaround for linking -lm (libmath) problem
-        $SVN revert ./configure
-        patch -p0 < ./../../mplayer-r34118-configure-ld-lm.patch
+        $SVN revert *
+        $SVN revert libao2/*
+        $SVN revert libvo/*
+        # Apply SB patch that was used for the Windows version
+        patch -p0 < ./../../mplayer-r34577-SB21.patch
+
+        # mplayer configure patch for r34577-SB21
+        patch -p0 < ./../../mplayer-r34577-configure.patch
 
         # libvorbis support seems broken in this revision, disable it for now
         ./configure --enable-static --enable-runtime-cpudetection \
@@ -1503,7 +1469,7 @@ build_ps3mediaserver() {
         # OSX
 
         mkdir $SRC/target/bin/osx
-        
+
         # Overwrite with the home built tools
         cp $TARGET/bin/dcraw $SRC/target/bin/osx
         cp $TARGET/bin/ffmpeg $SRC/target/bin/osx
@@ -1531,24 +1497,13 @@ build_ps3mediaserver() {
         cp $TARGET/bin/flac $SRC/target/bin/linux
         cp $TARGET/bin/mplayer $SRC/target/bin/linux
         cp $TARGET/bin/mencoder $SRC/target/bin/linux
+        cp $TARGET/lib/libmediainfo.so.0.0.0 $SRC/target/bin/libmediainfo.so
+        $STRIP --strip-unneeded $SRC/target/bin/libmediainfo.so
+        # tsMuxeR is already included
+        #cp $TARGET/bin/tsMuxeR .
 
-        # turn libmediainfo.a into a shared library
-        set_flags
-        mkdir tmp-libmediainfo
-        cd tmp-libmediainfo
-        cp $TARGET/lib/libmediainfo.a .
-        ar x libmediainfo.a
-        rm libmediainfo.a
-
-        # FIXME: not sure where libmediainfo.so resides
-        $GPP -shared -static-libstdc++ -static-libgcc -o ./../libmediainfo.so ./*.o  -Wl,--whole-archive -L./ -lzen -Wl,--no-whole-archive
+        $MVN package
         exit_on_error
-        cd ..
-        rm -rf ./tmp-libmediainfo
-        cd ..    
-
-         $MVN package
-         exit_on_error
 
         cd target
         PMS_FILENAME=`ls pms-generic-linux-*.tgz | head -1`
@@ -1702,6 +1657,10 @@ build_zlib() {
 
     cd zlib-$VERSION_ZLIB
     set_flags
+    if is_linux; then
+        export CFLAGS="-fPIC"
+        export CXXFLAGS="-fPIC"
+    fi
     ./configure --prefix=$TARGET
     $MAKE -j$THREADS
     exit_on_error
@@ -1747,9 +1706,6 @@ build_lame
 build_libbluray
 build_libdca
 build_libdv
-build_libdvdcss
-build_libdvdread
-build_libdvdnav
 build_libmad
 build_libzen
 # Note: libmediainfo requires libzen to build
@@ -1768,6 +1724,7 @@ build_dcraw
 if is_osx; then
     build_tsMuxeR
 fi
+build_enca
 build_ffmpeg
 build_mplayer
 
