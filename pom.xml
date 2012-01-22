@@ -7,22 +7,22 @@
 		run it. While PMS itself is 100% pure Java, some of the third party software is
 		not. This means building a platform specific distribution boils down to first
 		building the pms.jar and then assembling all application resources.
-		
+
 		Note that Maven 3 does not automatically install all dependencies, unlike Maven 2.
 		To install all dependencies to your local repository, run the following commands:
-		
+
 		mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external
 		mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
-		
+
 		To build PMS, do:
-		
+
 			mvn clean package
-		
+
 		After building, the "target" directory will contain the binary.
 		To generate a full source code report, do:
-		
+
 			mvn site
-			
+
 		After generating, the "target/site" directory will contain the reports.
 	-->
 
@@ -34,7 +34,7 @@
 	<version>1.50.1-SNAPSHOT</version>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
-	
+
 	<organization>
 		<name>PS3 Media Server</name>
 		<url>http://www.ps3mediaserver.org/</url>
@@ -49,11 +49,11 @@
 	</licenses>
 
 	<description>
-        PS3 Media Server is a cross-platform DLNA-compliant UPnP Media Server.
-        Originally written to support the PlayStation 3, PS3 Media Server has been
-        expanded to support a range of other media renderers, including smartphones,
-        televisions, music players and more.
-    </description>
+		PS3 Media Server is a cross-platform DLNA-compliant UPnP Media Server.
+		Originally written to support the PlayStation 3, PS3 Media Server has been
+		expanded to support a range of other media renderers, including smartphones,
+		televisions, music players and more.
+	</description>
 
 	<scm>
 		<connection>scm:git:git://github.com/ps3mediaserver/ps3mediaserver.git</connection>
@@ -70,7 +70,7 @@
 	<properties>
 		<!-- NSIS needs a version without "-SNAPSHOT" or "-b1" -->
 		<project.version.short>1.50.0</project.version.short>
-	
+
 		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
 		<jgoodies-common-version>1.2.1</jgoodies-common-version>
 		<jgoodies-forms-version>1.4.2</jgoodies-forms-version>
@@ -81,11 +81,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.external-resources>${project.basedir}/src/main/external-resources</project.external-resources>
 		<project.binaries>${project.basedir}/target/bin</project.binaries>
-		
+
 		<!-- Snapshots should get their binaries from the trunk, releases from a tag -->
 		<project.binaries-base>http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver</project.binaries-base>
 		<!-- <project.binaries-base>http://ps3mediaserver.googlecode.com/svn/tags/1.40.0</project.binaries-base> -->
-		
+
 		<maven.nsis.project.template>${project.basedir}/src/main/external-resources/nsis/project.jelly</maven.nsis.project.template>
 	</properties>
 
