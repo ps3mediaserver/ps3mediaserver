@@ -2,8 +2,8 @@
 #
 # build-pms-osx.sh
 #
-# Version: 2.0.7
-# Last updated: 2012-01-20
+# Version: 2.0.8
+# Last updated: 2012-01-25
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -142,11 +142,12 @@ VERSION_LIBVORBIS=1.3.2
 VERSION_LIBTHEORA=1.1.1
 VERSION_LIBZEN=0.4.23
 VERSION_LZO=2.04
-VERSION_MPLAYER=34577
+VERSION_MPLAYER=34587
 VERSION_NCURSES=5.9
 VERSION_PS3MEDIASERVER=2011-12-11
 VERSION_TSMUXER=1.10.6
-VERSION_X264=2011-11-09
+# Translation table for SVN revision numbers: http://x264.nl/x264/changelog.txt
+VERSION_X264=bcd41dbcaa4430b2118d9f6828c2b9635cf9d58d
 VERSION_XVID=1.3.1
 VERSION_ZLIB=1.2.5
 
@@ -1366,7 +1367,8 @@ build_mplayer() {
         # See https://svn.macports.org/ticket/30279
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../mplayer-r34577-SB21.patch
+        patch -p0 < ./../../mplayer-r34587-SB22.patch
+        exit_on_error
 
         # Theora and vorbis support seems broken in this revision, disable it for now
         ./configure --cc=$GCC2 --disable-x11 --disable-gl --disable-qtx \
@@ -1387,10 +1389,12 @@ build_mplayer() {
         $SVN revert libao2/*
         $SVN revert libvo/*
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../mplayer-r34577-SB21.patch
+        patch -p0 < ./../../mplayer-r34587-SB22.patch
+        exit_on_error
 
-        # mplayer configure patch for r34577-SB21
-        patch -p0 < ./../../mplayer-r34577-configure.patch
+        # mplayer configure patch for r34587-SB22
+        patch -p0 < ./../../mplayer-r34587-configure.patch
+        exit_on_error
 
         # libvorbis support seems broken in this revision, disable it for now
         ./configure --enable-static --enable-runtime-cpudetection \
@@ -1579,6 +1583,11 @@ build_x264() {
     fi
 
     set_flags
+
+    # There is a strange cyclic dependency here; FFmpeg uses x264 and
+    # x264 used libav* from FFmpeg. Delete pre-existing libraries for
+    # consistent builds; x264 can be built without them.
+    rm -f $TARGET/lib/libav*
 
     if is_osx; then
       if [ "$ARCHITECTURE" == "i386" ]; then
