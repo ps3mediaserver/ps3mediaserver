@@ -977,8 +977,8 @@
 								</goals>
 								<configuration>
 									<tasks>
-										<!-- Rename the pms-x.x.x-jar-with-dependencies.jar to pms.jar -->
-										<move file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
+										<!-- Copy the pms-x.x.x-jar-with-dependencies.jar to pms.jar -->
+										<copy file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
 
 										<!-- MediaInfo library needs to be in the standard library path to be found -->
@@ -1043,15 +1043,14 @@
 			<activation>
 				<activeByDefault>false</activeByDefault>
 				<os>
-					<!-- OSX is also detected as Unix, ignore the false positive -->
-					<family>unix,!mac</family>
+					<family>unix</family>
 				</os>
 			</activation>
 			
 			<build>
 				<plugins>
 					<!--
-						Plugin to move the pms-x.x.x-jar-with-dependencies.jar to pms.jar
+						Plugin to copy the pms-x.x.x-jar-with-dependencies.jar to pms.jar
 					-->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -1076,14 +1075,14 @@
 							</execution>
 									
 							<execution>
-								<id>prepare-package</id>
-								<phase>prepare-package</phase>
+								<id>copy-jar-with-dependencies</id>
+								<phase>package</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
 								<configuration>
 									<tasks>
-										<move file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
+										<copy file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
 									</tasks>
 								</configuration>
