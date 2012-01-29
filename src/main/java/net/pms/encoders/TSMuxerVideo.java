@@ -220,22 +220,28 @@ public class TSMuxerVideo extends Player {
 			boolean singleMediaAudio = media != null && media.getAudioCodes().size() <= 1;
 
 			if (params.aid != null) {
+				boolean dts = false;
+				boolean pcm = false;
 				if (numAudioTracks <= 1) {
 					ffAudioPipe = new PipeIPCProcess[numAudioTracks];
 					ffAudioPipe[0] = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true);
-					if (
+					dts = configuration.isDTSEmbedInPCM() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
+					pcm = configuration.isMencoderUsePcm() &&
 						(
-							configuration.isMencoderUsePcm() ||
-							configuration.isDTSEmbedInPCM()
-						) && (
 							params.aid.isLossless() ||
-							params.aid.isDTS()
-						) &&
-						params.mediaRenderer.isDTSPlayable()
-					) {
+							params.aid.isDTS() ||
+							params.aid.isAC3() ||
+							params.aid.isTrueHD() ||
+							params.aid.isMP3() ||
+							params.aid.isAAC() ||
+							params.aid.isVorbis() ||
+							params.aid.isWMA() ||
+							params.aid.isMpegAudio()
+						) && params.mediaRenderer.isMuxLPCMToMpeg();
+					if ( dts || pcm ) {
 						StreamModifier sm = new StreamModifier();
-						sm.setPcm(true);
-						sm.setDtsembed(configuration.isDTSEmbedInPCM() && params.aid.isDTS());
+						sm.setPcm(pcm);
+						sm.setDtsembed(dts);
 						sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid));
 						sm.setSampleFrequency(params.aid.getSampleRate() < 48000 ? 48000 : params.aid.getSampleRate());
 						sm.setBitspersample(16);
@@ -259,7 +265,8 @@ public class TSMuxerVideo extends Player {
 							"-srate", "48000",
 							"-o", ffAudioPipe[0].getInputPipe()
 						};
-						if (!params.mediaRenderer.isMuxDTSToMpeg()) {
+						if (!params.mediaRenderer.isMuxDTSToMpeg())   // use PCM trick when media renderer does not support DTS in MPEG
+						{
 							ffAudioPipe[0].setModifier(sm);
 						}
 					} else {
@@ -310,18 +317,23 @@ public class TSMuxerVideo extends Player {
 					for (int i = 0; i < media.getAudioCodes().size(); i++) {
 						DLNAMediaAudio audio = media.getAudioCodes().get(i);
 						ffAudioPipe[i] = new PipeIPCProcess(System.currentTimeMillis() + "ffmpeg" + i, System.currentTimeMillis() + "audioout" + i, false, true);
-						if (
+						dts = configuration.isDTSEmbedInPCM() && audio.isDTS() && params.mediaRenderer.isDTSPlayable();
+						pcm = configuration.isMencoderUsePcm() &&
 							(
 								audio.isLossless() ||
-								audio.isDTS()
-							) && (
-								configuration.isMencoderUsePcm() ||
-								configuration.isDTSEmbedInPCM()
-							) && params.mediaRenderer.isDTSPlayable()
-						) {
+								audio.isDTS() ||
+								audio.isAC3() ||
+								audio.isTrueHD() ||
+								audio.isMP3() ||
+								audio.isAAC() ||
+								audio.isVorbis() ||
+								audio.isWMA() ||
+								audio.isMpegAudio()
+							) && params.mediaRenderer.isMuxLPCMToMpeg();
+						if ( dts || pcm ) {
 							StreamModifier sm = new StreamModifier();
-							sm.setPcm(true);
-							sm.setDtsembed(configuration.isDTSEmbedInPCM() && audio.isDTS());
+							sm.setPcm(pcm);
+							sm.setDtsembed(dts);
 							sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, audio));
 							sm.setSampleFrequency(48000);
 							sm.setBitspersample(16);
@@ -415,15 +427,28 @@ public class TSMuxerVideo extends Player {
 		}
 		if (ffAudioPipe != null && ffAudioPipe.length == 1) {
 			String timeshift = "";
-			String type = "A_AC3";
-			if (
+			boolean dts = false;
+			boolean pcm = false;
+			dts = configuration.isDTSEmbedInPCM() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
+			pcm = configuration.isMencoderUsePcm() &&
 				(
-					(configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) &&
-					(params.aid.isDTS() || params.aid.isLossless()) &&
-					params.mediaRenderer.isDTSPlayable()
-				) ||
-				this instanceof TsMuxerAudio
-			) {
+					params.aid.isLossless() ||
+					params.aid.isDTS() ||
+					params.aid.isAC3() ||
+					params.aid.isTrueHD() ||
+					params.aid.isMP3() ||
+					params.aid.isAAC() ||
+					params.aid.isVorbis() ||
+					params.aid.isWMA() ||
+					params.aid.isMpegAudio()
+				) && params.mediaRenderer.isMuxLPCMToMpeg();
+			String type = "A_AC3";
+			if ( pcm || this instanceof TsMuxerAudio )
+			{
+				type = "A_LPCM";
+			}
+			if ( dts || this instanceof TsMuxerAudio )
+			{
 				type = "A_LPCM";
 				if (params.mediaRenderer.isMuxDTSToMpeg()) {
 					type = "A_DTS";
@@ -437,12 +462,28 @@ public class TSMuxerVideo extends Player {
 			for (int i = 0; i < media.getAudioCodes().size(); i++) {
 				DLNAMediaAudio lang = media.getAudioCodes().get(i);
 				String timeshift = "";
-				boolean lossless = false;
-				if ((lang.isDTS() || lang.isLossless()) && (configuration.isMencoderUsePcm() || configuration.isDTSEmbedInPCM()) && params.mediaRenderer.isDTSPlayable()) {
-					lossless = true;
-				}
+				boolean dts = false;
+				boolean pcm = false;
+				dts = configuration.isDTSEmbedInPCM() && lang.isDTS() && params.mediaRenderer.isDTSPlayable();
+				pcm = configuration.isMencoderUsePcm() &&
+					(
+						lang.isLossless() ||
+						lang.isDTS() ||
+						lang.isAC3() ||
+						lang.isTrueHD() ||
+						lang.isMP3() ||
+						lang.isAAC() ||
+						lang.isVorbis() ||
+						lang.isWMA() ||
+						lang.isMpegAudio()
+					) && params.mediaRenderer.isMuxLPCMToMpeg();
 				String type = "A_AC3";
-				if (lossless) {
+				if ( pcm )
+				{
+					type = "A_LPCM";
+				}
+				if ( dts )
+				{
 					type = "A_LPCM";
 					if (params.mediaRenderer.isMuxDTSToMpeg()) {
 						type = "A_DTS";
