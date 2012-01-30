@@ -3,6 +3,7 @@ package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,9 +80,10 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		cbActive = new JCheckBox(Messages.getString("ML.Condition.Header.Type.FILE_ISACTIF"));
 		cbActive.setFont(cbActive.getFont().deriveFont(Font.BOLD));
 		cbActive.setSelected(fileInfo.isActif());
-		Map<String, List<String>> genres = new HashMap<String, List<String>>();
-		genres.put(GENRES_NAME, fileInfo.getGenres());
-		pGenres = new FileTagsPanel(genres, false);
+		Map<String, List<String>> genresMap = new HashMap<String, List<String>>();
+		Collections.sort(fileInfo.getGenres());
+		genresMap.put(GENRES_NAME, fileInfo.getGenres());
+		pGenres = new FileTagsPanel(genresMap, false);
 	}
 
 	public void build() {
@@ -110,7 +112,7 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		CellConstraints cc = new CellConstraints();
 
 		FormLayout layout = new FormLayout("5px, 20:grow, 10px, 20:grow, 10px, 20:grow, 10px, 20:grow, 10px, d, 5px", // columns
-		        "3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, fill:d:grow, 3px"); // rows
+		        "3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 5px, d, 3px"); // rows
 		builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 		
@@ -135,49 +137,49 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		builder.add(tfImdbId, cc.xy(10, 8));
 		
 		//row 3
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_HOMEPAGEURL), cc.xyw(2, 12, 3));
-		builder.add(tfHomePage, cc.xyw(2, 14, 3));
+		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_HOMEPAGEURL), cc.xyw(2, 10, 3));
+		builder.add(tfHomePage, cc.xyw(2, 12, 3));
 
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_TRAILERURL), cc.xyw(6, 12, 3));
-		builder.add(tfTrailer, cc.xyw(6, 14, 3));
+		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_TRAILERURL), cc.xyw(6, 10, 3));
+		builder.add(tfTrailer, cc.xyw(6, 12, 3));
 
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_TMDBID), cc.xy(10, 12));
-		builder.add(tfTmdbId, cc.xy(10, 14));
+		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_TMDBID), cc.xy(10, 10));
+		builder.add(tfTmdbId, cc.xy(10, 12));
 		
 		//row 4		
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_RATINGPERCENT), cc.xy(2, 16));
-		builder.add(tfRating, cc.xy(2, 18));
+		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_RATINGPERCENT), cc.xy(2, 14));
+		builder.add(tfRating, cc.xy(2, 16));
 
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_RATINGVOTERS), cc.xy(4, 16));
-		builder.add(tfRatingVoters, cc.xy(4, 18));
+		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_RATINGVOTERS), cc.xy(4, 14));
+		builder.add(tfRatingVoters, cc.xy(4, 16));
 		
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_CERTIFICATIONREASON), cc.xyw(6, 16, 3));
-		builder.add(tfCertificationReason, cc.xyw(6, 18, 3));
+		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_CERTIFICATIONREASON), cc.xyw(6, 14, 3));
+		builder.add(tfCertificationReason, cc.xyw(6, 16, 3));
 
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_CERTIFICATION), cc.xy(10, 16));
-		builder.add(tfCertification, cc.xy(10, 18));
+		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_CERTIFICATION), cc.xy(10, 14));
+		builder.add(tfCertification, cc.xy(10, 16));
 		
 		//row 5
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_TAGLINE), cc.xyw(2, 20, 7));
-		builder.add(tfTagLine, cc.xyw(2, 22, 7));
+		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_TAGLINE), cc.xyw(2, 18, 7));
+		builder.add(tfTagLine, cc.xyw(2, 20, 7));
 		
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_BUDGET), cc.xy(10, 20));
-		builder.add(tfBudget, cc.xy(10, 22));
+		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_BUDGET), cc.xy(10, 18));
+		builder.add(tfBudget, cc.xy(10, 20));
 
 		//row 6
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_OVERVIEW), cc.xyw(2, 24, 7));
+		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_OVERVIEW), cc.xyw(2, 22, 7));
 		taOverview.setLineWrap(true);
 		taOverview.setWrapStyleWord(true);
 		JScrollPane spOverview = new JScrollPane(taOverview);
 		spOverview.setBorder(tfBudget.getBorder());
-		builder.add(spOverview, cc.xywh(2, 26, 7, 3));
+		builder.add(spOverview, cc.xywh(2, 24, 7, 3));
 		
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_REVENUE), cc.xy(10, 24));
-		builder.add(tfRevenue, cc.xy(10, 26, CellConstraints.DEFAULT, CellConstraints.TOP));
+		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_REVENUE), cc.xy(10, 22));
+		builder.add(tfRevenue, cc.xy(10, 24, CellConstraints.DEFAULT, CellConstraints.TOP));
 		
-		builder.add(cbActive, cc.xy(10, 28, CellConstraints.DEFAULT, CellConstraints.TOP));
+		builder.add(cbActive, cc.xy(10, 26, CellConstraints.DEFAULT, CellConstraints.TOP));
 
-		builder.add(pGenres, cc.xyw(2, 30, 9));
+		builder.add(pGenres, cc.xyw(2, 28, 9));
 
 		JPanel p = builder.getPanel();
 		JScrollPane sp = new JScrollPane(p);

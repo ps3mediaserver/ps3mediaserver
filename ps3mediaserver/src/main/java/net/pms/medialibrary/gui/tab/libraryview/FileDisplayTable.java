@@ -88,6 +88,7 @@ public class FileDisplayTable extends JPanel {
 	private void init() {
 		//configure the table
 		table = new ETable();
+		//align all the cells to the left and format the date according to available space
 		table.setDefaultRenderer(Integer.class, new FileDisplayTableCellRenderer());
 		table.setDefaultRenderer(Double.class, new FileDisplayTableCellRenderer());
 		table.setDefaultRenderer(Date.class, new DateCellRenderer());
@@ -143,6 +144,7 @@ public class FileDisplayTable extends JPanel {
 					public void propertyChange(PropertyChangeEvent e) {
 						TableColumn c = (TableColumn) e.getSource();
 						if(!isUpdating && e.getPropertyName().equals("preferredWidth")) {
+							//store the width of the column when it changes
 							for(ConditionType ct : ConditionType.values()) {
 								if(c.getHeaderValue().equals(Messages.getString("ML.Condition.Header.Type." + ct.toString()))) {
 									MediaLibraryStorage.getInstance().updateTableColumnWidth(ct, c.getWidth(), fileType);
@@ -256,7 +258,7 @@ public class FileDisplayTable extends JPanel {
 					
 					FileEditDialog fed = new FileEditDialog(fel);
 					fed.setModal(true);
-					fed.setSize(new Dimension(750, 455));
+					fed.setSize(new Dimension(745, 450));
 					fed.setLocation(GUIHelper.getCenterDialogOnParentLocation(fed.getSize(), table));
 					fed.setVisible(true);
 				} else {

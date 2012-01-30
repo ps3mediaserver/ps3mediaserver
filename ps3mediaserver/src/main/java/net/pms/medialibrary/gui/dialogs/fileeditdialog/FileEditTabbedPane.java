@@ -82,9 +82,6 @@ public class FileEditTabbedPane extends JTabbedPane {
 		if(selectedIndex > 0) {
 			setSelectedIndex(selectedIndex);
 		}
-		
-		validate();
-		repaint();
 	}
 
 	/**

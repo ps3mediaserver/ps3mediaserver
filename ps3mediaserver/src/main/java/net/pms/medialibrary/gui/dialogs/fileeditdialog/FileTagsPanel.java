@@ -1,32 +1,35 @@
 package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 import net.pms.Messages;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.gui.dialogs.TextInputDialog;
+import net.pms.medialibrary.gui.shared.ScrollablePanel;
 import net.pms.medialibrary.gui.shared.TagLabel;
 
 /**
@@ -55,9 +58,7 @@ public class FileTagsPanel extends JPanel {
 		build();		
 	}
 	
-	private void init(Map<String, List<String>> tags, boolean showTitel) {
-		setLayout(new GridLayout());
-		
+	private void init(Map<String, List<String>> tags, boolean showTitel) {		
 		lTitle = new JLabel(Messages.getString("ML.FileTagsPanel.ConfiguredTags"));
 		lTitle.setFont(lTitle.getFont().deriveFont((float)lTitle.getFont().getSize() + 4));
 		lTitle.setFont(lTitle.getFont().deriveFont(Font.BOLD));
@@ -85,8 +86,11 @@ public class FileTagsPanel extends JPanel {
 			}
 		});		
 
-		for(String tagName : tags.keySet()) {
-			TagLabelPanel pTag = createTagLabelPanel(tags.get(tagName));
+		List<String> tagNames = GUIHelper.asSortedList(tags.keySet());
+		for(String tagName : tagNames) {
+			List<String> tagValues = tags.get(tagName);
+			Collections.sort(tagValues);
+			TagLabelPanel pTag = createTagLabelPanel(tagValues);
 			tagPanels.put(tagName, pTag);
 		}
 	}
@@ -96,52 +100,51 @@ public class FileTagsPanel extends JPanel {
 	 * @param tags map where the key will be set as a tag name and the values as tag values
 	 */
 	private void build() {
-		int nbRows = tagPanels.size();
+		setLayout(new BorderLayout(3, 5));
+		removeAll();
 		
-		String colsStr = "";
 		if(showTitel) {
-			colsStr += "p, p, 5px, ";	
+			JPanel pTitle = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 3));
+			pTitle.add(lTitle);
+			pTitle.add(bAdd);
+			
+			JPanel pHeader = new JPanel(new BorderLayout(0, 0));
+			pHeader.add(pTitle, BorderLayout.CENTER);
+			pHeader.add(new JSeparator(), BorderLayout.SOUTH);
+			add(pHeader, BorderLayout.NORTH);
 		}
 		
-		for(int i = 0; i < nbRows; i++) {
-			colsStr += "p, 5px, ";
-		}
-		colsStr = colsStr.substring(0, colsStr.length() - 7);
+		//create tags panel
+		ScrollablePanel pTags = new ScrollablePanel(new GridBagLayout());
+		pTags.setScrollableWidth(ScrollablePanel.ScrollableSizeHint.FIT);
+		GridBagConstraints c = new GridBagConstraints();
+		c.ipadx = 5;
+		c.ipady = 5;
 		
-		PanelBuilder builder;
-		CellConstraints cc = new CellConstraints();
-		
-		FormLayout layout = new FormLayout("5px, p, 5px, 10:g, 5px", // columns
-		        colsStr); // rows
-		builder = new PanelBuilder(layout);
-		builder.setOpaque(true);
-
-		int tagIndex = 1;
-		if(showTitel) {
-			FlowLayout fl = new FlowLayout(FlowLayout.LEFT, 10, 0);
-			JPanel p = new JPanel(fl);
-			p.add(lTitle);
-			p.add(bAdd);
-			builder.add(p, cc.xyw(2, tagIndex++, 3));			
-			builder.addSeparator("", cc.xyw(2, tagIndex, 3));
-			tagIndex += 2;
-		}
-		
+		int rowIndex = 0;
 		for(String tagName : tagPanels.keySet()) {
-			JLabel lTagName = builder.addLabel(tagName + ":", cc.xy(2, tagIndex, CellConstraints.RIGHT, CellConstraints.CENTER));
+			JLabel lTagName = new JLabel(tagName + ":  ", SwingConstants.TRAILING);
 			lTagName.setFont(lTagName.getFont().deriveFont(Font.BOLD));
+			c.fill = GridBagConstraints.NONE;
+			c.gridx = 0;
+			c.gridy = rowIndex++;
+			c.weightx = 0;
+			c.weighty = 0;
+			c.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
+			pTags.add(lTagName, c);
 			
 			TagLabelPanel pTag = tagPanels.get(tagName);
-			builder.add(pTag, cc.xy(4, tagIndex, CellConstraints.FILL, CellConstraints.CENTER));
-			
-			tagIndex += 2;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 1;
+			c.weightx = 1;
+			c.weighty = 1;
+			c.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+			pTags.add(pTag, c);
 		}
-		
-		removeAll();
-		add(builder.getPanel());
-		
-		validate();
-		repaint();
+
+		JScrollPane spTags = new JScrollPane(pTags);
+		spTags.setBorder(BorderFactory.createEmptyBorder());
+		add(spTags, BorderLayout.CENTER);		
 	}
 	
 	public Map<String, List<String>> getTags() {

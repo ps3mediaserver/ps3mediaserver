@@ -1,5 +1,6 @@
 package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 
+import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -32,13 +33,15 @@ public class TagLabelPanel extends JPanel {
 	//holds the listeners subscribing for delete event notifications
 	private List<ActionListener> tagLabelListeners = new ArrayList<ActionListener>();
 	private TagLabel tlEditing;
+
+	private JPanel pTagValues;
 	
 	/**
 	 * Constructor
 	 * @param tagValues the initial tag values
 	 */
 	public TagLabelPanel(List<String> tagValues) {
-		setLayout(new WrapLayout(FlowLayout.LEFT, 0, 0));
+		setLayout(new BorderLayout(3, 0));
 		
 		//add add button
 		initImageIcons();
@@ -50,14 +53,16 @@ public class TagLabelPanel extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				createNewLabel();
 			}
-		});		
-		add(lAdd);
+		});
+		add(lAdd, BorderLayout.LINE_START);
 		
 		//add all the tag values
+		pTagValues = new JPanel(new WrapLayout(FlowLayout.LEFT, 0, 0));
 		for(String tagValue : tagValues) {
 			final TagLabel tl = createTagLabel(tagValue);
-			add(tl);
+			pTagValues.add(tl);
 		}
+		add(pTagValues, BorderLayout.CENTER);
 		refreshCommas();
 	}
 	
@@ -66,7 +71,7 @@ public class TagLabelPanel extends JPanel {
 	 */
 	private void createNewLabel() {
 		TagLabel tl = createTagLabel("");
-		add(tl);
+		pTagValues.add(tl);
 		refreshCommas();
 		tlEditing = tl;
 		tl.beginEdit();
@@ -95,8 +100,8 @@ public class TagLabelPanel extends JPanel {
 	 */
 	public List<String> getTagValues() {
 		List<String> res = new ArrayList<String>();
-		for(int i = 0; i < getComponentCount(); i++) {
-			JComponent c = (JComponent) getComponent(i);
+		for(int i = 0; i < pTagValues.getComponentCount(); i++) {
+			JComponent c = (JComponent) pTagValues.getComponent(i);
 			if(c instanceof TagLabel) {
 				String tv = ((TagLabel)c).getTagValue();
 				if(!tv.equals("")) {
@@ -126,10 +131,10 @@ public class TagLabelPanel extends JPanel {
 	 * Tells all the labels to draw a comma after the tag value, except for the last one
 	 */
 	private void refreshCommas() {
-		for(int i = 0; i < getComponentCount(); i++) {
-			JComponent c = (JComponent) getComponent(i);
+		for(int i = 0; i < pTagValues.getComponentCount(); i++) {
+			JComponent c = (JComponent) pTagValues.getComponent(i);
 			if(c instanceof TagLabel) {
-				((TagLabel)c).setAddComma(i < getComponentCount() - 1);
+				((TagLabel)c).setAddComma(i < pTagValues.getComponentCount() - 1);
 			}
 		}
 	}
@@ -157,7 +162,7 @@ public class TagLabelPanel extends JPanel {
 				if (e.getActionCommand().equals(TagLabel.ACTION_COMMAND_BEGIN_EDIT)) {
 					tlEditing = tl;
 				} else if (e.getActionCommand().equals(TagLabel.ACTION_COMMAND_DELETE)) {
-					remove(tl);
+					pTagValues.remove(tl);
 					refreshCommas();
 				} else if (e.getActionCommand().equals(TagLabel.ACTION_COMMAND_END_EDIT)) {
 					tlEditing = null;

@@ -1,13 +1,17 @@
 package net.pms.medialibrary.commons.dataobjects;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.pms.Messages;
+import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.enumarations.FileType;
 
 public class DOFileInfo {
@@ -25,7 +29,9 @@ public class DOFileInfo {
 	private int playCount;
 	private boolean actif;
 	
-	public String getFileName(boolean withExtension){
+	private List<ActionListener> propertyChangeListeners = new ArrayList<ActionListener>();
+	
+	public String getFileName(boolean withExtension) {
 		String retVal = fileName;
 		
 		if(!withExtension){
@@ -36,6 +42,14 @@ public class DOFileInfo {
 		}
 		
 		return retVal;
+	}
+	
+	public void addPropertyChangeListeners(ActionListener l) {
+		propertyChangeListeners.add(l);
+	}
+
+	public void removePropertyChangeListeners(ActionListener l) {
+		propertyChangeListeners.remove(l);
 	}
 	
 	public String getDisplayString(String displayNameMask){
@@ -49,6 +63,31 @@ public class DOFileInfo {
 		try { retVal = retVal.replace("%date_last_played", getPlayHistory().size() == 0 ? Messages.getString("ML.Condition.NeverPlayed") : getPlayHistory().get(getPlayHistory().size() - 1).toString()); } catch(Exception ex){ }
 		try { retVal = retVal.replace("%play_count", String.valueOf(getPlayCount())); } catch(Exception ex){ }
 		try { retVal = retVal.replace("%is_actif", String.valueOf(isActif())); } catch(Exception ex){ }
+		
+		String tagPrefix = "%tag_";
+		if(displayNameMask.contains(tagPrefix)) {
+			int tagNameStartIndex = displayNameMask.indexOf(tagPrefix) + tagPrefix.length();
+			int tagNameEndIndex = displayNameMask.indexOf(" ", tagNameStartIndex);
+			if(tagNameEndIndex == -1) {
+				tagNameEndIndex = displayNameMask.length() - 1;
+			}
+			String tagName = displayNameMask.substring(tagNameStartIndex, tagNameEndIndex);
+			String tagsString = "";
+			StringBuilder sb = new StringBuilder();
+			if(getTags() != null && getTags().containsKey(tagName)){
+				List<String> tagValues = getTags().get(tagName);
+				Collections.sort(tagValues);
+				for(String tagValue : tagValues){
+					sb.append(tagValue);
+					sb.append(", ");
+				}
+				tagsString = sb.toString();
+				if(tagsString.endsWith(", ")){
+					tagsString = tagsString.substring(0, tagsString.length() - 2);
+				}
+			}
+			retVal = retVal.replace(tagPrefix + tagName, tagsString);
+		}
 		
 		return retVal;
 	}
@@ -70,7 +109,10 @@ public class DOFileInfo {
     }
 
 	public void setFolderPath(String folderPath) {
-	    this.folderPath = folderPath;
+		if(!getFolderPath().equals(folderPath)) {
+		    this.folderPath = folderPath;
+		    firepropertyChangedEvent(ConditionType.FILE_FOLDERPATH);
+	    }
     }
 
 	public String getFolderPath() {
@@ -80,7 +122,10 @@ public class DOFileInfo {
     }
 
 	public void setFileName(String fileName) {
-	    this.fileName = fileName;
+		if(!getFileName().equals(fileName)) {
+		    this.fileName = fileName;
+		    firepropertyChangedEvent(ConditionType.FILE_FILENAME);
+	    }
     }
 
 	public String getFileName() {
@@ -98,7 +143,10 @@ public class DOFileInfo {
     }
 
 	public void setDateLastUpdatedDb(Date dateLastUpdatedDb) {
-	    this.dateLastUpdatedDb = dateLastUpdatedDb;
+		if(!getDateLastUpdatedDb().equals(dateLastUpdatedDb)) {
+		    this.dateLastUpdatedDb = dateLastUpdatedDb;
+		    firepropertyChangedEvent(ConditionType.FILE_DATELASTUPDATEDDB);
+	    }
     }
 
 	public Date getDateLastUpdatedDb() {
@@ -107,7 +155,10 @@ public class DOFileInfo {
     }
 
 	public void setDateInsertedDb(Date dateInsertedDb) {
-	    this.dateInsertedDb = dateInsertedDb;
+		if(!getDateInsertedDb().equals(dateInsertedDb)) {
+		    this.dateInsertedDb = dateInsertedDb;
+		    firepropertyChangedEvent(ConditionType.FILE_DATEINSERTEDDB);
+	    }
     }
 
 	public Date getDateInsertedDb() {
@@ -116,7 +167,10 @@ public class DOFileInfo {
     }
 
 	public void setDateModifiedOs(Date dateModifiedOs) {
-	    this.dateModifiedOs = dateModifiedOs;
+		if(!getDateModifiedOs().equals(dateModifiedOs)) {
+		    this.dateModifiedOs = dateModifiedOs;
+		    firepropertyChangedEvent(ConditionType.FILE_DATEMODIFIEDOS);
+	    }
     }
 
 	public Date getDateModifiedOs() {
@@ -125,7 +179,10 @@ public class DOFileInfo {
     }
 
 	public void setTags(Map<String, List<String>> tags) {
-	    this.tags = tags;
+		if(!getTags().equals(tags)) {
+		    this.tags = tags;
+		    firepropertyChangedEvent(ConditionType.FILE_CONTAINS_TAG);
+	    }
     }
 
 	public Map<String, List<String>> getTags() {
@@ -134,7 +191,10 @@ public class DOFileInfo {
     }
 
 	public void setThumbnailPath(String thumbnailPath) {
-	    this.thumbnailPath = thumbnailPath;
+		if(!getThumbnailPath().equals(thumbnailPath)) {
+		    this.thumbnailPath = thumbnailPath;
+		    firepropertyChangedEvent(ConditionType.FILE_THUMBNAILPATH);
+	    }
     }
 
 	public String getThumbnailPath() {
@@ -143,7 +203,10 @@ public class DOFileInfo {
     }
 
 	public void setSize(long size) {
-	    this.size = size;
+		if(getSize() != size) {
+		    this.size = size;
+		    firepropertyChangedEvent(ConditionType.FILE_SIZEBYTE);
+	    }
     }
 
 	public long getSize() {
@@ -151,7 +214,10 @@ public class DOFileInfo {
     }
 
 	public void setPlayCount(int playCount) {
-	    this.playCount = playCount;
+		if(getPlayCount() != playCount) {
+		    this.playCount = playCount;
+		    firepropertyChangedEvent(ConditionType.FILE_PLAYCOUNT);
+	    }
     }
 
 	public int getPlayCount() {
@@ -161,6 +227,7 @@ public class DOFileInfo {
 	public void addPlayToHistory(Date d) {
 		if(d != null){
 			getPlayHistory().add(d);
+		    firepropertyChangedEvent(ConditionType.FILEPLAYS_DATEPLAYEND);
 		}
 	}
 
@@ -170,7 +237,10 @@ public class DOFileInfo {
 	}
 
 	public void setActif(boolean actif) {
-		this.actif = actif;
+		if(isActif() != actif){
+			this.actif = actif;
+		    firepropertyChangedEvent(ConditionType.FILE_ISACTIF);
+		}
 	}
 
 	public boolean isActif() {
@@ -243,5 +313,12 @@ public class DOFileInfo {
 		fi.playHistory = playHistory;
 		return fi;
 	}
+    
+    protected void firepropertyChangedEvent(ConditionType ct) {
+    	ActionEvent e = new ActionEvent(this, ct.hashCode(), ct.toString());
+    	for(ActionListener l : propertyChangeListeners) {
+    		l.actionPerformed(e);
+    	}
+    }
 	
 }

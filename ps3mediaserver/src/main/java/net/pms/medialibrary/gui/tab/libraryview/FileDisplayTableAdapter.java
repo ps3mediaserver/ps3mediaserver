@@ -1,6 +1,8 @@
 package net.pms.medialibrary.gui.tab.libraryview;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,7 @@ import net.pms.medialibrary.commons.enumarations.ConditionValueType;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.helpers.DLNAHelper;
 import net.pms.medialibrary.commons.helpers.FolderHelper;
+import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 
 import com.jgoodies.binding.adapter.AbstractTableAdapter;
@@ -59,14 +62,22 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 		Object res = null;
 		
 		if(res == null){
+			StringBuilder sb;
 			switch(cd.getConditionType()){
 				case FILE_CONTAINS_TAG:
-					String tmpRes = "";
-					for(String key : file.getTags().keySet()){
-						tmpRes += key + "=" + file.getTags().get(key) + ", ";
+					List<String> keys = GUIHelper.asSortedList(file.getTags().keySet());
+					sb = new StringBuilder();
+					for(String key : keys){
+						List<String> tagValues = file.getTags().get(key);
+						Collections.sort(tagValues);
+						sb.append(key);
+						sb.append("=");
+						sb.append(tagValues);
+						sb.append(", ");
 					}
+					String tmpRes = sb.toString();
 					if(tmpRes.length() > 0){
-						tmpRes = tmpRes.substring(0, tmpRes.length() -2);
+						tmpRes = tmpRes.substring(0, tmpRes.length() - 2);
 					}
 					res = tmpRes;
 					break;
@@ -92,7 +103,7 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 					res = file.getPlayCount();
 					break;
 				case FILE_SIZEBYTE:
-					res = file.getSize() / 1000 / 1000;
+					res = file.getSize() / 1024 / 1024;
 					break;
 				case FILE_TYPE:
 					res = Messages.getString("ML.FileType." + file.getType());
@@ -112,6 +123,7 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 		Object res = getFileValue(video, cd);
 		
 		if(res == null){
+			StringBuilder sb;
 			switch(cd.getConditionType()){
 				case VIDEO_CERTIFICATION:
 					res = video.getAgeRating().getLevel();
@@ -138,31 +150,57 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 					res = video.getContainer();
 					break;
 				case VIDEO_CONTAINS_GENRE:
-					String tmpRes = "";
-					for(String genre : video.getGenres()){
-						tmpRes += genre + ", ";
+					List<String> genres = video.getGenres();
+					Collections.sort(genres);
+					sb = new StringBuilder();
+					for(String genre : genres){
+						sb.append(genre);
+						sb.append(", ");
 					}
+					String tmpRes = sb.toString();
 					if(tmpRes.length() > 0){
 						tmpRes = tmpRes.substring(0, tmpRes.length() - 2);
 					}
 					res = tmpRes;
 					break;
 				case VIDEO_CONTAINS_SUBTITLES:
-					tmpRes = "";
-					for(DLNAMediaSubtitle sub : video.getSubtitlesCodes()){
-						tmpRes += sub.getLangFullName() + ", ";
+					List<DLNAMediaSubtitle> subtitlesCodes = video.getSubtitlesCodes();
+					Collections.sort(subtitlesCodes, new Comparator<DLNAMediaSubtitle>() {
+
+						@Override
+						public int compare(DLNAMediaSubtitle o1, DLNAMediaSubtitle o2) {
+							return o1.getLangFullName().compareTo(o2.getLangFullName());
+						}
+					});
+					sb = new StringBuilder();
+					for(DLNAMediaSubtitle sub : subtitlesCodes){
+						sb.append(sub.getLangFullName());
+						sb.append(", ");
 					}
+					tmpRes = sb.toString();
 					if(tmpRes.length() > 0){
 						tmpRes = tmpRes.substring(0, tmpRes.length() - 2);
 					}
 					res = tmpRes;
 					break;
 				case VIDEO_CONTAINS_VIDEOAUDIO:
-					tmpRes = "";
-					for(DLNAMediaAudio audio : video.getAudioCodes()){
-						tmpRes += audio.getLangFullName() + " (" + audio.getAudioCodec() + "), ";
+					List<DLNAMediaAudio> audioCodes = video.getAudioCodes();
+					Collections.sort(audioCodes, new Comparator<DLNAMediaAudio>() {
+	
+						@Override
+						public int compare(DLNAMediaAudio o1, DLNAMediaAudio o2) {
+							return o1.getLangFullName().compareTo(o2.getLangFullName());
+						}
+					});
+					sb = new StringBuilder();
+					for (DLNAMediaAudio audio : audioCodes) {
+						sb.append(audio.getLangFullName());
+						sb.append(" (");
+						sb.append(audio.getAudioCodec());
+						sb.append("), ");
 					}
-					if(tmpRes.length() > 0){
+					tmpRes = sb.toString();
+					if (tmpRes.length() > 0) {
 						tmpRes = tmpRes.substring(0, tmpRes.length() - 2);
 					}
 					res = tmpRes;

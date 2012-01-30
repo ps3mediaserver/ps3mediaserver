@@ -5,11 +5,11 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -31,15 +31,15 @@ class ImageSelection extends TransferHandler implements Transferable {
 	private static final long serialVersionUID = 3468993662766779670L;
 	private static final Logger log = LoggerFactory.getLogger(ImageSelection.class);
 
-	private static final DataFlavor flavors[] = { DataFlavor.imageFlavor, DataFlavor.javaFileListFlavor };
+	private static final DataFlavor flavors[] = { DataFlavor.javaFileListFlavor };
 
 	private Image image;
 	private DOFileInfo fileInfo;
-	private ImageIcon videoCoverImage;
+
+	private List<String> iconExtensions = Arrays.asList("png", "jpg", "jpeg", "bmp");
 
 	public ImageSelection(DOFileInfo fileInfo, ImageIcon videoCoverImage) {
 		this.fileInfo = fileInfo;
-		this.videoCoverImage = videoCoverImage;
 	}
 
 	@Override
@@ -63,25 +63,7 @@ class ImageSelection extends TransferHandler implements Transferable {
 	}
 
 	@Override
-	public Transferable createTransferable(JComponent comp) {
-		// Clear
-		image = null;
-
-		if (comp instanceof JLabel) {
-			JLabel label = (JLabel) comp;
-			Icon icon = label.getIcon();
-			if (icon instanceof ImageIcon) {
-				image = ((ImageIcon) icon).getImage();
-				return this;
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public boolean importData(JComponent comp, Transferable t) {
-		if (comp instanceof JLabel) {
-			JLabel label = (JLabel) comp;
 			if (t.isDataFlavorSupported(DataFlavor.imageFlavor)) {
 				try {
 					image = (Image) t.getTransferData(DataFlavor.imageFlavor);
@@ -103,9 +85,6 @@ class ImageSelection extends TransferHandler implements Transferable {
 					}
 					ImageIO.write(bufImg, "JPEG", new FileImageOutputStream(saveFile));
 					
-					videoCoverImage = new ImageIcon(image);					
-					label.setIcon(videoCoverImage);
-					
 					fileInfo.setThumbnailPath(saveFileName);
 					return true;
 				} catch (Throwable th) {
@@ -116,15 +95,41 @@ class ImageSelection extends TransferHandler implements Transferable {
 					@SuppressWarnings("unchecked")
 					List<File> files = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
 					if (files.size() == 1) {
-						ImageIcon icon = new ImageIcon(files.get(0).getAbsolutePath());
-						label.setIcon(icon);
+						//get the paths
+						String sourceFileName = files.get(0).getAbsolutePath();
+						
+						//get the file extension
+						File f = new File(sourceFileName);
+						String name = f.getName();
+						int pos = name.lastIndexOf('.');
+						String ext = name.substring(pos + 1).toLowerCase();
+
+						//make sure an image has been dropped
+						if(!iconExtensions.contains(ext)) {
+							return false;
+						}
+						
+						String cleanFilePath = MediaLibraryConfiguration.getInstance().getPictureSaveFolderPath() + fileInfo.getFileName().replaceAll("\\\\|/|:|\\*|\\?|\"|<|>|\\|", "_");
+						
+						//make sure a new image is being created
+						String saveFileName;
+						int imageIndex = 0;
+						do {
+							saveFileName = String.format("%s.cover.%s%s", cleanFilePath, (imageIndex > 0 ? imageIndex + "." : ""), ext);
+							imageIndex++;
+						} while(new File(saveFileName).exists());
+						
+						//copy the image
+						FileImportHelper.copyFile(new File(sourceFileName), new File(saveFileName), false);
+						
+						//update the file info
+						fileInfo.setThumbnailPath(saveFileName);
 					}
 					return true;
 				} catch (Throwable th) {
 					log.error("Failed to accept dropped image", th);
 				}
 			}
-		}
 		return false;
 	}
 

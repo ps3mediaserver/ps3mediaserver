@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaSubtitle;
+import net.pms.medialibrary.commons.enumarations.ConditionType;
 
 public class DOVideoFileInfo extends DOFileInfo {
 	private String originalName;
@@ -62,66 +63,7 @@ public class DOVideoFileInfo extends DOFileInfo {
 		try { retVal = retVal.replace("%revenue", Integer.toString(getRevenue())); } catch(Exception ex){ }
 		try { retVal = retVal.replace("%homepage_url", getHomepageUrl()); } catch(Exception ex){ }
 		try { retVal = retVal.replace("%trailer_url", getTrailerUrl()); } catch(Exception ex){ }
-		try { retVal = retVal.replace("%director", getDirector()); } catch(Exception ex){ }
-		if(displayNameMask.contains("%genres")){
-			String genresString = "";
-			if(genres != null){
-				for(String genre : genres){
-					genresString += genre + ", ";
-				}
-				if(genresString.endsWith(", ")){
-					genresString = genresString.substring(0, genresString.length() - 2);
-				}
-			}
-			retVal = retVal.replace("%genres", genresString);
-		}
-		if(displayNameMask.contains("%audio_languages")){
-			String audiosString = "";
-			if(audioCodes != null){
-				for(DLNAMediaAudio audio : audioCodes){
-					audiosString += String.format("%s (%s), ", audio.getLangFullName(), audio.getCodecA());
-				}
-				if(audiosString.endsWith(", ")){
-					audiosString = audiosString.substring(0, audiosString.length() - 2);
-				}
-			}
-			retVal = retVal.replace("%audio_languages", audiosString);
-		}
-		if(displayNameMask.contains("%subtitle_languages")){
-			String subtitlesString = "";
-			if(subtitlesCodes != null){
-				for(DLNAMediaSubtitle subtitle : subtitlesCodes){
-					if(subtitle.getLang() != null){
-						subtitlesString += subtitle.getLangFullName() + ", ";
-					}
-				}
-				if(subtitlesString.endsWith(", ")){
-					subtitlesString = subtitlesString.substring(0, subtitlesString.length() - 2);
-				}
-			}
-			retVal = retVal.replace("%subtitle_languages", subtitlesString);
-		}
-		
-		String tagPrefix = "%tag_";
-		if(displayNameMask.contains(tagPrefix)) {
-			int tagNameStartIndex = displayNameMask.indexOf(tagPrefix) + tagPrefix.length();
-			int tagNameEndIndex = displayNameMask.indexOf(" ", tagNameStartIndex);
-			if(tagNameEndIndex == -1) {
-				tagNameEndIndex = displayNameMask.length() - 1;
-			}
-			String tagName = displayNameMask.substring(tagNameStartIndex, tagNameEndIndex);
-			String tagsString = "";
-			if(getTags() != null && getTags().containsKey(tagName)){
-				for(String tagValue : getTags().get(tagName)){
-					tagsString += tagValue + ", ";
-				}
-				if(tagsString.endsWith(", ")){
-					tagsString = tagsString.substring(0, tagsString.length() - 2);
-				}
-			}
-			retVal = retVal.replace(tagPrefix + tagName, tagsString);
-		}
-		
+		try { retVal = retVal.replace("%director", getDirector()); } catch(Exception ex){ }		
 		try { retVal = retVal.replace("%bitrate", Integer.toString(getBitrate())); } catch(Exception ex){ }
 		try { retVal = retVal.replace("%video_codec", getCodecV()); } catch(Exception ex){ }
 		try { retVal = retVal.replace("%duration", Double.toString(getDurationSec())); } catch(Exception ex){ }
@@ -132,12 +74,70 @@ public class DOVideoFileInfo extends DOFileInfo {
 		try { retVal = retVal.replace("%muxable", Boolean.toString(isMuxable())); } catch(Exception ex){ }
 		try { retVal = retVal.replace("%width", Integer.toString(getWidth())); } catch(Exception ex){ }
 		try { retVal = retVal.replace("%muxing_mode", getMuxingMode()); } catch(Exception ex){ }
+		if(displayNameMask.contains("%genres")){
+			List<String> genres = getGenres();
+			Collections.sort(genres);
+
+			StringBuilder sb = new StringBuilder();
+			for(String genre : genres) {
+				sb.append(genre);
+				sb.append(", ");
+			}
+			String genresString = sb.toString();
+			if(genresString.endsWith(", ")){
+				genresString = genresString.substring(0, genresString.length() - 2);
+			}
+			retVal = retVal.replace("%genres", genresString);
+		}
+		if(displayNameMask.contains("%audio_languages")){
+			List<DLNAMediaAudio> audioCodes = getAudioCodes();
+			Collections.sort(audioCodes, new Comparator<DLNAMediaAudio>() {
+				
+				@Override
+				public int compare(DLNAMediaAudio o1, DLNAMediaAudio o2) {
+					return o1.getLangFullName().compareTo(o2.getLangFullName());
+				}
+			});
+			StringBuilder sb = new StringBuilder();
+			for(DLNAMediaAudio audio : audioCodes){
+				sb.append(String.format("%s (%s), ", audio.getLangFullName(), audio.getCodecA()));
+			}
+
+			String audiosString = sb.toString();
+			if(audiosString.endsWith(", ")){
+				audiosString = audiosString.substring(0, audiosString.length() - 2);
+			}
+			retVal = retVal.replace("%audio_languages", audiosString);
+		}
+		if(displayNameMask.contains("%subtitle_languages")){
+			List<DLNAMediaSubtitle> subtitlesCodes = getSubtitlesCodes();
+			Collections.sort(subtitlesCodes, new Comparator<DLNAMediaSubtitle>() {
+
+				@Override
+				public int compare(DLNAMediaSubtitle o1, DLNAMediaSubtitle o2) {
+					return o1.getLangFullName().compareTo(o2.getLangFullName());
+				}
+			});
+			StringBuilder sb = new StringBuilder();
+			for(DLNAMediaSubtitle subtitle : subtitlesCodes){
+				sb.append(subtitle.getLangFullName());
+				sb.append(", ");
+			}
+			String subtitlesString = sb.toString();
+			if(subtitlesString.endsWith(", ")){
+				subtitlesString = subtitlesString.substring(0, subtitlesString.length() - 2);
+			}
+			retVal = retVal.replace("%subtitle_languages", subtitlesString);
+		}
 		
 		return retVal;
 	}
 
 	public void setAgeRating(DOCertification ageRating) {
-	    this.ageRating = ageRating;
+		if(!getAgeRating().equals(ageRating)) {
+		    this.ageRating = ageRating;
+		    firepropertyChangedEvent(ConditionType.VIDEO_CERTIFICATION);
+	    }
     }
 
 	public DOCertification getAgeRating() {
@@ -146,7 +146,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setRating(DORating rating) {
-	    this.rating = rating;
+		if(!getRating().equals(rating)) {
+		    this.rating = rating;
+		    firepropertyChangedEvent(ConditionType.VIDEO_RATINGPERCENT);
+	    }
     }
 
 	public DORating getRating() {
@@ -155,7 +158,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setDirector(String director) {
-	    this.director = director;
+		if(!getDirector().equals(director)) {
+		    this.director = director;
+		    firepropertyChangedEvent(ConditionType.VIDEO_DIRECTOR);
+	    }
     }
 
 	public String getDirector() {
@@ -164,17 +170,22 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setGenres(List<String> genres) {
-	    this.genres = genres;
+		if(!getGenres().equals(genres)) {
+		    this.genres = genres;
+		    firepropertyChangedEvent(ConditionType.VIDEO_CONTAINS_GENRE);
+	    }
     }
 
 	public List<String> getGenres() {
 		if(genres == null) genres = new ArrayList<String>();
-		Collections.sort(genres);
 	    return genres;
     }
 
 	public void setOverview(String overview) {
-	    this.overview = overview;
+		if(!getOverview().equals(overview)) {
+		    this.overview = overview;
+		    firepropertyChangedEvent(ConditionType.VIDEO_OVERVIEW);
+	    }
     }
 
 	public String getOverview() {
@@ -183,7 +194,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setTagLine(String tagLine) {
-	    this.tagLine = tagLine;
+		if(!getTagLine().equals(tagLine)) {
+		    this.tagLine = tagLine;
+		    firepropertyChangedEvent(ConditionType.VIDEO_TAGLINE);
+	    }
     }
 
 	public String getTagLine() {
@@ -192,7 +206,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setName(String name) {
-	    this.name = name;
+		if(!getName().equals(name)) {
+		    this.name = name;
+		    firepropertyChangedEvent(ConditionType.VIDEO_NAME);
+	    }
     }
 
 	public String getName() {
@@ -201,7 +218,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setSortName(String sortName) {
-		this.sortName = sortName;
+		if(!getSortName().equals(sortName)) {
+			this.sortName = sortName;
+		    firepropertyChangedEvent(ConditionType.VIDEO_SORTNAME);
+		}
 	}
 
 	public String getSortName() {
@@ -210,7 +230,10 @@ public class DOVideoFileInfo extends DOFileInfo {
 	}
 
 	public void setTrailerUrl(String trailerUrl) {
-	    this.trailerUrl = trailerUrl;
+		if(!getTrailerUrl().equals(trailerUrl)) {
+		    this.trailerUrl = trailerUrl;
+		    firepropertyChangedEvent(ConditionType.VIDEO_TRAILERURL);
+	    }
     }
 
 	public String getTrailerUrl() {
@@ -219,7 +242,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setOriginalName(String originalName) {
-	    this.originalName = originalName;
+		if(!getOriginalName().equals(originalName)) {
+		    this.originalName = originalName;
+		    firepropertyChangedEvent(ConditionType.VIDEO_ORIGINALNAME);
+	    }
     }
 
 	public String getOriginalName() {
@@ -228,7 +254,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setTmdbId(int tmdbId) {
-	    this.tmdbId = tmdbId;
+		if(getTmdbId() != tmdbId) {
+		    this.tmdbId = tmdbId;
+		    firepropertyChangedEvent(ConditionType.VIDEO_TMDBID);
+	    }
     }
 
 	public int getTmdbId() {
@@ -236,7 +265,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setImdbId(String imdbId) {
-	    this.imdbId = imdbId;
+		if(!getImdbId().equals(imdbId)) {
+		    this.imdbId = imdbId;
+		    firepropertyChangedEvent(ConditionType.VIDEO_IMDBID);
+	    }
     }
 
 	public String getImdbId() {
@@ -245,7 +277,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setRevenue(int revenue) {
-	    this.revenue = revenue;
+		if(getRevenue() != revenue) {
+		    this.revenue = revenue;
+		    firepropertyChangedEvent(ConditionType.VIDEO_REVENUE);
+	    }
     }
 
 	public int getRevenue() {
@@ -253,7 +288,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setBudget(int budget) {
-	    this.budget = budget;
+		if(getBudget() != budget) {
+		    this.budget = budget;
+		    firepropertyChangedEvent(ConditionType.VIDEO_BUDGET);
+	    }
     }
 
 	public int getBudget() {
@@ -261,7 +299,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setHomepageUrl(String homepageUrl) {
-	    this.homepageUrl = homepageUrl;
+		if(!getHomepageUrl().equals(homepageUrl)) {
+		    this.homepageUrl = homepageUrl;
+		    firepropertyChangedEvent(ConditionType.VIDEO_HOMEPAGEURL);
+	    }
     }
 
 	public String getHomepageUrl() {
@@ -270,7 +311,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setAspectRatio(String aspectRatio) {
-	    this.aspectRatio = aspectRatio;
+		if(!getAspectRatio().equals(aspectRatio)) {
+		    this.aspectRatio = aspectRatio;
+		    firepropertyChangedEvent(ConditionType.VIDEO_ASPECTRATIO);
+	    }
     }
 
 	public String getAspectRatio() {
@@ -279,7 +323,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setBitrate(int bitrate) {
-	    this.bitrate = bitrate;
+		if(getBitrate() != bitrate) {
+		    this.bitrate = bitrate;
+		    firepropertyChangedEvent(ConditionType.VIDEO_BITRATE);
+	    }
     }
 
 	public int getBitrate() {
@@ -287,7 +334,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setBitsPerPixel(int bitsPerPixel) {
-	    this.bitsPerPixel = bitsPerPixel;
+		if(getBitsPerPixel() != bitsPerPixel) {
+		    this.bitsPerPixel = bitsPerPixel;
+		    firepropertyChangedEvent(ConditionType.VIDEO_BITSPERPIXEL);
+	    }
     }
 
 	public int getBitsPerPixel() {
@@ -295,7 +345,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setCodecV(String codecV) {
-	    this.codecV = codecV;
+		if(!getCodecV().equals(codecV)) {
+		    this.codecV = codecV;
+		    firepropertyChangedEvent(ConditionType.VIDEO_CODECV);
+	    }
     }
 
 	public String getCodecV() {
@@ -304,7 +357,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setDurationSec(double durationSec) {
-	    this.durationSec = durationSec;
+		if(getDurationSec() != durationSec) {
+		    this.durationSec = durationSec;
+		    firepropertyChangedEvent(ConditionType.VIDEO_DURATIONSEC);
+	    }
     }
 
 	public double getDurationSec() {
@@ -312,7 +368,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setContainer(String container) {
-	    this.container = container;
+		if(!getContainer().equals(container)) {
+		    this.container = container;
+		    firepropertyChangedEvent(ConditionType.VIDEO_CONTAINER);
+	    }
     }
 
 	public String getContainer() {
@@ -321,7 +380,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setDvdtrack(int dvdtrack) {
-	    this.dvdtrack = dvdtrack;
+		if(getDvdtrack() != dvdtrack) {
+		    this.dvdtrack = dvdtrack;
+		    firepropertyChangedEvent(ConditionType.VIDEO_DVDTRACK);
+	    }
     }
 
 	public int getDvdtrack() {
@@ -329,7 +391,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setFrameRate(String frameRate) {
-	    this.frameRate = frameRate;
+		if(!getFrameRate().equals(frameRate)) {
+		    this.frameRate = frameRate;
+		    firepropertyChangedEvent(ConditionType.VIDEO_FRAMERATE);
+	    }
     }
 
 	public String getFrameRate() {
@@ -346,7 +411,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setHeight(int height) {
-	    this.height = height;
+		if(getHeight() != height) {
+		    this.height = height;
+		    firepropertyChangedEvent(ConditionType.VIDEO_HEIGHT);
+	    }
     }
 
 	public int getHeight() {
@@ -354,7 +422,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setMimeType(String mimeType) {
-	    this.mimeType = mimeType;
+		if(!getMimeType().equals(mimeType)) {
+		    this.mimeType = mimeType;
+		    firepropertyChangedEvent(ConditionType.VIDEO_MIMETYPE);
+	    }
     }
 
 	public String getMimeType() {
@@ -363,7 +434,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setModel(String model) {
-	    this.model = model;
+		if(!getModel().equals(model)) {
+		    this.model = model;
+		    firepropertyChangedEvent(ConditionType.VIDEO_MODEL);
+	    }
     }
 
 	public String getModel() {
@@ -372,7 +446,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setMuxable(boolean muxable) {
-	    this.muxable = muxable;
+		if(isMuxable() != muxable) {
+		    this.muxable = muxable;
+		    firepropertyChangedEvent(ConditionType.VIDEO_MUXABLE);
+	    }
     }
 
 	public boolean isMuxable() {
@@ -380,7 +457,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setWidth(int width) {
-	    this.width = width;
+		if(getWidth() != width) {
+		    this.width = width;
+		    firepropertyChangedEvent(ConditionType.VIDEO_WIDTH);
+	    }
     }
 
 	public int getWidth() {
@@ -388,7 +468,10 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setYear(int year) {
-	    this.year = year;
+		if(getYear() != year) {
+		    this.year = year;
+		    firepropertyChangedEvent(ConditionType.VIDEO_YEAR);
+	    }
     }
 
 	public int getYear() {
@@ -396,40 +479,34 @@ public class DOVideoFileInfo extends DOFileInfo {
     }
 
 	public void setAudioCodes(List<DLNAMediaAudio> audioCodes) {
-	    this.audioCodes = audioCodes;
+		if(!getAudioCodes().equals(audioCodes)) {
+		    this.audioCodes = audioCodes;
+		    firepropertyChangedEvent(ConditionType.VIDEO_CONTAINS_VIDEOAUDIO);
+	    }
     }
 
 	public List<DLNAMediaAudio> getAudioCodes() {
 		if(audioCodes == null) audioCodes = new ArrayList<DLNAMediaAudio>();
-		Collections.sort(audioCodes, new Comparator<DLNAMediaAudio>() {
-
-			@Override
-			public int compare(DLNAMediaAudio o1, DLNAMediaAudio o2) {
-				return o1.toString().compareTo(o2.toString());
-			}
-		});
 	    return audioCodes;
     }
 
 	public void setSubtitlesCodes(List<DLNAMediaSubtitle> subtitlesCodes) {
-	    this.subtitlesCodes = subtitlesCodes;
+		if(!getSubtitlesCodes().equals(subtitlesCodes)) {
+		    this.subtitlesCodes = subtitlesCodes;
+		    firepropertyChangedEvent(ConditionType.VIDEO_CONTAINS_SUBTITLES);
+	    }
     }
 
 	public List<DLNAMediaSubtitle> getSubtitlesCodes() {
 		if(subtitlesCodes == null) subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
-		Collections.sort(subtitlesCodes, new Comparator<DLNAMediaSubtitle>() {
-
-			@Override
-			public int compare(DLNAMediaSubtitle o1, DLNAMediaSubtitle o2) {
-				return o1.toString().compareTo(o2.toString());
-			}
-
-		});
 	    return subtitlesCodes;
     }
 
 	public void setMuxingMode(String muxingMode) {
-		this.muxingMode = muxingMode;
+		if(getMuxingMode() != muxingMode) {
+			this.muxingMode = muxingMode;
+		    firepropertyChangedEvent(ConditionType.VIDEO_MUXINGMODE);
+		}
 	}
 
 	public String getMuxingMode() {

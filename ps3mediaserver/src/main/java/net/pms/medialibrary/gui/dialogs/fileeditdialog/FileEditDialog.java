@@ -20,7 +20,7 @@ import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 
 /**
- * Dialog used to visualize and edit file properties
+ * Dialog used to visualize and edit file properties and tags
  * @author pw
  *
  */
@@ -35,7 +35,24 @@ public class FileEditDialog extends JDialog {
 	private JButton bOk;
 	private JButton bCancel;
 	private FileEditTabbedPane tpFileEdit;	
+      
+	private boolean requiresUpdate = false;
+	
+	/**
+	 * Listener used to be notified of file info changes in order to only save an updated configuration to DB if something has changed
+	 */
+	private ActionListener fileInfoChangedListener = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			requiresUpdate = true;
+		}
+	};
 
+	/**
+	 * Constructor
+	 * @param fel a linked list with a selected item which will be opened for editing
+	 */
 	public FileEditDialog(FileEditLinkedList fel) {
 		((java.awt.Frame) getOwner()).setIconImage(new ImageIcon(getClass().getResource("/resources/images/icon-16.png")).getImage());
 		setFileEditList(fel);
@@ -45,14 +62,25 @@ public class FileEditDialog extends JDialog {
 		build();
 	}
 
+	/**
+	 * Gets the used file edit list
+	 * @return used file edit list
+	 */
 	public FileEditLinkedList getFileEditList() {
 		return fileEditList;
 	}
 
+	/**
+	 * Sets the used file edit list
+	 * @param fileEditList used file edit list
+	 */
 	public void setFileEditList(FileEditLinkedList fileEditList) {
 		this.fileEditList = fileEditList;
 	}
 
+	/**
+	 * Initializes the UI components and builds the panel
+	 */
 	private void build() {
 		//initialize tabbed pane
 		tpFileEdit = new FileEditTabbedPane(getFileEditList().getSelected());
@@ -66,7 +94,10 @@ public class FileEditDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				boolean success = saveUpdatedFileInfo();
 				if(success) {
-					tpFileEdit.setContent(fileEditList.selectPreviousFile());
+					fileEditList.getSelected().removePropertyChangeListeners(fileInfoChangedListener);
+					fileEditList.selectPreviousFile();
+					fileEditList.getSelected().addPropertyChangeListeners(fileInfoChangedListener);
+					tpFileEdit.setContent(fileEditList.getSelected());
 					setTitle(fileEditList.getSelected().getFilePath());
 					refreshButtonStates();
 				}
@@ -81,7 +112,10 @@ public class FileEditDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				boolean success = saveUpdatedFileInfo();
 				if(success) {
-					tpFileEdit.setContent(fileEditList.selectNextFile());
+					fileEditList.getSelected().removePropertyChangeListeners(fileInfoChangedListener);
+					fileEditList.selectNextFile();
+					fileEditList.getSelected().addPropertyChangeListeners(fileInfoChangedListener);
+					tpFileEdit.setContent(fileEditList.getSelected());
 					setTitle(fileEditList.getSelected().getFilePath());
 					refreshButtonStates();
 				}
@@ -132,11 +166,18 @@ public class FileEditDialog extends JDialog {
 		getContentPane().add(builder.getPanel());
 	}
 	
+	/**
+	 * Disables or enables the back and forward buttons if there is no next item
+	 */
 	private void refreshButtonStates() {
 		bPrevious.setEnabled(fileEditList.hasPreviousFile());
 		bNext.setEnabled(fileEditList.hasNextFile());
 	}
 
+	/**
+	 * Saves the file info as it's being displayed to the database
+	 * @return
+	 */
 	private boolean saveUpdatedFileInfo() {
 		DOFileInfo fileInfo;
 		try {
@@ -147,7 +188,11 @@ public class FileEditDialog extends JDialog {
 			return false;
 		}
 		
-		MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
+		if(requiresUpdate) {
+			MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
+			requiresUpdate = false;
+		}
+		
 		return true;
 	}
 }

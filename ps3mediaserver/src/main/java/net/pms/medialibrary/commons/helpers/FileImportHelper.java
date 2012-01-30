@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -554,7 +555,7 @@ public class FileImportHelper {
 	 * @param saveFileName absolute path to save the file to
 	 * @throws IOException thrown if the save operation failed or the content type of the file was of type text
 	 */
-	private static void saveUrlToFile(String url, String saveFileName) throws IOException {
+	public static void saveUrlToFile(String url, String saveFileName) throws IOException {
 		URL u = new URL(url);
 		URLConnection uc = u.openConnection();
 		String contentType = uc.getContentType();
@@ -701,5 +702,48 @@ public class FileImportHelper {
 	    // Get the image's color model
 	    ColorModel cm = pg.getColorModel();
 	    return cm.hasAlpha();
+	}
+	
+	/**
+	 * Copies a file from the source to the destination
+	 * 
+	 * @param source
+	 *            the source file
+	 * @param dest
+	 *            the destination file
+	 * @param overwrite
+	 *            if true, the destination file will be overwritten if it
+	 *            already exists
+	 * @throws IOException
+	 */
+	public static void copyFile(File source, File dest, boolean overwrite) throws IOException {
+		if (dest.exists()) {
+			if(!overwrite) {
+				return;
+			}
+		} else {
+			dest.createNewFile();			
+		}
+		
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			in = new FileInputStream(source);
+			out = new FileOutputStream(dest);
+
+			// Transfer bytes from in to out
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+		} finally {
+			if (in != null) {
+				in.close();
+			}
+			if (out != null) {
+				out.close();
+			}
+		}
 	}
 }

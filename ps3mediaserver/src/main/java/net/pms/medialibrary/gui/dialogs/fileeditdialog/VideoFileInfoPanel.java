@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -40,27 +42,27 @@ public class VideoFileInfoPanel extends JPanel {
 	private static final long serialVersionUID = 3818830578372058006L;
 	private static final Logger log = LoggerFactory.getLogger(VideoFileInfoPanel.class);
 	private ImageIcon videoCoverImage;
+	private DOVideoFileInfo fileInfo;
+	private String videoCoverPath;
 	private JLabel lCover;
 
 	public VideoFileInfoPanel(DOVideoFileInfo fileInfo) {
 		build(fileInfo);
+		this.fileInfo = fileInfo;
+		
+		fileInfo.addPropertyChangeListeners(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getActionCommand().equals(ConditionType.FILE_THUMBNAILPATH.toString())) {
+					resizeCover();
+				}
+			}
+		});
 	}
 
 	private void build(final DOVideoFileInfo fileInfo) {
 		setLayout(new GridLayout());
-		
-		File imageFile = new File(fileInfo.getThumbnailPath());
-		if(imageFile.isFile()) {
-			//show the cover if it exists
-			videoCoverImage = new ImageIcon(imageFile.getAbsolutePath());
-		} else {
-			//show the no image image
-			try {
-				videoCoverImage = new ImageIcon(ImageIO.read(getClass().getResource("/resources/images/cover_no_image.png")));
-			} catch (IOException e1) {
-				log.error("Failed to load default image when no cover is available", e1);
-			}
-		}
 		
 		PanelBuilder builder;
 		CellConstraints cc = new CellConstraints();
@@ -184,10 +186,34 @@ public class VideoFileInfoPanel extends JPanel {
 	}
 	
 	/**
+	 * Resizes the image to the current height of the cover label and sets the with to respect the images aspect ratio
+	 * @param height the height to set for the image
+	 */
+	public void resizeCover() {
+		resizeCover(lCover.getHeight());
+	}
+	
+	/**
 	 * Resizes the image to the given height and sets the with to respect the images aspect ratio
 	 * @param height the height to set for the image
 	 */
 	public void resizeCover(int height) {
+		//refresh the cover if it has changed
+		if(videoCoverPath == null || !videoCoverPath.equals(fileInfo.getThumbnailPath())) {			
+			File imageFile = new File(fileInfo.getThumbnailPath());
+			if(imageFile.isFile()) {
+				//show the cover if it exists
+				videoCoverImage = new ImageIcon(imageFile.getAbsolutePath());
+			} else {
+				//show the no image image
+				try {
+					videoCoverImage = new ImageIcon(ImageIO.read(getClass().getResource("/resources/images/cover_no_image.png")));
+				} catch (IOException e1) {
+					log.error("Failed to load default image when no cover is available", e1);
+				}
+			}			
+		}
+		
 		if(height > 0) {
 			lCover.setIcon(getScaledImage(videoCoverImage, height));
 		}
