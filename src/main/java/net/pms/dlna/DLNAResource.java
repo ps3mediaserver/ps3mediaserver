@@ -536,9 +536,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						}
 
 						boolean hasEmbeddedSubs = false;
+
 						if (child.getMedia() != null) {
 							for (DLNAMediaSubtitle s : child.getMedia().getSubtitlesCodes()) {
-								hasEmbeddedSubs |= s.getSubType().equals("Embedded");
+								hasEmbeddedSubs = (hasEmbeddedSubs || s.isEmbedded());
 							}
 						}
 
