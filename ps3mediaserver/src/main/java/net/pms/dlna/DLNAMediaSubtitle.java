@@ -102,6 +102,23 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 		return "-";
 	}
 
+	/**
+	 * Returns whether or not the subtitles are embedded.
+	 *
+	 * @return True if the subtitles are embedded, false otherwise.
+	 * @since 1.51.0
+	 */
+	public boolean isEmbedded() {
+		switch (type) {
+			case ASS:
+				// No file available means the subtitles are embedded
+				return (file == null);
+			case EMBEDDED:
+				return true;
+		}
+		return false;
+	}
+
 	public String toString() {
 		return "Sub: " + getSubType() + " / lang: " + getLang() + " / flavor: " + flavor + " / ID: " + getId() + " / FILE: " + (file != null ? file.getAbsolutePath() : "-");
 	}

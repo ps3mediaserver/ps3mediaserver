@@ -1564,7 +1564,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean isMencoderAssDefaultStyle() {
-		return getBoolean(KEY_MENCODER_ASS_DEFAULTSTYLE, false);
+		return getBoolean(KEY_MENCODER_ASS_DEFAULTSTYLE, true);
 	}
 
 	public int getMEncoderOverscan() {

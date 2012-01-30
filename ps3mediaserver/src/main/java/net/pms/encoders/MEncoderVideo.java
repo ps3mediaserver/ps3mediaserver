@@ -1254,7 +1254,11 @@ public class MEncoderVideo extends Player {
 		}
 
 		String add = "";
-		if (configuration.getMencoderDecode() == null || configuration.getMencoderDecode().indexOf("-lavdopts") == -1) {
+		if (params.mediaRenderer.getCustomMencoderOptions() != null) {
+			if (params.mediaRenderer.getCustomMencoderOptions().indexOf("-lavdopts") == -1) {
+				add = " -lavdopts debug=0";
+			}
+		} else if (configuration.getMencoderDecode() == null || configuration.getMencoderDecode().indexOf("-lavdopts") == -1) {
 			add = " -lavdopts debug=0";
 		}
 
@@ -1268,7 +1272,7 @@ public class MEncoderVideo extends Player {
 		}
 		logger.trace("channels=" + channels);
 
-		StringTokenizer st = new StringTokenizer(alternativeCodec + "-channels " + channels + " " + configuration.getMencoderDecode() + add, " ");
+		StringTokenizer st = new StringTokenizer(alternativeCodec + "-channels " + channels + " " + ((params.mediaRenderer.getCustomMencoderOptions()!=null && !(params.mediaRenderer.getCustomMencoderOptions().indexOf("expand=") != -1 && dvd))?(params.mediaRenderer.getCustomMencoderOptions()):configuration.getMencoderDecode()) + add, " ");
 		overriddenMainArgs = new String[st.countTokens()];
 		int i = 0;
 		boolean processToken = false;

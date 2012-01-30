@@ -536,22 +536,21 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						}
 
 						boolean hasEmbeddedSubs = false;
+
 						if (child.getMedia() != null) {
 							for (DLNAMediaSubtitle s : child.getMedia().getSubtitlesCodes()) {
-								hasEmbeddedSubs |= s.getSubType().equals("Embedded");
+								hasEmbeddedSubs = (hasEmbeddedSubs || s.isEmbedded());
 							}
 						}
 
 						boolean hasSubsToTranscode = false;
-
 						if (!PMS.getConfiguration().isMencoderDisableSubs()) {
 						    hasSubsToTranscode = (PMS.getConfiguration().getUseSubtitles() && child.isSrtFile()) || hasEmbeddedSubs;
 						}
 
 						boolean isIncompatible = false;
 
-						// FIXME: Remove PS3 specific logic to support other renderers
-						if (!parserV2 && !child.getExt().ps3compatible()) {
+						if (!child.getExt().isCompatible(child.getMedia(),getDefaultRenderer())) {
 							isIncompatible = true;
 						}
 
@@ -591,8 +590,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								}
 							}
 						}
-					} else if (!child.getExt().ps3compatible() && !child.isFolder()) {
-						// FIXME: Remove PS3 specific logic to support other renderers
+					} else if (!child.getExt().isCompatible(child.getMedia(),getDefaultRenderer()) && !child.isFolder()) {
 						getChildren().remove(child);
 					}
 				}
@@ -603,8 +601,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					newChild.first = child;
 					child.second = newChild;
 
-					// FIXME: Remove PS3 specific logic to support other renderers
-					if (!newChild.getExt().ps3compatible() && newChild.getExt().getProfiles().size() > 0) {
+					if (!newChild.getExt().isCompatible(newChild.getMedia(),getDefaultRenderer()) && newChild.getExt().getProfiles().size() > 0) {
 						newChild.setPlayer(PMS.get().getPlayer(newChild.getExt().getProfiles().get(0), newChild.getExt()));
 					}
 					if (child.getMedia() != null && child.getMedia().isSecondaryFormatValid()) {

@@ -18,12 +18,31 @@
  */
 package net.pms.formats;
 
+import net.pms.configuration.RendererConfiguration;
+import net.pms.dlna.DLNAMediaInfo;
+
 public class MKV extends MPG {
+
+	/**
+	 * @deprecated Use {@link #isCompatible(DLNAMediaInfo, RendererConfiguration)} instead.
+	 * <p>
+	 * Returns whether or not a format can be handled by the PS3 natively.
+	 * This means the format can be streamed to PS3 instead of having to be
+	 * transcoded.
+	 * 
+	 * @return True if the format can be handled by PS3, false otherwise.
+	 */
+	@Deprecated
 	public boolean ps3compatible() {
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String[] getId() {
-		return new String[]{"mkv", "dv", "ty", "mov", "ogm", "ogv", "hdmov", "hdm", "rmv", "rmvb", "rm", "asf", "evo", "asx", "flv", "m2v", "3gp", "3g2"};
+		return new String[] { "mkv", "dv", "ty", "mov", "ogm", "ogv", "hdmov",
+				"hdm", "rmv", "rmvb", "rm", "asf", "evo", "asx", "flv", "m2v",
+				"3gp", "3g2" };
 	}
 }

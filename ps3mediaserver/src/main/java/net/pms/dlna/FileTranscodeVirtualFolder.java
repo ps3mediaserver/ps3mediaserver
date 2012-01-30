@@ -19,6 +19,7 @@
 package net.pms.dlna;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
@@ -102,13 +103,22 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 				// meskibob: I think it'd be a good idea to add a "Stream" option (for PS3 compatible containers) to the #Transcode# folder in addition to the current options already in there.
 				DLNAResource justStreamed = ref.clone();
 
-				// FIXME: Remove PS3 specific logic to support other renderers
-				if (justStreamed.getExt() != null && (justStreamed.getExt().ps3compatible() || justStreamed.isSkipTranscode())) {
+				RendererConfiguration renderer = null;
+				
+				if (this.getParent() != null) {
+					renderer = this.getParent().getDefaultRenderer();
+				}
+
+				if (justStreamed.getExt() != null && (justStreamed.getExt().isCompatible(ref.getMedia(), renderer) || justStreamed.isSkipTranscode())) {
 					justStreamed.setPlayer(null);
 					justStreamed.setMedia(ref.getMedia());
 					justStreamed.setNoName(true);
 					addChildInternal(justStreamed);
 					addChapterFile(justStreamed);
+
+					if (renderer != null) {
+						logger.debug("Duplicate " + ref.getName() + " for direct streaming to renderer: " + renderer.getRendererName());
+					}
 				}
 			}
 		}

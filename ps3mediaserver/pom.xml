@@ -7,22 +7,22 @@
 		run it. While PMS itself is 100% pure Java, some of the third party software is
 		not. This means building a platform specific distribution boils down to first
 		building the pms.jar and then assembling all application resources.
-		
+
 		Note that Maven 3 does not automatically install all dependencies, unlike Maven 2.
 		To install all dependencies to your local repository, run the following commands:
-		
+
 		mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external
 		mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
-		
+
 		To build PMS, do:
-		
+
 			mvn clean package
-		
+
 		After building, the "target" directory will contain the binary.
 		To generate a full source code report, do:
-		
+
 			mvn site
-			
+
 		After generating, the "target/site" directory will contain the reports.
 	-->
 
@@ -34,7 +34,7 @@
 	<version>1.50.1_mlx_v0.7-SNAPSHOT</version>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
-	
+
 	<organization>
 		<name>PS3 Media Server</name>
 		<url>http://www.ps3mediaserver.org/</url>
@@ -49,11 +49,11 @@
 	</licenses>
 
 	<description>
-        PS3 Media Server is a cross-platform DLNA-compliant UPnP Media Server.
-        Originally written to support the PlayStation 3, PS3 Media Server has been
-        expanded to support a range of other media renderers, including smartphones,
-        televisions, music players and more.
-    </description>
+		PS3 Media Server is a cross-platform DLNA-compliant UPnP Media Server.
+		Originally written to support the PlayStation 3, PS3 Media Server has been
+		expanded to support a range of other media renderers, including smartphones,
+		televisions, music players and more.
+	</description>
 
 	<scm>
 		<connection>scm:git:git://github.com/taconaut/pms-mlx.git</connection>
@@ -70,7 +70,7 @@
 	<properties>
 		<!-- NSIS needs a version without "-SNAPSHOT" or "-b1" -->
 		<project.version.short>1.50.0</project.version.short>
-	
+
 		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
 		<jcalendar-version>1.1.1</jcalendar-version>
 		<jgoodies-binding-version>2.5.0</jgoodies-binding-version>
@@ -84,11 +84,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.external-resources>${project.basedir}/src/main/external-resources</project.external-resources>
 		<project.binaries>${project.basedir}/target/bin</project.binaries>
-		
+
 		<!-- Snapshots should get their binaries from the trunk, releases from a tag -->
 		<project.binaries-base>http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver</project.binaries-base>
 		<!-- <project.binaries-base>http://ps3mediaserver.googlecode.com/svn/tags/1.40.0</project.binaries-base> -->
-		
+
 		<maven.nsis.project.template>${project.basedir}/src/main/external-resources/nsis/project.jelly</maven.nsis.project.template>
 	</properties>
 
@@ -387,7 +387,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.0</version>
+			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -417,8 +417,22 @@
 					to reference "/resource.name" rather than "/resources/resource.name"
 				-->
 				<targetPath>resources</targetPath>
+				<excludes>
+					<exclude>project.properties</exclude>
+				</excludes>
 
-				<!-- Enable the use of Maven properties -->
+				<!-- Avoid inadvertently filtering binaries -->
+				<filtering>false</filtering>
+			</resource>
+
+			<resource>
+				<directory>src/main/resources</directory>
+				<targetPath>resources</targetPath>
+				<includes>
+					<include>project.properties</include>
+				</includes>
+
+				<!-- Filter to replace Maven properties -->
 				<filtering>true</filtering>
 			</resource>
 
@@ -457,8 +471,68 @@
 				<filtering>true</filtering>
 			</testResource>
 		</testResources>
-		
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.11</version>
+				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											pl.project13.maven
+										</groupId>
+										<artifactId>
+											git-commit-id-plugin
+										</artifactId>
+										<versionRange>
+											[1.9,)
+										</versionRange>
+										<goals>
+											<goal>revision</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>		
+
 		<plugins>
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<version>1.9</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<dateFormat>yyyy-MM-dd</dateFormat>
+					<verbose>false</verbose>
+					<generateGitPropertiesFile>false</generateGitPropertiesFile>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
@@ -978,8 +1052,8 @@
 										<get src="${project.binaries-base}/win32/service/wrapper.exe" dest="${project.binaries}/win32/service/wrapper.exe" />
 										<get src="${project.binaries-base}/win32/service/wrapper.jar" dest="${project.binaries}/win32/service/wrapper.jar" />
 
-										<!-- Rename the pms-x.x.x-jar-with-dependencies.jar to pms.jar -->
-										<move file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
+										<!-- Copy the pms-x.x.x-jar-with-dependencies.jar to pms.jar -->
+										<copy file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
 
 										<!-- MediaInfo library needs to be in the standard library path to be found -->
@@ -1044,15 +1118,14 @@
 			<activation>
 				<activeByDefault>false</activeByDefault>
 				<os>
-					<!-- OSX is also detected as Unix, ignore the false positive -->
-					<family>unix,!mac</family>
+					<family>unix</family>
 				</os>
 			</activation>
 			
 			<build>
 				<plugins>
 					<!--
-						Plugin to move the pms-x.x.x-jar-with-dependencies.jar to pms.jar
+						Plugin to copy the pms-x.x.x-jar-with-dependencies.jar to pms.jar
 					-->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -1071,8 +1144,18 @@
 
 										<!-- Download binaries -->
 										<get src="${project.binaries-base}/linux/tsMuxeR" dest="${project.binaries}/tsMuxeR" />
-									
-										<move file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
+									</tasks>
+                                </configuration>
+                            </execution>
+							<execution>
+								<id>copy-jar-with-dependencies</id>
+								<phase>package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<copy file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
 									</tasks>
 								</configuration>
