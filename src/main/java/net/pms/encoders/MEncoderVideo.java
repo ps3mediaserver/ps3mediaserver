@@ -157,10 +157,10 @@ public class MEncoderVideo extends Player {
 		+ "container == iso :: -nosync\n"
 		+ "(container == avi || container == matroska) && vcodec == mpeg4 && acodec == mp3 :: -mc 0.1\n"
 		+ "container == flv :: -mc 0.1\n"
-		+ "container == mov :: -mc 0.1 -noass\n"
+		+ "container == mov :: -mc 0.1\n"
 		+ "container == rm  :: -mc 0.1\n"
 		+ "container == matroska && framerate == 29.97  :: -nomux -mc 0\n"
-		+ "container == mp4 && vcodec == h264 :: -mc 0.1 -noass\n"
+		+ "container == mp4 && vcodec == h264 :: -mc 0.1\n"
 		+ "\n"
 		+ Messages.getString("MEncoderVideo.87")
 		+ Messages.getString("MEncoderVideo.88")
