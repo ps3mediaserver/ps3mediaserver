@@ -499,6 +499,9 @@ public class PMS {
 		Player.initializeFinalizeTranscoderArgsListeners();
 		registerPlayers();
 
+		// Instantiate listeners that require registered players.
+		ExternalFactory.instantiateLateListeners();
+
 		boolean binding = false;
 
 		try {
