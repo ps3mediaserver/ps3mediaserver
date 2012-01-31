@@ -77,7 +77,7 @@ public class FileScanner implements Runnable{
 
 	public void scan(DOManagedFile mFolder) {
 		File folderToScan = new File(mFolder.getPath());
-		if (folderToScan.isDirectory() && !folderToScan.isHidden()) {
+		if (folderToScan.isDirectory()) {
 			net.pms.PMS.get().getFrame().setStatusLine(String.format(Messages.getString("ML.FileScanner.ScanFolder"), folderToScan.getAbsoluteFile()));
 
 			File[] childPaths = folderToScan.listFiles();
