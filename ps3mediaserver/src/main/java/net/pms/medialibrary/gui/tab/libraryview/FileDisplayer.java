@@ -107,7 +107,6 @@ public class FileDisplayer extends JPanel {
 		sp.setDividerLocation(filterHeight);
 		
 		repositionExpandFilterLabel();
-		applyFilter();
 	}
 
 	@SuppressWarnings("unchecked")
