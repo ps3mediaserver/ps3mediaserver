@@ -3,7 +3,6 @@ package net.pms.configuration;
 import net.pms.util.PropertiesUtil;
 
 class WindowsDefaultPaths implements ProgramPaths {
-	
 	@Override
 	public String getEac3toPath() {
 		return getBinariesPath() + "win32/eac3to/eac3to.exe";
@@ -58,7 +57,7 @@ class WindowsDefaultPaths implements ProgramPaths {
 	 */
 	private String getBinariesPath() {
 		String path = PropertiesUtil.getProjectProperties().get("project.binaries");
-		
+
 		if (path != null && !"".equals(path)) {
 			if (path.endsWith("/")) {
 				return path;

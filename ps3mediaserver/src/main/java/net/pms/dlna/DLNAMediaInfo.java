@@ -367,7 +367,6 @@ public class DLNAMediaInfo implements Cloneable {
 		// FAILSAFE
 		setParsing(true);
 		Runnable r = new Runnable() {
-
 			public void run() {
 				try {
 					Thread.sleep(10000);
@@ -1119,7 +1118,9 @@ public class DLNAMediaInfo implements Cloneable {
 		if (getFrameRate() != null && getFrameRate().length() > 0) {
 			try {
 				double fr = Double.parseDouble(getFrameRate().replace(',', '.'));
-				if (fr > 23.9 && fr < 23.99) {
+				if (fr >= 14.99 && fr < 15.1) {
+					validFrameRate = "15";
+				} else if (fr > 23.9 && fr < 23.99) {
 					validFrameRate = ratios ? "24000/1001" : "23.976";
 				} else if (fr > 23.99 && fr < 24.1) {
 					validFrameRate = "24";

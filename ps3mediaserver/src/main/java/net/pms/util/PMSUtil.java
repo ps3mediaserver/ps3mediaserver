@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 public class PMSUtil {
 	private static final Logger logger = LoggerFactory.getLogger(PMSUtil.class);
 
-	
 	@Deprecated
 	public static <T> T[] copyOf(T[] original, int newLength) {
 		logger.info("deprecated PMSUtil.copyOf called");
@@ -24,7 +23,7 @@ public class PMSUtil {
 	 * Open HTTP URLs in the default browser.
 	 * @param uri URI string to open externally.
 	 * @deprecated call SystemUtils.browseURI
-	 */	
+	 */
 	@Deprecated
 	public static void browseURI(String uri) {
 		logger.info("deprecated PMSUtil.browseURI called");
@@ -42,7 +41,7 @@ public class PMSUtil {
 		logger.info("deprecated PMSUtil.isNetworkInterfaceLoopback called");
 		return PMS.get().getRegistry().isNetworkInterfaceLoopback(ni);
 	}
-	
+
 	/**
 	 * Fetch the hardware address for a network interface.
 	 * 

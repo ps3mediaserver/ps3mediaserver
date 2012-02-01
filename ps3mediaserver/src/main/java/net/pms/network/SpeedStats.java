@@ -143,12 +143,14 @@ public class SpeedStats {
 					pw.stopProcess();
 				}
 			};
+
 			Thread failsafe = new Thread(r, "SpeedStats Failsafe");
 			failsafe.start();
 			pw.runInSameThread();
 			List<String> ls = pw.getOtherResults();
 			int time = 0;
 			int c = 0;
+
 			for (String line : ls) {
 				int msPos = line.indexOf("ms");
 				try {

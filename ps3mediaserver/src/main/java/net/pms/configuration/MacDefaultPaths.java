@@ -57,7 +57,7 @@ class MacDefaultPaths implements ProgramPaths {
 	 */
 	private String getBinariesPath() {
 		String path = PropertiesUtil.getProjectProperties().get("project.binaries");
-		
+
 		if (path != null && !"".equals(path)) {
 			if (path.endsWith("/")) {
 				return path;
