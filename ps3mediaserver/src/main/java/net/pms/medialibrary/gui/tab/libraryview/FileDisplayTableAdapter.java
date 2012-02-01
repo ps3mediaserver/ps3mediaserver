@@ -19,6 +19,7 @@ import net.pms.medialibrary.commons.dataobjects.DOImageFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOTableColumnConfiguration;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionOperator;
+import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.enumarations.ConditionValueType;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.helpers.DLNAHelper;
@@ -276,18 +277,44 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 		
 		return res;
 	}
+	
+	public ConditionType getColumnConditionType(int columnIndex) {
+		DOTableColumnConfiguration[] cConfs = getColumnConfigurations(getFileType());		
+		DOTableColumnConfiguration cd = cConfs[columnIndex];
+		return cd.getConditionType();
+	}
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return false;
+		boolean res = false;		
+		switch(getColumnConditionType(columnIndex)) {
+		case VIDEO_NAME:
+		case VIDEO_ORIGINALNAME:
+		case VIDEO_YEAR:
+		case VIDEO_SORTNAME:
+		case VIDEO_DIRECTOR:
+		case VIDEO_IMDBID:
+		case VIDEO_HOMEPAGEURL:
+		case VIDEO_TRAILERURL:
+		case VIDEO_TMDBID:
+		case VIDEO_RATINGPERCENT:
+		case VIDEO_RATINGVOTERS:
+		case VIDEO_CERTIFICATION:
+		case VIDEO_CERTIFICATIONREASON:
+		case VIDEO_TAGLINE:
+		case VIDEO_OVERVIEW:
+		case VIDEO_BUDGET:
+		case VIDEO_REVENUE:
+		case FILE_ISACTIF:
+			res = true;
+			break;
+		}
+		return res;
 	}
 
 	@Override
     public Class<?> getColumnClass(int c) {
-		DOTableColumnConfiguration[] cConfs = getColumnConfigurations(getFileType());
-		
-		DOTableColumnConfiguration cd = cConfs[c];
-		ConditionValueType vt = FolderHelper.getHelper().getConditionValueType(cd.getConditionType(), ConditionOperator.IS);
+		ConditionValueType vt = FolderHelper.getHelper().getConditionValueType(getColumnConditionType(c), ConditionOperator.IS);
 		
 		Class<?> res = null;
 		switch(vt){

@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.CellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
@@ -26,6 +27,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
@@ -38,6 +40,7 @@ import com.jgoodies.binding.list.SelectionInList;
 import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOTableColumnConfiguration;
+import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.dataobjects.comboboxitems.ConditionTypeCBItem;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.enumarations.FileType;
@@ -159,7 +162,7 @@ public class FileDisplayTable extends JPanel {
 		
 		//listen to mouse events to select a row on right click and show the context menu
 		//http://www.stupidjavatricks.com/?p=12
-		table.addMouseListener( new MouseAdapter()
+		table.addMouseListener(new MouseAdapter()
 		{
 			@Override
 			public void mouseClicked( MouseEvent e )
@@ -191,6 +194,104 @@ public class FileDisplayTable extends JPanel {
 				}
 			}
 		});
+		
+		//listen for cell edit events to update the changes in the DB
+		CellEditorListener cellEditorListener = new CellEditorListener() {
+
+			@Override
+			public void editingStopped(ChangeEvent e) {
+				FileDisplayTableAdapter tm = (FileDisplayTableAdapter) table.getModel();
+				ConditionType ct = tm.getColumnConditionType(table.getSelectedColumn());
+				DOFileInfo fileInfo = tm.getRow(table.getSelectedRow());
+
+				Object obj = ((CellEditor) e.getSource()).getCellEditorValue();
+
+				if (obj instanceof Boolean) {
+					Boolean newVal = (Boolean) obj;
+					switch (ct) {
+					case FILE_ISACTIF:
+						fileInfo.setActif(newVal);
+						break;
+					}
+				}
+				
+				if (fileInfo instanceof DOVideoFileInfo) {
+					DOVideoFileInfo video = (DOVideoFileInfo) fileInfo;
+
+					if (obj instanceof String) {
+						String newVal = (String) obj;
+						switch (ct) {
+						case VIDEO_NAME:
+							video.setName(newVal);
+							break;
+						case VIDEO_ORIGINALNAME:
+							video.setOriginalName(newVal);
+							break;
+						case VIDEO_SORTNAME:
+							video.setSortName(newVal);
+							break;
+						case VIDEO_DIRECTOR:
+							video.setDirector(newVal);
+							break;
+						case VIDEO_IMDBID:
+							video.setImdbId(newVal);
+							break;
+						case VIDEO_HOMEPAGEURL:
+							video.setHomepageUrl(newVal);
+							break;
+						case VIDEO_TRAILERURL:
+							video.setTrailerUrl(newVal);
+							break;
+						case VIDEO_CERTIFICATION:
+							video.getAgeRating().setLevel(newVal);
+							break;
+						case VIDEO_CERTIFICATIONREASON:
+							video.getAgeRating().setReason(newVal);
+							break;
+						case VIDEO_TAGLINE:
+							video.setTagLine(newVal);
+							break;
+						case VIDEO_OVERVIEW:
+							video.setOverview(newVal);
+							break;
+						}
+					} else if (obj instanceof Integer) {
+						Integer newVal = (Integer) obj;
+						switch (ct) {
+						case VIDEO_YEAR:
+							video.setYear(newVal);
+							break;
+						case VIDEO_TMDBID:
+							video.setTmdbId(newVal);
+							break;
+						case VIDEO_RATINGPERCENT:
+							video.getRating().setRatingPercent(newVal);
+							break;
+						case VIDEO_RATINGVOTERS:
+							video.getRating().setVotes(newVal);
+							break;
+						case VIDEO_BUDGET:
+							video.setBudget(newVal);
+							break;
+						case VIDEO_REVENUE:
+							video.setRevenue(newVal);
+							break;
+						}
+					}
+				}
+				
+				MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
+			}
+
+			@Override
+			public void editingCanceled(ChangeEvent e) {
+			}
+		};
+
+
+		table.getDefaultEditor(String.class).addCellEditorListener(cellEditorListener);
+		table.getDefaultEditor(Integer.class).addCellEditorListener(cellEditorListener);
+		table.getDefaultEditor(Boolean.class).addCellEditorListener(cellEditorListener);
 		
 		updateTableModel();
 		
