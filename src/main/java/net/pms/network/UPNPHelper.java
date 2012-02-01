@@ -140,7 +140,6 @@ public class UPNPHelper {
 	}
 
 	public static void sendByeBye() throws IOException {
-
 		logger.info("Sending BYEBYE...");
 		MulticastSocket ssdpSocket = getNewMulticastSocket();
 
@@ -161,6 +160,7 @@ public class UPNPHelper {
 		} catch (InterruptedException e) {
 		}
 	}
+
 	private static void sendMessage(DatagramSocket socket, String nt, String message) throws IOException {
 		String msg = buildMsg(nt, message);
 		Random rand = new Random();
@@ -262,10 +262,10 @@ public class UPNPHelper {
 					} catch (BindException e) {
 						if (!bindErrorReported) {
 							logger.error("Unable to bind to " + PMS.getConfiguration().getUpnpPort()
-									+ ", which means that PMS will not automatically appear on your renderer! "
-									+ "This usually means that another program occupies the port. Please "
-									+ "stop the other program and free up the port. "
-									+ "PMS will keep trying to bind to it...[" + e.getMessage() + "]");
+							+ ", which means that PMS will not automatically appear on your renderer! "
+							+ "This usually means that another program occupies the port. Please "
+							+ "stop the other program and free up the port. "
+							+ "PMS will keep trying to bind to it...[" + e.getMessage() + "]");
 						}
 						bindErrorReported = true;
 						sleep(5000);

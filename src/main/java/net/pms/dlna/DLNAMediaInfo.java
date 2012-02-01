@@ -351,7 +351,6 @@ public class DLNAMediaInfo implements Cloneable {
 		// FAILSAFE
 		setParsing(true);
 		Runnable r = new Runnable() {
-
 			public void run() {
 				try {
 					Thread.sleep(10000);

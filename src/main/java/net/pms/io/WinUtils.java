@@ -302,10 +302,9 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 		result[str.length()] = 0;
 		return result;
 	}
-	
+
 	@Override
 	public String[] getPingCommand(String hostAddress, int count, int packetSize) {
 		return new String[] { "ping", /* count */ "-n" , Integer.toString(count), /* size */ "-l", Integer.toString(packetSize), hostAddress };
 	}
-
 }

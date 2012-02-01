@@ -35,10 +35,9 @@ public interface SystemUtils {
 	public void browseURI(String uri);
 
 	public boolean isNetworkInterfaceLoopback(NetworkInterface ni) throws SocketException;
-	
-	
+
 	public void addSystemTray(final LooksFrame frame);
-	
+
 	/**
 	 * Fetch the hardware address for a network interface.
 	 * 
@@ -58,6 +57,4 @@ public interface SystemUtils {
 	 * @return
 	 */
 	String[] getPingCommand(String hostAddress, int count, int packetSize);
-	
-
 }

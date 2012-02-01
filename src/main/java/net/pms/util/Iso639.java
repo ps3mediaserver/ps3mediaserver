@@ -67,8 +67,7 @@ public class Iso639 {
 		}
 
 		String lang = null;
-		Iterator<Entry<String, String[]>> iterator = links.entrySet()
-				.iterator();
+		Iterator<Entry<String, String[]>> iterator = links.entrySet().iterator();
 
 		while (iterator.hasNext()) {
 			Entry<String, String[]> entry = iterator.next();
@@ -95,15 +94,12 @@ public class Iso639 {
 		}
 
 		String lang = null;
-		Iterator<Entry<String, String[]>> iterator = links.entrySet()
-				.iterator();
-
+		Iterator<Entry<String, String[]>> iterator = links.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, String[]> entry = iterator.next();
 			for (String c : entry.getValue()) {
 				if (code.equalsIgnoreCase(c)) {
-					return entry.getValue()[entry.getValue().length - 1]
-							.toLowerCase();
+					return entry.getValue()[entry.getValue().length - 1].toLowerCase();
 				}
 			}
 		}
@@ -147,8 +143,7 @@ public class Iso639 {
 			return false;
 		}
 
-		Iterator<Entry<String, String[]>> iterator = links.entrySet()
-				.iterator();
+		Iterator<Entry<String, String[]>> iterator = links.entrySet().iterator();
 
 		while (iterator.hasNext()) {
 			Entry<String, String[]> entry = iterator.next();
@@ -330,12 +325,9 @@ public class Iso639 {
 		putCode("Cree", null, "cre", "cre");
 		putCode("Creek", null, "mus", "mus");
 		putCode("Creoles and pidgins (Other)", null, "crp", "crp");
-		putCode("Creoles and pidgins, English-based (Other)", null, "cpe",
-				"cpe");
-		putCode("Creoles and pidgins, French-based (Other)", null, "cpf",
-				"cpf");
-		putCode("Creoles and pidgins, Portuguese-based (Other)", null, "cpp",
-				"cpp");
+		putCode("Creoles and pidgins, English-based (Other)", null, "cpe", "cpe");
+		putCode("Creoles and pidgins, French-based (Other)", null, "cpf", "cpf");
+		putCode("Creoles and pidgins, Portuguese-based (Other)", null, "cpp", "cpp");
 		putCode("Croatian", "hr", "hrv", "scr");
 		putCode("Cushitic (Other)", null, "cus", "cus");
 		putCode("Czech", "cs", "ces", "cze");
@@ -386,8 +378,7 @@ public class Iso639 {
 		putCode("Geez", null, "gez", "gez");
 		putCode("Georgian", "ka", "kat", "geo");
 		putCode("German", "de", "deu", "ger");
-		putCode("German, Low; Saxon, Low; Low German; Low Saxon", null, "nds",
-				"nds");
+		putCode("German, Low; Saxon, Low; Low German; Low Saxon", null, "nds", "nds");
 		putCode("German, Middle High (ca.1050-1500)", null, "gmh", "gmh");
 		putCode("German, Old High (ca.750-1050)", null, "goh", "goh");
 		putCode("Germanic (Other)", null, "gem", "gem");
@@ -422,8 +413,7 @@ public class Iso639 {
 		putCode("Indic (Other)", null, "inc", "inc");
 		putCode("Indo-European (Other)", null, "ine", "ine");
 		putCode("Indonesian", "id", "ind", "ind");
-		putCode("Interlingua (International Auxiliary Language Association)",
-				"ia", "ina", "ina");
+		putCode("Interlingua (International Auxiliary Language Association)", "ia", "ina", "ina");
 		putCode("Interlingue", "ie", "ile", "ile");
 		putCode("Inuktitut", "iu", "iku", "iku");
 		putCode("Inupiaq", "ik", "ipk", "ipk");
@@ -478,10 +468,8 @@ public class Iso639 {
 		putCode("Lezghian", null, "lez", "lez");
 		putCode("Lingala", "ln", "lin", "lin");
 		putCode("Lithuanian", "lt", "lit", "lit");
-		putCode("Low German; Low Saxon; German, Low; Saxon, Low", null, "nds",
-				"nds");
-		putCode("Low Saxon; Low German; Saxon, Low; German, Low", null, "nds",
-				"nds");
+		putCode("Low German; Low Saxon; German, Low; Saxon, Low", null, "nds", "nds");
+		putCode("Low Saxon; Low German; Saxon, Low; German, Low", null, "nds", "nds");
 		putCode("Lozi", null, "loz", "loz");
 		putCode("Luba-Katanga", null, "lub", "lub");
 		putCode("Luba-Lulua", null, "lua", "lua");
@@ -592,8 +580,7 @@ public class Iso639 {
 		putCode("Santali", null, "sat", "sat");
 		putCode("Sardinian", "sc", "srd", "srd");
 		putCode("Sasak", null, "sas", "sas");
-		putCode("Saxon, Low; German, Low; Low Saxon; Low German", null, "nds",
-				"nds");
+		putCode("Saxon, Low; German, Low; Low Saxon; Low German", null, "nds", "nds");
 		putCode("Scots", null, "sco", "sco");
 		putCode("Selkup", null, "sel", "sel");
 		putCode("Semitic (Other)", null, "sem", "sem");

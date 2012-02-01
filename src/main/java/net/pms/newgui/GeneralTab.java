@@ -332,7 +332,6 @@ public class GeneralTab {
 	}
 
 	private KeyedComboBoxModel createNetworkInterfacesModel() {
-
 		List<String> keys = NetworkConfiguration.getInstance().getKeys();
 		List<String> names = NetworkConfiguration.getInstance().getDisplayNames();
 		keys.add(0, "");
@@ -340,7 +339,6 @@ public class GeneralTab {
 		final KeyedComboBoxModel networkInterfaces = new KeyedComboBoxModel(keys.toArray(), names.toArray());
 		return networkInterfaces;
 	}
-
 
 	public void addPlugins() {
 		FormLayout layout = new FormLayout(

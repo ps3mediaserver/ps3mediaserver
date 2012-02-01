@@ -48,11 +48,12 @@ public class Build {
 	 * 
 	 * @return The profile directory name
 	 */
+
 	private static final String PROFILE_DIRECTORY_NAME = "PMS";
 
 	/**
 	 * Determines whether or not this PMS build can be updated to a more
-	 * recent version. 
+	 * recent version.
 	 * @return True if this build can be updated, false otherwise.
 	 */
 	public static boolean isUpdatable() {
@@ -70,7 +71,7 @@ public class Build {
 	/**
 	 * Returns the {@link #PROFILE_DIRECTORY_NAME} where configuration files
 	 * for this version of PMS are stored.
-	 *  
+	 *
 	 * @return The profile directory name
 	 */
 	public static String getProfileDirectoryName() {
