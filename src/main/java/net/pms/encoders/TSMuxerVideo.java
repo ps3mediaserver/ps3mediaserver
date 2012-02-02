@@ -230,13 +230,18 @@ public class TSMuxerVideo extends Player {
 						(
 							params.aid.isLossless() ||
 							params.aid.isDTS() ||
-							params.aid.isAC3() ||
 							params.aid.isTrueHD() ||
-							params.aid.isMP3() ||
-							params.aid.isAAC() ||
-							params.aid.isVorbis() ||
-							params.aid.isWMA() ||
-							params.aid.isMpegAudio()
+							(
+								!configuration.isMencoderUsePcmForHQAudioOnly() &&
+								(
+									params.aid.isAC3() ||
+									params.aid.isMP3() ||
+									params.aid.isAAC() ||
+									params.aid.isVorbis() ||
+									params.aid.isWMA() ||
+									params.aid.isMpegAudio()
+								)
+							)
 						) && params.mediaRenderer.isMuxLPCMToMpeg();
 					if ( dts || pcm ) {
 						StreamModifier sm = new StreamModifier();
@@ -322,13 +327,18 @@ public class TSMuxerVideo extends Player {
 							(
 								audio.isLossless() ||
 								audio.isDTS() ||
-								audio.isAC3() ||
 								audio.isTrueHD() ||
-								audio.isMP3() ||
-								audio.isAAC() ||
-								audio.isVorbis() ||
-								audio.isWMA() ||
-								audio.isMpegAudio()
+								(
+									!configuration.isMencoderUsePcmForHQAudioOnly() &&
+									(
+										audio.isAC3() ||
+										audio.isMP3() ||
+										audio.isAAC() ||
+										audio.isVorbis() ||
+										audio.isWMA() ||
+										audio.isMpegAudio()
+									)
+								)
 							) && params.mediaRenderer.isMuxLPCMToMpeg();
 						if ( dts || pcm ) {
 							StreamModifier sm = new StreamModifier();
@@ -434,13 +444,18 @@ public class TSMuxerVideo extends Player {
 				(
 					params.aid.isLossless() ||
 					params.aid.isDTS() ||
-					params.aid.isAC3() ||
 					params.aid.isTrueHD() ||
-					params.aid.isMP3() ||
-					params.aid.isAAC() ||
-					params.aid.isVorbis() ||
-					params.aid.isWMA() ||
-					params.aid.isMpegAudio()
+					(
+						!configuration.isMencoderUsePcmForHQAudioOnly() &&
+						(
+							params.aid.isAC3() ||
+							params.aid.isMP3() ||
+							params.aid.isAAC() ||
+							params.aid.isVorbis() ||
+							params.aid.isWMA() ||
+							params.aid.isMpegAudio()
+						)
+					)
 				) && params.mediaRenderer.isMuxLPCMToMpeg();
 			String type = "A_AC3";
 			if ( pcm || this instanceof TsMuxerAudio )
@@ -469,13 +484,18 @@ public class TSMuxerVideo extends Player {
 					(
 						lang.isLossless() ||
 						lang.isDTS() ||
-						lang.isAC3() ||
 						lang.isTrueHD() ||
-						lang.isMP3() ||
-						lang.isAAC() ||
-						lang.isVorbis() ||
-						lang.isWMA() ||
-						lang.isMpegAudio()
+						(
+							!configuration.isMencoderUsePcmForHQAudioOnly() &&
+							(
+								params.aid.isAC3() ||
+								params.aid.isMP3() ||
+								params.aid.isAAC() ||
+								params.aid.isVorbis() ||
+								params.aid.isWMA() ||
+								params.aid.isMpegAudio()
+							)
+						)
 					) && params.mediaRenderer.isMuxLPCMToMpeg();
 				String type = "A_AC3";
 				if ( pcm )
