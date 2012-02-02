@@ -242,7 +242,7 @@ public class TSMuxerVideo extends Player {
 									params.aid.isMpegAudio()
 								)
 							)
-						) && params.mediaRenderer.isMuxLPCMToMpeg();
+						) && params.mediaRenderer.isLPCMPlayable();
 					if ( dts || pcm ) {
 						StreamModifier sm = new StreamModifier();
 						sm.setPcm(pcm);
@@ -339,7 +339,7 @@ public class TSMuxerVideo extends Player {
 										audio.isMpegAudio()
 									)
 								)
-							) && params.mediaRenderer.isMuxLPCMToMpeg();
+							) && params.mediaRenderer.isLPCMPlayable();
 						if ( dts || pcm ) {
 							StreamModifier sm = new StreamModifier();
 							sm.setPcm(pcm);
@@ -456,7 +456,7 @@ public class TSMuxerVideo extends Player {
 							params.aid.isMpegAudio()
 						)
 					)
-				) && params.mediaRenderer.isMuxLPCMToMpeg();
+				) && params.mediaRenderer.isLPCMPlayable();
 			String type = "A_AC3";
 			if ( pcm || this instanceof TsMuxerAudio )
 			{
@@ -496,7 +496,7 @@ public class TSMuxerVideo extends Player {
 								params.aid.isMpegAudio()
 							)
 						)
-					) && params.mediaRenderer.isMuxLPCMToMpeg();
+					) && params.mediaRenderer.isLPCMPlayable();
 				String type = "A_AC3";
 				if ( pcm )
 				{

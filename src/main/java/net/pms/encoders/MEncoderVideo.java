@@ -1262,7 +1262,7 @@ public class MEncoderVideo extends Player {
 						params.aid.isMpegAudio()
 					)
 				)
-			) && params.mediaRenderer.isMuxLPCMToMpeg();
+			) && params.mediaRenderer.isLPCMPlayable();
 
 		if (dts || pcm) {
 			if (dts) {
