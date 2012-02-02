@@ -453,28 +453,31 @@ public class TranscodingTab {
 		builder.addLabel(Messages.getString("TrTab2.50"), cc.xy(1, 13));
 		builder.add(channels, cc.xy(3, 13));
 
-		abitrate = new JTextField("" + configuration.getAudioBitrate());
-		abitrate.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				try {
-					int ab = Integer.parseInt(abitrate.getText());
-					configuration.setAudioBitrate(ab);
-				} catch (NumberFormatException nfe) {
-				}
+		forcePCM = new JCheckBox(Messages.getString("TrTab2.27"));
+		forcePCM.setContentAreaFilled(false);
+		if (configuration.isMencoderUsePcm()) {
+			forcePCM.setSelected(true);
+		}
+		forcePCM.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setMencoderUsePcm(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
 
-		builder.addLabel(Messages.getString("TrTab2.29"), cc.xy(1, 15));
-		builder.add(abitrate, cc.xy(3, 15));
+		builder.add(forcePCM, cc.xyw(1, 15, 3));
+
+		ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
+		ac3remux.setContentAreaFilled(false);
+		if (configuration.isRemuxAC3()) {
+			ac3remux.setSelected(true);
+		}
+		ac3remux.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setRemuxAC3((e.getStateChange() == ItemEvent.SELECTED));
+			}
+		});
+
+		builder.add(ac3remux, cc.xyw(1, 17, 3));
 
 		forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
 		forceDTSinPCM.setContentAreaFilled(false);
@@ -495,33 +498,30 @@ public class TranscodingTab {
 			}
 		});
 
-		builder.add(forceDTSinPCM, cc.xyw(1, 17, 3));
+		builder.add(forceDTSinPCM, cc.xyw(1, 19, 3));
 
-		forcePCM = new JCheckBox(Messages.getString("TrTab2.27"));
-		forcePCM.setContentAreaFilled(false);
-		if (configuration.isMencoderUsePcm()) {
-			forcePCM.setSelected(true);
-		}
-		forcePCM.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				configuration.setMencoderUsePcm(e.getStateChange() == ItemEvent.SELECTED);
+		abitrate = new JTextField("" + configuration.getAudioBitrate());
+		abitrate.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+					int ab = Integer.parseInt(abitrate.getText());
+					configuration.setAudioBitrate(ab);
+				} catch (NumberFormatException nfe) {
+				}
 			}
 		});
 
-		builder.add(forcePCM, cc.xyw(1, 19, 3));
-
-		ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
-		ac3remux.setContentAreaFilled(false);
-		if (configuration.isRemuxAC3()) {
-			ac3remux.setSelected(true);
-		}
-		ac3remux.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				configuration.setRemuxAC3((e.getStateChange() == ItemEvent.SELECTED));
-			}
-		});
-
-		builder.add(ac3remux, cc.xyw(1, 21, 3));
+		builder.addLabel(Messages.getString("TrTab2.29"), cc.xy(1, 21));
+		builder.add(abitrate, cc.xy(3, 21));
 
 		mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
 		mpeg2remux.setContentAreaFilled(false);
