@@ -876,7 +876,7 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<!-- Make sure the download folders exist -->
 										<mkdir dir="${project.binaries}" />
 										<mkdir dir="${project.binaries}/win32" />
@@ -966,7 +966,7 @@
 										<get src="${project.binaries-base}/win32/service/wrapper.dll" dest="${project.binaries}/win32/service/wrapper.dll" usetimestamp="true" />
 										<get src="${project.binaries-base}/win32/service/wrapper.exe" dest="${project.binaries}/win32/service/wrapper.exe" usetimestamp="true" />
 										<get src="${project.binaries-base}/win32/service/wrapper.jar" dest="${project.binaries}/win32/service/wrapper.jar" usetimestamp="true" />
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 							<execution>
@@ -976,7 +976,7 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<!-- Copy the pms-x.x.x-jar-with-dependencies.jar to pms.jar -->
 										<copy file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
@@ -984,7 +984,7 @@
 										<!-- MediaInfo library needs to be in the standard library path to be found -->
 										<copy file="${project.binaries}/MediaInfo.dll" todir="${project.basedir}" />
 										<copy file="${project.binaries}/MediaInfo64.dll" todir="${project.basedir}" />
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
@@ -1064,13 +1064,13 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<!-- Make sure the binaries folder exists -->
 										<mkdir dir="${project.binaries}" />
 
 										<!-- Download binaries -->
 										<get src="${project.binaries-base}/linux/tsMuxeR" dest="${project.binaries}/tsMuxeR" usetimestamp="true" />
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 									
@@ -1081,10 +1081,10 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<copy file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
@@ -1150,7 +1150,7 @@
 								</goals>
 
 								<configuration>
-									<tasks>
+									<target>
 										<!-- Make sure the binaries folder exists -->
 										<mkdir dir="${project.binaries}" />
 										<mkdir dir="${project.binaries}/osx" />
@@ -1172,7 +1172,7 @@
 
 										<copy file="${project.external-resources}/osx/pms.icns"
 											todir="${project.binaries}" overwrite="true" />
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 
@@ -1183,7 +1183,7 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<!-- Make sure the target folder exists -->
 										<mkdir dir="${project.build.directory}/${project.build.finalName}-distribution" />
 
@@ -1200,7 +1200,7 @@
 											<arg value="-e" />
 											<arg value="end tell" />
 										</exec>
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
