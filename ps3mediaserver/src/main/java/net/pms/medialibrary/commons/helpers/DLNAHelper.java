@@ -9,13 +9,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
-import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
-import net.pms.encoders.MEncoderVideo;
-import net.pms.encoders.Player;
-import net.pms.encoders.TSMuxerVideo;
+import net.pms.dlna.FileTranscodeVirtualFolder;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.dlna.MediaLibraryRealFile;
 
@@ -123,73 +119,15 @@ public class DLNAHelper {
 	}
 
 	public static void addMultipleFiles(DLNAResource parent, MediaLibraryRealFile child) {
-		child.setParent(parent);
-		child.resolve();
-		if (child.isValid() && child.getExt().getProfiles() != null) {
-			DLNAResource ref = child;
-			Player tsMuxer = null;
-			for (int i = 0; i < child.getExt().getProfiles().size(); i++) {
-				Player pl = PMS.get().getPlayer(child.getExt().getProfiles().get(i), child.getExt());
-				if (pl != null && !child.getPlayer().equals(pl)) {
-					DLNAResource avisnewChild = (DLNAResource) child.clone();
-					avisnewChild.setId(null);
-					avisnewChild.setPlayer(pl);
-					avisnewChild.setNoName(true);
-					avisnewChild.setMedia(child.getMedia());
-					if (avisnewChild.getPlayer().id().equals(MEncoderVideo.ID)) {
-						ref = avisnewChild;
-					}
-					if (avisnewChild.getPlayer().id().equals(TSMuxerVideo.ID)) {
-						tsMuxer = pl;
-					}
-					avisnewChild.setParent(parent);
-				}
-			}
-			for (int i = 0; i < child.getMedia().getAudioCodes().size(); i++) {
-				DLNAResource newChildNoSub = (DLNAResource) ref.clone();
-				newChildNoSub.setId(null);
-				newChildNoSub.setPlayer(ref.getPlayer());
-				newChildNoSub.setMedia(ref.getMedia());
-				newChildNoSub.setNoName(true);
-				newChildNoSub.setMediaAudio(ref.getMedia().getAudioCodes().get(i));
-				newChildNoSub.setMediaSubtitle(new DLNAMediaSubtitle());
-				newChildNoSub.getMediaSubtitle().setId(-1);
-				newChildNoSub.setParent(parent);
-
-				for (int j = 0; j < child.getMedia().getSubtitlesCodes().size(); j++) {
-					DLNAResource newChild = (DLNAResource) ref.clone();
-					newChild.setId(null);
-					newChild.setPlayer(ref.getPlayer());
-					newChild.setMedia(ref.getMedia());
-					newChild.setNoName(true);
-					newChild.setMediaAudio(ref.getMedia().getAudioCodes().get(i));
-					newChild.setMediaSubtitle(ref.getMedia().getSubtitlesCodes().get(j));
-					newChild.setParent(parent);
-				}
-			}
-
-			if (tsMuxer != null) {
-				for (int i = 0; i < child.getMedia().getAudioCodes().size(); i++) {
-					DLNAResource newChildNoSub = (DLNAResource) ref.clone();
-					newChildNoSub.setId(null);
-					newChildNoSub.setPlayer(tsMuxer);
-					newChildNoSub.setMedia(ref.getMedia());
-					newChildNoSub.setNoName(true);
-					newChildNoSub.setMediaAudio(ref.getMedia().getAudioCodes().get(i));
-					newChildNoSub.setParent(parent);
-
-				}
-			}
-
-			// meskibob: I think it'd be a good idea to add a "Stream" option (for PS3 compatible containers) to the #Transcode# folder in addition to the current options already in there.
-			DLNAResource justStreamed = (DLNAResource) ref.clone();
-			if (justStreamed.getExt() != null && (justStreamed.getExt().ps3compatible() || justStreamed.isSkipTranscode())) {
-				justStreamed.setId(null);
-				justStreamed.setPlayer(null);
-				justStreamed.setMedia(ref.getMedia());
-				justStreamed.setNoName(true);
-				justStreamed.setParent(parent);
-			}
-			}
+		FileTranscodeVirtualFolder rootFolder = new FileTranscodeVirtualFolder("", null, false);
+		rootFolder.addChild(child.clone());
+		rootFolder.resolve();
+		//get the transcode folder which is hidden a bit deeper. this could break at some point but is an easy solution..
+		rootFolder.getChildren().get(1).getChildren().get(0).resolve();
+		DLNAResource transcodeFolder = rootFolder.getChildren().get(1).getChildren().get(0);
+		
+		for(DLNAResource r : transcodeFolder.getChildren()) {
+			parent.addChild(r);
+		}
 	}
 }
