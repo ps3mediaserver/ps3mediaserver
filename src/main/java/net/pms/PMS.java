@@ -457,7 +457,7 @@ public class PMS {
 
 		//check if Kerio is installed
 		if (registry.isKerioFirewall()) {
-			//todo: Warning message
+			logger.info("Detected Kerio firewall");
 		}
 
 		// force use of specific dvr ms muxer when it's installed in the right place

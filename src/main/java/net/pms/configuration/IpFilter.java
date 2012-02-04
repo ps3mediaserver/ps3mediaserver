@@ -159,8 +159,6 @@ public class IpFilter {
 						// -y
 						if (valid(ending)) {
 							return new ByteRule(-1, Integer.parseInt(ending));
-						} else {
-							// -
 						}
 					}
 				}
