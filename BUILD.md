@@ -1,12 +1,12 @@
-Installation instructions
+Build instructions
 =========================
 
 The latest release of PS3 Media Server can be downloaded from:
 
  - http://www.ps3mediaserver.org/
 
-This document describes how to install PS3 Media Server from the source files.
-To build PMS from the source some software packages are required:
+This document describes how to build PS3 Media Server from the source files.
+The following software packages are required:
 
   - The Java JDK (JRE is not enough)
   - Git
