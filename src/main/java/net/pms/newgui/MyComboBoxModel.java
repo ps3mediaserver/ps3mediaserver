@@ -25,12 +25,10 @@ public class MyComboBoxModel extends DefaultComboBoxModel {
 
 	public MyComboBoxModel() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public MyComboBoxModel(Object[] items) {
 		super(items);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
