@@ -3,7 +3,7 @@ Changelog:
 
 1.50.2 - 2012-??-??
 
-1.50.1 - 2012-01-29
+1.50.1 - 2012-01-28
 
 	Fixed DLNAResource cloning problem (#1274)
 	Added renderer configuration file for Philips TV (thanks, leroy!)
