@@ -35,8 +35,19 @@ public class InputFile {
 	@Deprecated
 	public long size;
 
+	/**
+	 * Return the string representation of this InputFile.
+	 */
 	public String toString() {
-		return file!=null?file.getName():(push!=null?"pipe":null);
+		if (file != null) {
+			return file.getName();
+		} else {
+			if (push != null) {
+				return "pipe";
+			} else {
+				return "";
+			}
+		}
 	}
 
 	/**
