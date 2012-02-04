@@ -73,7 +73,7 @@
 
 		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
 		<jcalendar-version>1.1.1</jcalendar-version>
-		<jgoodies-binding-version>2.5.0</jgoodies-binding-version>
+		<jgoodies-binding-version>2.5.1</jgoodies-binding-version>
 		<jgoodies-common-version>1.2.1</jgoodies-common-version>
 		<jgoodies-forms-version>1.4.2</jgoodies-forms-version>
 		<jgoodies-looks-version>2.4.2</jgoodies-looks-version>
@@ -630,9 +630,9 @@
 							<install>true</install>
 							<force>false</force>
 							<downloadUrl>http://www.jgoodies.com/download/libraries/{artifactId}/jgoodies-{artifactId}-{_version}.zip</downloadUrl>
-							<checksum>7936f7254085889cccfcc54c96a5ed52245a677b</checksum>
+							<checksum>52f3f7647cbb356c940beec74cebc66f0c9e2239</checksum>
 							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
-							<extractFileChecksum>11619aad3676b9e877b783babe9d4a291c7aea45</extractFileChecksum>
+							<extractFileChecksum>4ff916c4e7b59749b0240aaf2f68cb555355d95b</extractFileChecksum>
 						</artifactItem>
 		
 						<artifactItem>
