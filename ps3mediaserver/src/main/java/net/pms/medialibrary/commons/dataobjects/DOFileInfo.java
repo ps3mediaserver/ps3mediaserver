@@ -225,7 +225,7 @@ public class DOFileInfo {
     }
 
 	public void addPlayToHistory(Date d) {
-		if(d != null){
+		if(d != null && !getPlayHistory().contains(d)){
 			getPlayHistory().add(d);
 		    firepropertyChangedEvent(ConditionType.FILEPLAYS_DATEPLAYEND);
 		}

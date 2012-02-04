@@ -356,7 +356,7 @@ class DBFileInfo {
 					}
 					
 					try{
-						file.addPlayToHistory(rs.getDate(pos++));
+						file.addPlayToHistory(new Date(rs.getTimestamp(pos++).getTime()));
 					}catch(Exception ex){ }
 
 					DOFileInfo currFile = files.get(file.getId());

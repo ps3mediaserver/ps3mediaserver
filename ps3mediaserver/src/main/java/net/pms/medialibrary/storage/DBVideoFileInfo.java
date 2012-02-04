@@ -301,8 +301,9 @@ class DBVideoFileInfo extends DBFileInfo {
 					}
 					
 					try{
-						videoFile.addPlayToHistory(rs.getDate(pos++));
+						videoFile.addPlayToHistory(new Date(rs.getTimestamp(pos++).getTime()));
 					}catch(Exception ex){ }
+
 
 					DOVideoFileInfo currVideo = videos.get(videoFile.getId());
 
