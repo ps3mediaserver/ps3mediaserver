@@ -17,7 +17,7 @@ import net.pms.io.ProcessWrapperImpl;
 import net.pms.PMS;
 
 public class RAWThumbnailer extends Player {
-	public static String ID = "rawthumbs";
+	public final static String ID = "rawthumbs";
 
 	protected String[] getDefaultArgs() {
 		return new String[]{"-e", "-c"};
