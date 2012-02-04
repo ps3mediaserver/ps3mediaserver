@@ -870,7 +870,7 @@
 						<version>1.7</version>
 						<executions>
 							<execution>
-								<id>process-resources</id>
+								<id>process-resources-windows</id>
 								<phase>process-resources</phase>
 								<goals>
 									<goal>run</goal>
@@ -970,7 +970,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>prepare-package</id>
+								<id>prepare-package-windows</id>
 								<phase>prepare-package</phase>
 								<goals>
 									<goal>run</goal>
@@ -1002,7 +1002,7 @@
 						<version>1.0-SNAPSHOT</version>
 						<executions>
 							<execution>
-								<id>build-pms</id>
+								<id>build-pms-windows</id>
 								<configuration>
 									<makensisBin>${project.external-resources}/third-party/nsis/makensis.exe</makensisBin>
 									<outputFile>${project.build.directory}/PMS.exe</outputFile>
@@ -1016,7 +1016,7 @@
 							</execution>
 
 							<execution>
-								<id>build-setup</id>
+								<id>build-setup-windows</id>
 								<configuration>
 									<makensisBin>${project.external-resources}/third-party/nsis/makensis.exe</makensisBin>
 									<outputFile>${project.build.directory}/PMS-setup.exe</outputFile>
@@ -1058,7 +1058,7 @@
 						<version>1.7</version>
 						<executions>
 							<execution>
-								<id>process-resources</id>
+								<id>process-resources-linux</id>
 								<phase>process-resources</phase>
 								<goals>
 									<goal>run</goal>
@@ -1075,7 +1075,7 @@
 							</execution>
 									
 							<execution>
-								<id>copy-jar-with-dependencies</id>
+								<id>copy-jar-with-dependencies-linux</id>
 								<phase>package</phase>
 								<goals>
 									<goal>run</goal>
@@ -1097,7 +1097,7 @@
 						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>build-pms</id>
+								<id>build-pms-linux</id>
 								<phase>package</phase>
 								<goals>
 									<goal>single</goal>
@@ -1143,7 +1143,7 @@
 						<version>1.7</version>
 						<executions>
 							<execution>
-								<id>process-resources</id>
+								<id>process-resources-osx</id>
 								<phase>test</phase>
 								<goals>
 									<goal>run</goal>
@@ -1177,7 +1177,7 @@
 							</execution>
 
 							<execution>
-								<id>prepare-package</id>
+								<id>prepare-package-osx</id>
 								<phase>prepare-package</phase>
 								<goals>
 									<goal>run</goal>
@@ -1214,7 +1214,7 @@
 						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>make-assembly</id>
+								<id>make-assembly-osx</id>
 								<phase>package</phase>
 								<goals>
 									<goal>single</goal>
