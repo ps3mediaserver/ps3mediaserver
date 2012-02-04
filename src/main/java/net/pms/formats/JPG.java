@@ -20,8 +20,6 @@ package net.pms.formats;
 
 import java.util.ArrayList;
 
-import net.pms.configuration.RendererConfiguration;
-import net.pms.dlna.DLNAMediaInfo;
 import net.pms.encoders.Player;
 
 public class JPG extends Format {

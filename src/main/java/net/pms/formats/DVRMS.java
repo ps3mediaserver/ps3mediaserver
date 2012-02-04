@@ -22,8 +22,6 @@ import java.util.ArrayList;
 
 import net.pms.PMS;
 
-import net.pms.configuration.RendererConfiguration;
-import net.pms.dlna.DLNAMediaInfo;
 import net.pms.encoders.FFMpegDVRMSRemux;
 import net.pms.encoders.Player;
 
