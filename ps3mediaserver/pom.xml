@@ -29,9 +29,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.pms</groupId>
 	<artifactId>pms</artifactId>
-	<name>PS3 Media Server MLX</name>
+	<name>PS3 Media Server</name>
 	<packaging>jar</packaging>
-	<version>1.50.1_mlx_v0.7-SNAPSHOT</version>
+	<version>1.50.2_mlx_v0.7-SNAPSHOT</version>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
 
@@ -69,7 +69,7 @@
 
 	<properties>
 		<!-- NSIS needs a version without "-SNAPSHOT" or "-b1" -->
-		<project.version.short>1.50.0</project.version.short>
+		<project.version.short>1.50.2</project.version.short>
 
 		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
 		<jcalendar-version>1.1.1</jcalendar-version>
@@ -80,7 +80,7 @@
 		<jtmdb-version>1.9.15</jtmdb-version>
 		<junrar-version>0.5</junrar-version>
 		<mediautil-version>1.0</mediautil-version>
-		<slf4j-version>1.6.3</slf4j-version>
+		<slf4j-version>1.6.4</slf4j-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.external-resources>${project.basedir}/src/main/external-resources</project.external-resources>
 		<project.binaries>${project.basedir}/target/bin</project.binaries>
@@ -165,7 +165,7 @@
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.5</version>
+			<version>1.6</version>
 		</dependency>
 
 		<dependency>
@@ -221,13 +221,13 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>0.9.29</version>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
-			<version>0.9.29</version>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
@@ -286,7 +286,7 @@
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
-			<version>1.1</version>
+			<version>1.1.2</version>
 		</dependency> -->
 
 		<dependency>
@@ -368,7 +368,7 @@
 			<artifactId>jtmdb</artifactId>
 			<version>${jtmdb-version}</version>
 		</dependency>
-
+		
 		<!-- XXX: not Mavenized: http://flib.sourceforge.net/JCalendar/doc/index.html -->
 		<dependency>
 			<groupId>org.freixas</groupId>
@@ -479,41 +479,15 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.11</version>
 				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											pl.project13.maven
-										</groupId>
-										<artifactId>
-											git-commit-id-plugin
-										</artifactId>
-										<versionRange>
-											[1.9,)
-										</versionRange>
-										<goals>
-											<goal>revision</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
 			</plugins>
 		</pluginManagement>		
 
 		<plugins>
+			<!--
+				Plugin to add git commit information properties.
+				These are used in the project.properties files.
+				See: https://github.com/ktoso/maven-git-commit-id-plugin
+			-->
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
@@ -634,7 +608,7 @@
 							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
 							<extractFileChecksum>4ff916c4e7b59749b0240aaf2f68cb555355d95b</extractFileChecksum>
 						</artifactItem>
-		
+						
 						<artifactItem>
 							<groupId>com.jgoodies</groupId>
 							<artifactId>common</artifactId>
@@ -673,7 +647,7 @@
 							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
 							<extractFileChecksum>535745c08e342f7ea78556baad44a4a52ffb7863</extractFileChecksum>
 						</artifactItem>
-
+		
 						<artifactItem>
 							<groupId>jwbroek.cuelib</groupId>
 							<artifactId>cuelib</artifactId>
@@ -953,15 +927,16 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
 						<executions>
 							<execution>
-								<id>prepare-package</id>
-								<phase>prepare-package</phase>
+								<id>process-resources-windows</id>
+								<phase>process-resources</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<!-- Make sure the download folders exist -->
 										<mkdir dir="${project.binaries}" />
 										<mkdir dir="${project.binaries}/win32" />
@@ -975,83 +950,93 @@
 										<mkdir dir="${project.binaries}/win32/service" />
 
 										<!-- Download all necessary Windows binaries. Keep the same structure because NSIS expects it that way. -->
-										<get src="${project.binaries-base}/MediaInfo.dll" dest="${project.binaries}/MediaInfo.dll" />
-										<get src="${project.binaries-base}/MediaInfo64.dll" dest="${project.binaries}/MediaInfo64.dll" />
-										<get src="${project.binaries-base}/win32/Convert_License.txt" dest="${project.binaries}/win32/Convert_License.txt" />
-										<get src="${project.binaries-base}/win32/LICENSE.txt" dest="${project.binaries}/win32/LICENSE.txt" />
-										<get src="${project.binaries-base}/win32/builds.txt" dest="${project.binaries}/win32/builds.txt" />
-										<get src="${project.binaries-base}/win32/convert.exe" dest="${project.binaries}/win32/convert.exe" />
-										<get src="${project.binaries-base}/win32/dcrawMS.exe" dest="${project.binaries}/win32/dcrawMS.exe" />
-										<get src="${project.binaries-base}/win32/ffmpeg.exe" dest="${project.binaries}/win32/ffmpeg.exe" />
-										<get src="${project.binaries-base}/win32/flac.exe" dest="${project.binaries}/win32/flac.exe" />
-										<get src="${project.binaries-base}/win32/mencoder.exe" dest="${project.binaries}/win32/mencoder.exe" />
-										<get src="${project.binaries-base}/win32/mplayer.exe" dest="${project.binaries}/win32/mplayer.exe" />
-										<get src="${project.binaries-base}/win32/pthreadGC2.dll" dest="${project.binaries}/win32/pthreadGC2.dll" />
-										<get src="${project.binaries-base}/win32/tsMuxeR.exe" dest="${project.binaries}/win32/tsMuxeR.exe" />
-										<get src="${project.binaries-base}/win32/vcomp100.dll" dest="${project.binaries}/win32/vcomp100.dll" />
-										<get src="${project.binaries-base}/win32/codecs/drv33260.dll" dest="${project.binaries}/win32/codecs/drv33260.dll" />
-										<get src="${project.binaries-base}/win32/codecs/drv43260.dll" dest="${project.binaries}/win32/codecs/drv43260.dll" />
-										<get src="${project.binaries-base}/win32/codecs/pncrt.dll" dest="${project.binaries}/win32/codecs/pncrt.dll" />
-										<get src="${project.binaries-base}/win32/codecs/sipr3260.dll" dest="${project.binaries}/win32/codecs/sipr3260.dll" />
-										<get src="${project.binaries-base}/win32/codecs/tokr3260.dll" dest="${project.binaries}/win32/codecs/tokr3260.dll" />
-										<get src="${project.binaries-base}/win32/codecs/wma9dmod.dll" dest="${project.binaries}/win32/codecs/wma9dmod.dll" />
-										<get src="${project.binaries-base}/win32/codecs/wmv9dmod.dll" dest="${project.binaries}/win32/codecs/wmv9dmod.dll" />
-										<get src="${project.binaries-base}/win32/codecs/wmvdmod.dll" dest="${project.binaries}/win32/codecs/wmvdmod.dll" />
-										<get src="${project.binaries-base}/win32/dvrms/ffmpeg_MPGMUX.exe" dest="${project.binaries}/win32/dvrms/ffmpeg_MPGMUX.exe" />
-										<get src="${project.binaries-base}/win32/dvrms/pthreadGC2.dll" dest="${project.binaries}/win32/dvrms/pthreadGC2.dll" />
-										<get src="${project.binaries-base}/win32/fonts/fonts.conf" dest="${project.binaries}/win32/fonts/fonts.conf" />
-										<get src="${project.binaries-base}/win32/fonts/fonts.dtd" dest="${project.binaries}/win32/fonts/fonts.dtd" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-autohint.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-autohint.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-no-sub-pixel.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-no-sub-pixel.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-sub-pixel-bgr.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-sub-pixel-bgr.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-sub-pixel-rgb.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-sub-pixel-rgb.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-sub-pixel-vbgr.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-sub-pixel-vbgr.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-sub-pixel-vrgb.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-sub-pixel-vrgb.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-unhinted.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-unhinted.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/20-fix-globaladvance.conf" dest="${project.binaries}/win32/fonts/conf.avail/20-fix-globaladvance.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/20-unhint-small-vera.conf" dest="${project.binaries}/win32/fonts/conf.avail/20-unhint-small-vera.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/25-unhint-nonlatin.conf" dest="${project.binaries}/win32/fonts/conf.avail/25-unhint-nonlatin.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/30-metric-aliases.conf" dest="${project.binaries}/win32/fonts/conf.avail/30-metric-aliases.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/30-urw-aliases.conf" dest="${project.binaries}/win32/fonts/conf.avail/30-urw-aliases.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/40-nonlatin.conf" dest="${project.binaries}/win32/fonts/conf.avail/40-nonlatin.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/45-latin.conf" dest="${project.binaries}/win32/fonts/conf.avail/45-latin.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/49-sansserif.conf" dest="${project.binaries}/win32/fonts/conf.avail/49-sansserif.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/50-user.conf" dest="${project.binaries}/win32/fonts/conf.avail/50-user.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/51-local.conf" dest="${project.binaries}/win32/fonts/conf.avail/51-local.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/60-latin.conf" dest="${project.binaries}/win32/fonts/conf.avail/60-latin.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/65-fonts-persian.conf" dest="${project.binaries}/win32/fonts/conf.avail/65-fonts-persian.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/65-khmer.conf" dest="${project.binaries}/win32/fonts/conf.avail/65-khmer.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/65-nonlatin.conf" dest="${project.binaries}/win32/fonts/conf.avail/65-nonlatin.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/69-unifont.conf" dest="${project.binaries}/win32/fonts/conf.avail/69-unifont.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/70-no-bitmaps.conf" dest="${project.binaries}/win32/fonts/conf.avail/70-no-bitmaps.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/70-yes-bitmaps.conf" dest="${project.binaries}/win32/fonts/conf.avail/70-yes-bitmaps.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/80-delicious.conf" dest="${project.binaries}/win32/fonts/conf.avail/80-delicious.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.avail/90-synthetic.conf" dest="${project.binaries}/win32/fonts/conf.avail/90-synthetic.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/20-fix-globaladvance.conf" dest="${project.binaries}/win32/fonts/conf.d/20-fix-globaladvance.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/20-unhint-small-vera.conf" dest="${project.binaries}/win32/fonts/conf.d/20-unhint-small-vera.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/30-metric-aliases.conf" dest="${project.binaries}/win32/fonts/conf.d/30-metric-aliases.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/30-urw-aliases.conf" dest="${project.binaries}/win32/fonts/conf.d/30-urw-aliases.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/40-nonlatin.conf" dest="${project.binaries}/win32/fonts/conf.d/40-nonlatin.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/45-latin.conf" dest="${project.binaries}/win32/fonts/conf.d/45-latin.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/49-sansserif.conf" dest="${project.binaries}/win32/fonts/conf.d/49-sansserif.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/50-user.conf" dest="${project.binaries}/win32/fonts/conf.d/50-user.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/51-local.conf" dest="${project.binaries}/win32/fonts/conf.d/51-local.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/60-latin.conf" dest="${project.binaries}/win32/fonts/conf.d/60-latin.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/65-fonts-persian.conf" dest="${project.binaries}/win32/fonts/conf.d/65-fonts-persian.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/65-nonlatin.conf" dest="${project.binaries}/win32/fonts/conf.d/65-nonlatin.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/69-unifont.conf" dest="${project.binaries}/win32/fonts/conf.d/69-unifont.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/80-delicious.conf" dest="${project.binaries}/win32/fonts/conf.d/80-delicious.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/90-synthetic.conf" dest="${project.binaries}/win32/fonts/conf.d/90-synthetic.conf" />
-										<get src="${project.binaries-base}/win32/fonts/conf.d/README" dest="${project.binaries}/win32/fonts/conf.d/README" />
-										<get src="${project.binaries-base}/win32/mplayer/config" dest="${project.binaries}/win32/mplayer/config" />
-										<get src="${project.binaries-base}/win32/mplayer/input.conf" dest="${project.binaries}/win32/mplayer/input.conf" />
-										<get src="${project.binaries-base}/win32/mplayer/subfont.ttf" dest="${project.binaries}/win32/mplayer/subfont.ttf" />
-										<get src="${project.binaries-base}/win32/service/wrapper-community-license-1.1.txt" dest="${project.binaries}/win32/service/wrapper-community-license-1.1.txt" />
-										<get src="${project.binaries-base}/win32/service/wrapper.conf" dest="${project.binaries}/win32/service/wrapper.conf" />
-										<get src="${project.binaries-base}/win32/service/wrapper.dll" dest="${project.binaries}/win32/service/wrapper.dll" />
-										<get src="${project.binaries-base}/win32/service/wrapper.exe" dest="${project.binaries}/win32/service/wrapper.exe" />
-										<get src="${project.binaries-base}/win32/service/wrapper.jar" dest="${project.binaries}/win32/service/wrapper.jar" />
-
+										<get src="${project.binaries-base}/MediaInfo.dll" dest="${project.binaries}/MediaInfo.dll"  usetimestamp="true" />
+										<get src="${project.binaries-base}/MediaInfo64.dll" dest="${project.binaries}/MediaInfo64.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/Convert_License.txt" dest="${project.binaries}/win32/Convert_License.txt"  usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/LICENSE.txt" dest="${project.binaries}/win32/LICENSE.txt" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/builds.txt" dest="${project.binaries}/win32/builds.txt" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/convert.exe" dest="${project.binaries}/win32/convert.exe" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/dcrawMS.exe" dest="${project.binaries}/win32/dcrawMS.exe" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/ffmpeg.exe" dest="${project.binaries}/win32/ffmpeg.exe" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/flac.exe" dest="${project.binaries}/win32/flac.exe" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/mencoder.exe" dest="${project.binaries}/win32/mencoder.exe" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/mplayer.exe" dest="${project.binaries}/win32/mplayer.exe"  usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/pthreadGC2.dll" dest="${project.binaries}/win32/pthreadGC2.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/tsMuxeR.exe" dest="${project.binaries}/win32/tsMuxeR.exe" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/vcomp100.dll" dest="${project.binaries}/win32/vcomp100.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/codecs/drv33260.dll" dest="${project.binaries}/win32/codecs/drv33260.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/codecs/drv43260.dll" dest="${project.binaries}/win32/codecs/drv43260.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/codecs/pncrt.dll" dest="${project.binaries}/win32/codecs/pncrt.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/codecs/sipr3260.dll" dest="${project.binaries}/win32/codecs/sipr3260.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/codecs/tokr3260.dll" dest="${project.binaries}/win32/codecs/tokr3260.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/codecs/wma9dmod.dll" dest="${project.binaries}/win32/codecs/wma9dmod.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/codecs/wmv9dmod.dll" dest="${project.binaries}/win32/codecs/wmv9dmod.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/codecs/wmvdmod.dll" dest="${project.binaries}/win32/codecs/wmvdmod.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/dvrms/ffmpeg_MPGMUX.exe" dest="${project.binaries}/win32/dvrms/ffmpeg_MPGMUX.exe" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/dvrms/pthreadGC2.dll" dest="${project.binaries}/win32/dvrms/pthreadGC2.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/fonts.conf" dest="${project.binaries}/win32/fonts/fonts.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/fonts.dtd" dest="${project.binaries}/win32/fonts/fonts.dtd" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-autohint.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-autohint.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-no-sub-pixel.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-no-sub-pixel.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-sub-pixel-bgr.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-sub-pixel-bgr.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-sub-pixel-rgb.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-sub-pixel-rgb.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-sub-pixel-vbgr.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-sub-pixel-vbgr.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-sub-pixel-vrgb.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-sub-pixel-vrgb.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/10-unhinted.conf" dest="${project.binaries}/win32/fonts/conf.avail/10-unhinted.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/20-fix-globaladvance.conf" dest="${project.binaries}/win32/fonts/conf.avail/20-fix-globaladvance.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/20-unhint-small-vera.conf" dest="${project.binaries}/win32/fonts/conf.avail/20-unhint-small-vera.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/25-unhint-nonlatin.conf" dest="${project.binaries}/win32/fonts/conf.avail/25-unhint-nonlatin.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/30-metric-aliases.conf" dest="${project.binaries}/win32/fonts/conf.avail/30-metric-aliases.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/30-urw-aliases.conf" dest="${project.binaries}/win32/fonts/conf.avail/30-urw-aliases.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/40-nonlatin.conf" dest="${project.binaries}/win32/fonts/conf.avail/40-nonlatin.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/45-latin.conf" dest="${project.binaries}/win32/fonts/conf.avail/45-latin.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/49-sansserif.conf" dest="${project.binaries}/win32/fonts/conf.avail/49-sansserif.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/50-user.conf" dest="${project.binaries}/win32/fonts/conf.avail/50-user.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/51-local.conf" dest="${project.binaries}/win32/fonts/conf.avail/51-local.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/60-latin.conf" dest="${project.binaries}/win32/fonts/conf.avail/60-latin.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/65-fonts-persian.conf" dest="${project.binaries}/win32/fonts/conf.avail/65-fonts-persian.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/65-khmer.conf" dest="${project.binaries}/win32/fonts/conf.avail/65-khmer.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/65-nonlatin.conf" dest="${project.binaries}/win32/fonts/conf.avail/65-nonlatin.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/69-unifont.conf" dest="${project.binaries}/win32/fonts/conf.avail/69-unifont.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/70-no-bitmaps.conf" dest="${project.binaries}/win32/fonts/conf.avail/70-no-bitmaps.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/70-yes-bitmaps.conf" dest="${project.binaries}/win32/fonts/conf.avail/70-yes-bitmaps.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/80-delicious.conf" dest="${project.binaries}/win32/fonts/conf.avail/80-delicious.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.avail/90-synthetic.conf" dest="${project.binaries}/win32/fonts/conf.avail/90-synthetic.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/20-fix-globaladvance.conf" dest="${project.binaries}/win32/fonts/conf.d/20-fix-globaladvance.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/20-unhint-small-vera.conf" dest="${project.binaries}/win32/fonts/conf.d/20-unhint-small-vera.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/30-metric-aliases.conf" dest="${project.binaries}/win32/fonts/conf.d/30-metric-aliases.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/30-urw-aliases.conf" dest="${project.binaries}/win32/fonts/conf.d/30-urw-aliases.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/40-nonlatin.conf" dest="${project.binaries}/win32/fonts/conf.d/40-nonlatin.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/45-latin.conf" dest="${project.binaries}/win32/fonts/conf.d/45-latin.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/49-sansserif.conf" dest="${project.binaries}/win32/fonts/conf.d/49-sansserif.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/50-user.conf" dest="${project.binaries}/win32/fonts/conf.d/50-user.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/51-local.conf" dest="${project.binaries}/win32/fonts/conf.d/51-local.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/60-latin.conf" dest="${project.binaries}/win32/fonts/conf.d/60-latin.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/65-fonts-persian.conf" dest="${project.binaries}/win32/fonts/conf.d/65-fonts-persian.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/65-nonlatin.conf" dest="${project.binaries}/win32/fonts/conf.d/65-nonlatin.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/69-unifont.conf" dest="${project.binaries}/win32/fonts/conf.d/69-unifont.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/80-delicious.conf" dest="${project.binaries}/win32/fonts/conf.d/80-delicious.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/90-synthetic.conf" dest="${project.binaries}/win32/fonts/conf.d/90-synthetic.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/fonts/conf.d/README" dest="${project.binaries}/win32/fonts/conf.d/README" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/mplayer/config" dest="${project.binaries}/win32/mplayer/config" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/mplayer/input.conf" dest="${project.binaries}/win32/mplayer/input.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/mplayer/subfont.ttf" dest="${project.binaries}/win32/mplayer/subfont.ttf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/service/wrapper-community-license-1.1.txt" dest="${project.binaries}/win32/service/wrapper-community-license-1.1.txt" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/service/wrapper.conf" dest="${project.binaries}/win32/service/wrapper.conf" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/service/wrapper.dll" dest="${project.binaries}/win32/service/wrapper.dll" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/service/wrapper.exe" dest="${project.binaries}/win32/service/wrapper.exe" usetimestamp="true" />
+										<get src="${project.binaries-base}/win32/service/wrapper.jar" dest="${project.binaries}/win32/service/wrapper.jar" usetimestamp="true" />
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>prepare-package-windows</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
 										<!-- Copy the pms-x.x.x-jar-with-dependencies.jar to pms.jar -->
 										<copy file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
@@ -1059,8 +1044,7 @@
 										<!-- MediaInfo library needs to be in the standard library path to be found -->
 										<copy file="${project.binaries}/MediaInfo.dll" todir="${project.basedir}" />
 										<copy file="${project.binaries}/MediaInfo64.dll" todir="${project.basedir}" />
-
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
@@ -1078,7 +1062,7 @@
 						<version>1.0-SNAPSHOT</version>
 						<executions>
 							<execution>
-								<id>build-pms</id>
+								<id>build-pms-windows</id>
 								<configuration>
 									<makensisBin>${project.external-resources}/third-party/nsis/makensis.exe</makensisBin>
 									<outputFile>${project.build.directory}/PMS.exe</outputFile>
@@ -1090,8 +1074,9 @@
 									<goal>compile</goal>
 								</goals>
 							</execution>
+
 							<execution>
-								<id>build-setup</id>
+								<id>build-setup-windows</id>
 								<configuration>
 									<makensisBin>${project.external-resources}/third-party/nsis/makensis.exe</makensisBin>
 									<outputFile>${project.build.directory}/PMS-setup.exe</outputFile>
@@ -1130,34 +1115,36 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
 						<executions>
 							<execution>
-								<id>prepare-package</id>
-								<phase>prepare-package</phase>
+								<id>process-resources-linux</id>
+								<phase>process-resources</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<!-- Make sure the binaries folder exists -->
 										<mkdir dir="${project.binaries}" />
 
 										<!-- Download binaries -->
-										<get src="${project.binaries-base}/linux/tsMuxeR" dest="${project.binaries}/tsMuxeR" />
-									</tasks>
-                                </configuration>
-                            </execution>
+										<get src="${project.binaries-base}/linux/tsMuxeR" dest="${project.binaries}/tsMuxeR" usetimestamp="true" />
+									</target>
+								</configuration>
+							</execution>
+									
 							<execution>
-								<id>copy-jar-with-dependencies</id>
+								<id>copy-jar-with-dependencies-linux</id>
 								<phase>package</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<copy file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
@@ -1170,7 +1157,7 @@
 						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>build-pms</id>
+								<id>build-pms-linux</id>
 								<phase>package</phase>
 								<goals>
 									<goal>single</goal>
@@ -1213,26 +1200,29 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
 						<executions>
 							<execution>
-								<id>prepare-package</id>
-								<phase>prepare-package</phase>
+								<id>process-resources-osx</id>
+								<phase>test</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
+
 								<configuration>
-									<tasks>
+									<target>
 										<!-- Make sure the binaries folder exists -->
+										<mkdir dir="${project.binaries}" />
 										<mkdir dir="${project.binaries}/osx" />
 
 										<!-- Download binaries -->
-										<get src="${project.binaries-base}/osx/dcraw" dest="${project.binaries}/osx/dcraw" />
-										<get src="${project.binaries-base}/osx/ffmpeg" dest="${project.binaries}/osx/ffmpeg" />
-										<get src="${project.binaries-base}/osx/flac" dest="${project.binaries}/osx/flac" />
-										<get src="${project.binaries-base}/osx/libmediainfo.dylib" dest="${project.binaries}/libmediainfo.dylib" />
-										<get src="${project.binaries-base}/osx/mencoder" dest="${project.binaries}/osx/mencoder" />
-										<get src="${project.binaries-base}/osx/mplayer" dest="${project.binaries}/osx/mplayer" />
-										<get src="${project.binaries-base}/osx/tsMuxeR" dest="${project.binaries}/osx/tsMuxeR" />
+										<get src="${project.binaries-base}/osx/dcraw" dest="${project.binaries}/osx/dcraw" usetimestamp="true" />
+										<get src="${project.binaries-base}/osx/ffmpeg" dest="${project.binaries}/osx/ffmpeg" usetimestamp="true" />
+										<get src="${project.binaries-base}/osx/flac" dest="${project.binaries}/osx/flac" usetimestamp="true" />
+										<get src="${project.binaries-base}/osx/libmediainfo.dylib" dest="${project.binaries}/libmediainfo.dylib" usetimestamp="true" />
+										<get src="${project.binaries-base}/osx/mencoder" dest="${project.binaries}/osx/mencoder" usetimestamp="true" />
+										<get src="${project.binaries-base}/osx/mplayer" dest="${project.binaries}/osx/mplayer" usetimestamp="true" />
+										<get src="${project.binaries-base}/osx/tsMuxeR" dest="${project.binaries}/osx/tsMuxeR" usetimestamp="true" />
 
 										<!-- MediaInfo library needs to be in the standard library path to be found -->
 										<copy file="${project.binaries}/libmediainfo.dylib" todir="${project.basedir}" />
@@ -1242,7 +1232,18 @@
 
 										<copy file="${project.external-resources}/osx/pms.icns"
 											todir="${project.binaries}" overwrite="true" />
+									</target>
+								</configuration>
+							</execution>
 
+							<execution>
+								<id>prepare-package-osx</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
 										<!-- Make sure the target folder exists -->
 										<mkdir dir="${project.build.directory}/${project.build.finalName}-distribution" />
 
@@ -1259,7 +1260,7 @@
 											<arg value="-e" />
 											<arg value="end tell" />
 										</exec>
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
@@ -1273,7 +1274,7 @@
 						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>make-assembly</id>
+								<id>make-assembly-osx</id>
 								<phase>package</phase>
 								<goals>
 									<goal>single</goal>
