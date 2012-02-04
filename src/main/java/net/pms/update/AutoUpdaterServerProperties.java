@@ -36,7 +36,7 @@ public class AutoUpdaterServerProperties {
 
 	private String getStringWithDefault(String key, String defaultValue) {
 		String platformSpecificKey = getPlatformSpecificKey(key);
-		if (properties.containsKey(platformSpecificKey)) {;
+		if (properties.containsKey(platformSpecificKey)) {
 			return properties.get(platformSpecificKey);
 		} else if (properties.containsKey(key)) {
 			return properties.get(key);
