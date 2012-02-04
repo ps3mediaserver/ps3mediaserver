@@ -13,9 +13,6 @@
  */
 package net.pms.formats;
 
-import net.pms.configuration.RendererConfiguration;
-import net.pms.dlna.DLNAMediaInfo;
-
 public class M4A extends OGG {
 	@Override
 	public boolean transcodable() {

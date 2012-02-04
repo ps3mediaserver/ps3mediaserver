@@ -18,9 +18,6 @@
  */
 package net.pms.formats;
 
-import net.pms.configuration.RendererConfiguration;
-import net.pms.dlna.DLNAMediaInfo;
-
 public class MKV extends MPG {
 
 	/**

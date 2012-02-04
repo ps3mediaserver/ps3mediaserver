@@ -241,9 +241,7 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 				key = "SOFTWARE\\VideoLAN\\VLC";
 				int handles[] = (int[]) openKey.invoke(systemRoot, -2147483646,
 					toCstr(key), KEY_READ);
-				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
-					// do nothing
-				} else {
+				if (!(handles.length == 2 && handles[0] != 0 && handles[1] == 0)) {
 					key = "SOFTWARE\\Wow6432Node\\VideoLAN\\VLC";
 					handles = (int[]) openKey.invoke(systemRoot, -2147483646,
 						toCstr(key), KEY_READ);
@@ -260,9 +258,7 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 				key = "SOFTWARE\\AviSynth";
 				handles = (int[]) openKey.invoke(systemRoot, -2147483646,
 					toCstr(key), KEY_READ);
-				if (handles.length == 2 && handles[0] != 0 && handles[1] == 0) {
-					// do nothing
-				} else {
+				if (!(handles.length == 2 && handles[0] != 0 && handles[1] == 0)) {
 					key = "SOFTWARE\\Wow6432Node\\AviSynth";
 					handles = (int[]) openKey.invoke(systemRoot, -2147483646,
 						toCstr(key), KEY_READ);

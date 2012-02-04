@@ -21,8 +21,6 @@ package net.pms.formats;
 import java.util.ArrayList;
 
 import net.pms.PMS;
-import net.pms.configuration.RendererConfiguration;
-import net.pms.dlna.DLNAMediaInfo;
 import net.pms.encoders.FFMpegVideo;
 import net.pms.encoders.MEncoderAviSynth;
 import net.pms.encoders.MEncoderVideo;

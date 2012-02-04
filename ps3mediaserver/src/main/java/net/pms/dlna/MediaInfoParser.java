@@ -454,9 +454,7 @@ public class MediaInfoParser {
 				m = Integer.parseInt(token.substring(0, mnl).trim());
 			}
 			int msl = token.indexOf("ms");
-			if (msl > -1) {
-				// no need
-			} else {
+			if (msl == -1) {
 				int sl = token.indexOf("s");
 				if (sl > -1) {
 					s = Integer.parseInt(token.substring(0, sl).trim());
