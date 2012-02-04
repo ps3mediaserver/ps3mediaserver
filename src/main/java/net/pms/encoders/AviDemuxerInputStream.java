@@ -271,7 +271,7 @@ public class AviDemuxerInputStream extends InputStream {
 				}
 			}
 
-			if (size % 2 == 1) {
+			if (size % 2 != 0) {
 				size++;
 			}
 			i += size + 8;
