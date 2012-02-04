@@ -64,10 +64,10 @@ public class LoggingConfigFileLoader {
 	/**
 	 * Loads the (optional) Logback configuration file.
 	 * 
-	 * It loads the file {@link #DEFAULT_CONFIGFILENAME} from the current
+	 * It loads the file defined in the <code>project.logback</code> property from the current
 	 * directory and (re-)initializes Logback with this file. If running
 	 * headless (<code>System.Property("console")</code> set), then the
-	 * alternative config file {@link #HEADLESS_CONFIGFILENAME} is tried first.
+	 * alternative config file defined in <code>project.logback.headless</code> is tried first.
 	 * 
 	 * If no config file can be found in the CWD, then nothing is loaded and
 	 * Logback will use the logback.xml file on the classpath as a default. If
@@ -77,7 +77,6 @@ public class LoggingConfigFileLoader {
 	 * config file are dumped only to <code>stdout</code>.
 	 */
 	public static void load() {
-
 		// Note: Do not use any logging method in this method!
 		// Any logging would cause PMS.get() to be called from the
 		// FrameAppender, which in turn would start the PMS instance, which

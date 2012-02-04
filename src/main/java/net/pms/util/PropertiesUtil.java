@@ -51,7 +51,7 @@ public class PropertiesUtil {
 	 * <p>
 	 * Note that in the Maven "test" phase (e.g. when running PMS from Eclipse)
 	 * the file "src/test/resources/project.properties" is used, whereas in
-	 * other phases the file "src/main/resources/project.properties" (e.g. when
+	 * other phases, the file "src/main/resources/project.properties" (e.g. when
 	 * packaging the final build) will be used.
 	 * 
 	 * @return The properties object.
