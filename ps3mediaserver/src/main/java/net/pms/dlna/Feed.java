@@ -111,8 +111,6 @@ public class Feed extends DLNAResource {
 		SyndFeedInput input = new SyndFeedInput();
 		byte b[] = downloadAndSendBinary(url);
 		if (b != null) {
-			String content = new String(b, "UTF-8");
-			content = stripNonValidXMLCharacters(content);
 			SyndFeed feed = input.build(new XmlReader(new ByteArrayInputStream(b)));
 			setName(feed.getTitle());
 			if (feed.getCategories() != null && feed.getCategories().size() > 0) {

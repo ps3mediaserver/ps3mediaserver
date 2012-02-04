@@ -28,7 +28,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import net.pms.PMS;
-import net.pms.io.WaitBufferedInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +124,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			// Using maxMemory() to ignore the initial Java heap space size that freeMemory()
 			// takes into account.
 			// See http://javarevisited.blogspot.com/2011/05/java-heap-space-memory-size-jvm.html
-			int realisticSize = new Long(Runtime.getRuntime().maxMemory() * 3 / 10).intValue();
+			long realisticSize = Runtime.getRuntime().maxMemory() * 3 / 10;
 			
 			if (realisticSize < buffer.length) {
 				// A copy would be smaller in size, shrinking instead of growing the buffer.
@@ -134,7 +133,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			} else {
 				try {
 					// Try to allocate the realistic alternative size
-					copy = new byte[realisticSize];
+					copy = new byte[(int) realisticSize];
 				} catch (OutOfMemoryError e2) {
 					logger.debug("Cannot grow buffer size from " + formatter.format(buffer.length) + " bytes to "
 							+ formatter.format(realisticSize) + " bytes either.");

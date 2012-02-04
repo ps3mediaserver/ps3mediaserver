@@ -65,7 +65,6 @@ public class BasicSystemUtils implements SystemUtils {
 
 	@Override
 	public File getAvsPluginsDir() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -29,42 +29,33 @@ public class DummyFrame implements IFrame {
 
 	@Override
 	public void setReadValue(long v, String msg) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void setStatusCode(int code, String msg, String icon) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void setReloadable(boolean reload) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void addEngines() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void setStatusLine(String line) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void addRendererIcon(int code, String msg, String icon) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void serverReady() {
-		// TODO Auto-generated method stub
 	}
 	
 	@Override
 	public void setScanLibraryEnabled(boolean flag) {
-	    // TODO Auto-generated method stub
-	
 	}
 }

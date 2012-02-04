@@ -6,7 +6,6 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import net.pms.Messages;
-import net.pms.newgui.LooksFrame;
 
 public class ProfileChooser {
 	private static class ProfileChooserFileFilter extends FileFilter {

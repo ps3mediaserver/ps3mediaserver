@@ -19,7 +19,6 @@ public class MacSystemUtils extends BasicSystemUtils {
 	private final static Logger logger = LoggerFactory.getLogger(MacSystemUtils.class); 
 
 	public MacSystemUtils() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

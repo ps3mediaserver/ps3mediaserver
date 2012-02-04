@@ -33,36 +33,30 @@ public class ProcessWrapperLiteImpl implements ProcessWrapper {
 
 	@Override
 	public InputStream getInputStream(long seek) throws IOException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public ArrayList<String> getResults() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean isDestroyed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void runInNewThread() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public boolean isReadyToStop() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void setReadyToStop(boolean nullable) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
