@@ -45,7 +45,7 @@ public class DebugLogPathDefiner extends PropertyDefinerBase {
 	@Override
 	public String getPropertyValue() {
 		// Check if current directory is writable.
-		// XXX dir.canWite() has issues on Windows, so verify it directly:
+		// XXX dir.canWrite() has issues on Windows, so verify it directly:
 		// http://hyperic.allrightname.com/javadoc/hq-util/org/hyperic/util/file/FileUtil.html#canWrite%28java.io.File%29
 		File file = new File("write_test_file");
 
