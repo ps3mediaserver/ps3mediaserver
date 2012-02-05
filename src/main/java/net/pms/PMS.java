@@ -65,6 +65,7 @@ import net.pms.external.ExternalListener;
 import net.pms.formats.DVRMS;
 import net.pms.formats.FLAC;
 import net.pms.formats.Format;
+import net.pms.formats.FormatFactory;
 import net.pms.formats.GIF;
 import net.pms.formats.ISO;
 import net.pms.formats.JPG;
@@ -192,8 +193,6 @@ public class PMS {
 	 * User friendly name for the server.
 	 */
 	private String serverName;
-
-	private ArrayList<Format> extensions;
 
 	/**
 	 * List of registered {@link Player}s.
@@ -472,12 +471,9 @@ public class PMS {
 		// wrap System.err
 		System.setErr(new PrintStream(new SystemErrWrapper(), true));
 
-		extensions = new ArrayList<Format>();
 		players = new ArrayList<Player>();
 		allPlayers = new ArrayList<Player>();
 		server = new HTTPServer(configuration.getServerPort());
-
-		registerExtensions();
 
 		/*
 		 * XXX: keep this here (i.e. after registerExtensions and before registerPlayers) so that plugins
@@ -624,27 +620,6 @@ public class PMS {
 		ProcessWrapperImpl pwinstall = new ProcessWrapperImpl(cmdArray, new OutputParams(configuration));
 		pwinstall.runInSameThread();
 		return pwinstall.isSuccess();
-	}
-
-	/**Add a known set of extensions to the extensions list.
-	 * @see PMS#init()
-	 */
-	private void registerExtensions() {
-		extensions.add(new WEB());
-		extensions.add(new MKV());
-		extensions.add(new M4A());
-		extensions.add(new MP3());
-		extensions.add(new ISO());
-		extensions.add(new MPG());
-		extensions.add(new WAV());
-		extensions.add(new JPG());
-		extensions.add(new OGG());
-		extensions.add(new PNG());
-		extensions.add(new GIF());
-		extensions.add(new TIF());
-		extensions.add(new FLAC());
-		extensions.add(new DVRMS());
-		extensions.add(new RAW());
 	}
 
 	/**Register a known set of audio/video transcoders (known as {@link Player}s). Used in PMS#init().
@@ -945,18 +920,15 @@ public class PMS {
 	}
 
 	/**
+	 * @deprecated Use {@link FormatFactory#getAssociatedExtension(filename)}
+	 * instead.
+	 *
 	 * @param filename
 	 * @return The format.
 	 */
+	@Deprecated
 	public Format getAssociatedExtension(String filename) {
-		logger.trace("Search extension for " + filename);
-		for (Format ext : extensions) {
-			if (ext.match(filename)) {
-				logger.trace("Found 1! " + ext.getClass().getName());
-				return ext.duplicate();
-			}
-		}
-		return null;
+		return FormatFactory.getAssociatedExtension(filename);
 	}
 
 	public Player getPlayer(Class<? extends Player> profileClass, Format ext) {
@@ -1039,8 +1011,13 @@ public class PMS {
 		return server;
 	}
 
+	/**
+	 * @deprecated Use {@link FormatFactory#getExtensions()} instead.
+	 *
+	 * @return The list of formats. 
+	 */
 	public ArrayList<Format> getExtensions() {
-		return extensions;
+		return FormatFactory.getExtensions();
 	}
 
 	public ArrayList<Player> getPlayers() {

@@ -32,6 +32,7 @@ import net.pms.PMS;
 import net.pms.configuration.MapFileConfiguration;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
+import net.pms.formats.FormatFactory;
 import net.pms.network.HTTPResource;
 import net.pms.util.NaturalComparator;
 
@@ -92,7 +93,7 @@ public class MapFile extends DLNAResource {
 			File children[] = f.listFiles();
 			for (File child : children) {
 				if (child.isFile()) {
-					if (PMS.get().getAssociatedExtension(child.getName()) != null || isFileRelevant(child)) {
+					if (FormatFactory.getAssociatedExtension(child.getName()) != null || isFileRelevant(child)) {
 						excludeNonRelevantFolder = false;
 						break;
 					}
@@ -264,7 +265,7 @@ public class MapFile extends DLNAResource {
 		}
 		for (File f : files) {
 			if (!f.isHidden()) {
-				if (f.isDirectory() || PMS.get().getAssociatedExtension(f.getName()) != null) {
+				if (f.isDirectory() || FormatFactory.getAssociatedExtension(f.getName()) != null) {
 					addedFiles.add(f);
 				}
 			}

@@ -228,4 +228,13 @@ public abstract class Format implements Cloneable {
 		}
 		return false;
 	}
+
+	/**
+	 * Return the class name for string representation.
+	 * @return The name.
+	 */
+	public String toString() {
+		return getClass().getSimpleName();
+		
+	}
 }

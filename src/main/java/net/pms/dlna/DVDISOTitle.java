@@ -25,16 +25,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
+import net.pms.formats.FormatFactory;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
-// Ditlew
-import net.pms.configuration.RendererConfiguration;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -233,7 +232,7 @@ public class DVDISOTitle extends DLNAResource {
 	@Override
 	public boolean isValid() {
 		if (getExt() == null) {
-			setExt(PMS.get().getAssociatedExtension("dummy.iso"));
+			setExt(FormatFactory.getAssociatedExtension("dummy.iso"));
 		}
 		return true;
 	}

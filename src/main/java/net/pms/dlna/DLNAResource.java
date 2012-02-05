@@ -25,6 +25,7 @@ import static net.pms.util.StringUtil.encodeXML;
 import static net.pms.util.StringUtil.endTag;
 import static net.pms.util.StringUtil.openTag;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
@@ -56,6 +57,7 @@ import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.external.StartStopListener;
 import net.pms.formats.Format;
+import net.pms.formats.FormatFactory;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.SizeLimitInputStream;
@@ -853,7 +855,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 	protected void checktype() {
 		if (getExt() == null) {
-			setExt(PMS.get().getAssociatedExtension(getSystemName()));
+			setExt(FormatFactory.getAssociatedExtension(getSystemName()));
 		}
 		if (getExt() != null) {
 			if (getExt().isUnknown()) {

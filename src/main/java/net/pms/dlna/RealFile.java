@@ -27,11 +27,11 @@ import java.util.ArrayList;
 
 import net.pms.PMS;
 import net.pms.formats.Format;
+import net.pms.formats.FormatFactory;
 import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +134,7 @@ public class RealFile extends MapFile {
 	@Override
 	protected void checktype() {
 		if (getExt() == null) {
-			setExt(PMS.get().getAssociatedExtension(getFile().getAbsolutePath()));
+			setExt(FormatFactory.getAssociatedExtension(getFile().getAbsolutePath()));
 		}
 
 		super.checktype();
