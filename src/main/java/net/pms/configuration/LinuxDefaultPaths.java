@@ -56,7 +56,7 @@ class LinuxDefaultPaths implements ProgramPaths {
 	 * @return The path for binaries.
 	 */
 	private String getBinariesPath() {
-		String path = PropertiesUtil.getProjectProperties().get("project.binaries");
+		String path = PropertiesUtil.getProjectProperties().get("project.binaries.dir");
 
 		if (path != null && !"".equals(path)) {
 			if (path.endsWith("/")) {
