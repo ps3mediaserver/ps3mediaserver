@@ -28,13 +28,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import net.pms.Messages;
+import net.pms.encoders.Player;
+import net.pms.encoders.PlayerFactory;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
-import net.pms.Messages;
-import net.pms.PMS;
-import net.pms.encoders.Player;
 
 public class TreeNodeSettings extends DefaultMutableTreeNode {
 	private static final long serialVersionUID = -337606760204027449L;
@@ -75,7 +75,7 @@ public class TreeNodeSettings extends DefaultMutableTreeNode {
 
 	public JComponent getConfigPanel() {
 		if (p != null) {
-			if (PMS.get().getPlayers().contains(p)) {
+			if (PlayerFactory.getPlayers().contains(p)) {
 				return p.config();
 			} else {
 				return getWarningPanel();

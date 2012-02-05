@@ -50,6 +50,7 @@ import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
+import net.pms.encoders.PlayerFactory;
 import net.pms.encoders.TSMuxerVideo;
 import net.pms.encoders.VideoLanVideoStreaming;
 import net.pms.external.AdditionalResourceFolderListener;
@@ -503,7 +504,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						int i = 0;
 
 						while (pl == null && i < child.getExt().getProfiles().size()) {
-							pl = PMS.get().getPlayer(child.getExt().getProfiles().get(i), child.getExt());
+							pl = PlayerFactory.getPlayer(child.getExt().getProfiles().get(i), child.getExt());
 							i++;
 						}
 
@@ -512,7 +513,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						String name = getName();
 
 						for (Class<? extends Player> clazz : child.getExt().getProfiles()) {
-							for (Player p : PMS.get().getPlayers()) {
+							for (Player p : PlayerFactory.getPlayers()) {
 								if (p.getClass().equals(clazz)) {
 									String end = "[" + p.id() + "]";
 
@@ -604,7 +605,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					child.second = newChild;
 
 					if (!newChild.getExt().isCompatible(newChild.getMedia(),getDefaultRenderer()) && newChild.getExt().getProfiles().size() > 0) {
-						newChild.setPlayer(PMS.get().getPlayer(newChild.getExt().getProfiles().get(0), newChild.getExt()));
+						newChild.setPlayer(PlayerFactory.getPlayer(newChild.getExt().getProfiles().get(0), newChild.getExt()));
 					}
 					if (child.getMedia() != null && child.getMedia().isSecondaryFormatValid()) {
 						addChild(newChild);

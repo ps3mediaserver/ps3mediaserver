@@ -24,8 +24,8 @@ import java.awt.Font;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import net.pms.PMS;
 import net.pms.encoders.Player;
+import net.pms.encoders.PlayerFactory;
 
 public class TreeRenderer extends DefaultTreeCellRenderer {
 	private static final long serialVersionUID = 8830634234336247114L;
@@ -53,7 +53,7 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
 			} else {
 				if (((TreeNodeSettings) value).isEnable()) {
 					Player p = ((TreeNodeSettings) value).getPlayer();
-					if (PMS.get().getPlayers().contains(p)) {
+					if (PlayerFactory.getPlayers().contains(p)) {
 						setIcon(LooksFrame.readImageIcon("icon_tree_node-16.png"));
 					} else {
 						setIcon(LooksFrame.readImageIcon("messagebox_warning-16.png"));
