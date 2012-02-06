@@ -2,8 +2,8 @@
 #
 # build-pms-osx.sh
 #
-# Version: 2.0.8
-# Last updated: 2012-01-25
+# Version: 2.1.0
+# Last updated: 2012-02-06
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -131,7 +131,7 @@ VERSION_GIFLIB=4.1.6
 VERSION_ICONV=1.13.1
 VERSION_JPEG=8c
 VERSION_LAME=3.99.3
-VERSION_LIBBLURAY=2011-12-02
+VERSION_LIBBLURAY=0.2.1
 VERSION_LIBDCA=0.0.5
 VERSION_LIBDV=1.0.0
 VERSION_LIBMAD=0.15.1b
@@ -146,8 +146,7 @@ VERSION_MPLAYER=34587
 VERSION_NCURSES=5.9
 VERSION_PS3MEDIASERVER=2011-12-11
 VERSION_TSMUXER=1.10.6
-# Translation table for SVN revision numbers: http://x264.nl/x264/changelog.txt
-VERSION_X264=bcd41dbcaa4430b2118d9f6828c2b9635cf9d58d
+VERSION_X264=r2146
 VERSION_XVID=1.3.1
 VERSION_ZLIB=1.2.5
 
@@ -282,7 +281,7 @@ You can install Git with following command on Debian based systems (Debian, Ubun
 
     sudo apt-get install git
 
-Or (for older systems):
+Or (for older systems like Ubuntu 10.04 LTS):
 
     sudo apt-get install git-core
 
@@ -349,7 +348,17 @@ You can install strip with following command on Debian based systems (Debian, Ub
 
 EOM
             exit;;
-        
+
+        pkg-config)
+            cat >&2 << EOM
+It seems you are missing "pkg-config", which is required to run this script.
+You can install strip with following command on Debian based systems (Debian, Ubuntu, etc):
+
+    sudo apt-get install pkg-config
+
+EOM
+            exit;;
+
         yasm)
             if is_osx; then
                 cat >&2 << EOM
@@ -417,6 +426,7 @@ else
     AUTOMAKE=`check_binary automake`
     AUTOCONF=`check_binary autoconf`
     STRIP=`check_binary strip`
+    PKG_CONFIG=`check_binary pkg-config`
 fi
 
 
@@ -470,7 +480,7 @@ exit_on_error() {
     if [ "$?" != "0" ]; then
         echo Fatal error occurred, aborting build.
         cd $WORKDIR
-        exit
+        exit 1
     fi
 }
 
@@ -482,8 +492,8 @@ initialize() {
     WORKDIR=`pwd`
 
     # Directories for statically compiled libraries
-    TARGET="$WORKDIR/target"
-    SRC="$WORKDIR/src"
+    TARGET="$WORKDIR/target/bin-tools/target"
+    SRC="$WORKDIR/target/bin-tools/src"
     createdir "$SRC"
     createdir "$TARGET"
     
@@ -1367,7 +1377,7 @@ build_mplayer() {
         # See https://svn.macports.org/ticket/30279
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../mplayer-r34587-SB22.patch
+        patch -p0 < ./../../../contrib/mplayer-r34587-SB22.patch
         exit_on_error
 
         # Theora and vorbis support seems broken in this revision, disable it for now
@@ -1389,11 +1399,11 @@ build_mplayer() {
         $SVN revert libao2/*
         $SVN revert libvo/*
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../mplayer-r34587-SB22.patch
+        patch -p0 < ./../../../contrib/mplayer-r34587-SB22.patch
         exit_on_error
 
         # mplayer configure patch for r34587-SB22
-        patch -p0 < ./../../mplayer-r34587-configure.patch
+        patch -p0 < ./../../../contrib/mplayer-r34587-configure.patch
         exit_on_error
 
         # libvorbis support seems broken in this revision, disable it for now
@@ -1584,12 +1594,12 @@ build_x264() {
 
     set_flags
 
-    # There is a strange cyclic dependency here; FFmpeg uses x264 and
-    # x264 used libav* from FFmpeg. Delete pre-existing libraries for
-    # consistent builds; x264 can be built without them.
-    rm -f $TARGET/lib/libav*
-
     if is_osx; then
+      # There is a strange cyclic dependency here; FFmpeg uses x264 and
+      # x264 used libav* from FFmpeg. Delete pre-existing libraries for
+      # consistent builds; x264 can be built without them.
+      rm -f $TARGET/lib/libav*
+
       if [ "$ARCHITECTURE" == "i386" ]; then
        ./configure --prefix=$TARGET --host=i386-apple-darwin10 --disable-asm
       else
@@ -1728,7 +1738,9 @@ build_x264
 build_xvid
 
 # Build tools for including with PS3 Media Server
-build_flac
+if is_osx; then
+    build_flac
+fi
 build_dcraw
 if is_osx; then
     build_tsMuxeR
