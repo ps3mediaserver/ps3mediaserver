@@ -5,6 +5,9 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -61,7 +64,7 @@ public class FileDisplayTable extends JPanel {
 	private ETable table;
 	private JPopupMenu columnSelectorMenu;
 	
-	private JPopupMenu fileEditMenu;
+	private JPopupMenu fileEditMenu = new JPopupMenu();
 	
 	private boolean isUpdating = false;
 	private boolean isColumnDragging = false;
@@ -89,6 +92,24 @@ public class FileDisplayTable extends JPanel {
 	}
 
 	private void init() {
+		initTable();
+		
+		updateTableModel();
+		
+		//configure the context menu for column selection
+		columnSelectorMenu = new JPopupMenu();
+		columnSelectorMenu.setLayout(new SpringLayout());
+		refreshColumnSelectorMenu();
+		
+		//configure the context menu for file edition
+		refreshFileEditMenu(); 
+		
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setPreferredSize(table.getPreferredSize());
+		add(scrollPane);
+	}
+	
+	private void initTable() {
 		//configure the table
 		table = new ETable();
 		//align all the cells to the left and format the date according to available space
@@ -185,12 +206,47 @@ public class FileDisplayTable extends JPanel {
 					if(doSelect) {
 						table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);						
 					}
+					
+					refreshFileEditMenu();
 
 					//show the context menu
 					fileEditMenu.show(table, e.getX(), e.getY());
 
 					//make it look a bit nicer
 					table.requestFocus();
+				}
+			}
+		});
+		
+		//listen for key events
+		table.addKeyListener(new KeyAdapter() {
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.isControlDown()) {
+					switch(e.getKeyCode()) {
+					case KeyEvent.VK_ADD:
+						List<DOFileInfo> updatedFiles = new ArrayList<DOFileInfo>();
+						for(DOFileInfo fileInfo : getSelectedFiles()) {
+								fileInfo.setPlayCount(fileInfo.getPlayCount() + 1);
+								updatedFiles.add(fileInfo);
+						}
+						updateFiles(updatedFiles);
+						break;
+					case KeyEvent.VK_SUBTRACT:
+						updatedFiles = new ArrayList<DOFileInfo>();
+						for(DOFileInfo fileInfo : getSelectedFiles()) {
+							if(fileInfo.getPlayCount() > 0) {
+								fileInfo.setPlayCount(fileInfo.getPlayCount() - 1);
+								updatedFiles.add(fileInfo);
+							}
+						}
+						updateFiles(updatedFiles);
+						break;
+					case KeyEvent.VK_E:
+						editSelectedFiles();
+						break;
+					}
 				}
 			}
 		});
@@ -292,82 +348,99 @@ public class FileDisplayTable extends JPanel {
 		table.getDefaultEditor(String.class).addCellEditorListener(cellEditorListener);
 		table.getDefaultEditor(Integer.class).addCellEditorListener(cellEditorListener);
 		table.getDefaultEditor(Boolean.class).addCellEditorListener(cellEditorListener);
-		
-		updateTableModel();
-		
-		//configure the context menu for column selection
-		columnSelectorMenu = new JPopupMenu();
-		columnSelectorMenu.setLayout(new SpringLayout());
-		refreshColumnSelectorMenu();
-		
-		//configure the context menu for file edition
-		initFileEditMenu(); 
-		
-		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setPreferredSize(table.getPreferredSize());
-		add(scrollPane);
 	}
-	
-	private void initFileEditMenu() {
+
+	private void updateFiles(List<DOFileInfo> updatedFiles) {
+		for(DOFileInfo fileInfo : getSelectedFiles()) {
+			MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
+		}				
+		table.validate();
+		table.repaint();
+	}
+
+	private void refreshFileEditMenu() {
 		String iconsFolder = "/resources/images/";
 		
-		fileEditMenu = new JPopupMenu();
+		fileEditMenu.removeAll();
 		
+		//mark as played
+		JMenuItem markePlayedMenuItem = new JMenuItem(Messages.getString("ML.ContextMenu.MARKPLAYED"));
+		markePlayedMenuItem.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "mark_played-16.png")));
+		markePlayedMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				List<DOFileInfo> updatedFiles = new ArrayList<DOFileInfo>();
+				for(DOFileInfo fileInfo : getSelectedFiles()) {
+					if(fileInfo.getPlayCount() == 0) {
+						fileInfo.setPlayCount(1);
+						updatedFiles.add(fileInfo);
+					}
+				}
+				updateFiles(updatedFiles);
+			}		
+		});
+		fileEditMenu.add(markePlayedMenuItem);
+		
+		//edit
 		JMenuItem editMenuItem = new JMenuItem(Messages.getString("ML.ContextMenu.EDIT"));
 		editMenuItem.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "edit-16.png")));
 		editMenuItem.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {				
-				//create the edit dialog
-				if(table.getSelectionModel().getMinSelectionIndex() == table.getSelectionModel().getMaxSelectionIndex()) {
-					@SuppressWarnings("unchecked")
-					FileEditLinkedList fel = new FileEditLinkedList() {
-						AbstractTableAdapter<DOFileInfo> tm = (AbstractTableAdapter<DOFileInfo>) table.getModel();
-						
-						@Override
-						public boolean hasPreviousFile() {
-							return table.getSelectionModel().getLeadSelectionIndex() > 0;
-						}
-						
-						@Override
-						public boolean hasNextFile() {
-							return table.getSelectionModel().getLeadSelectionIndex() + 1 < tm.getRowCount();
-						}
-						
-						@Override
-						public DOFileInfo getSelected() {
-							return tm.getRow(table.convertRowIndexToModel(table.getSelectionModel().getLeadSelectionIndex()));
-						}
-						
-						@Override
-						public DOFileInfo selectPreviousFile() {
-							int rowNumber = table.getSelectionModel().getLeadSelectionIndex() - 1;
-							table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);
-							table.scrollRectToVisible(new Rectangle(table.getCellRect(rowNumber, 0, true)));
-							return getSelected();
-						}
-						
-						@Override
-						public DOFileInfo selectNextFile() {
-							int rowNumber = table.getSelectionModel().getLeadSelectionIndex() + 1;
-							table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);
-							table.scrollRectToVisible(new Rectangle(table.getCellRect(rowNumber, 0, true)));
-							return getSelected();
-						}
-					};
-					
-					FileEditDialog fed = new FileEditDialog(fel);
-					fed.setModal(true);
-					fed.setSize(new Dimension(745, 450));
-					fed.setLocation(GUIHelper.getCenterDialogOnParentLocation(fed.getSize(), table));
-					fed.setVisible(true);
-				} else {
-					JOptionPane.showMessageDialog(table, "Edition of multiple files isn't available yet");
-				}
+				editSelectedFiles();
 			}
 		});
 		fileEditMenu.add(editMenuItem);
+	}
+
+	private void editSelectedFiles() {
+		if(table.getSelectionModel().getMinSelectionIndex() == table.getSelectionModel().getMaxSelectionIndex()) {
+			@SuppressWarnings("unchecked")
+			FileEditLinkedList fel = new FileEditLinkedList() {
+				AbstractTableAdapter<DOFileInfo> tm = (AbstractTableAdapter<DOFileInfo>) table.getModel();
+				
+				@Override
+				public boolean hasPreviousFile() {
+					return table.getSelectionModel().getLeadSelectionIndex() > 0;
+				}
+				
+				@Override
+				public boolean hasNextFile() {
+					return table.getSelectionModel().getLeadSelectionIndex() + 1 < tm.getRowCount();
+				}
+				
+				@Override
+				public DOFileInfo getSelected() {
+					return tm.getRow(table.convertRowIndexToModel(table.getSelectionModel().getLeadSelectionIndex()));
+				}
+				
+				@Override
+				public DOFileInfo selectPreviousFile() {
+					int rowNumber = table.getSelectionModel().getLeadSelectionIndex() - 1;
+					table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);
+					table.scrollRectToVisible(new Rectangle(table.getCellRect(rowNumber, 0, true)));
+					return getSelected();
+				}
+				
+				@Override
+				public DOFileInfo selectNextFile() {
+					int rowNumber = table.getSelectionModel().getLeadSelectionIndex() + 1;
+					table.getSelectionModel().setSelectionInterval(rowNumber, rowNumber);
+					table.scrollRectToVisible(new Rectangle(table.getCellRect(rowNumber, 0, true)));
+					return getSelected();
+				}
+			};
+			
+			FileEditDialog fed = new FileEditDialog(fel);
+			fed.setModal(true);
+			fed.setSize(new Dimension(745, 450));
+			fed.setLocation(GUIHelper.getCenterDialogOnParentLocation(fed.getSize(), table));
+			fed.setVisible(true);
+		} else {
+			JOptionPane.showMessageDialog(table, "Edition of multiple files isn't available yet");
+		}
 	}
 	
 	private List<DOFileInfo> getSelectedFiles() {
