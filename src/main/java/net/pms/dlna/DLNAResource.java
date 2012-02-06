@@ -1492,16 +1492,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					if (low > 0) {
 						fis.skip(low);
 					}
+					// http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=12035
 					fis = wrap(fis, high, low);
-				}
-
-				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=12035
-				if (high > low && fis != null) {
-					long bytes = (high - (low < 0 ? 0 : low)) + 1;
-
-					LOGGER.trace("Using size-limiting stream (" + bytes + " bytes)");
-					SizeLimitInputStream slis = new SizeLimitInputStream(fis, bytes);
-					return slis;
 				}
 
 				return fis;
@@ -1623,7 +1615,22 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 
-	private static InputStream wrap(InputStream input, long high, long low) {
+	/**
+	 * Wrap an {@link InputStream} in a {@link SizeLimitInputStream} that sets a
+	 * limit to the maximum number of bytes to be read from the original input
+	 * stream. The number of bytes is determined by the high and low value
+	 * (bytes = high - low). If the high value is less than the low value, the
+	 * input stream is not wrapped and returned as is.
+	 * 
+	 * @param input
+	 *            The input stream to wrap.
+	 * @param high
+	 *            The high value.
+	 * @param low
+	 *            The low value.
+	 * @return The resulting input stream.
+	 */
+	private InputStream wrap(InputStream input, long high, long low) {
 		if (input != null && high > low) {
 			long bytes = (high - (low < 0 ? 0 : low)) + 1;
 			LOGGER.debug("Using size-limiting stream (" + bytes + " bytes)");
