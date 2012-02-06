@@ -149,6 +149,7 @@ VERSION_TSMUXER=1.10.6
 VERSION_X264=r2146
 VERSION_XVID=1.3.1
 VERSION_ZLIB=1.2.5
+VERSION_YASM=1.2.0
 
 
 ##########################################
@@ -1696,6 +1697,29 @@ build_zlib() {
 }
 
 
+##########################################
+# YASM
+# http://yasm.tortall.net/
+#
+build_yasm() {
+    start_build yasm
+    cd $SRC
+
+    if [ ! -d yasm-$VERSION_YASM ]; then
+        $TAR xzf yasm-$VERSION_YASM.tar.gz
+        exit_on_error
+    fi
+
+    cd yasm-$VERSION_YASM
+    set_flags
+    ./configure --prefix=$TARGET
+    exit_on_error
+    $MAKE -j$THREADS
+    exit_on_error
+    $MAKE install
+    cd $WORKDIR
+}
+
 
 ##########################################
 # Finally, execute the script...
@@ -1709,6 +1733,7 @@ fi
 initialize
 
 # Build static libraries to link against
+# build_yasm # for systems where YASM version is below 1.0.0
 build_zlib
 build_bzip2
 build_expat
