@@ -71,11 +71,6 @@
 #
 # CONFIGURATION
 #
-# Set FIXED_REVISIONS to "no" to check out the latest revisions.
-# Default is "yes" to check out the last known working revision.
-FIXED_REVISIONS="yes"
-
-
 # Set TARGET_ARCHITECTURE for building binaries. Choose one of the following:
 #
 # OSX:
@@ -95,7 +90,7 @@ FIXED_REVISIONS="yes"
 TARGET_ARCHITECTURE="default"
 
 
-# Set MINIMUM_ARCHITECTURE for building binaries. Valid only for Linux builds.
+# Set optional MINIMUM_ARCHITECTURE for building binaries. Valid only for Linux builds.
 # Resulting binaries will require MINIMUM_ARCHITECTURE to run and have extra optimization for TARGET_ARCHITECTURE.
 #    generic: Produce code optimized for the most common IA32/AMD64/EM64T processors.
 #    native: build for your own computer
@@ -103,7 +98,7 @@ TARGET_ARCHITECTURE="default"
 #    pentium2: Intel Pentium2 CPU based on PentiumPro core with MMX instruction set support.
 #    pentium4: Intel Pentium4 CPU with MMX, SSE and SSE2 instruction set support.   
 #    For a list of other options see: http://gcc.gnu.org/onlinedocs/gcc/i386-and-x86_002d64-Options.html
-MINIMUM_ARCHITECTURE="pentium4"
+MINIMUM_ARCHITECTURE=""
 
 
 # Set the amount of threads that are used for compiling everything. This
@@ -117,7 +112,7 @@ THREADS="2"
 
 
 # binaries deps versions
-. ./binaries-deps-versions
+. contrib/binaries-deps-versions
 
 
 ##########################################
@@ -379,19 +374,16 @@ LIBTOOL=`check_binary libtool`
 MAKE=`check_binary make`
 MVN=`check_binary mvn`
 SED=`check_binary sed`
-SVN=`check_binary svn`
 TAR=`check_binary tar`
 YASM=`check_binary yasm`
 UNZIP=`check_binary unzip`
 
 if is_osx; then
     GCC2=`check_binary gcc-4.2`
-    CURL=`check_binary curl`
     HDID=`check_binary hdid`
     HDIUTIL=`check_binary hdiutil`
 else
     GCC2=$GCC
-    WGET=`check_binary wget`
     AUTOMAKE=`check_binary automake`
     AUTOCONF=`check_binary autoconf`
     STRIP=`check_binary strip`
@@ -428,21 +420,6 @@ createdir() {
 
 
 ##########################################
-# Download a file from a URL
-#
-download() {
-    URL=$1
-    FILENAME=`echo $URL | $SED "s/.*\///g"`
-    
-    if is_osx; then
-        $CURL -L $URL > $FILENAME
-    else
-        $WGET $URL
-    fi
-}
-
-
-##########################################
 # Exit if the previous command ended with an error status
 #
 exit_on_error() {
@@ -462,7 +439,7 @@ initialize() {
 
     # Directories for statically compiled libraries
     TARGET="$WORKDIR/target/bin-tools/target"
-    SRC="$WORKDIR/target/bin-tools/src"
+    SRC="$WORKDIR/target/bin-tools/build"
     createdir "$SRC"
     createdir "$TARGET"
     
@@ -537,9 +514,15 @@ set_flags() {
             LDFLAGS="$LDFLAGS -arch $ARCHITECTURE"
             CXXFLAGS="$CXXFLAGS -arch $ARCHITECTURE"
         else
-            CFLAGS="$CFLAGS -march=$MINIMUM_ARCHITECTURE -mtune=$ARCHITECTURE"
-            CXXFLAGS="$CXXFLAGS -march=$MINIMUM_ARCHITECTURE -mtune=$ARCHITECTURE"
-            LDFLAGS="$LDFLAGS -march=$MINIMUM_ARCHITECTURE -mtune=$ARCHITECTURE"
+            if [ "$MINIMUM_ARCHITECTURE" == "" ]; then
+              CFLAGS="$CFLAGS -mtune=$ARCHITECTURE"
+              CXXFLAGS="$CXXFLAGS -mtune=$ARCHITECTURE"
+              LDFLAGS="$LDFLAGS -mtune=$ARCHITECTURE"
+            else
+              CFLAGS="$CFLAGS -march=$MINIMUM_ARCHITECTURE -mtune=$ARCHITECTURE"
+              CXXFLAGS="$CXXFLAGS -march=$MINIMUM_ARCHITECTURE -mtune=$ARCHITECTURE"
+              LDFLAGS="$LDFLAGS -march=$MINIMUM_ARCHITECTURE -mtune=$ARCHITECTURE"
+            fi
         fi
     fi
 
@@ -581,9 +564,8 @@ build_bzip2() {
     cd $SRC
 
     if [ ! -d bzip2-$VERSION_BZIP2 ]; then
-        download http://bzip.org/$VERSION_BZIP2/bzip2-$VERSION_BZIP2.tar.gz
+        $TAR zxf ./../src/bzip2-$VERSION_BZIP2.tar.gz
         exit_on_error
-        $TAR xzf bzip2-$VERSION_BZIP2.tar.gz
     fi
 
     cd bzip2-$VERSION_BZIP2
@@ -611,9 +593,8 @@ build_dcraw() {
     cd $SRC
 
     if [ ! -d dcraw-$VERSION_DCRAW ]; then
-        download http://www.cybercom.net/~dcoffin/dcraw/archive/dcraw-$VERSION_DCRAW.tar.gz
+        $TAR zxf ./../src/dcraw-$VERSION_DCRAW.tar.gz
         exit_on_error
-        $TAR xzf dcraw-$VERSION_DCRAW.tar.gz
         mv ./dcraw ./dcraw-$VERSION_DCRAW
     fi
 
@@ -640,9 +621,8 @@ build_enca() {
     cd $SRC
 
     if [ ! -d enca-$VERSION_ENCA ]; then
-        download http://dl.cihar.com/enca/enca-$VERSION_ENCA.tar.gz
+        $TAR zxf ./../src/enca-$VERSION_ENCA.tar.gz
         exit_on_error
-        $TAR xzf enca-$VERSION_ENCA.tar.gz
     fi
 
     cd enca-$VERSION_ENCA
@@ -665,9 +645,8 @@ build_expat() {
     cd $SRC
 
     if [ ! -d expat-$VERSION_EXPAT ]; then
-        download http://downloads.sourceforge.net/project/expat/expat/$VERSION_EXPAT/expat-$VERSION_EXPAT.tar.gz
+        $TAR zxf ./../src/expat-$VERSION_EXPAT.tar.gz
         exit_on_error
-        $TAR xzf expat-$VERSION_EXPAT.tar.gz
     fi
 
     cd expat-$VERSION_EXPAT
@@ -689,9 +668,8 @@ build_faad2() {
     cd $SRC
 
     if [ ! -d faad2-$VERSION_FAAD2 ]; then
-        download http://downloads.sourceforge.net/project/faac/faad2-src/faad2-$VERSION_FAAD2/faad2-$VERSION_FAAD2.tar.gz
+        $TAR zxf ./../src/faad2-$VERSION_FAAD2.tar.gz
         exit_on_error
-        $TAR xzf faad2-$VERSION_FAAD2.tar.gz
     fi
 
     cd faad2-$VERSION_FAAD2
@@ -712,26 +690,12 @@ build_ffmpeg() {
     start_build ffmpeg
     cd $SRC
     
-    if [ -d ffmpeg ]; then
-        cd ffmpeg
-        $GIT pull git://git.videolan.org/ffmpeg.git
-        exit_on_error
-    else
-        $GIT clone git://git.videolan.org/ffmpeg.git ffmpeg
-        exit_on_error
-        cd ffmpeg
-    fi
-
-    if [ "$FIXED_REVISIONS" == "yes" ]; then
-        $GIT checkout tags/$VERSION_FFMPEG
-        exit_on_error
-    fi
+    cp -a ./../src/ffmpeg ./
+    exit_on_error
+    cd ffmpeg
+    exit_on_error
 
     if is_osx; then
-        # Fix path to git in "version.sh" to avoid version "UNKNOWN"
-        GIT_STR=`echo $GIT | $SED -e "s/\//\\\\\\\\\\\//g"`
-        $SED -i -e "s/ git / $GIT_STR /g" version.sh
-
         set_flags
 
         # VDA disabled for mplayer, also disabled here to avoid build errors
@@ -771,9 +735,8 @@ build_flac() {
     cd $SRC
 
     if [ ! -d flac-$VERSION_FLAC ]; then
-        download http://downloads.xiph.org/releases/flac/flac-$VERSION_FLAC.tar.gz
+        $TAR zxf ./../src/flac-$VERSION_FLAC.tar.gz
         exit_on_error
-        $TAR xzf flac-$VERSION_FLAC.tar.gz
     fi
 
     cd flac-$VERSION_FLAC
@@ -816,9 +779,8 @@ build_fontconfig() {
     cd $SRC
 
     if [ ! -d fontconfig-$VERSION_FONTCONFIG ]; then
-        download http://www.freedesktop.org/software/fontconfig/release/fontconfig-$VERSION_FONTCONFIG.tar.gz
+        $TAR zxf ./../src/fontconfig-$VERSION_FONTCONFIG.tar.gz
         exit_on_error
-        $TAR xzf fontconfig-$VERSION_FONTCONFIG.tar.gz
     fi
 
     cd fontconfig-$VERSION_FONTCONFIG
@@ -857,9 +819,8 @@ build_freetype() {
     cd $SRC
 
     if [ ! -d freetype-$VERSION_FREETYPE ]; then
-        download http://download.savannah.gnu.org/releases/freetype/freetype-$VERSION_FREETYPE.tar.gz
+        $TAR zxf ./../src/freetype-$VERSION_FREETYPE.tar.gz
         exit_on_error
-        $TAR xzf freetype-$VERSION_FREETYPE.tar.gz
     fi
 
     cd freetype-$VERSION_FREETYPE
@@ -883,9 +844,8 @@ build_fribidi() {
     cd $SRC
 
     if [ ! -d fribidi-$VERSION_FRIBIDI ]; then
-        download http://fribidi.org/download/fribidi-$VERSION_FRIBIDI.tar.gz
+        $TAR zxf ./../src/fribidi-$VERSION_FRIBIDI.tar.gz
         exit_on_error
-        $TAR xzf fribidi-$VERSION_FRIBIDI.tar.gz
     fi
 
     cd fribidi-$VERSION_FRIBIDI
@@ -907,9 +867,8 @@ build_giflib() {
     cd $SRC
 
     if [ ! -d giflib-$VERSION_GIFLIB ]; then
-        download http://downloads.sourceforge.net/project/giflib/giflib%204.x/giflib-$VERSION_GIFLIB/giflib-$VERSION_GIFLIB.tar.bz2
+        $TAR xjf ./../src/giflib-$VERSION_GIFLIB.tar.bz2
         exit_on_error
-        $TAR xjf giflib-$VERSION_GIFLIB.tar.bz2
     fi
 
     cd giflib-$VERSION_GIFLIB
@@ -931,9 +890,8 @@ build_iconv() {
     cd $SRC
 
     if [ ! -d libiconv-$VERSION_ICONV ]; then
-        download http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$VERSION_ICONV.tar.gz
+        $TAR zxf ./../src/libiconv-$VERSION_ICONV.tar.gz
         exit_on_error
-        $TAR xzf libiconv-$VERSION_ICONV.tar.gz
     fi
 
     cd libiconv-$VERSION_ICONV
@@ -955,9 +913,8 @@ build_jpeg() {
     cd $SRC
 
     if [ ! -d jpeg-$VERSION_JPEG ]; then
-        download http://www.ijg.org/files/jpegsrc.v$VERSION_JPEG.tar.gz
+        $TAR zxf ./../src/jpegsrc.v$VERSION_JPEG.tar.gz
         exit_on_error
-        $TAR xzf jpegsrc.v$VERSION_JPEG.tar.gz
     fi
 
     cd jpeg-$VERSION_JPEG
@@ -979,11 +936,8 @@ build_lame() {
     cd $SRC
 
     if [ ! -d lame-$VERSION_LAME ]; then
-        #download http://downloads.sourceforge.net/project/lame/lame/$VERSION_LAME/lame-$VERSION_LAME.tar.gz
-	# Blah! 3.99.2 resides in the directory 3.99. Hardcoding that for now.
-        download http://downloads.sourceforge.net/project/lame/lame/3.99/lame-$VERSION_LAME.tar.gz
+        $TAR zxf ./../src/lame-$VERSION_LAME.tar.gz
         exit_on_error
-        $TAR xzf lame-$VERSION_LAME.tar.gz
     fi
 
     cd lame-$VERSION_LAME
@@ -1004,16 +958,10 @@ build_libbluray() {
     start_build libbluray
     cd $SRC
 
-    rm -rf libbluray
-    $GIT clone git://git.videolan.org/libbluray.git libbluray
+    cp -a ./../src/libbluray ./
     exit_on_error
     cd libbluray
-
-
-    if [ "$FIXED_REVISIONS" == "yes" ]; then
-        $GIT checkout "`$GIT rev-list master -n 1 --first-parent --before=$VERSION_LIBBLURAY`"
-        exit_on_error
-    fi
+    exit_on_error
 
     ./bootstrap
     ./configure --disable-shared --disable-dependency-tracking --prefix=$TARGET
@@ -1033,9 +981,8 @@ build_libdca() {
     cd $SRC
 
     if [ ! -d libdca-$VERSION_LIBDCA ]; then
-        download http://download.videolan.org/pub/videolan/libdca/$VERSION_LIBDCA/libdca-$VERSION_LIBDCA.tar.bz2
+        $TAR xjf ./../src/libdca-$VERSION_LIBDCA.tar.bz2
         exit_on_error
-        $TAR xjf libdca-$VERSION_LIBDCA.tar.bz2
     fi
 
     cd libdca-$VERSION_LIBDCA
@@ -1057,9 +1004,8 @@ build_libdv() {
     cd $SRC
 
     if [ ! -d libdv-$VERSION_LIBDV ]; then
-        download http://downloads.sourceforge.net/project/libdv/libdv/$VERSION_LIBDV/libdv-$VERSION_LIBDV.tar.gz
+        $TAR zxf ./../src/libdv-$VERSION_LIBDV.tar.gz
         exit_on_error
-        $TAR xzf libdv-$VERSION_LIBDV.tar.gz
     fi
 
     cd libdv-$VERSION_LIBDV
@@ -1090,9 +1036,8 @@ build_libmad() {
     cd $SRC
 
     if [ ! -d libmad-$VERSION_LIBMAD ]; then
-        download ftp://ftp.mars.org/pub/mpeg/libmad-$VERSION_LIBMAD.tar.gz
+        $TAR zxf ./../src/libmad-$VERSION_LIBMAD.tar.gz
         exit_on_error
-        $TAR xzf libmad-$VERSION_LIBMAD.tar.gz
     fi
 
     cd libmad-$VERSION_LIBMAD
@@ -1114,12 +1059,12 @@ build_libmediainfo() {
     cd $SRC
 
     if [ ! -d libmediainfo_$VERSION_LIBMEDIAINFO ]; then
-        download http://downloads.sourceforge.net/project/mediainfo/source/libmediainfo/$VERSION_LIBMEDIAINFO/libmediainfo_$VERSION_LIBMEDIAINFO.tar.bz2
-        exit_on_error
         if is_osx; then
-          $TAR xjf libmediainfo_$VERSION_LIBMEDIAINFO.tar.bz2 -s /MediaInfoLib/libmediainfo_$VERSION_LIBMEDIAINFO/
+          $TAR xjf ./../src/libmediainfo_$VERSION_LIBMEDIAINFO.tar.bz2 -s /MediaInfoLib/libmediainfo_$VERSION_LIBMEDIAINFO/
+          exit_on_error
         else
-          $TAR xjf libmediainfo_$VERSION_LIBMEDIAINFO.tar.bz2
+          $TAR xjf ./../src/libmediainfo_$VERSION_LIBMEDIAINFO.tar.bz2
+          exit_on_error
           mv ./MediaInfoLib/ ./libmediainfo_$VERSION_LIBMEDIAINFO
         fi        
     fi
@@ -1148,9 +1093,8 @@ build_libpng() {
     cd $SRC
 
     if [ ! -d libpng-$VERSION_LIBPNG ]; then
-        download http://downloads.sourceforge.net/project/libpng/libpng15/older-releases/$VERSION_LIBPNG/libpng-$VERSION_LIBPNG.tar.gz
+        $TAR zxf ./../src/libpng-$VERSION_LIBPNG.tar.gz
         exit_on_error
-        $TAR xzf libpng-$VERSION_LIBPNG.tar.gz
     fi
 
     cd libpng-$VERSION_LIBPNG
@@ -1172,9 +1116,8 @@ build_libogg() {
     cd $SRC
 
     if [ ! -d libogg-$VERSION_LIBOGG ]; then
-        download http://downloads.xiph.org/releases/ogg/libogg-$VERSION_LIBOGG.tar.gz
+        $TAR zxf ./../src/libogg-$VERSION_LIBOGG.tar.gz
         exit_on_error
-        $TAR xzf libogg-$VERSION_LIBOGG.tar.gz
     fi
 
     cd libogg-$VERSION_LIBOGG
@@ -1196,9 +1139,8 @@ build_libvorbis() {
     cd $SRC
 
     if [ ! -d libvorbis-$VERSION_LIBVORBIS ]; then
-        download http://downloads.xiph.org/releases/vorbis/libvorbis-$VERSION_LIBVORBIS.tar.gz
+        $TAR zxf ./../src/libvorbis-$VERSION_LIBVORBIS.tar.gz
         exit_on_error
-        $TAR xzf libvorbis-$VERSION_LIBVORBIS.tar.gz
     fi
 
     cd libvorbis-$VERSION_LIBVORBIS
@@ -1220,9 +1162,8 @@ build_libtheora() {
     cd $SRC
 
     if [ ! -d libtheora-$VERSION_LIBTHEORA ]; then
-        download http://downloads.xiph.org/releases/theora/libtheora-$VERSION_LIBTHEORA.tar.bz2
+        $TAR xjf ./../src/libtheora-$VERSION_LIBTHEORA.tar.bz2
         exit_on_error
-        $TAR xjf libtheora-$VERSION_LIBTHEORA.tar.bz2
     fi
 
     cd libtheora-$VERSION_LIBTHEORA
@@ -1245,9 +1186,8 @@ build_libzen() {
     cd $SRC
 
     if [ ! -d libzen_$VERSION_LIBZEN ]; then
-        download http://downloads.sourceforge.net/project/zenlib/ZenLib%20-%20Sources/$VERSION_LIBZEN/libzen_$VERSION_LIBZEN.tar.bz2
+        $TAR xjf ./../src/libzen_$VERSION_LIBZEN.tar.bz2
         exit_on_error
-        $TAR xjf libzen_$VERSION_LIBZEN.tar.bz2
 
         # For consistency and the check above have the same directory name as the .bz2 file available
         ln -s ZenLib libzen_$VERSION_LIBZEN 
@@ -1281,9 +1221,8 @@ build_lzo() {
     cd $SRC
 
     if [ ! -d lzo-$VERSION_LZO ]; then
-        download http://www.oberhumer.com/opensource/lzo/download/lzo-$VERSION_LZO.tar.gz
+        $TAR zxf ./../src/lzo-$VERSION_LZO.tar.gz
         exit_on_error
-        $TAR xzf lzo-$VERSION_LZO.tar.gz
     fi
 
     cd lzo-$VERSION_LZO
@@ -1314,21 +1253,10 @@ build_mplayer() {
     start_build mplayer
     cd $SRC
 
-    if [ "$FIXED_REVISIONS" == "yes" ]; then
-        REVISION="-r $VERSION_MPLAYER"
-    else
-        REVISION=""
-    fi
-
-    if [ -d mplayer ]; then
-        cd mplayer
-        $SVN update $REVISION
-        exit_on_error
-    else
-        $SVN checkout $REVISION svn://svn.mplayerhq.hu/mplayer/trunk mplayer
-        exit_on_error
-        cd mplayer
-    fi
+    cp -a ./../src/mplayer ./
+    exit_on_error
+    cd mplayer
+    exit_on_error
 
     # Copy ffmpeg source to avoid making another git clone by configure
     rm -rf ffmpeg
@@ -1346,7 +1274,7 @@ build_mplayer() {
         # See https://svn.macports.org/ticket/30279
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../../contrib/mplayer-r34587-SB22.patch
+        patch -p0 < ./../../../../contrib/mplayer-r34587-SB22.patch
         exit_on_error
 
         # Theora and vorbis support seems broken in this revision, disable it for now
@@ -1364,15 +1292,12 @@ build_mplayer() {
         export CFLAGS="$CFLAGS -O4 -fomit-frame-pointer -pipe"
         export LDFLAGS="$LDFLAGS -O4 -fomit-frame-pointer -pipe"
 
-        $SVN revert *
-        $SVN revert libao2/*
-        $SVN revert libvo/*
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../../contrib/mplayer-r34587-SB22.patch
+        patch -p0 < ./../../../../contrib/mplayer-r34587-SB22.patch
         exit_on_error
 
         # mplayer configure patch for r34587-SB22
-        patch -p0 < ./../../../contrib/mplayer-r34587-configure.patch
+        patch -p0 < ./../../../../contrib/mplayer-r34587-configure.patch
         exit_on_error
 
         # libvorbis support seems broken in this revision, disable it for now
@@ -1412,9 +1337,8 @@ build_ncurses() {
     cd $SRC
 
     if [ ! -d ncurses-$VERSION_NCURSES ]; then
-        download http://ftp.gnu.org/pub/gnu/ncurses/ncurses-$VERSION_NCURSES.tar.gz
+        $TAR zxf ./../src/ncurses-$VERSION_NCURSES.tar.gz
         exit_on_error
-        $TAR xzf ncurses-$VERSION_NCURSES.tar.gz
     fi
 
     cd ncurses-$VERSION_NCURSES
@@ -1509,8 +1433,6 @@ build_tsMuxeR() {
 
     if is_osx; then
         if [ ! -d tsMuxeR_$VERSION_TSMUXER ]; then
-            $CURL -H "Referer: http://www.videohelp.com/tools/tsMuxeR" -L http://www.videohelp.com/download/tsMuxeR_$VERSION_TSMUXER.dmg > tsMuxeR_$VERSION_TSMUXER.dmg
-            exit_on_error
             createdir tsMuxeR_$VERSION_TSMUXER
         fi
 
@@ -1526,7 +1448,7 @@ build_tsMuxeR() {
             cd tsMuxeR_$VERSION_TSMUXER
             $WGET --referer="http://www.videohelp.com/tools/tsMuxeR" http://www.videohelp.com/download/tsMuxeR_$VERSION_TSMUXER.tar.gz
             exit_on_error
-            $TAR xzf tsMuxeR_$VERSION_TSMUXER.tar.gz
+            $TAR zxf ./../src/tsMuxeR_$VERSION_TSMUXER.tar.gz
             cd ..
         fi
 
@@ -1546,20 +1468,10 @@ build_x264() {
     start_build x264
     cd $SRC
 
-    if [ -d x264 ]; then
-        cd x264
-        $GIT pull git://git.videolan.org/x264.git
-        exit_on_error
-    else
-        $GIT clone git://git.videolan.org/x264.git x264 -b stable
-        exit_on_error
-        cd x264
-    fi
-
-    if [ "$FIXED_REVISIONS" == "yes" ]; then
-        $GIT checkout "`$GIT rev-list stable -n 1 --first-parent --before=$VERSION_X264`"
-        exit_on_error
-    fi
+    cp -a ./../src/x264 ./
+    exit_on_error
+    cd x264
+    exit_on_error
 
     set_flags
 
@@ -1595,9 +1507,8 @@ build_xvid() {
     cd $SRC
 
     if [ ! -d xvidcore-$VERSION_XVID ]; then
-        download http://downloads.xvid.org/downloads/xvidcore-$VERSION_XVID.tar.gz
+        $TAR zxf ./../src/xvidcore-$VERSION_XVID.tar.gz
         exit_on_error
-        $TAR xzf xvidcore-$VERSION_XVID.tar.gz
         mv xvidcore xvidcore-$VERSION_XVID
     fi
 
@@ -1638,9 +1549,8 @@ build_zlib() {
     cd $SRC
 
     if [ ! -d zlib-$VERSION_ZLIB ]; then
-        download http://zlib.net/zlib-$VERSION_ZLIB.tar.gz
+        $TAR xzf ./../src/zlib-$VERSION_ZLIB.tar.gz
         exit_on_error
-        $TAR xzf zlib-$VERSION_ZLIB.tar.gz
     fi
 
     cd zlib-$VERSION_ZLIB
@@ -1674,7 +1584,7 @@ build_yasm() {
     cd $SRC
 
     if [ ! -d yasm-$VERSION_YASM ]; then
-        $TAR xzf yasm-$VERSION_YASM.tar.gz
+        $TAR zxf ./../src/yasm-$VERSION_YASM.tar.gz
         exit_on_error
     fi
 
@@ -1743,4 +1653,4 @@ build_ffmpeg
 build_mplayer
 
 # Build PS3 Media Server itself
-build_ps3mediaserver
+# build_ps3mediaserver
