@@ -719,6 +719,34 @@ download_yasm() {
 
 
 ##########################################
+# PS3MEDIASERVER
+# https://github.com/ps3mediaserver/ps3mediaserver
+#
+download_ps3mediaserver() {
+    start_download ps3mediaserver
+    cd $SRC
+
+    if [ -d ps3mediaserver ]; then
+        rm -rf ps3mediaserver
+    fi
+    $GIT clone git://github.com/ps3mediaserver/ps3mediaserver.git ps3mediaserver
+    exit_on_error
+    cd ps3mediaserver
+
+    if [ "$FIXED_REVISIONS" == "yes" ]; then
+        $GIT checkout $VERSION_PS3MEDIASERVER
+        exit_on_error
+    fi
+
+    # let's clean the source
+    rm -rf ./.git
+    rm -rf ./src/main/external-resources/third-party/nsis/ ./src/main/external-resources/nsis/
+    find . -depth -type f -name "*.dll" -exec rm -f '{}' \;
+    find . -type f \( -name "*-sources.jar" -o -name "*-javadoc.jar" -o -name "*-sources.zip" -o -name "*-javadoc.zip" -o -name "*-docs.zip" \) -exec rm -vf '{}' \;
+}
+
+
+##########################################
 # Finally, execute the script...
 #
 
@@ -762,3 +790,4 @@ fi
 download_enca
 download_ffmpeg
 download_mplayer
+download_ps3mediaserver
