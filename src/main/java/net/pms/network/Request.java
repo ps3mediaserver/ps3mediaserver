@@ -193,14 +193,14 @@ public class Request extends HTTPResource {
 
 				if (fileName.startsWith("thumbnail0000")) {
 					// This is a request for a thumbnail file.
-					output(output, "Content-Type: " + files.get(0).getThumbnailContentType());
+					output(output, "Content-Type: " + dlna.getThumbnailContentType());
 					output(output, "Accept-Ranges: bytes");
 					output(output, "Expires: " + getFUTUREDATE() + " GMT");
 					output(output, "Connection: keep-alive");
 					if (mediaRenderer.isMediaParserV2()) {
-						files.get(0).checkThumbnail();
+						dlna.checkThumbnail();
 					}
-					inputStream = files.get(0).getThumbnailInputStream();
+					inputStream = dlna.getThumbnailInputStream();
 				} else if (fileName.indexOf("subtitle0000") > -1) {
 					// This is a request for a subtitle file
 					output(output, "Content-Type: text/plain");
