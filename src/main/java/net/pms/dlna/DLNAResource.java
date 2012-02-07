@@ -1633,7 +1633,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private InputStream wrap(InputStream input, long high, long low) {
 		if (input != null && high > low) {
 			long bytes = (high - (low < 0 ? 0 : low)) + 1;
-			LOGGER.debug("Using size-limiting stream (" + bytes + " bytes)");
+			LOGGER.trace("Using size-limiting stream (" + bytes + " bytes)");
 			return new SizeLimitInputStream(input, bytes);
 		}
 		return input;
