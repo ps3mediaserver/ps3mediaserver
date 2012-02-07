@@ -230,29 +230,6 @@ EOM
             fi
             exit;;
 
-        git)
-            if is_osx; then
-                cat >&2 << EOM
-It seems you are missing "git", which is required to run this script.
-Please go to http://code.google.com/p/git-osx-installer/, download git
-and install it.
-
-EOM
-            else
-                cat >&2 << EOM
-It seems you are missing "git", which is required to run this script.
-You can install Git with following command on Debian based systems (Debian, Ubuntu, etc):
-
-    sudo apt-get install git
-
-Or (for older systems like Ubuntu 10.04 LTS):
-
-    sudo apt-get install git-core
-
-EOM
-            fi
-            exit;;
-
         javac)
             if is_osx; then
                 cat >&2 << EOM
@@ -271,36 +248,6 @@ You can install Sun JDK with following command on Debian based systems (Debian, 
 
 EOM
             fi
-            exit;;
-
-        svn)
-            if is_osx; then
-                cat >&2 << EOM
-It seems you are missing Xcode from Apple ("svn"), which is required to run this script.
-
-Please go to http://developer.apple.com/technologies/xcode.html, create a free
-Apple developer account and download Xcode and install it.
-
-EOM
-            else
-                cat >&2 << EOM
-It seems you are missing "svn", which is required to run this script.
-You can install Subversion with following command on Debian based systems (Debian, Ubuntu, etc):
-
-    sudo apt-get install subversion
-
-EOM
-            fi
-            exit;;
-        
-        wget)
-            cat >&2 << EOM
-It seems you are missing "wget", which is required to run this script.
-You can install Wget with following command on Debian based systems (Debian, Ubuntu, etc):
-
-    sudo apt-get install wget
-
-EOM
             exit;;
 
         strip)
@@ -367,7 +314,6 @@ EOM
 # Binaries
 ANT=`check_binary ant`
 GCC=`check_binary gcc`
-GIT=`check_binary git`
 GPP=`check_binary g++`
 JAVAC=`check_binary javac`
 LIBTOOL=`check_binary libtool`
@@ -1359,31 +1305,22 @@ build_ps3mediaserver() {
     start_build ps3mediaserver
     cd $SRC
 
-    rm -rf ps3mediaserver
-    $GIT clone git://github.com/ps3mediaserver/ps3mediaserver.git ps3mediaserver
+    cp -a ./../src/ps3mediaserver ./
     exit_on_error
     cd ps3mediaserver
-
-    if [ "$FIXED_REVISIONS" == "yes" ]; then
-        $GIT checkout "`$GIT rev-list master -n 1 --first-parent --before=$VERSION_PS3MEDIASERVER`"
-        exit_on_error
-    fi
-
-    mkdir $SRC/target
-    mkdir $SRC/target/bin
+    exit_on_error
 
     if is_osx; then
         # OSX
-
-        mkdir $SRC/target/bin/osx
+        mkdir -p ./target/bin/osx
 
         # Overwrite with the home built tools
-        cp $TARGET/bin/dcraw $SRC/target/bin/osx
-        cp $TARGET/bin/ffmpeg $SRC/target/bin/osx
-        cp $TARGET/bin/flac $SRC/target/bin/osx
-        cp $TARGET/bin/mplayer $SRC/target/bin/osx
-        cp $TARGET/bin/mencoder $SRC/target/bin/osx
-        cp $TARGET/bin/tsMuxeR $SRC/target/bin/osx
+        cp $TARGET/bin/dcraw ./target/bin/osx
+        cp $TARGET/bin/ffmpeg ./target/bin/osx
+        cp $TARGET/bin/flac ./target/bin/osx
+        cp $TARGET/bin/mplayer ./target/bin/osx
+        cp $TARGET/bin/mencoder ./target/bin/osx
+        cp $TARGET/bin/tsMuxeR ./target/bin/osx
 
         $MVN package
         exit_on_error
@@ -1395,19 +1332,17 @@ build_ps3mediaserver() {
         cp $PMS_FILENAME_NEW $WORKDIR
     else
         # Linux
-
-        mkdir $SRC/target/bin/linux
+        mkdir -p ./target/bin/linux
 
         # Overwrite with the home built tools
-        cp $TARGET/bin/dcraw $SRC/target/bin/linux
-        cp $TARGET/bin/ffmpeg $SRC/target/bin/linux
-        cp $TARGET/bin/flac $SRC/target/bin/linux
-        cp $TARGET/bin/mplayer $SRC/target/bin/linux
-        cp $TARGET/bin/mencoder $SRC/target/bin/linux
-        cp $TARGET/lib/libmediainfo.so.0.0.0 $SRC/target/bin/libmediainfo.so
-        $STRIP --strip-unneeded $SRC/target/bin/libmediainfo.so
-        # tsMuxeR is already included
-        #cp $TARGET/bin/tsMuxeR .
+        cp $TARGET/bin/dcraw ./target/bin/linux
+        cp $TARGET/bin/ffmpeg ./target/bin/linux
+        #cp $TARGET/bin/flac ./target/bin/linux
+        cp $TARGET/bin/mplayer ./target/bin/linux
+        cp $TARGET/bin/mencoder ./target/bin/linux
+        cp $TARGET/bin/tsMuxeR ./target/bin/linux
+        cp $TARGET/lib/libmediainfo.so.0.0.0 ./target/bin/linux/libmediainfo.so
+        $STRIP --strip-unneeded ./target/bin/linux/libmediainfo.so
 
         $MVN package
         exit_on_error
@@ -1427,35 +1362,30 @@ build_ps3mediaserver() {
 # http://www.videohelp.com/tools/tsMuxeR
 # Interesting Open Source followup project in development: https://github.com/kierank/libmpegts
 #
-build_tsMuxeR() {
-    start_build tsMuxeR
+build_tsmuxer() {
+    start_build tsmuxer
     cd $SRC
 
     if is_osx; then
         if [ ! -d tsMuxeR_$VERSION_TSMUXER ]; then
             createdir tsMuxeR_$VERSION_TSMUXER
+            # Nothing to build. Just open the disk image, copy the binary and detach the disk image
+            $HDID ./../src/tsMuxeR_$VERSION_TSMUXER.dmg
+            exit_on_error
+            cp -f /Volumes/tsMuxeR/tsMuxerGUI.app/Contents/MacOS/tsMuxeR tsMuxeR_$VERSION_TSMUXER/tsMuxeR
+            $HDIUTIL detach /Volumes/tsMuxeR
         fi
-
-        # Nothing to build. Just open the disk image, copy the binary and detach the disk image
-        $HDID tsMuxeR_$VERSION_TSMUXER.dmg
-        exit_on_error
-        cp -f /Volumes/tsMuxeR/tsMuxerGUI.app/Contents/MacOS/tsMuxeR tsMuxeR_$VERSION_TSMUXER/tsMuxeR
-        cp -f tsMuxeR_$VERSION_TSMUXER/tsMuxeR $TARGET/bin
-        $HDIUTIL detach /Volumes/tsMuxeR
     else
         if [ ! -d tsMuxeR_$VERSION_TSMUXER ]; then
             createdir tsMuxeR_$VERSION_TSMUXER
             cd tsMuxeR_$VERSION_TSMUXER
-            $WGET --referer="http://www.videohelp.com/tools/tsMuxeR" http://www.videohelp.com/download/tsMuxeR_$VERSION_TSMUXER.tar.gz
+            $TAR xzf ./../../src/tsMuxeR_$VERSION_TSMUXER.tar.gz
             exit_on_error
-            $TAR zxf ./../src/tsMuxeR_$VERSION_TSMUXER.tar.gz
             cd ..
         fi
-
-        # Nothing to build. Just copy the binary
-        cp -f tsMuxeR_$VERSION_TSMUXER/tsMuxeR $TARGET/bin
     fi
 
+    cp -f tsMuxeR_$VERSION_TSMUXER/tsMuxeR $TARGET/bin
     cd $WORKDIR
 }
 
@@ -1645,9 +1575,7 @@ if is_osx; then
     build_flac
 fi
 build_dcraw
-if is_osx; then
-    build_tsMuxeR
-fi
+build_tsmuxer
 build_enca
 build_ffmpeg
 build_mplayer

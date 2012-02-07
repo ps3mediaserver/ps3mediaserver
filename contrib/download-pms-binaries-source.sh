@@ -719,6 +719,30 @@ download_yasm() {
 
 
 ##########################################
+# TSMUXER
+# http://www.smlabs.net/en/products/tsmuxer/
+# http://www.videohelp.com/tools/tsMuxeR
+# Interesting Open Source followup project in development: https://github.com/kierank/libmpegts
+#
+download_tsmuxer() {
+    start_download tsmuxer
+    cd $SRC
+
+    if is_osx; then
+        if [ ! -f tsMuxeR-$VERSION_TSMUXER.dmg ]; then
+            $CURL --referer "http://www.videohelp.com/tools/tsMuxeR" -L http://www.videohelp.com/download/tsMuxeR__$VERSION_TSMUXER.dmg > tsMuxeR__$VERSION_TSMUXER.dmg
+            exit_on_error
+        fi
+    else
+        if [ ! -f tsMuxeR-$VERSION_TSMUXER.tar.gz ]; then
+            $WGET --referer="http://www.videohelp.com/tools/tsMuxeR" http://www.videohelp.com/download/tsMuxeR_$VERSION_TSMUXER.tar.gz
+            exit_on_error
+        fi
+    fi
+}
+
+
+##########################################
 # PS3MEDIASERVER
 # https://github.com/ps3mediaserver/ps3mediaserver
 #
@@ -790,4 +814,5 @@ fi
 download_enca
 download_ffmpeg
 download_mplayer
+download_tsmuxer
 download_ps3mediaserver
