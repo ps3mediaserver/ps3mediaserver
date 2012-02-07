@@ -141,7 +141,7 @@ public class AviDemuxerInputStream extends InputStream {
 					realIS = tsPipe.getInputStream();
 					ProcessUtil.waitFor(process);
 					logger.trace("tsMuxeR muxing finished");
-				} catch (Exception e) {
+				} catch (IOException e) {
 					logger.error(null, e);
 				}
 			}
