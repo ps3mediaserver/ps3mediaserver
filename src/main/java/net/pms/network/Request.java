@@ -220,6 +220,7 @@ public class Request extends HTTPResource {
 						// No inputStream indicates that transcoding / remuxing probably crashed.
 						logger.error("There is no inputstream to return for " + name);
 					} else {
+						startStopListenerDelegate.start(dlna);
 						output(output, "Content-Type: " + getRendererMimeType(dlna.mimeType(), mediaRenderer));
 
 						// Some renderers (like Samsung devices) allow a custom header for a subtitle URL
