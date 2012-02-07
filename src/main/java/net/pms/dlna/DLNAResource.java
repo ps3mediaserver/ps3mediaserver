@@ -1357,9 +1357,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				Runnable r = new Runnable() {
 					@Override
 					public void run() {
-						LOGGER.trace("StartStopListener: event:    start");
-						LOGGER.trace("StartStopListener: renderer: " + rendererId);
-						LOGGER.trace("StartStopListener: file:     " + getSystemName());
+						LOGGER.info("renderer: " + rendererId);
+						LOGGER.info("file: " + getSystemName());
 
 						for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 							if (listener instanceof StartStopListener) {
@@ -1370,7 +1369,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 										try {
 											((StartStopListener) listener).nowPlaying(getMedia(), self);
 										} catch (Throwable t) {
-											LOGGER.error(String.format("Failed to notify nowPlaying for StartStopListener of type=%s", listener.getClass()), t);
+											LOGGER.error(String.format("Notification of startPlaying event failed for StartStopListener %s", listener.getClass()), t);
 										}
 									}
 								};
@@ -1412,9 +1411,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						@Override
 						public void run() {
 							if (refCount == 1) {
-								LOGGER.trace("StartStopListener: event:    stop");
-								LOGGER.trace("StartStopListener: renderer: " + rendererId);
-								LOGGER.trace("StartStopListener: file:     " + getSystemName());
+								LOGGER.info("renderer: " + rendererId);
+								LOGGER.info("file: " + getSystemName());
 
 								for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 									if (listener instanceof StartStopListener) {
@@ -1425,7 +1423,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 												try {
 													((StartStopListener) listener).donePlaying(getMedia(), self);
 												} catch (Throwable t) {
-													LOGGER.error(String.format("Failed to notify with type=%s of donePlaying", listener.getClass()), t);
+													LOGGER.error(String.format("Notification of donePlaying event failed for StartStopListener %s", listener.getClass()), t);
 												}
 											}
 										};
@@ -1441,7 +1439,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			}
 		};
 
-		new Thread(defer, "StopPlaying Event Deferer").start();
+		new Thread(defer, "StopPlaying Event Deferrer").start();
 	}
 
 	/**Returns an InputStream of this DLNAResource that starts at a given time, if possible. Very useful if video chapters are being used.
