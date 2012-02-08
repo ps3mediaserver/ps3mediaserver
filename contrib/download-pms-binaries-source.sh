@@ -21,7 +21,7 @@
 FIXED_REVISIONS="yes"
 
 # binaries deps versions
-. contrib/binaries-deps-versions
+. binaries-deps-versions
 
 ##########################################
 # Determine the name of the operating system.
@@ -181,7 +181,7 @@ exit_on_error() {
 #
 initialize() {
     WORKDIR=`pwd`
-    SRC="$WORKDIR/target/bin-tools/src"
+    SRC="$WORKDIR/../target/bin-tools/src"
     createdir "$SRC"
 }
 
@@ -209,8 +209,8 @@ download_bzip2() {
     start_download bzip2
     cd $SRC
 
-    if [ ! -f bzip2-$VERSION_BZIP2.tar.gz ]; then
-        download http://bzip.org/$VERSION_BZIP2/bzip2-$VERSION_BZIP2.tar.gz
+    if [ ! -f bzip2-${VERSION_BZIP2}.tar.gz ]; then
+        download http://bzip.org/${VERSION_BZIP2}/bzip2-${VERSION_BZIP2}.tar.gz
         exit_on_error
     fi
 }
@@ -224,8 +224,8 @@ download_dcraw() {
     start_download dcraw
     cd $SRC
 
-    if [ ! -f dcraw-$VERSION_DCRAW.tar.gz ]; then
-        download http://www.cybercom.net/~dcoffin/dcraw/archive/dcraw-$VERSION_DCRAW.tar.gz
+    if [ ! -f dcraw-${VERSION_DCRAW}.tar.gz ]; then
+        download http://www.cybercom.net/~dcoffin/dcraw/archive/dcraw-${VERSION_DCRAW}.tar.gz
         exit_on_error
     fi
 }
@@ -239,8 +239,8 @@ download_expat() {
     start_download expat
     cd $SRC
 
-    if [ ! -f expat-$VERSION_EXPAT.tar.gz ]; then
-        download http://downloads.sourceforge.net/project/expat/expat/$VERSION_EXPAT/expat-$VERSION_EXPAT.tar.gz
+    if [ ! -f expat-${VERSION_EXPAT}.tar.gz ]; then
+        download http://downloads.sourceforge.net/project/expat/expat/${VERSION_EXPAT}/expat-${VERSION_EXPAT}.tar.gz
         exit_on_error
     fi
 }
@@ -254,8 +254,8 @@ download_faad2() {
     start_download faad2
     cd $SRC
 
-    if [ ! -f faad2-$VERSION_FAAD2.tar.gz ]; then
-        download http://downloads.sourceforge.net/project/faac/faad2-src/faad2-$VERSION_FAAD2/faad2-$VERSION_FAAD2.tar.gz
+    if [ ! -f faad2-${VERSION_FAAD2}.tar.gz ]; then
+        download http://downloads.sourceforge.net/project/faac/faad2-src/faad2-${VERSION_FAAD2}/faad2-${VERSION_FAAD2}.tar.gz
         exit_on_error
     fi
 }
@@ -277,7 +277,7 @@ download_ffmpeg() {
     cd ffmpeg
 
     if [ "$FIXED_REVISIONS" == "yes" ]; then
-        $GIT checkout tags/$VERSION_FFMPEG
+        $GIT checkout tags/${VERSION_FFMPEG}
         exit_on_error
     fi
     rm -rf ./.git
@@ -292,8 +292,8 @@ download_flac() {
     start_download flac
     cd $SRC
 
-    if [ ! -f flac-$VERSION_FLAC.tar.gz ]; then
-        download http://downloads.xiph.org/releases/flac/flac-$VERSION_FLAC.tar.gz
+    if [ ! -f flac-${VERSION_FLAC}.tar.gz ]; then
+        download http://downloads.xiph.org/releases/flac/flac-${VERSION_FLAC}.tar.gz
         exit_on_error
     fi
 }
@@ -307,8 +307,8 @@ download_fontconfig() {
     start_download fontconfig
     cd $SRC
 
-    if [ ! -f fontconfig-$VERSION_FONTCONFIG.tar.gz ]; then
-        download http://www.freedesktop.org/software/fontconfig/release/fontconfig-$VERSION_FONTCONFIG.tar.gz
+    if [ ! -f fontconfig-${VERSION_FONTCONFIG}.tar.gz ]; then
+        download http://www.freedesktop.org/software/fontconfig/release/fontconfig-${VERSION_FONTCONFIG}.tar.gz
         exit_on_error
     fi
 }
@@ -322,8 +322,8 @@ download_freetype() {
     start_download freetype
     cd $SRC
 
-    if [ ! -f freetype-$VERSION_FREETYPE.tar.gz ]; then
-        download http://download.savannah.gnu.org/releases/freetype/freetype-$VERSION_FREETYPE.tar.gz
+    if [ ! -f freetype-${VERSION_FREETYPE}.tar.gz ]; then
+        download http://download.savannah.gnu.org/releases/freetype/freetype-${VERSION_FREETYPE}.tar.gz
         exit_on_error
     fi
 }
@@ -337,8 +337,8 @@ download_fribidi() {
     start_download fribidi
     cd $SRC
 
-    if [ ! -f fribidi-$VERSION_FRIBIDI.tar.gz ]; then
-        download http://fribidi.org/download/fribidi-$VERSION_FRIBIDI.tar.gz
+    if [ ! -f fribidi-${VERSION_FRIBIDI}.tar.gz ]; then
+        download http://fribidi.org/download/fribidi-${VERSION_FRIBIDI}.tar.gz
         exit_on_error
     fi
 }
@@ -352,8 +352,8 @@ download_giflib() {
     start_download giflib
     cd $SRC
 
-    if [ ! -f giflib-$VERSION_GIFLIB.tar.bz2 ]; then
-        download http://downloads.sourceforge.net/project/giflib/giflib%204.x/giflib-$VERSION_GIFLIB/giflib-$VERSION_GIFLIB.tar.bz2
+    if [ ! -f giflib-${VERSION_GIFLIB}.tar.bz2 ]; then
+        download http://downloads.sourceforge.net/project/giflib/giflib%204.x/giflib-${VERSION_GIFLIB}/giflib-${VERSION_GIFLIB}.tar.bz2
         exit_on_error
     fi
 }
@@ -367,8 +367,8 @@ download_iconv() {
     start_download iconv
     cd $SRC
 
-    if [ ! -f libiconv-$VERSION_ICONV.tar.gz ]; then
-        download http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$VERSION_ICONV.tar.gz
+    if [ ! -f libiconv-${VERSION_ICONV}.tar.gz ]; then
+        download http://ftp.gnu.org/pub/gnu/libiconv/libiconv-${VERSION_ICONV}.tar.gz
         exit_on_error
     fi
 }
@@ -382,8 +382,8 @@ download_jpeg() {
     start_download jpeg
     cd $SRC
 
-    if [ ! -f jpegsrc.v$VERSION_JPEG.tar.gz ]; then
-        download http://www.ijg.org/files/jpegsrc.v$VERSION_JPEG.tar.gz
+    if [ ! -f jpegsrc.v${VERSION_JPEG}.tar.gz ]; then
+        download http://www.ijg.org/files/jpegsrc.v${VERSION_JPEG}.tar.gz
         exit_on_error
     fi
 }
@@ -397,10 +397,10 @@ download_lame() {
     start_download lame
     cd $SRC
 
-    if [ ! -f lame-$VERSION_LAME.tar.gz ]; then
-        #download http://downloads.sourceforge.net/project/lame/lame/$VERSION_LAME/lame-$VERSION_LAME.tar.gz
+    if [ ! -f lame-${VERSION_LAME}.tar.gz ]; then
+        #download http://downloads.sourceforge.net/project/lame/lame/${VERSION_LAME}/lame-${VERSION_LAME}.tar.gz
 	# Blah! 3.99.2 resides in the directory 3.99. Hardcoding that for now.
-        download http://downloads.sourceforge.net/project/lame/lame/3.99/lame-$VERSION_LAME.tar.gz
+        download http://downloads.sourceforge.net/project/lame/lame/3.99/lame-${VERSION_LAME}.tar.gz
         exit_on_error
     fi
 }
@@ -422,7 +422,7 @@ download_libbluray() {
     cd libbluray
 
     if [ "$FIXED_REVISIONS" == "yes" ]; then
-        $GIT checkout $VERSION_LIBBLURAY
+        $GIT checkout ${VERSION_LIBBLURAY}
         exit_on_error
     fi
     rm -rf ./.git
@@ -437,8 +437,8 @@ download_libdca() {
     start_download libdca
     cd $SRC
 
-    if [ ! -f libdca-$VERSION_LIBDCA.tar.bz2 ]; then
-        download http://download.videolan.org/pub/videolan/libdca/$VERSION_LIBDCA/libdca-$VERSION_LIBDCA.tar.bz2
+    if [ ! -f libdca-${VERSION_LIBDCA}.tar.bz2 ]; then
+        download http://download.videolan.org/pub/videolan/libdca/${VERSION_LIBDCA}/libdca-${VERSION_LIBDCA}.tar.bz2
         exit_on_error
     fi
 }
@@ -452,8 +452,8 @@ download_libdv() {
     start_download libdv
     cd $SRC
 
-    if [ ! -f libdv-$VERSION_LIBDV.tar.gz ]; then
-        download http://downloads.sourceforge.net/project/libdv/libdv/$VERSION_LIBDV/libdv-$VERSION_LIBDV.tar.gz
+    if [ ! -f libdv-${VERSION_LIBDV}.tar.gz ]; then
+        download http://downloads.sourceforge.net/project/libdv/libdv/${VERSION_LIBDV}/libdv-${VERSION_LIBDV}.tar.gz
         exit_on_error
     fi
 }
@@ -467,8 +467,8 @@ download_libmad() {
     start_download libmad
     cd $SRC
 
-    if [ ! -f libmad-$VERSION_LIBMAD.tar.gz ]; then
-        download ftp://ftp.mars.org/pub/mpeg/libmad-$VERSION_LIBMAD.tar.gz
+    if [ ! -f libmad-${VERSION_LIBMAD}.tar.gz ]; then
+        download ftp://ftp.mars.org/pub/mpeg/libmad-${VERSION_LIBMAD}.tar.gz
         exit_on_error
     fi
 }
@@ -482,8 +482,8 @@ download_libmediainfo() {
     start_download libmediainfo
     cd $SRC
 
-    if [ ! -f libmediainfo_$VERSION_LIBMEDIAINFO.tar.bz2 ]; then
-        download http://downloads.sourceforge.net/project/mediainfo/source/libmediainfo/$VERSION_LIBMEDIAINFO/libmediainfo_$VERSION_LIBMEDIAINFO.tar.bz2
+    if [ ! -f libmediainfo_${VERSION_LIBMEDIAINFO}.tar.bz2 ]; then
+        download http://downloads.sourceforge.net/project/mediainfo/source/libmediainfo/${VERSION_LIBMEDIAINFO}/libmediainfo_${VERSION_LIBMEDIAINFO}.tar.bz2
         exit_on_error
     fi
 }
@@ -497,8 +497,8 @@ download_libpng() {
     start_download libpng
     cd $SRC
 
-    if [ ! -f libpng-$VERSION_LIBPNG.tar.gz ]; then
-        download http://downloads.sourceforge.net/project/libpng/libpng15/older-releases/$VERSION_LIBPNG/libpng-$VERSION_LIBPNG.tar.gz
+    if [ ! -f libpng-${VERSION_LIBPNG}.tar.gz ]; then
+        download http://downloads.sourceforge.net/project/libpng/libpng15/older-releases/${VERSION_LIBPNG}/libpng-${VERSION_LIBPNG}.tar.gz
         exit_on_error
     fi
 }
@@ -512,8 +512,8 @@ download_libogg() {
     start_download libogg
     cd $SRC
 
-    if [ ! -f libogg-$VERSION_LIBOGG.tar.gz ]; then
-        download http://downloads.xiph.org/releases/ogg/libogg-$VERSION_LIBOGG.tar.gz
+    if [ ! -f libogg-${VERSION_LIBOGG}.tar.gz ]; then
+        download http://downloads.xiph.org/releases/ogg/libogg-${VERSION_LIBOGG}.tar.gz
         exit_on_error
     fi
 }
@@ -527,8 +527,8 @@ download_libvorbis() {
     start_download libvorbis
     cd $SRC
 
-    if [ ! -f libvorbis-$VERSION_LIBVORBIS.tar.gz ]; then
-        download http://downloads.xiph.org/releases/vorbis/libvorbis-$VERSION_LIBVORBIS.tar.gz
+    if [ ! -f libvorbis-${VERSION_LIBVORBIS}.tar.gz ]; then
+        download http://downloads.xiph.org/releases/vorbis/libvorbis-${VERSION_LIBVORBIS}.tar.gz
         exit_on_error
     fi
 }
@@ -542,8 +542,8 @@ download_libtheora() {
     start_download libtheora
     cd $SRC
 
-    if [ ! -f libtheora-$VERSION_LIBTHEORA.tar.bz2 ]; then
-        download http://downloads.xiph.org/releases/theora/libtheora-$VERSION_LIBTHEORA.tar.bz2
+    if [ ! -f libtheora-${VERSION_LIBTHEORA}.tar.bz2 ]; then
+        download http://downloads.xiph.org/releases/theora/libtheora-${VERSION_LIBTHEORA}.tar.bz2
         exit_on_error
     fi
 }
@@ -557,8 +557,8 @@ download_libzen() {
     start_download libzen
     cd $SRC
 
-    if [ ! -f libzen_$VERSION_LIBZEN.tar.bz2 ]; then
-        download http://downloads.sourceforge.net/project/zenlib/ZenLib%20-%20Sources/$VERSION_LIBZEN/libzen_$VERSION_LIBZEN.tar.bz2
+    if [ ! -f libzen_${VERSION_LIBZEN}.tar.bz2 ]; then
+        download http://downloads.sourceforge.net/project/zenlib/ZenLib%20-%20Sources/${VERSION_LIBZEN}/libzen_${VERSION_LIBZEN}.tar.bz2
         exit_on_error
     fi
 }
@@ -572,8 +572,8 @@ download_lzo() {
     start_download lzo
     cd $SRC
 
-    if [ ! -f lzo-$VERSION_LZO.tar.gz ]; then
-        download http://www.oberhumer.com/opensource/lzo/download/lzo-$VERSION_LZO.tar.gz
+    if [ ! -f lzo-${VERSION_LZO}.tar.gz ]; then
+        download http://www.oberhumer.com/opensource/lzo/download/lzo-${VERSION_LZO}.tar.gz
         exit_on_error
     fi
 }
@@ -588,7 +588,7 @@ download_mplayer() {
     cd $SRC
 
     if [ "$FIXED_REVISIONS" == "yes" ]; then
-        REVISION="-r $VERSION_MPLAYER"
+        REVISION="-r ${VERSION_MPLAYER}"
     else
         REVISION=""
     fi
@@ -609,8 +609,8 @@ download_ncurses() {
     start_download ncurses
     cd $SRC
 
-    if [ ! -f ncurses-$VERSION_NCURSES.tar.gz ]; then
-        download http://ftp.gnu.org/pub/gnu/ncurses/ncurses-$VERSION_NCURSES.tar.gz
+    if [ ! -f ncurses-${VERSION_NCURSES}.tar.gz ]; then
+        download http://ftp.gnu.org/pub/gnu/ncurses/ncurses-${VERSION_NCURSES}.tar.gz
         exit_on_error
     fi
 }
@@ -627,8 +627,8 @@ download_tsMuxeR() {
     cd $SRC
 
     if is_osx; then
-        if [ ! -f tsMuxeR_$VERSION_TSMUXER.dmg ]; then
-            $CURL -H "Referer: http://www.videohelp.com/tools/tsMuxeR" -L http://www.videohelp.com/download/tsMuxeR_$VERSION_TSMUXER.dmg > tsMuxeR_$VERSION_TSMUXER.dmg
+        if [ ! -f tsMuxeR_${VERSION_TSMUXER}.dmg ]; then
+            $CURL -H "Referer: http://www.videohelp.com/tools/tsMuxeR" -L http://www.videohelp.com/download/tsMuxeR_${VERSION_TSMUXER}.dmg > tsMuxeR_${VERSION_TSMUXER}.dmg
             exit_on_error
         fi
     fi
@@ -651,7 +651,7 @@ download_x264() {
     cd x264
 
     #if [ "$FIXED_REVISIONS" == "yes" ]; then
-    #    $GIT checkout $VERSION_X264
+    #    $GIT checkout ${VERSION_X264}
     #    exit_on_error
     #fi
     rm -rf ./.git
@@ -666,8 +666,8 @@ download_xvid() {
     start_download xvid
     cd $SRC
 
-    if [ ! -f xvidcore-$VERSION_XVID.tar.gz ]; then
-        download http://downloads.xvid.org/downloads/xvidcore-$VERSION_XVID.tar.gz
+    if [ ! -f xvidcore-${VERSION_XVID}.tar.gz ]; then
+        download http://downloads.xvid.org/downloads/xvidcore-${VERSION_XVID}.tar.gz
         exit_on_error
     fi
 }
@@ -681,8 +681,8 @@ download_zlib() {
     start_download zlib
     cd $SRC
 
-    if [ ! -f zlib-$VERSION_ZLIB.tar.gz ]; then
-        download http://sourceforge.net/projects/libpng/files/zlib/$VERSION_ZLIB/zlib-$VERSION_ZLIB.tar.gz
+    if [ ! -f zlib-${VERSION_ZLIB}.tar.gz ]; then
+        download http://sourceforge.net/projects/libpng/files/zlib/${VERSION_ZLIB}/zlib-${VERSION_ZLIB}.tar.gz
         exit_on_error
     fi
 }
@@ -696,8 +696,8 @@ download_enca() {
     start_download enca
     cd $SRC
 
-    if [ ! -f enca-$VERSION_ENCA.tar.gz ]; then
-        download http://dl.cihar.com/enca/enca-$VERSION_ENCA.tar.gz
+    if [ ! -f enca-${VERSION_ENCA}.tar.gz ]; then
+        download http://dl.cihar.com/enca/enca-${VERSION_ENCA}.tar.gz
         exit_on_error
     fi
 }
@@ -711,8 +711,8 @@ download_yasm() {
     start_download yasm
     cd $SRC
 
-    if [ ! -f yasm-$VERSION_YASM.tar.gz ]; then
-        download http://www.tortall.net/projects/yasm/releases/yasm-$VERSION_YASM.tar.gz
+    if [ ! -f yasm-${VERSION_YASM}.tar.gz ]; then
+        download http://www.tortall.net/projects/yasm/releases/yasm-${VERSION_YASM}.tar.gz
         exit_on_error
     fi
 }
@@ -729,13 +729,13 @@ download_tsmuxer() {
     cd $SRC
 
     if is_osx; then
-        if [ ! -f tsMuxeR-$VERSION_TSMUXER.dmg ]; then
-            $CURL --referer "http://www.videohelp.com/tools/tsMuxeR" -L http://www.videohelp.com/download/tsMuxeR__$VERSION_TSMUXER.dmg > tsMuxeR__$VERSION_TSMUXER.dmg
+        if [ ! -f tsMuxeR-${VERSION_TSMUXER}.dmg ]; then
+            $CURL --referer "http://www.videohelp.com/tools/tsMuxeR" -L http://www.videohelp.com/download/tsMuxeR__${VERSION_TSMUXER}.dmg > tsMuxeR__${VERSION_TSMUXER}.dmg
             exit_on_error
         fi
     else
-        if [ ! -f tsMuxeR-$VERSION_TSMUXER.tar.gz ]; then
-            $WGET --referer="http://www.videohelp.com/tools/tsMuxeR" http://www.videohelp.com/download/tsMuxeR_$VERSION_TSMUXER.tar.gz
+        if [ ! -f tsMuxeR-${VERSION_TSMUXER}.tar.gz ]; then
+            $WGET --referer="http://www.videohelp.com/tools/tsMuxeR" http://www.videohelp.com/download/tsMuxeR_${VERSION_TSMUXER}.tar.gz
             exit_on_error
         fi
     fi
@@ -758,7 +758,7 @@ download_ps3mediaserver() {
     cd ps3mediaserver
 
     if [ "$FIXED_REVISIONS" == "yes" ]; then
-        $GIT checkout $VERSION_PS3MEDIASERVER
+        $GIT checkout ${VERSION_PS3MEDIASERVER}
         exit_on_error
     fi
 

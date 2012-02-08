@@ -112,7 +112,7 @@ THREADS="2"
 
 
 # binaries deps versions
-. contrib/binaries-deps-versions
+. binaries-deps-versions
 
 
 ##########################################
@@ -384,8 +384,8 @@ initialize() {
     WORKDIR=`pwd`
 
     # Directories for statically compiled libraries
-    TARGET="$WORKDIR/target/bin-tools/target"
-    SRC="$WORKDIR/target/bin-tools/build"
+    TARGET="$WORKDIR/../target/bin-tools/target"
+    SRC="$WORKDIR/../target/bin-tools/build"
     createdir "$SRC"
     createdir "$TARGET"
     
