@@ -1,8 +1,10 @@
 package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -33,53 +37,84 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 	
 	private final String GENRES_NAME = Messages.getString("ML.Condition.Type.VIDEO_GENRES");
 	
-	private JTextField tfName;
-	private JTextField tfOriginalName;
-	private JTextField tfSortName;
-	private JTextField tfDirector;
-	private JTextField tfImdbId;
-	private JTextField tfTmdbId;
-	private JTextField tfRating;
-	private JTextField tfRatingVoters;
-	private JTextField tfRevenue;
-	private JTextField tfYear;
-	private JTextField tfBudget;
-	private JTextField tfHomePage;
-	private JTextField tfCertification;
-	private JTextField tfCertificationReason;
-	private JTextField tfTrailer;
-	private JTextField tfTagLine;
+	private PropertyInfoEntry hName;
+	private PropertyInfoEntry hOriginalName;
+	private PropertyInfoEntry hSortName;
+	private PropertyInfoEntry hDirector;
+	private PropertyInfoEntry hImdbId;
+	private PropertyInfoEntry hTmdbId;
+	private PropertyInfoEntry hRating;
+	private PropertyInfoEntry hRatingVoters;
+	private PropertyInfoEntry hRevenue;
+	private PropertyInfoEntry hYear;
+	private PropertyInfoEntry hBudget;
+	private PropertyInfoEntry hHomePage;
+	private PropertyInfoEntry hCertification;
+	private PropertyInfoEntry hCertificationReason;
+	private PropertyInfoEntry hTrailer;
+	private PropertyInfoEntry hTagLine;
+	private PropertyInfoTitleHeader hOverview;
 	private JTextArea taOverview;
 	private JCheckBox cbActive;
 	private FileTagsPanel pGenres;
+	
+	private boolean isConfirmEdit;
 
-	public VideoFilePropertiesPanel(DOVideoFileInfo fileInfo) {
+	public VideoFilePropertiesPanel(DOVideoFileInfo fileInfo, boolean isConfirmEdit) {
 		setLayout(new GridLayout());
+		this.isConfirmEdit = isConfirmEdit;
 		init(fileInfo);
 		build();
 	}
 	
 	public void init(DOVideoFileInfo fileInfo) {
-		tfName = new JTextField(fileInfo.getName());
-		tfOriginalName = new JTextField(fileInfo.getOriginalName());
-		tfYear = new JTextField(String.valueOf(fileInfo.getYear()));
-		tfSortName = new JTextField(fileInfo.getSortName());
-		tfDirector = new JTextField(fileInfo.getDirector());
-		tfImdbId = new JTextField(fileInfo.getImdbId());
-		tfHomePage = new JTextField(String.valueOf(fileInfo.getHomepageUrl()));
-		tfTrailer = new JTextField(String.valueOf(fileInfo.getTrailerUrl()));
-		tfTmdbId = new JTextField(String.valueOf(fileInfo.getTmdbId()));
-		tfRating = new JTextField(String.valueOf(fileInfo.getRating().getRatingPercent()));
-		tfRatingVoters = new JTextField(String.valueOf(fileInfo.getRating().getVotes()));
-		tfCertificationReason = new JTextField(String.valueOf(fileInfo.getAgeRating().getReason()));
-		tfCertification = new JTextField(String.valueOf(fileInfo.getAgeRating().getLevel()));
-		tfTagLine = new JTextField(String.valueOf(fileInfo.getTagLine()));
-		tfBudget = new JTextField(String.valueOf(fileInfo.getBudget()));
+		hName = new PropertyInfoEntry(fileInfo.getName(), ConditionType.VIDEO_NAME, isConfirmEdit);
+		hOriginalName = new PropertyInfoEntry(fileInfo.getOriginalName(), ConditionType.VIDEO_ORIGINALNAME, isConfirmEdit);
+		hYear = new PropertyInfoEntry(String.valueOf(fileInfo.getYear()), ConditionType.VIDEO_YEAR, isConfirmEdit);
+		hSortName = new PropertyInfoEntry(fileInfo.getSortName(), ConditionType.VIDEO_SORTNAME, isConfirmEdit);
+		hDirector = new PropertyInfoEntry(fileInfo.getDirector(), ConditionType.VIDEO_DIRECTOR, isConfirmEdit);
+		hImdbId = new PropertyInfoEntry(fileInfo.getImdbId(), ConditionType.VIDEO_IMDBID, isConfirmEdit);
+		hHomePage = new PropertyInfoEntry(fileInfo.getHomepageUrl(), ConditionType.VIDEO_HOMEPAGEURL, isConfirmEdit);
+		hTrailer = new PropertyInfoEntry(fileInfo.getTrailerUrl(), ConditionType.VIDEO_TRAILERURL, isConfirmEdit);
+		hTmdbId = new PropertyInfoEntry(String.valueOf(fileInfo.getTmdbId()), ConditionType.VIDEO_TMDBID, isConfirmEdit);
+		hRating = new PropertyInfoEntry(String.valueOf(fileInfo.getRating().getRatingPercent()), ConditionType.VIDEO_RATINGPERCENT, isConfirmEdit);
+		hRatingVoters = new PropertyInfoEntry(String.valueOf(fileInfo.getRating().getVotes()), ConditionType.VIDEO_RATINGVOTERS, isConfirmEdit);
+		hCertificationReason = new PropertyInfoEntry(fileInfo.getAgeRating().getReason(), ConditionType.VIDEO_CERTIFICATIONREASON, isConfirmEdit);
+		hCertification = new PropertyInfoEntry(fileInfo.getAgeRating().getLevel(), ConditionType.VIDEO_CERTIFICATION, isConfirmEdit);
+		hTagLine = new PropertyInfoEntry(fileInfo.getTagLine(), ConditionType.VIDEO_TAGLINE, isConfirmEdit);
+		hBudget = new PropertyInfoEntry(String.valueOf(fileInfo.getBudget()), ConditionType.VIDEO_BUDGET, isConfirmEdit);
+		hRevenue  = new PropertyInfoEntry(String.valueOf(fileInfo.getRevenue()), ConditionType.VIDEO_REVENUE, isConfirmEdit);
+		
+		hOverview = new PropertyInfoTitleHeader(ConditionType.VIDEO_OVERVIEW, isConfirmEdit);
 		taOverview = new JTextArea(String.valueOf(fileInfo.getOverview()));
-		tfRevenue = new JTextField(String.valueOf(fileInfo.getRevenue()));
+		taOverview.setLineWrap(true);
+		taOverview.setWrapStyleWord(true);
+		taOverview.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				hOverview.setSelected(true);
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				hOverview.setSelected(true);
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent arg0) {
+				hOverview.setSelected(true);
+			}
+		});
+
 		cbActive = new JCheckBox(Messages.getString("ML.Condition.Header.Type.FILE_ISACTIF"));
 		cbActive.setFont(cbActive.getFont().deriveFont(Font.BOLD));
-		cbActive.setSelected(fileInfo.isActif());
+		cbActive.setSelected(fileInfo.isActif());		
+		if(isConfirmEdit) {
+			cbActive.setSelected(false);
+			cbActive.setEnabled(false);
+		}
+		
 		Map<String, List<String>> genresMap = new HashMap<String, List<String>>();
 		Collections.sort(fileInfo.getGenres());
 		genresMap.put(GENRES_NAME, fileInfo.getGenres());
@@ -89,97 +124,61 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 	public void build() {
 		//reset the sizes of all text fields to lay them out correctly when resizing
 		//otherwise, scroll bars will show up if the dialog size is being reduced
-		tfName.setSize(new Dimension(10, 10));
-		tfOriginalName.setSize(new Dimension(10, 10));
-		tfYear.setSize(new Dimension(10, 10));
-		tfSortName.setSize(new Dimension(10, 10));
-		tfDirector.setSize(new Dimension(10, 10));
-		tfImdbId.setSize(new Dimension(10, 10));
-		tfHomePage.setSize(new Dimension(10, 10));
-		tfTrailer.setSize(new Dimension(10, 10));
-		tfTmdbId.setSize(new Dimension(10, 10));
-		tfRating.setSize(new Dimension(10, 10));
-		tfRatingVoters.setSize(new Dimension(10, 10));
-		tfCertificationReason.setSize(new Dimension(10, 10));
-		tfCertification.setSize(new Dimension(10, 10));
-		tfTagLine.setSize(new Dimension(10, 10));
-		tfBudget.setSize(new Dimension(10, 10));
 		taOverview.setSize(new Dimension(10, 10));
-		tfRevenue.setSize(new Dimension(10, 10));
 		
 		//build the panel
 		PanelBuilder builder;
 		CellConstraints cc = new CellConstraints();
 
 		FormLayout layout = new FormLayout("5px, 20:grow, 10px, 20:grow, 10px, 20:grow, 10px, 20:grow, 10px, d, 5px", // columns
-		        "3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 1px, d, 3px, d, 5px, d, 3px"); // rows
+		        "3px, d, 3px, d, 3px, d, 3px, d, 3px, d, 3px, d, 3px, d, 5px, d, 3px"); // rows
 		builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 		
 		//row 1
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_NAME), cc.xyw(2, 2, 3));
-		builder.add(tfName, cc.xyw(2, 4, 3));
-
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_ORIGINALNAME), cc.xyw(6, 2, 3));
-		builder.add(tfOriginalName, cc.xyw(6, 4, 3));
-
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_YEAR), cc.xy(10, 2));
-		builder.add(tfYear, cc.xy(10, 4));
+		builder.add(hName, cc.xyw(2, 2, 3));
+		builder.add(hOriginalName, cc.xyw(6, 2, 3));
+		builder.add(hYear, cc.xy(10, 2));
 		
 		//row 2
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_SORTNAME), cc.xyw(2, 6, 3));
-		builder.add(tfSortName, cc.xyw(2, 8, 3));
-
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_DIRECTOR), cc.xy(6, 6));
-		builder.add(tfDirector, cc.xyw(6, 8, 3));
-
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_IMDBID), cc.xy(10, 6));
-		builder.add(tfImdbId, cc.xy(10, 8));
+		builder.add(hSortName, cc.xyw(2, 4, 3));
+		builder.add(hDirector, cc.xyw(6, 4, 3));
+		builder.add(hImdbId, cc.xy(10, 4));
 		
 		//row 3
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_HOMEPAGEURL), cc.xyw(2, 10, 3));
-		builder.add(tfHomePage, cc.xyw(2, 12, 3));
-
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_TRAILERURL), cc.xyw(6, 10, 3));
-		builder.add(tfTrailer, cc.xyw(6, 12, 3));
-
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_TMDBID), cc.xy(10, 10));
-		builder.add(tfTmdbId, cc.xy(10, 12));
+		builder.add(hHomePage, cc.xyw(2, 6, 3));
+		builder.add(hTrailer, cc.xyw(6, 6, 3));
+		builder.add(hTmdbId, cc.xy(10, 6));
 		
 		//row 4		
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_RATINGPERCENT), cc.xy(2, 14));
-		builder.add(tfRating, cc.xy(2, 16));
+		builder.add(hRating, cc.xy(2, 8));
+		builder.add(hRatingVoters, cc.xy(4, 8));
+		builder.add(hCertificationReason, cc.xyw(6, 8, 3));
+		builder.add(hCertification, cc.xy(10, 8));
 
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_RATINGVOTERS), cc.xy(4, 14));
-		builder.add(tfRatingVoters, cc.xy(4, 16));
-		
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_CERTIFICATIONREASON), cc.xyw(6, 14, 3));
-		builder.add(tfCertificationReason, cc.xyw(6, 16, 3));
-
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_CERTIFICATION), cc.xy(10, 14));
-		builder.add(tfCertification, cc.xy(10, 16));
-		
 		//row 5
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_TAGLINE), cc.xyw(2, 18, 7));
-		builder.add(tfTagLine, cc.xyw(2, 20, 7));
-		
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_BUDGET), cc.xy(10, 18));
-		builder.add(tfBudget, cc.xy(10, 20));
+		builder.add(hTagLine, cc.xyw(2, 10, 7));
+		builder.add(hBudget, cc.xy(10, 10));
 
-		//row 6
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_OVERVIEW), cc.xyw(2, 22, 7));
-		taOverview.setLineWrap(true);
-		taOverview.setWrapStyleWord(true);
+		//row 6+7
+		JPanel pOverviewHeader = new JPanel(new GridLayout());
+		pOverviewHeader.setAlignmentY(LEFT_ALIGNMENT);
+		pOverviewHeader.add(hOverview);
+		
 		JScrollPane spOverview = new JScrollPane(taOverview);
-		spOverview.setBorder(tfBudget.getBorder());
-		builder.add(spOverview, cc.xywh(2, 24, 7, 3));
-		
-		builder.add(new PropertyInfoTitleLabel(ConditionType.VIDEO_REVENUE), cc.xy(10, 22));
-		builder.add(tfRevenue, cc.xy(10, 24, CellConstraints.DEFAULT, CellConstraints.TOP));
-		
-		builder.add(cbActive, cc.xy(10, 26, CellConstraints.DEFAULT, CellConstraints.TOP));
+		spOverview.setBorder(new JTextField().getBorder());
 
-		builder.add(pGenres, cc.xyw(2, 28, 9));
+		JPanel pOverview = new JPanel(new BorderLayout(0, 1));
+		pOverview.add(pOverviewHeader, BorderLayout.NORTH);
+		pOverview.add(spOverview, BorderLayout.CENTER);
+		
+		builder.add(pOverview, cc.xywh(2, 12, 7, 3));
+		
+		builder.add(hRevenue, cc.xy(10, 12));
+		builder.add(cbActive, cc.xy(10, 14));
+		
+		//row 8
+		builder.add(pGenres, cc.xyw(2, 16, 9));
 
 		JPanel p = builder.getPanel();
 		JScrollPane sp = new JScrollPane(p);
@@ -204,29 +203,29 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		int rating;
 		int voters;
 		
-		try { year = Integer.parseInt(tfYear.getText().trim()); } 
+		try { year = Integer.parseInt(hYear.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_YEAR, tfYear.getText());
+			throw new ConditionTypeException(ConditionType.VIDEO_YEAR, hYear.getText());
 		}
-		try { tmdbId = Integer.parseInt(tfTmdbId.getText().trim()); } 
+		try { tmdbId = Integer.parseInt(hTmdbId.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_TMDBID, tfTmdbId.getText());
+			throw new ConditionTypeException(ConditionType.VIDEO_TMDBID, hTmdbId.getText());
 		}
-		try { budget = Integer.parseInt(tfBudget.getText().trim()); } 
+		try { budget = Integer.parseInt(hBudget.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_BUDGET, tfBudget.getText());
+			throw new ConditionTypeException(ConditionType.VIDEO_BUDGET, hBudget.getText());
 		}
-		try { revenue = Integer.parseInt(tfRevenue.getText().trim()); } 
+		try { revenue = Integer.parseInt(hRevenue.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_REVENUE, tfRevenue.getText());
+			throw new ConditionTypeException(ConditionType.VIDEO_REVENUE, hRevenue.getText());
 		}
-		try { rating = Integer.parseInt(tfRating.getText().trim()); } 
+		try { rating = Integer.parseInt(hRating.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_RATINGPERCENT, tfRating.getText());
+			throw new ConditionTypeException(ConditionType.VIDEO_RATINGPERCENT, hRating.getText());
 		}
-		try { voters = Integer.parseInt(tfRatingVoters.getText().trim()); } 
+		try { voters = Integer.parseInt(hRatingVoters.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_RATINGVOTERS, tfRatingVoters.getText());
+			throw new ConditionTypeException(ConditionType.VIDEO_RATINGVOTERS, hRatingVoters.getText());
 		}
 
 		DOVideoFileInfo fiVideo = (DOVideoFileInfo) fileInfo;
@@ -238,20 +237,80 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		fiVideo.setRevenue(revenue);
 		fiVideo.setRating(new DORating(rating, voters));		
 		
-		fiVideo.setName(tfName.getText().trim());
-		fiVideo.setOriginalName(tfOriginalName.getText().trim());
-		fiVideo.setSortName(tfSortName.getText().trim());
-		fiVideo.setDirector(tfDirector.getText().trim());
-		fiVideo.setImdbId(tfImdbId.getText().trim());
-		fiVideo.setHomepageUrl(tfHomePage.getText().trim());
-		fiVideo.setTrailerUrl(tfTrailer.getText().trim());
-		fiVideo.setAgeRating(new DOCertification(tfCertification.getText().trim(), tfCertificationReason.getText().trim()));
-		fiVideo.setTagLine(tfTagLine.getText().trim());
+		fiVideo.setName(hName.getText().trim());
+		fiVideo.setOriginalName(hOriginalName.getText().trim());
+		fiVideo.setSortName(hSortName.getText().trim());
+		fiVideo.setDirector(hDirector.getText().trim());
+		fiVideo.setImdbId(hImdbId.getText().trim());
+		fiVideo.setHomepageUrl(hHomePage.getText().trim());
+		fiVideo.setTrailerUrl(hTrailer.getText().trim());
+		fiVideo.setAgeRating(new DOCertification(hCertification.getText().trim(), hCertificationReason.getText().trim()));
+		fiVideo.setTagLine(hTagLine.getText().trim());
 		fiVideo.setOverview(taOverview.getText().trim());
 		
 		Map<String, List<String>> tags = pGenres.getTags();
 		if (tags.keySet().contains(GENRES_NAME)) {
 			fiVideo.setGenres(tags.get(GENRES_NAME));
 		}
+	}
+
+	@Override
+	public List<ConditionType> getPropertiesToUpdate() {
+		List<ConditionType> res = new ArrayList<ConditionType>();
+		res.add(ConditionType.FILE_CONTAINS_TAG);
+		res.add(ConditionType.VIDEO_CONTAINS_GENRE);
+		
+		if(hName.isSelected()) {
+			res.add(ConditionType.VIDEO_NAME);
+		}
+		if(hOriginalName.isSelected()) {
+			res.add(ConditionType.VIDEO_ORIGINALNAME);
+		}
+		if(hSortName.isSelected()) {
+			res.add(ConditionType.VIDEO_SORTNAME);
+		}
+		if(hDirector.isSelected()) {
+			res.add(ConditionType.VIDEO_DIRECTOR);
+		}
+		if(hImdbId.isSelected()) {
+			res.add(ConditionType.VIDEO_IMDBID);
+		}
+		if(hTmdbId.isSelected()) {
+			res.add(ConditionType.VIDEO_TMDBID);
+		}
+		if(hRating.isSelected()) {
+			res.add(ConditionType.VIDEO_RATINGPERCENT);
+		}
+		if(hRatingVoters.isSelected()) {
+			res.add(ConditionType.VIDEO_RATINGVOTERS);
+		}
+		if(hRevenue.isSelected()) {
+			res.add(ConditionType.VIDEO_REVENUE);
+		}
+		if(hYear.isSelected()) {
+			res.add(ConditionType.VIDEO_YEAR);
+		}
+		if(hBudget.isSelected()) {
+			res.add(ConditionType.VIDEO_BUDGET);
+		}
+		if(hHomePage.isSelected()) {
+			res.add(ConditionType.VIDEO_HOMEPAGEURL);
+		}
+		if(hCertification.isSelected()) {
+			res.add(ConditionType.VIDEO_CERTIFICATION);
+		}
+		if(hCertificationReason.isSelected()) {
+			res.add(ConditionType.VIDEO_CERTIFICATIONREASON);
+		}
+		if(hTrailer.isSelected()) {
+			res.add(ConditionType.VIDEO_TRAILERURL);
+		}
+		if(hTagLine.isSelected()) {
+			res.add(ConditionType.VIDEO_TAGLINE);
+		}
+		if(hOverview.isSelected()) {
+			res.add(ConditionType.VIDEO_OVERVIEW);
+		}
+		return res;
 	}
 }

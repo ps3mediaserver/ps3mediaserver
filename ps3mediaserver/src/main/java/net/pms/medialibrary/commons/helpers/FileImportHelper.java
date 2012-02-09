@@ -38,7 +38,9 @@ import org.slf4j.LoggerFactory;
 import net.pms.PMS;
 import net.pms.medialibrary.commons.MediaLibraryConfiguration;
 import net.pms.medialibrary.commons.dataobjects.DOFileImportTemplate;
+import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
+import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.enumarations.FileProperty;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.exceptions.FileImportException;
@@ -290,7 +292,8 @@ public class FileImportHelper {
 						for(String tagValue : tagValues) {
 							tagValue = tagValue.trim();
 							if(!uniqueTagValues.contains(tagValue)){
-								log.trace(String.format("Added tag %s=%s for file %s", tag, tagValue, fileInfo.getFilePath()));								uniqueTagValues.add(tagValue);
+								log.trace(String.format("Added tag %s=%s for file %s", tag, tagValue, fileInfo.getFilePath()));								
+								uniqueTagValues.add(tagValue);
 							}
 						}
 						
@@ -298,6 +301,118 @@ public class FileImportHelper {
 					}
 					fileInfo.setTags(allTags);
 				}
+			}
+		}
+	}
+
+	/**
+	 * Updates the fields configured in propertiesToUse from fiSource to fiDestination
+	 * @param fiSource the source
+	 * @param fiDestination the destination
+	 * @param propertiesToUse the list of properties to copy from the source to the destination
+	 */
+	public static void updateFileInfo(DOFileInfo fiSource, DOFileInfo fiDestination, List<ConditionType> propertiesToUse) {
+		for(ConditionType ct : propertiesToUse) {
+			switch (ct) {
+			case FILE_THUMBNAILPATH:
+				fiDestination.setThumbnailPath(fiSource.getThumbnailPath());
+				break;
+			case FILE_CONTAINS_TAG:				
+				//merge tags
+				Map<String, List<String>> allTags = fiDestination.getTags();
+				Map<String, List<String>> newTags = fiSource.getTags();
+				
+				for (String tagName : newTags.keySet()) {
+					if (!allTags.containsKey(tagName)) {
+						allTags.put(tagName, new ArrayList<String>());
+					}
+
+					List<String> allTagValues = allTags.get(tagName);
+					List<String> newTagValues = newTags.get(tagName);
+					for (String tagValue : newTagValues) {
+						if (!allTagValues.contains(tagValue)) {
+							allTagValues.add(tagValue);
+						}
+					}
+				}
+				fiDestination.setTags(allTags);
+				break;			
+			}
+		}
+		
+		if(fiSource instanceof DOVideoFileInfo && fiDestination instanceof DOVideoFileInfo) {
+			updateFileInfo((DOVideoFileInfo) fiSource, (DOVideoFileInfo) fiDestination, propertiesToUse);
+		}
+	}
+
+
+	/**
+	 * Updates the fields configured in propertiesToUse from fiSource to fiDestination
+	 * @param fiSource the source
+	 * @param fiDestination the destination
+	 * @param propertiesToUse the list of properties to copy from the source to the destination
+	 */
+	private static void updateFileInfo(DOVideoFileInfo fiSource, DOVideoFileInfo fiDestination, List<ConditionType> propertiesToUse) {
+		for(ConditionType ct : propertiesToUse) {
+			switch (ct) {
+			case VIDEO_CERTIFICATION:
+				fiDestination.getAgeRating().setLevel(fiSource.getAgeRating().getLevel());
+				break;
+			case VIDEO_CERTIFICATIONREASON:
+				fiDestination.getAgeRating().setReason(fiSource.getAgeRating().getReason());
+				break;
+			case VIDEO_BUDGET:
+				fiDestination.setBudget(fiSource.getBudget());
+				break;
+			case VIDEO_DIRECTOR:
+				fiDestination.setDirector(fiSource.getDirector());
+				break;
+			case VIDEO_CONTAINS_GENRE:				
+				//merge new with existing genres
+				List<String> allGenres = fiDestination.getGenres();
+				for(String genre : fiSource.getGenres()) {
+					if(!allGenres.contains(genre)) {
+						allGenres.add(genre);
+					}
+				}				
+				fiDestination.setGenres(allGenres);
+				break;
+			case VIDEO_HOMEPAGEURL:
+				fiDestination.setHomepageUrl(fiSource.getHomepageUrl());
+				break;
+			case VIDEO_IMDBID:
+				fiDestination.setImdbId(fiSource.getImdbId());
+				break;
+			case VIDEO_NAME:
+				fiDestination.setName(fiSource.getName());
+				break;
+			case VIDEO_ORIGINALNAME:
+				fiDestination.setOriginalName(fiSource.getOriginalName());
+				break;
+			case VIDEO_OVERVIEW:
+				fiDestination.setOverview(fiSource.getOverview());
+				break;
+			case VIDEO_RATINGPERCENT:
+				fiDestination.getRating().setRatingPercent(fiSource.getRating().getRatingPercent());
+				break;
+			case VIDEO_RATINGVOTERS:
+				fiDestination.getRating().setVotes(fiSource.getRating().getVotes());
+				break;
+			case VIDEO_REVENUE:
+				fiDestination.setRevenue(fiSource.getRevenue());
+				break;
+			case VIDEO_TAGLINE:
+				fiDestination.setTagLine(fiSource.getTagLine());
+				break;
+			case VIDEO_TMDBID:
+				fiDestination.setTmdbId(fiSource.getTmdbId());
+				break;
+			case VIDEO_TRAILERURL:
+				fiDestination.setTrailerUrl(fiSource.getTrailerUrl());
+				break;
+			case VIDEO_YEAR:
+				fiDestination.setYear(fiSource.getYear());
+				break;
 			}
 		}
 	}

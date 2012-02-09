@@ -3,6 +3,7 @@ package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -15,7 +16,10 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
+import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
+import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
+import net.pms.medialibrary.commons.helpers.FileImportHelper;
 import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 
@@ -27,63 +31,94 @@ import net.pms.medialibrary.storage.MediaLibraryStorage;
 public class FileEditDialog extends JDialog {
 	private static final long serialVersionUID = 2921067184273978956L;
 	private final int MIN_BUTTON_WIDTH = 60;
-	
+
+	private EditMode editMode;
 	private FileEditLinkedList fileEditList;
+	private DOFileInfo fileInfo;
 	
 	private JButton bPrevious;
 	private JButton bNext;
 	private JButton bOk;
 	private JButton bCancel;
-	private FileEditTabbedPane tpFileEdit;	
+	private FileEditTabbedPane tpFileEdit;
+	private List<DOFileInfo> files;
       
 	private boolean requiresUpdate = false;
+	
+	public enum EditMode {
+		Single,
+		Multiple,
+		Linked
+	}
 	
 	/**
 	 * Listener used to be notified of file info changes in order to only save an updated configuration to DB if something has changed
 	 */
-	private ActionListener fileInfoChangedListener = new ActionListener() {
-		
+	private ActionListener fileInfoChangedListener = new ActionListener() {		
 		@Override
-		public void actionPerformed(ActionEvent arg0) {
+		public void actionPerformed(ActionEvent e) {
 			requiresUpdate = true;
 		}
 	};
-
-	/**
-	 * Constructor
-	 * @param fel a linked list with a selected item which will be opened for editing
-	 */
-	public FileEditDialog(FileEditLinkedList fel) {
+	
+	private FileEditDialog(EditMode editMode, String title) {
 		((java.awt.Frame) getOwner()).setIconImage(new ImageIcon(getClass().getResource("/resources/images/icon-16.png")).getImage());
-		setFileEditList(fel);
-		setTitle(fileEditList.getSelected().getFilePath());
+		setTitle(title);
 		setMinimumSize(new Dimension(400, 300));
-		
+		this.editMode = editMode;
+	}
+	
+	/**
+	 * Constructor used to edit a single file
+	 * @param fileInfo
+	 */
+	public FileEditDialog(DOFileInfo fileInfo) {
+		this(EditMode.Single, fileInfo.getFilePath());		
+		this.fileInfo = fileInfo;		
 		build();
 	}
 
 	/**
-	 * Gets the used file edit list
-	 * @return used file edit list
+	 * Constructor used to edit a single file, where forward/back buttons are being shown
+	 * @param fel a linked list with a selected item which will be opened for editing
 	 */
-	public FileEditLinkedList getFileEditList() {
-		return fileEditList;
+	public FileEditDialog(FileEditLinkedList fel) {
+		this(EditMode.Linked, fel.getSelected().getFilePath());
+		fileEditList = fel;
+		build();
 	}
-
+	
 	/**
-	 * Sets the used file edit list
-	 * @param fileEditList used file edit list
+	 * Constructor used to edit multiple files
+	 * @param files
 	 */
-	public void setFileEditList(FileEditLinkedList fileEditList) {
-		this.fileEditList = fileEditList;
+	public FileEditDialog(List<DOFileInfo> files) {	
+		this(EditMode.Multiple, String.format("%s items being edited", files.size()));
+		this.files = files;
+		build();
 	}
-
-	/**
-	 * Initializes the UI components and builds the panel
-	 */
-	private void build() {
+	
+	private void init() {
 		//initialize tabbed pane
-		tpFileEdit = new FileEditTabbedPane(getFileEditList().getSelected());
+		DOFileInfo fileToShow = null;
+		switch(editMode) {
+		case Single:
+			fileToShow = fileInfo;
+			break;
+		case Multiple:
+			fileToShow = new DOVideoFileInfo();
+			break;
+		case Linked:			
+			fileToShow = fileEditList.getSelected();
+			break;
+		}
+		
+		if(fileToShow == null) {
+			return;
+		}
+
+		tpFileEdit = new FileEditTabbedPane(fileToShow, editMode == EditMode.Multiple);
+		
 		
 		//initialize previous and next buttons
 		bPrevious = new JButton(new ImageIcon(getClass().getResource("/resources/images/previous-16.png")));
@@ -145,8 +180,13 @@ public class FileEditDialog extends JDialog {
 				dispose();
 			}
 		});
-		
-		refreshButtonStates();
+	}
+
+	/**
+	 * Initializes the UI components and builds the panel
+	 */
+	private void build() {
+		init();
 		
 		//build the panel
 		PanelBuilder builder;
@@ -158,20 +198,28 @@ public class FileEditDialog extends JDialog {
 		builder.setOpaque(true);
 
 		builder.add(tpFileEdit, cc.xyw(2, 2, 7));
-		builder.add(bPrevious, cc.xy(2, 4));
-		builder.add(bNext, cc.xy(4, 4));
+		
+		if(editMode == EditMode.Linked) {
+			builder.add(bPrevious, cc.xy(2, 4));
+			builder.add(bNext, cc.xy(4, 4));
+		}
+		
 		builder.add(bOk, cc.xy(6, 4));
 		builder.add(bCancel, cc.xy(8, 4));
 
 		getContentPane().add(builder.getPanel());
+
+		refreshButtonStates();
 	}
 	
 	/**
 	 * Disables or enables the back and forward buttons if there is no next item
 	 */
 	private void refreshButtonStates() {
-		bPrevious.setEnabled(fileEditList.hasPreviousFile());
-		bNext.setEnabled(fileEditList.hasNextFile());
+		if(editMode == EditMode.Linked) {
+			bPrevious.setEnabled(fileEditList.hasPreviousFile());
+			bNext.setEnabled(fileEditList.hasNextFile());
+		}
 	}
 
 	/**
@@ -188,9 +236,20 @@ public class FileEditDialog extends JDialog {
 			return false;
 		}
 		
-		if(requiresUpdate) {
-			MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
-			requiresUpdate = false;
+		switch(editMode) {
+		case Linked:
+		case Single:			
+			if(requiresUpdate) {
+				MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
+				requiresUpdate = false;
+			}
+			break;
+		case Multiple:
+			List<ConditionType> propertiesToUpdate = tpFileEdit.getPropertiesToUpdate();
+			for (DOFileInfo fiUpdate : files) {
+				FileImportHelper.updateFileInfo(fileInfo, fiUpdate, propertiesToUpdate);
+			}
+ 			break;
 		}
 		
 		return true;
