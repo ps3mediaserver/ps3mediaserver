@@ -2,6 +2,8 @@ package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -11,6 +13,7 @@ import net.pms.medialibrary.commons.dataobjects.DOAudioFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOImageFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
+import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
 
@@ -28,12 +31,15 @@ public class FileEditTabbedPane extends JTabbedPane {
 	private FileTagsPanel tagsPanel;
 	
 	private DOFileInfo fileInfo;
-
+	private boolean isMultiEdit;
+	
 	/**
 	 * Constructor
 	 * @param fileInfo the file info to edit
+	 * @param b 
 	 */
-	public FileEditTabbedPane(DOFileInfo fileInfo) {
+	public FileEditTabbedPane(DOFileInfo fileInfo, boolean isMultiEdit) {
+		this.isMultiEdit = isMultiEdit;
 		setContent(fileInfo);
 		
 		addComponentListener(new ComponentAdapter() {
@@ -59,10 +65,11 @@ public class FileEditTabbedPane extends JTabbedPane {
 	private void setContent() {		
 		infoPanel = new JPanel();
 		propertiesPanel = new JPanel();
-		tagsPanel = new FileTagsPanel(fileInfo.getTags(), true);
+		tagsPanel = new FileTagsPanel(isMultiEdit ? new HashMap<String, List<String>>() : fileInfo.getTags(), true);
+		
 		if(fileInfo instanceof DOVideoFileInfo) {
 			infoPanel = new VideoFileInfoPanel((DOVideoFileInfo) fileInfo);
-			propertiesPanel = new VideoFilePropertiesPanel((DOVideoFileInfo) fileInfo);			
+			propertiesPanel = new VideoFilePropertiesPanel(isMultiEdit ? new DOVideoFileInfo() : (DOVideoFileInfo) fileInfo, isMultiEdit);
 		} else if(fileInfo instanceof DOAudioFileInfo) {
 			//TODO: implement
 		} else if(fileInfo instanceof DOImageFileInfo) {
@@ -74,9 +81,15 @@ public class FileEditTabbedPane extends JTabbedPane {
 		
 		//remove all tab before restoring them
 		removeAll();
-		addTab(Messages.getString("ML.FileEditTabbedPane.tInfo"), infoPanel);
-		addTab(Messages.getString("ML.FileEditTabbedPane.tProperties"), propertiesPanel);
-		addTab(Messages.getString("ML.FileEditTabbedPane.tTags"), tagsPanel);
+
+		if(isMultiEdit) {
+			addTab(Messages.getString("ML.FileEditTabbedPane.tProperties"), propertiesPanel);
+			addTab(Messages.getString("ML.FileEditTabbedPane.tTags"), tagsPanel);
+		} else {
+			addTab(Messages.getString("ML.FileEditTabbedPane.tInfo"), infoPanel);
+			addTab(Messages.getString("ML.FileEditTabbedPane.tProperties"), propertiesPanel);
+			addTab(Messages.getString("ML.FileEditTabbedPane.tTags"), tagsPanel);			
+		}
 		
 		//restore the selected tab
 		if(selectedIndex > 0) {
@@ -95,5 +108,9 @@ public class FileEditTabbedPane extends JTabbedPane {
 		fileInfo.setTags(tagsPanel.getTags());
 		
 		return fileInfo;
+	}
+	
+	public List<ConditionType> getPropertiesToUpdate() {
+		return ((IFilePropertiesEditor) propertiesPanel).getPropertiesToUpdate();	
 	}
 }
