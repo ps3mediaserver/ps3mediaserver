@@ -434,19 +434,55 @@ public class FileDisplayTable extends JPanel {
 				}
 			};
 			editDialog = new FileEditDialog(fel);
-		} else {
-			editDialog = new FileEditDialog(selectedFiles);
-		}
-		
-		if(editDialog != null) {
+			editDialog.setSize(getSingleEditSize());
 			editDialog.setModal(true);
-			editDialog.setSize(new Dimension(760, 450));
-//			editDialog.pack();
 			editDialog.setLocation(GUIHelper.getCenterDialogOnParentLocation(editDialog.getSize(), table));
 			editDialog.setVisible(true);
+			setSingleEditSize(editDialog.getSize());
+		} else {
+			editDialog = new FileEditDialog(selectedFiles);
+			editDialog.setSize(getMultiEditSize());
+			editDialog.setModal(true);
+			editDialog.setLocation(GUIHelper.getCenterDialogOnParentLocation(editDialog.getSize(), table));
+			editDialog.setVisible(true);
+			setMultiEditSize(editDialog.getSize());
 		}
 	}
 	
+	private Dimension getMultiEditSize() {
+		MediaLibraryStorage storage = MediaLibraryStorage.getInstance();
+		int width = 750;
+		int height = 430;
+		try {
+			width = Integer.parseInt(storage.getMetaDataValue("FileEditDialog_MultiEdit_Width"));
+			height = Integer.parseInt(storage.getMetaDataValue("FileEditDialog_MultiEdit_Height"));
+		} catch (NumberFormatException ex) { }
+		return new Dimension(width, height);
+	}
+	
+	private void setMultiEditSize(Dimension size) {
+		MediaLibraryStorage storage = MediaLibraryStorage.getInstance();
+		storage.setMetaDataValue("FileEditDialog_MultiEdit_Width", String.valueOf(size.width));
+		storage.setMetaDataValue("FileEditDialog_MultiEdit_Height", String.valueOf(size.height));
+	}
+
+	private Dimension getSingleEditSize() {
+		MediaLibraryStorage storage = MediaLibraryStorage.getInstance();
+		int width = 750;
+		int height = 420;
+		try {
+			width = Integer.parseInt(storage.getMetaDataValue("FileEditDialog_SingleEdit_Width"));
+			height = Integer.parseInt(storage.getMetaDataValue("FileEditDialog_SingleEdit_Height"));
+		} catch (NumberFormatException ex) { }
+		return new Dimension(width, height);
+	}
+	
+	private void setSingleEditSize(Dimension size) {
+		MediaLibraryStorage storage = MediaLibraryStorage.getInstance();
+		storage.setMetaDataValue("FileEditDialog_SingleEdit_Width", String.valueOf(size.width));
+		storage.setMetaDataValue("FileEditDialog_SingleEdit_Height", String.valueOf(size.height));
+	}
+
 	private List<DOFileInfo> getSelectedFiles() {
 		List<DOFileInfo> selectedFiles = new ArrayList<DOFileInfo>();
 		@SuppressWarnings("unchecked")
