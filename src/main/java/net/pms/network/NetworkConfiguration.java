@@ -71,16 +71,43 @@ public class NetworkConfiguration {
 			return iface;
 		}
 
+		/**
+		 * Returns the name of the parent of the interface association.
+		 *
+		 * @return The name of the parent.
+		 */
 		public String getParentName() {
 			return parentName;
 		}
 
+		/**
+		 * Returns the name of the interface association.
+		 *
+		 * @return The name.
+		 */
 		public String getShortName() {
 			return iface.getName();
 		}
 
+		/**
+		 * Returns the display name of the interface association.
+		 *
+		 * @return The name.
+		 */
 		public String getDisplayName() {
-			return iface.getDisplayName().trim() + (addr != null ? " (" + addr.getHostAddress() + ")" : "");
+			String displayName = iface.getDisplayName();
+
+			if (displayName != null) {
+				displayName = displayName.trim();
+			} else {
+				displayName = iface.getName();
+			}
+
+			if (addr != null) {
+				displayName += " (" + addr.getHostAddress() + ")";
+			}
+
+			return displayName;
 		}
 		
 		@Override
@@ -209,7 +236,7 @@ public class NetworkConfiguration {
 	public List<String> getDisplayNames() {
 		List<String> result = new ArrayList<String>(interfaces.size());
 		for (InterfaceAssociation i : interfaces) {
-			result.add(i.getDisplayName());
+				result.add(i.getDisplayName());
 		}
 		return result;
 	}
