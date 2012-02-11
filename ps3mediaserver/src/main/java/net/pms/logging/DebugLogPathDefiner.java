@@ -25,8 +25,8 @@ import ch.qos.logback.core.PropertyDefinerBase;
 /**
  * Logback PropertyDefiner to set the path for the <code>debug.log</code> file.
  * <p>
- * If the current working directory is writable it returns an empty string. If
- * not then the path to the system temp directory is returned.
+ * If the current working directory is writable, it returns its absolute path. If
+ * not, then the path to the system temp directory is returned.
  * </p>
  * <p>
  * This is equivalent to the old behavior of PMS.
@@ -44,9 +44,11 @@ public class DebugLogPathDefiner extends PropertyDefinerBase {
 	 */
 	@Override
 	public String getPropertyValue() {
-
-		// Check if current directory is writable
+		// Check if current directory is writable.
+		// XXX dir.canWrite() has issues on Windows, so verify it directly:
+		// http://hyperic.allrightname.com/javadoc/hq-util/org/hyperic/util/file/FileUtil.html#canWrite%28java.io.File%29
 		File file = new File("write_test_file");
+
 		try {
 			file.createNewFile();
 			if (file.canWrite()) {
@@ -57,7 +59,7 @@ public class DebugLogPathDefiner extends PropertyDefinerBase {
 			// Could not create / write the file
 		}
 
-		// Return path to temp folder, which should be writeable
+		// Return path to temp folder, which should be writable
 		return System.getProperty("java.io.tmpdir");
 	}
 }

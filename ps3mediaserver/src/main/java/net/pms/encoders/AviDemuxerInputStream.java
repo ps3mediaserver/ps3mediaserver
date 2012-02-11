@@ -141,7 +141,7 @@ public class AviDemuxerInputStream extends InputStream {
 					realIS = tsPipe.getInputStream();
 					ProcessUtil.waitFor(process);
 					logger.trace("tsMuxeR muxing finished");
-				} catch (Exception e) {
+				} catch (IOException e) {
 					logger.error(null, e);
 				}
 			}
@@ -306,7 +306,7 @@ public class AviDemuxerInputStream extends InputStream {
 				getBytes(stream, "RIFF".equals(command) ? 4 : size);
 				command = getString(stream, 4).toUpperCase();
 				size = readBytes(stream, 4);
-				if (("LIST".equals(command) || "RIFF".equals(command) || "JUNK".equals(command)) && (size % 2 == 1))
+				if (("LIST".equals(command) || "RIFF".equals(command) || "JUNK".equals(command)) && (size % 2 != 0))
 				{
 					readByte(stream);
 				}

@@ -25,6 +25,7 @@ import static net.pms.util.StringUtil.encodeXML;
 import static net.pms.util.StringUtil.endTag;
 import static net.pms.util.StringUtil.openTag;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
@@ -49,6 +50,7 @@ import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
+import net.pms.encoders.PlayerFactory;
 import net.pms.encoders.TSMuxerVideo;
 import net.pms.encoders.VideoLanVideoStreaming;
 import net.pms.external.AdditionalResourceFolderListener;
@@ -56,6 +58,7 @@ import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.external.StartStopListener;
 import net.pms.formats.Format;
+import net.pms.formats.FormatFactory;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.SizeLimitInputStream;
@@ -501,7 +504,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						int i = 0;
 
 						while (pl == null && i < child.getExt().getProfiles().size()) {
-							pl = PMS.get().getPlayer(child.getExt().getProfiles().get(i), child.getExt());
+							pl = PlayerFactory.getPlayer(child.getExt().getProfiles().get(i), child.getExt());
 							i++;
 						}
 
@@ -510,7 +513,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						String name = getName();
 
 						for (Class<? extends Player> clazz : child.getExt().getProfiles()) {
-							for (Player p : PMS.get().getPlayers()) {
+							for (Player p : PlayerFactory.getPlayers()) {
 								if (p.getClass().equals(clazz)) {
 									String end = "[" + p.id() + "]";
 
@@ -602,7 +605,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					child.second = newChild;
 
 					if (!newChild.getExt().isCompatible(newChild.getMedia(),getDefaultRenderer()) && newChild.getExt().getProfiles().size() > 0) {
-						newChild.setPlayer(PMS.get().getPlayer(newChild.getExt().getProfiles().get(0), newChild.getExt()));
+						newChild.setPlayer(PlayerFactory.getPlayer(newChild.getExt().getProfiles().get(0), newChild.getExt()));
 					}
 					if (child.getMedia() != null && child.getMedia().isSecondaryFormatValid()) {
 						addChild(newChild);
@@ -853,7 +856,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 	protected void checktype() {
 		if (getExt() == null) {
-			setExt(PMS.get().getAssociatedExtension(getSystemName()));
+			setExt(FormatFactory.getAssociatedExtension(getSystemName()));
 		}
 		if (getExt() != null) {
 			if (getExt().isUnknown()) {
@@ -1354,9 +1357,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				Runnable r = new Runnable() {
 					@Override
 					public void run() {
-						LOGGER.trace("StartStopListener: event:    start");
-						LOGGER.trace("StartStopListener: renderer: " + rendererId);
-						LOGGER.trace("StartStopListener: file:     " + getSystemName());
+						LOGGER.info("renderer: " + rendererId);
+						LOGGER.info("file: " + getSystemName());
 
 						for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 							if (listener instanceof StartStopListener) {
@@ -1367,7 +1369,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 										try {
 											((StartStopListener) listener).nowPlaying(getMedia(), self);
 										} catch (Throwable t) {
-											LOGGER.error(String.format("Failed to notify nowPlaying for StartStopListener of type=%s", listener.getClass()), t);
+											LOGGER.error(String.format("Notification of startPlaying event failed for StartStopListener %s", listener.getClass()), t);
 										}
 									}
 								};
@@ -1409,9 +1411,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						@Override
 						public void run() {
 							if (refCount == 1) {
-								LOGGER.trace("StartStopListener: event:    stop");
-								LOGGER.trace("StartStopListener: renderer: " + rendererId);
-								LOGGER.trace("StartStopListener: file:     " + getSystemName());
+								LOGGER.info("renderer: " + rendererId);
+								LOGGER.info("file: " + getSystemName());
 
 								for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 									if (listener instanceof StartStopListener) {
@@ -1422,7 +1423,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 												try {
 													((StartStopListener) listener).donePlaying(getMedia(), self);
 												} catch (Throwable t) {
-													LOGGER.error(String.format("Failed to notify with type=%s of donePlaying", listener.getClass()), t);
+													LOGGER.error(String.format("Notification of donePlaying event failed for StartStopListener %s", listener.getClass()), t);
 												}
 											}
 										};
@@ -1438,7 +1439,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			}
 		};
 
-		new Thread(defer, "StopPlaying Event Deferer").start();
+		new Thread(defer, "StopPlaying Event Deferrer").start();
 	}
 
 	/**Returns an InputStream of this DLNAResource that starts at a given time, if possible. Very useful if video chapters are being used.
@@ -1489,16 +1490,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					if (low > 0) {
 						fis.skip(low);
 					}
+					// http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=12035
 					fis = wrap(fis, high, low);
-				}
-
-				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=12035
-				if (high > low && fis != null) {
-					long bytes = (high - (low < 0 ? 0 : low)) + 1;
-
-					LOGGER.trace("Using size-limiting stream (" + bytes + " bytes)");
-					SizeLimitInputStream slis = new SizeLimitInputStream(fis, bytes);
-					return slis;
 				}
 
 				return fis;
@@ -1620,10 +1613,25 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 
-	private static InputStream wrap(InputStream input, long high, long low) {
+	/**
+	 * Wrap an {@link InputStream} in a {@link SizeLimitInputStream} that sets a
+	 * limit to the maximum number of bytes to be read from the original input
+	 * stream. The number of bytes is determined by the high and low value
+	 * (bytes = high - low). If the high value is less than the low value, the
+	 * input stream is not wrapped and returned as is.
+	 * 
+	 * @param input
+	 *            The input stream to wrap.
+	 * @param high
+	 *            The high value.
+	 * @param low
+	 *            The low value.
+	 * @return The resulting input stream.
+	 */
+	private InputStream wrap(InputStream input, long high, long low) {
 		if (input != null && high > low) {
 			long bytes = (high - (low < 0 ? 0 : low)) + 1;
-			LOGGER.debug("Using size-limiting stream (" + bytes + " bytes)");
+			LOGGER.trace("Using size-limiting stream (" + bytes + " bytes)");
 			return new SizeLimitInputStream(input, bytes);
 		}
 		return input;

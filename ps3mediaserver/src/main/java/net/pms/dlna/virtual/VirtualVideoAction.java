@@ -21,8 +21,8 @@ package net.pms.dlna.virtual;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.pms.PMS;
 import net.pms.dlna.DLNAResource;
+import net.pms.formats.FormatFactory;
 import net.pms.network.HTTPResource;
 
 /**
@@ -158,7 +158,7 @@ public abstract class VirtualVideoAction extends DLNAResource {
 	 */
 	@Override
 	public boolean isValid() {
-		setExt(PMS.get().getAssociatedExtension("toto.mpg"));
+		setExt(FormatFactory.getAssociatedExtension("toto.mpg"));
 		return true;
 	}
 }

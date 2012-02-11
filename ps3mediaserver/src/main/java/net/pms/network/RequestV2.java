@@ -273,7 +273,7 @@ public class RequestV2 extends HTTPResource {
 
 				if (fileName.startsWith("thumbnail0000")) {
 					// This is a request for a thumbnail file.
-					output.setHeader(HttpHeaders.Names.CONTENT_TYPE, files.get(0).getThumbnailContentType());
+					output.setHeader(HttpHeaders.Names.CONTENT_TYPE, dlna.getThumbnailContentType());
 					output.setHeader(HttpHeaders.Names.ACCEPT_RANGES, "bytes");
 					output.setHeader(HttpHeaders.Names.EXPIRES, getFUTUREDATE() + " GMT");
 					output.setHeader(HttpHeaders.Names.CONNECTION, "keep-alive");
@@ -344,7 +344,7 @@ public class RequestV2 extends HTTPResource {
 						startStopListenerDelegate.start(dlna);
 
 						// Try to determine the content type of the file
-						String rendererMimeType = getRendererMimeType(files.get(0).mimeType(), mediaRenderer);
+						String rendererMimeType = getRendererMimeType(dlna.mimeType(), mediaRenderer);
 
 						if (rendererMimeType != null && !"".equals(rendererMimeType)) {
 							output.setHeader(HttpHeaders.Names.CONTENT_TYPE, rendererMimeType);
@@ -414,7 +414,7 @@ public class RequestV2 extends HTTPResource {
 						highRange = lowRange + CLoverride - (CLoverride > 0 ? 1 : 0);
 
 						if (contentFeatures != null) {
-							output.setHeader("ContentFeatures.DLNA.ORG", files.get(0).getDlnaContentFeatures());
+							output.setHeader("ContentFeatures.DLNA.ORG", dlna.getDlnaContentFeatures());
 						}
 
 						output.setHeader(HttpHeaders.Names.ACCEPT_RANGES, "bytes");

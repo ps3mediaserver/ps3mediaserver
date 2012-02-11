@@ -48,39 +48,12 @@ import net.pms.medialibrary.dlna.RootFolder;
 import net.pms.medialibrary.scanner.FullDataCollector;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 import net.pms.dlna.virtual.MediaLibrary;
-import net.pms.encoders.FFMpegAudio;
-import net.pms.encoders.FFMpegDVRMSRemux;
-import net.pms.encoders.FFMpegVideo;
-import net.pms.encoders.MEncoderAviSynth;
-import net.pms.encoders.MEncoderVideo;
-import net.pms.encoders.MEncoderWebVideo;
-import net.pms.encoders.MPlayerAudio;
-import net.pms.encoders.MPlayerWebAudio;
-import net.pms.encoders.MPlayerWebVideoDump;
 import net.pms.encoders.Player;
-import net.pms.encoders.RAWThumbnailer;
-import net.pms.encoders.TSMuxerVideo;
-import net.pms.encoders.TsMuxerAudio;
-import net.pms.encoders.VideoLanAudioStreaming;
-import net.pms.encoders.VideoLanVideoStreaming;
+import net.pms.encoders.PlayerFactory;
 import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
-import net.pms.formats.DVRMS;
-import net.pms.formats.FLAC;
 import net.pms.formats.Format;
-import net.pms.formats.GIF;
-import net.pms.formats.ISO;
-import net.pms.formats.JPG;
-import net.pms.formats.M4A;
-import net.pms.formats.MKV;
-import net.pms.formats.MP3;
-import net.pms.formats.MPG;
-import net.pms.formats.OGG;
-import net.pms.formats.PNG;
-import net.pms.formats.RAW;
-import net.pms.formats.TIF;
-import net.pms.formats.WAV;
-import net.pms.formats.WEB;
+import net.pms.formats.FormatFactory;
 import net.pms.gui.DummyFrame;
 import net.pms.gui.IFrame;
 import net.pms.io.BasicSystemUtils;
@@ -195,22 +168,6 @@ public class PMS {
 	 * User friendly name for the server.
 	 */
 	private String serverName;
-
-	private ArrayList<Format> extensions;
-
-	/**
-	 * List of registered {@link Player}s.
-	 */
-	private ArrayList<Player> players;
-
-	private ArrayList<Player> allPlayers;
-
-	/**
-	 * @return ArrayList of {@link Player}s.
-	 */
-	public ArrayList<Player> getAllPlayers() {
-		return allPlayers;
-	}
 
 	private ProxyServer proxyServer;
 
@@ -477,12 +434,7 @@ public class PMS {
 		// wrap System.err
 		System.setErr(new PrintStream(new SystemErrWrapper(), true));
 
-		extensions = new ArrayList<Format>();
-		players = new ArrayList<Player>();
-		allPlayers = new ArrayList<Player>();
 		server = new HTTPServer(configuration.getServerPort());
-
-		registerExtensions();
 
 		/*
 		 * XXX: keep this here (i.e. after registerExtensions and before registerPlayers) so that plugins
@@ -502,7 +454,12 @@ public class PMS {
 		// this must always be called *after* the plugins have loaded.
 		// here's as good a place as any
 		Player.initializeFinalizeTranscoderArgsListeners();
-		registerPlayers();
+
+		// Initialize a player factory to register all players
+		PlayerFactory.initialize(configuration);
+
+		// Add registered player engines
+		frame.addEngines();
 
 		// Instantiate listeners that require registered players.
 		ExternalFactory.instantiateLateListeners();
@@ -656,97 +613,6 @@ public class PMS {
 		ProcessWrapperImpl pwinstall = new ProcessWrapperImpl(cmdArray, new OutputParams(configuration));
 		pwinstall.runInSameThread();
 		return pwinstall.isSuccess();
-	}
-
-	/**Add a known set of extensions to the extensions list.
-	 * @see PMS#init()
-	 */
-	private void registerExtensions() {
-		extensions.add(new WEB());
-		extensions.add(new MKV());
-		extensions.add(new M4A());
-		extensions.add(new MP3());
-		extensions.add(new ISO());
-		extensions.add(new MPG());
-		extensions.add(new WAV());
-		extensions.add(new JPG());
-		extensions.add(new OGG());
-		extensions.add(new PNG());
-		extensions.add(new GIF());
-		extensions.add(new TIF());
-		extensions.add(new FLAC());
-		extensions.add(new DVRMS());
-		extensions.add(new RAW());
-	}
-
-	/**Register a known set of audio/video transcoders (known as {@link Player}s). Used in PMS#init().
-	 * @see PMS#init()
-	 */
-	private void registerPlayers() {
-		if (Platform.isWindows()) {
-			registerPlayer(new FFMpegVideo());
-		}
-		registerPlayer(new FFMpegAudio(configuration));
-		registerPlayer(new MEncoderVideo(configuration));
-		if (Platform.isWindows()) {
-			registerPlayer(new MEncoderAviSynth(configuration));
-		}
-		registerPlayer(new MPlayerAudio(configuration));
-		registerPlayer(new MEncoderWebVideo(configuration));
-		registerPlayer(new MPlayerWebVideoDump(configuration));
-		registerPlayer(new MPlayerWebAudio(configuration));
-		registerPlayer(new TSMuxerVideo(configuration));
-		registerPlayer(new TsMuxerAudio(configuration));
-		registerPlayer(new VideoLanAudioStreaming(configuration));
-		registerPlayer(new VideoLanVideoStreaming(configuration));
-		if (Platform.isWindows()) {
-			registerPlayer(new FFMpegDVRMSRemux());
-		}
-		registerPlayer(new RAWThumbnailer());
-		frame.addEngines();
-	}
-
-	/**Adds a single {@link Player} to the list of Players. Used by {@link PMS#registerPlayers()}.
-	 * @param p (Player) to be added to the list
-	 * @see Player
-	 * @see PMS#registerPlayers()
-	 */
-	public void registerPlayer(Player p) {
-		allPlayers.add(p);
-		boolean ok = false;
-		if (Player.NATIVE.equals(p.executable())) {
-			ok = true;
-		} else {
-			if (isWindows()) {
-				if (p.executable() == null) {
-					logger.info("Executable of transcoder profile " + p + " not found");
-					return;
-				}
-				File executable = new File(p.executable());
-				File executable2 = new File(p.executable() + ".exe");
-
-				if (executable.exists() || executable2.exists()) {
-					ok = true;
-				} else {
-					logger.info("Executable of transcoder profile " + p + " not found");
-					return;
-				}
-				if (p.avisynth()) {
-					ok = false;
-					if (registry.isAvis()) {
-						ok = true;
-					} else {
-						logger.info("Transcoder profile " + p + " will not be used because AviSynth was not found");
-					}
-				}
-			} else if (!p.avisynth()) {
-				ok = true;
-			}
-		}
-		if (ok) {
-			logger.info("Registering transcoding engine: " + p /*+ (p.avisynth()?(" with " + (forceMPlayer?"MPlayer":"AviSynth")):"")*/);
-			players.add(p);
-		}
 	}
 
 	/**Transforms a comma separated list of directory entries into an array of {@link String}.
@@ -977,37 +843,15 @@ public class PMS {
 	}
 
 	/**
+	 * @deprecated Use {@link FormatFactory#getAssociatedExtension(filename)}
+	 * instead.
+	 *
 	 * @param filename
 	 * @return The format.
 	 */
+	@Deprecated
 	public Format getAssociatedExtension(String filename) {
-		logger.trace("Search extension for " + filename);
-		for (Format ext : extensions) {
-			if (ext.match(filename)) {
-				logger.trace("Found 1! " + ext.getClass().getName());
-				return ext.duplicate();
-			}
-		}
-		return null;
-	}
-
-	public Player getPlayer(Class<? extends Player> profileClass, Format ext) {
-		for (Player p : players) {
-			if (p.getClass().equals(profileClass) && p.type() == ext.getType() && !p.excludeFormat(ext)) {
-				return p;
-			}
-		}
-		return null;
-	}
-
-	public ArrayList<Player> getPlayers(ArrayList<Class<? extends Player>> profileClasses, int type) {
-		ArrayList<Player> compatiblePlayers = new ArrayList<Player>();
-		for (Player p : players) {
-			if (profileClasses.contains(p.getClass()) && p.type() == type) {
-				compatiblePlayers.add(p);
-			}
-		}
-		return compatiblePlayers;
+		return FormatFactory.getAssociatedExtension(filename);
 	}
 
 	public static void main(String args[]) throws IOException, ConfigurationException {
@@ -1071,12 +915,74 @@ public class PMS {
 		return server;
 	}
 
+	/**
+	 * @deprecated Use {@link FormatFactory#getExtensions()} instead.
+	 *
+	 * @return The list of formats. 
+	 */
 	public ArrayList<Format> getExtensions() {
-		return extensions;
+		return FormatFactory.getExtensions();
 	}
 
+	/**
+	 * @deprecated Use {@link PlayerFactory#registerPlayer(Player)} instead.
+	 *
+	 * Adds a single {@link Player} to the list of Players.
+	 *
+	 * @param player Player to be added to the list.
+	 * @see Player
+	 */
+	@Deprecated
+	public void registerPlayer(Player player) {
+		PlayerFactory.registerPlayer(player);
+	}
+
+	/**
+	 * @deprecated Use {@link PlayerFactory#getPlayers()} instead.
+	 *
+	 * Returns the list of players that have been verified as okay.
+	 * 
+	 * @return The list of players.
+	 */
+	@Deprecated
 	public ArrayList<Player> getPlayers() {
-		return players;
+		return PlayerFactory.getPlayers();
+	}
+
+	/**
+	 * @deprecated Use {@link PlayerFactory#getAllPlayers()} instead.
+	 *
+	 * Returns the list of all players. This includes the ones not verified as
+	 * being okay.
+	 * 
+	 * @return The list of players.
+	 */
+	public ArrayList<Player> getAllPlayers() {
+		return PlayerFactory.getAllPlayers();
+	}
+
+	/**
+	 * @deprecated Use {@link PlayerFactory#getPlayer(Class, Format)} instead.
+	 * 
+	 * @param profileClass
+	 * @param ext
+	 * @return
+	 */
+	@Deprecated
+	public Player getPlayer(Class<? extends Player> profileClass, Format ext) {
+		return PlayerFactory.getPlayer(profileClass, ext);
+	}
+
+	/**
+	 * @deprecated Use {@link PlayerFactory#getPlayers(ArrayList, int)} instead.
+	 * 
+	 * @param profileClasses
+	 * @param type
+	 * @return
+	 */
+	@Deprecated
+	public ArrayList<Player> getPlayers(ArrayList<Class<? extends Player>> profileClasses, int type) {
+		return PlayerFactory.getPlayers(profileClasses, type);
 	}
 
 	public void save() {

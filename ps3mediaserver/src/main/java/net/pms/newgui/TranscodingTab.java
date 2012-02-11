@@ -56,6 +56,7 @@ import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.encoders.Player;
+import net.pms.encoders.PlayerFactory;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
@@ -281,7 +282,7 @@ public class TranscodingTab {
 
 		for (String id : configuration.getEnginesAsList(r.getRegistry())) {
 			//boolean matched = false;
-			for (Player p : PMS.get().getAllPlayers()) {
+			for (Player p : PlayerFactory.getAllPlayers()) {
 				if (p.id().equals(id)) {
 					ordPlayers.add(p);
 					//matched = true;
@@ -289,7 +290,7 @@ public class TranscodingTab {
 			}
 		}
 
-		for (Player p : PMS.get().getAllPlayers()) {
+		for (Player p : PlayerFactory.getAllPlayers()) {
 			if (!ordPlayers.contains(p)) {
 				ordPlayers.add(p);
 				disPlayers.add(p);

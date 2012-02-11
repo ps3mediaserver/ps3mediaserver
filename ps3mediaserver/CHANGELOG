@@ -1,13 +1,15 @@
 Changelog:
 ==========
 
-????-??-?? - 1.50.1
+1.50.2 - 2012-??-??
+
+1.50.1 - 2012-01-28
+
 	Fixed DLNAResource cloning problem (#1274)
 	Added renderer configuration file for Philips TV (thanks, leroy!)
 	Fixed bug in RootFolder (#1243)
 	Improved child discovery for the root folder
 	Enhanced network interface handling (#659)
-	Updated MPlayer and MEncoder revisions to SB19
 	Fixed bug in Navigation Share tab
 	Added Solaris specific ping command (#1277)
 	Fixed problem parsing framerates with comma (#1278)
@@ -19,21 +21,30 @@ Changelog:
 	Updated Samsung AllShare configuration to recognize newest firmware
 	Added support for WDHD Live and AirAv app (thanks, ehM.Deee!)
 	Migrated PMS source to GitHub (https://github.com/ps3mediaserver/ps3mediaserver)
-	Added commit information
+	Log build's commit id/date
 	Added subtitle HTTP header support for SamsungAllShare (thanks, SamiMakinen!)
-	Made streaming and transcoding logic better configurable (thanks, StreamHD!)
+	Made streaming and transcoding logic more configurable (thanks, StreamHD!)
+	Added country code thumbnails (thanks, happy-neko!)
+	Updated FFmpeg to r35509 from r31564
+	Updated JRE auto-download to 7u2 from 7u1
+	Updated MediaInfo to 0.7.53 from 0.7.51
+	Fixed delay when entering the media server
+	Language updates:
+		- Russian (thanks, Tianuchka!)
+		- Clarified some settings in all languages
+	Updated MPlayer/MEncoder to SB22 from SB18
 
-2011-11-20 - 1.50.0
+1.50.0 - 2011-11-20
 
 	Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3qtgk5k for more details
 	Updated binaries build script to include Linux support (thanks, happy.neko!)
 	Updated OS X MPlayer to include fontconfig support
 	Language updates:
-		Updated Bulgarian translation (thanks, JORDITO!)
-		Updated German translation (thanks, smo!)
-		Updated Dutch translation
-		Clarified English language labels
-		Speeds displayed in Mb/s instead of Kb/s
+		- Updated Bulgarian translation (thanks, JORDITO!)
+		- Updated German translation (thanks, smo!)
+		- Updated Dutch translation
+		- Clarified English language labels
+		- Speeds displayed in Mb/s instead of Kb/s
 	Added full featured IP filter with support for wildcards and ranges
 	Improved network interface choosing algorithm now skips virtual interfaces
 	Updated libraries (configuration, jgoodies and slf4j)
@@ -54,7 +65,7 @@ Changelog:
 	We now support Samsung AllShare, along with our existing support for Samsung WiseLink
 	Allow to configure subtitle color if using PMS in headless mode (#1280)
 
-2011-09-22 - 1.40.0
+1.40.0 - 2011-09-22
 
 	Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3wspwn8 for more details
 	Updated OS X MPlayer to enable external VOBsub, ASS/SSA and Fribidi support
@@ -83,11 +94,11 @@ Changelog:
 	Removed IP/hostname from Status tab (still shown in Traces)
 	Updated libraries (codec, gson, jgoodies, logback and netty)
 
-2011-07-06 - 1.30.1
+1.30.1 - 2011-07-06
 
 	Fixed bug that caused very slow iTunes library parsing
 
-2011-07-05 - 1.30.0
+1.30.0 - 2011-07-05
 
 	Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3hbqv4l for more details
 	Updated OS X binaries (FFmpeg, MEncoder and MPlayer) to fix an AC3 bug and improve internal VOBsub display quality
@@ -106,11 +117,11 @@ Changelog:
 	New Korean translation (thanks, mrahn80)
 	Fixed bug where config sometimes wouldn't save on Windows 7
 
-2011-06-17 - 1.25.1
+1.25.1 - 2011-06-17
 
 	Overscan compensation bug fixed
 
-2011-06-16 - 1.25.0
+1.25.0 - 2011-06-16
 
 	Overscan compensation feature added for MEncoder
 	Return of the official OS X build, thanks for your patience!
@@ -118,7 +129,7 @@ Changelog:
 	New build script for OS X that builds all dependencies (big thanks to Raptor399)
 	French translation fixed
 
-2011-06-14 - 1.24.0
+1.24.0 - 2011-06-14
 
 	New icon on OS X
 	Added Bulgarian and Brazilian Portuguese translation (thanks to jordito and gelo)
@@ -134,7 +145,7 @@ Changelog:
 	Support for multi-language VOBsub subtitles
 	It's possible to remove hard drives from list if they are no longer connected (thanks, spots)
 
-2011-05-26 - 1.23.0
+1.23.0 - 2011-05-26
 
 	Fixed Windows service
 	Windows service now starts automatically with the computer
@@ -145,7 +156,7 @@ Changelog:
 	Detect Popcorn Hour and WDTV live more reliably
 	English, Russian and Dutch language updates
 
-2011-05-15 - 1.22.0
+1.22.0 - 2011-05-15
 
 	Many file compatibility bugs fixed (particularly MKV, MP4 and DVD ISO)
 	Help tab improved
@@ -157,13 +168,13 @@ Changelog:
 	48fps videos are now supported
 	Various other fixes
 
-2011-04-15 - 1.21.1
+1.21.1 - 2011-04-15
 
 	Rollback MPlayer for Windows to fix critical subtitle bug
 	Add extra information to Windows uninstaller
 	Fix NPE when toggling HTTP Engine V2
 
-2011-04-12 - 1.21.0
+1.21.0 - 2011-04-12
 
 	Support new devices: Android, Nokia N900
 	Improved support for XBMC
@@ -198,7 +209,7 @@ Changelog:
 	Improved support for VLC Media Player
 	Fixed many minor bugs
 
-2010-10-04 - 1.20.412 Beta
+1.20.412 Beta - 2010-10-04
 
 	Fixed DTSWAV support on PS3 and FLAC 24bits/96kHz with Video
 	Fixed seeking issues on PS3 firmware 3.50
@@ -208,7 +219,7 @@ Changelog:
 	RAW generation fixed
 	Custom mencoder quality settings for a given renderer
 
-2010-03-27 - 1.20.409 Beta
+1.20.409 Beta - 2010-03-27
 
 	- Changes / Features
 
@@ -262,7 +273,7 @@ Changelog:
 	Linux: Included PMS.conf and fixed the permissions on executables
 	FreeBSD: Fixed transcoding
 
-2009-03-08 - 1.10.5
+1.10.5 - 2009-03-08
 
 	- Fixes:
 
@@ -273,7 +284,7 @@ Changelog:
 	Duplicate items issue on Linux
 	Upnp alive message sent sooner at the start of the server
 
-2009-03-02 - 1.10
+1.10 - 2009-03-02
 
 	- Changes / Features : Windows/Linux
 
@@ -309,7 +320,7 @@ Changelog:
 	Fixed tsMuxeR crash at the end of file
 	Modified UPNP discovery [work in progress]
 
-2009-02-04 - 1.04
+1.04 - 2009-02-04
 
 	- Changes / Features
 
@@ -336,7 +347,7 @@ Changelog:
 	Buffer issues with transcoded audio files lasting more than 10 minutes
 	Fixed RSS parsing with some feeds
 
-2009-01-18 - 1.03
+1.03 - 2009-01-18
 
 	- Changes / Features
 
@@ -366,7 +377,7 @@ Changelog:
 	Unavailable engines exclusion on OSX/Linux
 	Fixed console mode on Linux
 
-2009-01-05 - 1.02.1
+1.02.1 - 2009-01-05
 
 	- New features
 
@@ -379,7 +390,7 @@ Changelog:
 	Media library small fixes
 	Subtitles now work by default on OSX
 
-2009-01-04 - 1.02
+1.02 - 2009-01-04
 
 	- New features
 
@@ -403,7 +414,7 @@ Changelog:
 	Newest builds of ffmpeg/mplayer/mencoder for win32
 	Usual bunch of fixes
 
-2008-12-18 - 1.01
+1.01 - 2008-12-18
 
 	- New features
 
@@ -419,7 +430,7 @@ Changelog:
 	seeking issues with dvr-ms and tsMuxeR with AC3/PCM mode
 	Displayed aspect ratio preserved
 
-2008-12-14 - 1.00
+1.00 - 2008-12-14
 
 	- New Features
 
@@ -439,7 +450,7 @@ Changelog:
 	Added wmv binary codecs in Windows package for smooth WMV-HD transcoding  
 	Rare and random video glitch due to another seeking bug
 
-2008-12-12 - 0.99
+0.99 - 2008-12-12
 
 	- New features:
 
