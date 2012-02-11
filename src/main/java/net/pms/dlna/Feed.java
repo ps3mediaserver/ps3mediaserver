@@ -161,15 +161,13 @@ public class Feed extends DLNAResource {
 				}
 			}
 		}
-		if ("thumbnail".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())) {
-			if (getTempItemThumbURL() == null) {
-				setTempItemThumbURL(elt.getAttribute("url").getValue());
-			}
+		if ("thumbnail".equals(elt.getName()) && "media".equals(elt.getNamespacePrefix())
+				&& getTempItemThumbURL() == null) {
+			setTempItemThumbURL(elt.getAttribute("url").getValue());
 		}
-		if ("image".equals(elt.getName()) && "exInfo".equals(elt.getNamespacePrefix())) {
-			if (getTempItemThumbURL() == null) {
-				setTempItemThumbURL(elt.getValue());
-			}
+		if ("image".equals(elt.getName()) && "exInfo".equals(elt.getNamespacePrefix())
+				&& getTempItemThumbURL() == null) {
+			setTempItemThumbURL(elt.getValue());
 		}
 	}
 

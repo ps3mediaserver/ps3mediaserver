@@ -644,10 +644,8 @@ public class DLNAMediaDatabase implements Runnable {
 			logger.error("Error in compacting database: ", s);
 		} finally {
 			File testsql = new File(file);
-			if (testsql.exists()) {
-				if (!testsql.delete()) {
-					testsql.deleteOnExit();
-				}
+			if (testsql.exists() && !testsql.delete()) {
+				testsql.deleteOnExit();
 			}
 		}
 		PMS.get().getFrame().setStatusLine(null);

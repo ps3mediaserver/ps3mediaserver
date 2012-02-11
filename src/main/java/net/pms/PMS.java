@@ -319,10 +319,9 @@ public class PMS {
 		configuration.addConfigurationListener(new ConfigurationListener() {
 			@Override
 			public void configurationChanged(ConfigurationEvent event) {
-				if (!event.isBeforeUpdate()) {
-					if (PmsConfiguration.NEED_RELOAD_FLAGS.contains(event.getPropertyName())) {
-						frame.setReloadable(true);
-					}
+				if ((!event.isBeforeUpdate())
+						&& PmsConfiguration.NEED_RELOAD_FLAGS.contains(event.getPropertyName())) {
+					frame.setReloadable(true);
 				}
 			}
 		});
@@ -962,10 +961,10 @@ public class PMS {
 	}
 
 	public void storeFileInCache(File file, int formatType) {
-		if (getConfiguration().getUseCache()) {
-			if (!getDatabase().isDataExists(file.getAbsolutePath(), file.lastModified())) {
-				getDatabase().insertData(file.getAbsolutePath(), file.lastModified(), formatType, null);
-			}
+		if (getConfiguration().getUseCache()
+				&& !getDatabase().isDataExists(file.getAbsolutePath(), file.lastModified())) {
+
+			getDatabase().insertData(file.getAbsolutePath(), file.lastModified(), formatType, null);
 		}
 	}
 

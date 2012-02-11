@@ -77,13 +77,12 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	 */
 	@Override
 	public void disableGoToSleep() {
-		if (PMS.getConfiguration().isPreventsSleep()) {
-			// Disable go to sleep (every 40s)
-			if (System.currentTimeMillis() - lastDontSleepCall > 40000) {
-				logger.trace("Calling SetThreadExecutionState ES_SYSTEM_REQUIRED");
-				Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_SYSTEM_REQUIRED | Kernel32.ES_CONTINUOUS);
-				lastDontSleepCall = System.currentTimeMillis();
-			}
+		// Disable go to sleep (every 40s)
+		if (PMS.getConfiguration().isPreventsSleep()
+				&& System.currentTimeMillis() - lastDontSleepCall > 40000) {
+			logger.trace("Calling SetThreadExecutionState ES_SYSTEM_REQUIRED");
+			Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_SYSTEM_REQUIRED | Kernel32.ES_CONTINUOUS);
+			lastDontSleepCall = System.currentTimeMillis();
 		}
 	}
 
@@ -92,13 +91,12 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	 */
 	@Override
 	public void reenableGoToSleep() {
-		if (PMS.getConfiguration().isPreventsSleep()) {
-			// Reenable go to sleep
-			if (System.currentTimeMillis() - lastGoToSleepCall > 40000) {
-				logger.trace("Calling SetThreadExecutionState ES_CONTINUOUS");
-				Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_CONTINUOUS);
-				lastGoToSleepCall = System.currentTimeMillis();
-			}
+		// Reenable go to sleep
+		if (PMS.getConfiguration().isPreventsSleep()
+				&& System.currentTimeMillis() - lastGoToSleepCall > 40000) {
+			logger.trace("Calling SetThreadExecutionState ES_CONTINUOUS");
+			Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_CONTINUOUS);
+			lastGoToSleepCall = System.currentTimeMillis();
 		}
 	}
 

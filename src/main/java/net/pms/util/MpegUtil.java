@@ -65,10 +65,10 @@ public class MpegUtil {
 			Integer id = (((buffer[i + 1] + 256) % 256) - 64) * 256 + ((buffer[i + 2] + 256) % 256); // calc id
 			if (buffer[i + 7] == -32 && buffer[i + 6] == 1) {
 				int diff = i + 7 + 4; // 47 50 11 11 00 00 01 E0 00 00 84 C0
-				if ((buffer[diff] & 128) == 128 && (buffer[diff + 2] & 32) == 32) { // check pts
-					if (pts.get(id) == null || (pts.get(id) != null && end)) {
-						pts.put(id, new Integer(getTS(buffer, diff + 3)));
-					}
+				// check pts
+				if ((buffer[diff] & 128) == 128 && (buffer[diff + 2] & 32) == 32
+						&& (pts.get(id) == null || (pts.get(id) != null && end))) {
+					pts.put(id, new Integer(getTS(buffer, diff + 3)));
 				}
 			}
 		}

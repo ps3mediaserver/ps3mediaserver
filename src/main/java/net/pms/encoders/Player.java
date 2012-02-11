@@ -242,23 +242,28 @@ public abstract class Player {
 				for (DLNAMediaSubtitle sub : media.getSubtitlesCodes()) {
 					if (matchedSub !=null && matchedSub.getLang() !=null && matchedSub.getLang().equals("off")) {
 						StringTokenizer st = new StringTokenizer(configuration.getMencoderForcedSubTags(), ",");
+
 						while (st != null && sub.getFlavor() != null && st.hasMoreTokens()) {
 							String forcedTags = st.nextToken();
 							forcedTags = forcedTags.trim();
-							if (sub.getFlavor().toLowerCase().indexOf(forcedTags) > -1) {
-								if (Iso639.isCodesMatching(sub.getLang(),configuration.getMencoderForcedSubLanguage())) {
-									logger.trace("Forcing preferred subtitles : " + sub.getLang() + "/" + sub.getFlavor());
-									logger.trace("Forced subtitles track : " + sub);
-									if (sub.getFile() != null) {
-										logger.trace("Found external forced file : " + sub.getFile().getAbsolutePath());
-									}
-									params.sid = sub;
-									forcedSubsFound = true;
-									break;
+
+							if (sub.getFlavor().toLowerCase().indexOf(forcedTags) > -1
+									&& Iso639.isCodesMatching(sub.getLang(), configuration.getMencoderForcedSubLanguage())) {
+
+								logger.trace("Forcing preferred subtitles : " + sub.getLang() + "/" + sub.getFlavor());
+								logger.trace("Forced subtitles track : " + sub);
+
+								if (sub.getFile() != null) {
+									logger.trace("Found external forced file : " + sub.getFile().getAbsolutePath());
 								}
+								params.sid = sub;
+								forcedSubsFound = true;
+								break;
 							}
 						}
-						if (forcedSubsFound == true) break;
+						if (forcedSubsFound == true) {
+							break;
+						}
 					} else {
 							logger.trace("Found subtitles track: " + sub);
 							if (sub.getFile() != null) {

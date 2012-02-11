@@ -641,10 +641,8 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			}
 			this.bufferOverflowWarning = newMargin;
 		}
-		if (eof) {
-			if (readCount >= writeCount) {
-				return -1;
-			}
+		if (eof && readCount >= writeCount) {
+			return -1;
 		}
 		int c = 0;
 		int minBufferS = firstRead ? minMemorySize : secondread_minsize;
@@ -672,10 +670,8 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 		int mb = (int) (readCount % maxMemorySize);
 		int endOF = buffer.length;
 		int cut = 0;
-		if (eof) {
-			if ((writeCount - readCount) < len) {
-				cut = (int) (len - (writeCount - readCount));
-			}
+		if (eof && (writeCount - readCount) < len) {
+			cut = (int) (len - (writeCount - readCount));
 		}
 
 		if (mb >= endOF - len) {

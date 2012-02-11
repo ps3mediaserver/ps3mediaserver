@@ -257,17 +257,13 @@ public class MapFile extends DLNAResource {
 		List<DLNAResource> removedFiles = new ArrayList<DLNAResource>();
 		for (DLNAResource d : getChildren()) {
 			boolean isNeedMatching = !(d.getClass() == MapFile.class ||  (d instanceof VirtualFolder && !(d instanceof DVDISOFile)) );
-			if (isNeedMatching) {
-				if (!foundInList(files, d)) {
-					removedFiles.add(d);
-				}
+			if (isNeedMatching && !foundInList(files, d)) {
+				removedFiles.add(d);
 			}
 		}
 		for (File f : files) {
-			if (!f.isHidden()) {
-				if (f.isDirectory() || FormatFactory.getAssociatedExtension(f.getName()) != null) {
-					addedFiles.add(f);
-				}
+			if (!f.isHidden() && (f.isDirectory() || FormatFactory.getAssociatedExtension(f.getName()) != null)) {
+				addedFiles.add(f);
 			}
 		}
 
@@ -304,11 +300,9 @@ public class MapFile extends DLNAResource {
 
 	private boolean foundInList(List<File> files, DLNAResource d) {
 		for (File f: files) {
-			if (!f.isHidden()) {
-				if (isNameMatch(f, d) && (isRealFolder(d) || isSameLastModified(f, d))) {
-					files.remove(f);
-					return true;
-				}
+			if (!f.isHidden() && isNameMatch(f, d) && (isRealFolder(d) || isSameLastModified(f, d))) {
+				files.remove(f);
+				return true;
 			}
 		}
 		return false;
