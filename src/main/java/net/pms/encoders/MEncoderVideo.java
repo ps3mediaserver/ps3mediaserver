@@ -1233,8 +1233,36 @@ public class MEncoderVideo extends Player {
 			oaccopy = true;
 		}
 
-		dts = configuration.isDTSEmbedInPCM() && (!dvd || configuration.isMencoderRemuxMPEG2()) && params.aid != null && params.aid.isDTS() && !avisynth() && params.mediaRenderer.isDTSPlayable();
-		pcm = configuration.isMencoderUsePcm() && (!dvd || configuration.isMencoderRemuxMPEG2()) && (params.aid != null && (params.aid.isDTS() || params.aid.isLossless())) && params.mediaRenderer.isMuxLPCMToMpeg();
+		dts = configuration.isDTSEmbedInPCM() && 
+			(
+				!dvd ||
+				configuration.isMencoderRemuxMPEG2()
+			) && params.aid != null &&
+			params.aid.isDTS() &&
+			!avisynth() &&
+			params.mediaRenderer.isDTSPlayable();
+		pcm = configuration.isMencoderUsePcm() &&
+			(
+				!dvd || 
+				configuration.isMencoderRemuxMPEG2()
+			) && 
+			params.aid != null &&
+			(
+				params.aid.isDTS() ||
+				params.aid.isLossless() ||
+				params.aid.isTrueHD() ||
+				(
+					!configuration.isMencoderUsePcmForHQAudioOnly() &&
+					(
+						params.aid.isAC3() ||
+						params.aid.isMP3() ||
+						params.aid.isAAC() ||
+						params.aid.isVorbis() ||
+						params.aid.isWMA() ||
+						params.aid.isMpegAudio()
+					)
+				)
+			) && params.mediaRenderer.isLPCMPlayable();
 
 		if (dts || pcm) {
 			if (dts) {
