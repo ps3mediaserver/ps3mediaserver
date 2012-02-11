@@ -193,11 +193,13 @@ public class BasicSystemUtils implements SystemUtils {
 	}
 
 	/**
-	 * Return the platform specific ping command. 
-	 * @param hostAddress
-	 * @param count
-	 * @param packetSize
-	 * @return
+	 * Return the platform specific ping command for the given host address,
+	 * ping count and packet size.
+	 *
+	 * @param hostAddress The host address.
+	 * @param count The ping count.
+	 * @param packetSize The packet size.
+	 * @return The ping command.
 	 */
 	@Override
 	public String[] getPingCommand(String hostAddress, int count, int packetSize) {

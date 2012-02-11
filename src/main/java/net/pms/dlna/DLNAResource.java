@@ -841,10 +841,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**
-	 * This method gets called only for the browsed folder, and not for the parent folders. (And in the media library scan step too). 
-	 * Override in plugins, when you doesn't want to implement proper change tracking, and you don't care if the 
-	 * hierarchy of nodes getting invalid between.  
-	 * @return
+	 * This method gets called only for the browsed folder, and not for the
+	 * parent folders. (And in the media library scan step too). Override in
+	 * plugins when you do not want to implement proper change tracking, and
+	 * you do not care if the hierarchy of nodes getting invalid between.
+	 *
+	 * @return True when a refresh is needed, false otherwise.
 	 */
 	public boolean refreshChildren() {
 		if (isRefreshNeeded()) {

@@ -27,11 +27,15 @@ package net.pms.io;
 public class SolarisUtils extends BasicSystemUtils {
 
 	/**
-	 * Return the Solaris specific ping command  : ping -s host-address packetSize numberOfPackets
-	 * @param hostAddress
-	 * @param numberOfPackets
-	 * @param packetSize
-	 * @return
+	 * Return the Solaris specific ping command for the given host address,
+	 * ping count and packet size:
+	 * <p>
+	 * <code>ping -s [hostAddress] [packetSize] [numberOfPackets]</code>
+	 *
+	 * @param hostAddress The host address.
+	 * @param numberOfPackets The ping count.
+	 * @param packetSize The packet size.
+	 * @return The ping command.
 	 */
 	@Override
 	public String[] getPingCommand(String hostAddress, int numberOfPackets, int packetSize) {

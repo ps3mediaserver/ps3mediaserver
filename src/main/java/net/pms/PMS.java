@@ -811,7 +811,7 @@ public class PMS {
 	}
 
 	/**
-	 * @deprecated Use {@link FormatFactory#getAssociatedExtension(filename)}
+	 * @deprecated Use {@link FormatFactory#getAssociatedExtension(String)}
 	 * instead.
 	 *
 	 * @param filename
@@ -934,7 +934,7 @@ public class PMS {
 	 * 
 	 * @param profileClass
 	 * @param ext
-	 * @return
+	 * @return The player if a match could be found
 	 */
 	@Deprecated
 	public Player getPlayer(Class<? extends Player> profileClass, Format ext) {
@@ -946,7 +946,7 @@ public class PMS {
 	 * 
 	 * @param profileClasses
 	 * @param type
-	 * @return
+	 * @return The list of players that match
 	 */
 	@Deprecated
 	public ArrayList<Player> getPlayers(ArrayList<Class<? extends Player>> profileClasses, int type) {

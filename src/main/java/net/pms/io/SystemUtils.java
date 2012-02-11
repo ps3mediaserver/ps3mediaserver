@@ -50,11 +50,13 @@ public interface SystemUtils {
 	public byte[] getHardwareAddress(NetworkInterface ni) throws SocketException;
 
 	/**
-	 * Return the platform specific ping command. 
-	 * @param hostAddress
-	 * @param count
-	 * @param packetSize
-	 * @return
+	 * Return the platform specific ping command for the given host address,
+	 * ping count and packet size.
+	 *
+	 * @param hostAddress The host address.
+	 * @param count The ping count.
+	 * @param packetSize The packet size.
+	 * @return The ping command.
 	 */
 	String[] getPingCommand(String hostAddress, int count, int packetSize);
 }

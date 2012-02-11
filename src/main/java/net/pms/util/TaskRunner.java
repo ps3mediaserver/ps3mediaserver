@@ -146,7 +146,7 @@ public class TaskRunner {
 	}
 
 	/**
-	 * @return
+	 * @return True if all tasks have completed following shutdown.
 	 * @see java.util.concurrent.ExecutorService#isTerminated()
 	 */
 	public boolean isTerminated() {
@@ -156,7 +156,7 @@ public class TaskRunner {
 	/**
 	 * @param timeout
 	 * @param unit
-	 * @return
+	 * @return true if this executor terminated and false if the timeout elapsed before termination.
 	 * @throws InterruptedException
 	 * @see java.util.concurrent.ExecutorService#awaitTermination(long, java.util.concurrent.TimeUnit)
 	 */
