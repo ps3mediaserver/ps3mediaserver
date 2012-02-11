@@ -18,6 +18,11 @@
  */
 package net.pms.dlna;
 
+import net.pms.configuration.RendererConfiguration;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class keeps track of the audio properties of media.
  * 
@@ -28,6 +33,8 @@ package net.pms.dlna;
  * removed.
  */
 public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAMediaAudio.class);
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
@@ -124,6 +131,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 			try {
 				sr = Integer.parseInt(getSampleFrequency());
 			} catch (NumberFormatException e) {
+				LOGGER.debug("Could not parse sample rate from \"" + getSampleFrequency() + "\"");
 			}
 		}
 		return sr;

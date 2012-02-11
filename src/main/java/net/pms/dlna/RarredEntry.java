@@ -120,6 +120,7 @@ public class RarredEntry extends DLNAResource implements IPushOutput {
 						rarFile.close();
 						out.close();
 					} catch (IOException e) {
+						logger.debug("Caught exception", e);
 					}
 				}
 			}

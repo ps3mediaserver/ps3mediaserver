@@ -114,6 +114,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 						zipFile.close();
 						out.close();
 					} catch (IOException e) {
+						logger.debug("Caught exception", e);
 					}
 				}
 			}

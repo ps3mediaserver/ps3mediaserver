@@ -153,6 +153,7 @@ public class HTTPServer implements Runnable {
 				serverSocket.close();
 				serverSocketChannel.close();
 			} catch (IOException e) {
+				logger.debug("Caught exception", e);
 			}
 		} else if (channel != null) {
 			if (group != null) {

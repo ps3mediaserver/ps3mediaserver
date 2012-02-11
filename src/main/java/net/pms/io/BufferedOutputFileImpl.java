@@ -765,6 +765,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			try {
 				debugOutput.close();
 			} catch (IOException e) {
+				logger.debug("Caught exception", e);
 			}
 		}
 		timer.cancel();

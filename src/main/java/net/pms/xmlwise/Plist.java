@@ -8,6 +8,11 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.Closeable;
 
+import net.pms.newgui.TreeNodeSettings;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @SuppressWarnings("unchecked")
 /**
  * Plist xml handling (serialization and deserialization)
@@ -45,6 +50,8 @@ import java.io.Closeable;
  * @author Christoffer Lerno
  */
 public final class Plist {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Plist.class);
+
 	/**
 	 * Singleton instance.
 	 */
@@ -124,7 +131,7 @@ public final class Plist {
 				closeable.close();
 			}
 		} catch (IOException e) {
-			// Ignore
+			LOGGER.debug("Caught exception", e);
 		}
 	}
 

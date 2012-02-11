@@ -45,6 +45,7 @@ public class RendererConfiguration {
 		try {
 			defaultConf = new RendererConfiguration();
 		} catch (ConfigurationException e) {
+			logger.debug("Caught exception", e);
 		}
 
 		File renderersDir = getRenderersDir();

@@ -754,6 +754,7 @@ public class RootFolder extends DLNAResource {
 					try {
 						configuration.save();
 					} catch (ConfigurationException e) {
+						logger.debug("Caught exception", e);
 					}
 					return true;
 				}

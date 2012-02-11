@@ -296,6 +296,7 @@ public class DLNAMediaInfo implements Cloneable {
 				try {
 					putExtra(st.nextToken(), st.nextToken());
 				} catch (NoSuchElementException nsee) {
+					logger.debug("Caught exception", nsee);
 				}
 			}
 		}
@@ -790,7 +791,8 @@ public class DLNAMediaInfo implements Cloneable {
 												setFrameRate(String.format(Locale.ENGLISH, "%.2f", frameRateDouble / 2));
 											}
 										} catch (NumberFormatException nfe) {
-											// No need to log, could happen if tbc is "1k" or something like that, no big deal
+											// Could happen if tbc is "1k" or something like that, no big deal
+											logger.debug("Could not parse frame rate \"" + frameRateDoubleString + "\"");
 										}
 
 									} else if ((token.indexOf("tbr") > -1 || token.indexOf("tb(r)") > -1) && getFrameRate() == null) {
@@ -804,8 +806,13 @@ public class DLNAMediaInfo implements Cloneable {
 										}
 										try {
 											setWidth(Integer.parseInt(resolution.substring(0, resolution.indexOf("x"))));
+										} catch (NumberFormatException nfe) {
+											logger.debug("Could not parse width from \"" + resolution.substring(0, resolution.indexOf("x")) + "\"");
+										}
+										try {
 											setHeight(Integer.parseInt(resolution.substring(resolution.indexOf("x") + 1)));
 										} catch (NumberFormatException nfe) {
+											logger.debug("Could not parse height from \"" + resolution.substring(resolution.indexOf("x") + 1) + "\"");
 										}
 									}
 								}
@@ -880,6 +887,7 @@ public class DLNAMediaInfo implements Cloneable {
 							}
 						}
 					} catch (IOException e) {
+						logger.debug("Caught exception", e);
 					}
 				}
 
@@ -970,6 +978,7 @@ public class DLNAMediaInfo implements Cloneable {
 			double s = Double.parseDouble(st.nextToken());
 			return h * 3600 + m * 60 + s;
 		} catch (NumberFormatException nfe) {
+			logger.debug("Failed to parse duration \"" + duration + "\"");
 		}
 		return null;
 	}
@@ -1161,10 +1170,11 @@ public class DLNAMediaInfo implements Cloneable {
 			return (int) (getBitrate() / 8);
 		}
 		int realBitrate = 10000000;
-		try {
+
+		if (getDurationInSeconds() != 0) {
 			realBitrate = (int) (getSize() / getDurationInSeconds());
-		} catch (Throwable t) {
 		}
+
 		return realBitrate;
 	}
 
@@ -1265,6 +1275,7 @@ public class DLNAMediaInfo implements Cloneable {
 				returnData[1] = header;
 			}
 		} catch (IOException e) {
+			logger.debug("Caught exception", e);
 		}
 		return returnData;
 	}

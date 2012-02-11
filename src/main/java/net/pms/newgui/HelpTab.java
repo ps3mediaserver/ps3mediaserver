@@ -33,6 +33,10 @@ import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.pms.configuration.RendererConfiguration;
 import net.pms.util.PropertiesUtil;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -43,6 +47,8 @@ import com.jgoodies.forms.layout.FormLayout;
  * Sets up the panel for the help tab and loads its contents from a file.
  */
 public class HelpTab {
+	private static final Logger LOGGER = LoggerFactory.getLogger(HelpTab.class);
+
 	private JEditorPane editorPane;
 
 	/**
@@ -76,9 +82,9 @@ public class HelpTab {
 			// Display the HTML help file in the editor
 			editorPane.setPage(file.toURI().toURL());
 		} catch (MalformedURLException e) {
-			// TODO: log error
+			LOGGER.debug("Caught exception", e);
 		} catch (IOException e) {
-			// TODO: log error
+			LOGGER.debug("Caught exception", e);
 		}
 
 		// Enable internal anchor links
@@ -99,9 +105,9 @@ public class HelpTab {
 						}
 					}
 				} catch (IOException e) {
-					// TODO: log error
+					LOGGER.debug("Caught exception", e);
 				} catch (URISyntaxException e) {
-					// TODO: log error
+					LOGGER.debug("Caught exception", e);
 				}
 			}
 		});

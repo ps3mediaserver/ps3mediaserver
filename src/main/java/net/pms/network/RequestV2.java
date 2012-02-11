@@ -760,6 +760,7 @@ public class RequestV2 extends HTTPResource {
 							PMS.get().getRegistry().reenableGoToSleep();
 							inputStream.close();
 						} catch (IOException e) {
+							logger.debug("Caught exception", e);
 						}
 
 						// Always close the channel after the response is sent because of
@@ -774,6 +775,7 @@ public class RequestV2 extends HTTPResource {
 					PMS.get().getRegistry().reenableGoToSleep();
 					inputStream.close();
 				} catch (IOException ioe) {
+					logger.debug("Caught exception", ioe);
 				}
 
 				if (close) {
