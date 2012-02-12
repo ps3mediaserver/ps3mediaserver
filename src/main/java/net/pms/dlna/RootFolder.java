@@ -291,16 +291,17 @@ public class RootFolder extends DLNAResource {
 									parent.addChild(new WebVideoStream(values[0], values[1], values[2]));
 								}
 							}
-							// catch exception here and go with parsing
 						} catch (ArrayIndexOutOfBoundsException e) {
+							// catch exception here and go with parsing
 							logger.info("Error at line " + br.getLineNumber() + " of WEB.conf: " + e.getMessage());
+							logger.debug(null, e);
 						}
 					}
 				}
 				br.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Unexpected error in WEB.conf: " + e.getMessage());
+			} catch (IOException e) {
+				logger.info("Unexpected error in WEB.conf" + e.getMessage());
+				logger.debug(null, e);
 			}
 		}
 	}
@@ -389,9 +390,13 @@ public class RootFolder extends DLNAResource {
 						res.addChild(rf);
 					}
 				} else {
-					logger.info("iPhoto folder not found !?");
+					logger.info("iPhoto folder not found");
 				}
-			} catch (Exception e) {
+			} catch (XmlParseException e) {
+				logger.error("Something went wrong with the iPhoto Library scan: ", e);
+			} catch (URISyntaxException e) {
+				logger.error("Something went wrong with the iPhoto Library scan: ", e);
+			} catch (IOException e) {
 				logger.error("Something went wrong with the iPhoto Library scan: ", e);
 			}
 		}
