@@ -32,13 +32,12 @@ import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.enumarations.SortOption;
 import net.pms.medialibrary.commons.exceptions.StorageException;
 
-class DBFileInfo {
+class DBFileInfo extends DBBase {
 	private static final Logger log = LoggerFactory.getLogger(DBFileInfo.class);
 	protected static final String GENRE_KEY = "_X-?__GENRE__%*Y_";
-	protected JdbcConnectionPool cp;
 	
 	DBFileInfo(JdbcConnectionPool cp){
-		this.cp = cp;
+		super(cp);
 	}
 	
 	/*********************************************
@@ -72,9 +71,7 @@ class DBFileInfo {
 		} catch (SQLException ex) {
 			throw new StorageException("Failed to get tags for file type=" + fileType, ex);
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt, rs);
 		}		
 		
 		return retVal;
@@ -108,9 +105,7 @@ class DBFileInfo {
 		} catch (SQLException ex) {
 			throw new StorageException("Failed to get available values for tag=" + tagName, ex);
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt, rs);
 		}		
 		
 		return retVal;
@@ -126,8 +121,7 @@ class DBFileInfo {
 		} catch (Exception e) {
 			throw new StorageException("Failed to delete file with id=" + id, e);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex) { } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex) { } finally { conn = null; }
+			close(conn, stmt);
 		}		
 	}
 	
@@ -151,7 +145,7 @@ class DBFileInfo {
 	void deleteFileInfoByFilePath(String filePath) throws StorageException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
-		ResultSet res = null;
+		ResultSet rs = null;
 		
 		int pos = filePath.lastIndexOf(File.separatorChar) + 1;
 		String fileName = filePath.substring(0, pos);
@@ -162,17 +156,15 @@ class DBFileInfo {
 			stmt = conn.prepareStatement("SELECT ID FROM FILE WHERE FOLDERPATH = ? AND FILENAME = ?");
 			stmt.setString(1, folderPath);
 			stmt.setString(2, fileName);
-			res = stmt.executeQuery();
-			if(res.next()){
-				long fileId = res.getLong(1);
+			rs = stmt.executeQuery();
+			if(rs.next()){
+				long fileId = rs.getLong(1);
 				delete(fileId, conn, stmt);
 			}
 		} catch (Exception e) {
 			throw new StorageException("Failed to delete fileinfo for " + filePath, e);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex) { } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex) { } finally { conn = null; }
-			try { if (res != null) res.close(); } catch (SQLException ex) { } finally { res = null; }
+			close(conn, stmt, rs);
 		}
     }
 
@@ -209,9 +201,7 @@ class DBFileInfo {
 		} catch (Exception e) {
 			throw new StorageException("Failed to insert fileinfo for file" + fileInfo.getFilePath(), e);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex) { } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex) { } finally { conn = null; }
-			try { if (rs != null) rs.close(); } catch (SQLException ex) { } finally { rs = null; }
+			close(conn, stmt, rs);
 		}
     }
 	
@@ -250,9 +240,7 @@ class DBFileInfo {
 		} catch (Exception e) {
 			throw new StorageException("Failed to insert fileinfo for file" + fileInfo.getFilePath(), e);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex) { } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex) { } finally { conn = null; }
-			try { if (rs != null) rs.close(); } catch (SQLException ex) { } finally { rs = null; }
+			close(conn, stmt, rs);
 		}
 	}
 	
@@ -387,9 +375,7 @@ class DBFileInfo {
 		} catch (SQLException ex) {
 			throw new StorageException("Failed to get files", ex);
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt, rs);
 		}
 		
 		List<DOFileInfo> res = new ArrayList<DOFileInfo>(files.values());		
@@ -433,9 +419,7 @@ class DBFileInfo {
 		} catch (SQLException ex) {
 			throw new StorageException("Failed to get last update date for file " + filePath, ex);
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt, rs);
 		}		
 		
 		return retVal;
@@ -466,8 +450,7 @@ class DBFileInfo {
 		} catch (SQLException ex) {
 			throw new StorageException(String.format("Failed to inserted play for fileId=%s, playTimeSec=%s, datePlayEnd=%s", filedId, playTimeSec, datePlayEnd), ex);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}
 	}
 
@@ -476,7 +459,7 @@ class DBFileInfo {
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
-		ResultSet res = null;
+		ResultSet rs = null;
 		
 		String fileName = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1);
 		String folderPath = filePath.substring(0, filePath.lastIndexOf(File.separatorChar) + 1);
@@ -487,16 +470,14 @@ class DBFileInfo {
 			stmt = conn.prepareStatement("SELECT ID FROM FILE FILE WHERE FILENAME = ? AND FOLDERPATH = ?");
 			stmt.setString(1, fileName);
 			stmt.setString(2, folderPath);
-			res = stmt.executeQuery();
-			if(res.next()){
-				retVal = res.getLong(1);
+			rs = stmt.executeQuery();
+			if(rs.next()){
+				retVal = rs.getLong(1);
 			}
 		} catch (SQLException ex) {
 			throw new StorageException("Failed to get ID for for file path=" + filePath, ex);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
-			try { if (res != null) res.close(); } catch (SQLException ex){ } finally { res = null; }
+			close(conn, stmt, rs);
 		}
 		
 		return retVal;

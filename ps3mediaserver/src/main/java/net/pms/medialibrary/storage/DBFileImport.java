@@ -18,11 +18,10 @@ import org.h2.jdbcx.JdbcConnectionPool;
 /**
  * Package class used to structure code for MediaLibraryStorage
  */
-class DBFileImport {
-	private JdbcConnectionPool cp;
+class DBFileImport extends DBBase{
 	
 	DBFileImport(JdbcConnectionPool cp) {
-	    this.cp = cp;
+	    super(cp);
     }
 	
 	/*********************************************
@@ -83,9 +82,7 @@ class DBFileImport {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to retrieve file folder for template with id=%s", templateId), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(conn, stmt, rs);
 		}
 		
 		return new DOFileImportTemplate(templateId, templateName, engines, activeEngines, enabledTags);
@@ -211,9 +208,7 @@ class DBFileImport {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to retrieve file folder for templates"), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(conn, stmt, rs);
 		}
 		
 		return res;
@@ -241,9 +236,7 @@ class DBFileImport {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed count number of managed folders using the template with id=%s", templateId), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(conn, stmt, rs);
 		}
 		
 		return res;
@@ -279,9 +272,7 @@ class DBFileImport {
 		} catch (Exception e) {
 			throw new StorageException("Failed to insert import template with name " + template.getName(), e);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex) { } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex) { } finally { conn = null; }
-			try { if (rs != null) rs.close(); } catch (SQLException ex) { } finally { rs = null; }
+			close(conn, stmt, rs);
 		}
 	}
 
@@ -338,8 +329,7 @@ class DBFileImport {
 		} catch (SQLException e) {
 			throw new StorageException("Failed to delete file template entry with id=" + templateId, e);
         } finally {
-    		try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-    		try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt);
         }
 	}
 	

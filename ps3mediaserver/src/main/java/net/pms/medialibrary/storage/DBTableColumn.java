@@ -57,9 +57,7 @@ class DBTableColumn extends DBFileInfo {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to get table column configuration for fileType=%s", fileType), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(conn, stmt, rs);
 		}
 		return res;
 	}
@@ -81,8 +79,7 @@ class DBTableColumn extends DBFileInfo {
 			throw new StorageException(String.format("Failed to insert table column configuration for columnIndex=%s, width=%s, fileType=%s, conditionType=%s", 
 					c.getColumnIndex(), c.getWidth(), fileType, c.getConditionType()), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}
 	}
 
@@ -104,8 +101,7 @@ class DBTableColumn extends DBFileInfo {
 			throw new StorageException(String.format("Failed to update table column configuration for columnIndex=%s, width=%s, fileType=%s, conditionType=%s", 
 					c.getColumnIndex(), c.getWidth(), fileType, c.getConditionType()), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}
 	}
 
@@ -126,8 +122,7 @@ class DBTableColumn extends DBFileInfo {
 			throw new StorageException(String.format("Failed to update table column width for conditionType=%s, width=%s, fileType=%s", 
 					ct, width, fileType), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}
 	}
 
@@ -154,9 +149,7 @@ class DBTableColumn extends DBFileInfo {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to get table column configuration for fileType=%s, columnIndex=%s", fileType, columnIndex), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(conn, stmt, rs);
 		}
 		return res;
 	}
@@ -184,9 +177,7 @@ class DBTableColumn extends DBFileInfo {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to get table column configuration for fileType=%s, conditionType=%s", fileType, ct), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(conn, stmt, rs);
 		}
 		return res;
 	}
@@ -204,8 +195,7 @@ class DBTableColumn extends DBFileInfo {
 			} catch (SQLException se) {
 				throw new StorageException(String.format("Failed to delete table column configuration for fileType=%s", fileType), se);
 			} finally {
-				try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-				try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+				close(conn, stmt);
 			}
 	}
 
@@ -229,9 +219,7 @@ class DBTableColumn extends DBFileInfo {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to get table column configuration for fileType=%s", fileType), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(conn, stmt, rs);
 		}
 		return res;
 	}
@@ -250,8 +238,7 @@ class DBTableColumn extends DBFileInfo {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to delete table column configuration for fileType=%s", fileType), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}
 	}
 
@@ -268,8 +255,7 @@ class DBTableColumn extends DBFileInfo {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to delete table column configuration for fileType=%s", fileType), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}
 	}
 }

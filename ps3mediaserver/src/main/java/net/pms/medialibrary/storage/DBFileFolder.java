@@ -27,12 +27,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Package class used to structure code for MediaLibraryStorage
  */
-class DBFileFolder {
-	private JdbcConnectionPool cp;
+class DBFileFolder extends DBBase {
 	private static final Logger log = LoggerFactory.getLogger(DBFileFolder.class);
 	
 	DBFileFolder(JdbcConnectionPool cp) {
-	    this.cp = cp;
+	    super(cp);
     }
 	
 	/*********************************************
@@ -52,8 +51,7 @@ class DBFileFolder {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to retrieve file folder for template with id=%s", templateId), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt);
 		}
 		
 		return root;
@@ -125,7 +123,7 @@ class DBFileFolder {
 				}
 			}
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex) { } finally { rs = null; }
+			close(rs);
 		}
 
 		return baseFolder;
@@ -153,7 +151,7 @@ class DBFileFolder {
 				props.add(prio);
 			}	    
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(rs);
 		}
 
 	    return props;

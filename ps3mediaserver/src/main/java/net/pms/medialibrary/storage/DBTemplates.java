@@ -17,12 +17,10 @@ import net.pms.medialibrary.commons.exceptions.StorageException;
 
 import org.h2.jdbcx.JdbcConnectionPool;
 
-class DBTemplates {
-//	private static final Logger log = Logger.getLogger(DBTemplates.class);
-	private JdbcConnectionPool cp;
+class DBTemplates extends DBBase {
 	
 	DBTemplates(JdbcConnectionPool cp) {
-	    this.cp = cp;
+	    super(cp);
     }
 	
 	/*********************************************
@@ -52,9 +50,7 @@ class DBTemplates {
 		} catch (SQLException ex) { 
 			throw new StorageException(String.format("Failed to insert view with name for id=%s, name=%s", template.getId(), template.getName()), ex);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-	    	try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
-	    	try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }			
+			close(conn, stmt, rs);		
 		}	
     	
     }
@@ -83,8 +79,7 @@ class DBTemplates {
 		} catch (SQLException ex) {
 			throw new StorageException("Failed to delete template entry with id=" + templateId, ex);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt);
 		}
 	}
 	
@@ -105,9 +100,7 @@ class DBTemplates {
 		} catch (SQLException se) {
 			throw new StorageException("Failed to get all templates", se);
 		}  finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt, rs);
 		}
 
 		return retVal;
@@ -139,9 +132,7 @@ class DBTemplates {
 		} catch(SQLException ex){
 			throw new StorageException("Failed to get used template", ex);
 		}  finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt, rs);
 		}
 		
 	    return res;
@@ -176,8 +167,7 @@ class DBTemplates {
 		} catch (SQLException ex) {
 			throw new StorageException(String.format("Failed to updated template  with name='%s', id=%s", template.getName(), template.getId()), ex);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-	    	try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }			
+			close(conn, stmt);	
 		}    	
     }
 	
@@ -250,7 +240,7 @@ class DBTemplates {
 				}
 			}
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }			
+			close(rs);		
 		}
 
 		// Insert the child entries
@@ -271,8 +261,7 @@ class DBTemplates {
 			stmt.setLong(1, fileEntryId);
 			stmt.executeUpdate();
 		} finally {
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
+			close(conn, stmt);
 		}
 	}
 	

@@ -34,12 +34,11 @@ import org.h2.jdbcx.JdbcConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DBFolders {
+class DBFolders extends DBBase {
 	private static final Logger log = LoggerFactory.getLogger(DBFolders.class);
-	private JdbcConnectionPool cp;
 	
 	DBFolders(JdbcConnectionPool cp) {
-	    this.cp = cp;
+	    super(cp);
     }
 	
 	/*********************************************
@@ -81,9 +80,7 @@ class DBFolders {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Error inserting folder " + f.getName()), se);
 		} finally {
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(conn, stmt, rs);
 		}
 	}
 	
@@ -97,8 +94,7 @@ class DBFolders {
 		} catch (SQLException ex) {
 			throw new StorageException("Failed to delete folder with id=" + id, ex);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}
 	}
 
@@ -115,8 +111,7 @@ class DBFolders {
     	}catch(Exception ex){
 			throw new StorageException(String.format("Failed to get folder with initialFolderId=%s, depth=%s", initialFolderId, depth), ex);
     	} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}
     		
 		return rootFolder;
@@ -138,8 +133,7 @@ class DBFolders {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to get folder with folderId=%s, displayName=%s", folderId, displayName), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}	
     }
 
@@ -168,8 +162,7 @@ class DBFolders {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to update folder with folderId=%s, displayName=%s", f.getId(), f.getName()), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}	
 	}
 	
@@ -190,8 +183,7 @@ class DBFolders {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to updateFolderLocation for folder with id=%s, parentId=%s, locationInParent=%s", id, parentId, locationInParent), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}	
 	}
 	
@@ -323,11 +315,11 @@ class DBFolders {
     			}
     		} 
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(rs);
 		}
 		
 	}
-	
+
 	private void insertSpecialFolder(DOSpecialFolder f, PreparedStatement stmt, Connection conn) throws SQLException {
 		stmt = conn.prepareStatement("INSERT INTO SPECIALFOLDERS (FOLDERID, CLASSNAME, SAVEFILEPATH) VALUES (?, ?, ?)");
 		stmt.clearParameters();
@@ -406,11 +398,10 @@ class DBFolders {
     			}
     		}		
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }	
+			close(stmt, rs);
 		}
 	}
-	
+
 	private int deleteMediaLibraryFolderThumbnailPriorities(long mediaLibraryFolderId, Connection conn, PreparedStatement stmt) throws SQLException {
     		stmt = conn.prepareStatement("DELETE FROM FOLDERTHUMBNAILPRIORITIES WHERE FOLDERID = ?");
     		stmt.clearParameters();
@@ -437,7 +428,7 @@ class DBFolders {
 				found = true;
 			}
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(rs);
 		}	
 		
 		return found;
@@ -465,7 +456,7 @@ class DBFolders {
 				retVal.add(rs.getInt(1));
 			}
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(rs);
 		}
 
 		return retVal;
@@ -503,7 +494,7 @@ class DBFolders {
 		} catch(SQLException se) {
 			throw new StorageException("Failed to get folder with id=" + folderId, se);
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
+			close(rs);
 		}	
 		
 		return folder;
@@ -555,7 +546,7 @@ class DBFolders {
     			res.setSpecialFolderImplementation(sf);
     		}
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }			
+			close(rs);			
 		}
 		
 	    return res;
@@ -658,7 +649,7 @@ class DBFolders {
     			}
     		}
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }			
+			close(rs);		
 		}
 		
 		return res;

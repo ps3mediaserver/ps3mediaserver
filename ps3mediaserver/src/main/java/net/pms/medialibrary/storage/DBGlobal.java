@@ -9,11 +9,10 @@ import net.pms.medialibrary.commons.exceptions.StorageException;
 
 import org.h2.jdbcx.JdbcConnectionPool;
 
-class DBGlobal {
-	private JdbcConnectionPool cp;
+class DBGlobal extends DBBase {
 	
 	DBGlobal(JdbcConnectionPool cp){
-		this.cp = cp;
+		super(cp);
 	}
 	
 	/*********************************************
@@ -43,9 +42,7 @@ class DBGlobal {
 		} catch (SQLException se) {
 			throw new StorageException("Failed to get meta data value for key=" + key, se);
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt, rs);
 		}
 		
 		return retVal;
@@ -68,8 +65,7 @@ class DBGlobal {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to set metadata value=%s for key=%s", value, key), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt);
 		}
 	}
 }

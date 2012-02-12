@@ -10,11 +10,10 @@ import net.pms.medialibrary.commons.exceptions.StorageException;
 
 import org.h2.jdbcx.JdbcConnectionPool;
 
-class DBPicturesFileInfo {
-	private JdbcConnectionPool cp;
+class DBPicturesFileInfo extends DBBase {
 	
 	DBPicturesFileInfo(JdbcConnectionPool cp) {
-	    this.cp = cp;
+	    super(cp);
     }
 	
 	/*********************************************
@@ -45,9 +44,7 @@ class DBPicturesFileInfo {
 		} catch (SQLException se) {
 			throw new StorageException("Failed to get pictures count", se);
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt, rs);
 		}
 		
 		return count;

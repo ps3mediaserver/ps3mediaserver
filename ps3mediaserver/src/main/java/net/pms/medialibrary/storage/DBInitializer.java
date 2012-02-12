@@ -114,8 +114,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			res = false;
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			DBBase.close(conn, stmt);
     	}
     	
     	return res;
@@ -135,8 +134,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			//do nothing
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			DBBase.close(conn, stmt);
     	}
     	
     	return res;		
@@ -556,8 +554,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed ti initialize database ", se);
 		} finally {
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }	
+			DBBase.close(conn, stmt);
 		}
 	}
 	
@@ -660,8 +657,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.1 to 0.2", se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			DBBase.close(conn, stmt);
     	}
 	}
 
@@ -699,8 +695,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.2 to 0.3", se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			DBBase.close(conn, stmt);
     	}
 	}
 
@@ -729,8 +724,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.3 to 0.4", se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			DBBase.close(conn, stmt);
     	}
 	}
 
@@ -867,8 +861,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.4 to 0.5", se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			DBBase.close(conn, stmt);
     	}
 	}
 
@@ -888,8 +881,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.5 to 0.6", se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			DBBase.close(conn, stmt);
     	}
 	}
 	
@@ -910,8 +902,7 @@ class DBInitializer {
 			log.error(String.format("Failed to insert TABLECOLUMNCONFIGURATION for columnIndex=%s, width=%s, fileType=%s, conditionType=%s", 
 					c.getColumnIndex(), c.getWidth(), fileType, c.getConditionType()), se);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			DBBase.close(conn, stmt);
 		}
 	}
 }

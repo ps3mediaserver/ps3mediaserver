@@ -46,9 +46,7 @@ class DBAudioFileInfo extends DBFileInfo {
 		} catch (SQLException se) {
 			throw new StorageException("Failed to get audio count", se);
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt, rs);
 		}
 		
 		return count;
@@ -86,8 +84,7 @@ class DBAudioFileInfo extends DBFileInfo {
 		} catch (Exception e) {
 			throw new StorageException("Failed to insert audiofileinfo for file " + fileInfo.getFilePath(), e);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex) { } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex) { } finally { conn = null; }
+			close(conn, stmt);
 		}
 	}
 

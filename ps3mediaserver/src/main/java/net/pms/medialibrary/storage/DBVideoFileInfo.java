@@ -54,9 +54,7 @@ class DBVideoFileInfo extends DBFileInfo {
 		} catch (SQLException e) {
 			throw new StorageException("Failed to delete video with id=" + id, e);
         } finally {
-    		try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-    		try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-    		try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt, rs);
         }
     }
 	
@@ -112,9 +110,7 @@ class DBVideoFileInfo extends DBFileInfo {
         } catch (SQLException e) {
 			throw new StorageException("Failed to clear videos properly", e);
         } finally {
-    		try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-    		try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-    		try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt, rs);
         }
 		
 		return res;
@@ -178,9 +174,7 @@ class DBVideoFileInfo extends DBFileInfo {
         } catch (SQLException e) {
 			throw new StorageException("Failed to clear videos properly", e);
         } finally {
-    		try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-    		try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-    		try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt, rs);
         }
         
         return res;
@@ -383,9 +377,7 @@ class DBVideoFileInfo extends DBFileInfo {
 		} catch (SQLException ex) {
 			throw new StorageException("Failed to get video files", ex);
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+			close(conn, stmt, rs);
 		}
 		
 		List<DOVideoFileInfo> res = new ArrayList<DOVideoFileInfo>(videos.values());
@@ -490,9 +482,7 @@ class DBVideoFileInfo extends DBFileInfo {
 			} catch (SQLException se) {
 				throw new StorageException("Failed to get get video properties", se);
 			} finally {
-				try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-				try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-				try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+				close(conn, stmt, rs);
 			}
 		}
 		else{
@@ -513,9 +503,7 @@ class DBVideoFileInfo extends DBFileInfo {
 			} catch (SQLException se) {
 				throw new StorageException("Failed to get get video properties", se);
 			} finally {
-				try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-				try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-				try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }
+				close(conn, stmt, rs);
 			}
 		}
 		return retVal;
@@ -548,9 +536,7 @@ class DBVideoFileInfo extends DBFileInfo {
 		} catch (SQLException se) {
 			throw new StorageException(String.format("Failed to get filtered video count for filter with equation='%s' and %s conditions", filter.getEquation(), filter.getConditions().size()), se);
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt, rs);
 		}	
 		
 		return nbItems;
@@ -573,9 +559,7 @@ class DBVideoFileInfo extends DBFileInfo {
 		} catch (SQLException se) {
 			throw new StorageException("Failed to get video count", se);
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException ex){ } finally { rs = null; }
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex){ } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex){ } finally { conn = null; }	
+			close(conn, stmt, rs);
 		}
 		
 		return count;
@@ -634,8 +618,7 @@ class DBVideoFileInfo extends DBFileInfo {
 		} catch (Exception e) {
 			throw new StorageException("Failed to insert video file info " + fileInfo.getFilePath(), e);
 		} finally {
-			try { if (stmt != null) stmt.close(); } catch (SQLException ex) { } finally { stmt = null; }
-			try { if (conn != null) conn.close(); } catch (SQLException ex) { } finally { conn = null; }
+			close(conn, stmt);
 		}
 	}
 
@@ -694,8 +677,7 @@ class DBVideoFileInfo extends DBFileInfo {
     	} catch (Exception e) {
 			throw new StorageException("Failed to update video file info " + fileInfo.getFilePath(), e);
     	} finally {
-    		try { if (stmt != null) stmt.close(); } catch (SQLException ex) { } finally { stmt = null; }
-    		try { if (conn != null) conn.close(); } catch (SQLException ex) { } finally { conn = null; }
+			close(conn, stmt);
     	}	    
     }
 
