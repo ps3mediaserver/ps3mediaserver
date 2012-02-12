@@ -579,14 +579,13 @@ public class RootFolder extends DLNAResource {
 		if (Platform.isMac()) {
 			Process prc = Runtime.getRuntime().exec("defaults read com.apple.iApps iTunesRecentDatabases");
 			BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
-			if ((line = in.readLine()) != null) {
-				// we want the 2nd line
-				if ((line = in.readLine()) != null) {
-					line = line.trim(); // remove extra spaces
-					line = line.substring(1, line.length() - 1); // remove quotes and spaces
-					URI tURI = new URI(line);
-					iTunesFile = URLDecoder.decode(tURI.toURL().getFile(), "UTF8");
-				}
+
+			// we want the 2nd line
+			if ((line = in.readLine()) != null && (line = in.readLine()) != null) {
+				line = line.trim(); // remove extra spaces
+				line = line.substring(1, line.length() - 1); // remove quotes and spaces
+				URI tURI = new URI(line);
+				iTunesFile = URLDecoder.decode(tURI.toURL().getFile(), "UTF8");
 			}
 			if (in != null) {
 				in.close();
