@@ -343,7 +343,7 @@ public class AviDemuxerInputStream extends InputStream {
 				throw new IOException("Not header: " + command);
 			}
 
-			if (size % 2 == 1) {
+			if (size % 2 != 0) {
 				readByte(stream);
 			}
 
