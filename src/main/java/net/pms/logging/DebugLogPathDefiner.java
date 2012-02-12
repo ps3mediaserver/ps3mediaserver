@@ -58,9 +58,14 @@ public class DebugLogPathDefiner extends PropertyDefinerBase {
 		File file = new File("write_test_file");
 
 		try {
-			file.createNewFile();
+			if (!file.createNewFile()) {
+				LOGGER.debug("Cannot create new file in current directory.");
+			}
+
 			if (file.canWrite()) {
-				file.delete();
+				if (!file.delete()) {
+					LOGGER.debug("Cannot delete file from current directory.");
+				}
 				return new File("").getAbsolutePath();
 			}
 		} catch (IOException e) {

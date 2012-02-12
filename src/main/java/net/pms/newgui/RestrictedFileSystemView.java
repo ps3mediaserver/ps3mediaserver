@@ -11,6 +11,11 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileView;
 
+import net.pms.encoders.AviDemuxerInputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Fallback implementation of a FileSystemView.
  * <p>
@@ -39,6 +44,7 @@ import javax.swing.filechooser.FileView;
  * 
  */
 public class RestrictedFileSystemView extends FileSystemView {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RestrictedFileSystemView.class);
 	private static final String newFolderString = UIManager.getString("FileChooser.other.newFolder");
 	private File _defaultDirectory;
 
@@ -378,7 +384,9 @@ public class RestrictedFileSystemView extends FileSystemView {
 		if (newFolder.exists()) {
 			throw new IOException("Directory already exists:" + newFolder.getAbsolutePath());
 		} else {
-			newFolder.mkdirs();
+			if (!newFolder.mkdirs()) {
+				LOGGER.debug("Could not create directory \"" + newFolder.getAbsolutePath() + "\"");
+			}
 		}
 
 		return newFolder;

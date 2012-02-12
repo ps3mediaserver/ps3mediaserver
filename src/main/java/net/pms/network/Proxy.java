@@ -114,9 +114,13 @@ public class Proxy extends Thread {
 			fileResource = fileResource + ".cached";
 			String fileN = "proxycache/" + target + "/" + directoryResource;
 			File directoryResourceFile = new File(fileN);
+
 			if (writeCache) {
-				directoryResourceFile.mkdirs();
+				if (!(directoryResourceFile.mkdirs())) {
+					logger.debug("Could not create directory \"" + directoryResourceFile.getAbsolutePath() + "\"");
+				}
 			}
+
 			File cachedResource = new File(directoryResourceFile, fileResource);
 			//System.out.println("Trying to find: " + cachedResource.getAbsolutePath());
 
