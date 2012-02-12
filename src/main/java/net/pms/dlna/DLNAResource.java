@@ -916,7 +916,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		if (isSrtFile() && (getMediaAudio() == null && getMediaSubtitle() == null)
-				&& getPlayer() == null || getPlayer().isExternalSubtitlesSupported()) {
+				&& getPlayer() == null || (getPlayer() != null && getPlayer().isExternalSubtitlesSupported())) {
 			name += " {External Subtitles}";
 		}
 
