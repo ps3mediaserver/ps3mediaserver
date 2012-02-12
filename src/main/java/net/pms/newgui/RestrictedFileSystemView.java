@@ -375,7 +375,7 @@ public class RestrictedFileSystemView extends FileSystemView {
 		int i = 2;
 		while (newFolder.exists() && (i < 100)) {
 			newFolder = createFileObject(containingDir, MessageFormat.format(newFolderString,
-				new Object[]{new Integer(i)}));
+				new Object[] { Integer.valueOf(i) }));
 			i++;
 		}
 
