@@ -812,7 +812,7 @@ public class PMS {
 				logger.error("A serious error occurred during PMS init");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("A serious error occurred during PMS init", e);
 		}
 	}
 
