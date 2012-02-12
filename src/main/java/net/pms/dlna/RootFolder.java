@@ -149,8 +149,29 @@ public class RootFolder extends DLNAResource {
 		setDiscovered(true);
 	}
 
+	/**
+	 * Returns whether or not a scan is running.
+	 *
+	 * @return <code>true</code> if a scan is running, <code>false</code>
+	 * otherwise. 
+	 */
+	private synchronized boolean isRunning() {
+		return running;
+	}
+
+	/**
+	 * Sets whether or not a scan is running.
+	 *
+	 * @param running  Set to <code>true</code> if the scan is running, or to
+	 * <code>false</code> when the scan has stopped.
+	 */
+	private synchronized void setRunning(boolean running) {
+		this.running = running;
+	}
+
 	public void scan() {
-		running = true;
+		setRunning(true);
+
 		if(!isDiscovered()) {
 			discoverChildren();
 		}
@@ -163,13 +184,13 @@ public class RootFolder extends DLNAResource {
 	}
 
 	public void stopscan() {
-		running = false;
+		setRunning(false);
 	}
 
 	private synchronized void scan(DLNAResource resource) {
-		if (running) {
+		if (isRunning()) {
 			for (DLNAResource child : resource.getChildren()) {
-				if (running && child.allowScan()) {
+				if (isRunning() && child.allowScan()) {
 					child.setDefaultRenderer(resource.getDefaultRenderer());
 					String trace = null;
 					if (child instanceof RealFile) {
