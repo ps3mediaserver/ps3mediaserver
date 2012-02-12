@@ -21,8 +21,6 @@ package net.pms.logging;
 import java.io.File;
 import java.io.IOException;
 
-import net.pms.configuration.RendererConfiguration;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

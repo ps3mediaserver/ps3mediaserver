@@ -22,7 +22,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import net.pms.configuration.RendererConfiguration;
 import net.pms.util.PropertiesUtil;
 
 import org.slf4j.ILoggerFactory;

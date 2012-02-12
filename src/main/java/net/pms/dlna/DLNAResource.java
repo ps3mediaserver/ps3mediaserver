@@ -25,7 +25,6 @@ import static net.pms.util.StringUtil.encodeXML;
 import static net.pms.util.StringUtil.endTag;
 import static net.pms.util.StringUtil.openTag;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;

@@ -33,11 +33,10 @@ import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import net.pms.util.PropertiesUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.pms.configuration.RendererConfiguration;
-import net.pms.util.PropertiesUtil;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;

@@ -18,8 +18,6 @@
  */
 package net.pms.dlna;
 
-import net.pms.configuration.RendererConfiguration;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
