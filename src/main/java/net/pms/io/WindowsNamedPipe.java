@@ -97,7 +97,15 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 	private Thread forced;
 	private boolean b2;
 	private FileOutputStream debug;
+
+	/**
+	 * @deprecated Use {@link #setLoop(boolean)} instead.
+	 *
+	 * This field will be made private in a future version. 
+	 */
+	@Deprecated
 	public static boolean loop = true;
+
 	private BufferedOutputFile directBuffer;
 
 	public WindowsNamedPipe(String n, boolean forcereconnect, boolean in, OutputParams params) {
@@ -291,5 +299,15 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 	@Override
 	public void stopProcess() {
 		interrupt();
+	}
+
+	/**
+	 * Set the loop to the specified value. When set to <code>true</code> the
+	 * code will loop.
+	 *
+	 * @param value The value to set.
+	 */
+	public static void setLoop(boolean value) {
+		loop = value;
 	}
 }

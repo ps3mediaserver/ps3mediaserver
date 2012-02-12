@@ -376,10 +376,11 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	}
 
 	public void quit() {
-		WindowsNamedPipe.loop = false;
+		WindowsNamedPipe.setLoop(false);
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
+			logger.error(null, e);
 		}
 		System.exit(0);
 	}
