@@ -74,11 +74,10 @@ public class IpFilter {
 			public ByteRule(int a, int b) {
 				this.min = a;
 				this.max = b;
-				if (b > -1 && a > -1) {
-					if (b < a) {
-						this.max = a;
-						this.min = b;
-					}
+
+				if (b > -1 && a > -1 && b < a) {
+					this.max = a;
+					this.min = b;
 				}
 			}
 

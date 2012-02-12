@@ -66,7 +66,8 @@ public class OutputTextConsumer extends OutputConsumer {
 			if (br != null) {
 				try {
 					br.close();
-				} catch (Exception ignore) {
+				} catch (IOException e) {
+					logger.debug("Caught exception", e);
 				}
 			}
 		}

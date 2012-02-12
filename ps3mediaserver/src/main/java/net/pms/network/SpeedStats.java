@@ -56,7 +56,7 @@ public class SpeedStats {
 		return instance;
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(RendererConfiguration.class);
+	private static final Logger logger = LoggerFactory.getLogger(SpeedStats.class);
 
 	private final Map<String, Future<Integer>> speedStats = new HashMap<String, Future<Integer>>();
 
@@ -153,14 +153,16 @@ public class SpeedStats {
 
 			for (String line : ls) {
 				int msPos = line.indexOf("ms");
-				try {
-					if (msPos > -1) {
-						String timeString = line.substring(line.lastIndexOf("=", msPos) + 1, msPos).trim();
+
+				if (msPos > -1) {
+					String timeString = line.substring(line.lastIndexOf("=", msPos) + 1, msPos).trim();
+					try {
 						time += Double.parseDouble(timeString);
 						c++;
+					} catch (NumberFormatException e) {
+						// no big deal
+						logger.debug("Could not parse time from \"" + timeString + "\"");
 					}
-				} catch (Exception e) {
-					// no big deal
 				}
 			}
 			if (c > 0) {

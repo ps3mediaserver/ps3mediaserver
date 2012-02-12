@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.pms.configuration.RendererConfiguration;
 import net.pms.util.PropertiesUtil;
 
 import org.slf4j.ILoggerFactory;
@@ -125,6 +126,7 @@ public class LoggingConfigFileLoader {
 
 		} catch (JoranException je) {
 			// StatusPrinter will handle this
+			je.printStackTrace();
 		}
 
 		for (Logger logger : lc.getLoggerList()) {

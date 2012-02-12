@@ -312,6 +312,7 @@ public class DLNAMediaInfo implements Cloneable {
 				try {
 					putExtra(st.nextToken(), st.nextToken());
 				} catch (NoSuchElementException nsee) {
+					logger.debug("Caught exception", nsee);
 				}
 			}
 		}
@@ -455,8 +456,11 @@ public class DLNAMediaInfo implements Cloneable {
 		args[9] = PMS.getConfiguration().getTempFolder() + "/imagemagick_thumbs/" + media.getFile().getName() + ".jpg";
 		OutputParams params = new OutputParams(PMS.getConfiguration());
 		params.workDir = new File(PMS.getConfiguration().getTempFolder().getAbsolutePath() + "/imagemagick_thumbs/");
-		if (!params.workDir.exists())
-			params.workDir.mkdirs();
+		if (!params.workDir.exists()) {
+			if (!params.workDir.mkdirs()) {
+				logger.debug("Could not create directory \"" + params.workDir.getAbsolutePath() + "\"");
+			}
+		}
 		params.maxBufferSize = 1;
 		params.stdin = media.getPush();
 		params.log = true;
@@ -586,73 +590,71 @@ public class DLNAMediaInfo implements Cloneable {
 					}
 				}
 			}
-			if (type == Format.IMAGE) {
-				if (f.getFile() != null) {
-					try {
-						ffmpeg_parsing = false;
-						ImageInfo info = Sanselan.getImageInfo(f.getFile());
-						setWidth(info.getWidth());
-						setHeight(info.getHeight());
-						setBitsPerPixel(info.getBitsPerPixel());
-						String formatName = info.getFormatName();
-						if (formatName.startsWith("JPEG")) {
-							setCodecV("jpg");
-							IImageMetadata meta = Sanselan.getMetadata(f.getFile());
-							if (meta != null && meta instanceof JpegImageMetadata) {
-								JpegImageMetadata jpegmeta = (JpegImageMetadata) meta;
-								TiffField tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_MODEL);
-								if (tf != null) {
-									setModel(tf.getStringValue().trim());
-								}
-
-								tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_EXPOSURE_TIME);
-								if (tf != null) {
-									setExposure((int) (1000 * tf.getDoubleValue()));
-								}
-
-								tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_ORIENTATION);
-								if (tf != null) {
-									setOrientation(tf.getIntValue());
-								}
-
-								tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_ISO);
-								if (tf != null) {
-									setIso(tf.getIntValue());
-								}
+			if (type == Format.IMAGE && f.getFile() != null) {
+				try {
+					ffmpeg_parsing = false;
+					ImageInfo info = Sanselan.getImageInfo(f.getFile());
+					setWidth(info.getWidth());
+					setHeight(info.getHeight());
+					setBitsPerPixel(info.getBitsPerPixel());
+					String formatName = info.getFormatName();
+					if (formatName.startsWith("JPEG")) {
+						setCodecV("jpg");
+						IImageMetadata meta = Sanselan.getMetadata(f.getFile());
+						if (meta != null && meta instanceof JpegImageMetadata) {
+							JpegImageMetadata jpegmeta = (JpegImageMetadata) meta;
+							TiffField tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_MODEL);
+							if (tf != null) {
+								setModel(tf.getStringValue().trim());
 							}
-						} else if (formatName.startsWith("PNG")) {
-							setCodecV("png");
-						} else if (formatName.startsWith("GIF")) {
-							setCodecV("gif");
-						} else if (formatName.startsWith("TIF")) {
-							setCodecV("tiff");
-						}
-						setContainer(getCodecV());
-					} catch (Throwable e) {
-						// ffmpeg_parsing = true;
-						logger.info("Error during the parsing of image with Sanselan... switching to Ffmpeg: " + e.getMessage());
-					}
-					try {
-						if(PMS.getConfiguration().getImageThumbnailsEnabled()) {
-							getImageMagickThumbnail(f);
-							String frameName = PMS.getConfiguration().getTempFolder() + "/imagemagick_thumbs/" + f.getFile().getName() + ".jpg";
-							File jpg = new File(frameName);
-							if (jpg.exists()) {
-								InputStream is = new FileInputStream(jpg);
-								int sz = is.available();
-								if (sz > 0) {
-									setThumb(new byte [sz]);
-									is.read(getThumb());
-								}
-								is.close();
-								if (!jpg.delete())
-									jpg.deleteOnExit();
+
+							tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_EXPOSURE_TIME);
+							if (tf != null) {
+								setExposure((int) (1000 * tf.getDoubleValue()));
+							}
+
+							tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_ORIENTATION);
+							if (tf != null) {
+								setOrientation(tf.getIntValue());
+							}
+
+							tf = jpegmeta.findEXIFValue(TiffConstants.EXIF_TAG_ISO);
+							if (tf != null) {
+								setIso(tf.getIntValue());
 							}
 						}
-					} catch (Throwable e) {
-						logger.info("Error during the generating thumbnail of image with ImageMagick...: " + e.getMessage());
-					
+					} else if (formatName.startsWith("PNG")) {
+						setCodecV("png");
+					} else if (formatName.startsWith("GIF")) {
+						setCodecV("gif");
+					} else if (formatName.startsWith("TIF")) {
+						setCodecV("tiff");
 					}
+					setContainer(getCodecV());
+				} catch (Throwable e) {
+					// ffmpeg_parsing = true;
+					logger.info("Error during the parsing of image with Sanselan... switching to Ffmpeg: " + e.getMessage());
+				}
+				try {
+					if(PMS.getConfiguration().getImageThumbnailsEnabled()) {
+						getImageMagickThumbnail(f);
+						String frameName = PMS.getConfiguration().getTempFolder() + "/imagemagick_thumbs/" + f.getFile().getName() + ".jpg";
+						File jpg = new File(frameName);
+						if (jpg.exists()) {
+							InputStream is = new FileInputStream(jpg);
+							int sz = is.available();
+							if (sz > 0) {
+								setThumb(new byte [sz]);
+								is.read(getThumb());
+							}
+							is.close();
+							if (!jpg.delete())
+								jpg.deleteOnExit();
+						}
+					}
+				} catch (Throwable e) {
+					logger.info("Error during the generating thumbnail of image with ImageMagick...: " + e.getMessage());
+				
 				}
 			}
 			if (ffmpeg_parsing) {
@@ -809,7 +811,8 @@ public class DLNAMediaInfo implements Cloneable {
 												setFrameRate(String.format(Locale.ENGLISH, "%.2f", frameRateDouble / 2));
 											}
 										} catch (NumberFormatException nfe) {
-											// No need to log, could happen if tbc is "1k" or something like that, no big deal
+											// Could happen if tbc is "1k" or something like that, no big deal
+											logger.debug("Could not parse frame rate \"" + frameRateDoubleString + "\"");
 										}
 
 									} else if ((token.indexOf("tbr") > -1 || token.indexOf("tb(r)") > -1) && getFrameRate() == null) {
@@ -823,8 +826,13 @@ public class DLNAMediaInfo implements Cloneable {
 										}
 										try {
 											setWidth(Integer.parseInt(resolution.substring(0, resolution.indexOf("x"))));
+										} catch (NumberFormatException nfe) {
+											logger.debug("Could not parse width from \"" + resolution.substring(0, resolution.indexOf("x")) + "\"");
+										}
+										try {
 											setHeight(Integer.parseInt(resolution.substring(resolution.indexOf("x") + 1)));
 										} catch (NumberFormatException nfe) {
+											logger.debug("Could not parse height from \"" + resolution.substring(resolution.indexOf("x") + 1) + "\"");
 										}
 									}
 								}
@@ -895,10 +903,14 @@ public class DLNAMediaInfo implements Cloneable {
 								jpg.deleteOnExit();
 							}
 							if (!jpg.getParentFile().delete()) {
-								jpg.getParentFile().delete();
+								// Retry
+								if (!jpg.getParentFile().delete()) {
+									logger.debug("Faild to delete \"" + jpg.getParentFile().getAbsolutePath() + "\"");
+								}
 							}
 						}
 					} catch (IOException e) {
+						logger.debug("Caught exception", e);
 					}
 				}
 
@@ -989,6 +1001,7 @@ public class DLNAMediaInfo implements Cloneable {
 			double s = Double.parseDouble(st.nextToken());
 			return h * 3600 + m * 60 + s;
 		} catch (NumberFormatException nfe) {
+			logger.debug("Failed to parse duration \"" + duration + "\"");
 		}
 		return null;
 	}
@@ -1063,12 +1076,12 @@ public class DLNAMediaInfo implements Cloneable {
 							avcHeader.parse();
 							logger.trace("H264 file: " + f.getFilename() + ": Profile: " + avcHeader.getProfile() + " / level: " + avcHeader.getLevel() + " / ref frames: " + avcHeader.getRef_frames());
 							muxable = true;
-							if (avcHeader.getLevel() >= 41) { // Check if file is compliant with Level4.1
-								if (getWidth() > 0 && getHeight() > 0) {
-									int maxref = (int) Math.floor(8388608 / (getWidth() * getHeight()));
-									if (avcHeader.getRef_frames() > maxref) {
-										muxable = false;
-									}
+
+							// Check if file is compliant with Level4.1
+							if (avcHeader.getLevel() >= 41 && getWidth() > 0 && getHeight() > 0) {
+								int maxref = (int) Math.floor(8388608 / (getWidth() * getHeight()));
+								if (avcHeader.getRef_frames() > maxref) {
+									muxable = false;
 								}
 							}
 							if (!muxable) {
@@ -1180,10 +1193,11 @@ public class DLNAMediaInfo implements Cloneable {
 			return (int) (getBitrate() / 8);
 		}
 		int realBitrate = 10000000;
-		try {
+
+		if (getDurationInSeconds() != 0) {
 			realBitrate = (int) (getSize() / getDurationInSeconds());
-		} catch (Throwable t) {
 		}
+
 		return realBitrate;
 	}
 
@@ -1284,6 +1298,7 @@ public class DLNAMediaInfo implements Cloneable {
 				returnData[1] = header;
 			}
 		} catch (IOException e) {
+			logger.debug("Caught exception", e);
 		}
 		return returnData;
 	}

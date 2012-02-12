@@ -64,7 +64,8 @@ public class OutputBufferConsumer extends OutputConsumer {
 			if (inputStream != null) {
 				try {
 					inputStream.close();
-				} catch (Exception ignore) {
+				} catch (IOException e) {
+					logger.debug("Caught exception", e);
 				}
 			}
 		}

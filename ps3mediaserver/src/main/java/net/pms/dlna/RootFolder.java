@@ -149,8 +149,29 @@ public class RootFolder extends DLNAResource {
 		setDiscovered(true);
 	}
 
+	/**
+	 * Returns whether or not a scan is running.
+	 *
+	 * @return <code>true</code> if a scan is running, <code>false</code>
+	 * otherwise. 
+	 */
+	private synchronized boolean isRunning() {
+		return running;
+	}
+
+	/**
+	 * Sets whether or not a scan is running.
+	 *
+	 * @param running  Set to <code>true</code> if the scan is running, or to
+	 * <code>false</code> when the scan has stopped.
+	 */
+	private synchronized void setRunning(boolean running) {
+		this.running = running;
+	}
+
 	public void scan() {
-		running = true;
+		setRunning(true);
+
 		if(!isDiscovered()) {
 			discoverChildren();
 		}
@@ -163,13 +184,13 @@ public class RootFolder extends DLNAResource {
 	}
 
 	public void stopscan() {
-		running = false;
+		setRunning(false);
 	}
 
 	private synchronized void scan(DLNAResource resource) {
-		if (running) {
+		if (isRunning()) {
 			for (DLNAResource child : resource.getChildren()) {
-				if (running && child.allowScan()) {
+				if (isRunning() && child.allowScan()) {
 					child.setDefaultRenderer(resource.getDefaultRenderer());
 					String trace = null;
 					if (child instanceof RealFile) {
@@ -270,16 +291,17 @@ public class RootFolder extends DLNAResource {
 									parent.addChild(new WebVideoStream(values[0], values[1], values[2]));
 								}
 							}
-							// catch exception here and go with parsing
 						} catch (ArrayIndexOutOfBoundsException e) {
+							// catch exception here and go with parsing
 							logger.info("Error at line " + br.getLineNumber() + " of WEB.conf: " + e.getMessage());
+							logger.debug(null, e);
 						}
 					}
 				}
 				br.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Unexpected error in WEB.conf: " + e.getMessage());
+			} catch (IOException e) {
+				logger.info("Unexpected error in WEB.conf" + e.getMessage());
+				logger.debug(null, e);
 			}
 		}
 	}
@@ -368,9 +390,13 @@ public class RootFolder extends DLNAResource {
 						res.addChild(rf);
 					}
 				} else {
-					logger.info("iPhoto folder not found !?");
+					logger.info("iPhoto folder not found");
 				}
-			} catch (Exception e) {
+			} catch (XmlParseException e) {
+				logger.error("Something went wrong with the iPhoto Library scan: ", e);
+			} catch (URISyntaxException e) {
+				logger.error("Something went wrong with the iPhoto Library scan: ", e);
+			} catch (IOException e) {
 				logger.error("Something went wrong with the iPhoto Library scan: ", e);
 			}
 		}
@@ -554,11 +580,13 @@ public class RootFolder extends DLNAResource {
 			Process prc = Runtime.getRuntime().exec("defaults read com.apple.iApps iTunesRecentDatabases");
 			BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
 			if ((line = in.readLine()) != null) {
-				line = in.readLine(); // we want the 2nd line
-				line = line.trim(); // remove extra spaces
-				line = line.substring(1, line.length() - 1); // remove quotes and spaces
-				URI tURI = new URI(line);
-				iTunesFile = URLDecoder.decode(tURI.toURL().getFile(), "UTF8");
+				// we want the 2nd line
+				if ((line = in.readLine()) != null) {
+					line = line.trim(); // remove extra spaces
+					line = line.substring(1, line.length() - 1); // remove quotes and spaces
+					URI tURI = new URI(line);
+					iTunesFile = URLDecoder.decode(tURI.toURL().getFile(), "UTF8");
+				}
 			}
 			if (in != null) {
 				in.close();
@@ -754,6 +782,7 @@ public class RootFolder extends DLNAResource {
 					try {
 						configuration.save();
 					} catch (ConfigurationException e) {
+						logger.debug("Caught exception", e);
 					}
 					return true;
 				}

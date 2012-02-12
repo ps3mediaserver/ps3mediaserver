@@ -362,6 +362,7 @@ public class MEncoderVideo extends Player {
 				try {
 					configuration.setMencoderScaleX(Integer.parseInt(scaleX.getText()));
 				} catch (NumberFormatException nfe) {
+					logger.debug("Could not parse scaleX from \"" + scaleX.getText() + "\"");
 				}
 			}
 		});
@@ -383,6 +384,7 @@ public class MEncoderVideo extends Player {
 				try {
 					configuration.setMencoderScaleY(Integer.parseInt(scaleY.getText()));
 				} catch (NumberFormatException nfe) {
+					logger.debug("Could not parse scaleY from \"" + scaleY.getText() + "\"");
 				}
 			}
 		});
@@ -1424,6 +1426,7 @@ public class MEncoderVideo extends Player {
 				try {
 					subpos = Integer.parseInt(configuration.getMencoderNoAssSubPos());
 				} catch (NumberFormatException n) {
+					logger.debug("Could not parse subpos from \"" + configuration.getMencoderNoAssSubPos() + "\"");
 				}
 				sb.append(" -subpos ").append(100 - subpos);
 			}
@@ -2029,12 +2032,13 @@ public class MEncoderVideo extends Player {
 			if (params.aid != null) {
 				interpreter.set("samplerate", params.aid.getSampleRate());
 			}
+			String framerate = media.getValidFps(false);
 			try {
-				String framerate = media.getValidFps(false);
 				if (framerate != null) {
 					interpreter.set("framerate", Double.parseDouble(framerate));
 				}
 			} catch (NumberFormatException e) {
+				logger.debug("Could not parse framerate from \"" + framerate + "\"");
 			}
 			interpreter.set("duration", media.getDurationInSeconds());
 			if (params.aid != null) {

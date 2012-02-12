@@ -32,6 +32,7 @@ public class MediaInfoParser {
 		try {
 			MI.finalize();
 		} catch (Throwable e) {
+			logger.debug("Caught exception", e);
 		}
 	}
 
@@ -155,21 +156,25 @@ public class MediaInfoParser {
 								try {
 									currentAudioTrack.setYear(Integer.parseInt(value));
 								} catch (NumberFormatException nfe) {
+									logger.debug("Could not parse year \"" + value + "\"");
 								}
 							} else if (key.equals("Track/Position") && step == MediaInfo.StreamKind.General) {
 								try {
 									currentAudioTrack.setTrack(Integer.parseInt(value));
 								} catch (NumberFormatException nfe) {
+									logger.debug("Could not parse track \"" + value + "\"");
 								}
 							} else if (key.equals("Resolution") && step == MediaInfo.StreamKind.Audio) {
 								try {
 									currentAudioTrack.setBitsperSample(Integer.parseInt(value));
 								} catch (NumberFormatException nfe) {
+									logger.debug("Could not parse bits per sample \"" + value + "\"");
 								}
 							} else if (key.equals("Video_Delay") && step == MediaInfo.StreamKind.Audio) {
 								try {
 									currentAudioTrack.setDelay(Integer.parseInt(value));
 								} catch (NumberFormatException nfe) {
+									logger.debug("Could not parse delay \"" + value + "\"");
 								}
 							}
 						}

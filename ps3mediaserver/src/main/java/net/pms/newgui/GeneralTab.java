@@ -230,6 +230,7 @@ public class GeneralTab {
 					int ab = Integer.parseInt(p);
 					configuration.setServerPort(ab);
 				} catch (NumberFormatException nfe) {
+					logger.debug("Could not parse port from \"" + port.getText() + "\"");
 				}
 
 			}

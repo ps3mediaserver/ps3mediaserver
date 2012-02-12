@@ -723,11 +723,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	protected void refreshChildrenIfNeeded() {
-		if (isDiscovered()) {
-			if (isRefreshNeeded()) {
-				refreshChildren();
-				notifyRefresh();
-			}
+		if (isDiscovered() && isRefreshNeeded()) {
+			refreshChildren();
+			notifyRefresh();
 		}
 	}
 
@@ -841,10 +839,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**
-	 * This method gets called only for the browsed folder, and not for the parent folders. (And in the media library scan step too). 
-	 * Override in plugins, when you doesn't want to implement proper change tracking, and you don't care if the 
-	 * hierarchy of nodes getting invalid between.  
-	 * @return
+	 * This method gets called only for the browsed folder, and not for the
+	 * parent folders. (And in the media library scan step too). Override in
+	 * plugins when you do not want to implement proper change tracking, and
+	 * you do not care if the hierarchy of nodes getting invalid between.
+	 *
+	 * @return True when a refresh is needed, false otherwise.
 	 */
 	public boolean refreshChildren() {
 		if (isRefreshNeeded()) {
@@ -858,10 +858,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		if (getExt() == null) {
 			setExt(FormatFactory.getAssociatedExtension(getSystemName()));
 		}
-		if (getExt() != null) {
-			if (getExt().isUnknown()) {
-				getExt().setType(getSpecificType());
-			}
+		if (getExt() != null && getExt().isUnknown()) {
+			getExt().setType(getSpecificType());
 		}
 	}
 
@@ -893,10 +891,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	public String getDisplayName(RendererConfiguration mediaRenderer) {
 		String name = getName();
-		if (this instanceof RealFile) {
-			if (PMS.getConfiguration().isHideExtensions() && !isFolder()) {
-				name = FileUtil.getFileNameWithoutExtension(name);
-			}
+		if (this instanceof RealFile && PMS.getConfiguration().isHideExtensions() && !isFolder()) {
+			name = FileUtil.getFileNameWithoutExtension(name);
 		}
 		if (getPlayer() != null) {
 			if (isNoName()) {
@@ -919,10 +915,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			}
 		}
 
-		if (isSrtFile() && (getMediaAudio() == null && getMediaSubtitle() == null)) {
-			if (getPlayer() == null || getPlayer().isExternalSubtitlesSupported()) {
-				name += " {External Subtitles}";
-			}
+		if (isSrtFile() && (getMediaAudio() == null && getMediaSubtitle() == null)
+				&& getPlayer() == null || (getPlayer() != null && getPlayer().isExternalSubtitlesSupported())) {
+			name += " {External Subtitles}";
 		}
 
 		if (getMediaAudio() != null) {
@@ -1004,6 +999,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		try {
 			return URLEncoder.encode(s, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
+			LOGGER.debug("Caught exception", e);
 		}
 		return "";
 	}
@@ -1237,8 +1233,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								int defaultFrequency = mediaRenderer.isTranscodeAudioTo441() ? 44100 : 48000;
 								if (!PMS.getConfiguration().isAudioResample()) {
 									try {
+										// TODO: Which exception could be thrown here?
 										defaultFrequency = firstAudioTrack.getSampleRate();
 									} catch (Exception e) {
+										LOGGER.debug("Caught exception", e);
 									}
 								}
 								int na = firstAudioTrack.getNrAudioChannels();
@@ -1551,32 +1549,31 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					}
 					LOGGER.trace("Finished sleeping for " + params.waitbeforestart + " milliseconds");
 				}
-			} else if (params.timeseek > 0 && getMedia() != null && getMedia().isMediaparsed()) {
-				if (getMedia().getDurationInSeconds() > 0) {
-					LOGGER.debug("Requesting time seek: " + params.timeseek + " seconds");
-					params.minBufferSize = 1;
-					Runnable r = new Runnable() {
-						@Override
-						public void run() {
-							externalProcess.stopProcess();
-						}
-					};
-					new Thread(r, "External Process Stopper").start();
-					ProcessWrapper newExternalProcess = getPlayer().launchTranscode(
-						getSystemName(),
-						this,
-						getMedia(),
-						params);
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						LOGGER.error(null, e);
+			} else if (params.timeseek > 0 && getMedia() != null && getMedia().isMediaparsed()
+					&& getMedia().getDurationInSeconds() > 0) {
+				LOGGER.debug("Requesting time seek: " + params.timeseek + " seconds");
+				params.minBufferSize = 1;
+				Runnable r = new Runnable() {
+					@Override
+					public void run() {
+						externalProcess.stopProcess();
 					}
-					if (newExternalProcess == null) {
-						LOGGER.trace("External process instance is null... sounds not good");
-					}
-					externalProcess = newExternalProcess;
+				};
+				new Thread(r, "External Process Stopper").start();
+				ProcessWrapper newExternalProcess = getPlayer().launchTranscode(
+					getSystemName(),
+					this,
+					getMedia(),
+					params);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					LOGGER.error(null, e);
 				}
+				if (newExternalProcess == null) {
+					LOGGER.trace("External process instance is null... sounds not good");
+				}
+				externalProcess = newExternalProcess;
 			}
 			if (externalProcess == null) {
 				return null;

@@ -19,6 +19,12 @@
 package net.pms.logging;
 
 import java.io.File;
+import java.io.IOException;
+
+import net.pms.configuration.RendererConfiguration;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.core.PropertyDefinerBase;
 
@@ -37,6 +43,8 @@ import ch.qos.logback.core.PropertyDefinerBase;
  * 
  */
 public class DebugLogPathDefiner extends PropertyDefinerBase {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DebugLogPathDefiner.class);
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -50,13 +58,19 @@ public class DebugLogPathDefiner extends PropertyDefinerBase {
 		File file = new File("write_test_file");
 
 		try {
-			file.createNewFile();
+			if (!file.createNewFile()) {
+				LOGGER.debug("Cannot create new file in current directory.");
+			}
+
 			if (file.canWrite()) {
-				file.delete();
+				if (!file.delete()) {
+					LOGGER.debug("Cannot delete file from current directory.");
+				}
 				return new File("").getAbsolutePath();
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			// Could not create / write the file
+			LOGGER.debug("Current directory is not writable.");
 		}
 
 		// Return path to temp folder, which should be writable

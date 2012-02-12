@@ -31,8 +31,12 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.util.PropertiesUtil;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -40,6 +44,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class AboutTab {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AboutTab.class);
+
 	private ImagePanel imagePanel;
 	private JLabel jl;
 	private JProgressBar jpb;
@@ -147,6 +153,7 @@ public class AboutTab {
 			try {
 				PMS.get().getRegistry().browseURI(link);
 			} catch (Exception e1) {
+				LOGGER.debug("Caught exception", e1);
 			}
 		}
 
@@ -172,6 +179,7 @@ public class AboutTab {
 		try {
 			bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/logo.png"));
 		} catch (IOException e) {
+			LOGGER.debug("Caught exception", e);
 		}
 		return new ImagePanel(bi);
 	}

@@ -45,6 +45,7 @@ public class RendererConfiguration {
 		try {
 			defaultConf = new RendererConfiguration();
 		} catch (ConfigurationException e) {
+			logger.debug("Caught exception", e);
 		}
 
 		File renderersDir = getRenderersDir();
@@ -136,7 +137,7 @@ public class RendererConfiguration {
 
 	private static RendererConfiguration manageRendererMatch(RendererConfiguration r) {
 		if (addressAssociation.values().contains(r)) {
-			// FIXME: This cannot ever ever happen because of how renderer matching
+			// This cannot ever ever happen because of how renderer matching
 			// is implemented in RequestHandler and RequestHandlerV2. The first header
 			// match will associate the IP address with the renderer and from then on
 			// all other requests from the same IP address will be recognized based on
@@ -864,12 +865,10 @@ public class RendererConfiguration {
 	 * 				otherwise.
 	 */
 	public boolean isCompatible(DLNAMediaInfo mediainfo, Format format) {
-		if (isMediaParserV2() && mediainfo != null) {
-			// Use the configured "Supported" lines in the renderer.conf
-			// to see if any of them match the MediaInfo library
-			if (getFormatConfiguration().match(mediainfo) != null) {
-				return true;
-			}
+		// Use the configured "Supported" lines in the renderer.conf
+		// to see if any of them match the MediaInfo library
+		if (isMediaParserV2() && mediainfo != null && getFormatConfiguration().match(mediainfo) != null) {
+			return true;
 		}
 
 		if (format != null) {

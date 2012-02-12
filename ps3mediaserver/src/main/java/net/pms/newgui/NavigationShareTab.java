@@ -40,9 +40,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaDatabase;
 import net.pms.util.KeyedComboBoxModel;
 
@@ -53,6 +57,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
 public class NavigationShareTab {
+	private static final Logger LOGGER = LoggerFactory.getLogger(NavigationShareTab.class);
 	public static final String ALL_DRIVES = Messages.getString("FoldTab.0");
 	private JList FList;
 	private DefaultListModel df;
@@ -228,6 +233,7 @@ public class NavigationShareTab {
 					int ab = Integer.parseInt(seekpos.getText());
 					configuration.setThumbnailSeekPos(ab);
 				} catch (NumberFormatException nfe) {
+					LOGGER.debug("Could not parse thumbnail seek position from \"" + seekpos.getText() + "\"");
 				}
 
 			}
@@ -283,6 +289,7 @@ public class NavigationShareTab {
 					try {
 						configuration.setAudioThumbnailMethod(Integer.parseInt((String) thumbKCBM.getSelectedKey()));
 					} catch (NumberFormatException nfe) {
+						LOGGER.debug("Could not parse audio thumbnail method from \"" + thumbKCBM.getSelectedKey() + "\"");
 					}
 
 				}
@@ -513,6 +520,7 @@ public class NavigationShareTab {
 					try {
 						configuration.setSortMethod(Integer.parseInt((String) kcbm.getSelectedKey()));
 					} catch (NumberFormatException nfe) {
+						LOGGER.debug("Could not parse sort method from \"" + kcbm.getSelectedKey() + "\"");
 					}
 
 				}

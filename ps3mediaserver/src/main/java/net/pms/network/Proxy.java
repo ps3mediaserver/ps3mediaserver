@@ -91,6 +91,7 @@ public class Proxy extends Thread {
 				try {
 					targetPort = Integer.parseInt(targetHost.substring(targetHost.indexOf(":") + 1));
 				} catch (NumberFormatException nfe) {
+					logger.debug("Could not parse port from \"" + targetHost.substring(targetHost.indexOf(":") + 1) + "\"");
 				}
 				target = targetHost.substring(0, targetHost.indexOf(":"));
 			}
@@ -113,9 +114,13 @@ public class Proxy extends Thread {
 			fileResource = fileResource + ".cached";
 			String fileN = "proxycache/" + target + "/" + directoryResource;
 			File directoryResourceFile = new File(fileN);
+
 			if (writeCache) {
-				directoryResourceFile.mkdirs();
+				if (!(directoryResourceFile.mkdirs())) {
+					logger.debug("Could not create directory \"" + directoryResourceFile.getAbsolutePath() + "\"");
+				}
 			}
+
 			File cachedResource = new File(directoryResourceFile, fileResource);
 			//System.out.println("Trying to find: " + cachedResource.getAbsolutePath());
 
@@ -190,7 +195,7 @@ public class Proxy extends Thread {
 			socketToWeb.close();
 			toBrowser.close();
 		} catch (IOException e) {
-			//System.err.println("E2 " + Thread.currentThread().getName() + ": " + e.getMessage());
+			logger.debug("Caught exception", e);
 		} finally {
 			try {
 				if (toWeb != null) {
@@ -201,7 +206,7 @@ public class Proxy extends Thread {
 				}
 				socket.close();
 			} catch (IOException e) {
-				//System.err.println("E3 " + Thread.currentThread().getName() + ": " + e.getMessage());
+				logger.debug("Caught exception", e);
 			}
 		}
 	}

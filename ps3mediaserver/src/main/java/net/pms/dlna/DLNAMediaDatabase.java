@@ -123,6 +123,7 @@ public class DLNAMediaDatabase implements Runnable {
 				executeUpdate(conn, "DROP TABLE AUDIOTRACKS");
 				executeUpdate(conn, "DROP TABLE SUBTRACKS");
 			} catch (SQLException se) {
+				logger.debug("Caught exception", se);
 			}
 			try {
 				StringBuilder sb = new StringBuilder();
@@ -644,10 +645,8 @@ public class DLNAMediaDatabase implements Runnable {
 			logger.error("Error in compacting database: ", s);
 		} finally {
 			File testsql = new File(file);
-			if (testsql.exists()) {
-				if (!testsql.delete()) {
-					testsql.deleteOnExit();
-				}
+			if (testsql.exists() && !testsql.delete()) {
+				testsql.deleteOnExit();
 			}
 		}
 		PMS.get().getFrame().setStatusLine(null);

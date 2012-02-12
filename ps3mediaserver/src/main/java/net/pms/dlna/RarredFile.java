@@ -85,6 +85,7 @@ public class RarredFile extends DLNAResource {
 		try {
 			t = f.exists() && !rarFile.isEncrypted();
 		} catch (Throwable th) {
+			logger.debug("Caught exception", th);
 		}
 		return t;
 	}

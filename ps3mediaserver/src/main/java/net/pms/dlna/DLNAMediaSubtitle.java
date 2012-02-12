@@ -163,6 +163,7 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 					try {
 						fis.close();
 					} catch (IOException e) {
+						logger.debug("Caught exception", e);
 					}
 				}
 			}

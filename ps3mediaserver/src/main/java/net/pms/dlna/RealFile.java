@@ -51,7 +51,7 @@ public class RealFile extends MapFile {
 	}
 
 	@Override
-	// FIXME: this is called repeatedly for invalid files e.g. files MediaInfo can't parse
+	// TODO: this is called repeatedly for invalid files e.g. files MediaInfo can't parse
 	public boolean isValid() {
 		File file = this.getFile();
 		checktype();
@@ -88,6 +88,7 @@ public class RealFile extends MapFile {
 		try {
 			return new FileInputStream(getFile());
 		} catch (FileNotFoundException e) {
+			logger.debug("File not found: \"" + getFile().getAbsolutePath() + "\"");
 		}
 		return null;
 	}

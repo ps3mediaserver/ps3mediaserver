@@ -106,6 +106,8 @@ public class BlockerFileInputStream extends UnusedInputStream {
 
 	@Override
 	public void unusedStreamSignal() {
-		file.delete();
+		if (!file.delete()) {
+			logger.debug("Failed to delete \"" + file.getAbsolutePath() + "\"");
+		}
 	}
 }

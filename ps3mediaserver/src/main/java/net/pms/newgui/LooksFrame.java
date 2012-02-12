@@ -129,6 +129,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 						systemClassName = gtkLAF;
 					}
 				} catch (ClassNotFoundException ce) {
+					logger.debug("Caught exception", ce);
 				}
 
 				logger.debug("Choosing java look and feel: " + systemClassName);

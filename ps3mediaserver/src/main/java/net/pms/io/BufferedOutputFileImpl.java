@@ -173,7 +173,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 		this.minMemorySize = (int) (1048576 * params.minBufferSize);
 		this.maxMemorySize = (int) (1048576 * params.maxBufferSize);
 
-		// FIXME: Better to relate margin directly to maxMemorySize instead of using arbitrary fixed values
+		// TODO: Better to relate margin directly to maxMemorySize instead of using arbitrary fixed values
 
 		int margin = MARGIN_LARGE; // Issue 220: extends to 20Mb : readCount is wrongly set cause of the ps3's
 		// 2nd request with a range like 44-xxx, causing the end of buffer margin to be first sent 
@@ -317,7 +317,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 					buffer = growBuffer(buffer, maxMemorySize);
 				}
 
-				// FIXME: This smells like 2x System.arraycopy()!
+				// TODO: This smells like System.arraycopy()!
 				int s = (len - off);
 				for (int i = 0; i < s; i++) {
 					buffer[modulo(mb + i, buffer.length)] = b[off + i];
@@ -641,10 +641,8 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			}
 			this.bufferOverflowWarning = newMargin;
 		}
-		if (eof) {
-			if (readCount >= writeCount) {
-				return -1;
-			}
+		if (eof && readCount >= writeCount) {
+			return -1;
 		}
 		int c = 0;
 		int minBufferS = firstRead ? minMemorySize : secondread_minsize;
@@ -672,10 +670,8 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 		int mb = (int) (readCount % maxMemorySize);
 		int endOF = buffer.length;
 		int cut = 0;
-		if (eof) {
-			if ((writeCount - readCount) < len) {
-				cut = (int) (len - (writeCount - readCount));
-			}
+		if (eof && (writeCount - readCount) < len) {
+			cut = (int) (len - (writeCount - readCount));
 		}
 
 		if (mb >= endOF - len) {
@@ -769,6 +765,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			try {
 				debugOutput.close();
 			} catch (IOException e) {
+				logger.debug("Caught exception", e);
 			}
 		}
 		timer.cancel();

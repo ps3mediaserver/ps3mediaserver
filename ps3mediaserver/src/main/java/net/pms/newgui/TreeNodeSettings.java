@@ -28,6 +28,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.pms.Messages;
 import net.pms.encoders.Player;
 import net.pms.encoders.PlayerFactory;
@@ -37,6 +40,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class TreeNodeSettings extends DefaultMutableTreeNode {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TreeNodeSettings.class);
 	private static final long serialVersionUID = -337606760204027449L;
 	private Player p;
 	private JComponent otherConfigPanel;
@@ -93,6 +97,7 @@ public class TreeNodeSettings extends DefaultMutableTreeNode {
 			try {
 				bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/messagebox_warning-220.png"));
 			} catch (IOException e) {
+				LOGGER.debug("Caught exception", e);
 			}
 			ImagePanel ip = new ImagePanel(bi);
 

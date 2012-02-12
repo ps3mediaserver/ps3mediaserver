@@ -760,6 +760,7 @@ public class RequestV2 extends HTTPResource {
 							PMS.get().getRegistry().reenableGoToSleep();
 							inputStream.close();
 						} catch (IOException e) {
+							logger.debug("Caught exception", e);
 						}
 
 						// Always close the channel after the response is sent because of
@@ -774,6 +775,7 @@ public class RequestV2 extends HTTPResource {
 					PMS.get().getRegistry().reenableGoToSleep();
 					inputStream.close();
 				} catch (IOException ioe) {
+					logger.debug("Caught exception", ioe);
 				}
 
 				if (close) {
@@ -786,7 +788,7 @@ public class RequestV2 extends HTTPResource {
 		} else {
 			// No response data and no input stream. Seems we are merely serving up headers.
 			if (lowRange > 0 && highRange > 0) {
-				// FIXME: There is no content, so why set a length?
+				// XXX: There is no content, so why set a length?
 				output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "" + (highRange - lowRange + 1));
 			} else {
 				output.setHeader(HttpHeaders.Names.CONTENT_LENGTH, "0");

@@ -28,6 +28,8 @@ import java.io.PrintStream;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -326,10 +328,9 @@ public class PMS {
 		configuration.addConfigurationListener(new ConfigurationListener() {
 			@Override
 			public void configurationChanged(ConfigurationEvent event) {
-				if (!event.isBeforeUpdate()) {
-					if (PmsConfiguration.NEED_RELOAD_FLAGS.contains(event.getPropertyName())) {
-						frame.setReloadable(true);
-					}
+				if ((!event.isBeforeUpdate())
+						&& PmsConfiguration.NEED_RELOAD_FLAGS.contains(event.getPropertyName())) {
+					frame.setReloadable(true);
 				}
 			}
 		});
@@ -532,7 +533,10 @@ public class PMS {
 					}
 					get().getServer().stop();
 					Thread.sleep(500);
-				} catch (Exception e) {
+				} catch (IOException e) {
+					logger.debug("Caught exception", e);
+				} catch (InterruptedException e) {
+					logger.debug("Caught exception", e);
 				}
 			}
 		});
@@ -771,8 +775,10 @@ public class PMS {
 							logger.info(String.format("Generated new UUID based on the MAC address of the network adapter '%s'", ni.getDisplayName()));
 						}
 					}
-				} catch (Throwable e) {
-					//do nothing
+				} catch (SocketException e) {
+					logger.debug("Caught exception", e);
+				} catch (UnknownHostException e) {
+					logger.debug("Caught exception", e);
 				}
 
 				//create random UUID if the generation by MAC address failed
@@ -843,7 +849,7 @@ public class PMS {
 	}
 
 	/**
-	 * @deprecated Use {@link FormatFactory#getAssociatedExtension(filename)}
+	 * @deprecated Use {@link FormatFactory#getAssociatedExtension(String)}
 	 * instead.
 	 *
 	 * @param filename
@@ -966,7 +972,7 @@ public class PMS {
 	 * 
 	 * @param profileClass
 	 * @param ext
-	 * @return
+	 * @return The player if a match could be found
 	 */
 	@Deprecated
 	public Player getPlayer(Class<? extends Player> profileClass, Format ext) {
@@ -978,7 +984,7 @@ public class PMS {
 	 * 
 	 * @param profileClasses
 	 * @param type
-	 * @return
+	 * @return The list of players that match
 	 */
 	@Deprecated
 	public ArrayList<Player> getPlayers(ArrayList<Class<? extends Player>> profileClasses, int type) {
@@ -994,10 +1000,10 @@ public class PMS {
 	}
 
 	public void storeFileInCache(File file, int formatType) {
-		if (getConfiguration().getUseCache()) {
-			if (!getDatabase().isDataExists(file.getAbsolutePath(), file.lastModified())) {
-				getDatabase().insertData(file.getAbsolutePath(), file.lastModified(), formatType, null);
-			}
+		if (getConfiguration().getUseCache()
+				&& !getDatabase().isDataExists(file.getAbsolutePath(), file.lastModified())) {
+
+			getDatabase().insertData(file.getAbsolutePath(), file.lastModified(), formatType, null);
 		}
 	}
 

@@ -121,7 +121,11 @@ public class HTTPResource {
 			String fileName = url.getFile();
 			fileName = convertURLToFileName(fileName);
 			File hostDir = new File(PMS.getConfiguration().getTempFolder(), hostName);
-			hostDir.mkdir();
+
+			if (!hostDir.mkdir()) {
+				logger.debug("Cannot create directory \"" + hostDir.getAbsolutePath() + "\"");
+			}
+
 			f = new File(hostDir, fileName);
 			if (f.exists()) {
 				return new FileInputStream(f);
