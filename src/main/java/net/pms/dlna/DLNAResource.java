@@ -1233,7 +1233,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								int defaultFrequency = mediaRenderer.isTranscodeAudioTo441() ? 44100 : 48000;
 								if (!PMS.getConfiguration().isAudioResample()) {
 									try {
-										// FIXME: Which exception could be thrown here?
+										// TODO: Which exception could be thrown here?
 										defaultFrequency = firstAudioTrack.getSampleRate();
 									} catch (Exception e) {
 										LOGGER.debug("Caught exception", e);

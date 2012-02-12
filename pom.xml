@@ -252,7 +252,7 @@
 		</dependency>
 
 		<!-- originally, hamcrest-all 1.2RC2 for the artifact change, see: https://code.google.com/p/hamcrest/issues/detail?id=12#c54 
-			FIXME: verify if needed -->
+			TODO: verify if needed -->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-integration</artifactId>
@@ -277,14 +277,6 @@
 			<artifactId>rome</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-
-		<!-- FIXME: verify if needed -->
-		<!-- no, rome already provides jdom
-		<dependency>
-			<groupId>org.jdom</groupId>
-			<artifactId>jdom</artifactId>
-			<version>1.1.2</version>
-		</dependency> -->
 
 		<dependency>
 			<groupId>org.jvnet.winp</groupId>
