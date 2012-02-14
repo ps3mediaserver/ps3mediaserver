@@ -200,20 +200,24 @@ public class NetworkConfiguration {
 		Set<InetAddress> subAddress = getAllAvailableAddresses(netIface.getSubInterfaces());
 		LOG.debug("sub address for {} is {}", netIface.getName(), subAddress);
 		boolean foundAddress = false;
+
 		for (InterfaceAddress ifaceAddr : netIface.getInterfaceAddresses()) {
-			InetAddress address = ifaceAddr.getAddress();
-			LOG.trace("checking {} from {} on {}", new Object[] { address, ifaceAddr, netIface.getName() });
-			if (isRelevantAddress(address)) {
-				if (!subAddress.contains(address)) {
-					LOG.debug("found {} -> {}", netIface.getName(), address.getHostAddress());
-					final InterfaceAssociation ni = new InterfaceAssociation(address, netIface, parentName);
-					interfaces.add(ni);
-					mainAddress.put(netIface.getName(), ni);
-					foundAddress = true;
+			if (ifaceAddr != null) {
+				InetAddress address = ifaceAddr.getAddress();
+				LOG.trace("checking {} from {} on {}", new Object[] { address, ifaceAddr, netIface.getName() });
+
+				if (isRelevantAddress(address)) {
+					if (!subAddress.contains(address)) {
+						LOG.debug("found {} -> {}", netIface.getName(), address.getHostAddress());
+						final InterfaceAssociation ni = new InterfaceAssociation(address, netIface, parentName);
+						interfaces.add(ni);
+						mainAddress.put(netIface.getName(), ni);
+						foundAddress = true;
+					}
+				} else {
+					LOG.debug("has {}, which is skipped, because loopback={}, ipv6={}", new Object[] { 
+						address, address.isLoopbackAddress(), (address instanceof Inet6Address)} );
 				}
-			} else {
-				LOG.debug("has {}, which is skipped, because loopback={}, ipv6={}", new Object[] { 
-					address, address.isLoopbackAddress(), (address instanceof Inet6Address)} );
 			}
 		}
 		if (!foundAddress) {
