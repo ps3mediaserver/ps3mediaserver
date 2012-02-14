@@ -8,6 +8,7 @@ import java.util.List;
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
+import net.pms.medialibrary.commons.enumarations.FileType;
 
 public class DOVideoFileInfo extends DOFileInfo {
 	private String originalName;
@@ -44,6 +45,10 @@ public class DOVideoFileInfo extends DOFileInfo {
 	private String muxingMode;
 	private List<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
 	private List<DLNAMediaSubtitle> subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
+	
+	public DOVideoFileInfo() {
+		setType(FileType.VIDEO);
+	}
 	
 	public String getDisplayString(String displayNameMask){
 		String retVal = super.getDisplayString(displayNameMask);
@@ -132,6 +137,8 @@ public class DOVideoFileInfo extends DOFileInfo {
 		
 		return retVal;
 	}
+	
+	
 
 	public void setAgeRating(DOCertification ageRating) {
 		if(!getAgeRating().equals(ageRating)) {

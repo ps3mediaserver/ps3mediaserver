@@ -248,6 +248,7 @@ public class FileEditDialog extends JDialog {
 			List<ConditionType> propertiesToUpdate = tpFileEdit.getPropertiesToUpdate();
 			for (DOFileInfo fiUpdate : files) {
 				FileImportHelper.updateFileInfo(fileInfo, fiUpdate, propertiesToUpdate);
+				MediaLibraryStorage.getInstance().updateFileInfo(fiUpdate);
 			}
  			break;
 		}

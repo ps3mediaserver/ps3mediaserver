@@ -123,7 +123,9 @@ public class FileEditTabbedPane extends JTabbedPane {
 	public DOFileInfo getUpdatedFileInfo() throws ConditionTypeException {
 		//update the file properties
 		((IFilePropertiesEditor) propertiesPanel).updateFileInfo(fileInfo);
-		coverPanel.updateFileInfo(fileInfo);
+		if(isMultiEdit) {
+			coverPanel.updateFileInfo(fileInfo);
+		}
 		fileInfo.setTags(tagsPanel.getTags());
 		
 		return fileInfo;
