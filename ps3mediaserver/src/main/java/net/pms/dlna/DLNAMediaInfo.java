@@ -456,11 +456,11 @@ public class DLNAMediaInfo implements Cloneable {
 		args[9] = PMS.getConfiguration().getTempFolder() + "/imagemagick_thumbs/" + media.getFile().getName() + ".jpg";
 		OutputParams params = new OutputParams(PMS.getConfiguration());
 		params.workDir = new File(PMS.getConfiguration().getTempFolder().getAbsolutePath() + "/imagemagick_thumbs/");
-		if (!params.workDir.exists()) {
-			if (!params.workDir.mkdirs()) {
-				logger.debug("Could not create directory \"" + params.workDir.getAbsolutePath() + "\"");
-			}
+
+		if (!params.workDir.exists() && !params.workDir.mkdirs()) {
+			logger.debug("Could not create directory \"" + params.workDir.getAbsolutePath() + "\"");
 		}
+
 		params.maxBufferSize = 1;
 		params.stdin = media.getPush();
 		params.log = true;
@@ -902,11 +902,10 @@ public class DLNAMediaInfo implements Cloneable {
 							if (!jpg.delete()) {
 								jpg.deleteOnExit();
 							}
-							if (!jpg.getParentFile().delete()) {
-								// Retry
-								if (!jpg.getParentFile().delete()) {
-									logger.debug("Faild to delete \"" + jpg.getParentFile().getAbsolutePath() + "\"");
-								}
+
+							// Try and retry
+							if (!jpg.getParentFile().delete() && !jpg.getParentFile().delete()) {
+								logger.debug("Faild to delete \"" + jpg.getParentFile().getAbsolutePath() + "\"");
 							}
 						}
 					} catch (IOException e) {

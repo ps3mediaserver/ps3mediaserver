@@ -8,7 +8,6 @@ import java.util.Map;
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
-import net.pms.newgui.TreeNodeSettings;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;

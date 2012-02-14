@@ -50,7 +50,7 @@ Section ""
  
   ; change for your purpose (-jar etc.)
   ${GetParameters} $1
-  StrCpy $0 '"$R0" -classpath update.jar;pms.jar -Xmx1024M -Dsun.java2d.d3d=false -Dfile.encoding=UTF-8 ${CLASS} $1'
+  StrCpy $0 '"$R0" -classpath update.jar;pms.jar -Xmx1024M -Djava.net.preferIPv4Stack=true -Dsun.java2d.d3d=false -Dfile.encoding=UTF-8 ${CLASS} $1'
  
   SetOutPath $EXEDIR
   Exec $0

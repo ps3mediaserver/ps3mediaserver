@@ -154,11 +154,10 @@ public class DVDISOTitle extends DLNAResource {
 					if (!jpg.delete()) {
 						jpg.deleteOnExit();
 					}
-					if (!jpg.getParentFile().delete()) {
-						// Retry
-						if (!jpg.getParentFile().delete()) {
-							logger.debug("Faild to delete \"" + jpg.getParentFile().getAbsolutePath() + "\"");
-						}
+
+					// Try and retry
+					if (!jpg.getParentFile().delete() && !jpg.getParentFile().delete()) {
+						logger.debug("Faild to delete \"" + jpg.getParentFile().getAbsolutePath() + "\"");
 					}
 				}
 				jpg = new File(frameName + "1.jpg");

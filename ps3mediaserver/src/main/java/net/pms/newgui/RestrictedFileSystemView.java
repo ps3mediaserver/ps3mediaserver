@@ -11,8 +11,6 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileView;
 
-import net.pms.encoders.AviDemuxerInputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -377,7 +375,7 @@ public class RestrictedFileSystemView extends FileSystemView {
 		int i = 2;
 		while (newFolder.exists() && (i < 100)) {
 			newFolder = createFileObject(containingDir, MessageFormat.format(newFolderString,
-				new Object[]{new Integer(i)}));
+				new Object[] { Integer.valueOf(i) }));
 			i++;
 		}
 
