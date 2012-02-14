@@ -139,12 +139,17 @@ public class NetworkConfiguration {
 	private Set<InetAddress> addAvailableAddresses(NetworkInterface netIface) {
 		Set<InetAddress> addrSet = new HashSet<InetAddress>();
 		LOG.trace("available addresses for {} is : {}", netIface.getName(), Collections.list(netIface.getInetAddresses()));
+
 		for (InterfaceAddress ia : netIface.getInterfaceAddresses()) {
-			InetAddress address = ia.getAddress();
-			if (isRelevantAddress(address)) {
-				addrSet.add(ia.getAddress());
+			if (ia != null) {
+				InetAddress address = ia.getAddress();
+
+				if (isRelevantAddress(address)) {
+					addrSet.add(ia.getAddress());
+				}
 			}
 		}
+
 		LOG.debug(" non loopback/ipv4 addresses : {}", addrSet);
 		addressMap.put(netIface.getName(), addrSet);
 		return addrSet;
