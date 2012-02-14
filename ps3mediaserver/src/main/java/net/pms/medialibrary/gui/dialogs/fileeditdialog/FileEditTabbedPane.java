@@ -2,13 +2,19 @@ package net.pms.medialibrary.gui.dialogs.fileeditdialog;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.pms.Messages;
+import net.pms.PMS;
 import net.pms.medialibrary.commons.dataobjects.DOAudioFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOImageFileInfo;
@@ -16,6 +22,10 @@ import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.panels.FileCoverPanel;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.panels.FileTagsPanel;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.panels.VideoFileInfoPanel;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.panels.VideoFilePropertiesPanel;
 
 /**
  * Groups the info, properties and tags panels in a tabbed pane.
@@ -25,10 +35,12 @@ import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
  */
 public class FileEditTabbedPane extends JTabbedPane {
 	private static final long serialVersionUID = -4181083393313495546L;
+	private static final Logger log = LoggerFactory.getLogger(FileEditTabbedPane.class);
 
 	private JPanel infoPanel;
 	private JPanel propertiesPanel;
 	private FileTagsPanel tagsPanel;
+	private FileCoverPanel coverPanel;
 	
 	private DOFileInfo fileInfo;
 	private boolean isMultiEdit;
@@ -66,6 +78,11 @@ public class FileEditTabbedPane extends JTabbedPane {
 		infoPanel = new JPanel();
 		propertiesPanel = new JPanel();
 		tagsPanel = new FileTagsPanel(isMultiEdit ? new HashMap<String, List<String>>() : fileInfo.getTags(), true);
+		try {
+			coverPanel = new FileCoverPanel(PMS.getConfiguration().getTempFolder().getAbsolutePath() + File.separator + "tmp_cover.jpg");
+		} catch (IOException e) {
+			log.error("Failed to get temp folder location", e);
+		}
 		
 		if(fileInfo instanceof DOVideoFileInfo) {
 			infoPanel = new VideoFileInfoPanel((DOVideoFileInfo) fileInfo);
@@ -85,6 +102,7 @@ public class FileEditTabbedPane extends JTabbedPane {
 		if(isMultiEdit) {
 			addTab(Messages.getString("ML.FileEditTabbedPane.tProperties"), propertiesPanel);
 			addTab(Messages.getString("ML.FileEditTabbedPane.tTags"), tagsPanel);
+			addTab(Messages.getString("ML.FileEditTabbedPane.tCover"), coverPanel);
 		} else {
 			addTab(Messages.getString("ML.FileEditTabbedPane.tInfo"), infoPanel);
 			addTab(Messages.getString("ML.FileEditTabbedPane.tProperties"), propertiesPanel);
@@ -105,12 +123,15 @@ public class FileEditTabbedPane extends JTabbedPane {
 	public DOFileInfo getUpdatedFileInfo() throws ConditionTypeException {
 		//update the file properties
 		((IFilePropertiesEditor) propertiesPanel).updateFileInfo(fileInfo);
+		coverPanel.updateFileInfo(fileInfo);
 		fileInfo.setTags(tagsPanel.getTags());
 		
 		return fileInfo;
 	}
 	
 	public List<ConditionType> getPropertiesToUpdate() {
-		return ((IFilePropertiesEditor) propertiesPanel).getPropertiesToUpdate();	
+		List<ConditionType> res = ((IFilePropertiesEditor) propertiesPanel).getPropertiesToUpdate();
+		res.addAll(coverPanel.getPropertiesToUpdate());
+		return res;
 	}
 }

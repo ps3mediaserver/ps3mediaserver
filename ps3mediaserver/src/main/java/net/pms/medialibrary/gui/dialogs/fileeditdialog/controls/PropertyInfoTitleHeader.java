@@ -1,4 +1,4 @@
-package net.pms.medialibrary.gui.dialogs.fileeditdialog;
+package net.pms.medialibrary.gui.dialogs.fileeditdialog.controls;
 
 import java.awt.Font;
 import java.awt.GridLayout;

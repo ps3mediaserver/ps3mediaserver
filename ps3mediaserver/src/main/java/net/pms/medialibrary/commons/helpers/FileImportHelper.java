@@ -315,7 +315,14 @@ public class FileImportHelper {
 		for(ConditionType ct : propertiesToUse) {
 			switch (ct) {
 			case FILE_THUMBNAILPATH:
-				fiDestination.setThumbnailPath(fiSource.getThumbnailPath());
+				//copy the temporary file
+				String saveFileName = FileImportHelper.getCoverPath(fiSource.getThumbnailPath(), fiDestination);
+				try {
+					FileImportHelper.copyFile(fiSource.getThumbnailPath(), saveFileName, true);
+					fiDestination.setThumbnailPath(saveFileName);
+				} catch (IOException e) {
+					log.error(String.format("Failed to copy cover from %s to %s", fiSource.getThumbnailPath(), saveFileName), e);
+				}
 				break;
 			case FILE_CONTAINS_TAG:				
 				//merge tags
@@ -389,6 +396,8 @@ public class FileImportHelper {
 			case VIDEO_ORIGINALNAME:
 				fiDestination.setOriginalName(fiSource.getOriginalName());
 				break;
+			case VIDEO_SORTNAME:
+				fiDestination.setSortName(fiSource.getSortName());
 			case VIDEO_OVERVIEW:
 				fiDestination.setOverview(fiSource.getOverview());
 				break;
@@ -488,26 +497,14 @@ public class FileImportHelper {
 			break;
 		case VIDEO_COVERURL:
 			validateStringValue(value, fileProperty);
-							
-			String vdt = (String) value;
-			String saveFileName = "";
+			String saveFileName = getCoverPath((String) value, fileInfo);
 			try {
-				if(vdt.length() < 4) {
-					break;
-				}
-				
-				String ext = vdt.substring(vdt.length() - 4, vdt.length());
-				if(ext.startsWith(".")){
-					ext = ext.substring(1, 4);
-				}
-				saveFileName = MediaLibraryConfiguration.getInstance().getPictureSaveFolderPath() + fileInfo.getFileName().replaceAll("\\\\|/|:|\\*|\\?|\"|<|>|\\|", "_") + ".cover." + ext;
-				saveUrlToFile(vdt, saveFileName);
+				saveUrlToFile((String) value, saveFileName);
 				fileInfo.setThumbnailPath(saveFileName);
 			} catch (IOException e) {
 				log.error(String.format("Failed to save cover url='%s' to file='%s'", value, saveFileName), e);
 				throw new FilePropertyImportException(fileProperty, null, String.class, ExceptionType.ProcessingFailed);
 			}
-			fileInfo.setThumbnailPath(saveFileName);
 			break;
 		case VIDEO_DIRECTOR:
 			validateStringValue(value, fileProperty);
@@ -592,6 +589,22 @@ public class FileImportHelper {
 		default:
 			break;
 		}
+	}
+	
+	/**
+	 * Creates the file path where to save the cover for the file info.<br>
+	 * The path is consists of <pictures_save_folder_path>/<file_name>.cover.<extension> 
+	 * @param coverPath the path of the cover (used to determine the extension)
+	 * @param fileInfo the file info to create the cover path for
+	 * @return the cover path or null if coverPath doesn't contain a dot
+	 */
+	public static String getCoverPath(String coverPath, DOFileInfo fileInfo) {
+		String res = null;
+		if(coverPath != null && coverPath.contains(".")) {
+			String ext = coverPath.substring(coverPath.lastIndexOf('.'), coverPath.length());
+			res = MediaLibraryConfiguration.getInstance().getPictureSaveFolderPath() + fileInfo.getFileName().replaceAll("\\\\|/|:|\\*|\\?|\"|<|>|\\|", "_") + ".cover" + ext;			
+		}
+		return res;
 	}
 
 	/**
@@ -747,7 +760,11 @@ public class FileImportHelper {
 		return res;
 	}
 	
-	// This method returns a buffered image with the contents of an image
+	/**
+	 * Creates a buffered image from an image
+	 * @param image the image
+	 * @return the buffered image
+	 */
 	public static BufferedImage getBufferedImage(Image image) {
 	    if (image instanceof BufferedImage) {
 	        return (BufferedImage)image;
@@ -799,7 +816,7 @@ public class FileImportHelper {
 	}
 	
 	// This method returns true if the specified image has transparent pixels
-	public static boolean hasAlpha(Image image) {
+	private static boolean hasAlpha(Image image) {
 	    // If buffered image, the color model is readily available
 	    if (image instanceof BufferedImage) {
 	        BufferedImage bimage = (BufferedImage)image;
@@ -830,14 +847,15 @@ public class FileImportHelper {
 	 *            if true, the destination file will be overwritten if it
 	 *            already exists
 	 * @throws IOException
+	 * @return true if the file has been copied; otherwise false
 	 */
-	public static void copyFile(File source, File dest, boolean overwrite) throws IOException {
+	public static boolean copyFile(File source, File dest, boolean overwrite) throws IOException {
 		if (dest.exists()) {
 			if(!overwrite) {
-				return;
+				return false;
 			}
 		} else {
-			dest.createNewFile();			
+			dest.createNewFile();
 		}
 		
 		InputStream in = null;
@@ -860,5 +878,24 @@ public class FileImportHelper {
 				out.close();
 			}
 		}
+		log.debug(String.format("Copied file from %s to %s", source.getAbsolutePath(), dest.getAbsolutePath()));
+		return true;
+	}
+	
+	/**
+	 * Copies a file from the source to the destination
+	 * 
+	 * @param source
+	 *            the source file
+	 * @param dest
+	 *            the destination file
+	 * @param overwrite
+	 *            if true, the destination file will be overwritten if it
+	 *            already exists
+	 * @throws IOException
+	 * @return true if the file has been copied; otherwise false
+	 */
+	public static void copyFile(String source, String dest, boolean overwrite) throws IOException {
+		copyFile(new File(source), new File(dest), overwrite);
 	}
 }

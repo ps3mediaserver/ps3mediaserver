@@ -1,4 +1,4 @@
-package net.pms.medialibrary.gui.dialogs.fileeditdialog;
+package net.pms.medialibrary.gui.dialogs.fileeditdialog.controls;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;

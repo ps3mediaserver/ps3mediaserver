@@ -1,4 +1,4 @@
-package net.pms.medialibrary.gui.dialogs.fileeditdialog;
+package net.pms.medialibrary.gui.dialogs.fileeditdialog.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -29,6 +29,7 @@ import javax.swing.SwingConstants;
 import net.pms.Messages;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.gui.dialogs.TextInputDialog;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.controls.TagLabelPanel;
 import net.pms.medialibrary.gui.shared.ScrollablePanel;
 import net.pms.medialibrary.gui.shared.TagLabel;
 

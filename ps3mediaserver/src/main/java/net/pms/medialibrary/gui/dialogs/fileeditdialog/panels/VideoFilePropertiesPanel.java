@@ -1,4 +1,4 @@
-package net.pms.medialibrary.gui.dialogs.fileeditdialog;
+package net.pms.medialibrary.gui.dialogs.fileeditdialog.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -31,6 +31,8 @@ import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.controls.PropertyInfoEntry;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.controls.PropertyInfoTitleHeader;
 
 public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesEditor {
 	private static final long serialVersionUID = -2983607076103804005L;

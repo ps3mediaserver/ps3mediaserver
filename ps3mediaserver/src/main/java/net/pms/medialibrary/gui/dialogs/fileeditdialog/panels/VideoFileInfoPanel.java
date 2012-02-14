@@ -1,18 +1,15 @@
-package net.pms.medialibrary.gui.dialogs.fileeditdialog;
+package net.pms.medialibrary.gui.dialogs.fileeditdialog.panels;
 
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -37,6 +34,8 @@ import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.helpers.DLNAHelper;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.gui.dialogs.ImageViewer;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.controls.PropertyInfoTitleHeader;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.transferhandlers.FileInfoCoverTransferHandler;
 
 public class VideoFileInfoPanel extends JPanel {
 	private static final long serialVersionUID = 3818830578372058006L;
@@ -80,7 +79,7 @@ public class VideoFileInfoPanel extends JPanel {
 		// Add cover
 		lCover = new JLabel();
 		lCover.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		lCover.setTransferHandler(new ImageSelection(fileInfo, videoCoverImage));
+		lCover.setTransferHandler(new FileInfoCoverTransferHandler(fileInfo));
 		lCover.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -203,35 +202,23 @@ public class VideoFileInfoPanel extends JPanel {
 			File imageFile = new File(fileInfo.getThumbnailPath());
 			if(imageFile.isFile()) {
 				//show the cover if it exists
-				videoCoverImage = new ImageIcon(imageFile.getAbsolutePath());
+				try {
+					videoCoverImage = new ImageIcon(ImageIO.read(new File(imageFile.getAbsolutePath())));
+				} catch (IOException e) {
+					log.error("Failed to load cover from " + imageFile.getAbsolutePath(), e);
+				}
 			} else {
 				//show the no image image
 				try {
 					videoCoverImage = new ImageIcon(ImageIO.read(getClass().getResource("/resources/images/cover_no_image.png")));
-				} catch (IOException e1) {
-					log.error("Failed to load default image when no cover is available", e1);
+				} catch (IOException e) {
+					log.error("Failed to load default image when no cover is available", e);
 				}
 			}			
 		}
 		
 		if(height > 0) {
-			lCover.setIcon(getScaledImage(videoCoverImage, height));
+			lCover.setIcon(GUIHelper.getScaledImage(videoCoverImage, height));
 		}
-	}
-
-	/**
-	 * Method used to resize images to fit the cover into the label
-	 * @param srcImg source image icon
-	 * @param h height of the image
-	 * @return resized image icon
-	 */
-	private static ImageIcon getScaledImage(ImageIcon srcImg, int h) {
-		int w = srcImg.getIconWidth() * h / srcImg.getIconHeight();
-		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g2 = resizedImg.createGraphics();
-		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		g2.drawImage(srcImg.getImage(), 0, 0, w, h, null);
-		g2.dispose();
-		return new ImageIcon(resizedImg);
 	}
 }
