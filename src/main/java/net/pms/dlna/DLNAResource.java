@@ -1512,7 +1512,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				fis = wrap(fis, high, low);
 
 				if (timeRange.getStartOrZero() > 0 && this instanceof RealFile) {
-					fis.skip(MpegUtil.getPossitionForTimeInMpeg(((RealFile) this).getFile(), (int) timeRange.getStartOrZero() ));
+					fis.skip(MpegUtil.getPositionForTimeInMpeg(((RealFile) this).getFile(), (int) timeRange.getStartOrZero() ));
 				}
 			}
 			return fis;
