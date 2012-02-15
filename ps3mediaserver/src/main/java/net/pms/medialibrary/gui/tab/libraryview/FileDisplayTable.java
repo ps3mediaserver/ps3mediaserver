@@ -428,9 +428,9 @@ public class FileDisplayTable extends JPanel {
 				}
 				
 				if(selectedFiles.size() == 1) {
-					questionStr = String.format(Messages.getString("ML.DeleteFileDialog.SingleFile"), selectedFiles.get(0).getFilePath());
+					questionStr = String.format(Messages.getString("ML.DeleteFileDialog.Option.SingleFile"), selectedFiles.get(0).getFilePath());
 				} else {
-					questionStr = String.format(Messages.getString("ML.DeleteFileDialog.MultipleFiles"), selectedFiles.size());
+					questionStr = String.format(Messages.getString("ML.DeleteFileDialog.Option.MultipleFiles"), selectedFiles.size());
 				}
 				
 				Object[] options = { Messages.getString("ML.DeleteFileDialog.bCancel"), Messages.getString("ML.DeleteFileDialog.bDeleteFromComputer"),
