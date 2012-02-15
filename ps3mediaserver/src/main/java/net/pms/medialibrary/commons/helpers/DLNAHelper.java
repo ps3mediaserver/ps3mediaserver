@@ -120,6 +120,7 @@ public class DLNAHelper {
 
 	public static void addMultipleFiles(DLNAResource parent, MediaLibraryRealFile child) {
 		FileTranscodeVirtualFolder rootFolder = new FileTranscodeVirtualFolder("", null, false);
+		rootFolder.setParent(parent);
 		rootFolder.addChild(child.clone());
 		rootFolder.resolve();
 		//get the transcode folder which is hidden a bit deeper. this could break at some point but is an easy solution..
