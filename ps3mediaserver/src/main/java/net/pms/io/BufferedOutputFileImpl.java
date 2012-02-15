@@ -263,7 +263,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 				// Ditlew - fixes the above (the above iterator breaks on items getting close, cause they will remove them self from the arraylist)
 				while (inputStreams.size() > 0) {
 					try {
-						((WaitBufferedInputStream) inputStreams.get(0)).close();
+						inputStreams.get(0).close();
 					} catch (IOException e) {
 						logger.error("Error: ", e);
 					}
@@ -361,7 +361,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 						packetLength = 14;
 						streamPos = -1;
 					} else {
-						packetLength = 6 + ((int) ((buffer[modulo(packetposMB + 4, buffer.length)] + 256) % 256)) * 256 + ((buffer[modulo(packetposMB + 5, buffer.length)] + 256) % 256);
+						packetLength = 6 + (((buffer[modulo(packetposMB + 4, buffer.length)] + 256) % 256)) * 256 + ((buffer[modulo(packetposMB + 5, buffer.length)] + 256) % 256);
 					}
 					if (streamPos != -1) {
 						mb = packetposMB + streamPos + 18;
@@ -511,8 +511,8 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			int _offset = s + m * 60 + h * 60 + offset_sec;
 
 			// new timecode
-			byte _h = (byte) ((int) (_offset / 3600) % 24);
-			byte _m = (byte) ((int) (_offset / 60) % 60);
+			byte _h = (byte) ((_offset / 3600) % 24);
+			byte _m = (byte) ((_offset / 60) % 60);
 			byte _s = (byte) (_offset % 60);
 
 			// update gop

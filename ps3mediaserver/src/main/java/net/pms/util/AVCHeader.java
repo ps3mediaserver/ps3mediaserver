@@ -112,7 +112,7 @@ public class AVCHeader {
 	 * @return The bit value.
 	 */
 	private int getBit() {
-		int pos = (int) (currentBit / 8);
+		int pos = currentBit / 8;
 		int modulo = currentBit % 8;
 		currentBit++;
 		

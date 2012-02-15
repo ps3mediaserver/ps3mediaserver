@@ -20,7 +20,7 @@ public class PCMAudioOutputStream extends FlowParserOutputStream {
 	}
 
 	protected void init() {
-		blocksize = (2 * (int) ((nbchannels + 1) / 2)) * sampleFrequency * bitsperSample / 1600;
+		blocksize = (2 * ((nbchannels + 1) / 2)) * sampleFrequency * bitsperSample / 1600;
 		payload = new byte[4];
 		switch (nbchannels) {
 			case 1:

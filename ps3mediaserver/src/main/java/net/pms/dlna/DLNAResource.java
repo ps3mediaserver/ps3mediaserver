@@ -1354,8 +1354,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				Runnable r = new Runnable() {
 					@Override
 					public void run() {
-						LOGGER.info("renderer: " + rendererId);
-						LOGGER.info("file: " + getSystemName());
+						LOGGER.info(String.format("renderer: %s, file: %s", rendererId, getSystemName()));
 
 						for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 							if (listener instanceof StartStopListener) {
@@ -1408,8 +1407,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						@Override
 						public void run() {
 							if (refCount == 1) {
-								LOGGER.info("renderer: " + rendererId);
-								LOGGER.info("file: " + getSystemName());
+								LOGGER.info(String.format("renderer: %s, file: %s", rendererId, getSystemName()));
 
 								for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 									if (listener instanceof StartStopListener) {
@@ -1514,7 +1512,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				fis = wrap(fis, high, low);
 
 				if (timeRange.getStartOrZero() > 0 && this instanceof RealFile) {
-					fis.skip(MpegUtil.getPossitionForTimeInMpeg(((RealFile) this).getFile(), (int) timeRange.getStartOrZero() ));
+					fis.skip(MpegUtil.getPositionForTimeInMpeg(((RealFile) this).getFile(), (int) timeRange.getStartOrZero() ));
 				}
 			}
 			return fis;
