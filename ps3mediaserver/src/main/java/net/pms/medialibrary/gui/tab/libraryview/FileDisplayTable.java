@@ -391,11 +391,11 @@ public class FileDisplayTable extends JPanel {
 		fileEditMenu.add(miMarkePlayed);
 		
 		//tag
-		JMenu mTag = new JMenu("Tag");
+		JMenu mTag = new JMenu(Messages.getString("ML.ContextMenu.TAG"));
 		mTag.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "tag-16.png")));
 		fileEditMenu.add(mTag);
 		
-		JMenuItem miCreateTag = new JMenuItem("New tag");
+		JMenuItem miCreateTag = new JMenuItem(Messages.getString("ML.ContextMenu.NEWTAG"));
 		mTag.add(miCreateTag);
 		mTag.addSeparator();
 		
