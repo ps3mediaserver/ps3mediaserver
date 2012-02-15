@@ -145,7 +145,13 @@ public class FileTagsPanel extends JPanel {
 
 		JScrollPane spTags = new JScrollPane(pTags);
 		spTags.setBorder(BorderFactory.createEmptyBorder());
-		add(spTags, BorderLayout.CENTER);		
+		
+		JPanel pMain = new JPanel(new BorderLayout());
+		pMain.add(spTags, BorderLayout.NORTH);
+		//add a default panel to have the correct backround color for the entire panel
+		pMain.add(new JPanel(), BorderLayout.CENTER);
+		
+		add(pMain, BorderLayout.CENTER);		
 	}
 	
 	public Map<String, List<String>> getTags() {
