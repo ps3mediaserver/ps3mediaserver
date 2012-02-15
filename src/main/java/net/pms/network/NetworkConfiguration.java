@@ -169,7 +169,7 @@ public class NetworkConfiguration {
 		LOG.trace("checkNetworkInterface(parent = {}, child interfaces = {})", parentName, nis);
 		for (NetworkInterface ni : nis) {
 			if (!skipNetworkInterface(ni.getName(), ni.getDisplayName())) {
-				// check for interface has at least one ip address.
+				// check for interface has at least one IP address.
 				checkNetworkInterface(ni, parentName);
 			} else {
 				LOG.debug("child network interface ({},{}) is skipped, because skip_network_interfaces='{}'", 
