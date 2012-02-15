@@ -888,7 +888,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 							// Try and retry
 							if (!jpg.getParentFile().delete() && !jpg.getParentFile().delete()) {
-								logger.debug("Faild to delete \"" + jpg.getParentFile().getAbsolutePath() + "\"");
+								logger.debug("Failed to delete \"" + jpg.getParentFile().getAbsolutePath() + "\"");
 							}
 						}
 					} catch (IOException e) {
