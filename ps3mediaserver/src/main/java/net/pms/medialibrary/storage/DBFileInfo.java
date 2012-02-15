@@ -117,7 +117,7 @@ class DBFileInfo extends DBBase {
 		
 		try {
 			conn = cp.getConnection();
-			delete(id, conn, stmt);
+			deleteFile(id, conn, stmt);
 		} catch (Exception e) {
 			throw new StorageException("Failed to delete file with id=" + id, e);
 		} finally {
@@ -125,7 +125,7 @@ class DBFileInfo extends DBBase {
 		}		
 	}
 	
-	void delete(long id, Connection conn, PreparedStatement stmt) throws SQLException{			
+	void deleteFile(long id, Connection conn, PreparedStatement stmt) throws SQLException{			
 		//delete play counts
 		stmt = conn.prepareStatement("DELETE FROM FILEPLAYS WHERE FILEID = ?");
 		stmt.setLong(1, id);
@@ -159,7 +159,7 @@ class DBFileInfo extends DBBase {
 			rs = stmt.executeQuery();
 			if(rs.next()){
 				long fileId = rs.getLong(1);
-				delete(fileId, conn, stmt);
+				deleteFile(fileId, conn, stmt);
 			}
 		} catch (Exception e) {
 			throw new StorageException("Failed to delete fileinfo for " + filePath, e);

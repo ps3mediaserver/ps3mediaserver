@@ -1,6 +1,7 @@
 package net.pms.medialibrary.gui.tab.libraryview;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,7 +22,10 @@ import java.util.List;
 import javax.swing.CellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -36,9 +41,13 @@ import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jgoodies.binding.adapter.AbstractTableAdapter;
 import com.jgoodies.binding.list.SelectionInList;
 import net.pms.Messages;
+import net.pms.PMS;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOTableColumnConfiguration;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
@@ -56,6 +65,7 @@ import net.pms.medialibrary.storage.MediaLibraryStorage;
 
 public class FileDisplayTable extends JPanel {
 	private static final long serialVersionUID = -3062848510551753642L;
+	private static final Logger log = LoggerFactory.getLogger(FileDisplayTable.class);
 	private final int MAX_MENUITEMS_PER_COLUMN = 20;
 	
 	private FileType fileType;
@@ -362,9 +372,9 @@ public class FileDisplayTable extends JPanel {
 		fileEditMenu.removeAll();
 		
 		//mark as played
-		JMenuItem markePlayedMenuItem = new JMenuItem(Messages.getString("ML.ContextMenu.MARKPLAYED"));
-		markePlayedMenuItem.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "mark_played-16.png")));
-		markePlayedMenuItem.addActionListener(new ActionListener() {
+		JMenuItem miMarkePlayed = new JMenuItem(Messages.getString("ML.ContextMenu.MARKPLAYED"));
+		miMarkePlayed.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "mark_played-16.png")));
+		miMarkePlayed.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -378,19 +388,94 @@ public class FileDisplayTable extends JPanel {
 				updateFiles(updatedFiles);
 			}		
 		});
-		fileEditMenu.add(markePlayedMenuItem);
+		fileEditMenu.add(miMarkePlayed);
+		
+		//tag
+		JMenu mTag = new JMenu("Tag");
+		mTag.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "tag-16.png")));
+		fileEditMenu.add(mTag);
+		
+		JMenuItem miCreateTag = new JMenuItem("New tag");
+		mTag.add(miCreateTag);
+		mTag.addSeparator();
+		
+		fileEditMenu.addSeparator();
 		
 		//edit
-		JMenuItem editMenuItem = new JMenuItem(Messages.getString("ML.ContextMenu.EDIT"));
-		editMenuItem.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "edit-16.png")));
-		editMenuItem.addActionListener(new ActionListener() {
+		JMenuItem miEdit = new JMenuItem(Messages.getString("ML.ContextMenu.EDIT"));
+		miEdit.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "edit-16.png")));
+		miEdit.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {				
 				editSelectedFiles();
 			}
 		});
-		fileEditMenu.add(editMenuItem);
+		fileEditMenu.add(miEdit);
+		
+		//delete
+		JMenuItem miDelete = new JMenuItem(Messages.getString("ML.ContextMenu.DELETE"));
+		miDelete.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "delete-16.png")));
+		miDelete.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {// Custom button text
+				List<DOFileInfo> selectedFiles = getSelectedFiles();
+				String questionStr;
+				
+				if(selectedFiles.size() == 0) {
+					return;
+				}
+				
+				if(selectedFiles.size() == 1) {
+					questionStr = String.format(Messages.getString("ML.DeleteFileDialog.SingleFile"), selectedFiles.get(0).getFilePath());
+				} else {
+					questionStr = String.format(Messages.getString("ML.DeleteFileDialog.MultipleFiles"), selectedFiles.size());
+				}
+				
+				Object[] options = { Messages.getString("ML.DeleteFileDialog.bCancel"), Messages.getString("ML.DeleteFileDialog.bDeleteFromComputer"),
+						Messages.getString("ML.DeleteFileDialog.bRemoveFromLibrary") };
+				int dialogResponse = JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+								String.format(Messages.getString("ML.DeleteFileDialog.pQuestion"), questionStr), Messages.getString("ML.DeleteFileDialog.Header"),
+								JOptionPane.YES_NO_CANCEL_OPTION,
+								JOptionPane.QUESTION_MESSAGE, null, options,
+								options[2]);
+				
+				boolean deleteFile = false;
+				boolean removeFromLibrary = false;
+				switch(dialogResponse) {
+				case 0:
+					//do nothing
+					break;
+				case 1:
+					deleteFile = true;
+					removeFromLibrary = true;
+					break;
+				case 2:
+					removeFromLibrary = true;
+					break;
+				}
+				
+				if(removeFromLibrary) {
+					for(DOFileInfo fileInfo : selectedFiles) {
+						if(deleteFile) {
+							File fDelete = new File(fileInfo.getFilePath());
+							try {
+								fDelete.delete();
+								log.info("Deleted file " + fDelete.getAbsolutePath());
+							} catch(SecurityException ex) {
+								log.error("Failed to delete file " + fDelete.getAbsolutePath());
+								return;
+							}
+						}
+						
+						MediaLibraryStorage.getInstance().deleteVideo(fileInfo.getId());
+						selectionInList.getList().remove(fileInfo);
+					}					
+				}
+			}
+		});
+		fileEditMenu.add(miDelete);
 	}
 
 	private void editSelectedFiles() {

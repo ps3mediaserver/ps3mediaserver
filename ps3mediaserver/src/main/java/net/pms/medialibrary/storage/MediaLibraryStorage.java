@@ -502,10 +502,20 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 	 *********************************************/
 
 	@Override
-	public void deleteVideoFileInfo() {
+	public void deleteAllVideos() {
 		try {
 			int nbDeleted = dbVideoFileInfo.deleteAllVideos();
 			if(log.isInfoEnabled()) log.info(String.format("Deleted %s videos", nbDeleted));
+		} catch (StorageException e) {
+			log.error("Storage error (delete)", e);
+		}
+	}
+	
+	@Override
+	public void deleteVideo(long fileId) {
+		try {
+			dbVideoFileInfo.deleteVideo(fileId);
+			if(log.isInfoEnabled()) log.info(String.format("Deleted video with id=%s", fileId));
 		} catch (StorageException e) {
 			log.error("Storage error (delete)", e);
 		}

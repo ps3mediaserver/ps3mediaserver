@@ -73,7 +73,7 @@ public class LibraryManager implements ILibraryManager {
 
 	@Override
 	public void clearVideo() {
-		this.mediaLibraryStorage.deleteVideoFileInfo();
+		this.mediaLibraryStorage.deleteAllVideos();
 		for(ILibraryManagerEventListener l : this.libraryManagerEventListeners){
 			l.itemCountChanged(getVideoCount(), FileType.VIDEO);
 		}

@@ -43,41 +43,6 @@ class DBVideoFileInfo extends DBFileInfo {
 	 * 
 	 *********************************************/
 	
-	void delete(long id) throws StorageException{
-		Connection conn = null;
-		ResultSet rs = null;
-		PreparedStatement stmt = null;
-		
-		try {
-			conn = cp.getConnection();
-			delete(id, conn, stmt);
-		} catch (SQLException e) {
-			throw new StorageException("Failed to delete video with id=" + id, e);
-        } finally {
-			close(conn, stmt, rs);
-        }
-    }
-	
-	void delete(long fileId, Connection conn, PreparedStatement stmt) throws SQLException {
-		//delete audio tracks
-		stmt = conn.prepareStatement("DELETE FROM VIDEOAUDIO WHERE FILEID = ?");
-		stmt.setLong(1, fileId);		
-        stmt.executeUpdate();
-
-		//delete subtitles
-		stmt = conn.prepareStatement("DELETE FROM SUBTITLES WHERE FILEID = ?");
-		stmt.setLong(1, fileId);		
-        stmt.executeUpdate();
-        
-		//delete video
-		stmt = conn.prepareStatement("DELETE FROM VIDEO WHERE FILEID = ?");
-		stmt.setLong(1, fileId);
-        stmt.executeUpdate();
-
-        //delete file
-        super.delete(fileId, conn, stmt);
-    }
-	
 	int cleanVideoFileInfos() throws StorageException{
 		int res = 0;
 		
@@ -103,7 +68,7 @@ class DBVideoFileInfo extends DBFileInfo {
 				String filePath = rs.getString(2) + File.separator + rs.getString(3);
 				File file = new File(filePath);
 				if(!file.exists()){
-					delete(fileId, conn, stmt);
+					deleteVideo(fileId, conn, stmt);
 					res++;
 				}
 			}
@@ -142,28 +107,8 @@ class DBVideoFileInfo extends DBFileInfo {
 			while(rs.next()){
 				String fileIdStr = "";
 				try{
-    				int fileId = rs.getInt(1);
-    				fileIdStr = String.valueOf(fileId);
-
-    				//delete plays
-    				stmt = conn.prepareStatement("DELETE FROM FILEPLAYS WHERE FILEID = ?");
-    				stmt.setInt(1, fileId);
-    		        stmt.executeUpdate();
-    		        
-    				//delete video
-    				stmt = conn.prepareStatement("DELETE FROM VIDEO WHERE FILEID = ?");
-    				stmt.setInt(1, fileId);
-    		        stmt.executeUpdate();
-    				
-    				//delete file tags
-    				stmt = conn.prepareStatement("DELETE FROM FILETAGS WHERE FILEID = ?");
-    				stmt.setInt(1, fileId);
-    		        stmt.executeUpdate();
-    		        
-    		        //delete file
-    				stmt = conn.prepareStatement("DELETE FROM FILE WHERE ID = ?");
-    				stmt.setInt(1, fileId);
-    		        stmt.executeUpdate();
+    				long fileId = rs.getLong(1);
+    				deleteVideo(fileId, conn, stmt);
     		        nbDeletedVideos++;
 				} catch (SQLException e) {
 					throw new StorageException("Failed to clear video id=" + fileIdStr + " properly", e);
@@ -178,6 +123,20 @@ class DBVideoFileInfo extends DBFileInfo {
         }
         
         return res;
+	}
+
+	void deleteVideo(long fileId) throws StorageException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		try {
+			conn = cp.getConnection();
+			deleteVideo(fileId, conn, stmt);
+        } catch (SQLException e) {
+			throw new StorageException("Failed to delete video with id=" + fileId, e);
+		} finally {
+			close(conn, stmt);
+        }
 	}
 	
 	List<DOVideoFileInfo> getVideoFileInfo(DOFilter filter, boolean sortAscending, final ConditionType sortField, SortOption sortOption, int maxResults, boolean onlyActive) throws StorageException {
@@ -777,5 +736,28 @@ class DBVideoFileInfo extends DBFileInfo {
 				throw new StorageException("Failed to insert genre " + genre + " for file " + videoFileInfo.getFileName(false), e);
 			}
 		}	
+	}
+	
+	private void deleteVideo(long fileId, Connection conn, PreparedStatement stmt) throws StorageException {
+		String fileIdStr = "";
+		try{
+			fileIdStr = String.valueOf(fileId);
+			
+			stmt = conn.prepareStatement("DELETE FROM VIDEO WHERE FILEID = ?");
+			stmt.setLong(1, fileId);
+	        stmt.executeUpdate();
+
+			stmt = conn.prepareStatement("DELETE FROM VIDEOAUDIO WHERE FILEID = ?");
+			stmt.setLong(1, fileId);
+	        stmt.executeUpdate();
+
+			stmt = conn.prepareStatement("DELETE FROM SUBTITLES WHERE FILEID = ?");
+			stmt.setLong(1, fileId);
+	        stmt.executeUpdate();
+	        
+	        super.delete(fileId);
+		} catch (SQLException e) {
+			throw new StorageException("Failed to clear video id=" + fileIdStr + " properly", e);
+        }		
 	}
 }

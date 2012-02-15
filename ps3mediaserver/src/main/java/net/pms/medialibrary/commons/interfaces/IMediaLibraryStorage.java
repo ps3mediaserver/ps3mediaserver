@@ -54,11 +54,12 @@ public interface IMediaLibraryStorage {
 	List<String> getTagValues(String tagName, boolean isAscending, int minOccurences);
 	
 	//VideoFileInfo
-	void deleteVideoFileInfo();
+	void deleteAllVideos();
 	List<DOVideoFileInfo> getVideoFileInfo(DOFilter filter, boolean sortAscending, ConditionType sortField, int maxResults, SortOption sortOption, boolean onlyActive);
 	List<String> getVideoProperties(ConditionType conditionType, boolean isAscending, int minOccurences);
 	int getFilteredVideoCount(DOFilter filter);
 	int getVideoCount();	
+	void deleteVideo(long fileId);
 	
 	//AudioFileInfo
 	void deleteAudioFileInfo();
