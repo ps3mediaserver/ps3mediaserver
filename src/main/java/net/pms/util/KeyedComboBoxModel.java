@@ -184,7 +184,7 @@ public class KeyedComboBoxModel implements ComboBoxModel {
 	 */
 	protected synchronized void fireListDataEvent(final ListDataEvent evt) {
 		if (tempListeners == null) {
-			tempListeners = (ListDataListener[]) listdatalistener.toArray(new ListDataListener[listdatalistener.size()]);
+			tempListeners = listdatalistener.toArray(new ListDataListener[listdatalistener.size()]);
 		}
 		for (int i = 0; i < tempListeners.length; i++) {
 			final ListDataListener l = tempListeners[i];
@@ -286,7 +286,7 @@ public class KeyedComboBoxModel implements ComboBoxModel {
 			return null;
 		}
 
-		final ComboBoxItemPair datacon = (ComboBoxItemPair) data.get(index);
+		final ComboBoxItemPair datacon = data.get(index);
 		if (datacon == null) {
 			return null;
 		}
@@ -308,7 +308,7 @@ public class KeyedComboBoxModel implements ComboBoxModel {
 			return null;
 		}
 
-		final ComboBoxItemPair datacon = (ComboBoxItemPair) data.get(index);
+		final ComboBoxItemPair datacon = data.get(index);
 		if (datacon == null) {
 			return null;
 		}
@@ -357,7 +357,7 @@ public class KeyedComboBoxModel implements ComboBoxModel {
 		}
 
 		for (int i = 0; i < data.size(); i++) {
-			final ComboBoxItemPair datacon = (ComboBoxItemPair) data.get(i);
+			final ComboBoxItemPair datacon = data.get(i);
 			if (anItem.equals(datacon.getKey())) {
 				return i;
 			}
@@ -378,7 +378,7 @@ public class KeyedComboBoxModel implements ComboBoxModel {
 		}
 
 		for (int i = 0; i < data.size(); i++) {
-			final ComboBoxItemPair datacon = (ComboBoxItemPair) data.get(i);
+			final ComboBoxItemPair datacon = data.get(i);
 			if (key.equals(datacon.getValue())) {
 				return i;
 			}

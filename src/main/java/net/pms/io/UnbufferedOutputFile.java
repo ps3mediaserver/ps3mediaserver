@@ -122,7 +122,7 @@ public class UnbufferedOutputFile implements BufferedOutputFile {
 	 * @deprecated Unused method from interface.
 	 * @return null
 	 */
-	@Override
+	@Deprecated
 	public WaitBufferedInputStream getCurrentInputStream() {
 		return null;
 	}
@@ -131,7 +131,7 @@ public class UnbufferedOutputFile implements BufferedOutputFile {
 	 * @deprecated Unused method from interface.
 	 * @return 0
 	 */
-	@Override
+	@Deprecated
 	public long getWriteCount() {
 		return 0;
 	}
@@ -140,7 +140,7 @@ public class UnbufferedOutputFile implements BufferedOutputFile {
 	 * @deprecated Unused method from interface.
 	 * @return 0
 	 */
-	@Override
+	@Deprecated
 	public int read(boolean firstRead, long readCount) {
 		return 0;
 	}
@@ -149,7 +149,7 @@ public class UnbufferedOutputFile implements BufferedOutputFile {
 	 * @deprecated Unused method from interface.
 	 * @return 0
 	 */
-	@Override
+	@Deprecated
 	public int read(boolean firstRead, long readCount, byte[] b, int off, int len) {
 		return 0;
 	}
@@ -157,21 +157,21 @@ public class UnbufferedOutputFile implements BufferedOutputFile {
 	/**
 	 * @deprecated Unused method from interface.
 	 */
-	@Override
+	@Deprecated
 	public void attachThread(ProcessWrapper thread) {
 	}
 	
 	/**
 	 * @deprecated Unused method from interface.
 	 */
-	@Override
+	@Deprecated
 	public void reset() {
 	}
 	
 	/**
 	 * @deprecated Unused method from interface.
 	 */
-	@Override
+	@Deprecated
 	public void removeInputStream(WaitBufferedInputStream waitBufferedInputStream) {
 	}
 
@@ -179,7 +179,7 @@ public class UnbufferedOutputFile implements BufferedOutputFile {
 	/**
 	 * @deprecated Unused method from interface.
 	 */
-	@Override
+	@Deprecated
 	public void detachInputStream() {
 	}
 }

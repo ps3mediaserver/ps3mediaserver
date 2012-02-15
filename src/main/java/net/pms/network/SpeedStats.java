@@ -165,11 +165,11 @@ public class SpeedStats {
 				}
 			}
 			if (c > 0) {
-				time = (int) (time / c);
+				time = time / c;
 			}
 
 			if (time > 0) {
-				int speedInMbits = (int) (1024 / time);
+				int speedInMbits = 1024 / time;
 				logger.info("Address " + addr + " has an estimated network speed of: " + speedInMbits + " Mb/s");
 				synchronized(speedStats) {
 					CompletedFuture<Integer> result = new CompletedFuture<Integer>(speedInMbits);
