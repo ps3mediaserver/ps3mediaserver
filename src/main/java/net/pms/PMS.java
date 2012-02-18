@@ -871,9 +871,9 @@ public class PMS {
 		}
 
 		try {
-			configuration = new PmsConfiguration();
+			setConfiguration(new PmsConfiguration());
 
-			assert configuration != null;
+			assert getConfiguration() != null;
 
 			// Load the (optional) logback config file. This has to be called after 'new PmsConfiguration'
 			// as the logging starts immediately and some filters need the PmsConfiguration.
@@ -981,10 +981,22 @@ public class PMS {
 	 * Retrieves the {@link net.pms.configuration.PmsConfiguration PmsConfiguration} object
 	 * that contains all configured settings for PMS. The object provides getters for all
 	 * configurable PMS settings.
+	 *
 	 * @return The configuration object
 	 */
 	public static PmsConfiguration getConfiguration() {
 		return configuration;
+	}
+
+	/**
+	 * Sets the {@link net.pms.configuration.PmsConfiguration PmsConfiguration} object
+	 * that contains all configured settings for PMS. The object provides getters for all
+	 * configurable PMS settings.
+	 *
+	 * @param conf The configuration object.
+	 */
+	public static void setConfiguration(PmsConfiguration conf) {
+		configuration = conf;
 	}
 
 	/**

@@ -23,8 +23,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
@@ -46,6 +49,7 @@ import net.pms.formats.WAV;
 import net.pms.formats.WEB;
 import net.pms.network.HTTPResource;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
@@ -346,4 +350,53 @@ public class FormatRecognitionTest {
 		assertEquals("isCompatible() reporting different outcome than ps3compatible() for WEB video",
 				format.ps3compatible(),	conf.isCompatible(info, format));
 	}
+
+	/**
+	 * When PMS is in the process of starting up, something particular happens.
+	 * The RootFolder is initialized and several VirtualVideoActions are added
+	 * as children. VirtualVideoActions use the MPG format and at the time of
+	 * initialization getDefaultRenderer() is used to determine whether or not
+	 * the format can be streamed.
+	 * <p>
+	 * Under these conditions Format.isCompatible() must return true, or
+	 * selecting the VirtualVideoAction will result in a "Corrupted data"
+	 * message.
+	 * <p>
+	 * This test verifies the case above.
+	 */
+	@Test
+	public void testVirtualVideoActionInitializationCompatibility() {
+		boolean configurationLoaded = false;
+
+		try {
+			// Initialize PMS configuration like at initialization time, this
+			// is relevant for Format.isCompatible().
+			PMS.setConfiguration(new PmsConfiguration());
+			configurationLoaded = true;
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Continue the test if the configuration loaded, otherwise skip it.
+		assumeTrue(configurationLoaded);
+
+		// Construct media info exactly as VirtualVideoAction does
+		DLNAMediaInfo info = new DLNAMediaInfo();
+		info.setContainer("mpegps");
+		ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
+		info.setAudioCodes(audioCodes);
+		info.setMimeType("video/mpeg");
+		info.setCodecV("mpeg2");
+		info.setMediaparsed(true);
+		Format format = new MPG();
+		format.match("test.mpg");
+
+		// Test without rendererConfiguration, as can happen when plugins
+		// create virtual video actions under a folder.
+		assertEquals("VirtualVideoAction is initialized as incompatible with null configuration",
+				true, format.isCompatible(info, null));
+	}
+	
 }

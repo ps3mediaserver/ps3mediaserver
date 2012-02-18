@@ -21,7 +21,6 @@ package net.pms.formats;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.InputFile;
@@ -104,21 +103,35 @@ public abstract class Format implements Cloneable {
 	public abstract boolean ps3compatible();
 	
 	/**
-	 * Returns whether or not a format can be handled by the renderer natively.
-	 * This means the format can be streamed instead of having to be transcoded.
+	 * Returns whether or not media can be handled by the renderer natively,
+	 * based on the given media information and renderer. If the format can be
+	 * streamed (as opposed to having to be transcoded), <code>true</code> will
+	 * be returned.
 	 * 
-	 * @return True if the format can be handled by the renderer, false otherwise.
-	 *
+	 * @param media
+	 *            The media information.
+	 * @param renderer
+	 *            The renderer for which to check. If <code>null</code> is set
+	 *            as renderer, the default renderer configuration will be used.
+	 * 
+	 * @return True if the format can be handled by the renderer, false
+	 *         otherwise.
+	 * 
 	 * @since 1.50.1
 	 */
 	public boolean isCompatible(DLNAMediaInfo media, RendererConfiguration renderer) {
+		RendererConfiguration referenceRenderer;
+
 		if (renderer != null) {
-			// Let the renderer configuration decide on native compatibility
-			return renderer.isCompatible(media, this);
+			// Use the provided renderer as reference
+			referenceRenderer = renderer;
 		} else {
-			// Is this format among the ones configured in PMS to be streamed?
-			return skip(PMS.getConfiguration().getNoTranscode(), null);
+			// Use the default renderer as reference
+			referenceRenderer = RendererConfiguration.getDefaultConf();
 		}
+
+		// Let the renderer configuration decide on native compatibility
+		return referenceRenderer.isCompatible(media, this);
 	}
 
 	public abstract boolean transcodable();

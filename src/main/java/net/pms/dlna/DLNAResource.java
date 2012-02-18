@@ -566,7 +566,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							LOGGER.trace("Switching " + child.getName() + " to player " + pl.toString() + " for transcoding");
 						}
 
-						if (child.getExt().isVideo()) {
+						// Should the child be added to the transcode folder?
+						if (child.getExt().isVideo() && child.isTranscodeFolderAvailable()) {
 							vf = getTranscodeFolder(true);
 
 							if (vf != null) {
