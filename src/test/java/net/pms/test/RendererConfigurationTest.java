@@ -132,14 +132,14 @@ public class RendererConfigurationTest {
 	    	if (headerLine != null && headerLine.toLowerCase().startsWith("user-agent")) {
 	    		// Match by User-Agent
 				RendererConfiguration rc = RendererConfiguration.getRendererConfigurationByUA(headerLine);
-				assertNotNull("No renderer recognized for header \"" + headerLine + "\"", rc);
+				assertNotNull("Recognized renderer for header \"" + headerLine + "\"", rc);
 				assertEquals("Expected renderer \"" + correctRendererName + "\", "
 						+ "instead renderer \"" + rc.getRendererName() + "\" was returned for header \""
 						+ headerLine + "\"", correctRendererName, rc.getRendererName());
 	    	} else {
 	    		// Match by additional header
 				RendererConfiguration rc = RendererConfiguration.getRendererConfigurationByUAAHH(headerLine);
-				assertNotNull("No renderer recognized for header \"" + headerLine + "\"", rc);
+				assertNotNull("Recognized renderer for header \"" + headerLine + "\"", rc);
 				assertEquals("Expected renderer \"" + correctRendererName + "\" to be recognized, "
 						+ "instead renderer \"" + rc.getRendererName() + "\" was returned for header \""
 						+ headerLine + "\"", correctRendererName, rc.getRendererName());

@@ -51,17 +51,17 @@ public class FormatFactoryTest {
 	public final void testFormatFactoryEdgeCases() {
 		// Null string
 		Format result = FormatFactory.getAssociatedExtension(null);
-		assertNull("Matched format " + result + " for null string", result);
+		assertNull("Null string matches no format", result);
 
 		// Empty string
 		result = FormatFactory.getAssociatedExtension("");
-		assertNull("Matched extension for empty string", result);
+		assertNull("Empty string matches no extension", result);
 
 		// Non-existent format
 		result = FormatFactory
 				.getAssociatedExtension("qwerty://test.org/test.qwerty");
 		assertNull(
-				"Matched extension for \"qwerty://test.org/test.qwerty\" string",
+				"Non-existent string \"qwerty://test.org/test.qwerty\" matches no format",
 				result);
 
 		// Combination of MPG and WEB: which will win?
@@ -104,12 +104,10 @@ public class FormatFactoryTest {
 		Format result = FormatFactory.getAssociatedExtension(filename);
 
 		if (result != null) {
-			assertEquals("\"" + filename + "\" is expected to match "
-					+ formatName + ", but matches " + result + " instead.",
+			assertEquals("\"" + filename + "\" is expected to match",
 					formatName, result.toString());
 		} else {
-			assertNull("\"" + filename + "\" matches nothing, but "
-					+ formatName + " was expected", formatName);
+			assertNull("\"" + filename + "\" is expected to match nothing", formatName);
 		}
 	}
 }
