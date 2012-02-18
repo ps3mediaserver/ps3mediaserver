@@ -57,12 +57,12 @@ public class FormatFactoryTest {
 		result = FormatFactory.getAssociatedExtension("");
 		assertNull("Empty string matches no extension", result);
 
-		// Unsupported protocol
+		// Unsupported protocol and extension
 		result = FormatFactory.getAssociatedExtension(
 			"bogus://example.com/test.bogus"
 		);
 		assertNull(
-		    "Unsupported protocol and extension: \"bogus://example.com/test.mp3\" matches no format",
+		    "Unsupported protocol and extension: \"bogus://example.com/test.bogus\" matches no format",
 		    result
 		);
 				
