@@ -37,10 +37,10 @@ public final class FormatFactory {
 	/**
 	 * Initial list of known formats.
 	 */
-	private static final Format[] FORMATS = new Format[] { new DVRMS(),
-			new FLAC(), new GIF(), new ISO(), new JPG(), new M4A(), new MKV(),
-			new MP3(), new MPG(), new OGG(), new PNG(), new RAW(), new TIF(),
-			new WAV(), new WEB() };
+	private static final Format[] FORMATS = new Format[] { new WEB(),
+			new MKV(), new M4A(), new MP3(), new ISO(), new MPG(), new WAV(),
+			new JPG(), new OGG(), new PNG(), new GIF(), new TIF(), new FLAC(),
+			new DVRMS(), new RAW(), };
 
 	/**
 	 * The list of registered formats.
