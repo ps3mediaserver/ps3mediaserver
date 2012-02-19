@@ -566,7 +566,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							LOGGER.trace("Switching " + child.getName() + " to player " + pl.toString() + " for transcoding");
 						}
 
-						if (child.getExt().isVideo()) {
+						// Should the child be added to the transcode folder?
+						if (child.getExt().isVideo() && child.isTranscodeFolderAvailable()) {
 							vf = getTranscodeFolder(true);
 
 							if (vf != null) {
@@ -1232,7 +1233,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								int defaultFrequency = mediaRenderer.isTranscodeAudioTo441() ? 44100 : 48000;
 								if (!PMS.getConfiguration().isAudioResample()) {
 									try {
-										// TODO: Which exception could be thrown here?
+										// FIXME: Which exception could be thrown here?
 										defaultFrequency = firstAudioTrack.getSampleRate();
 									} catch (Exception e) {
 										LOGGER.debug("Caught exception", e);
@@ -1354,8 +1355,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				Runnable r = new Runnable() {
 					@Override
 					public void run() {
-						LOGGER.info("renderer: " + rendererId);
-						LOGGER.info("file: " + getSystemName());
+						LOGGER.info(String.format("renderer: %s, file: %s", rendererId, getSystemName()));
 
 						for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 							if (listener instanceof StartStopListener) {
@@ -1408,8 +1408,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						@Override
 						public void run() {
 							if (refCount == 1) {
-								LOGGER.info("renderer: " + rendererId);
-								LOGGER.info("file: " + getSystemName());
+								LOGGER.info(String.format("renderer: %s, file: %s", rendererId, getSystemName()));
 
 								for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 									if (listener instanceof StartStopListener) {
@@ -1514,7 +1513,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				fis = wrap(fis, high, low);
 
 				if (timeRange.getStartOrZero() > 0 && this instanceof RealFile) {
-					fis.skip(MpegUtil.getPossitionForTimeInMpeg(((RealFile) this).getFile(), (int) timeRange.getStartOrZero() ));
+					fis.skip(MpegUtil.getPositionForTimeInMpeg(((RealFile) this).getFile(), (int) timeRange.getStartOrZero() ));
 				}
 			}
 			return fis;

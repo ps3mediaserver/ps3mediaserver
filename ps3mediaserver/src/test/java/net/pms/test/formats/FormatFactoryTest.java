@@ -51,21 +51,45 @@ public class FormatFactoryTest {
 	public final void testFormatFactoryEdgeCases() {
 		// Null string
 		Format result = FormatFactory.getAssociatedExtension(null);
-		assertNull("Matched format " + result + " for null string", result);
+		assertNull("Null string matches no format", result);
 
 		// Empty string
 		result = FormatFactory.getAssociatedExtension("");
-		assertNull("Matched extension for empty string", result);
+		assertNull("Empty string matches no extension", result);
 
-		// Non-existent format
-		result = FormatFactory
-				.getAssociatedExtension("qwerty://test.org/test.qwerty");
+		// Unsupported protocol and extension
+		result = FormatFactory.getAssociatedExtension(
+			"bogus://example.com/test.bogus"
+		);
 		assertNull(
-				"Matched extension for \"qwerty://test.org/test.qwerty\" string",
-				result);
+		    "Unsupported protocol and extension: \"bogus://example.com/test.bogus\" matches no format",
+		    result
+		);
+				
+		// XXX an unsupported (here misspelt) protocol should result in a failed match rather
+		// than fall through to an extension match
+		/*
+			result = FormatFactory.getAssociatedExtension(
+				"htp://example.com/test.mp3"
+			);
+			assertNull(
+				"Unsupported protocol: \"htp://example.com/test.mp3\" matches no format",
+				result
+			);
+		*/
 
-		// Combination of MPG and WEB: which will win?
-		testSingleFormat("http://test.org/test.mpg", "MPG");
+		// Unsupported extension
+		result = FormatFactory.getAssociatedExtension(
+			"test.bogus"
+		);
+		assertNull(
+			"Unsupported extension: \"test.bogus\" matches no format",
+			result
+		);
+
+		// Confirm the protocol (e.g. WEB) is checked before the extension
+		testSingleFormat("http://example.com/test.mp3", "WEB");
+		testSingleFormat("http://example.com/test.asf?format=.wmv", "WEB");
 	}
 
 	/**
@@ -88,7 +112,7 @@ public class FormatFactoryTest {
 		testSingleFormat("test.arw", "RAW");
 		testSingleFormat("test.tiff", "TIF");
 		testSingleFormat("test.wav", "WAV");
-		testSingleFormat("http://test.org/", "WEB");
+		testSingleFormat("http://example.com/", "WEB");
 	}
 
 	/**
@@ -104,12 +128,10 @@ public class FormatFactoryTest {
 		Format result = FormatFactory.getAssociatedExtension(filename);
 
 		if (result != null) {
-			assertEquals("\"" + filename + "\" is expected to match "
-					+ formatName + ", but matches " + result + " instead.",
+			assertEquals("\"" + filename + "\" is expected to match",
 					formatName, result.toString());
 		} else {
-			assertNull("\"" + filename + "\" matches nothing, but "
-					+ formatName + " was expected", formatName);
+			assertNull("\"" + filename + "\" is expected to match nothing", formatName);
 		}
 	}
 }

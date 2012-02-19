@@ -137,11 +137,13 @@ public class PMS {
 	/**
 	 * @deprecated This field is not used and will be removed in the future. 
 	 */
+	@Deprecated
 	public final static SimpleDateFormat sdfDate = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
 
 	/**
 	 * @deprecated This field is not used and will be removed in the future. 
 	 */
+	@Deprecated
 	public final static SimpleDateFormat sdfHour = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
 	/**
@@ -901,9 +903,9 @@ public class PMS {
 		}
 
 		try {
-			configuration = new PmsConfiguration();
+			setConfiguration(new PmsConfiguration());
 
-			assert configuration != null;
+			assert getConfiguration() != null;
 
 			// Load the (optional) logback config file. This has to be called after 'new PmsConfiguration'
 			// as the logging starts immediately and some filters need the PmsConfiguration.
@@ -1011,10 +1013,22 @@ public class PMS {
 	 * Retrieves the {@link net.pms.configuration.PmsConfiguration PmsConfiguration} object
 	 * that contains all configured settings for PMS. The object provides getters for all
 	 * configurable PMS settings.
+	 *
 	 * @return The configuration object
 	 */
 	public static PmsConfiguration getConfiguration() {
 		return configuration;
+	}
+
+	/**
+	 * Sets the {@link net.pms.configuration.PmsConfiguration PmsConfiguration} object
+	 * that contains all configured settings for PMS. The object provides getters for all
+	 * configurable PMS settings.
+	 *
+	 * @param conf The configuration object.
+	 */
+	public static void setConfiguration(PmsConfiguration conf) {
+		configuration = conf;
 	}
 
 	/**

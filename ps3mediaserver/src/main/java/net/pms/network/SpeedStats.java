@@ -60,8 +60,8 @@ public class SpeedStats {
 	private final Map<String, Future<Integer>> speedStats = new HashMap<String, Future<Integer>>();
 
 	/**
-	 * Return the network throughput for the given IP address in MBits. It is calculated in the background, and cached, 
-	 * so only a reference is given to the result, which can be retrieved with calling get() method on it.
+	 * Return the network throughput for the given IP address in MBits. It is calculated in the background, and cached,
+	 * so only a reference is given to the result, which can be retrieved by calling the get() method on it.
 	 * @param addr
 	 * @return  The network throughput
 	 */
@@ -91,30 +91,30 @@ public class SpeedStats {
 			try {
 				return doCall();
 			} catch (Exception e) {
-				logger.warn("error during measuring network throughput : "+e.getMessage(), e);
+				logger.warn("Error measuring network throughput : " + e.getMessage(), e);
 				throw e;
 			}
 		}
 
 		private Integer doCall() throws Exception {
 			String ip = addr.getHostAddress();
-			logger.info("Checking ip:" + ip + " for " + rendererName);
-			// calling canonical host name at the first time is slow, so we call it in a separate thread
+			logger.info("Checking IP: " + ip + " for " + rendererName);
+			// calling the canonical host name the first time is slow, so we call it in a separate thread
 			String hostname = addr.getCanonicalHostName();
 			synchronized(speedStats) {
 				Future<Integer> otherTask = speedStats.get(hostname);
 				if (otherTask != null) {
 					// wait a little bit
 					try {
-						// probably we are waiting for ourself, to finishing the work ...  
+						// probably we are waiting for ourself to finish the work...
 						Integer value = otherTask.get(100, TimeUnit.MILLISECONDS);
-						// if the other task already calculated, the speed, we get the result, 
-						// unless we will do it now 
+						// if the other task already calculated the speed, we get the result,
+						// unless we do it now 
 						if (value != null) {
 							return value;
 						}
 					} catch (TimeoutException e) {
-						logger.trace("we couldn't get the value based on canonical name");
+						logger.trace("We couldn't get the value based on the canonical name");
 					}
 				}
 			}
@@ -165,15 +165,15 @@ public class SpeedStats {
 				}
 			}
 			if (c > 0) {
-				time = (int) (time / c);
+				time = time / c;
 			}
 
 			if (time > 0) {
-				int speedInMbits = (int) (1024 / time);
+				int speedInMbits = 1024 / time;
 				logger.info("Address " + addr + " has an estimated network speed of: " + speedInMbits + " Mb/s");
 				synchronized(speedStats) {
 					CompletedFuture<Integer> result = new CompletedFuture<Integer>(speedInMbits);
-					// change the statistics with a computed future values
+					// update the statistics with a computed future value
 					speedStats.put(ip, result);
 					speedStats.put(hostname, result);
 				}

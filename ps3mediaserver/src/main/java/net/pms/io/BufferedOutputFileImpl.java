@@ -173,7 +173,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 		this.minMemorySize = (int) (1048576 * params.minBufferSize);
 		this.maxMemorySize = (int) (1048576 * params.maxBufferSize);
 
-		// TODO: Better to relate margin directly to maxMemorySize instead of using arbitrary fixed values
+		// FIXME: Better to relate margin directly to maxMemorySize instead of using arbitrary fixed values
 
 		int margin = MARGIN_LARGE; // Issue 220: extends to 20Mb : readCount is wrongly set cause of the ps3's
 		// 2nd request with a range like 44-xxx, causing the end of buffer margin to be first sent 
@@ -263,7 +263,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 				// Ditlew - fixes the above (the above iterator breaks on items getting close, cause they will remove them self from the arraylist)
 				while (inputStreams.size() > 0) {
 					try {
-						((WaitBufferedInputStream) inputStreams.get(0)).close();
+						inputStreams.get(0).close();
 					} catch (IOException e) {
 						logger.error("Error: ", e);
 					}
@@ -317,7 +317,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 					buffer = growBuffer(buffer, maxMemorySize);
 				}
 
-				// TODO: This smells like System.arraycopy()!
+				// FIXME: This smells like 2x System.arraycopy()!
 				int s = (len - off);
 				for (int i = 0; i < s; i++) {
 					buffer[modulo(mb + i, buffer.length)] = b[off + i];
@@ -361,7 +361,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 						packetLength = 14;
 						streamPos = -1;
 					} else {
-						packetLength = 6 + ((int) ((buffer[modulo(packetposMB + 4, buffer.length)] + 256) % 256)) * 256 + ((buffer[modulo(packetposMB + 5, buffer.length)] + 256) % 256);
+						packetLength = 6 + (((buffer[modulo(packetposMB + 4, buffer.length)] + 256) % 256)) * 256 + ((buffer[modulo(packetposMB + 5, buffer.length)] + 256) % 256);
 					}
 					if (streamPos != -1) {
 						mb = packetposMB + streamPos + 18;
@@ -511,8 +511,8 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			int _offset = s + m * 60 + h * 60 + offset_sec;
 
 			// new timecode
-			byte _h = (byte) ((int) (_offset / 3600) % 24);
-			byte _m = (byte) ((int) (_offset / 60) % 60);
+			byte _h = (byte) ((_offset / 3600) % 24);
+			byte _m = (byte) ((_offset / 60) % 60);
 			byte _s = (byte) (_offset % 60);
 
 			// update gop

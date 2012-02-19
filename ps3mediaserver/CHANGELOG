@@ -2,6 +2,8 @@ Changelog:
 ==========
 
 1.50.2 - 2012-??-??
+	Fix StartStopListener callbacks for HTTP Engine V1
+	Surface playback start/stop events
 
 1.50.1 - 2012-01-28
 

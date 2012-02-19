@@ -35,7 +35,7 @@ public abstract class FlowParserOutputStream extends OutputStream {
 				buffer.put(swapRemainingByte[0]);
 				off++;
 			}
-			int modulo = (int) Math.abs(len - off) % swapOrderBits;
+			int modulo = Math.abs(len - off) % swapOrderBits;
 			if (modulo != 0) {
 				swapRemainingByte = new byte[1];
 				len -= modulo;

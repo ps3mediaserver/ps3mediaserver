@@ -148,7 +148,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				if (bo == null || params.losslessaudio || params.lossyaudio || params.no_videoencode) {
 					InputStream is = params.input_pipes[0].getInputStream();
 					outConsumer = new OutputBufferConsumer((params.avidemux) ? new AviDemuxerInputStream(is, params, attachedProcesses) : is, params);
-					bo = (BufferedOutputFile) outConsumer.getBuffer();
+					bo = outConsumer.getBuffer();
 				}
 				bo.attachThread(this);
 				new OutputTextLogger(process.getInputStream()).start();
@@ -158,7 +158,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 					: new OutputTextLogger(process.getInputStream());
 			} else {
 				outConsumer = new OutputBufferConsumer(process.getInputStream(), params);
-				bo = (BufferedOutputFile) outConsumer.getBuffer();
+				bo = outConsumer.getBuffer();
 				bo.attachThread(this);
 			}
 			if (params.stdin != null) {

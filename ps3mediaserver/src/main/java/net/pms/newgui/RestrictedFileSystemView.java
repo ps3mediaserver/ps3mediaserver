@@ -301,7 +301,7 @@ public class RestrictedFileSystemView extends FileSystemView {
 			}
 		}
 
-		return (File[]) files.toArray(new File[files.size()]);
+		return files.toArray(new File[files.size()]);
 	}
 
 	/**

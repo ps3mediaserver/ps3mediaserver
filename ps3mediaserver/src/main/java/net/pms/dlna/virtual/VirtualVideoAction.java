@@ -20,7 +20,10 @@ package net.pms.dlna.virtual;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
+import net.pms.dlna.DLNAMediaAudio;
+import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.FormatFactory;
 import net.pms.network.HTTPResource;
@@ -56,8 +59,26 @@ public abstract class VirtualVideoAction extends DLNAResource {
 		this.videoKo = "videos/button_cancel-512.mpg";
 		timer1 = -1;
 		this.enabled = enabled;
+
+		// Create correct mediaInfo for the embedded .mpg videos
+		// This is needed by Format.isCompatible()
+		DLNAMediaInfo mediaInfo = new DLNAMediaInfo();
+		mediaInfo.setContainer("mpegps");
+		ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
+		mediaInfo.setAudioCodes(audioCodes);
+		mediaInfo.setMimeType("video/mpeg");
+		mediaInfo.setCodecV("mpeg2");
+		mediaInfo.setMediaparsed(true);
+		
+		setMedia(mediaInfo);
 	}
 
+	/**
+	 * Returns <code>false</code> because this virtual video action should not
+	 * appear in the transcode folder.
+	 *
+	 * @return Always returns <code>false</code>
+	 */
 	@Override
 	public boolean isTranscodeFolderAvailable() {
 		return false;
