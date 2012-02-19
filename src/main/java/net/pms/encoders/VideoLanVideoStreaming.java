@@ -84,7 +84,7 @@ public class VideoLanVideoStreaming extends Player {
 			one remaining valid DVD framerate it accepts (i.e. PAL)
 			https://secure.wikimedia.org/wikipedia/en/wiki/MPEG-2#DVD-Video
 
-			Note: channels=2 causes various recent VLCs (from 1.1.4 to 1.1.7)
+			FIXME (or, rather, FIXVLC): channels=2 causes various recent VLCs (from 1.1.4 to 1.1.7)
 			to segfault on both Windows and Linux.
 
 			Similar issue (the workaround doesn't work here):
@@ -134,7 +134,8 @@ public class VideoLanVideoStreaming extends Player {
 		// 1) add this automatically if enabled (probe)
 		// 2) add a GUI option to "enable GPU acceleration"
 		// 3) document it as an option the user can enable themselves in the vlc GUI (saved to a config file used by cvlc)
-		// It is still unstable, causing (consistent) segfaults on Windows and Linux.
+		// XXX: it's still experimental (i.e. unstable), causing (consistent) segfaults on Windows and Linux,
+		// so don't even document it for now
 		// cmdList.add("--ffmpeg-hw");
 
 		String transcodeSpec = String.format(
@@ -144,7 +145,7 @@ public class VideoLanVideoStreaming extends Player {
 			(isWindows ? "\\\\" : ""),
 			tsPipe.getInputPipe());
 
-		// There's precious little documentation on how (if at all) VLC
+		// XXX there's precious little documentation on how (if at all) VLC
 		// treats colons and hyphens (and :name= and --name=) differently
 		// so we just have to test it ourselves
 		// these work fine on Windows and Linux with VLC 1.1.x
@@ -159,7 +160,8 @@ public class VideoLanVideoStreaming extends Player {
 			cmdList.add(transcodeSpec);
 		}
 
-		// See https://code.google.com/p/ps3mediaserver/issues/detail?id=711
+		// FIXME: cargo-culted from here:
+		// via: https://code.google.com/p/ps3mediaserver/issues/detail?id=711
 		if (Platform.isMac()) {
 			cmdList.add("");
 		}

@@ -35,13 +35,18 @@ public final class FormatFactory {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FormatFactory.class);
 
 	/**
-	 * List of known formats.
+	 * Initial list of known formats.
 	 */
-	private static final Format[] FORMATS = new Format[] { new DVRMS(),
-			new FLAC(), new GIF(), new ISO(), new JPG(), new M4A(), new MKV(),
-			new MP3(), new MPG(), new OGG(), new PNG(), new RAW(), new TIF(),
-			new WAV(), new WEB() };
+	private static final Format[] FORMATS = new Format[] { new WEB(),
+			new MKV(), new M4A(), new MP3(), new ISO(), new MPG(), new WAV(),
+			new JPG(), new OGG(), new PNG(), new GIF(), new TIF(), new FLAC(),
+			new DVRMS(), new RAW(), };
 
+	/**
+	 * The list of registered formats.
+	 */
+	private static ArrayList<Format> formats = new ArrayList<Format>(Arrays.asList(FORMATS));
+	
 	/**
 	 * This class is not meant to be instantiated.
 	 */
@@ -59,7 +64,7 @@ public final class FormatFactory {
 	 * @see Format#match(String)
 	 */
 	public static Format getAssociatedExtension(final String filename) {
-		for (Format ext : FORMATS) {
+		for (Format ext : formats) {
 			if (ext.match(filename)) {
 				LOGGER.trace("Matched format " + ext + " to \"" + filename + "\"");
 
@@ -78,9 +83,16 @@ public final class FormatFactory {
 	 * @return The list of known formats.
 	 */
 	public static ArrayList<Format> getExtensions() {
-		ArrayList<Format> formats = new ArrayList<Format>(Arrays.asList(FORMATS));
-
 		return formats;
+	}
+
+	/**
+	 * Sets the list of known formats.
+	 *
+	 * @param formatList The list of known formats.
+	 */
+	public static void setExtensions(ArrayList<Format> formatList) {
+		formats = formatList;
 	}
 }
 

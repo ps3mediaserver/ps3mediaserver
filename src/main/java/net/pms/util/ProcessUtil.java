@@ -55,7 +55,7 @@ public class ProcessUtil {
 	}
 
 	/*
-	 * XXX: this is a hack - destroy() *should* work
+	 * FIXME: this is a hack - destroy() *should* work
 	 *
 	 * call chain (innermost last):
 	 *

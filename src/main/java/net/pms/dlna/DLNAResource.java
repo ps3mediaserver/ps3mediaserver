@@ -566,7 +566,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							LOGGER.trace("Switching " + child.getName() + " to player " + pl.toString() + " for transcoding");
 						}
 
-						if (child.getExt().isVideo()) {
+						// Should the child be added to the transcode folder?
+						if (child.getExt().isVideo() && child.isTranscodeFolderAvailable()) {
 							vf = getTranscodeFolder(true);
 
 							if (vf != null) {
@@ -1232,7 +1233,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								int defaultFrequency = mediaRenderer.isTranscodeAudioTo441() ? 44100 : 48000;
 								if (!PMS.getConfiguration().isAudioResample()) {
 									try {
-										// TODO: Which exception could be thrown here?
+										// FIXME: Which exception could be thrown here?
 										defaultFrequency = firstAudioTrack.getSampleRate();
 									} catch (Exception e) {
 										LOGGER.debug("Caught exception", e);
