@@ -382,6 +382,9 @@ public class FormatRecognitionTest {
 		// Continue the test if the configuration loaded, otherwise skip it.
 		assumeTrue(configurationLoaded);
 
+		// Continue the test if the MediaInfoParser can be loaded, otherwise skip it.
+		assumeTrue(MediaInfoParser.isValid());
+		
 		// Construct media info exactly as VirtualVideoAction does
 		DLNAMediaInfo info = new DLNAMediaInfo();
 		info.setContainer("mpegps");
@@ -396,12 +399,8 @@ public class FormatRecognitionTest {
 		// Test without rendererConfiguration, as can happen when plugins
 		// create virtual video actions under a folder.
 
-		/*
-		 * FIXME: Can't figure out why this gives different results on different systems.
-		 * Outcommenting this test for now to allow building without build error.
 		assertEquals("VirtualVideoAction is initialized as compatible with null configuration",
 				true, format.isCompatible(info, null));
-		*/
 	}
 	
 }
