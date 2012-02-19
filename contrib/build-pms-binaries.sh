@@ -636,7 +636,7 @@ build_ffmpeg() {
     start_build ffmpeg
     cd $SRC
     
-    cp -a ./../src/ffmpeg ./
+    cp -af ./../src/ffmpeg ./
     exit_on_error
     cd ffmpeg
     exit_on_error
