@@ -63,6 +63,16 @@
 			</includes>
 		</fileSet>
 
+		<!-- Include fontconfig files -->
+		<fileSet>
+			<directory>${project.external-resources}/osx/fonts</directory>
+			<outputDirectory>${project.name}.app/Contents/Resources/Java/fonts</outputDirectory>
+			<fileMode>0644</fileMode>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+
 		<!-- Include configuration files -->
 		<fileSet>
 			<directory>${project.external-resources}</directory>
