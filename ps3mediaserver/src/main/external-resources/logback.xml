@@ -1,94 +1,71 @@
 <configuration debug="true">
-	<!-- See http://logback.qos.ch/manual/index.html for more information -->
-	<!-- on how to configure the Logback logging engine. -->
-	<!-- Available levels: ALL < TRACE < DEBUG < INFO < WARN < ERROR < OFF -->
+  <!-- See http://logback.qos.ch/manual/index.html for more information -->
+  <!-- on how to configure the Logback logging engine. -->
+  <!-- Available levels: ALL < TRACE < DEBUG < INFO < WARN < ERROR < OFF -->
 
-	<define name="debugLogPath" class="net.pms.logging.DebugLogPathDefiner" />
+  <define name="debugLogPath" class="net.pms.logging.DebugLogPathDefiner" />
 
-	<appender name="frame" class="net.pms.logging.FrameAppender">
-		<!-- only show event of the user selected level on the gui -->
-		<filter class="net.pms.logging.PMSThresholdFilter" />
+  <appender name="frame" class="net.pms.logging.FrameAppender">
+    <!-- only show event of the user selected level in the GUI -->
+    <filter class="net.pms.logging.PMSThresholdFilter" />
 
-		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<!-- This pattern mimics the original PMS debug.log format -->
-			<pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
-		</encoder>
-	</appender>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <!-- This pattern mimics the original PMS debug.log format -->
+          <pattern>[%thread] %-5level %d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n</pattern>
+    </encoder>
+  </appender>
 
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<!-- only show event INFO and higher on the Console. -->
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>INFO</level>
-		</filter>
-		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<!-- This pattern mimics the original PMS debug.log format -->
-			<pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
-		</encoder>
-	</appender>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- only show event INFO and higher on the console. -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <!-- This pattern mimics the original PMS debug.log format -->
+          <pattern>[%thread] %-5level %d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n</pattern>
+    </encoder>
+  </appender>
 
-	<appender name="debug.log" class="ch.qos.logback.core.FileAppender">
-		<!-- only show event DEBUG and higher on the Console. -->
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>DEBUG</level>
-		</filter>
-		<file>${debugLogPath}${file.separator}debug.log</file>
-		<append>false</append>  <!-- Start new debug.log on each application start -->
-		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<!-- This pattern mimics the original PMS debug.log format -->
-			<pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
-		</encoder>
-	</appender>
+  <appender name="debug.log" class="ch.qos.logback.core.FileAppender">
+    <!-- only log event DEBUG and higher to the debug.log. -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>DEBUG</level>
+    </filter>
+    <file>${debugLogPath}${file.separator}debug.log</file>
+    <append>false</append>  <!-- Start new debug.log on each application start -->
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <!-- This pattern mimics the original PMS debug.log format -->
+        <pattern>[%thread] %-5level %d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n</pattern>
+    </encoder>
+  </appender>
 
-	<appender name="fileimport.log" class="ch.qos.logback.core.FileAppender">
-		<!-- only show event DEBUG and higher on the Console. -->
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>DEBUG</level>
-		</filter>
-		<file>${debugLogPath}${file.separator}fileimport.log</file>
-		<append>false</append>  <!-- Start new debug.log on each application start -->
-		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<!-- This pattern mimics the original PMS debug.log format -->
-			<pattern>%d [%t] %-5p %c{0} - %m%n</pattern>
-		</encoder>
-	</appender>
+  <!-- If unlimited growth of debug.log is not desired use the "debug.log.10MB" -->
+  <!-- appender instead of the "debug.log" appender. This appender will -->
+  <!-- roll the debug.log file after 10 MBytes and will keep a maximum -->
+  <!-- of 5 old and compressed logs. -->
+  <appender name="debug.log.10MB" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- only log event DEBUG and higher to the rolling debug.log. -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>DEBUG</level>
+    </filter>
+    <file>${debugLogPath}${file.separator}debug.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${debugLogPath}debug.log.%i.zip</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>5</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+        <pattern>[%thread] %-5level %d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n</pattern>
+    </encoder>
+  </appender>
 
-	<!-- If unlimited growth of debug.log is not desired use the "debug.log.10MB" -->
-	<!-- appender instead of the "debug.log" appender. This appender will -->
-	<!-- roll the debug.log file after 10 MBytes and will keep a maximum -->
-	<!-- of 5 old and compressed logs. -->
-	<appender name="debug.log.10MB"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<!-- only show event DEBUG and higher on the Console. -->
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>DEBUG</level>
-		</filter>
-		<file>${debugLogPath}${file.separator}debug.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-			<fileNamePattern>${debugLogPath}debug.log.%i.zip</fileNamePattern>
-			<minIndex>1</minIndex>
-			<maxIndex>5</maxIndex>
-		</rollingPolicy>
-		<triggeringPolicy
-			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-			<maxFileSize>10MB</maxFileSize>
-		</triggeringPolicy>
-		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
-		</encoder>
-	</appender>
-
-	<!-- Configure the loggers for the specialized logging files -->
-	<logger name="net.pms.medialibrary.commons.helpers.FileImportHelper">
-		<appender-ref ref="fileimport.log" />
-	</logger>
-	<logger name="net.pms.plugin.fileimport">
-		<appender-ref ref="fileimport.log" />
-	</logger>
-
-	<root level="ALL">
-		<appender-ref ref="frame" />
-		<appender-ref ref="STDOUT" />
-		<appender-ref ref="debug.log" />
-		<!-- <appender-ref ref="debug.log.10MB" /> -->
-	</root>
+  <root level="ALL">
+    <appender-ref ref="frame" />
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="debug.log" />
+    <!-- <appender-ref ref="debug.log.10MB" /> -->
+  </root>
 </configuration>

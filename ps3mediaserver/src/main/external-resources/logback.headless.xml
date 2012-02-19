@@ -12,7 +12,7 @@
     </filter>
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
       <!-- This pattern mimics the original PMS debug.log format -->
-          <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
+          <pattern>[%thread] %-5level %d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n</pattern>
     </encoder>
   </appender>
 
@@ -25,7 +25,7 @@
     <append>false</append>  <!-- Start new debug.log on each application start -->
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
       <!-- This pattern mimics the original PMS debug.log format -->
-        <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
+        <pattern>[%thread] %-5level %d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n</pattern>
     </encoder>
   </appender>
 
@@ -48,7 +48,7 @@
       <maxFileSize>10MB</maxFileSize>
     </triggeringPolicy>
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-        <pattern>[%thread] %-5level %d{HH:mm:ss.SSS} %msg%n</pattern>
+        <pattern>[%thread] %-5level %d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n</pattern>
     </encoder>
   </appender>
 

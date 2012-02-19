@@ -277,10 +277,9 @@ download_ffmpeg() {
     cd ffmpeg
 
     if [ "$FIXED_REVISIONS" == "yes" ]; then
-        $GIT checkout tags/${VERSION_FFMPEG}
+        $GIT checkout ${VERSION_FFMPEG}
         exit_on_error
     fi
-    rm -rf ./.git
 }
 
 
