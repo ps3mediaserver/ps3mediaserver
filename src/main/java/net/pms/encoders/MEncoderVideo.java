@@ -1350,21 +1350,71 @@ public class MEncoderVideo extends Player {
 		}
 
 		StringBuilder sb = new StringBuilder();
+		// set subtitles options
+		if (!configuration.isMencoderDisableSubs() && !avisynth()) {
+			// Use ASS formating for all subtitled files except vobsub and dvd
+			if (
+				params.sid != null &&
+				//params.sid.getType() != DLNAMediaSubtitle.EMBEDDED &&
+				params.sid.getType() != DLNAMediaSubtitle.VOBSUB &&
+				//params.sid.getType() != DLNAMediaSubtitle.SUBRIP &&
+				configuration.isMencoderAss() && 	// GUI: enable subtitles formating
+				!foundNoassParam &&			// GUI: codec specific options
+				!dvd
+			) {
+				sb.append("-ass ");
 
-		// Use ASS & Fontconfig flags (and therefore ASS font styles) for all subtitled files except vobsub, embedded, dvd and mp4 container with srt
-		// Note: The MP4 container with SRT rule is a workaround for MEncoder r30369. If there is ever a later version of MEncoder that supports external srt subs we should use that. As of r32848 that isn't the case
-		if (
-			params.sid != null &&
-			params.sid.getType() != DLNAMediaSubtitle.EMBEDDED &&
-			params.sid.getType() != DLNAMediaSubtitle.VOBSUB &&
-			!(params.sid.getType() == DLNAMediaSubtitle.SUBRIP && media.getContainer().equals("mp4")) &&
-			!configuration.isMencoderDisableSubs() &&
-			configuration.isMencoderAss() &&
-			!foundNoassParam &&
-			!dvd &&
-			!avisynth()
-		) {
-			sb.append("-ass -").append(configuration.isMencoderFontConfig() ? "" : "no").append("fontconfig ");
+				// GUI: Override ASS subtitles style if requested (always for SRT subtitles)
+				if (!configuration.isMencoderAssDefaultStyle() || params.sid.getType() == DLNAMediaSubtitle.SUBRIP || params.sid.getType() == DLNAMediaSubtitle.EMBEDDED) {
+					String assSubColor = "ffffff00";
+					if (configuration.getSubsColor() != 0) {
+						assSubColor = Integer.toHexString(configuration.getSubsColor());
+						if (assSubColor.length() > 2) {
+							assSubColor = assSubColor.substring(2) + "00";
+						}
+					}
+					sb.append("-ass-color ").append(assSubColor).append(" -ass-border-color 00000000 -ass-font-scale ").append(configuration.getMencoderAssScale());
+					// set subtitles font
+					if (configuration.getMencoderFont() != null && configuration.getMencoderFont().length() > 0) {
+						sb.append(" -ass-force-style FontName=").append(configuration.getMencoderFont()).append(",");
+					} else {
+						String font = CodecUtil.getDefaultFontPath();
+						if (StringUtils.isNotBlank(font)) {
+							sb.append(" -ass-force-style FontName=").append(font).append(",");
+						} else {
+							sb.append(" -ass-force-style FontName=Arial,");
+						}
+					}
+					sb.append("Outline=").append(configuration.getMencoderAssOutline()).append(",Shadow=").append(configuration.getMencoderAssShadow()).append(",MarginV=").append(configuration.getMencoderAssMargin()).append(" ");
+				}
+			// use PLAINTEXT formating
+			} else {
+				// set subtitles font
+				if (configuration.getMencoderFont() != null && configuration.getMencoderFont().length() > 0) {
+					sb.append("-subfont ").append(configuration.getMencoderFont()).append(" ");
+				} else {
+					String font = CodecUtil.getDefaultFontPath();
+					if (StringUtils.isNotBlank(font)) {
+						sb.append("-subfont ").append(font).append(" ");
+					}
+				}
+
+				sb.append("-subfont-text-scale ").append(configuration.getMencoderNoAssScale());
+				sb.append(" -subfont-outline ").append(configuration.getMencoderNoAssOutline());
+				sb.append(" -subfont-blur ").append(configuration.getMencoderNoAssBlur());
+				int subpos = 1;
+				try {
+					subpos = Integer.parseInt(configuration.getMencoderNoAssSubPos());
+				} catch (NumberFormatException n) {
+					logger.debug("Could not parse subpos from \"" + configuration.getMencoderNoAssSubPos() + "\"");
+				}
+				sb.append(" -subpos ").append(100 - subpos).append(" ");
+			}
+
+			// common subtitles options
+			// use fontconfig if enabled
+			sb.append("-").append(configuration.isMencoderFontConfig() ? "" : "no").append("fontconfig ");
+
 			if (mpegts || wmv) {
 				needAssFixPTS = Platform.isWindows(); // don't think the fixpts filter is in the mplayer trunk
 			}
@@ -1394,41 +1444,6 @@ public class MEncoderVideo extends Player {
 			sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" ");
 			if (configuration.isMencoderSubFribidi()) {
 				sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" ");
-			}
-		}
-
-		if (!configuration.isMencoderDisableSubs() && !avisynth()) {
-			if (configuration.getMencoderFont() != null && configuration.getMencoderFont().length() > 0) {
-				sb.append("-subfont ").append(configuration.getMencoderFont()).append(" ");
-			} else {
-				String font = CodecUtil.getDefaultFontPath();
-				if (StringUtils.isNotBlank(font)) {
-					sb.append("-subfont ").append(font).append(" ");
-				}
-			}
-			if (configuration.isMencoderAss() && !foundNoassParam) {
-				if (!configuration.isMencoderAssDefaultStyle() || (subString != null && params.sid.getType() != DLNAMediaSubtitle.ASS)) {
-					String assSubColor = "ffffff00";
-					if (configuration.getSubsColor() != 0) {
-						assSubColor = Integer.toHexString(configuration.getSubsColor());
-						if (assSubColor.length() > 2) {
-							assSubColor = assSubColor.substring(2) + "00";
-						}
-					}
-					sb.append("-ass-color ").append(assSubColor).append(" -ass-border-color 00000000 -ass-font-scale ").append(configuration.getMencoderAssScale());
-					sb.append(" -ass-force-style FontName=Arial,Outline=").append(configuration.getMencoderAssOutline()).append(",Shadow=").append(configuration.getMencoderAssShadow()).append(",MarginV=").append(configuration.getMencoderAssMargin()).append(" ");
-				}
-			} else {
-				sb.append("-subfont-text-scale ").append(configuration.getMencoderNoAssScale());
-				sb.append(" -subfont-outline ").append(configuration.getMencoderNoAssOutline());
-				sb.append(" -subfont-blur ").append(configuration.getMencoderNoAssBlur());
-				int subpos = 1;
-				try {
-					subpos = Integer.parseInt(configuration.getMencoderNoAssSubPos());
-				} catch (NumberFormatException n) {
-					logger.debug("Could not parse subpos from \"" + configuration.getMencoderNoAssSubPos() + "\"");
-				}
-				sb.append(" -subpos ").append(100 - subpos);
 			}
 		}
 
