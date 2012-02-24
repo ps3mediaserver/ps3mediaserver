@@ -1376,15 +1376,15 @@ public class MEncoderVideo extends Player {
 					sb.append("-ass-color ").append(assSubColor).append(" -ass-border-color 00000000 -ass-font-scale ").append(configuration.getMencoderAssScale());
 					// set subtitles font
 					if (configuration.getMencoderFont() != null && configuration.getMencoderFont().length() > 0) {
-						sb.append("-font ").append(configuration.getMencoderFont()).append(" "); // set font with -font option, workarond for https://github.com/Happy-Neko/ps3mediaserver/commit/52e62203ea12c40628de1869882994ce1065446a#commitcomment-990156 bug
+						sb.append(" -font ").append(configuration.getMencoderFont()).append(" "); // set font with -font option, workarond for https://github.com/Happy-Neko/ps3mediaserver/commit/52e62203ea12c40628de1869882994ce1065446a#commitcomment-990156 bug
 						sb.append(" -ass-force-style FontName=").append(configuration.getMencoderFont()).append(",");
 					} else {
 						String font = CodecUtil.getDefaultFontPath();
 						if (StringUtils.isNotBlank(font)) {
-							sb.append("-font ").append(font).append(" ");
+							sb.append(" -font ").append(font).append(" ");
 							sb.append(" -ass-force-style FontName=").append(font).append(",");
 						} else {
-							sb.append("-font Arial ");
+							sb.append(" -font Arial ");
 							sb.append(" -ass-force-style FontName=Arial,");
 						}
 					}
@@ -1394,11 +1394,11 @@ public class MEncoderVideo extends Player {
 			} else {
 				// set subtitles font
 				if (configuration.getMencoderFont() != null && configuration.getMencoderFont().length() > 0) {
-					sb.append("-font ").append(configuration.getMencoderFont()).append(" ");
+					sb.append(" -font ").append(configuration.getMencoderFont()).append(" ");
 				} else {
 					String font = CodecUtil.getDefaultFontPath();
 					if (StringUtils.isNotBlank(font)) {
-						sb.append("-font ").append(font).append(" ");
+						sb.append(" -font ").append(font).append(" ");
 					}
 				}
 
