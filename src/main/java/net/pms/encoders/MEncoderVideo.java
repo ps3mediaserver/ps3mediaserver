@@ -1402,7 +1402,7 @@ public class MEncoderVideo extends Player {
 					}
 				}
 
-				sb.append("-subfont-text-scale ").append(configuration.getMencoderNoAssScale());
+				sb.append(" -subfont-text-scale ").append(configuration.getMencoderNoAssScale());
 				sb.append(" -subfont-outline ").append(configuration.getMencoderNoAssOutline());
 				sb.append(" -subfont-blur ").append(configuration.getMencoderNoAssBlur());
 				int subpos = 1;
