@@ -1381,6 +1381,11 @@ public class MEncoderVideo extends Player {
 					} else {
 						String font = CodecUtil.getDefaultFontPath();
 						if (StringUtils.isNotBlank(font)) {
+							// Variable "font" contains a font path instead of a font name.
+							// Does "-ass-force-style" support font paths? In tests on OSX
+							// the font path is ignored (Outline, Shadow and MarginV are
+							// used, though) and the "-font" definition is used instead.
+							// See: https://github.com/ps3mediaserver/ps3mediaserver/pull/14
 							sb.append(" -font ").append(font).append(" ");
 							sb.append(" -ass-force-style FontName=").append(font).append(",");
 						} else {
