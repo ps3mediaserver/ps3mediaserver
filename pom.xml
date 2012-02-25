@@ -144,12 +144,6 @@
 			</snapshots>
 		</repository>
 
-		<!-- apple stub code -->		
-		<repository>
-			<id>ooo-maven-repo</id>
-			<url>http://ooo-maven.googlecode.com/hg/repository</url>
-		</repository>
-		
 	</repositories>
 
 	<dependencies>
@@ -336,15 +330,6 @@
 			<groupId>mediautil</groupId>
 			<artifactId>mediautil</artifactId>
 			<version>${mediautil-version}</version>
-		</dependency>
-
-
-		<dependency>
-			<!-- Stub required by PMSUtil.java -->
-			<groupId>com.apple</groupId>
-			<artifactId>applejavaextensions</artifactId>
-			<version>1.5.4</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
