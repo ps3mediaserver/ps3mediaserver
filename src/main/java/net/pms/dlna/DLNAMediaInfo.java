@@ -250,7 +250,7 @@ public class DLNAMediaInfo implements Cloneable {
 	public boolean encrypted;
 
 	public boolean isMuxable(RendererConfiguration mediaRenderer) {
-		// temporary fix, MediaInfo support will take care of that in the future
+		// temporary fix: MediaInfo support will take care of this in the future
 
 		// for now, http://ps3mediaserver.org/forum/viewtopic.php?f=11&t=6361&start=0
 		if (mediaRenderer.isBRAVIA() && getCodecV() != null && getCodecV().startsWith("mpeg2")) {
@@ -303,7 +303,7 @@ public class DLNAMediaInfo implements Cloneable {
 	}
 
 	public DLNAMediaInfo() {
-		setThumbready(true); // this class manages thumb by default with the parser_v1 method
+		setThumbready(true); // this class manages thumbnails by default with the parser_v1 method
 	}
 
 	public void generateThumbnail(InputFile input, Format ext, int type) {
@@ -337,7 +337,8 @@ public class DLNAMediaInfo implements Cloneable {
 		args[11] = "-f";
 		args[12] = "image2";
 		args[13] = "pipe:";
-		if (!PMS.getConfiguration().getThumbnailsEnabled() || (PMS.getConfiguration().isUseMplayerForVideoThumbs() && !dvrms)) {
+		// FIXME MPlayer should not be used if thumbnail generation is disabled (and it should be disabled in the GUI)
+		if (!PMS.getConfiguration().isThumbnailGenerationEnabled() || (PMS.getConfiguration().isUseMplayerForVideoThumbs() && !dvrms)) {
 			args[2] = "0";
 			for (int i = 5; i <= 13; i++) {
 				args[i] = "-an";
@@ -557,12 +558,12 @@ public class DLNAMediaInfo implements Cloneable {
 									audio.setTrack(Integer.parseInt(((y != null && y.length() > 0) ? y : "1")));
 									audio.setGenre(t.getFirst(FieldKey.GENRE));
 								} catch (Throwable e) {
-									logger.debug("error in parsing unimportant metadata: " + e.getMessage());
+									logger.debug("Error parsing unimportant metadata: " + e.getMessage());
 								}
 							}
 						}
 					} catch (Throwable e) {
-						logger.debug("Error in parsing audio file: " + e.getMessage() + " - " + (e.getCause() != null ? e.getCause().getMessage() : ""));
+						logger.debug("Error parsing audio file: " + e.getMessage() + " - " + (e.getCause() != null ? e.getCause().getMessage() : ""));
 						ffmpeg_parsing = false;
 					}
 					if (audio.getSongname() == null || audio.getSongname().length() == 0) {
@@ -616,7 +617,7 @@ public class DLNAMediaInfo implements Cloneable {
 					setContainer(getCodecV());
 				} catch (Throwable e) {
 					// ffmpeg_parsing = true;
-					logger.info("Error during the parsing of image with Sanselan... switching to Ffmpeg: " + e.getMessage());
+					logger.info("Error parsing image with Sanselan... switching to FFmpeg: " + e.getMessage());
 				}
 				try {
 					if(PMS.getConfiguration().getImageThumbnailsEnabled()) {
@@ -636,7 +637,7 @@ public class DLNAMediaInfo implements Cloneable {
 						}
 					}
 				} catch (Throwable e) {
-					logger.info("Error during the generating thumbnail of image with ImageMagick...: " + e.getMessage());
+					logger.info("Error generating thumbnail of image with ImageMagick: " + e.getMessage());
 				
 				}
 			}
@@ -727,7 +728,7 @@ public class DLNAMediaInfo implements Cloneable {
 									try {
 										audio.setId(Integer.parseInt(idString, 16));
 									} catch (NumberFormatException nfe) {
-										logger.debug("Error in parsing Stream ID: " + idString);
+										logger.debug("Error parsing Stream ID: " + idString);
 									}
 								}
 
@@ -863,7 +864,7 @@ public class DLNAMediaInfo implements Cloneable {
 							setDuration((double) length);
 						}
 					} catch (IOException e) {
-						logger.trace("Error in retrieving length: " + e.getMessage());
+						logger.trace("Error retrieving length: " + e.getMessage());
 					}
 				}
 
@@ -927,7 +928,7 @@ public class DLNAMediaInfo implements Cloneable {
 							}
 						}
 					} catch (IOException e) {
-						logger.debug("Error while decoding thumbnail : " + e.getMessage());
+						logger.debug("Error while decoding thumbnail: " + e.getMessage());
 					}
 				}
 			}
