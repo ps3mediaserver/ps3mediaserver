@@ -48,7 +48,7 @@
 		<dependency>
 			<groupId>net.pms</groupId>
 			<artifactId>pms</artifactId>
-			<version>1.50.2_mlx_v0.7-SNAPSHOT</version>
+			<version>1.51.0_mlx_v0.7-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
