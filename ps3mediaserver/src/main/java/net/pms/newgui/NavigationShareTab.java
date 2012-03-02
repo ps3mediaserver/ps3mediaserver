@@ -68,7 +68,7 @@ public class NavigationShareTab {
 	private JCheckBox hideengines;
 	private JButton but5;
 	private JTextField seekpos;
-	private JCheckBox tncheckBox;
+	private JCheckBox thumbgenCheckBox;
 	private JCheckBox mplayer_thumb;
 	private JCheckBox dvdiso_thumb;
 	private JCheckBox image_thumb;
@@ -133,7 +133,7 @@ public class NavigationShareTab {
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		builder.add(tncheckBox, cc.xyw(1, 3, 3));
+		builder.add(thumbgenCheckBox, cc.xyw(1, 3, 3));
 		builder.addLabel(Messages.getString("NetworkTab.16"), cc.xyw(4, 3, 3));
 		builder.add(seekpos, cc.xyw(6, 3, 2));
 
@@ -204,15 +204,15 @@ public class NavigationShareTab {
 
 	private void initSimpleComponents(CellConstraints cc) {
 		// Generate thumbnails
-		tncheckBox = new JCheckBox(Messages.getString("NetworkTab.2"));
-		tncheckBox.setContentAreaFilled(false);
-		tncheckBox.addItemListener(new ItemListener() {
+		thumbgenCheckBox = new JCheckBox(Messages.getString("NetworkTab.2"));
+		thumbgenCheckBox.setContentAreaFilled(false);
+		thumbgenCheckBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				configuration.setThumbnailsEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setThumbnailGenerationEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		if (configuration.getThumbnailsEnabled()) {
-			tncheckBox.setSelected(true);
+		if (configuration.isThumbnailGenerationEnabled()) {
+			thumbgenCheckBox.setSelected(true);
 		}
 
 		//ThumbnailSeekPos

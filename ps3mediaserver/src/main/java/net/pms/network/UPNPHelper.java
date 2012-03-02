@@ -109,22 +109,18 @@ public class UPNPHelper {
 	private static MulticastSocket getNewMulticastSocket() throws IOException {
 		MulticastSocket ssdpSocket = new MulticastSocket();
 		ssdpSocket.setReuseAddress(true);
-		if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
-			logger.trace("Searching network interface for " + PMS.getConfiguration().getServerHostname());
-			NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
-			if (ni != null) {
-				ssdpSocket.setNetworkInterface(ni);
+		NetworkInterface ni = NetworkConfiguration.getInstance().getNetworkInterfaceByServerName();
+		if (ni != null) {
+			ssdpSocket.setNetworkInterface(ni);
 
-				// force IPv4 address
-				Enumeration<InetAddress> enm = ni.getInetAddresses();
-				while (enm.hasMoreElements()) {
-					InetAddress ia = enm.nextElement();
-					if (!(ia instanceof Inet6Address)) {
-						ssdpSocket.setInterface(ia);
-						break;
-					}
+			// force IPv4 address
+			Enumeration<InetAddress> enm = ni.getInetAddresses();
+			while (enm.hasMoreElements()) {
+				InetAddress ia = enm.nextElement();
+				if (!(ia instanceof Inet6Address)) {
+					ssdpSocket.setInterface(ia);
+					break;
 				}
-
 			}
 		} else if (PMS.get().getServer().getNi() != null) {
 			logger.trace("Setting multicast network interface: " + PMS.get().getServer().getNi());
@@ -208,12 +204,9 @@ public class UPNPHelper {
 						if (bindErrorReported) {
 							logger.warn("Finally, acquiring port " + PMS.getConfiguration().getUpnpPort() + " was successful!");
 						}
-						if (PMS.getConfiguration().getServerHostname() != null && PMS.getConfiguration().getServerHostname().length() > 0) {
-							logger.trace("Searching network interface for " + PMS.getConfiguration().getServerHostname());
-							NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName(PMS.getConfiguration().getServerHostname()));
-							if (ni != null) {
-								socket.setNetworkInterface(ni);
-							}
+						NetworkInterface ni = NetworkConfiguration.getInstance().getNetworkInterfaceByServerName();
+						if (ni != null) {
+							socket.setNetworkInterface(ni);
 						} else if (PMS.get().getServer().getNi() != null) {
 							logger.trace("Setting multicast network interface: " + PMS.get().getServer().getNi());
 							socket.setNetworkInterface(PMS.get().getServer().getNi());

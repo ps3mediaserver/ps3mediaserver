@@ -7,13 +7,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.pms.newgui.LooksFrame;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.apple.eawt.Application;
-import com.apple.eawt.ApplicationEvent;
 
 public class MacSystemUtils extends BasicSystemUtils {
 	private final static Logger logger = LoggerFactory.getLogger(MacSystemUtils.class); 
@@ -37,25 +32,7 @@ public class MacSystemUtils extends BasicSystemUtils {
 	public boolean isNetworkInterfaceLoopback(NetworkInterface ni) throws SocketException {
 		return false;
 	}
-	
 
-	@Override
-	public void addSystemTray(final LooksFrame frame) {
-		final LooksFrame frameRef = frame;
-		Application.getApplication().addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
-
-			public void handleReOpenApplication(ApplicationEvent e) {
-				if (!frameRef.isVisible())
-					frameRef.setVisible(true);
-			}
-
-			public void handleQuit(ApplicationEvent e) {
-				System.exit(0);
-			}
-
-		});
-	}
-	
 	/**
 	 * Fetch the hardware address for a network interface.
 	 * 

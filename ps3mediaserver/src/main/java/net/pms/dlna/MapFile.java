@@ -110,31 +110,35 @@ public class MapFile extends DLNAResource {
 	}
 
 	private void manageFile(File f) {
-		if ((f.isFile() || f.isDirectory()) && !f.isHidden()) {
-			if (PMS.getConfiguration().isArchiveBrowsing() && (f.getName().toLowerCase().endsWith(".zip") || f.getName().toLowerCase().endsWith(".cbz"))) {
-				addChild(new ZippedFile(f));
-			} else if (PMS.getConfiguration().isArchiveBrowsing() && (f.getName().toLowerCase().endsWith(".rar") || f.getName().toLowerCase().endsWith(".cbr"))) {
-				addChild(new RarredFile(f));
-			} else if ((f.getName().toLowerCase().endsWith(".iso") || f.getName().toLowerCase().endsWith(".img")) || (f.isDirectory() && f.getName().toUpperCase().equals("VIDEO_TS"))) {
-				addChild(new DVDISOFile(f));
-			} else if (f.getName().toLowerCase().endsWith(".m3u") || f.getName().toLowerCase().endsWith(".m3u8") || f.getName().toLowerCase().endsWith(".pls")) {
-				addChild(new PlaylistFolder(f));
-			} else if (f.getName().toLowerCase().endsWith(".cue")) {
-				addChild(new CueFolder(f));
-			} else {
-				/* Optionally ignore empty directories */
-				if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders() && !isFolderRelevant(f)) {
-					logger.debug("Ignoring empty/non relevant directory: " + f.getName());
-				} /* Otherwise add the file */ else {
-					RealFile file = new RealFile(f);
-					addChild(file);
+		if (f.isFile() || f.isDirectory()) {
+			String lcFilename = f.getName().toLowerCase();
+
+			if (!f.isHidden()) {
+				if (PMS.getConfiguration().isArchiveBrowsing() && (lcFilename.endsWith(".zip") || lcFilename.endsWith(".cbz"))) {
+					addChild(new ZippedFile(f));
+				} else if (PMS.getConfiguration().isArchiveBrowsing() && (lcFilename.endsWith(".rar") || lcFilename.endsWith(".cbr"))) {
+					addChild(new RarredFile(f));
+				} else if ((lcFilename.endsWith(".iso") || lcFilename.endsWith(".img")) || (f.isDirectory() && f.getName().toUpperCase().equals("VIDEO_TS"))) {
+					addChild(new DVDISOFile(f));
+				} else if (lcFilename.endsWith(".m3u") || lcFilename.endsWith(".m3u8") || lcFilename.endsWith(".pls")) {
+					addChild(new PlaylistFolder(f));
+				} else if (lcFilename.endsWith(".cue")) {
+					addChild(new CueFolder(f));
+				} else {
+					/* Optionally ignore empty directories */
+					if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders() && !isFolderRelevant(f)) {
+						logger.debug("Ignoring empty/non-relevant directory: " + f.getName());
+					} else { // Otherwise add the file
+						addChild(new RealFile(f));
+					}
 				}
 			}
-		}
-		if (f.isFile()) {
-			String fileName = f.getName().toLowerCase();
-			if (fileName.equalsIgnoreCase("folder.jpg") || fileName.equalsIgnoreCase("folder.png") || (fileName.contains("albumart") && fileName.endsWith(".jpg"))) {
-				setPotentialCover(f);
+
+			// FIXME this causes folder thumbnails to take precedence over file thumbnails
+			if (f.isFile()) {
+				if (lcFilename.equals("folder.jpg") || lcFilename.equals("folder.png") || (lcFilename.contains("albumart") && lcFilename.endsWith(".jpg"))) {
+					setPotentialCover(f);
+				}
 			}
 		}
 	}
@@ -228,13 +232,13 @@ public class MapFile extends DLNAResource {
 
 		for (File f : files) {
 			if (f.isDirectory()) {
-				discoverable.add(f); //manageFile(f);
+				discoverable.add(f); // manageFile(f);
 			}
 		}
 
 		for (File f : files) {
 			if (f.isFile()) {
-				discoverable.add(f); //manageFile(f);
+				discoverable.add(f); // manageFile(f);
 			}
 		}
 	}
@@ -255,12 +259,14 @@ public class MapFile extends DLNAResource {
 		List<File> files = getFileList();
 		List<File> addedFiles = new ArrayList<File>();
 		List<DLNAResource> removedFiles = new ArrayList<DLNAResource>();
+
 		for (DLNAResource d : getChildren()) {
-			boolean isNeedMatching = !(d.getClass() == MapFile.class ||  (d instanceof VirtualFolder && !(d instanceof DVDISOFile)) );
+			boolean isNeedMatching = !(d.getClass() == MapFile.class || (d instanceof VirtualFolder && !(d instanceof DVDISOFile)));
 			if (isNeedMatching && !foundInList(files, d)) {
 				removedFiles.add(d);
 			}
 		}
+
 		for (File f : files) {
 			if (!f.isHidden() && (f.isDirectory() || FormatFactory.getAssociatedExtension(f.getName()) != null)) {
 				addedFiles.add(f);
@@ -274,7 +280,6 @@ public class MapFile extends DLNAResource {
 		for (File f : addedFiles) {
 			logger.debug("File automatically added: " + f.getName());
 		}
-
 
 		TranscodeVirtualFolder vf = getTranscodeFolder(false);
 
@@ -321,7 +326,9 @@ public class MapFile extends DLNAResource {
 	}
 
 	private boolean isDVDIsoMatch(File file, DLNAResource resource) {
-		return (resource instanceof DVDISOFile) && resource.getName().startsWith(DVDISOFile.PREFIX) && resource.getName().substring(DVDISOFile.PREFIX.length()).equals(file.getName());
+		return (resource instanceof DVDISOFile) &&
+			resource.getName().startsWith(DVDISOFile.PREFIX) &&
+			resource.getName().substring(DVDISOFile.PREFIX.length()).equals(file.getName());
 	}
 
 	@Override

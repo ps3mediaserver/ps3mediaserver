@@ -80,7 +80,7 @@ public class RAWThumbnailer extends Player {
 
 	@Override
 	public String name() {
-		return "Raws Thumbnailer";
+		return "dcraw Thumbnailer";
 	}
 
 	@Override

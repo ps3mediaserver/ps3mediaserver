@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class stores the network configuration: which network contains which IPs, etc.
- * 
+ *
  * @author zsombor
  *
  */
@@ -116,7 +117,7 @@ public class NetworkConfiguration {
 		}
 	}
 
-	private final static Logger LOG = LoggerFactory.getLogger(NetworkConfiguration.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(NetworkConfiguration.class);
 
 	List<InterfaceAssociation> interfaces = new ArrayList<InterfaceAssociation>();
 	Map<String, InterfaceAssociation> mainAddress = new HashMap<String, InterfaceAssociation>();
@@ -127,7 +128,7 @@ public class NetworkConfiguration {
 		try {
 			checkNetworkInterface(NetworkInterface.getNetworkInterfaces(), null);
 		} catch (SocketException e) {
-			LOG.error("Inspecting the network failed:" + e.getMessage(), e);
+			LOGGER.error("Inspecting the network failed: " + e.getMessage(), e);
 		}
 	}
 
@@ -138,7 +139,7 @@ public class NetworkConfiguration {
 	 */
 	private Set<InetAddress> addAvailableAddresses(NetworkInterface netIface) {
 		Set<InetAddress> addrSet = new HashSet<InetAddress>();
-		LOG.trace("available addresses for {} is : {}", netIface.getName(), Collections.list(netIface.getInetAddresses()));
+		LOGGER.trace("available addresses for {} is: {}", netIface.getName(), Collections.list(netIface.getInetAddresses()));
 
 		for (InterfaceAddress ia : netIface.getInterfaceAddresses()) {
 			if (ia != null) {
@@ -150,13 +151,13 @@ public class NetworkConfiguration {
 			}
 		}
 
-		LOG.debug(" non loopback/ipv4 addresses : {}", addrSet);
+		LOGGER.debug("non loopback/ipv4 addresses: {}", addrSet);
 		addressMap.put(netIface.getName(), addrSet);
 		return addrSet;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param address
 	 * @return true if it's not ipv6 address, and not loopback
 	 */
@@ -166,17 +167,17 @@ public class NetworkConfiguration {
 
 	private void checkNetworkInterface(Enumeration<NetworkInterface> enm, String parentName) {
 		List<NetworkInterface> nis = Collections.list(enm);
-		LOG.trace("checkNetworkInterface(parent = {}, child interfaces = {})", parentName, nis);
+		LOGGER.trace("checkNetworkInterface(parent = {}, child interfaces = {})", parentName, nis);
 		for (NetworkInterface ni : nis) {
 			if (!skipNetworkInterface(ni.getName(), ni.getDisplayName())) {
 				// check for interface has at least one IP address.
 				checkNetworkInterface(ni, parentName);
 			} else {
-				LOG.debug("child network interface ({},{}) is skipped, because skip_network_interfaces='{}'", 
+				LOGGER.debug("child network interface ({},{}) skipped, because skip_network_interfaces='{}'",
 					new Object[] { ni.getName(),ni.getDisplayName(), skipNetworkInterfaces });
 			}
 		}
-		LOG.trace("checkNetworkInterface(parent = {}) finished.", parentName);
+		LOGGER.trace("checkNetworkInterface(parent = {}) finished", parentName);
 	}
 
 
@@ -193,41 +194,41 @@ public class NetworkConfiguration {
 	}
 
 	private void checkNetworkInterface(NetworkInterface netIface, String parentName) {
-		LOG.trace("checking {}, display name : {}",netIface.getName(), netIface.getDisplayName());
+		LOGGER.trace("checking {}, display name: {}",netIface.getName(), netIface.getDisplayName());
 		addAvailableAddresses(netIface);
 		checkNetworkInterface(netIface.getSubInterfaces(), netIface.getName());
 		// create address / iface pairs which are not IP address of the child iface too
 		Set<InetAddress> subAddress = getAllAvailableAddresses(netIface.getSubInterfaces());
-		LOG.debug("sub address for {} is {}", netIface.getName(), subAddress);
+		LOGGER.debug("sub address for {} is {}", netIface.getName(), subAddress);
 		boolean foundAddress = false;
 
 		for (InterfaceAddress ifaceAddr : netIface.getInterfaceAddresses()) {
 			if (ifaceAddr != null) {
 				InetAddress address = ifaceAddr.getAddress();
-				LOG.trace("checking {} from {} on {}", new Object[] { address, ifaceAddr, netIface.getName() });
+				LOGGER.trace("checking {} from {} on {}", new Object[] { address, ifaceAddr, netIface.getName() });
 
 				if (isRelevantAddress(address)) {
 					if (!subAddress.contains(address)) {
-						LOG.debug("found {} -> {}", netIface.getName(), address.getHostAddress());
+						LOGGER.debug("found {} -> {}", netIface.getName(), address.getHostAddress());
 						final InterfaceAssociation ni = new InterfaceAssociation(address, netIface, parentName);
 						interfaces.add(ni);
 						mainAddress.put(netIface.getName(), ni);
 						foundAddress = true;
 					}
 				} else {
-					LOG.debug("has {}, which is skipped, because loopback={}, ipv6={}", new Object[] { 
+					LOGGER.debug("has {}, which is skipped, because loopback={}, ipv6={}", new Object[] {
 						address, address.isLoopbackAddress(), (address instanceof Inet6Address)} );
 				}
 			}
 		}
 		if (!foundAddress) {
 			interfaces.add(new InterfaceAssociation(null, netIface, parentName));
-			LOG.debug("found {}, without valid address", netIface.getName());
+			LOGGER.debug("found {}, without valid address", netIface.getName());
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the list of interface names
 	 */
 	public List<String> getKeys() {
@@ -239,8 +240,8 @@ public class NetworkConfiguration {
 	}
 
 	/**
-	 * 
-	 * @return the user friendly name of the interfaces, with the IP address 
+	 *
+	 * @return the user friendly name of the interfaces, with the IP address
 	 */
 	public List<String> getDisplayNames() {
 		List<String> result = new ArrayList<String>(interfaces.size());
@@ -251,19 +252,19 @@ public class NetworkConfiguration {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the first NetworkInterface which doesn't have a parent, so defaulting will avoid using alias interfaces
 	 */
 	public InterfaceAssociation getDefaultNetworkInterfaceAddress() {
-		LOG.debug("default network interface address from {}", interfaces);
+		LOGGER.debug("default network interface address from {}", interfaces);
 		InterfaceAssociation association = getFirstInterfaceWithAddress();
 		if (association != null) {
 			if (association.getParentName() != null) {
 				InterfaceAssociation ia = getAddressForNetworkInterfaceName(association.getParentName());
-				LOG.trace("first association has parent : {} -> {}", association, ia);
+				LOGGER.trace("first association has parent: {} -> {}", association, ia);
 				return ia;
 			} else {
-				LOG.trace("first network interface : {}", association);
+				LOGGER.trace("first network interface: {}", association);
 				return association;
 			}
 		}
@@ -280,7 +281,7 @@ public class NetworkConfiguration {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param name the interface name
 	 * @return the default IP address, and network interface for the given name
 	 */
@@ -305,6 +306,21 @@ public class NetworkConfiguration {
 		return txt.toLowerCase().contains(substr);
 	}
 
+	/**
+	 * @return a network interface, if a server hostname is configured.
+	 * @throws SocketException
+	 * @throws UnknownHostException
+	 */
+	public NetworkInterface getNetworkInterfaceByServerName() throws SocketException, UnknownHostException {
+		String hostname = PMS.getConfiguration().getServerHostname();
+		if (hostname != null) {
+			LOGGER.trace("Searching network interface for " + hostname);
+			return NetworkInterface.getByInetAddress(InetAddress.getByName(hostname));
+		}
+		return null;
+	}
+	
+	
 	private static NetworkConfiguration config;
 
 	/**

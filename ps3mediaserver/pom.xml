@@ -31,7 +31,7 @@
 	<artifactId>pms</artifactId>
 	<name>PS3 Media Server</name>
 	<packaging>jar</packaging>
-	<version>1.50.2_mlx_v0.7-SNAPSHOT</version>
+	<version>1.51.0_mlx_v0.7-SNAPSHOT</version>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
 
@@ -69,7 +69,7 @@
 
 	<properties>
 		<!-- NSIS needs a version without "-SNAPSHOT" or "-b1" -->
-		<project.version.short>1.50.2</project.version.short>
+		<project.version.short>1.51.0</project.version.short>
 
 		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
 		<jcalendar-version>1.1.1</jcalendar-version>
@@ -147,12 +147,6 @@
 			</snapshots>
 		</repository>
 
-		<!-- apple stub code -->		
-		<repository>
-			<id>ooo-maven-repo</id>
-			<url>http://ooo-maven.googlecode.com/hg/repository</url>
-		</repository>
-		
 	</repositories>
 
 	<dependencies>
@@ -369,14 +363,6 @@
 		</dependency>
 
 		<dependency>
-			<!-- Stub required by PMSUtil.java -->
-			<groupId>com.apple</groupId>
-			<artifactId>applejavaextensions</artifactId>
-			<version>1.5.4</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.1</version>
@@ -471,7 +457,6 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.11</version>
 				</plugin>
-				
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
@@ -480,25 +465,6 @@
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											pl.project13.maven
-										</groupId>
-										<artifactId>
-											git-commit-id-plugin
-										</artifactId>
-										<versionRange>
-											[1.9,)
-										</versionRange>
-										<goals>
-											<goal>revision</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>
@@ -512,6 +478,25 @@
 										</versionRange>
 										<goals>
 											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											pl.project13.maven
+										</groupId>
+										<artifactId>
+											git-commit-id-plugin
+										</artifactId>
+										<versionRange>
+											[1.9,)
+										</versionRange>
+										<goals>
+											<goal>revision</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
