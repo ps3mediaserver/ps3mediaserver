@@ -370,7 +370,7 @@ public class FormatRecognitionTest {
 
 		try {
 			// Initialize PMS configuration like at initialization time, this
-			// is relevant for Format.isCompatible().
+			// is relevant for RendererConfiguration.isCompatible().
 			PMS.setConfiguration(new PmsConfiguration());
 			configurationLoaded = true;
 		} catch (ConfigurationException e) {
@@ -382,6 +382,9 @@ public class FormatRecognitionTest {
 		// Continue the test if the configuration loaded, otherwise skip it.
 		assumeTrue(configurationLoaded);
 
+		// Continue the test if the MediaInfoParser can be loaded, otherwise skip it.
+		assumeTrue(MediaInfoParser.isValid());
+		
 		// Construct media info exactly as VirtualVideoAction does
 		DLNAMediaInfo info = new DLNAMediaInfo();
 		info.setContainer("mpegps");
@@ -395,6 +398,7 @@ public class FormatRecognitionTest {
 
 		// Test without rendererConfiguration, as can happen when plugins
 		// create virtual video actions under a folder.
+
 		assertEquals("VirtualVideoAction is initialized as compatible with null configuration",
 				true, format.isCompatible(info, null));
 	}

@@ -63,6 +63,7 @@ public class PmsConfiguration {
 
 	private static final String KEY_ALTERNATE_SUBS_FOLDER = "alternate_subs_folder";
 	private static final String KEY_ALTERNATE_THUMB_FOLDER = "alternate_thumb_folder";
+	private static final String KEY_APERTURE_ENABLED = "aperture";
 	private static final String KEY_AUDIO_BITRATE = "audiobitrate";
 	private static final String KEY_AUDIO_CHANNEL_COUNT = "audiochannels";
 	private static final String KEY_AUDIO_RESAMPLE = "audio_resample";
@@ -90,9 +91,9 @@ public class PmsConfiguration {
 	private static final String KEY_HIDE_TRANSCODE_FOLDER = "hide_transcode_folder";
 	private static final String KEY_HIDE_VIDEO_SETTINGS = "hidevideosettings";
 	private static final String KEY_HTTP_ENGINE_V2 = "http_engine_v2";
+	private static final String KEY_IMAGE_THUMBNAILS_ENABLED = "image_thumbnails";
 	private static final String KEY_IP_FILTER = "ip_filter";
 	private static final String KEY_IPHOTO_ENABLED = "iphoto";
-	private static final String KEY_APERTURE_ENABLED = "aperture";
 	private static final String KEY_ITUNES_ENABLED = "itunes";
 	private static final String KEY_LANGUAGE = "language";
 	private static final String KEY_LOGGING_LEVEL = "level";
@@ -112,6 +113,8 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_DISABLE_SUBS = "mencoder_disablesubs";
 	private static final String KEY_MENCODER_FONT_CONFIG = "mencoder_fontconfig";
 	private static final String KEY_MENCODER_FONT = "mencoder_font";
+	private static final String KEY_MENCODER_FORCED_SUB_LANG = "forced_sub_lang";
+	private static final String KEY_MENCODER_FORCED_SUB_TAGS = "forced_sub_tags";
 	private static final String KEY_MENCODER_FORCE_FPS = "mencoder_forcefps";
 	private static final String KEY_MENCODER_INTELLIGENT_SYNC = "mencoder_intelligent_sync";
 	private static final String KEY_MENCODER_MAIN_SETTINGS = "mencoder_encode";
@@ -123,8 +126,8 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_NOASS_SCALE = "mencoder_noass_scale";
 	private static final String KEY_MENCODER_NOASS_SUBPOS = "mencoder_noass_subpos";
 	private static final String KEY_MENCODER_NO_OUT_OF_SYNC = "mencoder_nooutofsync";
-	private static final String KEY_MENCODER_OVERSCAN_COMPENSATION_WIDTH = "mencoder_overscan_compensation_width";
 	private static final String KEY_MENCODER_OVERSCAN_COMPENSATION_HEIGHT = "mencoder_overscan_compensation_height";
+	private static final String KEY_MENCODER_OVERSCAN_COMPENSATION_WIDTH = "mencoder_overscan_compensation_width";
 	private static final String KEY_MENCODER_REMUX_AC3 = "mencoder_remux_ac3";
 	private static final String KEY_MENCODER_REMUX_MPEG2 = "mencoder_remux_mpeg2";
 	private static final String KEY_MENCODER_SCALER = "mencoder_scaler";
@@ -157,23 +160,20 @@ public class PmsConfiguration {
 	private static final String KEY_SORT_METHOD = "key_sort_method";
 	private static final String KEY_SUBS_COLOR = "subs_color";
 	private static final String KEY_TEMP_FOLDER_PATH = "temp";
+	private static final String KEY_THUMBNAIL_GENERATION_ENABLED = "thumbnails"; // TODO should be renamed e.g. "generate_thumbnails" at some stage
 	private static final String KEY_THUMBNAIL_SEEK_POS = "thumbnail_seek_pos";
-	private static final String KEY_THUMBNAILS_ENABLED = "thumbnails";
-	private static final String KEY_IMAGE_THUMBNAILS_ENABLED = "image_thumbnails";
 	private static final String KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS = "transcode_block_multiple_connections";
 	private static final String KEY_TRANSCODE_KEEP_FIRST_CONNECTION = "transcode_keep_first_connection";
 	private static final String KEY_TSMUXER_FORCEFPS = "tsmuxer_forcefps";
 	private static final String KEY_TSMUXER_PREREMIX_AC3 = "tsmuxer_preremix_ac3";
 	private static final String KEY_TURBO_MODE_ENABLED = "turbomode";
+	private static final String KEY_UPNP_PORT = "upnp_port";
 	private static final String KEY_USE_CACHE = "usecache";
 	private static final String KEY_USE_MPLAYER_FOR_THUMBS = "use_mplayer_for_video_thumbs";
 	private static final String KEY_USE_SUBTITLES = "autoloadsrt";
+	private static final String KEY_UUID = "uuid";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
-	private static final String KEY_UPNP_PORT = "upnp_port";
-	private static final String KEY_UUID = "uuid";
-	private static final String KEY_MENCODER_FORCED_SUB_LANG = "forced_sub_lang";
-	private static final String KEY_MENCODER_FORCED_SUB_TAGS = "forced_sub_tags";
 
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
 	// see Build for more details
@@ -1201,12 +1201,50 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_MAX_BITRATE, value);
 	}
 
+	/**
+	 * @deprecated Use {@link #isThumbnailGenerationEnabled()} instead.
+	 * <p>
+	 * Returns true if thumbnail generation is enabled, false otherwise.
+	 * This only determines whether a thumbnailer (e.g. dcraw, MPlayer)
+	 * is used to generate thumbnails. It does not reflect whether
+	 * thumbnails should be displayed or not.
+	 *
+	 * @return boolean indicating whether thumbnail generation is enabled.
+	 */
+	@Deprecated
 	public boolean getThumbnailsEnabled() {
-		return getBoolean(KEY_THUMBNAILS_ENABLED, true);
+		return isThumbnailGenerationEnabled();
 	}
 
+	/**
+	 * Returns true if thumbnail generation is enabled, false otherwise.
+	 *
+	 * @return boolean indicating whether thumbnail generation is enabled.
+	 */
+	public boolean isThumbnailGenerationEnabled() {
+		return getBoolean(KEY_THUMBNAIL_GENERATION_ENABLED, true);
+	}
+
+	/**
+	 * @deprecated Use {@link #setThumbnailGenerationEnabled()} instead.
+	 * <p>
+	 * Sets the thumbnail generation option.
+	 * This only determines whether a thumbnailer (e.g. dcraw, MPlayer)
+	 * is used to generate thumbnails. It does not reflect whether
+	 * thumbnails should be displayed or not.
+	 *
+	 * @return boolean indicating whether thumbnail generation is enabled.
+	 */
+	@Deprecated
 	public void setThumbnailsEnabled(boolean value) {
-		configuration.setProperty(KEY_THUMBNAILS_ENABLED, value);
+		setThumbnailGenerationEnabled(value);
+	}
+
+	/**
+	 * Sets the thumbnail generation option.
+	 */
+	public void setThumbnailGenerationEnabled(boolean value) {
+		configuration.setProperty(KEY_THUMBNAIL_GENERATION_ENABLED, value);
 	}
 	
 	public boolean getImageThumbnailsEnabled() {
@@ -1430,7 +1468,7 @@ public class PmsConfiguration {
 	}
 
 	public List<String> getEnginesAsList(SystemUtils registry) {
-		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,mplayeraudio,ffmpegaudio,tsmuxeraudio,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux,rawthumbs"));
+		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,ffmpegaudio,mplayeraudio,tsmuxeraudio,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux,rawthumbs"));
 		engines = hackAvs(registry, engines);
 		return engines;
 	}

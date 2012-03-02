@@ -189,12 +189,12 @@ public abstract class Format implements Cloneable {
 		return (Format) this.clone();
 	}
 
-	// method which allow us the fine tuning of parsing with different formats in the future
+	// method which allows us to fine tune parsing with different formats in the future
 	public void parse(DLNAMediaInfo media, InputFile file, int type) {
 		parse(media, file, type, null);
 	}
 
-	// 10/02/03 now this is useful :p
+	// 2010-02-03 now this is useful :p
 	public void parse(DLNAMediaInfo media, InputFile file, int type, RendererConfiguration renderer) {
 		if (renderer != null && renderer.isMediaParserV2()) {
 			renderer.getFormatConfiguration().parse(media, file, this, type);

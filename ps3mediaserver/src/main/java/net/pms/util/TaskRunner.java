@@ -34,17 +34,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Background task executor and scheduler with a dynamic thread pool, where the threads are daemons.
- *  
+ *
  * @author zsombor
  *
  */
 public class TaskRunner {
-
-	final static Logger LOG = LoggerFactory.getLogger(TaskRunner.class);
+	final static Logger LOGGER = LoggerFactory.getLogger(TaskRunner.class);
 	
 	private static TaskRunner instance;
 	
-	public static synchronized TaskRunner getInstance() { 
+	public static synchronized TaskRunner getInstance() {
 		if (instance == null) {
 			instance = new TaskRunner();
 		}
@@ -56,14 +55,14 @@ public class TaskRunner {
 		int counter = 0;
 		@Override
 		public Thread newThread(Runnable r) {
-			Thread t = new Thread(r, "background-task-"+(counter++));
+			Thread t = new Thread(r, "background-task-" + (counter++));
 			t.setDaemon(true);
 			return t;
 		}
 	});
 	
 	private final Map<String, Integer> counters = new HashMap<String, Integer>();
-	private final Map<String, Lock> uniquenessLock = new HashMap<String, Lock> (); 
+	private final Map<String, Lock> uniquenessLock = new HashMap<String, Lock> ();
 	
 	public void submit(Runnable runnable) {
 		executors.execute(runnable);
@@ -75,7 +74,7 @@ public class TaskRunner {
 	
 	/**
 	 * Submit a named task for later execution.
-	 * 
+	 *
 	 * @param name
 	 * @param runnable
 	 */
@@ -90,7 +89,7 @@ public class TaskRunner {
 	 * @param singletonTask
 	 */
 	public void submitNamed(final String name, final boolean singletonTask, final Runnable runnable) {
-		submit(new Runnable() { 
+		submit(new Runnable() {
 			@Override
 			public void run() {
 				String prevName = Thread.currentThread().getName();
@@ -99,17 +98,17 @@ public class TaskRunner {
 					if (singletonTask) {
 						if (getLock(name).tryLock()) {
 							locked = true;
-							LOG.debug("singleton task "+name+" started.");
+							LOGGER.debug("singleton task " + name + " started");
 						} else {
 							locked = false;
-							LOG.debug("singleton task '"+name+"' already running, exiting.");
+							LOGGER.debug("singleton task '" + name + "' already running, exiting");
 							return;
 						}
 					}
 					Thread.currentThread().setName(prevName + '-' + name + '(' + getAndIncr(name) + ')');
-					LOG.debug("task started");
+					LOGGER.debug("task started");
 					runnable.run();
-					LOG.debug("task ended.");
+					LOGGER.debug("task ended");
 				} finally {
 					if (locked) {
 						getLock(name).unlock();
@@ -163,5 +162,4 @@ public class TaskRunner {
 	public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
 		return executors.awaitTermination(timeout, unit);
 	}
-	
 }

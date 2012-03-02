@@ -40,7 +40,7 @@ import com.sun.jna.Platform;
  * This class handles players. Creating an instance will initialize the list of
  * known players.
  *
- * @since 1.50.2
+ * @since 1.51.0
  */
 public final class PlayerFactory {
 	/**
