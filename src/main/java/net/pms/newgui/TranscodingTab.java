@@ -551,13 +551,16 @@ public class TranscodingTab {
 
 		builder.addLabel(Messages.getString("TrTab2.32"), cc.xyw(1, 29, 3));
 
-		Object data[] = new Object[]{configuration.getMencoderMainSettings(),
-			"keyint=5:vqscale=1:vqmin=2  /* Great Quality */",
-			"keyint=5:vqscale=1:vqmin=1  /* Lossless Quality */",
-			"keyint=5:vqscale=2:vqmin=3  /* Good quality */",
-			"keyint=25:vqmax=5:vqmin=2  /* Good quality for HD Wifi Transcoding */",
-			"keyint=25:vqmax=7:vqmin=2  /* Medium quality for HD Wifi Transcoding */",
-			"keyint=25:vqmax=8:vqmin=3  /* Low quality, Low-end CPU or HD Wifi Transcoding */"};
+		Object data[] = new Object[] {
+			configuration.getMencoderMainSettings(),                                                /* default */
+			String.format("keyint=5:vqscale=1:vqmin=2  /* %s */", Messages.getString("TrTab2.60")), /* great */
+			String.format("keyint=5:vqscale=1:vqmin=1  /* %s */", Messages.getString("TrTab2.61")), /* lossless */
+			String.format("keyint=5:vqscale=2:vqmin=3  /* %s */", Messages.getString("TrTab2.62")), /* good (wired) */
+			String.format("keyint=25:vqmax=5:vqmin=2  /* %s */",  Messages.getString("TrTab2.63")), /* good (wireless) */
+			String.format("keyint=25:vqmax=7:vqmin=2  /* %s */",  Messages.getString("TrTab2.64")), /* medium (wireless) */
+			String.format("keyint=25:vqmax=8:vqmin=3  /* %s */",  Messages.getString("TrTab2.65"))  /* low */
+		};
+
 		MyComboBoxModel cbm = new MyComboBoxModel(data);
 
 		vq = new JComboBox(cbm);
