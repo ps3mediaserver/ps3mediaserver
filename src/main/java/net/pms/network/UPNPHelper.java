@@ -41,19 +41,47 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to handle the UPnP traffic that makes PMS discoverable by other clients.
- * See http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.0.pdf for the specifications.
+ * See http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.0.pdf
+ * and http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1-AnnexA.pdf
+ * for the specifications.
  */
 public class UPNPHelper {
 	private static final Logger logger = LoggerFactory.getLogger(UPNPHelper.class);
 	private final static String CRLF = "\r\n";
 	private final static String ALIVE = "ssdp:alive";
-	private final static String UPNP_HOST = "239.255.255.250";
+	
+	/**
+	 * IPv4 Multicast channel reserved for SSDP by Internet Assigned Numbers Authority (IANA).
+	 * MUST be 239.255.255.250.
+	 */
+	private final static String IPV4_UPNP_HOST = "239.255.255.250";
+
+	/**
+	 * IPv6 Multicast channel reserved for SSDP by Internet Assigned Numbers Authority (IANA).
+	 * MUST be [FF02::C].
+	 */
+	private final static String IPV6_UPNP_HOST = "[FF02::C]";
+
+	/**
+	 * Multicast channel reserved for SSDP by Internet Assigned Numbers Authority (IANA).
+	 * MUST be 1900.
+	 */
 	private final static int UPNP_PORT = 1900;
+
 	private final static String BYEBYE = "ssdp:byebye";
 	private static Thread listener;
 	private static Thread aliveThread;
 	private static SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
 
+	/**
+	 * Send UPnP discovery search message to discover devices of interest on
+	 * the network.
+	 *
+	 * @param host The multicast channel
+	 * @param port The multicast port
+	 * @param st The search target string
+	 * @throws IOException
+	 */
 	private static void sendDiscover(String host, int port, String st) throws IOException {
 		String usn = PMS.get().usn();
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -282,7 +310,7 @@ public class UPNPHelper {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("NOTIFY * HTTP/1.1" + CRLF);
-		sb.append("HOST: " + UPNP_HOST + ":").append(UPNP_PORT).append(CRLF);
+		sb.append("HOST: " + IPV4_UPNP_HOST + ":").append(UPNP_PORT).append(CRLF);
 		sb.append("NT: ").append(nt).append(CRLF);
 		sb.append("NTS: ").append(message).append(CRLF);
 
@@ -308,6 +336,6 @@ public class UPNPHelper {
 	}
 
 	private static InetAddress getUPNPAddress() throws IOException {
-		return InetAddress.getByAddress(UPNP_HOST, new byte[]{(byte) 239, (byte) 255, (byte) 255, (byte) 250});
+		return InetAddress.getByAddress(IPV4_UPNP_HOST, new byte[]{(byte) 239, (byte) 255, (byte) 255, (byte) 250});
 	}
 }
