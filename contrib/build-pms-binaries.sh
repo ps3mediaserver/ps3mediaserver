@@ -1220,7 +1220,7 @@ build_mplayer() {
         # See https://svn.macports.org/ticket/30279
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../../../contrib/mplayer-r34728-SB25.patch
+        patch -p0 < ./../../../../contrib/mplayer-r34780-SB26.patch
         exit_on_error
 
         # Theora and vorbis support seems broken in this revision, disable it for now
@@ -1239,7 +1239,7 @@ build_mplayer() {
         export LDFLAGS="$LDFLAGS -O4 -fomit-frame-pointer -pipe"
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../../../contrib/mplayer-r34728-SB25.patch
+        patch -p0 < ./../../../../contrib/mplayer-r34780-SB26.patch
         exit_on_error
 
         # mplayer configure patch for r34587-SB22
