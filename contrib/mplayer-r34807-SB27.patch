@@ -1,6 +1,6 @@
 Index: configure
 ===================================================================
---- configure	(revision 34780)
+--- configure	(revision 34807)
 +++ configure	(working copy)
 @@ -565,6 +565,7 @@
    --with-install=PATH    path to a custom install program
@@ -132,7 +132,7 @@ Index: configure
  
 Index: libao2/ao_sdl.c
 ===================================================================
---- libao2/ao_sdl.c	(revision 34780)
+--- libao2/ao_sdl.c	(revision 34807)
 +++ libao2/ao_sdl.c	(working copy)
 @@ -143,7 +143,7 @@
  	mp_msg(MSGT_AO,MSGL_INFO,MSGTR_AO_SDL_INFO, rate, (channels > 1) ? "Stereo" : "Mono", af_fmt2str_short(format));
@@ -145,7 +145,7 @@ Index: libao2/ao_sdl.c
  
 Index: libvo/sdl_common.c
 ===================================================================
---- libvo/sdl_common.c	(revision 34780)
+--- libvo/sdl_common.c	(revision 34807)
 +++ libvo/sdl_common.c	(working copy)
 @@ -64,7 +64,7 @@
          if (WinID > 0) {
@@ -167,7 +167,7 @@ Index: libvo/sdl_common.c
      if (!s) {
 Index: libvo/vo_sdl.c
 ===================================================================
---- libvo/vo_sdl.c	(revision 34780)
+--- libvo/vo_sdl.c	(revision 34807)
 +++ libvo/vo_sdl.c	(working copy)
 @@ -1334,17 +1334,17 @@
      mp_msg(MSGT_VO,MSGL_DBG3, "SDL: Opening Plugin\n");
@@ -194,7 +194,7 @@ Index: libvo/vo_sdl.c
      priv->fullmode = -2;
 Index: mencoder.c
 ===================================================================
---- mencoder.c	(revision 34780)
+--- mencoder.c	(revision 34807)
 +++ mencoder.c	(working copy)
 @@ -139,6 +139,7 @@
  int benchmark=0;
@@ -227,7 +227,7 @@ Index: mencoder.c
      // av = compensated (with out buffering delay) A-V diff
 Index: mp_msg.c
 ===================================================================
---- mp_msg.c	(revision 34780)
+--- mp_msg.c	(revision 34807)
 +++ mp_msg.c	(working copy)
 @@ -34,6 +34,26 @@
  /* maximum message length of mp_msg */
@@ -317,7 +317,7 @@ Index: mp_msg.c
  }
 Index: mpcommon.c
 ===================================================================
---- mpcommon.c	(revision 34780)
+--- mpcommon.c	(revision 34807)
 +++ mpcommon.c	(working copy)
 @@ -538,40 +538,46 @@
  /// Returns a_pts
@@ -402,7 +402,7 @@ Index: mpcommon.c
  }
 Index: mplayer.c
 ===================================================================
---- mplayer.c	(revision 34780)
+--- mplayer.c	(revision 34807)
 +++ mplayer.c	(working copy)
 @@ -145,6 +145,12 @@
  float start_volume = -1;
@@ -637,14 +637,14 @@ Index: osdep/alloc-win.c
 \ No newline at end of file
 Index: version.sh
 ===================================================================
---- version.sh	(revision 34780)
+--- version.sh	(revision 34807)
 +++ version.sh	(working copy)
 @@ -17,9 +17,9 @@
  version=$svn_revision
  fi
  
 -NEW_REVISION="#define VERSION \"${version}${extra}\""
-+NEW_REVISION="#define VERSION \"SB26\""
++NEW_REVISION="#define VERSION \"SB27\""
  OLD_REVISION=$(head -n 1 version.h 2> /dev/null)
 -TITLE='#define MP_TITLE "%s "VERSION" (C) 2000-2012 MPlayer Team\n"'
 +TITLE='#define MP_TITLE "%s "VERSION" (C) 2000-2012 MPlayer Team\nCustom build by SubJunk, http://www.spirton.com\n\n"'
