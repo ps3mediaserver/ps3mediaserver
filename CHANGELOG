@@ -5,6 +5,7 @@ Changelog:
 
 	Fix StartStopListener callbacks for HTTP Engine V1
 	Surface playback start/stop events
+	Make video quality presets localizable
 
 1.50.1 - 2012-01-28
 
