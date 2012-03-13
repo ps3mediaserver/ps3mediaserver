@@ -34,8 +34,12 @@ public class PmsProperties {
 	 */
 	public void loadFromResourceFile(String filename) throws IOException {
 		InputStream inputStream = getClass().getResourceAsStream(filename);
-		properties.load(inputStream);
-		inputStream.close();
+
+		try {
+			properties.load(inputStream);
+		} finally {
+			inputStream.close();
+		}
 	}
 
 	public void clear() {

@@ -174,8 +174,9 @@ public class CodecUtil {
 			// et merci Yann :p
 			if (nbchannels == 5) /* Were missing an LFE channel so create one from the fronts */ {
 				mixer = "channels=6:6:0:0:1:1:3:2:5:3:4:4:2:5,sub=80:5";
-			} else {
-				mixer = "channels=6:6:0:0:1:1:3:2:5:3:4:4:2:5";
+// New MEncoder builds don't need to remap audio channels anymore (for 5.1 audio) 
+//			} else {
+//				mixer = "channels=6:6:0:0:1:1:3:2:5:3:4:4:2:5";
 			}
 			if (nbchannels <= 2) { // downmixing to 2 channels
 				mixer = "pan=2:1:0:0:1:1:0:0:1:0.707:0.707:1:1";

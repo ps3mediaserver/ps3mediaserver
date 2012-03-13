@@ -145,12 +145,18 @@ public class DVDISOTitle extends DLNAResource {
 				File jpg = new File(frameName + "2.jpg");
 				if (jpg.exists()) {
 					InputStream is = new FileInputStream(jpg);
-					int sz = is.available();
-					if (sz > 0) {
-						getMedia().setThumb(new byte[sz]);
-						is.read(getMedia().getThumb());
+
+					try {
+						int sz = is.available();
+
+						if (sz > 0) {
+							getMedia().setThumb(new byte[sz]);
+							is.read(getMedia().getThumb());
+						}
+					} finally {
+						is.close();
 					}
-					is.close();
+
 					if (!jpg.delete()) {
 						jpg.deleteOnExit();
 					}
