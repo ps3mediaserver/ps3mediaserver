@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.pms.medialibrary.commons.dataobjects.DOFileImportTemplate;
+import net.pms.medialibrary.commons.dataobjects.DOFileScannerEngineConfiguration;
 import net.pms.medialibrary.commons.enumarations.FileProperty;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.exceptions.StorageException;
@@ -31,7 +32,7 @@ class DBFileImport extends DBBase{
 	 *********************************************/
 
 	DOFileImportTemplate getFileImportTemplate(int templateId) throws StorageException {
-		Map<FileProperty, List<String>> engines = new HashMap<FileProperty, List<String>>();
+		List<DOFileScannerEngineConfiguration> engines = new ArrayList<DOFileScannerEngineConfiguration>();
 		Map<FileType, List<String>> activeEngines = new HashMap<FileType, List<String>>();
 		Map<FileType, Map<String, List<String>>> enabledTags;
 		String templateName = "";
@@ -52,7 +53,7 @@ class DBFileImport extends DBBase{
 			}
 
 			// get configured engines per FileProperty
-			stmt = conn.prepareStatement("SELECT FILEPROPERTY, ENGINENAME"
+			stmt = conn.prepareStatement("SELECT FILEPROPERTY, ENGINENAME, ISENABLED"
 							+ " FROM FILEIMPORTTEMPLATEENTRY"
 							+ " WHERE TEMPLATEID = ?"
 							+ " ORDER BY PRIO ASC");
@@ -62,12 +63,23 @@ class DBFileImport extends DBBase{
 			while (rs.next()) {
 				FileProperty fp = FileProperty.valueOf(rs.getString(1));
 				String engineName = rs.getString(2);
-				if (engines.containsKey(fp)) {
-					engines.get(fp).add(engineName);
-				} else {
+				boolean isEnabled = rs.getBoolean(3);
+				
+				DOFileScannerEngineConfiguration existingEngine = null;
+				for(DOFileScannerEngineConfiguration en : engines) {
+					if(en.getFileProperty() == fp){
+						existingEngine = en;
+						break;
+					}
+				}
+				
+				if(existingEngine == null) {
 					List<String> engineNames = new ArrayList<String>();
 					engineNames.add(engineName);
-					engines.put(fp, engineNames);
+					DOFileScannerEngineConfiguration newEngine = new DOFileScannerEngineConfiguration(isEnabled, engineNames, fp);
+					engines.add(newEngine);
+				} else {
+					existingEngine.getEngineNames().add(engineName);
 				}
 			}
 
@@ -174,25 +186,36 @@ class DBFileImport extends DBBase{
 			
 			for(DOFileImportTemplate template : res) {
 				//get configured engines per FileProperty
-				stmt = conn.prepareStatement("SELECT FILEPROPERTY, ENGINENAME"
+				stmt = conn.prepareStatement("SELECT FILEPROPERTY, ENGINENAME, ISENABLED"
 				                + " FROM FILEIMPORTTEMPLATEENTRY"
 				                + " WHERE TEMPLATEID = ?"
 				                + " ORDER BY PRIO ASC");
 				stmt.setInt(1, template.getId());
 				rs = stmt.executeQuery();
-				
-				Map<FileProperty, List<String>> engines = new HashMap<FileProperty, List<String>>();
+
+				List<DOFileScannerEngineConfiguration> engines = new ArrayList<DOFileScannerEngineConfiguration>();
 				while (rs.next()) {
 					FileProperty fp = FileProperty.valueOf(rs.getString(1));
 					String engineName = rs.getString(2);
-					if(engines.containsKey(fp)) {
-						engines.get(fp).add(engineName);
-					} else {
+					boolean isEnabled = rs.getBoolean(3);
+					
+					DOFileScannerEngineConfiguration existingEngine = null;
+					for(DOFileScannerEngineConfiguration en : engines) {
+						if(en.getFileProperty() == fp){
+							existingEngine = en;
+							break;
+						}
+					}
+					
+					if(existingEngine == null) {
 						List<String> engineNames = new ArrayList<String>();
 						engineNames.add(engineName);
-						engines.put(fp, engineNames);
+						DOFileScannerEngineConfiguration newEngine = new DOFileScannerEngineConfiguration(isEnabled, engineNames, fp);
+						engines.add(newEngine);
+					} else {
+						existingEngine.getEngineNames().add(engineName);
 					}
-				}				
+				}
 				template.setConfiguredEngines(engines);
 
 				//set the list of active engines per FileType
@@ -340,16 +363,16 @@ class DBFileImport extends DBBase{
 	 *********************************************/
 	
 	private void insertFileImportTemplateEntries(DOFileImportTemplate template, Connection conn, PreparedStatement stmt) throws SQLException {		
-		for(FileProperty fp : template.getAllConfiguredEngines().keySet()) {
-			List<String> engineNames = template.getAllConfiguredEngines().get(fp);
+		for(DOFileScannerEngineConfiguration engine : template.getAllConfiguredEngines()) {
 			int prio = 0;
-			for(String engineName : engineNames) {
-				stmt = conn.prepareStatement("INSERT INTO FILEIMPORTTEMPLATEENTRY (TEMPLATEID, FILEPROPERTY, ENGINENAME, PRIO)"
-		                + "VALUES (?, ?, ?, ?)");
+			for(String engineName : engine.getEngineNames()) {
+				stmt = conn.prepareStatement("INSERT INTO FILEIMPORTTEMPLATEENTRY (TEMPLATEID, FILEPROPERTY, ENGINENAME, PRIO, ISENABLED)"
+		                + "VALUES (?, ?, ?, ?, ?)");
 				stmt.setInt(1, template.getId());
-				stmt.setString(2, fp.toString());
+				stmt.setString(2, engine.getFileProperty().toString());
 				stmt.setString(3, engineName);	
-				stmt.setInt(4, prio++);					
+				stmt.setInt(4, prio++);
+				stmt.setBoolean(5, engine.isEnabled());
 				stmt.executeUpdate();				
 			}
 		}		

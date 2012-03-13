@@ -25,7 +25,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.medialibrary.commons.dataobjects.DOFileImportTemplate;
-import net.pms.medialibrary.commons.enumarations.FileProperty;
+import net.pms.medialibrary.commons.dataobjects.DOFileScannerEngineConfiguration;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.helpers.FileImportHelper;
 
@@ -130,8 +130,8 @@ public class FileImportPropertiesPanel extends JPanel {
 	}
 
 	private JPanel buildFilePropertyPreferencesPanel() {
-		FormLayout layout = new FormLayout("r:p, 5px, p, 15px, r:p, 5px, p, 15px, r:p, 5px, p, 15px, r:p, 5px, p",
-		        "p, 5px, p, 5px, p, 5px, p, 5px, p, fill:1:grow");
+		FormLayout layout = new FormLayout("5px, f:p:g, 15px, f:p:g, 15px, f:p:g, 15px, f:p:g, 15px, f:p:g, 5px",
+		        "5px, t:p, 15px, t:p, 15px, t:p, 15px, t:p, 15px, t:p, 5px");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(new TitledBorder("Properties"));
 		builder.setOpaque(true);
@@ -141,20 +141,16 @@ public class FileImportPropertiesPanel extends JPanel {
 		if (fssps != null) {
 			// create grid with file types and engine names
 			int index = 0;
-			int x = -1;
-			int y = -1;
+			int x = 0;
+			int y = 0;
 			for (FileScannerSelectorPanel fssp : fssps) {
 				if (index % 4 == 0) {
-					x = 1;
-				} else {
-					x += 2;
+					x = 2;
+					y += 2;
 				}
-				y = index % 4 == 0 ? y + 2 : y;
 
-				builder.add(fssp.getNameLabel(), cc.xy(x, y));
-
+				builder.add(fssp, cc.xy(x, y));
 				x += 2;
-				builder.add(fssp.getEnginesList(), cc.xy(x, y));
 
 				index++;
 			}
@@ -263,14 +259,14 @@ public class FileImportPropertiesPanel extends JPanel {
 	private List<FileScannerSelectorPanel> getSelectorPanels(DOFileImportTemplate template, FileType fileType){
 
 		//get the list of available plugins and create a map containing all available engines for a file property
-		Map<FileProperty, List<String>> filePropertyEngineNames = FileImportHelper.getFilePropertyEngines(template);
+		List<DOFileScannerEngineConfiguration> filePropertyEngineNames = FileImportHelper.getFilePropertyEngines(template);
 		
 		//add all file properties with engine names
 		String filePropertyPrefix = fileType.toString() + "_";
 		ArrayList<FileScannerSelectorPanel> newFssps = new ArrayList<FileScannerSelectorPanel>();
-		for(FileProperty fp : filePropertyEngineNames.keySet()) {
-			if(fp.toString().startsWith(filePropertyPrefix)) {
-				newFssps.add(new FileScannerSelectorPanel(fp, filePropertyEngineNames.get(fp)));
+		for(DOFileScannerEngineConfiguration engine : filePropertyEngineNames) {
+			if(engine.getFileProperty().toString().startsWith(filePropertyPrefix)) {
+				newFssps.add(new FileScannerSelectorPanel(engine));
 			}
 		}
 		
@@ -285,10 +281,10 @@ public class FileImportPropertiesPanel extends JPanel {
 		return newFssps;
 	}
 
-	public Map<FileProperty, List<String>> getConfiguredEngines() {
-		Map<FileProperty, List<String>> res = new HashMap<FileProperty, List<String>>();
+	public List<DOFileScannerEngineConfiguration> getConfiguredEngines() {
+		List<DOFileScannerEngineConfiguration> res = new ArrayList<DOFileScannerEngineConfiguration>();
 		for(FileScannerSelectorPanel p : fssps) {
-			res.put(p.getFileProperty(), p.getEngineNames());
+			res.add(p.getEngine());
 		}
 		return res;
 	}

@@ -39,6 +39,7 @@ import net.pms.PMS;
 import net.pms.medialibrary.commons.MediaLibraryConfiguration;
 import net.pms.medialibrary.commons.dataobjects.DOFileImportTemplate;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
+import net.pms.medialibrary.commons.dataobjects.DOFileScannerEngineConfiguration;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.enumarations.FileProperty;
@@ -64,8 +65,8 @@ public class FileImportHelper {
 	 * @param template the template specifying the priorities of the engines that will be used
 	 * @return a map containing the prioritized engines for all file types
 	 */
-	public static Map<FileProperty, List<String>> getFilePropertyEngines(DOFileImportTemplate template){
-		Map<FileProperty, List<String>> res = new HashMap<FileProperty, List<String>>();
+	public static List<DOFileScannerEngineConfiguration> getFilePropertyEngines(DOFileImportTemplate template){
+		List<DOFileScannerEngineConfiguration> res = new ArrayList<DOFileScannerEngineConfiguration>();
 		
 		//get the list of available plugins and create a map containing all available engines for a file property
 		List<FileImportPlugin> importPlugins = ExternalFactory.getFileImportPlugins();
@@ -147,8 +148,17 @@ public class FileImportHelper {
 					return res;
 				}
 			});
+			
+			//determine if the the engine is enabled
+			boolean isEnabled = false;
+			for(DOFileScannerEngineConfiguration engine : template.getAllConfiguredEngines()) {
+				if(engine.getFileProperty() == fp) {
+					isEnabled = engine.isEnabled();
+					break;
+				}
+			}
 
-			res.put(fp, enginesToUse);
+			res.add(new DOFileScannerEngineConfiguration(isEnabled, enginesToUse, fp));
 		}
 		
 		return res;
@@ -181,6 +191,20 @@ public class FileImportHelper {
 		for(FileProperty fileProperty : FileProperty.values()) {
 			if(!fileProperty.toString().startsWith("VIDEO_")){
 				//we only want to import properties for video files; discard the rest
+				continue;
+			}
+			
+			//check if the file property is disabled
+			boolean isEngineEnabled = false;
+			for(DOFileScannerEngineConfiguration engine : importConfig.getAllConfiguredEngines()) {
+				if(engine.getFileProperty() == fileProperty) {
+					if(engine.isEnabled()) {
+						isEngineEnabled = engine.isEnabled();
+						break;
+					}
+				}
+			}
+			if(!isEngineEnabled) {
 				continue;
 			}
 			

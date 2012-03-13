@@ -27,7 +27,7 @@ class DBInitializer {
 	private static final Logger log = LoggerFactory.getLogger(DBInitializer.class);
 	
 	private String name;
-	private String dbVersion = "0.6";
+	private String dbVersion = "0.7";
 	private IMediaLibraryStorage storage;
 	private JdbcConnectionPool cp;
 
@@ -487,6 +487,7 @@ class DBInitializer {
 			sb.append(", FILEPROPERTY	VARCHAR(64)");
 			sb.append(", ENGINENAME		VARCHAR(64)");
 			sb.append(", PRIO			INT");
+			sb.append(", ISENABLED		BIT");
 			sb.append(", CONSTRAINT PK_FILEIMPORTTEMPLATEENTRY PRIMARY KEY (TEMPLATEID, FILEPROPERTY, ENGINENAME))");
 			stmt.executeUpdate(sb.toString());
 			stmt.executeUpdate("CREATE INDEX IDX_FILEIMPORTTEMPLATEENTRY_TEMPLATEID ON FILEIMPORTTEMPLATEENTRY (TEMPLATEID asc);");
@@ -638,6 +639,10 @@ class DBInitializer {
 		if(realStorageVersion.equals("0.5")){
 			updateDb05_06();
 			realStorageVersion = "0.6";
+		}
+		if(realStorageVersion.equals("0.6")){
+			updateDb06_07();
+			realStorageVersion = "0.7";
 		}
 	}
 
@@ -880,6 +885,26 @@ class DBInitializer {
 			if(log.isInfoEnabled()) log.info("Updated DB from version 0.5 to 0.6");
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.5 to 0.6", se);
+		} finally {
+			DBBase.close(conn, stmt);
+    	}
+	}
+
+	private void updateDb06_07() {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		try {
+			conn = cp.getConnection();
+			//do updates
+			stmt = conn.prepareStatement("ALTER TABLE FILEIMPORTTEMPLATEENTRY ADD ISENABLED BIT DEFAULT 1");
+			stmt.executeUpdate();
+			
+			//update db version
+			storage.setMetaDataValue(MetaDataKeys.VERSION.toString(), "0.7");
+			if(log.isInfoEnabled()) log.info("Updated DB from version 0.6 to 0.7");
+		} catch (SQLException se) {
+			log.error("Failed to update DB from version 0.6 to 0.7", se);
 		} finally {
 			DBBase.close(conn, stmt);
     	}
