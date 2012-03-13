@@ -55,13 +55,13 @@ import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.dataobjects.comboboxitems.ConditionTypeCBItem;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.enumarations.FileType;
-import net.pms.medialibrary.commons.events.FileImportDialogListener;
 import net.pms.medialibrary.commons.helpers.FileImportHelper;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
 import net.pms.medialibrary.gui.dialogs.FileImportTemplateDialog;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.FileEditDialog;
 import net.pms.medialibrary.gui.shared.DateCellRenderer;
+import net.pms.medialibrary.gui.shared.EMenuItem;
 import net.pms.medialibrary.gui.shared.ETable;
 import net.pms.medialibrary.gui.shared.JCustomCheckBoxMenuItem;
 import net.pms.medialibrary.gui.shared.SpringUtilities;
@@ -375,6 +375,68 @@ public class FileDisplayTable extends JPanel {
 		
 		fileEditMenu.removeAll();
 		
+		//edit
+		JMenuItem miEdit = new JMenuItem(Messages.getString("ML.ContextMenu.EDIT"));
+		miEdit.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "edit-16.png")));
+		miEdit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				editSelectedFiles();
+			}
+		});
+		fileEditMenu.add(miEdit);
+
+		//update
+		JMenu mUpdate = new JMenu(Messages.getString("ML.ContextMenu.UPDATE"));
+		mUpdate.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "update-16.png")));
+		fileEditMenu.add(mUpdate);
+		
+		//sort the collection of templates by name
+		List<DOFileImportTemplate> templates = MediaLibraryStorage.getInstance().getFileImportTemplates();
+		Collections.sort(templates, new Comparator<DOFileImportTemplate>() {
+
+			@Override
+			public int compare(DOFileImportTemplate o1, DOFileImportTemplate o2) {
+				return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+			}
+		});
+		
+		//add the templates
+		for(DOFileImportTemplate template : templates) {
+			final EMenuItem miTemplate = new EMenuItem(template);
+			miTemplate.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DOFileImportTemplate templateToUse = (DOFileImportTemplate)miTemplate.getUserObject();
+					updateSelectedFiles(templateToUse);
+				}
+			});
+			mUpdate.add(miTemplate);
+		}
+
+		//configure
+		JMenuItem miConfigureTemplate = new JMenuItem(Messages.getString("ML.ContextMenu.CONFIGURE"));
+		miConfigureTemplate.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "configure-16.png")));
+		miConfigureTemplate.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				showFileImportTemplateDialog();
+			}
+		});
+		mUpdate.addSeparator();
+		mUpdate.add(miConfigureTemplate);
+		
+		//tag
+		JMenu mTag = new JMenu(Messages.getString("ML.ContextMenu.TAG"));
+		mTag.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "tag-16.png")));
+		fileEditMenu.add(mTag);
+		
+		JMenuItem miCreateTag = new JMenuItem(Messages.getString("ML.ContextMenu.NEWTAG"));
+		mTag.add(miCreateTag);
+		mTag.addSeparator();
+		
 		//mark as played
 		JMenuItem miMarkePlayed = new JMenuItem(Messages.getString("ML.ContextMenu.MARKPLAYED"));
 		miMarkePlayed.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "mark_played-16.png")));
@@ -393,43 +455,6 @@ public class FileDisplayTable extends JPanel {
 			}		
 		});
 		fileEditMenu.add(miMarkePlayed);
-		
-		//tag
-		JMenu mTag = new JMenu(Messages.getString("ML.ContextMenu.TAG"));
-		mTag.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "tag-16.png")));
-		fileEditMenu.add(mTag);
-		
-		JMenuItem miCreateTag = new JMenuItem(Messages.getString("ML.ContextMenu.NEWTAG"));
-		mTag.add(miCreateTag);
-		mTag.addSeparator();
-		
-		fileEditMenu.addSeparator();
-		
-		//edit
-		JMenuItem miEdit = new JMenuItem(Messages.getString("ML.ContextMenu.EDIT"));
-		miEdit.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "edit-16.png")));
-		miEdit.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {				
-				editSelectedFiles();
-			}
-		});
-		fileEditMenu.add(miEdit);
-
-		//update
-		JMenuItem miUpdate = new JMenuItem(Messages.getString("ML.ContextMenu.UPDATE"));
-		miUpdate.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "update-16.png")));
-		miUpdate.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {				
-				updateSelectedFiles();
-			}
-		});
-		fileEditMenu.add(miUpdate);
-		
-		fileEditMenu.addSeparator();
 		
 		//delete
 		JMenuItem miDelete = new JMenuItem(Messages.getString("ML.ContextMenu.DELETE"));
@@ -493,7 +518,19 @@ public class FileDisplayTable extends JPanel {
 				}
 			}
 		});
+		fileEditMenu.addSeparator();
 		fileEditMenu.add(miDelete);
+	}
+
+	private void showFileImportTemplateDialog() {
+		//show the dialog
+		FileImportTemplateDialog vid = new FileImportTemplateDialog(SwingUtilities.getWindowAncestor(this), 1);
+		vid.setLocation(GUIHelper.getCenterDialogOnParentLocation(vid.getPreferredSize(), this));
+		vid.setResizable(false);
+		vid.setModal(true);
+		
+		vid.pack();
+		vid.setVisible(true);
 	}
 
 	private void editSelectedFiles() {
@@ -553,23 +590,11 @@ public class FileDisplayTable extends JPanel {
 	}
 
 
-	private void updateSelectedFiles() {
-		//show the dialog
-		FileImportTemplateDialog vid = new FileImportTemplateDialog(SwingUtilities.getWindowAncestor(this), 1);
-		vid.setLocation(GUIHelper.getCenterDialogOnParentLocation(vid.getPreferredSize(), this));
-		vid.setResizable(false);
-		vid.setModal(true);
-		
-		vid.pack();
-		vid.setVisible(true);
-		
-		if(vid.isSave()) {
-			DOFileImportTemplate template = vid.getTemplate();
-			List<DOFileInfo> filesToUpdate = getSelectedFiles();
-			FileImportHelper.updateFileInfos(template, filesToUpdate);
-			for(DOFileInfo updatedFileInfo : filesToUpdate) {
-				MediaLibraryStorage.getInstance().updateFileInfo(updatedFileInfo);
-			}
+	private void updateSelectedFiles(DOFileImportTemplate template) {
+		List<DOFileInfo> filesToUpdate = getSelectedFiles();
+		FileImportHelper.updateFileInfos(template, filesToUpdate, true);
+		for (DOFileInfo updatedFileInfo : filesToUpdate) {
+			MediaLibraryStorage.getInstance().updateFileInfo(updatedFileInfo);
 		}
 	}
 	

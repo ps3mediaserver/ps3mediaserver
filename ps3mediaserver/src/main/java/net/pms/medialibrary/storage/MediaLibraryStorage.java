@@ -416,6 +416,8 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 
 	@Override
 	public void updateFileInfo(DOFileInfo fileInfo) {
+		String statusMsg = null;
+		
 		switch(fileInfo.getType()){
 			case AUDIO:
 				dbAudioFileInfo.updateAudioFileInfo((DOAudioFileInfo)fileInfo);
@@ -429,10 +431,16 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 			try {
 				dbVideoFileInfo.updateFileInfo((DOVideoFileInfo)fileInfo);
 				if(log.isDebugEnabled()) log.debug(String.format("Updated video file %s", fileInfo.getFilePath()));
+				statusMsg = Messages.getString("ML.Messages.VideoUpdated") + " " + fileInfo.toString();
 			} catch (StorageException e) {
 				log.error("Storage error (update)", e);
 			}
 			break;
+		}
+		
+		// notify of the insert in the GUI
+		if(statusMsg != null) {
+			PMS.get().getFrame().setStatusLine(statusMsg);
 		}
 	}
 

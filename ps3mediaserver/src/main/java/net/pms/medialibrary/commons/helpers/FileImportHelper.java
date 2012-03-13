@@ -51,12 +51,15 @@ import net.pms.medialibrary.commons.exceptions.FilePropertyImportException;
 import net.pms.medialibrary.commons.exceptions.FilePropertyImportException.ExceptionType;
 import net.pms.medialibrary.external.ExternalFactory;
 import net.pms.medialibrary.external.FileImportPlugin;
+import net.pms.medialibrary.storage.MediaLibraryStorage;
 
 public class FileImportHelper {
 	private static final Logger log = LoggerFactory.getLogger(FileImportHelper.class);
 	
 	private static Map<String, FileImportPlugin> fileImportPlugins; //key=name of the plugin, value=plugin
 	private static Map<String, Date> pluginsLastQueryDate = new HashMap<String, Date>(); //key=name of the plugin, value=date when the last request to this plugin started
+	
+	private static int updateThreadCounter = 0;
 	
 	/**
 	 * This method will return a map containing all prioritized engine names
@@ -173,8 +176,44 @@ public class FileImportHelper {
 	 * @param fileInfo the video that will be updated witch additional information
 	 */
 	public static void updateFileInfos(DOFileImportTemplate importConfig, List<DOFileInfo> fileInfos){
+		updateFileInfos(importConfig, fileInfos, false);
+	}
+
+	/**
+	 * The file info objects will be updated according to the rules defined in 
+	 * the importConfig.
+	 * @param importConfig defines which plugins will be used to update fields in fileInfo
+	 * @param fileInfo the video that will be updated witch additional information
+	 * @param async the operation will be performed asynchronously if true; synchronously if false
+	 */
+	public static void updateFileInfos(final DOFileImportTemplate importConfig, final List<DOFileInfo> fileInfos, boolean async){
+		if(async) {
+			Runnable r = new Runnable() {
+				
+				@Override
+				public void run() {
+					updateFileInfosInternal(importConfig, fileInfos);
+				}
+			};
+			Thread th = new Thread(r);
+			th.setName("update" + updateThreadCounter++);
+			th.start();
+		} else {
+			updateFileInfosInternal(importConfig, fileInfos);			
+		}
+	}
+	
+	/**
+	 * Private method used to run the same update operation sync and async
+	 * @param importConfig defines which plugins will be used to update fields in fileInfo
+	 * @param fileInfo the video that will be updated witch additional information
+	 */
+	private static void updateFileInfosInternal(DOFileImportTemplate importConfig, List<DOFileInfo> fileInfos){
 		for(DOFileInfo fileInfo : fileInfos) {
 			updateFileInfo(importConfig, (DOVideoFileInfo) fileInfo);
+			
+			//update the DB
+			MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
 		}
 	}
 	
@@ -184,7 +223,7 @@ public class FileImportHelper {
 	 * @param importConfig defines which plugins will be used to update fields in fileInfo
 	 * @param fileInfo the video that will be updated witch additional information
 	 */
-	public static void updateFileInfo(DOFileImportTemplate importConfig, DOFileInfo fileInfo){
+	public static void updateFileInfo(DOFileImportTemplate importConfig, DOFileInfo fileInfo) {
 		//lazy-load file import plugins
 		if(fileImportPlugins == null) {
 			fileImportPlugins = new HashMap<String, FileImportPlugin>();
