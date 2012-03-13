@@ -130,8 +130,8 @@ public class FileImportPropertiesPanel extends JPanel {
 	}
 
 	private JPanel buildFilePropertyPreferencesPanel() {
-		FormLayout layout = new FormLayout("5px, f:p:g, 15px, f:p:g, 15px, f:p:g, 15px, f:p:g, 15px, f:p:g, 5px",
-		        "5px, t:p, 15px, t:p, 15px, t:p, 15px, t:p, 5px");
+		FormLayout layout = new FormLayout("5px, f:p:g, 15px, f:p:g, 15px, f:p:g, 15px, f:p:g, 15px, f:p:g, 15px, f:p:g, 5px",
+		        "5px, t:p, 15px, t:p, 15px, t:p, 5px");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(new TitledBorder("Properties"));
 		builder.setOpaque(true);
@@ -144,7 +144,7 @@ public class FileImportPropertiesPanel extends JPanel {
 			int x = 0;
 			int y = 0;
 			for (FileScannerSelectorPanel fssp : fssps) {
-				if (index % 5 == 0) {
+				if (index % 6 == 0) {
 					x = 2;
 					y += 2;
 				}
