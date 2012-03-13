@@ -1157,46 +1157,115 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_MENCODER_YADIF, value);
 	}
 
+	/**
+	 * Returns true if MEncoder should be used to upscale the video to an
+	 * optimal resolution. Default value is false, meaning the renderer will
+	 * upscale the video itself.
+	 *
+	 * @return True if MEncoder should be used, false otherwise. 
+	 * @see {@link #getMencoderScaleX(int)}, {@link #getMencoderScaleY(int)}
+	 */
 	public boolean isMencoderScaler() {
 		return getBoolean(KEY_MENCODER_SCALER, false);
 	}
 
+	/**
+	 * Set to true if MEncoder should be used to upscale the video to an
+	 * optimal resolution. Set to false to leave upscaling to the renderer.
+	 *
+	 * @param value Set to true if MEncoder should be used to upscale.
+	 * @see {@link #setMencoderScaleX(int)}, {@link #setMencoderScaleY(int)}
+	 */
 	public void setMencoderScaler(boolean value) {
 		configuration.setProperty(KEY_MENCODER_SCALER, value);
 	}
 
+	/**
+	 * Returns the width in pixels to which a video should be scaled when
+	 * {@link #isMencoderScaler()} returns true.
+	 *
+	 * @return The width in pixels.
+	 */
 	public int getMencoderScaleX() {
 		return getInt(KEY_MENCODER_SCALEX, 0);
 	}
 
+	/**
+	 * Sets the width in pixels to which a video should be scaled when
+	 * {@link #isMencoderScaler()} returns true.
+	 *
+	 * @param value The width in pixels.
+	 */
 	public void setMencoderScaleX(int value) {
 		configuration.setProperty(KEY_MENCODER_SCALEX, value);
 	}
 
+	/**
+	 * Returns the height in pixels to which a video should be scaled when
+	 * {@link #isMencoderScaler()} returns true.
+	 *
+	 * @return The height in pixels.
+	 */
 	public int getMencoderScaleY() {
 		return getInt(KEY_MENCODER_SCALEY, 0);
 	}
 
+	/**
+	 * Sets the height in pixels to which a video should be scaled when
+	 * {@link #isMencoderScaler()} returns true.
+	 *
+	 * @param value The height in pixels.
+	 */
 	public void setMencoderScaleY(int value) {
 		configuration.setProperty(KEY_MENCODER_SCALEY, value);
 	}
 
+	/**
+	 * Returns the number of audio channels that MEncoder should use for
+	 * transcoding. Default value is 6 (for 5.1 audio).
+	 *
+	 * @return The number of audio channels.
+	 */
 	public int getAudioChannelCount() {
 		return getInt(KEY_AUDIO_CHANNEL_COUNT, 6);
 	}
 
+	/**
+	 * Sets the number of audio channels that MEncoder should use for
+	 * transcoding.
+	 *
+	 * @param value The number of audio channels.
+	 */
 	public void setAudioChannelCount(int value) {
 		configuration.setProperty(KEY_AUDIO_CHANNEL_COUNT, value);
 	}
 
+	/**
+	 * Sets the AC3 audio bitrate, which determines the quality of digital
+	 * audio sound. An AV-receiver or amplifier has to be capable of playing
+	 * this quality.
+	 * 
+	 * @param value The AC3 audio bitrate.
+	 */
 	public void setAudioBitrate(int value) {
 		configuration.setProperty(KEY_AUDIO_BITRATE, value);
 	}
 
+	/**
+	 * Returns the maximum video bitrate to be used by MEncoder. The default
+	 * value is 110.
+	 *
+	 * @return The maximum video bitrate.
+	 */
 	public String getMaximumBitrate() {
 		return getString(KEY_MAX_BITRATE, "110");
 	}
 
+	/**
+	 * Sets the maximum video bitrate to be used by MEncoder.
+	 *
+	 * @param value The maximum video bitrate.
+	 */
 	public void setMaximumBitrate(String value) {
 		configuration.setProperty(KEY_MAX_BITRATE, value);
 	}
@@ -1246,15 +1315,31 @@ public class PmsConfiguration {
 	public void setThumbnailGenerationEnabled(boolean value) {
 		configuration.setProperty(KEY_THUMBNAIL_GENERATION_ENABLED, value);
 	}
-	
+
+	/**
+	 * Returns true if PMS should generate thumbnails for images. Default value
+	 * is true.
+	 *
+	 * @return True if image thumbnails should be generated.
+	 */
 	public boolean getImageThumbnailsEnabled() {
 		return getBoolean(KEY_IMAGE_THUMBNAILS_ENABLED, true);
 	}
 
+	/**
+	 * Set to true if PMS should generate thumbnails for images.
+	 *
+	 * @param value True if image thumbnails should be generated.
+	 */
 	public void setImageThumbnailsEnabled(boolean value) {
 		configuration.setProperty(KEY_IMAGE_THUMBNAILS_ENABLED, value);
 	}
 
+	/**
+	 * Returns the number of CPU cores that should be used for transcoding.
+	 * 
+	 * @return The number of CPU cores.
+	 */
 	public int getNumberOfCpuCores() {
 		int nbcores = Runtime.getRuntime().availableProcessors();
 		if (nbcores < 1) {
@@ -1263,46 +1348,119 @@ public class PmsConfiguration {
 		return getInt(KEY_NUMBER_OF_CPU_CORES, nbcores);
 	}
 
+	/**
+	 * Sets the number of CPU cores that should be used for transcoding. The
+	 * maximum value depends on the physical available count of "real processor
+	 * cores". That means hyperthreading virtual CPU cores do not count! If you
+	 * are not sure, analyze your CPU with the free tool CPU-z on Windows
+	 * systems. On Linux have a look at the virtual proc-filesystem: in the
+	 * file "/proc/cpuinfo" you will find more details about your CPU. You also
+	 * get much information about CPUs from AMD and Intel from their Wikipedia
+	 * articles.
+	 * <p>
+	 * PMS will detect and set the correct amount of cores as the default value.
+	 *
+	 * @param value The number of CPU cores.
+	 */
 	public void setNumberOfCpuCores(int value) {
 		configuration.setProperty(KEY_NUMBER_OF_CPU_CORES, value);
 	}
 
+	/**
+	 * @deprecated This method is not used anywhere.
+	 */
+	@Deprecated
 	public boolean isTurboModeEnabled() {
 		return getBoolean(KEY_TURBO_MODE_ENABLED, false);
 	}
 
+	/**
+	 * @deprecated This method is not used anywhere.
+	 */
+	@Deprecated
 	public void setTurboModeEnabled(boolean value) {
 		configuration.setProperty(KEY_TURBO_MODE_ENABLED, value);
 	}
 
+	/**
+	 * Returns true if PMS should start minimized, i.e. without its window
+	 * opened. Default value false: to start with a window.
+	 *
+	 * @return True if PMS should start minimized, false otherwise.
+	 */
 	public boolean isMinimized() {
 		return getBoolean(KEY_MINIMIZED, false);
 	}
 
+	/**
+	 * Set to true if PMS should start minimized, i.e. without its window
+	 * opened.
+	 *
+	 * @param value True if PMS should start minimized, false otherwise.
+	 */
 	public void setMinimized(boolean value) {
 		configuration.setProperty(KEY_MINIMIZED, value);
 	}
 
+	/**
+	 * Returns true when PMS should check for external subtitle files with the
+	 * same name as the media (*.srt, *.sub, *.ass, etc.). The default value is
+	 * true.
+	 *
+	 * @return True if PMS should check for external subtitle files, false if
+	 * 		they should be ignored.
+	 */
 	public boolean getUseSubtitles() {
 		return getBoolean(KEY_USE_SUBTITLES, true);
 	}
 
+	/**
+	 * Set to true if PMS should check for external subtitle files with the
+	 * same name as the media (*.srt, *.sub, *.ass etc.).
+	 *
+	 * @param value True if PMS should check for external subtitle files.
+	 */
 	public void setUseSubtitles(boolean value) {
 		configuration.setProperty(KEY_USE_SUBTITLES, value);
 	}
 
+	/**
+	 * Returns true if PMS should hide the "# Videosettings #" folder on the
+	 * DLNA device. The default value is false: PMS will display the folder.
+	 *
+	 * @return True if PMS should hide the folder, false othewise.
+	 */
 	public boolean getHideVideoSettings() {
 		return getBoolean(KEY_HIDE_VIDEO_SETTINGS, false);
 	}
 
+	/**
+	 * Set to true if PMS should hide the "# Videosettings #" folder on the
+	 * DLNA device, or set to false to make PMS display the folder.
+	 *
+	 * @param value True if PMS should hide the folder.
+	 */
 	public void setHideVideoSettings(boolean value) {
 		configuration.setProperty(KEY_HIDE_VIDEO_SETTINGS, value);
 	}
 
+	/**
+	 * Returns true if PMS should cache scanned media in its internal database,
+	 * speeding up later retrieval. When false is returned, PMS will not use
+	 * cache and media will have to be rescanned.
+	 *
+	 * @return True if PMS should cache media.
+	 */
 	public boolean getUseCache() {
 		return getBoolean(KEY_USE_CACHE, false);
 	}
 
+	/**
+	 * Set to true if PMS should cache scanned media in its internal database,
+	 * speeding up later retrieval.
+	 *
+	 * @param value True if PMS should cache media.
+	 */
 	public void setUseCache(boolean value) {
 		configuration.setProperty(KEY_USE_CACHE, value);
 	}
