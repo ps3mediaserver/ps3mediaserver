@@ -183,7 +183,7 @@ public class ManagedFoldersPanel extends JPanel {
 		builder.add(bAddFolder, cc.xy(1, 2, CellConstraints.CENTER, CellConstraints.BOTTOM));
 
 		FormLayout layout2 = new FormLayout(
-		        "center:p, 2px, 20:grow, 2px, p, 2px, p, 10px, center:p, 2px, center:p, 2px, center:p, 4px, p, 2px, p, 10px, p", // columns
+		        "center:p, 2px, 20:grow, 2px, p, 2px, p, 10px, center:p, 2px, center:p, 2px, center:p, 10px, p, 2px, p, 10px, p", // columns
 		        "p, p, p, p, p, p, p, p, p, p," + // rows (40)
 		        "p, p, p, p, p, p, p, p, p, p," + 
 		        "p, p, p, p, p, p, p, p, p, p," + 

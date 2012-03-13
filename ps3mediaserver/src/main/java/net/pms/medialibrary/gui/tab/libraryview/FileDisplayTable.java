@@ -58,6 +58,7 @@ import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.helpers.FileImportHelper;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
+import net.pms.medialibrary.commons.interfaces.IProgress;
 import net.pms.medialibrary.gui.dialogs.FileImportTemplateDialog;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.FileEditDialog;
 import net.pms.medialibrary.gui.shared.DateCellRenderer;
@@ -433,14 +434,15 @@ public class FileDisplayTable extends JPanel {
 		mTag.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "tag-16.png")));
 		fileEditMenu.add(mTag);
 		
-		JMenuItem miCreateTag = new JMenuItem(Messages.getString("ML.ContextMenu.NEWTAG"));
-		mTag.add(miCreateTag);
+		JMenuItem miConfigureTags = new JMenuItem(Messages.getString("ML.ContextMenu.CONFIGURE"));
+		miConfigureTags.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "configure-16.png")));
 		mTag.addSeparator();
+		mTag.add(miConfigureTags);
 		
 		//mark as played
-		JMenuItem miMarkePlayed = new JMenuItem(Messages.getString("ML.ContextMenu.MARKPLAYED"));
-		miMarkePlayed.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "mark_played-16.png")));
-		miMarkePlayed.addActionListener(new ActionListener() {
+		JMenuItem miMarkPlayed = new JMenuItem(Messages.getString("ML.ContextMenu.MARKPLAYED"));
+		miMarkPlayed.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "mark_played-16.png")));
+		miMarkPlayed.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -454,7 +456,7 @@ public class FileDisplayTable extends JPanel {
 				updateFiles(updatedFiles);
 			}		
 		});
-		fileEditMenu.add(miMarkePlayed);
+		fileEditMenu.add(miMarkPlayed);
 		
 		//delete
 		JMenuItem miDelete = new JMenuItem(Messages.getString("ML.ContextMenu.DELETE"));
@@ -592,7 +594,22 @@ public class FileDisplayTable extends JPanel {
 
 	private void updateSelectedFiles(DOFileImportTemplate template) {
 		List<DOFileInfo> filesToUpdate = getSelectedFiles();
-		FileImportHelper.updateFileInfos(template, filesToUpdate, true);
+		final int nbFilesToUpdate = filesToUpdate.size();
+		IProgress progressReporter = new IProgress() {
+			
+			@Override
+			public void workComplete() {
+				repaint();
+				PMS.get().getFrame().setStatusLine(String.format(Messages.getString("ML.Messages.UpdateFinished"), nbFilesToUpdate));
+			}
+			
+			@Override
+			public void reportProgress(int percentComplete) {
+				repaint();
+			}
+		};
+		
+		FileImportHelper.updateFileInfos(template, filesToUpdate, true, progressReporter);
 		for (DOFileInfo updatedFileInfo : filesToUpdate) {
 			MediaLibraryStorage.getInstance().updateFileInfo(updatedFileInfo);
 		}

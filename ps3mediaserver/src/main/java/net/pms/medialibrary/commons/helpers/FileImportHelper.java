@@ -49,6 +49,7 @@ import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.exceptions.FileImportException;
 import net.pms.medialibrary.commons.exceptions.FilePropertyImportException;
 import net.pms.medialibrary.commons.exceptions.FilePropertyImportException.ExceptionType;
+import net.pms.medialibrary.commons.interfaces.IProgress;
 import net.pms.medialibrary.external.ExternalFactory;
 import net.pms.medialibrary.external.FileImportPlugin;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
@@ -176,7 +177,7 @@ public class FileImportHelper {
 	 * @param fileInfo the video that will be updated witch additional information
 	 */
 	public static void updateFileInfos(DOFileImportTemplate importConfig, List<DOFileInfo> fileInfos){
-		updateFileInfos(importConfig, fileInfos, false);
+		updateFileInfos(importConfig, fileInfos, false, null);
 	}
 
 	/**
@@ -186,35 +187,47 @@ public class FileImportHelper {
 	 * @param fileInfo the video that will be updated witch additional information
 	 * @param async the operation will be performed asynchronously if true; synchronously if false
 	 */
-	public static void updateFileInfos(final DOFileImportTemplate importConfig, final List<DOFileInfo> fileInfos, boolean async){
+	public static void updateFileInfos(final DOFileImportTemplate importConfig, final List<DOFileInfo> fileInfos, boolean async, final IProgress callback){
 		if(async) {
 			Runnable r = new Runnable() {
 				
 				@Override
 				public void run() {
-					updateFileInfosInternal(importConfig, fileInfos);
+					updateFileInfosInternal(importConfig, fileInfos, callback);
 				}
 			};
 			Thread th = new Thread(r);
 			th.setName("update" + updateThreadCounter++);
 			th.start();
 		} else {
-			updateFileInfosInternal(importConfig, fileInfos);			
+			updateFileInfosInternal(importConfig, fileInfos, callback);			
 		}
 	}
 	
 	/**
 	 * Private method used to run the same update operation sync and async
 	 * @param importConfig defines which plugins will be used to update fields in fileInfo
+	 * @param callback 
 	 * @param fileInfo the video that will be updated witch additional information
 	 */
-	private static void updateFileInfosInternal(DOFileImportTemplate importConfig, List<DOFileInfo> fileInfos){
+	private static void updateFileInfosInternal(DOFileImportTemplate importConfig, List<DOFileInfo> fileInfos, IProgress callback){
+		int nbFilesProcessed = 0;
 		for(DOFileInfo fileInfo : fileInfos) {
 			updateFileInfo(importConfig, (DOVideoFileInfo) fileInfo);
 			
 			//update the DB
 			MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
+			
+			if(callback != null) {
+				callback.reportProgress(100 * nbFilesProcessed / fileInfos.size());
+			}
+			
+			nbFilesProcessed++;
 		}
+		
+		if(callback != null) {
+			callback.workComplete();
+		}		
 	}
 	
 	/**
