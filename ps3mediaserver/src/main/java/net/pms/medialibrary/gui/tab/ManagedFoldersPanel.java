@@ -107,7 +107,7 @@ public class ManagedFoldersPanel extends JPanel {
 					vid.setVisible(true);
 					
 					if(vid.isSave()) {
-						templateId = vid.getFileImportTemplateId();
+						templateId = vid.getTemplateId();
 					}
 					
 					b.setUserObject(storage.getFileImportTemplate(templateId));

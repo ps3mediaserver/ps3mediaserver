@@ -49,8 +49,12 @@ public class FileImportTemplateDialog extends JDialog {
 		placeComponents();
 	}
 	
-	public int getFileImportTemplateId() {
+	public int getTemplateId() {
 		return pTemplateFileProperties.getFileImportTemplateId();
+	}
+	
+	public DOFileImportTemplate getTemplate() {
+		return pTemplateFileProperties.getDisplayedTemplate();
 	}
 	
 	public void addFileImportDialogListener(FileImportDialogListener listener) {

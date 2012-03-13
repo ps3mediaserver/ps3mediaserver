@@ -37,9 +37,11 @@ import org.slf4j.LoggerFactory;
 
 import net.pms.PMS;
 import net.pms.medialibrary.commons.MediaLibraryConfiguration;
+import net.pms.medialibrary.commons.dataobjects.DOAudioFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOFileImportTemplate;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOFileScannerEngineConfiguration;
+import net.pms.medialibrary.commons.dataobjects.DOImageFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.enumarations.FileProperty;
@@ -163,14 +165,26 @@ public class FileImportHelper {
 		
 		return res;
 	}
-	
+
 	/**
-	 * The fileinfo object will be updated according to the rules defined in 
+	 * The file info objects will be updated according to the rules defined in 
 	 * the importConfig.
 	 * @param importConfig defines which plugins will be used to update fields in fileInfo
 	 * @param fileInfo the video that will be updated witch additional information
 	 */
-	public static void updateFileInfo(DOFileImportTemplate importConfig, DOVideoFileInfo fileInfo){
+	public static void updateFileInfos(DOFileImportTemplate importConfig, List<DOFileInfo> fileInfos){
+		for(DOFileInfo fileInfo : fileInfos) {
+			updateFileInfo(importConfig, (DOVideoFileInfo) fileInfo);
+		}
+	}
+	
+	/**
+	 * The file info object will be updated according to the rules defined in 
+	 * the importConfig.
+	 * @param importConfig defines which plugins will be used to update fields in fileInfo
+	 * @param fileInfo the video that will be updated witch additional information
+	 */
+	public static void updateFileInfo(DOFileImportTemplate importConfig, DOFileInfo fileInfo){
 		//lazy-load file import plugins
 		if(fileImportPlugins == null) {
 			fileImportPlugins = new HashMap<String, FileImportPlugin>();
@@ -249,7 +263,14 @@ public class FileImportHelper {
 				
 				//set the value if it is valid, log a comprehensive log message otherwise
 				try{
-					setValue(value, fileProperty, fileInfo);
+					if(fileInfo instanceof DOVideoFileInfo) {
+						setValue(value, fileProperty, (DOVideoFileInfo) fileInfo);
+					} else if(fileInfo instanceof DOAudioFileInfo) {
+						//TODO: implement
+					} else if(fileInfo instanceof DOImageFileInfo) {
+						//TODO: implement
+					}
+						
 					log.debug(String.format("Imported %s='%s' with plugin='%s' for file='%s'", fileProperty, value, engineName, filePath));
 					break;
 				}catch(FilePropertyImportException ex){
