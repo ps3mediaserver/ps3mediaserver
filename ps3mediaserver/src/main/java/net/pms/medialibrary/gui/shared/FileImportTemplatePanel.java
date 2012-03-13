@@ -22,7 +22,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOFileImportTemplate;
-import net.pms.medialibrary.commons.enumarations.FileProperty;
+import net.pms.medialibrary.commons.dataobjects.DOFileScannerEngineConfiguration;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 
@@ -126,10 +126,10 @@ public class FileImportTemplatePanel extends JPanel {
 		}
 		
 		//merge the configured engines for the different file types
-		Map<FileProperty, List<String>> configuredEngines = new HashMap<FileProperty, List<String>>();
-		configuredEngines.putAll(fippsAudio.getConfiguredEngines());
-		configuredEngines.putAll(fippsVideo.getConfiguredEngines());
-		configuredEngines.putAll(fippsPictures.getConfiguredEngines());
+		List<DOFileScannerEngineConfiguration> configuredEngines = new ArrayList<DOFileScannerEngineConfiguration>();
+		configuredEngines.addAll(fippsAudio.getConfiguredEngines());
+		configuredEngines.addAll(fippsVideo.getConfiguredEngines());
+		configuredEngines.addAll(fippsPictures.getConfiguredEngines());
  		displayedTemplate.setConfiguredEngines(configuredEngines);
  		
 		//merge the active engines for the different file types

@@ -1,34 +1,33 @@
 package net.pms.medialibrary.gui.shared;
 
-import java.awt.Component;
 import java.awt.GridLayout;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
+import net.pms.medialibrary.commons.dataobjects.DOFileScannerEngineConfiguration;
 import net.pms.medialibrary.commons.enumarations.FileProperty;
 
 public class FileScannerSelectorPanel extends JPanel {
 	private static final long serialVersionUID = -7986992235501250777L;
 	
-	private JLabel lFileType;
+	private PropertyInfoTitleHeader lFileType;
 	private ReorderableJList lEngineNames;
 	
-	private FileProperty fileProperty;
+	private DOFileScannerEngineConfiguration engine;
 
-	public FileScannerSelectorPanel(FileProperty fileProperty, List<String> engineNames){
+	public FileScannerSelectorPanel(DOFileScannerEngineConfiguration engine){
 		setLayout(new GridLayout());
 		
-		this.fileProperty = fileProperty == null ? FileProperty.UNKNOWN : fileProperty;
-		init(engineNames);
+		this.engine = engine;
+		init();
 	}
 
 	public Map<FileProperty, List<String>> getFilePropertyEngineNames() {
@@ -36,27 +35,25 @@ public class FileScannerSelectorPanel extends JPanel {
 	}
 	
 	public String getLocalizedFilePropertyName() {
-		return Messages.getString("ML.FileProperty." + fileProperty.toString());
-	}
-	
-	public FileProperty getFileProperty() {
-		return fileProperty;
+		return Messages.getString("ML.FileProperty." + engine.getFileProperty().toString());
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<String> getEngineNames() {
+	private List<String> getEngineNames() {
 		return (List<String>) Collections.list(((DefaultListModel)lEngineNames.getModel()).elements());
 	}
 	
-	private void init(List<String> engineNames) {
-		FormLayout layout = new FormLayout("p, 4px, p",
-		        "p");
+	private void init() {
+		FormLayout layout = new FormLayout("f:p:g",
+		        "p, 2px, p");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 
 		CellConstraints cc = new CellConstraints();
 		
-		lFileType = new JLabel(getLocalizedFilePropertyName());
+		lFileType = new PropertyInfoTitleHeader(getLocalizedFilePropertyName(), true);
+		lFileType.setSelected(engine.isEnabled() && engine.getEngineNames().size() > 0);
+		lFileType.setEnabled(engine.getEngineNames().size() > 0);
 		builder.add(lFileType, cc.xy(1, 1));
 		
 		lEngineNames = new ReorderableJList();
@@ -65,19 +62,15 @@ public class FileScannerSelectorPanel extends JPanel {
 		DefaultListModel defModel = new DefaultListModel();
 		lEngineNames.setModel(defModel);
 		
-		for(String engineName : engineNames) {
+		for(String engineName : engine.getEngineNames()) {
 			defModel.addElement(engineName);			
 		}
-		builder.add(lEngineNames, cc.xy(3, 1));
+		builder.add(lEngineNames, cc.xy(1, 3));
 		
 		add(builder.getPanel());
 	}
 
-	public Component getNameLabel() {
-		return lFileType;
-	}
-
-	public Component getEnginesList() {
-		return lEngineNames;
+	public DOFileScannerEngineConfiguration getEngine() {
+		return new DOFileScannerEngineConfiguration(lFileType.isSelected(), getEngineNames(), engine.getFileProperty());
 	}
 }

@@ -39,7 +39,7 @@ public class FileScanner implements Runnable{
 	private Object scanThreadPause;
 	private List<IFileScannerEventListener> fileScannerEventListeners;
 	
-	public int updateIntervalDays = 100;
+	public int updateIntervalDays = 5000;
 	
 	private FileScanner() throws InitialisationException{
 		directoryPaths = new ConcurrentLinkedQueue<DOManagedFile>();

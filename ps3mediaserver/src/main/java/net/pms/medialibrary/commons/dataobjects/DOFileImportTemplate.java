@@ -11,15 +11,15 @@ import net.pms.medialibrary.commons.enumarations.FileType;
 public class DOFileImportTemplate {
 	private int id = 1;
 	private String name;
-	private Map<FileProperty, List<String>> configuredEnginesPerFileProperty = new HashMap<FileProperty, List<String>>();
+	private List<DOFileScannerEngineConfiguration> configuredEnginesPerFileProperty;
 	private Map<FileType, List<String>> enabledEnginesForFileType;
 	private Map<FileType, Map<String, List<String>>> enabledTags;
 	
 	public DOFileImportTemplate(){
-		this(0, "", new HashMap<FileProperty, List<String>>(), new HashMap<FileType, List<String>>(), new HashMap<FileType, Map<String, List<String>>>());
+		this(0, "", new ArrayList<DOFileScannerEngineConfiguration>(), new HashMap<FileType, List<String>>(), new HashMap<FileType, Map<String, List<String>>>());
 	}
 	
-	public DOFileImportTemplate(int id, String name, Map<FileProperty, List<String>> engines, Map<FileType, List<String>> enabledEngines, Map<FileType, Map<String, List<String>>> enabledTags){
+	public DOFileImportTemplate(int id, String name, List<DOFileScannerEngineConfiguration> engines, Map<FileType, List<String>> enabledEngines, Map<FileType, Map<String, List<String>>> enabledTags){
 		setId(id);
 		setName(name);
 		setConfiguredEngines(engines);
@@ -35,33 +35,48 @@ public class DOFileImportTemplate {
 		this.id = id;
 	}
 	
-	public void setConfiguredEngines(Map<FileProperty, List<String>> engines) {
+	public void setConfiguredEngines(List<DOFileScannerEngineConfiguration> engines) {
 		this.configuredEnginesPerFileProperty = engines;
 	}
 	
-	public void addConfiguredEngine(FileProperty fileProperty, List<String> engineNames) {
-		if(configuredEnginesPerFileProperty == null) configuredEnginesPerFileProperty = new HashMap<FileProperty, List<String>>();
-		if(configuredEnginesPerFileProperty.containsKey(fileProperty)) {
-			configuredEnginesPerFileProperty.remove(fileProperty);
+	public void addConfiguredEngine(DOFileScannerEngineConfiguration engine) {
+		if(engine == null) return;
+		if(configuredEnginesPerFileProperty == null) configuredEnginesPerFileProperty = new ArrayList<DOFileScannerEngineConfiguration>();
+		
+		DOFileScannerEngineConfiguration engineToRemove = null;
+		for(DOFileScannerEngineConfiguration existingEngine : configuredEnginesPerFileProperty) {
+			if(existingEngine.getFileProperty() == engine.getFileProperty()) {
+				engineToRemove = existingEngine;
+				break;
+			}
 		}
-		configuredEnginesPerFileProperty.put(fileProperty, engineNames);
+		if(engineToRemove != null) {
+			configuredEnginesPerFileProperty.remove(engineToRemove);
+		}
+		
+		configuredEnginesPerFileProperty.add(engine);
 	}
 
-	public Map<FileProperty, List<String>> getAllConfiguredEngines() {
-		if(configuredEnginesPerFileProperty == null) configuredEnginesPerFileProperty = new HashMap<FileProperty, List<String>>();
+	public List<DOFileScannerEngineConfiguration> getAllConfiguredEngines() {
+		if(configuredEnginesPerFileProperty == null) configuredEnginesPerFileProperty = new ArrayList<DOFileScannerEngineConfiguration>();
 		return configuredEnginesPerFileProperty;
 	}
 	
 	public List<String> getConfiguredEngines(FileProperty fileProperty) {
 		List<String> res = new ArrayList<String>();
-		if(configuredEnginesPerFileProperty != null && configuredEnginesPerFileProperty.containsKey(fileProperty)) {
-			res = configuredEnginesPerFileProperty.get(fileProperty);
+
+		for(DOFileScannerEngineConfiguration existingEngine : configuredEnginesPerFileProperty) {
+			if(existingEngine.getFileProperty() == fileProperty) {
+				res = existingEngine.getEngineNames();
+				break;
+			}
 		}
+		
 		return res;
 	}
 
 	public void clearConfiguredEngines() {
-		if(configuredEnginesPerFileProperty == null) configuredEnginesPerFileProperty = new HashMap<FileProperty, List<String>>();
+		if(configuredEnginesPerFileProperty == null) configuredEnginesPerFileProperty = new ArrayList<DOFileScannerEngineConfiguration>();
 		configuredEnginesPerFileProperty.clear();
 	}
 	
