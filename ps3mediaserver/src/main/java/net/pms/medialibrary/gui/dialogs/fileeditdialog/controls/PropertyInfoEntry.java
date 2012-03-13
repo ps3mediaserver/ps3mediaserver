@@ -9,18 +9,19 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import net.pms.medialibrary.commons.enumarations.ConditionType;
+import net.pms.medialibrary.gui.shared.JHeader;
 
 public class PropertyInfoEntry extends JPanel {
 	private static final long serialVersionUID = 6146935074550677958L;
 
-	private PropertyInfoTitleHeader hTitle;
+	private JHeader hTitle;
 	private JTextField tfValue;
 	private JComboBox cbValue;
 	
 	public PropertyInfoEntry(String value, ConditionType ct, boolean isConfirmEdit) {
 		setLayout(new BorderLayout(0, 1));
 
-		hTitle = new PropertyInfoTitleHeader(ct, isConfirmEdit);
+		hTitle = new JHeader(ct, isConfirmEdit);
 		tfValue = new JTextField(value);
 		tfValue.getDocument().addDocumentListener(new DocumentListener() {
 			

@@ -32,7 +32,7 @@ import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.controls.PropertyInfoEntry;
-import net.pms.medialibrary.gui.dialogs.fileeditdialog.controls.PropertyInfoTitleHeader;
+import net.pms.medialibrary.gui.shared.JHeader;
 
 public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesEditor {
 	private static final long serialVersionUID = -2983607076103804005L;
@@ -55,7 +55,7 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 	private PropertyInfoEntry hCertificationReason;
 	private PropertyInfoEntry hTrailer;
 	private PropertyInfoEntry hTagLine;
-	private PropertyInfoTitleHeader hOverview;
+	private JHeader hOverview;
 	private JTextArea taOverview;
 	private JCheckBox cbActive;
 	private FileTagsPanel pGenres;
@@ -87,7 +87,7 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		hBudget = new PropertyInfoEntry(String.valueOf(fileInfo.getBudget()), ConditionType.VIDEO_BUDGET, isConfirmEdit);
 		hRevenue  = new PropertyInfoEntry(String.valueOf(fileInfo.getRevenue()), ConditionType.VIDEO_REVENUE, isConfirmEdit);
 		
-		hOverview = new PropertyInfoTitleHeader(ConditionType.VIDEO_OVERVIEW, isConfirmEdit);
+		hOverview = new JHeader(ConditionType.VIDEO_OVERVIEW, isConfirmEdit);
 		taOverview = new JTextArea(String.valueOf(fileInfo.getOverview()));
 		taOverview.setLineWrap(true);
 		taOverview.setWrapStyleWord(true);

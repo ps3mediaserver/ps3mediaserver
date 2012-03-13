@@ -23,7 +23,7 @@ import net.pms.medialibrary.commons.enumarations.FileProperty;
 public class FileScannerSelectorPanel extends JPanel {
 	private static final long serialVersionUID = -7986992235501250777L;
 	
-	private PropertyInfoTitleHeader lFileType;
+	private JHeader lFileType;
 	private ReorderableJList lEngineNames;
 	
 	private DOFileScannerEngineConfiguration engine;
@@ -56,7 +56,7 @@ public class FileScannerSelectorPanel extends JPanel {
 
 		CellConstraints cc = new CellConstraints();
 		
-		lFileType = new PropertyInfoTitleHeader(getLocalizedFilePropertyName(), true);
+		lFileType = new JHeader(getLocalizedFilePropertyName(), true);
 		lFileType.setSelected(engine.isEnabled() && engine.getEngineNames().size() > 0);
 		lFileType.setEnabled(engine.getEngineNames().size() > 0);
 		lFileType.addChangeListener(new ChangeListener() {

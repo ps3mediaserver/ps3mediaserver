@@ -1,5 +1,6 @@
 package net.pms.medialibrary.gui.shared;
 
+import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
@@ -11,30 +12,30 @@ import javax.swing.event.ChangeListener;
 import net.pms.Messages;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
 
-public class PropertyInfoTitleHeader extends JComponent {
+public class JHeader extends JComponent {
 	private static final long serialVersionUID = 4201268643022810386L;
 	
 	private JCheckBox cbTitle;
 	private JLabel lTitle;
 
-	public PropertyInfoTitleHeader(ConditionType ct) {
+	public JHeader(ConditionType ct) {
 		this(ct, false);
 	}
 
-	public PropertyInfoTitleHeader(ConditionType ct, boolean isConfirmEdit) {
+	public JHeader(ConditionType ct, boolean isConfirmEdit) {
 		this(Messages.getString("ML.Condition.Header.Type." + ct) + ":", isConfirmEdit);
 	}
 
-	public PropertyInfoTitleHeader(String text) {
+	public JHeader(String text) {
 		this(text, false);
 	}
 	
-	public PropertyInfoTitleHeader(String text, boolean isConfirmEdit) {
+	public JHeader(String text, boolean isConfirmEdit) {
 		this(text, isConfirmEdit, false);
 	}
 	
-	public PropertyInfoTitleHeader(String text, boolean isConfirmEdit, boolean setSelected) {
-		setLayout(new GridLayout());
+	public JHeader(String text, boolean isConfirmEdit, boolean setSelected) {
+		setLayout(new BorderLayout());
 		JComponent cp;
 		
 		cbTitle = new JCheckBox(text);
@@ -47,7 +48,7 @@ public class PropertyInfoTitleHeader extends JComponent {
 			cp = lTitle;
 		}
 		cp.setFont(cp.getFont().deriveFont(Font.BOLD));
-		add(cp);
+		add(cp, BorderLayout.LINE_START);
 	}
 	
 	@Override
