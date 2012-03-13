@@ -1,5 +1,6 @@
 package net.pms.medialibrary.gui.shared;
 
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.util.Collections;
 import java.util.List;
@@ -7,6 +8,10 @@ import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -54,11 +59,20 @@ public class FileScannerSelectorPanel extends JPanel {
 		lFileType = new PropertyInfoTitleHeader(getLocalizedFilePropertyName(), true);
 		lFileType.setSelected(engine.isEnabled() && engine.getEngineNames().size() > 0);
 		lFileType.setEnabled(engine.getEngineNames().size() > 0);
+		lFileType.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				lEngineNames.setEnabled(lFileType.isSelected());
+			}
+		});
 		builder.add(lFileType, cc.xy(1, 1));
-		
+
 		lEngineNames = new ReorderableJList();
+		lEngineNames.setBorder(new LineBorder(Color.lightGray));
 		lEngineNames.setSelectionBackground(lEngineNames.getBackground());
 		lEngineNames.setSelectionForeground(lEngineNames.getForeground());
+		lEngineNames.setEnabled(lFileType.isSelected());
 		DefaultListModel defModel = new DefaultListModel();
 		lEngineNames.setModel(defModel);
 		

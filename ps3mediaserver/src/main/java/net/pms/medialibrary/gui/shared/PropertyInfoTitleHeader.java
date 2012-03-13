@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.event.ChangeListener;
 
 import net.pms.Messages;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
@@ -67,5 +68,9 @@ public class PropertyInfoTitleHeader extends JComponent {
 			return cbTitle.isSelected();
 		}
 		return true;
+	}
+
+	public void addChangeListener(ChangeListener l) {
+		cbTitle.addChangeListener(l);
 	}
 }
