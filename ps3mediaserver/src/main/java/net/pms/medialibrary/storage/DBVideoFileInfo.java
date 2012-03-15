@@ -279,12 +279,6 @@ class DBVideoFileInfo extends DBFileInfo {
 
 					boolean doInsertAudioTrack = true;
 					for (DLNAMediaAudio currTrack : videoFile.getAudioCodes()) {
-//						if (currTrack.getLang() == null || audioTrack.getLang() == null || audioTrack.getCodecA() == null || currTrack.getCodecA() == null 
-//								|| audioTrack.getSampleFrequency() == null || currTrack.getSampleFrequency() == null
-//						        || (currTrack.getLang().equals(audioTrack.getLang()) && currTrack.getNrAudioChannels() == audioTrack.getNrAudioChannels()
-//						        		&& currTrack.getSampleFrequency().equals(audioTrack.getSampleFrequency()) 
-//						                && currTrack.getCodecA().equals(audioTrack.getCodecA())
-//						                && currTrack.getBitsperSample() == audioTrack.getBitsperSample() && currTrack.getDelay() == audioTrack.getDelay())) {
 						if(currTrack.equals(audioTrack)) {
 							doInsertAudioTrack = false;
 							break;
@@ -306,8 +300,7 @@ class DBVideoFileInfo extends DBFileInfo {
 
 					boolean doInsertSubtitleTrack = true;
 					for (DLNAMediaSubtitle currTrack : videoFile.getSubtitlesCodes()) {
-						if (currTrack.getLang() == null
-						        || (currTrack.getFile() == subtitleTrack.getFile() && currTrack.getLang().equals(subtitleTrack.getLang()) && currTrack.getType() == subtitleTrack.getType())) {
+						if(currTrack.equals(subtitleTrack)) { 
 							doInsertSubtitleTrack = false;
 							break;
 						}
@@ -406,8 +399,8 @@ class DBVideoFileInfo extends DBFileInfo {
 		//limit the number of videos if configured
 		if(maxResults > 0 && maxResults < res.size()){
 			res = res.subList(0, maxResults);
-		}			
-
+		}
+		
 		return res;
 	}
 	
