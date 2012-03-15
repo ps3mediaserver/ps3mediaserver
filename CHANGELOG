@@ -8,7 +8,6 @@ Changelog:
 	Make video quality presets localizable
 	Fixed OSX log message about font definitions
 	Fixed double wrapping of streams causing stuttering
-	Fixed bugs causing PMS not to start up
 	Added MPEG4 ASP with Qpel support for PS3
 
 1.50.1 - 2012-01-28
