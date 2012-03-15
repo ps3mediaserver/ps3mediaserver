@@ -173,7 +173,7 @@ public class BasicSystemUtils implements SystemUtils {
 			try {
 				tray.add(trayIcon);
 			} catch (AWTException e) {
-				e.printStackTrace();
+				logger.debug("Caught exception", e);
 			}
 		}
 	}

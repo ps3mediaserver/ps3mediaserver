@@ -45,6 +45,7 @@ import javax.swing.LookAndFeel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -156,8 +157,8 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		if (selectedLaf != null) {
 			try {
 				UIManager.setLookAndFeel(selectedLaf);
-			} catch (Exception e) {
-				System.out.println("Can't change L&F: " + e);
+			} catch (UnsupportedLookAndFeelException e) {
+				logger.debug("Cannot change look and feel", e);
 			}
 		}
 

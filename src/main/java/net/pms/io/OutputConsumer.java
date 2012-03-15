@@ -22,7 +22,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class OutputConsumer extends Thread {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OutputConsumer.class);
 	protected InputStream inputStream;
 
 	public OutputConsumer(InputStream inputStream) {
@@ -34,7 +38,7 @@ public abstract class OutputConsumer extends Thread {
 		try {
 			inputStream.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.debug("Failed to close stream", e);
 		}
 	}
 

@@ -316,8 +316,8 @@ public class PMS {
 		if (System.getProperty(CONSOLE) == null) {
 			frame = new LooksFrame(autoUpdater, configuration);
 		} else {
-			System.out.println("GUI environment not available");
-			System.out.println("Switching to console mode");
+			logger.info("GUI environment not available");
+			logger.info("Switching to console mode");
 			frame = new DummyFrame();
 		}
 		configuration.addConfigurationListener(new ConfigurationListener() {
@@ -654,7 +654,7 @@ public class PMS {
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						logger.trace("Caught exception", e);
 					}
 					server = new HTTPServer(configuration.getServerPort());
 					server.start();
