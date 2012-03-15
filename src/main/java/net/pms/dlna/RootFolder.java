@@ -366,8 +366,8 @@ public class RootFolder extends DLNAResource {
 				Process prc = Runtime.getRuntime().exec("defaults read com.apple.iApps iPhotoRecentDatabases");
 				BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
 				String line = null;
-				if ((line = in.readLine()) != null) {
-					line = in.readLine(); // we want the 2nd line
+				line = in.readLine();
+				if ((line = in.readLine()) != null) {  // we want the 2nd line
 					line = line.trim(); // remove extra spaces
 					line = line.substring(1, line.length() - 1); // remove quotes and spaces
 				}
