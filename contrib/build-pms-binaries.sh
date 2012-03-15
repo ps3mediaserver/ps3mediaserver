@@ -1446,11 +1446,7 @@ build_xvid() {
     set_flags
 
     if is_osx; then
-      if [ "$ARCHITECTURE" == "x86_64" ]; then
-        ./configure --prefix=$TARGET --host=x86-apple-darwin10
-      else
-        ./configure --prefix=$TARGET
-      fi
+      ./configure --prefix=$TARGET --host=x86-apple-darwin10
     else
       ./configure --prefix=$TARGET
     fi
