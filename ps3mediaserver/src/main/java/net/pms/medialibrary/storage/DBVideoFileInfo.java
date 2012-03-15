@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -205,7 +206,8 @@ class DBVideoFileInfo extends DBFileInfo {
 					int pos = 1;
 					videoFile.setId(rs.getInt(pos++));
 
-					if (!videos.containsKey(videoFile.getId())) {				
+					if (!videos.containsKey(videoFile.getId())) {
+						//import all fields when having a video with a new id
 						videoFile.setFolderPath(rs.getString(pos++));
 						videoFile.setFileName(rs.getString(pos++));
 						videoFile.setType(FileType.valueOf(rs.getString(pos++)));
@@ -250,15 +252,20 @@ class DBVideoFileInfo extends DBFileInfo {
 
 						videos.put(videoFile.getId(), videoFile);
 					}else{
+						//skip the already imported fields if the video with this id is already contained in the list
 						pos = 43;
+						
+						videoFile = videos.get(videoFile.getId());
 					}
 					
-					try{
-						videoFile.addPlayToHistory(new Date(rs.getTimestamp(pos++).getTime()));
-					}catch(Exception ex){ }
-
-
-					DOVideoFileInfo currVideo = videos.get(videoFile.getId());
+					//play count history
+					Timestamp playTimestamp = rs.getTimestamp(pos++);
+					if(playTimestamp != null) {
+						Date playDate = new Date(playTimestamp.getTime());
+						if(!videoFile.getPlayHistory().contains(playDate)) {
+							videoFile.addPlayToHistory(playDate);
+						}
+					}
 
 					// Audio track
 					DLNAMediaAudio audioTrack = new DLNAMediaAudio();
@@ -271,19 +278,20 @@ class DBVideoFileInfo extends DBFileInfo {
 					audioTrack.setMuxingModeAudio(rs.getString(pos++));
 
 					boolean doInsertAudioTrack = true;
-					for (DLNAMediaAudio currTrack : currVideo.getAudioCodes()) {
-						if (currTrack.getLang() == null || audioTrack.getLang() == null || audioTrack.getCodecA() == null || currTrack.getCodecA() == null 
-								|| audioTrack.getSampleFrequency() == null || currTrack.getSampleFrequency() == null
-						        || (currTrack.getLang().equals(audioTrack.getLang()) && currTrack.getNrAudioChannels() == audioTrack.getNrAudioChannels()
-						        		&& currTrack.getSampleFrequency().equals(audioTrack.getSampleFrequency()) 
-						                && currTrack.getCodecA().equals(audioTrack.getCodecA())
-						                && currTrack.getBitsperSample() == audioTrack.getBitsperSample() && currTrack.getDelay() == audioTrack.getDelay())) {
+					for (DLNAMediaAudio currTrack : videoFile.getAudioCodes()) {
+//						if (currTrack.getLang() == null || audioTrack.getLang() == null || audioTrack.getCodecA() == null || currTrack.getCodecA() == null 
+//								|| audioTrack.getSampleFrequency() == null || currTrack.getSampleFrequency() == null
+//						        || (currTrack.getLang().equals(audioTrack.getLang()) && currTrack.getNrAudioChannels() == audioTrack.getNrAudioChannels()
+//						        		&& currTrack.getSampleFrequency().equals(audioTrack.getSampleFrequency()) 
+//						                && currTrack.getCodecA().equals(audioTrack.getCodecA())
+//						                && currTrack.getBitsperSample() == audioTrack.getBitsperSample() && currTrack.getDelay() == audioTrack.getDelay())) {
+						if(currTrack.equals(audioTrack)) {
 							doInsertAudioTrack = false;
 							break;
 						}
 					}
 					if (doInsertAudioTrack) {
-						currVideo.getAudioCodes().add(audioTrack);
+						videoFile.getAudioCodes().add(audioTrack);
 					}
 
 					// Subtitle track
@@ -297,7 +305,7 @@ class DBVideoFileInfo extends DBFileInfo {
 					subtitleTrack.setType(rs.getInt(pos++));
 
 					boolean doInsertSubtitleTrack = true;
-					for (DLNAMediaSubtitle currTrack : currVideo.getSubtitlesCodes()) {
+					for (DLNAMediaSubtitle currTrack : videoFile.getSubtitlesCodes()) {
 						if (currTrack.getLang() == null
 						        || (currTrack.getFile() == subtitleTrack.getFile() && currTrack.getLang().equals(subtitleTrack.getLang()) && currTrack.getType() == subtitleTrack.getType())) {
 							doInsertSubtitleTrack = false;
@@ -305,7 +313,7 @@ class DBVideoFileInfo extends DBFileInfo {
 						}
 					}
 					if (doInsertSubtitleTrack) {
-						currVideo.getSubtitlesCodes().add(subtitleTrack);
+						videoFile.getSubtitlesCodes().add(subtitleTrack);
 					}
 
 					// Genres and Tags
@@ -314,19 +322,23 @@ class DBVideoFileInfo extends DBFileInfo {
 					if (tagKey == null) {
 						// do nothing
 					} else if (tagKey.equals(GENRE_KEY)) {
-						if (!currVideo.getGenres().contains(tagValue)) {
-							currVideo.getGenres().add(tagValue);
+						//it's a genre
+						if (!videoFile.getGenres().contains(tagValue)) {
+							videoFile.getGenres().add(tagValue);
 						}
 					} else {
-						if(currVideo.getTags().containsKey(tagKey)) {
-							List<String> tagValues = currVideo.getTags().get(tagKey);
+						//it's a tag
+						if(videoFile.getTags().containsKey(tagKey)) {
+							//add the tag to the existing list
+							List<String> tagValues = videoFile.getTags().get(tagKey);
 							if(!tagValues.contains(tagValue)) {
 								tagValues.add(tagValue);
 							}
 						} else {
+							//create a new list as it doesn't exist yet
 							List<String> l = new ArrayList<String>();
 							l.add(tagValue);
-							currVideo.getTags().put(tagKey, l);
+							videoFile.getTags().put(tagKey, l);
 						}
 					}
 				} catch (Exception ex) {
