@@ -111,7 +111,7 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 
 		cbActive = new JCheckBox(Messages.getString("ML.Condition.Header.Type.FILE_ISACTIF"));
 		cbActive.setFont(cbActive.getFont().deriveFont(Font.BOLD));
-		cbActive.setSelected(fileInfo.isActif());		
+		cbActive.setSelected(fileInfo.isActive());		
 		if(isConfirmEdit) {
 			cbActive.setSelected(false);
 			cbActive.setEnabled(false);
@@ -231,7 +231,7 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		}
 
 		DOVideoFileInfo fiVideo = (DOVideoFileInfo) fileInfo;
-		fiVideo.setActif(cbActive.isSelected());
+		fiVideo.setActive(cbActive.isSelected());
 		
 		fiVideo.setYear(year);
 		fiVideo.setTmdbId(tmdbId);

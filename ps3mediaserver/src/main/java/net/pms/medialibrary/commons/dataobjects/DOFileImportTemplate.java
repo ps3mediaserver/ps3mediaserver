@@ -1,3 +1,21 @@
+/*
+ * PS3 Media Server, for streaming any medias to your PS3.
+ * Copyright (C) 2008  A.Brochard
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package net.pms.medialibrary.commons.dataobjects;
 
 import java.util.ArrayList;
@@ -8,64 +26,109 @@ import java.util.Map;
 import net.pms.medialibrary.commons.enumarations.FileProperty;
 import net.pms.medialibrary.commons.enumarations.FileType;
 
+/**
+ * The Class DOFileImportTemplate defines the how file properties and tags will be imported or updated. 
+ */
 public class DOFileImportTemplate {
 	private int id = 1;
 	private String name;
-	private List<DOFileScannerEngineConfiguration> configuredEnginesPerFileProperty;
+	
+	/** The list of engine configurations. An engine configuration */
+	private List<DOFileScannerEngineConfiguration> engineConfigurations;
+	
+	/** Contains the list of enabled engines configured for a file type */
 	private Map<FileType, List<String>> enabledEnginesForFileType;
 	private Map<FileType, Map<String, List<String>>> enabledTags;
 	
+	/**
+	 * Instantiates a new file import template with default parameters.
+	 */
 	public DOFileImportTemplate(){
 		this(0, "", new ArrayList<DOFileScannerEngineConfiguration>(), new HashMap<FileType, List<String>>(), new HashMap<FileType, Map<String, List<String>>>());
 	}
 	
+	/**
+	 * Instantiates a new file import template.
+	 *
+	 * @param id the id
+	 * @param name the name
+	 * @param engines the engines
+	 * @param enabledEngines the enabled engines
+	 * @param enabledTags the enabled tags
+	 */
 	public DOFileImportTemplate(int id, String name, List<DOFileScannerEngineConfiguration> engines, Map<FileType, List<String>> enabledEngines, Map<FileType, Map<String, List<String>>> enabledTags){
 		setId(id);
 		setName(name);
-		setConfiguredEngines(engines);
+		setEngineConfigurations(engines);
 		setEnabledEngines(enabledEngines);
 		setEnabledTags(enabledTags);
 	}
 
+	/**
+	 * Gets the id.
+	 *
+	 * @return the id
+	 */
 	public int getId() {
 		return id;
 	}
 
+	/**
+	 * Sets the id.
+	 *
+	 * @param id the new id
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}
-	
-	public void setConfiguredEngines(List<DOFileScannerEngineConfiguration> engines) {
-		this.configuredEnginesPerFileProperty = engines;
+
+	public void setEngineConfigurations(List<DOFileScannerEngineConfiguration> engineConfigurations) {
+		this.engineConfigurations = engineConfigurations;
 	}
-	
-	public void addConfiguredEngine(DOFileScannerEngineConfiguration engine) {
-		if(engine == null) return;
-		if(configuredEnginesPerFileProperty == null) configuredEnginesPerFileProperty = new ArrayList<DOFileScannerEngineConfiguration>();
+
+	/**
+	 * Adds the engine configuration.
+	 *
+	 * @param engineConfiguration the engine configuration
+	 */
+	public void addEngineConfiguration(DOFileScannerEngineConfiguration engineConfiguration) {
+		if(engineConfiguration == null) return;
+		if(engineConfigurations == null) engineConfigurations = new ArrayList<DOFileScannerEngineConfiguration>();
 		
 		DOFileScannerEngineConfiguration engineToRemove = null;
-		for(DOFileScannerEngineConfiguration existingEngine : configuredEnginesPerFileProperty) {
-			if(existingEngine.getFileProperty() == engine.getFileProperty()) {
+		for(DOFileScannerEngineConfiguration existingEngine : engineConfigurations) {
+			if(existingEngine.getFileProperty() == engineConfiguration.getFileProperty()) {
 				engineToRemove = existingEngine;
 				break;
 			}
 		}
 		if(engineToRemove != null) {
-			configuredEnginesPerFileProperty.remove(engineToRemove);
+			engineConfigurations.remove(engineToRemove);
 		}
 		
-		configuredEnginesPerFileProperty.add(engine);
+		engineConfigurations.add(engineConfiguration);
 	}
 
-	public List<DOFileScannerEngineConfiguration> getAllConfiguredEngines() {
-		if(configuredEnginesPerFileProperty == null) configuredEnginesPerFileProperty = new ArrayList<DOFileScannerEngineConfiguration>();
-		return configuredEnginesPerFileProperty;
+	/**
+	 * Gets the engine configurations.
+	 *
+	 * @return the engine configurations
+	 */
+	public List<DOFileScannerEngineConfiguration> getEngineConfigurations() {
+		if(engineConfigurations == null) engineConfigurations = new ArrayList<DOFileScannerEngineConfiguration>();
+		return engineConfigurations;
 	}
-	
-	public List<String> getConfiguredEngines(FileProperty fileProperty) {
+
+	/**
+	 * Gets the engine configurations for the given file property.
+	 *
+	 * @param fileProperty the file property
+	 * @return the engine configurations
+	 */
+	public List<String> getEngineConfigurations(FileProperty fileProperty) {
 		List<String> res = new ArrayList<String>();
 
-		for(DOFileScannerEngineConfiguration existingEngine : configuredEnginesPerFileProperty) {
+		for(DOFileScannerEngineConfiguration existingEngine : engineConfigurations) {
 			if(existingEngine.getFileProperty() == fileProperty) {
 				res = existingEngine.getEngineNames();
 				break;
@@ -75,19 +138,37 @@ public class DOFileImportTemplate {
 		return res;
 	}
 
-	public void clearConfiguredEngines() {
-		if(configuredEnginesPerFileProperty == null) configuredEnginesPerFileProperty = new ArrayList<DOFileScannerEngineConfiguration>();
-		configuredEnginesPerFileProperty.clear();
+	/**
+	 * Clear engine configurations.
+	 */
+	public void clearEngineConfigurations() {
+		if(engineConfigurations == null) engineConfigurations = new ArrayList<DOFileScannerEngineConfiguration>();
+		engineConfigurations.clear();
 	}
 	
+	/**
+	 * Sets the name.
+	 *
+	 * @param name the new name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Gets the name.
+	 *
+	 * @return the name
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * Gets the enabled engines.
+	 *
+	 * @return a map containing a list of engine names to use for each file type
+	 */
 	public Map<FileType, List<String>> getEnabledEngines() {
 		if(enabledEnginesForFileType == null) enabledEnginesForFileType = new HashMap<FileType, List<String>>();
 		if(!enabledEnginesForFileType.containsKey(FileType.VIDEO)) enabledEnginesForFileType.put(FileType.VIDEO, new ArrayList<String>());
@@ -98,10 +179,20 @@ public class DOFileImportTemplate {
 		return enabledEnginesForFileType;
 	}
 
+	/**
+	 * Sets the enabled engines.
+	 *
+	 * @param enabledEnginesForFileType a map containing a list of engine names to use for each file type
+	 */
 	public void setEnabledEngines(Map<FileType, List<String>> enabledEnginesForFileType) {
 		this.enabledEnginesForFileType = enabledEnginesForFileType;
 	}
 
+	/**
+	 * Gets the enabled tags.
+	 *
+	 * @return a map containing a list of tag names to use for each file type
+	 */
 	public Map<FileType, Map<String, List<String>>> getEnabledTags() {
 		if(enabledTags == null) enabledTags = new HashMap<FileType, Map<String,List<String>>>();
 		if(!enabledTags.containsKey(FileType.VIDEO)) enabledTags.put(FileType.VIDEO, new HashMap<String, List<String>>());
@@ -112,15 +203,26 @@ public class DOFileImportTemplate {
 		return enabledTags;
 	}
 
+	/**
+	 * Sets the enabled tags.
+	 *
+	 * @param enabledTags a map containing a list of tag names to use for each file type
+	 */
 	public void setEnabledTags(Map<FileType, Map<String, List<String>>> enabledTags) {
 		this.enabledTags = enabledTags;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return getName();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof DOFileImportTemplate)) {
@@ -130,7 +232,7 @@ public class DOFileImportTemplate {
 		DOFileImportTemplate compObj = (DOFileImportTemplate) obj;
 		if (getId()  == compObj.getId() 
 				&& getName().equals(compObj.getName())
-				&& getAllConfiguredEngines().equals(compObj.getAllConfiguredEngines())
+				&& getEngineConfigurations().equals(compObj.getEngineConfigurations())
 				&& getEnabledEngines().equals(compObj.getEnabledEngines())
 				&& getEnabledTags().equals(compObj.getEnabledTags())) {
 			return true; 
@@ -139,11 +241,14 @@ public class DOFileImportTemplate {
 		return false;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
-	public int hashCode(){
+	public int hashCode() {
 		int hashCode = 24 + getId();
 		hashCode *= 24 + getName().hashCode();
-		hashCode *= 24 + getAllConfiguredEngines().hashCode();
+		hashCode *= 24 + getEngineConfigurations().hashCode();
 		hashCode *= 24 + getEnabledEngines().hashCode();
 		hashCode *= 24 + getEnabledTags().hashCode();
 		return hashCode;

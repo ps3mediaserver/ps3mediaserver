@@ -98,7 +98,7 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 					res = file.getFolderPath();
 					break;
 				case FILE_ISACTIF:
-					res = file.isActif();
+					res = file.isActive();
 					break;
 				case FILE_PLAYCOUNT:
 					res = file.getPlayCount();

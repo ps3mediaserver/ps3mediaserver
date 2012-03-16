@@ -279,7 +279,7 @@ public class FileDisplayTable extends JPanel {
 					Boolean newVal = (Boolean) obj;
 					switch (ct) {
 					case FILE_ISACTIF:
-						fileInfo.setActif(newVal);
+						fileInfo.setActive(newVal);
 						break;
 					}
 				}

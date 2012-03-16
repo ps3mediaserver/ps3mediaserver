@@ -49,7 +49,7 @@ public class VideoFileInfoPanel extends JPanel {
 		build(fileInfo);
 		this.fileInfo = fileInfo;
 		
-		fileInfo.addPropertyChangeListeners(new ActionListener() {
+		fileInfo.addPropertyChangeListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {

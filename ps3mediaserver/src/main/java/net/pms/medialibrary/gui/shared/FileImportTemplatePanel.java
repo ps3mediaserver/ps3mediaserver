@@ -130,7 +130,7 @@ public class FileImportTemplatePanel extends JPanel {
 		configuredEngines.addAll(fippsAudio.getConfiguredEngines());
 		configuredEngines.addAll(fippsVideo.getConfiguredEngines());
 		configuredEngines.addAll(fippsPictures.getConfiguredEngines());
- 		displayedTemplate.setConfiguredEngines(configuredEngines);
+ 		displayedTemplate.setEngineConfigurations(configuredEngines);
  		
 		//merge the active engines for the different file types
 		Map<FileType, List<String>> activeEngines = new HashMap<FileType, List<String>>();

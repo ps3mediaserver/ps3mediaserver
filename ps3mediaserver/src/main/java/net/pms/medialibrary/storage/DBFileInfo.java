@@ -189,7 +189,7 @@ class DBFileInfo extends DBBase {
 			stmt.setString(7, fileInfo.getThumbnailPath());
 			stmt.setLong(8, fileInfo.getSize());
 			stmt.setInt(9, fileInfo.getPlayCount());
-			stmt.setBoolean(10, fileInfo.isActif());
+			stmt.setBoolean(10, fileInfo.isActive());
 			stmt.executeUpdate();
 			
 			rs = stmt.getGeneratedKeys();
@@ -226,7 +226,7 @@ class DBFileInfo extends DBBase {
 			stmt.setString(7, fileInfo.getThumbnailPath());
 			stmt.setLong(8, fileInfo.getSize());
 			stmt.setInt(9, fileInfo.getPlayCount());
-			stmt.setBoolean(10, fileInfo.isActif());
+			stmt.setBoolean(10, fileInfo.isActive());
 			stmt.setLong(11, fileInfo.getId());
 			stmt.executeUpdate();
 			
@@ -336,7 +336,7 @@ class DBFileInfo extends DBBase {
 						file.setDateModifiedOs(new Date(rs.getTimestamp(pos++).getTime()));
 						file.setThumbnailPath(rs.getString(pos++));
 						file.setPlayCount(rs.getInt(pos++));
-						file.setActif(rs.getBoolean(pos++));
+						file.setActive(rs.getBoolean(pos++));
 
 						files.put(file.getId(), file);
 					}else{

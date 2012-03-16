@@ -217,7 +217,7 @@ class DBVideoFileInfo extends DBFileInfo {
 						videoFile.setDateModifiedOs(new Date(rs.getTimestamp(pos++).getTime()));
 						videoFile.setThumbnailPath(rs.getString(pos++));
 						videoFile.setPlayCount(rs.getInt(pos++));
-						videoFile.setActif(rs.getBoolean(pos++));
+						videoFile.setActive(rs.getBoolean(pos++));
 						
 						videoFile.setOriginalName(rs.getString(pos++));
 						videoFile.setName(rs.getString(pos++));

@@ -216,7 +216,7 @@ class DBFileImport extends DBBase{
 						existingEngine.getEngineNames().add(engineName);
 					}
 				}
-				template.setConfiguredEngines(engines);
+				template.setEngineConfigurations(engines);
 
 				//set the list of active engines per FileType
 				Map<FileType, List<String>> activeEngines = new HashMap<FileType, List<String>>();
@@ -363,7 +363,7 @@ class DBFileImport extends DBBase{
 	 *********************************************/
 	
 	private void insertFileImportTemplateEntries(DOFileImportTemplate template, Connection conn, PreparedStatement stmt) throws SQLException {		
-		for(DOFileScannerEngineConfiguration engine : template.getAllConfiguredEngines()) {
+		for(DOFileScannerEngineConfiguration engine : template.getEngineConfigurations()) {
 			int prio = 0;
 			for(String engineName : engine.getEngineNames()) {
 				stmt = conn.prepareStatement("INSERT INTO FILEIMPORTTEMPLATEENTRY (TEMPLATEID, FILEPROPERTY, ENGINENAME, PRIO, ISENABLED)"

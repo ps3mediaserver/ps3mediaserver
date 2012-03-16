@@ -127,7 +127,7 @@ public class FullDataCollector {
 
 		File f = new File(mf.getPath());
 		if (retVal != null) {
-			retVal.setActif(true);
+			retVal.setActive(true);
 			if (f != null && f.exists()) {
 				retVal.setSize(f.length());
 				if (f.exists()) {

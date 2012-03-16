@@ -109,7 +109,7 @@ public class FileImportHelper {
 		
 		// prioritize the engines according to the configuration
 		for (FileProperty fp : filePropertyEngineNames.keySet()) {
-			final List<String> configuredEngineNames = template.getConfiguredEngines(fp);
+			final List<String> configuredEngineNames = template.getEngineConfigurations(fp);
 			List<String> availableEngineNames = filePropertyEngineNames.get(fp);
 			List<String> enginesToUse = new ArrayList<String>();
 
@@ -157,7 +157,7 @@ public class FileImportHelper {
 			
 			//determine if the the engine is enabled
 			boolean isEnabled = false;
-			for(DOFileScannerEngineConfiguration engine : template.getAllConfiguredEngines()) {
+			for(DOFileScannerEngineConfiguration engine : template.getEngineConfigurations()) {
 				if(engine.getFileProperty() == fp) {
 					isEnabled = engine.isEnabled();
 					break;
@@ -262,7 +262,7 @@ public class FileImportHelper {
 			
 			//check if the file property is disabled
 			boolean isEngineEnabled = false;
-			for(DOFileScannerEngineConfiguration engine : importConfig.getAllConfiguredEngines()) {
+			for(DOFileScannerEngineConfiguration engine : importConfig.getEngineConfigurations()) {
 				if(engine.getFileProperty() == fileProperty) {
 					if(engine.isEnabled()) {
 						isEngineEnabled = engine.isEnabled();
@@ -275,7 +275,7 @@ public class FileImportHelper {
 			}
 			
 			//get the list of engines to use for this file property
-			List<String> prioritizedEngineNames = importConfig.getConfiguredEngines(fileProperty);
+			List<String> prioritizedEngineNames = importConfig.getEngineConfigurations(fileProperty);
 			
 			//get the next file property if no engines have been configured to retrieve
 			//info about the current one

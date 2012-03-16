@@ -129,9 +129,9 @@ public class FileEditDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				boolean success = saveUpdatedFileInfo();
 				if(success) {
-					fileEditList.getSelected().removePropertyChangeListeners(fileInfoChangedListener);
+					fileEditList.getSelected().removePropertyChangeListener(fileInfoChangedListener);
 					fileEditList.selectPreviousFile();
-					fileEditList.getSelected().addPropertyChangeListeners(fileInfoChangedListener);
+					fileEditList.getSelected().addPropertyChangeListener(fileInfoChangedListener);
 					tpFileEdit.setContent(fileEditList.getSelected());
 					setTitle(fileEditList.getSelected().getFilePath());
 					refreshButtonStates();
@@ -147,9 +147,9 @@ public class FileEditDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				boolean success = saveUpdatedFileInfo();
 				if(success) {
-					fileEditList.getSelected().removePropertyChangeListeners(fileInfoChangedListener);
+					fileEditList.getSelected().removePropertyChangeListener(fileInfoChangedListener);
 					fileEditList.selectNextFile();
-					fileEditList.getSelected().addPropertyChangeListeners(fileInfoChangedListener);
+					fileEditList.getSelected().addPropertyChangeListener(fileInfoChangedListener);
 					tpFileEdit.setContent(fileEditList.getSelected());
 					setTitle(fileEditList.getSelected().getFilePath());
 					refreshButtonStates();
