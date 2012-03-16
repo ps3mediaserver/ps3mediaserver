@@ -112,7 +112,7 @@
 		<!-- netty -->
 		<repository>
 			<id>jboss</id>
-			<url>http://repository.jboss.com/maven2/</url>
+			<url>http://repository.jboss.org/</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
