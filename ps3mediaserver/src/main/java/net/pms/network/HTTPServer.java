@@ -191,7 +191,7 @@ public class HTTPServer implements Runnable {
 			} catch (ClosedByInterruptException e) {
 				stop = true;
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.debug("Caught exception", e);
 			} finally {
 				try {
 					if (stop && serverSocket != null) {
@@ -201,7 +201,7 @@ public class HTTPServer implements Runnable {
 						serverSocketChannel.close();
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.debug("Caught exception", e);
 				}
 			}
 		}

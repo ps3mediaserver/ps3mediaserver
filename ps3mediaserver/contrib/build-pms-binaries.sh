@@ -1220,7 +1220,7 @@ build_mplayer() {
         # See https://svn.macports.org/ticket/30279
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../../../contrib/mplayer-r34807-SB27.patch
+        patch -p0 < ./../../../../contrib/mplayer-r34814-SB28.patch
         exit_on_error
 
         # Theora and vorbis support seems broken in this revision, disable it for now
@@ -1239,7 +1239,7 @@ build_mplayer() {
         export LDFLAGS="$LDFLAGS -O4 -fomit-frame-pointer -pipe"
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../../../contrib/mplayer-r34807-SB27.patch
+        patch -p0 < ./../../../../contrib/mplayer-r34814-SB28.patch
         exit_on_error
 
         # mplayer configure patch for r34587-SB22
@@ -1446,11 +1446,7 @@ build_xvid() {
     set_flags
 
     if is_osx; then
-      if [ "$ARCHITECTURE" == "x86_64" ]; then
-        ./configure --prefix=$TARGET --host=x86-apple-darwin10
-      else
-        ./configure --prefix=$TARGET
-      fi
+      ./configure --prefix=$TARGET --host=x86-apple-darwin10
     else
       ./configure --prefix=$TARGET
     fi

@@ -294,7 +294,7 @@ public class IpFilter {
 
 	private static void eq(String name, Object obj, Object obj2) {
 		if (obj != null && obj.equals(obj2)) {
-			System.out.println("EQ: " + name + '=' + obj);
+			LOGGER.debug("EQ: " + name + '=' + obj);
 		} else {
 			throw new RuntimeException(name + " expected : '" + obj + "' <> actual : '" + obj2 + "'");
 		}

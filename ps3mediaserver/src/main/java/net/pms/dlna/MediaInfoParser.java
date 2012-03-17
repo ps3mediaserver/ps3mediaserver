@@ -51,7 +51,7 @@ public class MediaInfoParser {
 					StringTokenizer st = new StringTokenizer(info, "\n\r");
 					while (st.hasMoreTokens()) {
 						String line = st.nextToken().trim();
-						//System.out.println(line);
+
 						if (line.equals("Video") || line.startsWith("Video #")) {
 							step = MediaInfo.StreamKind.Video;
 						} else if (line.equals("Audio") || line.startsWith("Audio #")) {

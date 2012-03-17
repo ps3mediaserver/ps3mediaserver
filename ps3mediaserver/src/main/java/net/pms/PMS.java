@@ -323,8 +323,8 @@ public class PMS {
 		if (System.getProperty(CONSOLE) == null) {
 			frame = new LooksFrame(autoUpdater, configuration);
 		} else {
-			System.out.println("GUI environment not available");
-			System.out.println("Switching to console mode");
+			logger.info("GUI environment not available");
+			logger.info("Switching to console mode");
 			frame = new DummyFrame();
 		}
 		configuration.addConfigurationListener(new ConfigurationListener() {
@@ -352,9 +352,9 @@ public class PMS {
 		String shortCommitId = commitId.substring(0,  9);
 
 		logger.info("Build: " + shortCommitId + " (" + commitTime + ")");
-		logger.info("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor"));
-		logger.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
-		logger.info("Encoding: " + System.getProperty("file.encoding"));
+
+		// Log system properties
+		logSystemInfo();
 
 		String cwd = new File("").getAbsolutePath();
 		logger.info("Working directory: " + cwd);
@@ -686,7 +686,7 @@ public class PMS {
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						logger.trace("Caught exception", e);
 					}
 					server = new HTTPServer(configuration.getServerPort());
 					server.start();
@@ -1038,5 +1038,46 @@ public class PMS {
 	 */
 	public static String getVersion() {
 		return PropertiesUtil.getProjectProperties().get("project.version");
+	}
+
+	/**
+	 * Log system properties identifying Java, the OS and encoding and log
+	 * warnings where appropriate.
+	 */
+	private void logSystemInfo() {
+		logger.info("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor"));
+		logger.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " "
+				+ System.getProperty("os.version"));
+		logger.info("Encoding: " + System.getProperty("file.encoding"));
+		logger.info("");
+
+		if (Platform.isMac()) {
+			// The binaries shipped with the Mac OS X version of PMS are being
+			// compiled against specific OS versions, making them incompatible
+			// with older versions. Warn the user about this when necessary.
+			String osVersion = System.getProperty("os.version");
+
+			// Split takes a regular expression, so escape the dot.
+			String[] versionNumbers = osVersion.split("\\.");
+
+			if (versionNumbers.length > 1) {
+				try {
+					int osVersionMinor = Integer.parseInt(versionNumbers[1]);
+
+					if (osVersionMinor < 6) {
+						logger.warn("-----------------------------------------------------------------");
+						logger.warn("WARNING!");
+						logger.warn("PMS ships with binaries compiled for Mac OS X 10.6 or higher.");
+						logger.warn("You are running an older version of Mac OS X so PMS may not work!");
+						logger.warn("More information in the FAQ:");
+						logger.warn("http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=3507&p=66371#p66371");
+						logger.warn("-----------------------------------------------------------------");
+						logger.warn("");
+					}
+				} catch (NumberFormatException e) {
+					logger.debug("Cannot parse minor os.version number");
+				}
+			}
+		}
 	}
 }
