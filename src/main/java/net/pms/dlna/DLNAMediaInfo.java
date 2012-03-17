@@ -1092,17 +1092,45 @@ public class DLNAMediaInfo implements Cloneable {
 	}
 
 	public String toString() {
-		String s = "container: " + getContainer() + " / bitrate: " + getBitrate() + " / size: " + getSize() + " / codecV: " + getCodecV() + " / duration: " + getDurationString() + " / width: " + getWidth() + " / height: " + getHeight() + " / frameRate: " + getFrameRate() + " / thumb size : " + (getThumb() != null ? getThumb().length : 0) + " / muxingMode: " + getMuxingMode();
+		StringBuilder sb = new StringBuilder();
+//		String s = "container: " + getContainer() + " / bitrate: " + getBitrate() + " / size: " + getSize() + " / codecV: " + getCodecV() + " / duration: " + getDurationString() + " / width: " + getWidth() + " / height: " + getHeight() + " / frameRate: " + getFrameRate() + " / thumb size : " + (getThumb() != null ? getThumb().length : 0) + " / muxingMode: " + getMuxingMode();
+		sb.append("container: "); sb.append(getContainer());
+		sb.append(" / bitrate: "); sb.append(getBitrate());
+		sb.append(" / size: "); sb.append(getSize());
+		sb.append(" / codecV: "); sb.append(getCodecV());
+		sb.append(" / duration: "); sb.append(getDurationString());
+		sb.append(" / width: "); sb.append(getWidth());
+		sb.append(" / height: "); sb.append(getHeight());
+		sb.append(" / frameRate: "); sb.append(getFrameRate());
+		sb.append(" / thumb size : "); sb.append((getThumb() != null ? getThumb().length : 0));
+		sb.append(" / muxingMode: "); sb.append(getMuxingMode());
 		for (DLNAMediaAudio audio : getAudioCodes()) {
-			s += "\n\taudio: id=" + audio.getId() + " / lang: " + audio.getLang() + " / flavor: " + audio.getFlavor() + " / codec: " + audio.getCodecA() + " / sf:" + audio.getSampleFrequency() + " / na: " + audio.getNrAudioChannels() + " / bs: " + audio.getBitsperSample();
+//			s += "\n\taudio: id=" + audio.getId() + " / lang: " + audio.getLang() + " / flavor: " + audio.getFlavor() + " / codec: " + audio.getCodecA() + " / sf:" + audio.getSampleFrequency() + " / na: " + audio.getNrAudioChannels() + " / bs: " + audio.getBitsperSample();
+			sb.append("\n\taudio: id="); sb.append(audio.getId());
+			sb.append(" / lang: "); sb.append(audio.getLang());
+			sb.append(" / flavor: "); sb.append(audio.getLang());
+			sb.append(" / codec: "); sb.append(audio.getCodecA());
+			sb.append(" / sf:"); sb.append(audio.getSampleFrequency());
+			sb.append(" / na: "); sb.append(audio.getNrAudioChannels());
+			sb.append(" / bs: "); sb.append(audio.getBitsperSample());
 			if (audio.getArtist() != null) {
-				s += " / " + audio.getArtist() + "|" + audio.getAlbum() + "|" + audio.getSongname() + "|" + audio.getYear() + "|" + audio.getTrack();
+//				s += " / " + audio.getArtist() + "|" + audio.getAlbum() + "|" + audio.getSongname() + "|" + audio.getYear() + "|" + audio.getTrack();
+				sb.append(" / "); sb.append(audio.getArtist());
+				sb.append("|"); sb.append(audio.getAlbum());
+				sb.append("|"); sb.append(audio.getSongname());
+				sb.append("|"); sb.append(audio.getYear());
+				sb.append("|"); sb.append(audio.getTrack());
 			}
 		}
 		for (DLNAMediaSubtitle sub : getSubtitlesCodes()) {
-			s += "\n\tsub: id=" + sub.getId() + " / lang: " + sub.getLang() + " / flavor: " + sub.getFlavor() + " / type: " + sub.getType();
+//			s += "\n\tsub: id=" + sub.getId() + " / lang: " + sub.getLang() + " / flavor: " + sub.getFlavor() + " / type: " + sub.getType();
+			sb.append("\n\tsub: id="); sb.append(sub.getId());
+			sb.append(" / lang: "); sb.append(sub.getLang());
+			sb.append(" / flavor: "); sb.append(sub.getFlavor());
+			sb.append(" / type: "); sb.append(sub.getType());
 		}
-		return s;
+//		return s;
+		return sb.toString();
 	}
 
 	public InputStream getThumbnailInputStream() {
