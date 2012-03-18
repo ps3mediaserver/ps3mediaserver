@@ -10,6 +10,7 @@ import net.pms.medialibrary.commons.dataobjects.DOFileEntryFolder;
 import net.pms.medialibrary.commons.dataobjects.DOFolder;
 import net.pms.medialibrary.commons.dataobjects.DOManagedFile;
 import net.pms.medialibrary.commons.dataobjects.DOMediaLibraryFolder;
+import net.pms.medialibrary.commons.dataobjects.DOQuickTagEntry;
 import net.pms.medialibrary.commons.dataobjects.DOTableColumnConfiguration;
 import net.pms.medialibrary.commons.dataobjects.DOTemplate;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
@@ -98,4 +99,8 @@ public interface IMediaLibraryStorage {
 	DOFileImportTemplate getFileImportTemplate(int templateId);
 	void deleteFileImportTemplate(int templateId);
 	boolean isFileImportTemplateInUse(int templateId);
+	
+	//Quick Tags
+	void setQuickTagEntries(List<DOQuickTagEntry> quickTagEntries);
+	List<DOQuickTagEntry> getQuickTagEntries();
 }

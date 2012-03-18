@@ -6,7 +6,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -104,9 +106,21 @@ public class QuickTagEntriesPanel extends JPanel{
 		}
 		
 		removeAll();
-		add(builder.getPanel());
+		
+		JScrollPane spMain = new JScrollPane(builder.getPanel());
+		spMain.setBorder(BorderFactory.createEmptyBorder());
+		
+		add(spMain);
 		
 		validate();
 		repaint();
+	}
+
+	public List<DOQuickTagEntry> getQuickTagEntries() {
+		List<DOQuickTagEntry> res = new ArrayList<DOQuickTagEntry>();
+		for(QuickTagEntryPanel pEntry : quickTagEntryPanels) {
+			res.add(pEntry.getQuickTagEntry());
+		}
+		return res;
 	}
 }

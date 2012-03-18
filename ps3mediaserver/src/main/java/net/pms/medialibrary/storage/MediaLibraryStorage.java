@@ -19,6 +19,7 @@ import net.pms.medialibrary.commons.dataobjects.DOFolder;
 import net.pms.medialibrary.commons.dataobjects.DOImageFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOManagedFile;
 import net.pms.medialibrary.commons.dataobjects.DOMediaLibraryFolder;
+import net.pms.medialibrary.commons.dataobjects.DOQuickTagEntry;
 import net.pms.medialibrary.commons.dataobjects.DOTableColumnConfiguration;
 import net.pms.medialibrary.commons.dataobjects.DOTemplate;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
@@ -50,6 +51,7 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 	private DBManagedFolders dbManagedFolders;
 	private DBTableColumn dbTableColumn;
 	private DBFileImport dbFileImport;
+	private DBQuickTag dbQuickTag;
 	
 	/**
 	 * Constructor
@@ -71,6 +73,7 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 		dbManagedFolders = new DBManagedFolders(cp);
 		dbTableColumn = new DBTableColumn(cp);
 		dbFileImport = new DBFileImport(cp);
+		dbQuickTag = new DBQuickTag(cp);
 		
 		if(dbInitializer.isConnected()){
 			dbInitializer.configureDb();
@@ -879,6 +882,33 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 		List<String> res = null;
 		try {
 			res = dbFileInfo.getTagValues(tagName, isAscending, minOccurences);
+		} catch (StorageException e) {
+			log.error("Storage error (get)", e);
+		}
+		return res;
+	}
+	
+	/*********************************************
+	 * 
+	 * Quick Tags
+	 * 
+	 *********************************************/
+
+	@Override
+	public void setQuickTagEntries(List<DOQuickTagEntry> quickTags) {
+		try {
+			dbQuickTag.setQuickTags(quickTags);
+			if(log.isDebugEnabled()) log.debug(String.format("Inserted %s quick tags", quickTags.size()));
+		} catch (StorageException e) {
+			log.error("Storage error (insert)", e);
+		}
+	}
+
+	@Override
+	public List<DOQuickTagEntry> getQuickTagEntries() {
+		List<DOQuickTagEntry> res = null;
+		try {
+			res = dbQuickTag.getQuickTags();
 		} catch (StorageException e) {
 			log.error("Storage error (get)", e);
 		}

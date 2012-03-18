@@ -68,7 +68,9 @@ public class QuickTagEntryPanel {
 			}
 		});
 		cbTagName.setEditable(true);
+		
 		cbTagName.setSelectedItem(entry.getTagName());
+		cbTagValue.setSelectedItem(entry.getTagValue());
 		
 		cbKeyCombination = new JComboBox(keyCombinations);
 		cbKeyCombination.setSelectedItem(new KeyCombinationCBItem(entry.getKeyCombination()));
@@ -118,6 +120,17 @@ public class QuickTagEntryPanel {
 
 	public JButton getbDelete() {
 		return bDelete;
+	}
+	
+	public DOQuickTagEntry getQuickTagEntry() {		
+		DOQuickTagEntry res = new DOQuickTagEntry();
+		res.setName(tfName.getText());
+		if(cbTagName.getSelectedItem() != null) res.setTagName(cbTagName.getSelectedItem().toString());
+		if(cbTagValue.getSelectedItem() != null) res.setTagValue(cbTagValue.getSelectedItem().toString());
+		if(cbVirtualKey.getSelectedItem() != null) res.setVirtualKey((int)cbVirtualKey.getSelectedItem().toString().charAt(0));
+		if(cbKeyCombination.getSelectedItem() != null) res.setKeyCombination(KeyCombination.valueOf(cbKeyCombination.getSelectedItem().toString()));
+		
+		return res;
 	}
 
 	private void fireDelete() {

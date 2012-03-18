@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -13,12 +12,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOQuickTagEntry;
 import net.pms.medialibrary.commons.enumarations.FileType;
+import net.pms.medialibrary.storage.MediaLibraryStorage;
 
 public class QuickTagDialog extends JDialog {
 	private static final long serialVersionUID = 1623280241555707047L;
@@ -29,7 +30,6 @@ public class QuickTagDialog extends JDialog {
 	private JPanel pTitle;
 	private QuickTagEntriesPanel pQuickTagEntries;
 	
-	private List<DOQuickTagEntry> quickTagEntries;
 	private FileType fileType;
 
 	public QuickTagDialog(FileType fileType) {
@@ -37,14 +37,14 @@ public class QuickTagDialog extends JDialog {
 		setTitle(Messages.getString("ML.QuickTagDialog.Title"));
 		
 		//TODO: retrieve the existing tags
-		this.quickTagEntries = new ArrayList<DOQuickTagEntry>();
+		List<DOQuickTagEntry> quickTagEntries = MediaLibraryStorage.getInstance().getQuickTagEntries();
 		this.fileType = fileType;
 		
-		init();
+		init(quickTagEntries);
 		build();
 	}
 
-	private void init() {
+	private void init(List<DOQuickTagEntry> quickTagEntries) {
 		//title
 		pTitle = new JPanel(new BorderLayout());
 		JLabel lTitle = new JLabel(Messages.getString("ML.QuickTagDialog.Header"));
@@ -115,13 +115,26 @@ public class QuickTagDialog extends JDialog {
 	}
 	
 	private void close(boolean doSave) {
+		boolean doClose = true;
 		if(doSave) {
-			save();
+			doClose = save();
 		}
-		dispose();
+		
+		if(doClose) {
+			dispose();
+		}
 	}
 	
-	private void save() {
+	private boolean save() {
+		List<DOQuickTagEntry> quickTagEntries = pQuickTagEntries.getQuickTagEntries();
+		for(DOQuickTagEntry entry : quickTagEntries) {
+			if(entry.getName().equals("")) {
+				JOptionPane.showMessageDialog(this, Messages.getString("ML.QuickTagDialog.Message.NameEmpty"));
+				return false;
+			}
+		}
 		
+		MediaLibraryStorage.getInstance().setQuickTagEntries(quickTagEntries);
+		return true;
 	}
 }

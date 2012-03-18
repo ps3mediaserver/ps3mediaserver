@@ -25,9 +25,10 @@ import org.slf4j.LoggerFactory;
 
 class DBInitializer {
 	private static final Logger log = LoggerFactory.getLogger(DBInitializer.class);
+
+	private final String DB_VERSION = "0.8";
 	
 	private String name;
-	private String dbVersion = "0.7";
 	private IMediaLibraryStorage storage;
 	private JdbcConnectionPool cp;
 
@@ -75,25 +76,25 @@ class DBInitializer {
 	void configureDb() {
 		String realStorageVersion = storage.getStorageVersion();
 		if(realStorageVersion == null){
-			if(log.isInfoEnabled()) log.info("Reinitializing DB because the version number could not be found. Create DB version " + dbVersion);
+			if(log.isInfoEnabled()) log.info("Reinitializing DB because the version number could not be found. Create DB version " + DB_VERSION);
 			initDb();			
 		}
-		else if(dbVersion.equals(realStorageVersion)){
-			if(log.isInfoEnabled()) log.info(String.format("Database version %s is up and running", dbVersion));
+		else if(DB_VERSION.equals(realStorageVersion)){
+			if(log.isInfoEnabled()) log.info(String.format("Database version %s is up and running", DB_VERSION));
 		} else {
 			double newestDbVersion;
 			double runningDbVersion;
 			try {
-				newestDbVersion = Double.parseDouble(dbVersion);
+				newestDbVersion = Double.parseDouble(DB_VERSION);
 				runningDbVersion = Double.parseDouble(realStorageVersion);
 				if(!(newestDbVersion > runningDbVersion)){
-					log.info(String.format("Don't update DB. newestDbVersion='%s' or runningDbVersion='%s'", dbVersion, realStorageVersion));
+					log.info(String.format("Don't update DB. newestDbVersion='%s' or runningDbVersion='%s'", DB_VERSION, realStorageVersion));
 				}
 			} catch(Exception ex){
-				log.error(String.format("Failed to parse newestDbVersion='%s' or runningDbVersion='%s'", dbVersion, realStorageVersion));
+				log.error(String.format("Failed to parse newestDbVersion='%s' or runningDbVersion='%s'", DB_VERSION, realStorageVersion));
 			}
 			
-			if(log.isInfoEnabled()) log.info(String.format("Updating DB from version %s to %s", realStorageVersion, dbVersion));
+			if(log.isInfoEnabled()) log.info(String.format("Updating DB from version %s to %s", realStorageVersion, DB_VERSION));
 			updateDb(realStorageVersion);
 		}
     }
@@ -185,6 +186,7 @@ class DBInitializer {
 		try { stmt.executeUpdate("DROP TABLE FILEIMPORTTEMPLATEENTRY"); } catch (SQLException se) {}
 		try { stmt.executeUpdate("DROP TABLE FILEIMPORTTEMPLATEACTIVEENGINE"); } catch (SQLException se) {}
 		try { stmt.executeUpdate("DROP TABLE FILEIMPORTTEMPLATETAGS"); } catch (SQLException se) {}
+		try { stmt.executeUpdate("DROP TABLE QUICKTAG"); } catch (SQLException se) {}
 		if(log.isInfoEnabled()) log.info("All database tables dropped");
 				
 		try {
@@ -540,8 +542,17 @@ class DBInitializer {
 			sb.append(", WIDTH          INT");
 			sb.append(", CONSTRAINT UC_TABLECOLUMNCONFIGURATION UNIQUE (FILETYPE, COLUMNINDEX)");
 			sb.append(", CONSTRAINT PK_TABLECOLUMNCONFIGURATION PRIMARY KEY (FILETYPE, CONDITIONTYPE))");
+
+			//Create table QUICKTAG
+			sb = new StringBuffer();
+			sb.append("CREATE TABLE QUICKTAG (");
+			sb.append("  NAME           VARCHAR(256)");
+			sb.append(", TAGNAME        VARCHAR(1024)");
+			sb.append(", TAGVALUE       VARCHAR(1024)");
+			sb.append(", VIRTUALKEY     INT");
+			sb.append(", KEYCOMBINATION VARCHAR(128)");
 			stmt.executeUpdate(sb.toString());
-			if(log.isDebugEnabled()) log.debug("Table TABLECOLUMNCONFIGURATION created");
+			if(log.isDebugEnabled()) log.debug("Table QUICKTAG created");
 			
 			//Create and populate table METADATA
 			stmt.executeUpdate("CREATE TABLE METADATA (KEY VARCHAR2(255) NOT NULL, VALUE VARCHAR2(255) NOT NULL, CONSTRAINT PK_METADATA PRIMARY KEY (KEY, VALUE))");
@@ -567,7 +578,7 @@ class DBInitializer {
 			dir.mkdirs();
 		}
 		stmt.executeUpdate("INSERT INTO METADATA VALUES ('" + MetaDataKeys.PICTURE_SAVE_FOLDER_PATH + "', '" + pictureSaveFilePath + "')");
-		stmt.executeUpdate("INSERT INTO METADATA (KEY, VALUE) VALUES ('" + MetaDataKeys.VERSION + "', '" + dbVersion + "')");
+		stmt.executeUpdate("INSERT INTO METADATA (KEY, VALUE) VALUES ('" + MetaDataKeys.VERSION + "', '" + DB_VERSION + "')");
 		stmt.executeUpdate("INSERT INTO METADATA (KEY, VALUE) VALUES ('" + MetaDataKeys.MAX_LINE_LENGTH + "', '" + "60" + "')");
 		stmt.executeUpdate("INSERT INTO METADATA (KEY, VALUE) VALUES ('" + MetaDataKeys.MEDIA_LIBRARY_ENABLE + "', 'TRUE')");
 		stmt.executeUpdate("INSERT INTO METADATA (KEY, VALUE) VALUES ('" + MetaDataKeys.OMIT_PREFIXES + "', 'the le la les')");
@@ -643,6 +654,10 @@ class DBInitializer {
 		if(realStorageVersion.equals("0.6")){
 			updateDb06_07();
 			realStorageVersion = "0.7";
+		}
+		if(realStorageVersion.equals("0.7")){
+			updateDb07_08();
+			realStorageVersion = "0.8";
 		}
 	}
 
@@ -905,6 +920,26 @@ class DBInitializer {
 			if(log.isInfoEnabled()) log.info("Updated DB from version 0.6 to 0.7");
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.6 to 0.7", se);
+		} finally {
+			DBBase.close(conn, stmt);
+    	}
+	}
+
+	private void updateDb07_08() {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		try {
+			conn = cp.getConnection();
+			//do updates
+			stmt = conn.prepareStatement("CREATE TABLE QUICKTAG (NAME VARCHAR(256), TAGNAME VARCHAR(1024), TAGVALUE VARCHAR(1024), VIRTUALKEY INT, KEYCOMBINATION VARCHAR(128))");
+			stmt.executeUpdate();
+			
+			//update db version
+			storage.setMetaDataValue(MetaDataKeys.VERSION.toString(), "0.8");
+			if(log.isInfoEnabled()) log.info("Updated DB from version 0.7 to 0.8");
+		} catch (SQLException se) {
+			log.error("Failed to update DB from version 0.7 to 0.8", se);
 		} finally {
 			DBBase.close(conn, stmt);
     	}
