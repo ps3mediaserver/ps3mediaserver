@@ -96,7 +96,6 @@ public class PmsConfiguration {
 	private static final String KEY_IPHOTO_ENABLED = "iphoto";
 	private static final String KEY_ITUNES_ENABLED = "itunes";
 	private static final String KEY_LANGUAGE = "language";
-	private static final String KEY_LOGGING_LEVEL = "level";
 	private static final String KEY_MAX_AUDIO_BUFFER = "maxaudiobuffer";
 	private static final String KEY_MAX_BITRATE = "maximumbitrate";
 	private static final String KEY_MAX_MEMORY_BUFFER_SIZE = "maxvideobuffer";
@@ -1615,10 +1614,6 @@ public class PmsConfiguration {
 			value = "0";
 		}
 		configuration.setProperty(KEY_MENCODER_OVERSCAN_COMPENSATION_HEIGHT, value);
-	}
-
-	public int getLoggingLevel() {
-		return getInt(KEY_LOGGING_LEVEL, 2);
 	}
 
 	public void setEnginesAsList(ArrayList<String> enginesAsList) {

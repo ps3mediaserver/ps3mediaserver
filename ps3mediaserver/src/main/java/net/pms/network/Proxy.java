@@ -151,6 +151,7 @@ public class Proxy extends Thread {
 
 			int bytes_read;
 			long CL = 10000000000L;
+
 			while (total_read < CL && (bytes_read = sockWebInputStream.read(buffer)) != -1) {
 				if (!resourceExists) {
 					if (10000000000L == CL) {
@@ -177,6 +178,9 @@ public class Proxy extends Thread {
 				baos.write(buffer, 0, bytes_read);
 				total_read += bytes_read;
 			}
+
+			sockWebInputStream.close();
+
 			if (inMemory) {
 
 				baos.close();
@@ -188,7 +192,6 @@ public class Proxy extends Thread {
 
 				fOUT.close();
 			}
-
 
 			socketToWeb.close();
 			toBrowser.close();
