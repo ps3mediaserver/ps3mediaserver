@@ -1,7 +1,12 @@
 Changelog:
 ==========
 
-1.51.0 - 2012-??-??
+1.51.1 - 2012-??-??
+
+	Language updates:
+		- Czech (thanks, valib!)
+
+1.51.0 - 2012-03-17
 
 	Fix StartStopListener callbacks for HTTP Engine V1
 	Surface playback start/stop events
@@ -9,8 +14,16 @@ Changelog:
 	Fixed OSX log message about font definitions
 	Fixed double wrapping of streams causing stuttering
 	Added MPEG4 ASP with Qpel support for PS3
-	Language updates:
-		- Czech (thanks, valib!)
+	Allow 15fps video
+	MediaInfo link added to the About tab
+	Updated to latest versions of libraries (codec, jdom, logback and slf4j)
+	Various stability and speed improvements
+	Updated JRE autodownload to 7u3 from 7u2
+	Updated MPlayer and MEncoder to SB28
+	Updated ImageMagick Convert to 6.7.6
+	Updated MediaInfo to 0.7.54
+	More reliable selection of correct audio channels
+	Improved fast-forward and rewind support
 
 1.50.1 - 2012-01-28
 
