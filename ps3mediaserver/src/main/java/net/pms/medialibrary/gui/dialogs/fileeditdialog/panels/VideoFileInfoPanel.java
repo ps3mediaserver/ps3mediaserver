@@ -44,20 +44,25 @@ public class VideoFileInfoPanel extends JPanel {
 	private DOVideoFileInfo fileInfo;
 	private String videoCoverPath;
 	private JLabel lCover;
+	
+	private ActionListener thumbnailChangeListener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (e.getActionCommand().equals(ConditionType.FILE_THUMBNAILPATH.toString())) {
+				resizeCover();
+			}
+		}
+	};
+
+	public VideoFileInfoPanel() {
+		this(new DOVideoFileInfo());
+	}
 
 	public VideoFileInfoPanel(DOVideoFileInfo fileInfo) {
 		build(fileInfo);
 		this.fileInfo = fileInfo;
 		
-		fileInfo.addPropertyChangeListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(e.getActionCommand().equals(ConditionType.FILE_THUMBNAILPATH.toString())) {
-					resizeCover();
-				}
-			}
-		});
+		fileInfo.addPropertyChangeListener(thumbnailChangeListener);
 	}
 
 	private void build(final DOVideoFileInfo fileInfo) {
@@ -221,4 +226,9 @@ public class VideoFileInfoPanel extends JPanel {
 			lCover.setIcon(GUIHelper.getScaledImage(videoCoverImage, height));
 		}
 	}
+	
+	public void dispose() {
+		fileInfo.removePropertyChangeListener(thumbnailChangeListener);
+	}
+	
 }

@@ -104,12 +104,14 @@ public class FileEditDialog extends JDialog {
 		switch(editMode) {
 		case Single:
 			fileToShow = fileInfo;
+			fileInfo.addPropertyChangeListener(fileInfoChangedListener);
 			break;
 		case Multiple:
 			fileToShow = new DOVideoFileInfo();
 			break;
 		case Linked:			
 			fileToShow = fileEditList.getSelected();
+			fileToShow.addPropertyChangeListener(fileInfoChangedListener);
 			break;
 		}
 		
@@ -166,6 +168,7 @@ public class FileEditDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				boolean success = saveUpdatedFileInfo();
 				if(success) {
+					tpFileEdit.dispose();
 					dispose();
 				}
 			}
@@ -177,6 +180,7 @@ public class FileEditDialog extends JDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				tpFileEdit.dispose();
 				dispose();
 			}
 		});
@@ -254,5 +258,17 @@ public class FileEditDialog extends JDialog {
 		}
 		
 		return true;
+	}
+	
+	@Override
+	public void dispose() {
+		if(fileInfo != null) {
+			fileInfo.removePropertyChangeListener(fileInfoChangedListener);
+		}
+		if(fileEditList != null && fileEditList.getSelected() != null) {
+			fileEditList.getSelected().removePropertyChangeListener(fileInfoChangedListener);
+		}
+		
+		super.dispose();
 	}
 }

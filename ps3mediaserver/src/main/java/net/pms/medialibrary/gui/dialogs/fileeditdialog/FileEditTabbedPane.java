@@ -37,7 +37,7 @@ public class FileEditTabbedPane extends JTabbedPane {
 	private static final long serialVersionUID = -4181083393313495546L;
 	private static final Logger log = LoggerFactory.getLogger(FileEditTabbedPane.class);
 
-	private JPanel infoPanel;
+	private VideoFileInfoPanel infoPanel;
 	private JPanel propertiesPanel;
 	private FileTagsPanel tagsPanel;
 	private FileCoverPanel coverPanel;
@@ -75,7 +75,7 @@ public class FileEditTabbedPane extends JTabbedPane {
 	 * Initializes the components and builds the panel
 	 */
 	private void setContent() {		
-		infoPanel = new JPanel();
+		infoPanel = new VideoFileInfoPanel();
 		propertiesPanel = new JPanel();
 		tagsPanel = new FileTagsPanel(isMultiEdit ? new HashMap<String, List<String>>() : fileInfo.getTags(), true);
 		try {
@@ -135,5 +135,9 @@ public class FileEditTabbedPane extends JTabbedPane {
 		List<ConditionType> res = ((IFilePropertiesEditor) propertiesPanel).getPropertiesToUpdate();
 		res.addAll(coverPanel.getPropertiesToUpdate());
 		return res;
+	}
+	
+	public void dispose() {
+		infoPanel.dispose();
 	}
 }

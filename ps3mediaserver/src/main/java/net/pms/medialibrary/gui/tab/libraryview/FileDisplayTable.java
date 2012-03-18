@@ -61,6 +61,7 @@ import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
 import net.pms.medialibrary.commons.interfaces.IProgress;
 import net.pms.medialibrary.gui.dialogs.FileImportTemplateDialog;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.FileEditDialog;
+import net.pms.medialibrary.gui.dialogs.quicktagdialog.QuickTagDialog;
 import net.pms.medialibrary.gui.shared.DateCellRenderer;
 import net.pms.medialibrary.gui.shared.EMenuItem;
 import net.pms.medialibrary.gui.shared.ETable;
@@ -436,6 +437,18 @@ public class FileDisplayTable extends JPanel {
 		
 		JMenuItem miConfigureTags = new JMenuItem(Messages.getString("ML.ContextMenu.CONFIGURE"));
 		miConfigureTags.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "configure-16.png")));
+		miConfigureTags.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				QuickTagDialog dialog = new QuickTagDialog(getFileType());
+				dialog.pack();
+				dialog.setMinimumSize(dialog.getSize());
+				dialog.setLocation(GUIHelper.getCenterDialogOnParentLocation(dialog.getSize(), table));
+				dialog.setModal(true);
+				dialog.setVisible(true);
+			}
+		});
 		mTag.addSeparator();
 		mTag.add(miConfigureTags);
 		
