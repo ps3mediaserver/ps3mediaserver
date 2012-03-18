@@ -50,6 +50,7 @@ import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.medialibrary.commons.dataobjects.DOFileImportTemplate;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
+import net.pms.medialibrary.commons.dataobjects.DOQuickTagEntry;
 import net.pms.medialibrary.commons.dataobjects.DOTableColumnConfiguration;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.dataobjects.comboboxitems.ConditionTypeCBItem;
@@ -86,10 +87,12 @@ public class FileDisplayTable extends JPanel {
 	private int colMoveFromIndex;
 	
 	private SelectionInList<DOFileInfo> selectionInList = new SelectionInList<DOFileInfo>();
+	private List<DOQuickTagEntry> quickTags;
 
 	public FileDisplayTable(FileType fileType) {
 		super(new BorderLayout());
 		setFileType(fileType);
+		refreshQuickTags();
 		init();
 	}
 
@@ -103,6 +106,10 @@ public class FileDisplayTable extends JPanel {
 
 	public void setContent(List<DOFileInfo> files) {
 		selectionInList.setList(files);
+	}
+	
+	private void refreshQuickTags() {
+		quickTags = MediaLibraryStorage.getInstance().getQuickTagEntries();
 	}
 
 	private void init() {
@@ -236,7 +243,58 @@ public class FileDisplayTable extends JPanel {
 		table.addKeyListener(new KeyAdapter() {
 			
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void keyPressed(KeyEvent e) {				
+				//handle quick tags
+				for(DOQuickTagEntry quickTag : quickTags) {
+					
+					if(e.getKeyCode() != quickTag.getKeyCode()) {
+						continue;
+					}
+					
+					switch(quickTag.getKeyCombination()) {
+					case Ctrl:
+						if(!e.isControlDown()) {
+							continue;
+						}
+						break;
+					case Alt:
+						if(!e.isAltDown()) {
+							continue;
+						}
+						break;
+					case Shift:
+						if(!e.isShiftDown()) {
+							continue;
+						}
+						break;
+					case CtrlShift:
+						if(!(e.isControlDown() && e.isShiftDown())) {
+							continue;
+						}
+						break;
+					case CtrlAlt:
+						if(!(e.isControlDown() && e.isAltDown())) {
+							continue;
+						}
+						break;
+					case ShiftAlt:
+						if(!(e.isShiftDown() && e.isAltDown())) {
+							continue;
+						}
+						break;
+					case CtrlShiftAlt:
+						if(!(e.isShiftDown() && e.isShiftDown() && e.isAltDown())) {
+							continue;
+						}
+						break;
+					default:
+						continue;
+					}
+					
+					tagSelectedFiles(quickTag);
+				}
+				
+				//handle the default events
 				if(e.isControlDown()) {
 					switch(e.getKeyCode()) {
 					case KeyEvent.VK_ADD:
@@ -261,6 +319,13 @@ public class FileDisplayTable extends JPanel {
 						editSelectedFiles();
 						break;
 					}
+				}
+				
+
+				if(!e.isShiftDown() && !e.isShiftDown() && !e.isAltDown()) {
+					if(e.getKeyCode() == KeyEvent.VK_DELETE) {
+						deleteSelectedFiles();
+					}		
 				}
 			}
 		});
@@ -435,6 +500,21 @@ public class FileDisplayTable extends JPanel {
 		mTag.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "tag-16.png")));
 		fileEditMenu.add(mTag);
 		
+		//add quick tags
+		for(DOQuickTagEntry quickTag : quickTags) {
+			final EMenuItem miTemplate = new EMenuItem(quickTag);
+			miTemplate.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DOQuickTagEntry tagToUse = (DOQuickTagEntry)miTemplate.getUserObject();
+					tagSelectedFiles(tagToUse);
+				}
+			});
+			mTag.add(miTemplate);
+		}
+
+		//configure
 		JMenuItem miConfigureTags = new JMenuItem(Messages.getString("ML.ContextMenu.CONFIGURE"));
 		miConfigureTags.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "configure-16.png")));
 		miConfigureTags.addActionListener(new ActionListener() {
@@ -447,6 +527,8 @@ public class FileDisplayTable extends JPanel {
 				dialog.setLocation(GUIHelper.getCenterDialogOnParentLocation(dialog.getSize(), table));
 				dialog.setModal(true);
 				dialog.setVisible(true);
+
+				refreshQuickTags();
 			}
 		});
 		mTag.addSeparator();
@@ -477,60 +559,8 @@ public class FileDisplayTable extends JPanel {
 		miDelete.addActionListener(new ActionListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent arg0) {// Custom button text
-				List<DOFileInfo> selectedFiles = getSelectedFiles();
-				String questionStr;
-				
-				if(selectedFiles.size() == 0) {
-					return;
-				}
-				
-				if(selectedFiles.size() == 1) {
-					questionStr = String.format(Messages.getString("ML.DeleteFileDialog.Option.SingleFile"), selectedFiles.get(0).getFilePath());
-				} else {
-					questionStr = String.format(Messages.getString("ML.DeleteFileDialog.Option.MultipleFiles"), selectedFiles.size());
-				}
-				
-				Object[] options = { Messages.getString("ML.DeleteFileDialog.bCancel"), Messages.getString("ML.DeleteFileDialog.bDeleteFromComputer"),
-						Messages.getString("ML.DeleteFileDialog.bRemoveFromLibrary") };
-				int dialogResponse = JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-								String.format(Messages.getString("ML.DeleteFileDialog.pQuestion"), questionStr), Messages.getString("ML.DeleteFileDialog.Header"),
-								JOptionPane.YES_NO_CANCEL_OPTION,
-								JOptionPane.QUESTION_MESSAGE, null, options,
-								options[2]);
-				
-				boolean deleteFile = false;
-				boolean removeFromLibrary = false;
-				switch(dialogResponse) {
-				case 0:
-					//do nothing
-					break;
-				case 1:
-					deleteFile = true;
-					removeFromLibrary = true;
-					break;
-				case 2:
-					removeFromLibrary = true;
-					break;
-				}
-				
-				if(removeFromLibrary) {
-					for(DOFileInfo fileInfo : selectedFiles) {
-						if(deleteFile) {
-							File fDelete = new File(fileInfo.getFilePath());
-							try {
-								fDelete.delete();
-								log.info("Deleted file " + fDelete.getAbsolutePath());
-							} catch(SecurityException ex) {
-								log.error("Failed to delete file " + fDelete.getAbsolutePath());
-								return;
-							}
-						}
-						
-						MediaLibraryStorage.getInstance().deleteVideo(fileInfo.getId());
-						selectionInList.getList().remove(fileInfo);
-					}					
-				}
+			public void actionPerformed(ActionEvent arg0) {
+				deleteSelectedFiles();
 			}
 		});
 		fileEditMenu.addSeparator();
@@ -604,7 +634,6 @@ public class FileDisplayTable extends JPanel {
 		}
 	}
 
-
 	private void updateSelectedFiles(DOFileImportTemplate template) {
 		List<DOFileInfo> filesToUpdate = getSelectedFiles();
 		final int nbFilesToUpdate = filesToUpdate.size();
@@ -625,6 +654,75 @@ public class FileDisplayTable extends JPanel {
 		FileImportHelper.updateFileInfos(template, filesToUpdate, true, progressReporter);
 		for (DOFileInfo updatedFileInfo : filesToUpdate) {
 			MediaLibraryStorage.getInstance().updateFileInfo(updatedFileInfo);
+		}
+	}
+
+	private void tagSelectedFiles(DOQuickTagEntry quickTag) {
+		for (DOFileInfo file : getSelectedFiles()) {
+			if(!file.getTags().containsKey(quickTag.getTagName())) {
+				file.getTags().put(quickTag.getTagName(), new ArrayList<String>());
+			}
+			List<String> tagNames = file.getTags().get(quickTag.getTagName());
+			if(!tagNames.contains(quickTag.getTagValue())) {
+				tagNames.add(quickTag.getTagValue());
+				MediaLibraryStorage.getInstance().updateFileInfo(file);
+			}
+		}
+	}
+
+	private void deleteSelectedFiles() {
+		List<DOFileInfo> selectedFiles = getSelectedFiles();
+		String questionStr;
+		
+		if(selectedFiles.size() == 0) {
+			return;
+		}
+		
+		if(selectedFiles.size() == 1) {
+			questionStr = String.format(Messages.getString("ML.DeleteFileDialog.Option.SingleFile"), selectedFiles.get(0).getFilePath());
+		} else {
+			questionStr = String.format(Messages.getString("ML.DeleteFileDialog.Option.MultipleFiles"), selectedFiles.size());
+		}
+		
+		Object[] options = { Messages.getString("ML.DeleteFileDialog.bCancel"), Messages.getString("ML.DeleteFileDialog.bDeleteFromComputer"),
+				Messages.getString("ML.DeleteFileDialog.bRemoveFromLibrary") };
+		int dialogResponse = JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+						String.format(Messages.getString("ML.DeleteFileDialog.pQuestion"), questionStr), Messages.getString("ML.DeleteFileDialog.Header"),
+						JOptionPane.YES_NO_CANCEL_OPTION,
+						JOptionPane.QUESTION_MESSAGE, null, options,
+						options[2]);
+		
+		boolean deleteFile = false;
+		boolean removeFromLibrary = false;
+		switch(dialogResponse) {
+		case 0:
+			//do nothing
+			break;
+		case 1:
+			deleteFile = true;
+			removeFromLibrary = true;
+			break;
+		case 2:
+			removeFromLibrary = true;
+			break;
+		}
+		
+		if(removeFromLibrary) {
+			for(DOFileInfo fileInfo : selectedFiles) {
+				if(deleteFile) {
+					File fDelete = new File(fileInfo.getFilePath());
+					try {
+						fDelete.delete();
+						log.info("Deleted file " + fDelete.getAbsolutePath());
+					} catch(SecurityException ex) {
+						log.error("Failed to delete file " + fDelete.getAbsolutePath());
+						return;
+					}
+				}
+				
+				MediaLibraryStorage.getInstance().deleteVideo(fileInfo.getId());
+				selectionInList.getList().remove(fileInfo);
+			}					
 		}
 	}
 	

@@ -35,7 +35,7 @@ public class DOQuickTagEntry {
 	private String tagValue;
 	
 	/** The virtual key . */
-	private int virtualKey;
+	private int keyCode;
 	
 	/** The key combination. */
 	private KeyCombination keyCombination;
@@ -56,11 +56,11 @@ public class DOQuickTagEntry {
 	 * @param virtualKey the virtual key
 	 * @param keyCombination the key combination
 	 */
-	public DOQuickTagEntry(String name, String tagName, String tagValue, int virtualKey, KeyCombination keyCombination) {
+	public DOQuickTagEntry(String name, String tagName, String tagValue, int keyCode, KeyCombination keyCombination) {
 		setName(name);
 		setTagName(tagName);
 		setTagValue(tagValue);
-		setVirtualKey(virtualKey);
+		setKeyCode(keyCode);
 		setKeyCombination(keyCombination);
 	}
 	
@@ -119,21 +119,21 @@ public class DOQuickTagEntry {
 	}
 
 	/**
-	 * Gets the virtual key.
+	 * Gets the key code.
 	 *
-	 * @return the virtual key
+	 * @return the key code
 	 */
-	public int getVirtualKey() {
-		return virtualKey;
+	public int getKeyCode() {
+		return keyCode;
 	}
 
 	/**
-	 * Sets the virtual key.
+	 * Sets the key code.
 	 *
-	 * @param virtualKey the new virtual key
+	 * @param keyCode the new key code
 	 */
-	public void setVirtualKey(int virtualKey) {
-		this.virtualKey = virtualKey;
+	public void setKeyCode(int keyCode) {
+		this.keyCode = keyCode;
 	}
 
 	/**
@@ -152,5 +152,10 @@ public class DOQuickTagEntry {
 	 */
 	public void setKeyCombination(KeyCombination keyCombination) {
 		this.keyCombination = keyCombination;
-	} 
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

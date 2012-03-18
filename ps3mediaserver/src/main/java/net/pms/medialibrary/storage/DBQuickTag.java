@@ -43,7 +43,7 @@ class DBQuickTag extends DBBase {
 				stmt.setString(1, quickTag.getName());
 				stmt.setString(2, quickTag.getTagName());
 				stmt.setString(3, quickTag.getTagValue());
-				stmt.setInt(4, quickTag.getVirtualKey());
+				stmt.setInt(4, quickTag.getKeyCode());
 				stmt.setString(5, quickTag.getKeyCombination().toString());
 				stmt.executeUpdate();
 			}
@@ -66,8 +66,9 @@ class DBQuickTag extends DBBase {
 			conn = cp.getConnection();
 
 			// delete all existing quick tags
-			stmt = conn.prepareStatement("SELECT NAME, TAGNAME, TAGVALUE, VIRTUALKEY, KEYCOMBINATION" +
-										 " FROM QUICKTAG");
+			stmt = conn.prepareStatement("SELECT NAME, TAGNAME, TAGVALUE, VIRTUALKEY, KEYCOMBINATION"
+										 + " FROM QUICKTAG"
+										 + " ORDER BY NAME ASC");
 			rs = stmt.executeQuery();
 			while(rs.next()) {
 				res.add(new DOQuickTagEntry(rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4), 

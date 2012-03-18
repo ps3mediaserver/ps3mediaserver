@@ -85,7 +85,7 @@ public class QuickTagEntryPanel {
 			virtualKeys.add(String.valueOf((char)i));			
 		}
 		cbVirtualKey = new JComboBox(virtualKeys.toArray());
-		cbVirtualKey.setSelectedItem(String.valueOf((char)entry.getVirtualKey()));
+		cbVirtualKey.setSelectedItem(String.valueOf((char)entry.getKeyCode()));
 		
 		bDelete = new JButton();
 		bDelete.setIcon(new ImageIcon(getClass().getResource("/resources/images/tp_remove.png")));
@@ -127,8 +127,8 @@ public class QuickTagEntryPanel {
 		res.setName(tfName.getText());
 		if(cbTagName.getSelectedItem() != null) res.setTagName(cbTagName.getSelectedItem().toString());
 		if(cbTagValue.getSelectedItem() != null) res.setTagValue(cbTagValue.getSelectedItem().toString());
-		if(cbVirtualKey.getSelectedItem() != null) res.setVirtualKey((int)cbVirtualKey.getSelectedItem().toString().charAt(0));
-		if(cbKeyCombination.getSelectedItem() != null) res.setKeyCombination(KeyCombination.valueOf(cbKeyCombination.getSelectedItem().toString()));
+		if(cbVirtualKey.getSelectedItem() != null) res.setKeyCode((int)cbVirtualKey.getSelectedItem().toString().charAt(0));
+		if(cbKeyCombination.getSelectedItem() != null) res.setKeyCombination(((KeyCombinationCBItem)cbKeyCombination.getSelectedItem()).getKeyCombination());
 		
 		return res;
 	}

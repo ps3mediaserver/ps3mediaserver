@@ -36,7 +36,6 @@ public class QuickTagDialog extends JDialog {
 		((java.awt.Frame)getOwner()).setIconImage(new ImageIcon(getClass().getResource("/resources/images/icon-32.png")).getImage());
 		setTitle(Messages.getString("ML.QuickTagDialog.Title"));
 		
-		//TODO: retrieve the existing tags
 		List<DOQuickTagEntry> quickTagEntries = MediaLibraryStorage.getInstance().getQuickTagEntries();
 		this.fileType = fileType;
 		
