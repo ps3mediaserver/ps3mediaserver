@@ -335,9 +335,14 @@ public class FileDisplayTable extends JPanel {
 
 			@Override
 			public void editingStopped(ChangeEvent e) {
+				if(getSelectedFiles().size() != 1) {
+					//only allow editing if a file is actually selected. This return should never be reached
+					return;
+				}
+				
 				FileDisplayTableAdapter tm = (FileDisplayTableAdapter) table.getModel();
 				ConditionType ct = tm.getColumnConditionType(table.getSelectedColumn());
-				DOFileInfo fileInfo = tm.getRow(table.getSelectedRow());
+				DOFileInfo fileInfo = getSelectedFiles().get(0);
 
 				Object obj = ((CellEditor) e.getSource()).getCellEditorValue();
 
