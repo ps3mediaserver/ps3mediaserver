@@ -1503,10 +1503,14 @@ public class MEncoderVideo extends Player {
 			cmdArray[cmdArray.length - 11] = "" + (lavf ? params.aid.getId() + 1 : params.aid.getId());
 		}
 
+		/*
+		 * TODO: Move the following block up with the rest of the
+		 * subtitle stuff
+		 */
 		if (subString == null && params.sid != null) {
 			cmdArray[cmdArray.length - 10] = "-sid";
 			cmdArray[cmdArray.length - 9] = "" + params.sid.getId();
-		} else if (subString != null && !avisynth()) { // Trick necessary for mencoder to skip the internal embedded track ?
+		} else if (subString != null && !avisynth()) { // Trick necessary for MEncoder to skip the internal embedded track ?
 			cmdArray[cmdArray.length - 10] = "-sid";
 			cmdArray[cmdArray.length - 9] = "100";
 		} else if (subString == null) { // Trick necessary for MEncoder to not display the internal embedded track
@@ -1541,6 +1545,10 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
+		/*
+		 * TODO: Move the following block up with the rest of the
+		 * subtitle stuff
+		 */
 		if (subString != null && !configuration.isMencoderDisableSubs() && !avisynth()) {
 			if (params.sid.getType() == DLNAMediaSubtitle.VOBSUB) {
 				cmdArray[cmdArray.length - 4] = "-vobsub";
@@ -1550,7 +1558,7 @@ public class MEncoderVideo extends Player {
 				cmdArray[cmdArray.length - 3] = "" + params.sid.getLang();
 			} else {
 				cmdArray[cmdArray.length - 4] = "-sub";
-				cmdArray[cmdArray.length - 3] = subString.replace(",", "\\,"); // commas in mencoder separates multiple subtitles files
+				cmdArray[cmdArray.length - 3] = subString.replace(",", "\\,"); // Commas in MEncoder separate multiple subtitle files
 				if (params.sid.isFileUtf8() && params.sid.getPlayableFile() != null) {
 					cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 1);
 					cmdArray[cmdArray.length - 3] = "-utf8";
