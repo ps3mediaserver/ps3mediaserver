@@ -1338,6 +1338,8 @@ public class MEncoderVideo extends Player {
 		StringBuilder sb = new StringBuilder();
 		// set subtitles options
 		if (!configuration.isMencoderDisableSubs() && !avisynth()) {
+			int subtitleMargin = 0;
+			int userMargin     = 0;
 			// Use ASS formating for all subtitled files except vobsub and dvd
 			if (
 				params.sid != null &&
@@ -1351,7 +1353,11 @@ public class MEncoderVideo extends Player {
 				sb.append("-ass ");
 
 				// GUI: Override ASS subtitles style if requested (always for SRT subtitles)
-				if (!configuration.isMencoderAssDefaultStyle() || params.sid.getType() == DLNAMediaSubtitle.SUBRIP || params.sid.getType() == DLNAMediaSubtitle.EMBEDDED) {
+				if (
+					!configuration.isMencoderAssDefaultStyle() ||
+					params.sid.getType() == DLNAMediaSubtitle.SUBRIP ||
+					params.sid.getType() == DLNAMediaSubtitle.EMBEDDED
+				) {
 					String assSubColor = "ffffff00";
 					if (configuration.getSubsColor() != 0) {
 						assSubColor = Integer.toHexString(configuration.getSubsColor());
@@ -1380,7 +1386,25 @@ public class MEncoderVideo extends Player {
 							sb.append(" -ass-force-style FontName=Arial,");
 						}
 					}
-					sb.append("Outline=").append(configuration.getMencoderAssOutline()).append(",Shadow=").append(configuration.getMencoderAssShadow()).append(",MarginV=").append(configuration.getMencoderAssMargin()).append(" ");
+
+					// Add to the subtitle margin if overscan compensation is being used
+					// This keeps the subtitle text inside the frame instead of in the border
+					if (intOCH > 0) {
+						subtitleMargin = (media.getHeight() / 100) * intOCH;
+					}
+
+					sb.append("Outline=").append(configuration.getMencoderAssOutline()).append(",Shadow=").append(configuration.getMencoderAssShadow());
+
+					try {
+						userMargin = Integer.parseInt(configuration.getMencoderAssMargin());
+					} catch (NumberFormatException n) {
+						logger.debug("Could not parse SSA margin from \"" + configuration.getMencoderAssMargin() + "\"");
+					}
+					subtitleMargin = subtitleMargin + userMargin;
+
+					sb.append(",MarginV=").append(Math.round(subtitleMargin)).append(" ");
+				} else if (intOCH > 0) {
+					sb.append("-ass-force-style MarginV=").append(Math.round(subtitleMargin)).append(" ");
 				}
 			// use PLAINTEXT formating
 			} else {
@@ -1397,17 +1421,25 @@ public class MEncoderVideo extends Player {
 				sb.append(" -subfont-text-scale ").append(configuration.getMencoderNoAssScale());
 				sb.append(" -subfont-outline ").append(configuration.getMencoderNoAssOutline());
 				sb.append(" -subfont-blur ").append(configuration.getMencoderNoAssBlur());
-				int subpos = 1;
+
+				// Add to the subtitle margin if overscan compensation is being used
+				// This keeps the subtitle text inside the frame instead of in the border
+				if (intOCH > 0) {
+					subtitleMargin = intOCH;
+				}
+
 				try {
-					subpos = Integer.parseInt(configuration.getMencoderNoAssSubPos());
+					userMargin = Integer.parseInt(configuration.getMencoderNoAssSubPos());
 				} catch (NumberFormatException n) {
 					logger.debug("Could not parse subpos from \"" + configuration.getMencoderNoAssSubPos() + "\"");
 				}
-				sb.append(" -subpos ").append(100 - subpos).append(" ");
+				subtitleMargin = subtitleMargin + userMargin;
+
+				sb.append(" -subpos ").append(100 - Math.round(subtitleMargin)).append(" ");
 			}
 
-			// common subtitles options
-			// use fontconfig if enabled
+			// Common subtitle options
+			// Use fontconfig if enabled
 			sb.append("-").append(configuration.isMencoderFontConfig() ? "" : "no").append("fontconfig ");
 		}
 
