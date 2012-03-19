@@ -280,6 +280,7 @@ download_ffmpeg() {
         $GIT checkout ${VERSION_FFMPEG}
         exit_on_error
     fi
+    rm -rf ./.git
 }
 
 
