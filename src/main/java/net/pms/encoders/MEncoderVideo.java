@@ -1325,8 +1325,6 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
-		boolean needAssFixPTS = false;
-
 		boolean foundNoassParam = false;
 		if (media != null) {
 			String sArgs [] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, subString, configuration.isMencoderIntelligentSync(), false);
@@ -1362,6 +1360,7 @@ public class MEncoderVideo extends Player {
 						}
 					}
 					sb.append("-ass-color ").append(assSubColor).append(" -ass-border-color 00000000 -ass-font-scale ").append(configuration.getMencoderAssScale());
+
 					// set subtitles font
 					if (configuration.getMencoderFont() != null && configuration.getMencoderFont().length() > 0) {
 						sb.append(" -font ").append(configuration.getMencoderFont()).append(" "); // set font with -font option, workarond for https://github.com/Happy-Neko/ps3mediaserver/commit/52e62203ea12c40628de1869882994ce1065446a#commitcomment-990156 bug
@@ -1410,10 +1409,6 @@ public class MEncoderVideo extends Player {
 			// common subtitles options
 			// use fontconfig if enabled
 			sb.append("-").append(configuration.isMencoderFontConfig() ? "" : "no").append("fontconfig ");
-
-			if (mpegts || wmv) {
-				needAssFixPTS = Platform.isWindows(); // don't think the fixpts filter is in the mplayer trunk
-			}
 		}
 
 		// Apply DVD/VOBsub subtitle quality
@@ -1570,12 +1565,6 @@ public class MEncoderVideo extends Player {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-psprobe";
 			cmdArray[cmdArray.length - 3] = "10000";
-		}
-
-		if (needAssFixPTS) {
-			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
-			cmdArray[cmdArray.length - 4] = "-vf";
-			cmdArray[cmdArray.length - 3] = "ass,fixpts";
 		}
 
 		boolean deinterlace = configuration.isMencoderYadif();
