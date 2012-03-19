@@ -616,25 +616,6 @@ download_ncurses() {
 
 
 ##########################################
-# TSMUXER
-# http://www.smlabs.net/en/products/tsmuxer/
-# http://www.videohelp.com/tools/tsMuxeR
-# Interesting Open Source followup project in development: https://github.com/kierank/libmpegts
-#
-download_tsMuxeR() {
-    start_download tsMuxeR
-    cd $SRC
-
-    if is_osx; then
-        if [ ! -f tsMuxeR_${VERSION_TSMUXER}.dmg ]; then
-            $CURL -H "Referer: http://www.videohelp.com/tools/tsMuxeR" -L http://www.videohelp.com/download/tsMuxeR_${VERSION_TSMUXER}.dmg > tsMuxeR_${VERSION_TSMUXER}.dmg
-            exit_on_error
-        fi
-    fi
-}
-
-
-##########################################
 # X264
 # svn://svn.videolan.org/x264/trunk
 #
@@ -807,9 +788,6 @@ download_xvid
 # Build tools for including with PS3 Media Server
 download_flac
 download_dcraw
-if is_osx; then
-    download_tsMuxeR
-fi
 download_enca
 download_ffmpeg
 download_mplayer
