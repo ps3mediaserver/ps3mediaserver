@@ -814,7 +814,6 @@ public class MEncoderVideo extends Player {
 
 		builder.add(mencoder_noass_subpos, cc.xy(15, 41));
 
-
 		ass = new JCheckBox(Messages.getString("MEncoderVideo.20"));
 		ass.setContentAreaFilled(false);
 		ass.addItemListener(new ItemListener() {
@@ -822,15 +821,6 @@ public class MEncoderVideo extends Player {
 				if (e != null) {
 					configuration.setMencoderAss(e.getStateChange() == ItemEvent.SELECTED);
 				}
-
-				mencoder_ass_scale.setEnabled(configuration.isMencoderAss());
-				mencoder_ass_outline.setEnabled(configuration.isMencoderAss());
-				mencoder_ass_shadow.setEnabled(configuration.isMencoderAss());
-				mencoder_ass_margin.setEnabled(configuration.isMencoderAss());
-				mencoder_noass_scale.setEnabled(!configuration.isMencoderAss());
-				mencoder_noass_outline.setEnabled(!configuration.isMencoderAss());
-				mencoder_noass_blur.setEnabled(!configuration.isMencoderAss());
-				mencoder_noass_subpos.setEnabled(!configuration.isMencoderAss());
 			}
 		});
 
@@ -892,7 +882,7 @@ public class MEncoderVideo extends Player {
 
 		builder.addLabel(Messages.getString("MEncoderVideo.93"), cc.xyw(1, 47, 6));
 
-		builder.addLabel(Messages.getString("MEncoderVideo.28"), cc.xy(1, 49, CellConstraints.RIGHT, CellConstraints.CENTER));
+		builder.addLabel(Messages.getString("MEncoderVideo.28") + "% ", cc.xy(1, 49, CellConstraints.RIGHT, CellConstraints.CENTER));
 		ocw = new JTextField(configuration.getMencoderOverscanCompensationWidth());
 		ocw.addKeyListener(new KeyListener() {
 			@Override
@@ -910,7 +900,7 @@ public class MEncoderVideo extends Player {
 		});
 		builder.add(ocw, cc.xyw(3, 49, 1));
 
-		builder.addLabel(Messages.getString("MEncoderVideo.30"), cc.xy(5, 49));
+		builder.addLabel(Messages.getString("MEncoderVideo.30") + "% ", cc.xy(5, 49));
 		och = new JTextField(configuration.getMencoderOverscanCompensationHeight());
 		och.addKeyListener(new KeyListener() {
 			@Override
@@ -1158,15 +1148,13 @@ public class MEncoderVideo extends Player {
 		try {
 			intOCW = Integer.parseInt(configuration.getMencoderOverscanCompensationWidth());
 		} catch (NumberFormatException e) {
-			logger.error("Cannot parse configured MEncoder overscan compensation width: \""
-					+ configuration.getMencoderOverscanCompensationWidth() + "\"");
+			logger.error("Cannot parse configured MEncoder overscan compensation width: \"" + configuration.getMencoderOverscanCompensationWidth() + "\"");
 		}
 
 		try {
 			intOCH = Integer.parseInt(configuration.getMencoderOverscanCompensationHeight());
 		} catch (NumberFormatException e) {
-			logger.error("Cannot parse configured MEncoder overscan compensation height: \""
-					+ configuration.getMencoderOverscanCompensationHeight() + "\"");
+			logger.error("Cannot parse configured MEncoder overscan compensation height: \"" + configuration.getMencoderOverscanCompensationHeight() + "\"");
 		}
 
 		if (
@@ -1337,8 +1325,6 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
-		boolean needAssFixPTS = false;
-
 		boolean foundNoassParam = false;
 		if (media != null) {
 			String sArgs [] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, subString, configuration.isMencoderIntelligentSync(), false);
@@ -1350,22 +1336,38 @@ public class MEncoderVideo extends Player {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		// set subtitles options
-		if (!configuration.isMencoderDisableSubs() && !avisynth()) {
-			// Use ASS formating for all subtitled files except vobsub and dvd
+		// Set subtitles options
+		if (!configuration.isMencoderDisableSubs() && !avisynth() && params.sid != null) {
+			int subtitleMargin = 0;
+			int userMargin     = 0;
+
+			// Use ASS flag (and therefore ASS font styles) for all subtitled files except vobsub, embedded, dvd and mp4 container with srt
+			// Note: The MP4 container with SRT rule is a workaround for MEncoder r30369. If there is ever a later version of MEncoder that supports external srt subs we should use that. As of r32848 that isn't the case
 			if (
-				params.sid != null &&
-				//params.sid.getType() != DLNAMediaSubtitle.EMBEDDED &&
+				(
+					(
+						params.sid.isFileUtf8() &&
+						params.sid.getType() == DLNAMediaSubtitle.EMBEDDED
+					) ||
+					params.sid.getType() != DLNAMediaSubtitle.EMBEDDED
+				) &&
 				params.sid.getType() != DLNAMediaSubtitle.VOBSUB &&
-				//params.sid.getType() != DLNAMediaSubtitle.SUBRIP &&
-				configuration.isMencoderAss() && 	// GUI: enable subtitles formating
-				!foundNoassParam &&			// GUI: codec specific options
+				!(
+					params.sid.getType() == DLNAMediaSubtitle.SUBRIP &&
+					media.getContainer().equals("mp4")
+				) &&
+				configuration.isMencoderAss() &&   // GUI: enable subtitles formating
+				!foundNoassParam &&                // GUI: codec specific options
 				!dvd
 			) {
 				sb.append("-ass ");
 
 				// GUI: Override ASS subtitles style if requested (always for SRT subtitles)
-				if (!configuration.isMencoderAssDefaultStyle() || params.sid.getType() == DLNAMediaSubtitle.SUBRIP || params.sid.getType() == DLNAMediaSubtitle.EMBEDDED) {
+				if (
+					!configuration.isMencoderAssDefaultStyle() ||
+					params.sid.getType() == DLNAMediaSubtitle.SUBRIP ||
+					params.sid.getType() == DLNAMediaSubtitle.EMBEDDED
+				) {
 					String assSubColor = "ffffff00";
 					if (configuration.getSubsColor() != 0) {
 						assSubColor = Integer.toHexString(configuration.getSubsColor());
@@ -1374,6 +1376,7 @@ public class MEncoderVideo extends Player {
 						}
 					}
 					sb.append("-ass-color ").append(assSubColor).append(" -ass-border-color 00000000 -ass-font-scale ").append(configuration.getMencoderAssScale());
+
 					// set subtitles font
 					if (configuration.getMencoderFont() != null && configuration.getMencoderFont().length() > 0) {
 						sb.append(" -font ").append(configuration.getMencoderFont()).append(" "); // set font with -font option, workarond for https://github.com/Happy-Neko/ps3mediaserver/commit/52e62203ea12c40628de1869882994ce1065446a#commitcomment-990156 bug
@@ -1393,7 +1396,30 @@ public class MEncoderVideo extends Player {
 							sb.append(" -ass-force-style FontName=Arial,");
 						}
 					}
-					sb.append("Outline=").append(configuration.getMencoderAssOutline()).append(",Shadow=").append(configuration.getMencoderAssShadow()).append(",MarginV=").append(configuration.getMencoderAssMargin()).append(" ");
+
+					// Add to the subtitle margin if overscan compensation is being used
+					// This keeps the subtitle text inside the frame instead of in the border
+					if (intOCH > 0) {
+						subtitleMargin = (media.getHeight() / 100) * intOCH;
+					}
+
+					sb.append("Outline=").append(configuration.getMencoderAssOutline()).append(",Shadow=").append(configuration.getMencoderAssShadow());
+
+					try {
+						userMargin = Integer.parseInt(configuration.getMencoderAssMargin());
+					} catch (NumberFormatException n) {
+						logger.debug("Could not parse SSA margin from \"" + configuration.getMencoderAssMargin() + "\"");
+					}
+					subtitleMargin = subtitleMargin + userMargin;
+
+					sb.append(",MarginV=").append(Math.round(subtitleMargin)).append(" ");
+				} else if (intOCH > 0) {
+					sb.append("-ass-force-style MarginV=").append(Math.round(subtitleMargin)).append(" ");
+				}
+
+				if (params.sid.getType() != DLNAMediaSubtitle.EMBEDDED) {
+					// Workaround for MPlayer #2041, remove when that bug is fixed
+					sb.append("-noflip-hebrew ");
 				}
 			// use PLAINTEXT formating
 			} else {
@@ -1410,48 +1436,39 @@ public class MEncoderVideo extends Player {
 				sb.append(" -subfont-text-scale ").append(configuration.getMencoderNoAssScale());
 				sb.append(" -subfont-outline ").append(configuration.getMencoderNoAssOutline());
 				sb.append(" -subfont-blur ").append(configuration.getMencoderNoAssBlur());
-				int subpos = 1;
+
+				// Add to the subtitle margin if overscan compensation is being used
+				// This keeps the subtitle text inside the frame instead of in the border
+				if (intOCH > 0) {
+					subtitleMargin = intOCH;
+				}
+
 				try {
-					subpos = Integer.parseInt(configuration.getMencoderNoAssSubPos());
+					userMargin = Integer.parseInt(configuration.getMencoderNoAssSubPos());
 				} catch (NumberFormatException n) {
 					logger.debug("Could not parse subpos from \"" + configuration.getMencoderNoAssSubPos() + "\"");
 				}
-				sb.append(" -subpos ").append(100 - subpos).append(" ");
+				subtitleMargin = subtitleMargin + userMargin;
+
+				sb.append(" -subpos ").append(100 - Math.round(subtitleMargin)).append(" ");
 			}
 
-			// common subtitles options
-			// use fontconfig if enabled
+			// Common subtitle options
+			// Use fontconfig if enabled
 			sb.append("-").append(configuration.isMencoderFontConfig() ? "" : "no").append("fontconfig ");
 
-			if (mpegts || wmv) {
-				needAssFixPTS = Platform.isWindows(); // don't think the fixpts filter is in the mplayer trunk
-			}
-		}
+			// Apply DVD/VOBsub subtitle quality
+			if (params.sid.getType() == DLNAMediaSubtitle.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
+				String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
 
-		// Apply DVD/VOBsub subtitle quality
-		if (params.sid != null && params.sid.getType() == DLNAMediaSubtitle.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
-			String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
-
-			sb.append("-spuaa ").append(subtitleQuality).append(" ");
-		}
-
-		// Apply overscan compensation
-		// -vf scale to original resolution seems to fix most cases of video warping
-		// TODO: Integrate with Video Scaler option
-		if (intOCW > 0 || intOCH > 0) {
-			String scaleAppend = "";
-
-			if (media != null && media.getWidth() > 0 && media.getHeight() > 0) {
-				scaleAppend = ",scale=" + media.getWidth() + ":" + media.getHeight();
+				sb.append("-spuaa ").append(subtitleQuality).append(" ");
 			}
 
-			sb.append("-vf softskip,expand=-").append(intOCW).append(":-").append(intOCH).append(scaleAppend).append(",harddup ");
-		}
-
-		if (params.sid != null && !params.sid.isFileUtf8() && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
-			sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" ");
-			if (configuration.isMencoderSubFribidi()) {
-				sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" ");
+			if (!params.sid.isFileUtf8() && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
+				sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" ");
+				if (configuration.isMencoderSubFribidi()) {
+					sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" ");
+				}
 			}
 		}
 
@@ -1520,10 +1537,14 @@ public class MEncoderVideo extends Player {
 			cmdArray[cmdArray.length - 11] = "" + (lavf ? params.aid.getId() + 1 : params.aid.getId());
 		}
 
+		/*
+		 * TODO: Move the following block up with the rest of the
+		 * subtitle stuff
+		 */
 		if (subString == null && params.sid != null) {
 			cmdArray[cmdArray.length - 10] = "-sid";
 			cmdArray[cmdArray.length - 9] = "" + params.sid.getId();
-		} else if (subString != null && !avisynth()) { // Trick necessary for mencoder to skip the internal embedded track ?
+		} else if (subString != null && !avisynth()) { // Trick necessary for MEncoder to skip the internal embedded track ?
 			cmdArray[cmdArray.length - 10] = "-sid";
 			cmdArray[cmdArray.length - 9] = "100";
 		} else if (subString == null) { // Trick necessary for MEncoder to not display the internal embedded track
@@ -1540,6 +1561,7 @@ public class MEncoderVideo extends Player {
 		}
 		cmdArray[cmdArray.length - 6] = "-ofps";
 		cmdArray[cmdArray.length - 5] = "24000/1001";
+
 		String frameRate = null;
 		if (media != null) {
 			frameRate = media.getValidFps(true);
@@ -1557,6 +1579,10 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
+		/*
+		 * TODO: Move the following block up with the rest of the
+		 * subtitle stuff
+		 */
 		if (subString != null && !configuration.isMencoderDisableSubs() && !avisynth()) {
 			if (params.sid.getType() == DLNAMediaSubtitle.VOBSUB) {
 				cmdArray[cmdArray.length - 4] = "-vobsub";
@@ -1566,7 +1592,7 @@ public class MEncoderVideo extends Player {
 				cmdArray[cmdArray.length - 3] = "" + params.sid.getLang();
 			} else {
 				cmdArray[cmdArray.length - 4] = "-sub";
-				cmdArray[cmdArray.length - 3] = subString.replace(",", "\\,"); // commas in mencoder separates multiple subtitles files
+				cmdArray[cmdArray.length - 3] = subString.replace(",", "\\,"); // Commas in MEncoder separate multiple subtitle files
 				if (params.sid.isFileUtf8() && params.sid.getPlayableFile() != null) {
 					cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 1);
 					cmdArray[cmdArray.length - 3] = "-utf8";
@@ -1583,25 +1609,180 @@ public class MEncoderVideo extends Player {
 			cmdArray[cmdArray.length - 3] = "10000";
 		}
 
-		if (needAssFixPTS) {
+		boolean deinterlace = configuration.isMencoderYadif();
+
+		// Check if the media renderer supports this resolution
+		boolean isResolutionTooHighForRenderer = params.mediaRenderer.isVideoRescale() && media != null && (media.getWidth() > params.mediaRenderer.getMaxVideoWidth() || (media.getHeight() > params.mediaRenderer.getMaxVideoHeight()));
+
+		// Video scaler and overscan compensation
+		boolean scaleBool = isResolutionTooHighForRenderer || (configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0)) || (intOCW > 0 || intOCH > 0);
+		if ((deinterlace || scaleBool) && !avisynth()) {
+			StringBuilder vfValueOverscanPrepend = new StringBuilder();
+			StringBuilder vfValueOverscanMiddle  = new StringBuilder();
+			StringBuilder vfValueVS              = new StringBuilder();
+			StringBuilder vfValueComplete        = new StringBuilder();
+
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-vf";
-			cmdArray[cmdArray.length - 3] = "ass,fixpts";
+
+			String deinterlaceComma = "";
+			int scaleWidth = 0;
+			int scaleHeight = 0;
+			double rendererAspectRatio;
+
+			// Set defaults
+			if (media != null && media.getWidth() > 0 && media.getHeight() > 0) {
+				scaleWidth = media.getWidth();
+				scaleHeight = media.getHeight();
+			}
+
+			/*
+			 * Implement overscan compensation settings
+			 * 
+			 * This feature takes into account aspect ratio,
+			 * making it less blunt than the Video Scaler option
+			 */
+			if (intOCW > 0 || intOCH > 0) {
+				int intOCWPixels = (media.getWidth()  / 100) * intOCW;
+				int intOCHPixels = (media.getHeight() / 100) * intOCH;
+
+				scaleWidth  = scaleWidth  + intOCWPixels;
+				scaleHeight = scaleHeight + intOCHPixels;
+
+				// See if the video needs to be scaled down
+				if (
+					(scaleWidth > params.mediaRenderer.getMaxVideoWidth()) ||
+					(scaleHeight > params.mediaRenderer.getMaxVideoHeight())
+				) {
+					double overscannedAspectRatio = scaleWidth / scaleHeight;
+					rendererAspectRatio = params.mediaRenderer.getMaxVideoWidth() / params.mediaRenderer.getMaxVideoHeight();
+
+					if (overscannedAspectRatio > rendererAspectRatio) {
+						// Limit video by width
+						scaleWidth  = params.mediaRenderer.getMaxVideoWidth();
+						scaleHeight = (int) Math.round(params.mediaRenderer.getMaxVideoWidth() / overscannedAspectRatio);
+					} else {
+						// Limit video by height
+						scaleWidth  = (int) Math.round(params.mediaRenderer.getMaxVideoHeight() * overscannedAspectRatio);
+						scaleHeight = params.mediaRenderer.getMaxVideoHeight();
+					}
+				}
+
+				vfValueOverscanPrepend.append("softskip,expand=-").append(Math.round(intOCWPixels)).append(":-").append(Math.round(intOCHPixels));
+				vfValueOverscanMiddle.append(",scale=").append(scaleWidth).append(":").append(scaleHeight);
+			}
+
+			/*
+			 * Video Scaler and renderer-specific resolution-limiter
+			 */
+			if (configuration.isMencoderScaler()) {
+				// Use the manual, user-controlled scaler
+				if (configuration.getMencoderScaleX() != 0) {
+					if (configuration.getMencoderScaleX() <= params.mediaRenderer.getMaxVideoWidth()) {
+						scaleWidth = configuration.getMencoderScaleX();
+					} else {
+						scaleWidth = params.mediaRenderer.getMaxVideoWidth();
+					}
+				}
+
+				if (configuration.getMencoderScaleY() != 0) {
+					if (configuration.getMencoderScaleY() <= params.mediaRenderer.getMaxVideoHeight()) {
+						scaleHeight = configuration.getMencoderScaleY();
+					} else {
+						scaleHeight = params.mediaRenderer.getMaxVideoHeight();
+					}
+				}
+				logger.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", your Video Scaler setting");
+
+				vfValueVS.append("scale=").append(scaleWidth).append(":").append(scaleHeight);
+
+			/*
+			 * The video resolution is too big for the renderer so we need to scale it down
+			 */
+			} else if (
+				media != null &&
+				media.getWidth() > 0 &&
+				media.getHeight() > 0 &&
+				(
+					media.getWidth()  > params.mediaRenderer.getMaxVideoWidth() || 
+					media.getHeight() > params.mediaRenderer.getMaxVideoHeight()
+				)
+			) {
+				double videoAspectRatio = (double) media.getWidth() / (double) media.getHeight();
+				rendererAspectRatio = (double) params.mediaRenderer.getMaxVideoWidth() / (double) params.mediaRenderer.getMaxVideoHeight();
+
+				/*
+				 * First we deal with some exceptions, then if they are not matched we will
+				 * let the renderer limits work.
+				 * 
+				 * This is so, for example, we can still define a maximum resolution of
+				 * 1920x1080 in the renderer config file but still support 1920x1088 when
+				 * it's needed, otherwise we would either resize 1088 to 1080, meaning the
+				 * ugly (unused) bottom 8 pixels would be displayed, or we would limit all
+				 * videos to 1088 causing the bottom 8 meaningful pixels to be cut off.
+				 */
+				if (media.getWidth() == 3840 && media.getHeight() == 1080) {
+					// Full-SBS
+					scaleWidth  = 1920;
+					scaleHeight = 1080;
+				} else if (media.getWidth() == 1920 && media.getHeight() == 2160) {
+					// Full-OU
+					scaleWidth  = 1920;
+					scaleHeight = 1080;
+				} else if (media.getWidth() == 1920 && media.getHeight() == 1088) {
+					// SAT capture
+					scaleWidth  = 1920;
+					scaleHeight = 1088;
+				} else {
+					// Passed the exceptions, now we allow the renderer to define the limits
+					if (videoAspectRatio > rendererAspectRatio) {
+						scaleWidth  = params.mediaRenderer.getMaxVideoWidth();
+						scaleHeight = (int) Math.round(params.mediaRenderer.getMaxVideoWidth() / videoAspectRatio);
+					} else {
+						scaleWidth  = (int) Math.round(params.mediaRenderer.getMaxVideoHeight() * videoAspectRatio);
+						scaleHeight = params.mediaRenderer.getMaxVideoHeight();
+					}
+				}
+				logger.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", the maximum your renderer supports");
+
+				vfValueVS.append("scale=").append(scaleWidth).append(":").append(scaleHeight);
+			}
+
+			// Put the string together taking into account overscan compensation and video scaler
+			if (intOCW > 0 || intOCH > 0) {
+				vfValueComplete.append(vfValueOverscanPrepend).append(vfValueOverscanMiddle).append(",harddup");
+				logger.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", to fit your overscan compensation");
+			} else {
+				vfValueComplete.append(vfValueVS);
+			}
+
+			if (deinterlace) {
+				deinterlaceComma = ",";
+			}
+
+			cmdArray[cmdArray.length - 3] = (deinterlace ? "yadif" : "") + (scaleBool ? deinterlaceComma + vfValueComplete : "");
 		}
 
-		boolean deinterlace = configuration.isMencoderYadif();
-		// check if the media renderer supports this resolution
-		boolean mediaRendererScaler = params.mediaRenderer.isVideoRescale() && media != null && (media.getWidth() > params.mediaRenderer.getMaxVideoWidth() || (media.getHeight() > params.mediaRenderer.getMaxVideoHeight()));
-		// use scaler?
-		boolean scaleBool = mediaRendererScaler || (configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0));
-		if ((deinterlace || scaleBool) && !avisynth()) {
+		/*
+		 * The PS3 and possibly other renderers display videos incorrectly
+		 * if the dimensions aren't divisible by 4, so if that is the
+		 * case we scale it down to the nearest 4.
+		 * This fixes the long-time bug of videos displaying in black and
+		 * white with diagonal strips of colour, weird one.
+		 * 
+		 * TODO: Integrate this with the other stuff so that "scale" only
+		 * ever appears once in the MEncoder CMD.
+		 */
+		if (media != null && (media.getWidth() % 4 != 0) || media.getHeight() % 4 != 0) {
+			int newWidth;
+			int newHeight;
+
+			newWidth  = Math.round(media.getWidth() / 4) * 4;
+			newHeight = Math.round(media.getHeight() / 4) * 4;
+
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-vf";
-			String scalerString = "scale=" + (params.mediaRenderer.getMaxVideoWidth() > 0 ? params.mediaRenderer.getMaxVideoWidth() : configuration.getMencoderScaleX()) + ":" + (params.mediaRenderer.getMaxVideoHeight() > 0 ? params.mediaRenderer.getMaxVideoHeight() : configuration.getMencoderScaleY());
-			if (deinterlace) {
-				scalerString = "," + scalerString;
-			}
-			cmdArray[cmdArray.length - 3] = (deinterlace ? "yadif" : "") + (scaleBool ? scalerString : "");
+			cmdArray[cmdArray.length - 3] = "softskip,scale=" + newWidth + ":" + newHeight;
 		}
 
 		if (configuration.getMencoderMT() && !avisynth && !dvd && !(media.getCodecV() != null && (media.getCodecV().equals("mpeg2video")))) {
