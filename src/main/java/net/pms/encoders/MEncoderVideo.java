@@ -882,7 +882,7 @@ public class MEncoderVideo extends Player {
 
 		builder.addLabel(Messages.getString("MEncoderVideo.93"), cc.xyw(1, 47, 6));
 
-		builder.addLabel(Messages.getString("MEncoderVideo.28"), cc.xy(1, 49, CellConstraints.RIGHT, CellConstraints.CENTER));
+		builder.addLabel(Messages.getString("MEncoderVideo.28") + "% ", cc.xy(1, 49, CellConstraints.RIGHT, CellConstraints.CENTER));
 		ocw = new JTextField(configuration.getMencoderOverscanCompensationWidth());
 		ocw.addKeyListener(new KeyListener() {
 			@Override
@@ -900,7 +900,7 @@ public class MEncoderVideo extends Player {
 		});
 		builder.add(ocw, cc.xyw(3, 49, 1));
 
-		builder.addLabel(Messages.getString("MEncoderVideo.30"), cc.xy(5, 49));
+		builder.addLabel(Messages.getString("MEncoderVideo.30") + "% ", cc.xy(5, 49));
 		och = new JTextField(configuration.getMencoderOverscanCompensationHeight());
 		och.addKeyListener(new KeyListener() {
 			@Override
@@ -1418,19 +1418,6 @@ public class MEncoderVideo extends Player {
 			sb.append("-spuaa ").append(subtitleQuality).append(" ");
 		}
 
-		// Apply overscan compensation
-		// -vf scale to original resolution seems to fix most cases of video warping
-		// TODO: Integrate with Video Scaler option
-		if (intOCW > 0 || intOCH > 0) {
-			String scaleAppend = "";
-
-			if (media != null && media.getWidth() > 0 && media.getHeight() > 0) {
-				scaleAppend = ",scale=" + media.getWidth() + ":" + media.getHeight();
-			}
-
-			sb.append("-vf softskip,expand=-").append(intOCW).append(":-").append(intOCH).append(scaleAppend).append(",harddup ");
-		}
-
 		if (params.sid != null && !params.sid.isFileUtf8() && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
 			sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" ");
 			if (configuration.isMencoderSubFribidi()) {
@@ -1576,18 +1563,157 @@ public class MEncoderVideo extends Player {
 		}
 
 		boolean deinterlace = configuration.isMencoderYadif();
-		// check if the media renderer supports this resolution
-		boolean mediaRendererScaler = params.mediaRenderer.isVideoRescale() && media != null && (media.getWidth() > params.mediaRenderer.getMaxVideoWidth() || (media.getHeight() > params.mediaRenderer.getMaxVideoHeight()));
-		// use scaler?
-		boolean scaleBool = mediaRendererScaler || (configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0));
+
+		// Check if the media renderer supports this resolution
+		boolean isResolutionTooHighForRenderer = params.mediaRenderer.isVideoRescale() && media != null && (media.getWidth() > params.mediaRenderer.getMaxVideoWidth() || (media.getHeight() > params.mediaRenderer.getMaxVideoHeight()));
+
+		// Video scaler and overscan compensation
+		boolean scaleBool = isResolutionTooHighForRenderer || (configuration.isMencoderScaler() && (configuration.getMencoderScaleX() != 0 || configuration.getMencoderScaleY() != 0)) || (intOCW > 0 || intOCH > 0);
 		if ((deinterlace || scaleBool) && !avisynth()) {
+			StringBuilder vfValueOverscanPrepend = new StringBuilder();
+			StringBuilder vfValueOverscanMiddle  = new StringBuilder();
+			StringBuilder vfValueVS              = new StringBuilder();
+			StringBuilder vfValueComplete        = new StringBuilder();
+
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-vf";
-			String scalerString = "scale=" + (params.mediaRenderer.getMaxVideoWidth() > 0 ? params.mediaRenderer.getMaxVideoWidth() : configuration.getMencoderScaleX()) + ":" + (params.mediaRenderer.getMaxVideoHeight() > 0 ? params.mediaRenderer.getMaxVideoHeight() : configuration.getMencoderScaleY());
-			if (deinterlace) {
-				scalerString = "," + scalerString;
+
+			String deinterlaceComma = "";
+			int scaleWidth = 0;
+			int scaleHeight = 0;
+			double rendererAspectRatio;
+
+			// Set defaults
+			if (media != null && media.getWidth() > 0 && media.getHeight() > 0) {
+				scaleWidth = media.getWidth();
+				scaleHeight = media.getHeight();
 			}
-			cmdArray[cmdArray.length - 3] = (deinterlace ? "yadif" : "") + (scaleBool ? scalerString : "");
+
+			/*
+			 * Implement overscan compensation settings
+			 * 
+			 * This feature takes into account aspect ratio,
+			 * making it less blunt than the Video Scaler option
+			 */
+			if (intOCW > 0 || intOCH > 0) {
+				int intOCWPixels = (media.getWidth()  / 100) * intOCW;
+				int intOCHPixels = (media.getHeight() / 100) * intOCH;
+
+				scaleWidth  = scaleWidth  + intOCWPixels;
+				scaleHeight = scaleHeight + intOCHPixels;
+
+				// See if the video needs to be scaled down
+				if (
+					(scaleWidth > params.mediaRenderer.getMaxVideoWidth()) ||
+					(scaleHeight > params.mediaRenderer.getMaxVideoHeight())
+				) {
+					double overscannedAspectRatio = scaleWidth / scaleHeight;
+					rendererAspectRatio = params.mediaRenderer.getMaxVideoWidth() / params.mediaRenderer.getMaxVideoHeight();
+
+					if (overscannedAspectRatio > rendererAspectRatio) {
+						// Limit video by width
+						scaleWidth  = params.mediaRenderer.getMaxVideoWidth();
+						scaleHeight = (int) Math.round(params.mediaRenderer.getMaxVideoWidth() / overscannedAspectRatio);
+					} else {
+						// Limit video by height
+						scaleWidth  = (int) Math.round(params.mediaRenderer.getMaxVideoHeight() * overscannedAspectRatio);
+						scaleHeight = params.mediaRenderer.getMaxVideoHeight();
+					}
+				}
+
+				vfValueOverscanPrepend.append("softskip,expand=-").append(Math.round(intOCWPixels)).append(":-").append(Math.round(intOCHPixels));
+				vfValueOverscanMiddle.append(",scale=").append(scaleWidth).append(":").append(scaleHeight);
+			}
+
+			/*
+			 * Video Scaler and renderer-specific resolution-limiter
+			 */
+			if (configuration.isMencoderScaler()) {
+				// Use the manual, user-controlled scaler
+				if (configuration.getMencoderScaleX() != 0) {
+					if (configuration.getMencoderScaleX() <= params.mediaRenderer.getMaxVideoWidth()) {
+						scaleWidth = configuration.getMencoderScaleX();
+					} else {
+						scaleWidth = params.mediaRenderer.getMaxVideoWidth();
+					}
+				}
+
+				if (configuration.getMencoderScaleY() != 0) {
+					if (configuration.getMencoderScaleY() <= params.mediaRenderer.getMaxVideoHeight()) {
+						scaleHeight = configuration.getMencoderScaleY();
+					} else {
+						scaleHeight = params.mediaRenderer.getMaxVideoHeight();
+					}
+				}
+				logger.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", your Video Scaler setting");
+
+				vfValueVS.append("scale=").append(scaleWidth).append(":").append(scaleHeight);
+
+			/*
+			 * The video resolution is too big for the renderer so we need to scale it down
+			 */
+			} else if (
+				media != null &&
+				media.getWidth() > 0 &&
+				media.getHeight() > 0 &&
+				(
+					media.getWidth()  > params.mediaRenderer.getMaxVideoWidth() || 
+					media.getHeight() > params.mediaRenderer.getMaxVideoHeight()
+				)
+			) {
+				double videoAspectRatio = (double) media.getWidth() / (double) media.getHeight();
+				rendererAspectRatio = (double) params.mediaRenderer.getMaxVideoWidth() / (double) params.mediaRenderer.getMaxVideoHeight();
+
+				/*
+				 * First we deal with some exceptions, then if they are not matched we will
+				 * let the renderer limits work.
+				 * 
+				 * This is so, for example, we can still define a maximum resolution of
+				 * 1920x1080 in the renderer config file but still support 1920x1088 when
+				 * it's needed, otherwise we would either resize 1088 to 1080, meaning the
+				 * ugly (unused) bottom 8 pixels would be displayed, or we would limit all
+				 * videos to 1088 causing the bottom 8 meaningful pixels to be cut off.
+				 */
+				if (media.getWidth() == 3840 && media.getHeight() == 1080) {
+					// Full-SBS
+					scaleWidth  = 1920;
+					scaleHeight = 1080;
+				} else if (media.getWidth() == 1920 && media.getHeight() == 2160) {
+					// Full-OU
+					scaleWidth  = 1920;
+					scaleHeight = 1080;
+				} else if (media.getWidth() == 1920 && media.getHeight() == 1088) {
+					// SAT capture
+					scaleWidth  = 1920;
+					scaleHeight = 1088;
+				} else {
+					// Passed the exceptions, now we allow the renderer to define the limits
+					if (videoAspectRatio > rendererAspectRatio) {
+						scaleWidth  = params.mediaRenderer.getMaxVideoWidth();
+						scaleHeight = (int) Math.round(params.mediaRenderer.getMaxVideoWidth() / videoAspectRatio);
+					} else {
+						scaleWidth  = (int) Math.round(params.mediaRenderer.getMaxVideoHeight() * videoAspectRatio);
+						scaleHeight = params.mediaRenderer.getMaxVideoHeight();
+					}
+				}
+				logger.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", the maximum your renderer supports");
+
+				vfValueVS.append("scale=").append(scaleWidth).append(":").append(scaleHeight);
+			}
+
+			// Put the string together taking into account overscan compensation and video scaler
+			if (intOCW > 0 || intOCH > 0) {
+				vfValueComplete.append(vfValueOverscanPrepend).append(vfValueOverscanMiddle).append(",harddup");
+				logger.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", to fit your overscan compensation");
+			} else {
+				vfValueComplete.append(vfValueVS);
+			}
+
+			if (deinterlace) {
+				deinterlaceComma = ",";
+			}
+
+			cmdArray[cmdArray.length - 3] = (deinterlace ? "yadif" : "") + (scaleBool ? deinterlaceComma + vfValueComplete : "");
 		}
 
 		/*
