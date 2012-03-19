@@ -61,6 +61,7 @@ public class FileTagsPanel extends JPanel {
 	
 	private void init(Map<String, List<String>> tags, boolean showTitel) {		
 		lTitle = new JLabel(Messages.getString("ML.FileTagsPanel.ConfiguredTags"));
+		lTitle.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 		lTitle.setFont(lTitle.getFont().deriveFont((float)lTitle.getFont().getSize() + 4));
 		lTitle.setFont(lTitle.getFont().deriveFont(Font.BOLD));
 
@@ -105,9 +106,9 @@ public class FileTagsPanel extends JPanel {
 		removeAll();
 		
 		if(showTitel) {
-			JPanel pTitle = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 3));
-			pTitle.add(lTitle);
-			pTitle.add(bAdd);
+			JPanel pTitle = new JPanel(new BorderLayout());
+			pTitle.add(lTitle, BorderLayout.LINE_START);
+			pTitle.add(bAdd, BorderLayout.LINE_END);
 			
 			JPanel pHeader = new JPanel(new BorderLayout(0, 0));
 			pHeader.add(pTitle, BorderLayout.CENTER);
