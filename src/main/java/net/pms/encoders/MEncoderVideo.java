@@ -814,7 +814,6 @@ public class MEncoderVideo extends Player {
 
 		builder.add(mencoder_noass_subpos, cc.xy(15, 41));
 
-
 		ass = new JCheckBox(Messages.getString("MEncoderVideo.20"));
 		ass.setContentAreaFilled(false);
 		ass.addItemListener(new ItemListener() {
@@ -822,15 +821,6 @@ public class MEncoderVideo extends Player {
 				if (e != null) {
 					configuration.setMencoderAss(e.getStateChange() == ItemEvent.SELECTED);
 				}
-
-				mencoder_ass_scale.setEnabled(configuration.isMencoderAss());
-				mencoder_ass_outline.setEnabled(configuration.isMencoderAss());
-				mencoder_ass_shadow.setEnabled(configuration.isMencoderAss());
-				mencoder_ass_margin.setEnabled(configuration.isMencoderAss());
-				mencoder_noass_scale.setEnabled(!configuration.isMencoderAss());
-				mencoder_noass_outline.setEnabled(!configuration.isMencoderAss());
-				mencoder_noass_blur.setEnabled(!configuration.isMencoderAss());
-				mencoder_noass_subpos.setEnabled(!configuration.isMencoderAss());
 			}
 		});
 
@@ -1158,15 +1148,13 @@ public class MEncoderVideo extends Player {
 		try {
 			intOCW = Integer.parseInt(configuration.getMencoderOverscanCompensationWidth());
 		} catch (NumberFormatException e) {
-			logger.error("Cannot parse configured MEncoder overscan compensation width: \""
-					+ configuration.getMencoderOverscanCompensationWidth() + "\"");
+			logger.error("Cannot parse configured MEncoder overscan compensation width: \"" + configuration.getMencoderOverscanCompensationWidth() + "\"");
 		}
 
 		try {
 			intOCH = Integer.parseInt(configuration.getMencoderOverscanCompensationHeight());
 		} catch (NumberFormatException e) {
-			logger.error("Cannot parse configured MEncoder overscan compensation height: \""
-					+ configuration.getMencoderOverscanCompensationHeight() + "\"");
+			logger.error("Cannot parse configured MEncoder overscan compensation height: \"" + configuration.getMencoderOverscanCompensationHeight() + "\"");
 		}
 
 		if (
@@ -1540,6 +1528,7 @@ public class MEncoderVideo extends Player {
 		}
 		cmdArray[cmdArray.length - 6] = "-ofps";
 		cmdArray[cmdArray.length - 5] = "24000/1001";
+
 		String frameRate = null;
 		if (media != null) {
 			frameRate = media.getValidFps(true);
