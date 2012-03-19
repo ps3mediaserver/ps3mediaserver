@@ -1337,7 +1337,7 @@ public class MEncoderVideo extends Player {
 
 		StringBuilder sb = new StringBuilder();
 		// Set subtitles options
-		if (!configuration.isMencoderDisableSubs() && !avisynth()) {
+		if (!configuration.isMencoderDisableSubs() && !avisynth() && params.sid != null) {
 			int subtitleMargin = 0;
 			int userMargin     = 0;
 
@@ -1456,19 +1456,19 @@ public class MEncoderVideo extends Player {
 			// Common subtitle options
 			// Use fontconfig if enabled
 			sb.append("-").append(configuration.isMencoderFontConfig() ? "" : "no").append("fontconfig ");
-		}
 
-		// Apply DVD/VOBsub subtitle quality
-		if (params.sid != null && params.sid.getType() == DLNAMediaSubtitle.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
-			String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
+			// Apply DVD/VOBsub subtitle quality
+			if (params.sid.getType() == DLNAMediaSubtitle.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
+				String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
 
-			sb.append("-spuaa ").append(subtitleQuality).append(" ");
-		}
+				sb.append("-spuaa ").append(subtitleQuality).append(" ");
+			}
 
-		if (params.sid != null && !params.sid.isFileUtf8() && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
-			sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" ");
-			if (configuration.isMencoderSubFribidi()) {
-				sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" ");
+			if (!params.sid.isFileUtf8() && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
+				sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" ");
+				if (configuration.isMencoderSubFribidi()) {
+					sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" ");
+				}
 			}
 		}
 
