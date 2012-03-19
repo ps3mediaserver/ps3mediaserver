@@ -542,6 +542,8 @@ class DBInitializer {
 			sb.append(", WIDTH          INT");
 			sb.append(", CONSTRAINT UC_TABLECOLUMNCONFIGURATION UNIQUE (FILETYPE, COLUMNINDEX)");
 			sb.append(", CONSTRAINT PK_TABLECOLUMNCONFIGURATION PRIMARY KEY (FILETYPE, CONDITIONTYPE))");
+			stmt.executeUpdate(sb.toString());
+			if(log.isDebugEnabled()) log.debug("Table TABLECOLUMNCONFIGURATION created");
 
 			//Create table QUICKTAG
 			sb = new StringBuffer();
@@ -550,7 +552,7 @@ class DBInitializer {
 			sb.append(", TAGNAME        VARCHAR(1024)");
 			sb.append(", TAGVALUE       VARCHAR(1024)");
 			sb.append(", VIRTUALKEY     INT");
-			sb.append(", KEYCOMBINATION VARCHAR(128)");
+			sb.append(", KEYCOMBINATION VARCHAR(128))");
 			stmt.executeUpdate(sb.toString());
 			if(log.isDebugEnabled()) log.debug("Table QUICKTAG created");
 			
