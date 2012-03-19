@@ -1336,18 +1336,28 @@ public class MEncoderVideo extends Player {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		// set subtitles options
+		// Set subtitles options
 		if (!configuration.isMencoderDisableSubs() && !avisynth()) {
 			int subtitleMargin = 0;
 			int userMargin     = 0;
-			// Use ASS formating for all subtitled files except vobsub and dvd
+
+			// Use ASS flag (and therefore ASS font styles) for all subtitled files except vobsub, embedded, dvd and mp4 container with srt
+			// Note: The MP4 container with SRT rule is a workaround for MEncoder r30369. If there is ever a later version of MEncoder that supports external srt subs we should use that. As of r32848 that isn't the case
 			if (
-				params.sid != null &&
-				//params.sid.getType() != DLNAMediaSubtitle.EMBEDDED &&
+				(
+					(
+						params.sid.isFileUtf8() &&
+						params.sid.getType() == DLNAMediaSubtitle.EMBEDDED
+					) ||
+					params.sid.getType() != DLNAMediaSubtitle.EMBEDDED
+				) &&
 				params.sid.getType() != DLNAMediaSubtitle.VOBSUB &&
-				//params.sid.getType() != DLNAMediaSubtitle.SUBRIP &&
-				configuration.isMencoderAss() && 	// GUI: enable subtitles formating
-				!foundNoassParam &&			// GUI: codec specific options
+				!(
+					params.sid.getType() == DLNAMediaSubtitle.SUBRIP &&
+					media.getContainer().equals("mp4")
+				) &&
+				configuration.isMencoderAss() &&   // GUI: enable subtitles formating
+				!foundNoassParam &&                // GUI: codec specific options
 				!dvd
 			) {
 				sb.append("-ass ");
@@ -1405,6 +1415,11 @@ public class MEncoderVideo extends Player {
 					sb.append(",MarginV=").append(Math.round(subtitleMargin)).append(" ");
 				} else if (intOCH > 0) {
 					sb.append("-ass-force-style MarginV=").append(Math.round(subtitleMargin)).append(" ");
+				}
+
+				if (params.sid.getType() != DLNAMediaSubtitle.EMBEDDED) {
+					// Workaround for MPlayer #2041, remove when that bug is fixed
+					sb.append("-noflip-hebrew ");
 				}
 			// use PLAINTEXT formating
 			} else {
