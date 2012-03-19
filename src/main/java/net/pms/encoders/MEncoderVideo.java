@@ -1590,6 +1590,28 @@ public class MEncoderVideo extends Player {
 			cmdArray[cmdArray.length - 3] = (deinterlace ? "yadif" : "") + (scaleBool ? scalerString : "");
 		}
 
+		/*
+		 * The PS3 and possibly other renderers display videos incorrectly
+		 * if the dimensions aren't divisible by 4, so if that is the
+		 * case we scale it down to the nearest 4.
+		 * This fixes the long-time bug of videos displaying in black and
+		 * white with diagonal strips of colour, weird one.
+		 * 
+		 * TODO: Integrate this with the other stuff so that "scale" only
+		 * ever appears once in the MEncoder CMD.
+		 */
+		if (media != null && (media.getWidth() % 4 != 0) || media.getHeight() % 4 != 0) {
+			int newWidth;
+			int newHeight;
+
+			newWidth  = Math.round(media.getWidth() / 4) * 4;
+			newHeight = Math.round(media.getHeight() / 4) * 4;
+
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
+			cmdArray[cmdArray.length - 4] = "-vf";
+			cmdArray[cmdArray.length - 3] = "softskip,scale=" + newWidth + ":" + newHeight;
+		}
+
 		if (configuration.getMencoderMT() && !avisynth && !dvd && !(media.getCodecV() != null && (media.getCodecV().equals("mpeg2video")))) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-lavdopts";
