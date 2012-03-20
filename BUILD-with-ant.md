@@ -84,7 +84,7 @@ PMS is now ready to be built.
 
         ant jar
 
-or if you want to build in offline mode using prevously downloaded dependencies:
+or if you want to build in offline mode using previously downloaded dependencies:
 
         ant jar -Dmaven.settings.offline=true
 
@@ -96,13 +96,13 @@ The resulting binary will be built in the "target" directory:
 Information for developers
 ---------------------------
 
-Ant compiling is designed to be fallback method for build enviroments where Maven 3
+Ant compiling is designed to be fallback method for build environments where Maven 3
 is unavailable or offline builds are required.
 
 You can overwrite `maven-build.properties` and `maven-build.xml` with
 
         mvn ant:ant
 
-to apply `pom.xml` changes automaticaly. 
+to apply `pom.xml` changes automatically. 
 
 `build.xml` and `pms-build.properties` should be edited manually.
