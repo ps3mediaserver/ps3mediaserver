@@ -20,6 +20,7 @@ package net.pms.newgui;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -96,7 +97,7 @@ public class TracesTab {
 		jList = new JTextArea();
 		jList.setEditable(false);
 		jList.setBackground(Color.WHITE);
-		//jList.setFont(new Font("Arial", Font.PLAIN, 12));
+		jList.setFont(new Font("Courier New", Font.PLAIN, 12));
 		final JPopupMenu popup = new JPopupMenu();
 		JMenuItem defaultItem = new JMenuItem(Messages.getString("TracesTab.3"));
 
