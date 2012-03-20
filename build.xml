@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ====================================================================== -->
+<!-- Ant build file (http://ant.apache.org/) for Ant 1.6.2 or above.        -->
+<!-- ====================================================================== -->
+
+<project name="pms" default="jar" basedir=".">
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="/usr/share/java/ant-contrib.jar"/>
+    </classpath>
+  </taskdef>
+
+  <property file="pms-build.properties"/>
+
+  <!-- ====================================================================== -->
+  <!-- Import maven-build.xml into the current project                        -->
+  <!-- ====================================================================== -->
+
+  <import file="maven-build.xml"/>
+
+  <propertyregex property="jgoodies-common-version-underscore" input="${jgoodies-common-version}" regexp="\." replace="_" global="true" />
+  <propertyregex property="jgoodies-forms-version-underscore" input="${jgoodies-forms-version}" regexp="\." replace="_" global="true" />
+  <propertyregex property="jgoodies-looks-version-underscore" input="${jgoodies-looks-version}" regexp="\." replace="_" global="true" />
+
+  
+  <!-- ====================================================================== -->
+  <!-- Help target                                                            -->
+  <!-- ====================================================================== -->
+
+  <target name="help">
+    <echo message="Please run: $ant -projecthelp"/>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Build pms.jar with dependencies                                        -->
+  <!-- ====================================================================== -->
+
+  <target name="jar" depends="compile,test" description="Builds pms.jar with dependencies">
+    <fileset id="deps.fileset" dir="${maven.repo.local}" includes="**/*.jar" excludes="*source*.* rome*.jar cglib*.jar junit*.jar maven*.jar"/>
+    <jar jarfile="${maven.build.dir}/pms.jar" 
+         compress="off" 
+         basedir="${maven.build.outputDir}" 
+         excludes="**/package.html">
+        <zipgroupfileset refid="deps.fileset"/>
+        <manifest>
+            <attribute name="Main-Class" value="net.pms.PMS" />
+        </manifest>
+    </jar>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Download all dependencies target                                           -->
+  <!-- ====================================================================== -->
+
+  <target name="get-deps-all" 
+          depends="get-deps" 
+          description="Download all dependencies including dependencies that do not exist in a public Maven repositories" 
+          unless="maven.mode.offline">
+
+    <mkdir dir="${maven.repo.local}"/>
+    <mkdir dir="${maven.repo.local}/com/jgoodies/common/${jgoodies-common-version}"/>
+    <get src="http://www.jgoodies.com/download/libraries/common/jgoodies-common-${jgoodies-common-version-underscore}.zip" 
+         dest="${maven.repo.local}/com/jgoodies/common/${jgoodies-common-version}/jgoodies-common-${jgoodies-common-version-underscore}.zip" 
+         usetimestamp="false" 
+         ignoreerrors="false">
+    </get>
+    <unzip src="${maven.repo.local}/com/jgoodies/common/${jgoodies-common-version}/jgoodies-common-${jgoodies-common-version-underscore}.zip" 
+        dest="${maven.repo.local}/com/jgoodies/common/${jgoodies-common-version}">
+        <patternset>
+            <include name="**/jgoodies-common-*.jar"/>
+        </patternset>
+        <mapper type="flatten"/>
+    </unzip>
+    <delete file="${maven.repo.local}/com/jgoodies/common/${jgoodies-common-version}/jgoodies-common-${jgoodies-common-version-underscore}.zip"/>
+
+    <mkdir dir="${maven.repo.local}/com/jgoodies/forms/${jgoodies-forms-version}"/>
+    <get src="http://www.jgoodies.com/download/libraries/forms/jgoodies-forms-${jgoodies-forms-version-underscore}.zip" 
+         dest="${maven.repo.local}/com/jgoodies/forms/${jgoodies-forms-version}/jgoodies-forms-${jgoodies-forms-version-underscore}.zip" 
+         usetimestamp="false" 
+         ignoreerrors="false">
+    </get>
+    <unzip src="${maven.repo.local}/com/jgoodies/forms/${jgoodies-forms-version}/jgoodies-forms-${jgoodies-forms-version-underscore}.zip" 
+        dest="${maven.repo.local}/com/jgoodies/forms/${jgoodies-forms-version}">
+        <patternset>
+            <include name="**/jgoodies-forms-*.jar"/>
+        </patternset>
+        <mapper type="flatten"/>
+    </unzip>
+    <delete file="${maven.repo.local}/com/jgoodies/forms/${jgoodies-forms-version}/jgoodies-forms-${jgoodies-forms-version-underscore}.zip"/>
+
+    <mkdir dir="${maven.repo.local}/com/jgoodies/looks/${jgoodies-looks-version}"/>
+    <get src="http://www.jgoodies.com/download/libraries/looks/jgoodies-looks-${jgoodies-looks-version-underscore}.zip" 
+         dest="${maven.repo.local}/com/jgoodies/looks/${jgoodies-looks-version}/jgoodies-looks-${jgoodies-looks-version-underscore}.zip" 
+         usetimestamp="false" 
+         ignoreerrors="false">
+    </get>
+    <unzip src="${maven.repo.local}/com/jgoodies/looks/${jgoodies-looks-version}/jgoodies-looks-${jgoodies-looks-version-underscore}.zip" 
+        dest="${maven.repo.local}/com/jgoodies/looks/${jgoodies-looks-version}">
+        <patternset>
+            <include name="**/jgoodies-looks-*.jar"/>
+        </patternset>
+        <mapper type="flatten"/>
+    </unzip>
+    <delete file="${maven.repo.local}/com/jgoodies/looks/${jgoodies-looks-version}/jgoodies-looks-${jgoodies-looks-version-underscore}.zip"/>
+
+    <mkdir dir="${maven.repo.local}/de/innosystec/java-unrar/${junrar-version}"/>
+    <get src="http://cloud.github.com/downloads/edmund-wagner/junrar/java-unrar-${junrar-version}.zip" 
+         dest="${maven.repo.local}/de/innosystec/java-unrar/${junrar-version}/java-unrar-${junrar-version}.zip" 
+         usetimestamp="false" 
+         ignoreerrors="false">
+    </get>
+    <unzip src="${maven.repo.local}/de/innosystec/java-unrar/${junrar-version}/java-unrar-${junrar-version}.zip" 
+        dest="${maven.repo.local}/de/innosystec/java-unrar/${junrar-version}">
+        <patternset>
+            <include name="**/java-unrar-*.jar"/>
+        </patternset>
+        <mapper type="flatten"/>
+    </unzip>
+    <delete file="${maven.repo.local}/de/innosystec/java-unrar/${junrar-version}/java-unrar-${junrar-version}.zip"/>
+
+    <mkdir dir="${maven.repo.local}/jwbroek/cuelib/cuelib/${cuelib-version}"/>
+    <get src="http://cuelib.googlecode.com/files/cuelib-${cuelib-version}.jar" 
+         dest="${maven.repo.local}/jwbroek/cuelib/cuelib/${cuelib-version}/cuelib-${cuelib-version}.jar" 
+         usetimestamp="false" 
+         ignoreerrors="false">
+    </get>
+
+    <mkdir dir="${maven.repo.local}/mediautil/mediautil/${mediautil-version}"/>
+    <get src="http://downloads.sourceforge.net/project/mediachest/MediaUtil/Version%201.0/mediautil-1.zip" 
+         dest="${maven.repo.local}/mediautil/mediautil/${mediautil-version}/mediautil-${mediautil-version}.zip" 
+         usetimestamp="false" 
+         ignoreerrors="false">
+    </get>
+    <unzip src="${maven.repo.local}/mediautil/mediautil/${mediautil-version}/mediautil-${mediautil-version}.zip" 
+        dest="${maven.repo.local}/mediautil/mediautil/${mediautil-version}">
+        <patternset>
+            <include name="**/mediautil-*.jar"/>
+        </patternset>
+        <mapper type="flatten"/>
+    </unzip>
+    <delete file="${maven.repo.local}/mediautil/mediautil/${mediautil-version}/mediautil-${mediautil-version}.zip"/>
+  </target>
+
+</project>
