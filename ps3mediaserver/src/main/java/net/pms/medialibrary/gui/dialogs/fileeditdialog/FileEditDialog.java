@@ -74,7 +74,7 @@ public class FileEditDialog extends JDialog {
 	 */
 	public FileEditDialog(DOFileInfo fileInfo) {
 		this(EditMode.Single, fileInfo.getFilePath());		
-		this.fileInfo = fileInfo;		
+		this.fileInfo = fileInfo;
 		build();
 	}
 

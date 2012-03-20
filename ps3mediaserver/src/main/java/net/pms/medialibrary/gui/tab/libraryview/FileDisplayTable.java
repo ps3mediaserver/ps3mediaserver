@@ -60,7 +60,9 @@ import net.pms.medialibrary.commons.helpers.FileImportHelper;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
 import net.pms.medialibrary.commons.interfaces.IProgress;
+import net.pms.medialibrary.external.FileImportPlugin;
 import net.pms.medialibrary.gui.dialogs.FileImportTemplateDialog;
+import net.pms.medialibrary.gui.dialogs.FileUpdateWithPluginDialog;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.FileEditDialog;
 import net.pms.medialibrary.gui.dialogs.quicktagdialog.QuickTagDialog;
 import net.pms.medialibrary.gui.shared.DateCellRenderer;
@@ -500,6 +502,20 @@ public class FileDisplayTable extends JPanel {
 		mUpdate.addSeparator();
 		mUpdate.add(miConfigureTemplate);
 		
+		//import by name or id
+		if(getSelectedFiles().size() == 1) {
+			JMenuItem miImportWithPlugin = new JMenuItem(Messages.getString("ML.ContextMenu.UPDATEBYNAMEORID"));
+			miImportWithPlugin.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "id-16.png")));
+			miImportWithPlugin.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					updateByNameOrId();
+				}
+			});
+			mUpdate.addSeparator();
+			mUpdate.add(miImportWithPlugin);
+		}
+		
 		//tag
 		JMenu mTag = new JMenu(Messages.getString("ML.ContextMenu.TAG"));
 		mTag.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "tag-16.png")));
@@ -570,6 +586,24 @@ public class FileDisplayTable extends JPanel {
 		});
 		fileEditMenu.addSeparator();
 		fileEditMenu.add(miDelete);
+	}
+
+	private void updateByNameOrId() {
+		if(getSelectedFiles().size() == 1) {
+			DOFileInfo fileInfo = getSelectedFiles().get(0);
+			FileUpdateWithPluginDialog dialog = new FileUpdateWithPluginDialog(fileInfo);
+			dialog.pack();
+			dialog.setLocation(GUIHelper.getCenterDialogOnParentLocation(dialog.getSize(), this));
+			dialog.setModal(true);
+			dialog.setResizable(false);
+			dialog.setVisible(true);
+			
+			if(dialog.isUpdate()) {
+				FileImportPlugin plugin = dialog.getPlugin();
+				FileImportHelper.updateFileInfo(plugin, fileInfo);
+				MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
+			}
+		}
 	}
 
 	private void showFileImportTemplateDialog() {

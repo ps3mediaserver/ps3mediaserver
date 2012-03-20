@@ -2,7 +2,6 @@ package net.pms.medialibrary.gui.dialogs.fileeditdialog.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

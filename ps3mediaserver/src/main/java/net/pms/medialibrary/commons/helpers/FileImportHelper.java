@@ -231,6 +231,85 @@ public class FileImportHelper {
 	}
 	
 	/**
+	 * The file info object will be updated according to the plugin
+	 *
+	 * @param plugin the plugin
+	 * @param fileInfo the video that will be updated witch additional information
+	 */
+	public static void updateFileInfo(FileImportPlugin plugin, DOFileInfo fileInfo) {
+		// iterate through all file properties and respect the configured priorities to retrieve the information
+		for (FileProperty fileProperty : plugin.getSupportedFileProperties()) {
+			// try to get the value
+			Object value = null;
+			try {
+				value = plugin.getFileProperty(fileProperty);
+			} catch (Throwable t) {
+				// catch throwable for every external call to avoid a plugin crashing pms
+				log.error(String.format("Failed to query plugin='%s' for file property='%s'", plugin.getName(), fileProperty), t);
+				continue;
+			}
+
+			// set the value if it is valid, log a comprehensive log message otherwise
+			try {
+				if (fileInfo instanceof DOVideoFileInfo) {
+					setValue(value, fileProperty, (DOVideoFileInfo) fileInfo);
+				} else if (fileInfo instanceof DOAudioFileInfo) {
+					// TODO: implement
+				} else if (fileInfo instanceof DOImageFileInfo) {
+					// TODO: implement
+				}
+				log.debug(String.format("Imported %s='%s' with plugin='%s' for file='%s'", fileProperty, value, plugin.getName(), fileInfo.getFilePath()));
+			} catch (FilePropertyImportException ex) {
+				switch (ex.getExceptionType()) {
+				case NoResult:
+					log.debug(String.format("No result found for FileProperty='%s' with plugin='%s' for file='%s'", fileProperty, plugin.getName(), fileInfo.getFilePath()));
+					break;
+				case WrongType:
+					log.error(String.format("The plugin='%s' returned a value of the wrong type for the FileProperty='%s'. Expected='%s', Received='%s'", plugin.getName(), fileProperty, ex.getExpectedType(), ex.getReceivedType()));
+					break;
+				case ProcessingFailed:
+					log.error(String.format("An operation failed while trying to get the FileProperty='%s' with plugin='%s' for file='%s'", fileProperty, plugin.getName(), fileInfo.getFilePath()));
+				}
+			}
+		}
+
+		// load tags
+		List<String> supportedTags = plugin.getSupportedTags(fileInfo.getType());
+		if(supportedTags != null) {
+			for (String tag : supportedTags) {
+				List<String> tagValues;
+				try {
+					tagValues = plugin.getTags(tag);
+				} catch (Throwable t) {
+					// catch throwable for every external call to avoid a plugin crashing pms
+					log.error(String.format("Failed to get tag '%s' for plugin '%s'", tag, plugin.getName()), t);
+					continue;
+				}
+	
+				Map<String, List<String>> allTags = new HashMap<String, List<String>>();
+				if (tagValues != null && tagValues.size() > 0) {
+					if (!allTags.containsKey(tag)) {
+						allTags.put(tag, new ArrayList<String>());
+					}
+	
+					// make sure the values are unique for a tag and that they have been trimmed
+					List<String> uniqueTagValues = allTags.get(tag);
+					for (String tagValue : tagValues) {
+						tagValue = tagValue.trim();
+						if (!uniqueTagValues.contains(tagValue)) {
+							log.trace(String.format("Added tag %s=%s for file %s", tag, tagValue, fileInfo.getFilePath()));
+							uniqueTagValues.add(tagValue);
+						}
+					}
+	
+					fileInfo.getTags().put(tag, uniqueTagValues);
+				}
+				fileInfo.setTags(allTags);
+			}
+		}
+	}
+	
+	/**
 	 * The file info object will be updated according to the rules defined in 
 	 * the importConfig.
 	 * @param importConfig defines which plugins will be used to update fields in fileInfo
