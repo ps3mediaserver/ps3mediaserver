@@ -1094,7 +1094,7 @@ public class DLNAMediaInfo implements Cloneable {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("container: ").append(getContainer())
-	      .append(" / bitrate: ").append(getBitrate())
+	          .append(" / bitrate: ").append(getBitrate())
 		  .append(" / size: ").append(getSize())
 		  .append(" / codecV: ").append(getCodecV())
 		  .append(" / duration: ").append(getDurationString())
