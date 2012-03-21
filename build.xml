@@ -97,7 +97,7 @@
     <mkdir dir="${maven.build.outputDir}"/>
     <javac destdir="${maven.build.outputDir}"
            nowarn="false"
-           debug="false"
+           debug="true"
            target="1.6"
            verbose="false"
            fork="false"
