@@ -39,6 +39,7 @@
 			<directory>${project.external-resources}</directory>
 			<outputDirectory>.</outputDirectory>
 			<fileMode>0755</fileMode>
+			<lineEnding>unix</lineEnding>
 			<includes>
 				<include>PMS.sh</include>
 			</includes>
@@ -49,6 +50,7 @@
 			<directory>${project.basedir}</directory>
 			<outputDirectory>.</outputDirectory>
 			<fileMode>0644</fileMode>
+			<lineEnding>unix</lineEnding>
 			<includes>
 				<include>README.md</include>
 				<include>CHANGELOG</include>
@@ -61,6 +63,7 @@
 			<directory>${project.external-resources}</directory>
 			<outputDirectory>.</outputDirectory>
 			<fileMode>0644</fileMode>
+			<lineEnding>unix</lineEnding>
 			<includes>
 				<include>PMS.conf</include>
 				<include>WEB.conf</include>
