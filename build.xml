@@ -24,38 +24,40 @@
   <propertyregex property="jgoodies-looks-version-underscore" input="${jgoodies-looks-version}" regexp="\." replace="_" global="true" />
 
   <path id="compile.classpath">
-    <pathelement location="${maven.repo.local}/org/beanshell/bsh-core/2.0b4/bsh-core-2.0b4.jar"/>
-    <pathelement location="${maven.repo.local}/commons-codec/commons-codec/1.6/commons-codec-1.6.jar"/>
-    <pathelement location="${maven.repo.local}/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
-    <pathelement location="${maven.repo.local}/commons-configuration/commons-configuration/1.7/commons-configuration-1.7.jar"/>
-    <pathelement location="${maven.repo.local}/commons-digester/commons-digester/1.8.1/commons-digester-1.8.1.jar"/>
-    <pathelement location="${maven.repo.local}/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar"/>
-    <pathelement location="${maven.repo.local}/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar"/>
-    <pathelement location="${maven.repo.local}/commons-io/commons-io/1.4/commons-io-1.4.jar"/>
-    <pathelement location="${maven.repo.local}/commons-lang/commons-lang/2.6/commons-lang-2.6.jar"/>
-    <pathelement location="${maven.repo.local}/com/h2database/h2/1.1.105/h2-1.1.105.jar"/>
-    <pathelement location="${maven.repo.local}/ch/qos/logback/logback-classic/1.0.0/logback-classic-1.0.0.jar"/>
-    <pathelement location="${maven.repo.local}/ch/qos/logback/logback-core/1.0.0/logback-core-1.0.0.jar"/>
-    <pathelement location="${maven.repo.local}/org/apache/sanselan/sanselan/0.97-incubator/sanselan-0.97-incubator.jar"/>
-    <pathelement location="${maven.repo.local}/org/slf4j/slf4j-api/1.6.4/slf4j-api-1.6.4.jar"/>
-    <pathelement location="${maven.repo.local}/org/slf4j/jcl-over-slf4j/1.6.4/jcl-over-slf4j-1.6.4.jar"/>
-    <pathelement location="${maven.repo.local}/com/google/code/gson/gson/1.7.1/gson-1.7.1.jar"/>
-    <pathelement location="${maven.repo.local}/org/hamcrest/hamcrest-integration/1.2/hamcrest-integration-1.2.jar"/>
-    <pathelement location="${maven.repo.local}/org/hamcrest/hamcrest-library/1.2/hamcrest-library-1.2.jar"/>
-    <pathelement location="${maven.repo.local}/org/hamcrest/hamcrest-core/1.2/hamcrest-core-1.2.jar"/>
-    <pathelement location="${maven.repo.local}/org/jboss/netty/netty/3.2.4.Final/netty-3.2.4.Final.jar"/>
-    <pathelement location="${maven.repo.local}/maven/maven-nsis-plugin/2.1/maven-nsis-plugin-2.1.jar"/>
-    <pathelement location="${maven.repo.local}/net/java/dev/rome/rome/1.0.0/rome-1.0.0.jar"/>
-    <pathelement location="${maven.repo.local}/jdom/jdom/1.0/jdom-1.0.jar"/>
-    <pathelement location="${maven.repo.local}/org/jvnet/winp/winp/1.14/winp-1.14.jar"/>
-    <pathelement location="${maven.repo.local}/org/jaudiotagger/2.0.3/jaudiotagger-2.0.3.jar"/>
-    <pathelement location="${maven.repo.local}/net/java/dev/jna/jna/3.2.5/jna-3.2.5.jar"/>
-    <pathelement location="${maven.repo.local}/com/jgoodies/common/${jgoodies-common-version}/jgoodies-common-${jgoodies-common-version}.jar"/>
-    <pathelement location="${maven.repo.local}/com/jgoodies/forms/${jgoodies-forms-version}/jgoodies-forms-${jgoodies-forms-version}.jar"/>
-    <pathelement location="${maven.repo.local}/com/jgoodies/looks/${jgoodies-looks-version}/jgoodies-looks-${jgoodies-looks-version}.jar"/>
-    <pathelement location="${maven.repo.local}/de/innosystec/java-unrar/${junrar-version}/java-unrar-${junrar-version}.jar"/>
-    <pathelement location="${maven.repo.local}/jwbroek/cuelib/cuelib/${cuelib-version}/cuelib-${cuelib-version}.jar"/>
-    <pathelement location="${maven.repo.local}/mediautil/mediautil/${mediautil-version}/mediautil-${mediautil-version}.jar"/>
+    <fileset id="compile.fileset" dir="${maven.repo.local}" casesensitive="yes">
+      <include name="org/beanshell/bsh-core/2.0b4/bsh-core-2.0b4.jar"/>
+      <include name="commons-codec/commons-codec/1.6/commons-codec-1.6.jar"/>
+      <include name="commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
+      <include name="commons-configuration/commons-configuration/1.7/commons-configuration-1.7.jar"/>
+      <include name="commons-digester/commons-digester/1.8.1/commons-digester-1.8.1.jar"/>
+      <include name="commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar"/>
+      <include name="commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar"/>
+      <include name="commons-io/commons-io/1.4/commons-io-1.4.jar"/>
+      <include name="commons-lang/commons-lang/2.6/commons-lang-2.6.jar"/>
+      <include name="com/h2database/h2/1.1.105/h2-1.1.105.jar"/>
+      <include name="ch/qos/logback/logback-classic/1.0.0/logback-classic-1.0.0.jar"/>
+      <include name="ch/qos/logback/logback-core/1.0.0/logback-core-1.0.0.jar"/>
+      <include name="org/apache/sanselan/sanselan/0.97-incubator/sanselan-0.97-incubator.jar"/>
+      <include name="org/slf4j/slf4j-api/1.6.4/slf4j-api-1.6.4.jar"/>
+      <include name="org/slf4j/jcl-over-slf4j/1.6.4/jcl-over-slf4j-1.6.4.jar"/>
+      <include name="com/google/code/gson/gson/1.7.1/gson-1.7.1.jar"/>
+      <include name="org/hamcrest/hamcrest-integration/1.2/hamcrest-integration-1.2.jar"/>
+      <include name="org/hamcrest/hamcrest-library/1.2/hamcrest-library-1.2.jar"/>
+      <include name="org/hamcrest/hamcrest-core/1.2/hamcrest-core-1.2.jar"/>
+      <include name="org/jboss/netty/netty/3.2.4.Final/netty-3.2.4.Final.jar"/>
+      <include name="maven/maven-nsis-plugin/2.1/maven-nsis-plugin-2.1.jar"/>
+      <include name="net/java/dev/rome/rome/1.0.0/rome-1.0.0.jar"/>
+      <include name="jdom/jdom/1.0/jdom-1.0.jar"/>
+      <include name="org/jvnet/winp/winp/1.14/winp-1.14.jar"/>
+      <include name="org/jaudiotagger/2.0.3/jaudiotagger-2.0.3.jar"/>
+      <include name="net/java/dev/jna/jna/3.2.5/jna-3.2.5.jar"/>
+      <include name="com/jgoodies/common/${jgoodies-common-version}/jgoodies-common-${jgoodies-common-version}.jar"/>
+      <include name="com/jgoodies/forms/${jgoodies-forms-version}/jgoodies-forms-${jgoodies-forms-version}.jar"/>
+      <include name="com/jgoodies/looks/${jgoodies-looks-version}/jgoodies-looks-${jgoodies-looks-version}.jar"/>
+      <include name="de/innosystec/java-unrar/${junrar-version}/java-unrar-${junrar-version}.jar"/>
+      <include name="jwbroek/cuelib/cuelib/${cuelib-version}/cuelib-${cuelib-version}.jar"/>
+      <include name="mediautil/mediautil/${mediautil-version}/mediautil-${mediautil-version}.jar"/>
+    </fileset>
   </path>
 
   
@@ -122,12 +124,10 @@
   <!-- ====================================================================== -->
 
   <target name="jar" depends="compile,test" description="Builds pms.jar with dependencies">
-    <fileset id="deps.fileset" dir="${maven.repo.local}" includes="**/*.jar" excludes="*source*.* rome*.jar cglib*.jar junit*.jar maven*.jar"/>
     <jar jarfile="${maven.build.dir}/pms.jar"
          compress="off"
-         basedir="${maven.build.outputDir}"
-         excludes="**/package.html">
-        <zipgroupfileset refid="deps.fileset"/>
+         basedir="${maven.build.outputDir}">
+        <zipgroupfileset refid="compile.fileset"/>
         <manifest>
             <attribute name="Main-Class" value="net.pms.PMS" />
         </manifest>
