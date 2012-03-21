@@ -33,6 +33,26 @@
   </target>
 
   <!-- ====================================================================== -->
+  <!-- Cleaning up target (except binary tools and java libs)                 -->
+  <!-- ====================================================================== -->
+
+  <target name="clean" description="Clean the output directory">
+    <delete includeemptydirs="true">
+      <fileset dir="${maven.build.dir}" excludes="ant-dependencies/ bin-tools/"/>
+    </delete>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Cleaning up java libs                                                  -->
+  <!-- ====================================================================== -->
+
+  <target name="clean-deps" description="Clean build dependencies">
+    <delete includeemptydirs="true">
+      <fileset dir="${maven.repo.local}"/>
+    </delete>
+  </target>
+
+  <!-- ====================================================================== -->
   <!-- Build pms.jar with dependencies                                        -->
   <!-- ====================================================================== -->
 
@@ -50,7 +70,7 @@
   </target>
 
   <!-- ====================================================================== -->
-  <!-- Download all dependencies target                                           -->
+  <!-- Download all build dependencies                                        -->
   <!-- ====================================================================== -->
 
   <target name="get-deps-all" 
