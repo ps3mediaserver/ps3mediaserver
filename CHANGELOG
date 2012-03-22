@@ -1,8 +1,17 @@
 Changelog:
 ==========
 
-1.51.1 - 2012-??-??
+1.52.1 - 2012-??-??
 
+	
+
+1.52.0 - 2012-03-22
+
+	Fix program starting on Linux
+	Support videos with resolutions that are not divisible by 4
+	Improved overscan-compensation
+	Fixed the display of Hebrew subtitles
+	Improvements to logging
 	Language updates:
 		- Czech (thanks, valib!)
 
