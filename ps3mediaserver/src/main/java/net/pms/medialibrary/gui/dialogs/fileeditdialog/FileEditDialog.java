@@ -8,7 +8,6 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +113,7 @@ public class FileEditDialog extends JDialog {
 		switch(editMode) {
 		case Single:
 			fileToShow = fileInfo;
-			fileInfo.addPropertyChangeListener(fileInfoChangedListener);
+			fileToShow.addPropertyChangeListener(fileInfoChangedListener);
 			break;
 		case Multiple:
 			fileToShow = new DOVideoFileInfo();
@@ -219,7 +218,7 @@ public class FileEditDialog extends JDialog {
 			
 			//get the updated file info
 			DOFileInfo newFileInfo = new DOFileInfo();
-			DOFileInfo ff = editMode == EditMode.Single ? fileInfo : fileEditList.getSelected();
+			DOFileInfo ff = getEditingFileInfo();
 			if(ff instanceof DOVideoFileInfo) {
 				newFileInfo = new DOVideoFileInfo();
 			} else if(ff instanceof DOAudioFileInfo) {
@@ -274,6 +273,17 @@ public class FileEditDialog extends JDialog {
 		refreshButtonStates();
 	}
 	
+	private DOFileInfo getEditingFileInfo() {
+		switch (editMode) {
+		case Linked:
+			return fileEditList.getSelected();
+		case Single:
+			return fileInfo;
+		default:
+			return null;
+		}
+	}
+	
 	/**
 	 * Disables or enables the back and forward buttons if there is no next item
 	 */
@@ -289,27 +299,21 @@ public class FileEditDialog extends JDialog {
 	 * @return true if the file has been saved
 	 */
 	private boolean saveUpdatedFileInfo() {
-		DOFileInfo fileInfo;
-		try {
-			fileInfo = tpFileEdit.getUpdatedFileInfo();
-		} catch(ConditionTypeException ex) {
-			String msg = String.format(Messages.getString("ML.FileEditDialog.InvalidInt"),Messages.getString("ML.Condition.Header.Type." + ex.getConditionType()), System.getProperty("line.separator"));
-			JOptionPane.showMessageDialog(this, msg, "Save error", JOptionPane.ERROR_MESSAGE);
-			return false;
-		}
+		DOFileInfo ff = getEditingFileInfo();
+		tpFileEdit.updateFileInfo(ff);
 		
 		switch(editMode) {
 		case Linked:
 		case Single:			
 			if(requiresUpdate) {
-				MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
+				MediaLibraryStorage.getInstance().updateFileInfo(ff);
 				requiresUpdate = false;
 			}
 			break;
 		case Multiple:
 			List<ConditionType> propertiesToUpdate = tpFileEdit.getPropertiesToUpdate();
 			for (DOFileInfo fiUpdate : files) {
-				FileImportHelper.updateFileInfo(fileInfo, fiUpdate, propertiesToUpdate);
+				FileImportHelper.updateFileInfo(ff, fiUpdate, propertiesToUpdate);
 				MediaLibraryStorage.getInstance().updateFileInfo(fiUpdate);
 			}
  			break;
