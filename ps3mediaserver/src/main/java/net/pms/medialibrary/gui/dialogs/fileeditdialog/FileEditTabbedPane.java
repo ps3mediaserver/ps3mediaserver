@@ -37,8 +37,8 @@ public class FileEditTabbedPane extends JTabbedPane {
 	private static final long serialVersionUID = -4181083393313495546L;
 	private static final Logger log = LoggerFactory.getLogger(FileEditTabbedPane.class);
 
-	private VideoFileInfoPanel infoPanel;
-	private JPanel propertiesPanel;
+	private VideoFileInfoPanel pInfo;
+	private JPanel pProperties;
 	private FileTagsPanel tagsPanel;
 	private FileCoverPanel coverPanel;
 	
@@ -57,7 +57,7 @@ public class FileEditTabbedPane extends JTabbedPane {
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent paramComponentEvent) {
-				((IFilePropertiesEditor) propertiesPanel).build();
+				((IFilePropertiesEditor) pProperties).build();
 			}
 		});
 	}
@@ -75,8 +75,8 @@ public class FileEditTabbedPane extends JTabbedPane {
 	 * Initializes the components and builds the panel
 	 */
 	private void setContent() {		
-		infoPanel = new VideoFileInfoPanel();
-		propertiesPanel = new JPanel();
+		pInfo = new VideoFileInfoPanel();
+		pProperties = new JPanel();
 		tagsPanel = new FileTagsPanel(isMultiEdit ? new HashMap<String, List<String>>() : fileInfo.getTags(), true);
 		try {
 			coverPanel = new FileCoverPanel(PMS.getConfiguration().getTempFolder().getAbsolutePath() + File.separator + "tmp_cover.jpg");
@@ -85,8 +85,8 @@ public class FileEditTabbedPane extends JTabbedPane {
 		}
 		
 		if(fileInfo instanceof DOVideoFileInfo) {
-			infoPanel = new VideoFileInfoPanel((DOVideoFileInfo) fileInfo);
-			propertiesPanel = new VideoFilePropertiesPanel(isMultiEdit ? new DOVideoFileInfo() : (DOVideoFileInfo) fileInfo, isMultiEdit);
+			pInfo = new VideoFileInfoPanel((DOVideoFileInfo) fileInfo);
+			pProperties = new VideoFilePropertiesPanel(isMultiEdit ? new DOVideoFileInfo() : (DOVideoFileInfo) fileInfo, isMultiEdit);
 		} else if(fileInfo instanceof DOAudioFileInfo) {
 			//TODO: implement
 		} else if(fileInfo instanceof DOImageFileInfo) {
@@ -100,12 +100,12 @@ public class FileEditTabbedPane extends JTabbedPane {
 		removeAll();
 
 		if(isMultiEdit) {
-			addTab(Messages.getString("ML.FileEditTabbedPane.tProperties"), propertiesPanel);
+			addTab(Messages.getString("ML.FileEditTabbedPane.tProperties"), pProperties);
 			addTab(Messages.getString("ML.FileEditTabbedPane.tTags"), tagsPanel);
 			addTab(Messages.getString("ML.FileEditTabbedPane.tCover"), coverPanel);
 		} else {
-			addTab(Messages.getString("ML.FileEditTabbedPane.tInfo"), infoPanel);
-			addTab(Messages.getString("ML.FileEditTabbedPane.tProperties"), propertiesPanel);
+			addTab(Messages.getString("ML.FileEditTabbedPane.tInfo"), pInfo);
+			addTab(Messages.getString("ML.FileEditTabbedPane.tProperties"), pProperties);
 			addTab(Messages.getString("ML.FileEditTabbedPane.tTags"), tagsPanel);			
 		}
 		
@@ -121,8 +121,31 @@ public class FileEditTabbedPane extends JTabbedPane {
 	 * @throws ConditionTypeException
 	 */
 	public DOFileInfo getUpdatedFileInfo() throws ConditionTypeException {
+		return getUpdatedFileInfo(fileInfo);
+	}
+	
+	public DOFileInfo getDisplayedFileInfo() throws ConditionTypeException {
+		DOFileInfo newFileInfo = null;
+		if(fileInfo instanceof DOVideoFileInfo) {
+			newFileInfo = new DOVideoFileInfo();
+		}
+		else if(fileInfo instanceof DOAudioFileInfo) {
+			newFileInfo = new DOAudioFileInfo();
+		}
+		else if(fileInfo instanceof DOImageFileInfo) {
+			newFileInfo = new DOImageFileInfo();
+		}
+		else if(fileInfo instanceof DOFileInfo) {
+			newFileInfo = new DOFileInfo();
+		}
+		
+		return getUpdatedFileInfo(newFileInfo);
+	}
+	
+	private DOFileInfo getUpdatedFileInfo(DOFileInfo fileInfo) {
 		//update the file properties
-		((IFilePropertiesEditor) propertiesPanel).updateFileInfo(fileInfo);
+		((IFilePropertiesEditor) pProperties).updateFileInfo(fileInfo);
+		((IFilePropertiesEditor) pInfo).updateFileInfo(fileInfo);
 		if(isMultiEdit) {
 			coverPanel.updateFileInfo(fileInfo);
 		}
@@ -132,12 +155,15 @@ public class FileEditTabbedPane extends JTabbedPane {
 	}
 	
 	public List<ConditionType> getPropertiesToUpdate() {
-		List<ConditionType> res = ((IFilePropertiesEditor) propertiesPanel).getPropertiesToUpdate();
-		res.addAll(coverPanel.getPropertiesToUpdate());
+		List<ConditionType> res = ((IFilePropertiesEditor) pProperties).getPropertiesToUpdate();
+		if(isMultiEdit) {
+			res.addAll(coverPanel.getPropertiesToUpdate());
+		}
+		
 		return res;
 	}
 	
 	public void dispose() {
-		infoPanel.dispose();
+		pInfo.dispose();
 	}
 }

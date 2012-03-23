@@ -29,7 +29,6 @@ import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DORating;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
-import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.controls.PropertyInfoEntry;
 import net.pms.medialibrary.gui.shared.JHeader;
@@ -191,7 +190,7 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 	}
 
 	@Override
-	public void updateFileInfo(DOFileInfo fileInfo) throws ConditionTypeException {
+	public void updateFileInfo(DOFileInfo fileInfo) {
 		if(!(fileInfo instanceof DOVideoFileInfo)) {
 			return;
 		}
@@ -207,27 +206,27 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		
 		try { year = Integer.parseInt(hYear.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_YEAR, hYear.getText());
+			year = 0;
 		}
 		try { tmdbId = Integer.parseInt(hTmdbId.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_TMDBID, hTmdbId.getText());
+			tmdbId = 0;
 		}
 		try { budget = Integer.parseInt(hBudget.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_BUDGET, hBudget.getText());
+			budget = 0;
 		}
 		try { revenue = Integer.parseInt(hRevenue.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_REVENUE, hRevenue.getText());
+			revenue = 0;
 		}
 		try { rating = Integer.parseInt(hRating.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_RATINGPERCENT, hRating.getText());
+			rating = 0;
 		}
 		try { voters = Integer.parseInt(hRatingVoters.getText().trim()); } 
 		catch(NumberFormatException ex) {
-			throw new ConditionTypeException(ConditionType.VIDEO_RATINGVOTERS, hRatingVoters.getText());
+			voters = 0;
 		}
 
 		DOVideoFileInfo fiVideo = (DOVideoFileInfo) fileInfo;
@@ -250,6 +249,7 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		fiVideo.setTagLine(hTagLine.getText().trim());
 		fiVideo.setOverview(taOverview.getText().trim());
 		
+		fiVideo.getGenres().clear();
 		Map<String, List<String>> tags = pGenres.getTags();
 		if (tags.keySet().contains(GENRES_NAME)) {
 			fiVideo.setGenres(tags.get(GENRES_NAME));
@@ -313,6 +313,7 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		if(hOverview.isSelected()) {
 			res.add(ConditionType.VIDEO_OVERVIEW);
 		}
+		
 		return res;
 	}
 }

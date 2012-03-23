@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
-import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
 import net.pms.medialibrary.gui.dialogs.ImageViewer;
@@ -151,7 +150,7 @@ public class FileCoverPanel extends JPanel implements IFilePropertiesEditor {
 	}
 
 	@Override
-	public void updateFileInfo(DOFileInfo fileInfo) throws ConditionTypeException {
+	public void updateFileInfo(DOFileInfo fileInfo) {
 		fileInfo.setThumbnailPath(coverPath);
 	}
 

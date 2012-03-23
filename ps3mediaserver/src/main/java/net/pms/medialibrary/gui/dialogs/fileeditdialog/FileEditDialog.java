@@ -10,17 +10,25 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
+import net.pms.medialibrary.commons.dataobjects.DOAudioFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
+import net.pms.medialibrary.commons.dataobjects.DOImageFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.helpers.FileImportHelper;
+import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
+import net.pms.medialibrary.external.FileImportPlugin;
+import net.pms.medialibrary.gui.dialogs.FileUpdateWithPluginDialog;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 
 /**
@@ -30,6 +38,7 @@ import net.pms.medialibrary.storage.MediaLibraryStorage;
  */
 public class FileEditDialog extends JDialog {
 	private static final long serialVersionUID = 2921067184273978956L;
+	private static final Logger log = LoggerFactory.getLogger(FileEditDialog.class);
 	private final int MIN_BUTTON_WIDTH = 60;
 
 	private EditMode editMode;
@@ -40,6 +49,7 @@ public class FileEditDialog extends JDialog {
 	private JButton bNext;
 	private JButton bOk;
 	private JButton bCancel;
+	private JButton bImportWithPlugin;
 	private FileEditTabbedPane tpFileEdit;
 	private List<DOFileInfo> files;
       
@@ -184,6 +194,51 @@ public class FileEditDialog extends JDialog {
 				dispose();
 			}
 		});
+		
+		bImportWithPlugin = new JButton(Messages.getString("ML.FileEditDialog.bImportWithPlugin"));
+		if (bImportWithPlugin.getPreferredSize().width < MIN_BUTTON_WIDTH) bImportWithPlugin.setPreferredSize(new Dimension(MIN_BUTTON_WIDTH, bImportWithPlugin.getPreferredSize().height));
+		bImportWithPlugin.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateWithPlugin();
+			}
+		});
+	}
+	
+	private void updateWithPlugin() {
+		FileUpdateWithPluginDialog dialog = new FileUpdateWithPluginDialog(editMode == EditMode.Linked ? fileEditList.getSelected() : fileInfo);
+		dialog.pack();
+		dialog.setLocation(GUIHelper.getCenterDialogOnParentLocation(dialog.getSize(), bImportWithPlugin));
+		dialog.setModal(true);
+		dialog.setResizable(false);
+		dialog.setVisible(true);
+		
+		if(dialog.isUpdate()) {
+			FileImportPlugin plugin = dialog.getPlugin();
+			
+			//get the updated file info
+			DOFileInfo newFileInfo = new DOFileInfo();
+			DOFileInfo ff = editMode == EditMode.Single ? fileInfo : fileEditList.getSelected();
+			if(ff instanceof DOVideoFileInfo) {
+				newFileInfo = new DOVideoFileInfo();
+			} else if(ff instanceof DOAudioFileInfo) {
+				newFileInfo = new DOAudioFileInfo();
+			} else if(ff instanceof DOImageFileInfo) {
+				newFileInfo = new DOImageFileInfo();
+			}
+			
+			FileImportHelper.updateFileInfo(plugin, newFileInfo);
+			
+			try {
+				DOFileInfo displayedFileInfo = tpFileEdit.getDisplayedFileInfo();
+				displayedFileInfo.mergePropertiesAndTags(newFileInfo);
+				tpFileEdit.setContent(displayedFileInfo);
+			} catch (ConditionTypeException e) {
+				log.error("Failed to get the displayed file info", e);
+				//TODO: show error dialog
+			}
+		}
 	}
 
 	/**
@@ -196,20 +251,23 @@ public class FileEditDialog extends JDialog {
 		PanelBuilder builder;
 		CellConstraints cc = new CellConstraints();
 
-		FormLayout layout = new FormLayout("3px, d, 3px, d, fill:10:grow, d, 3px, d, 3px", // columns
+		FormLayout layout = new FormLayout("3px, d, 3px, d, fill:10:grow, d, 30px, d, 3px, d, 3px", // columns
 		        "3px, fill:10:grow, 3px, p, 3px"); // rows
 		builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 
-		builder.add(tpFileEdit, cc.xyw(2, 2, 7));
+		builder.add(tpFileEdit, cc.xyw(2, 2, 9));
 		
 		if(editMode == EditMode.Linked) {
 			builder.add(bPrevious, cc.xy(2, 4));
 			builder.add(bNext, cc.xy(4, 4));
+			builder.add(bImportWithPlugin, cc.xy(6, 4));
+		} else if(editMode == EditMode.Single){
+			builder.add(bImportWithPlugin, cc.xy(6, 4));
 		}
 		
-		builder.add(bOk, cc.xy(6, 4));
-		builder.add(bCancel, cc.xy(8, 4));
+		builder.add(bOk, cc.xy(8, 4));
+		builder.add(bCancel, cc.xy(10, 4));
 
 		getContentPane().add(builder.getPanel());
 
@@ -228,7 +286,7 @@ public class FileEditDialog extends JDialog {
 
 	/**
 	 * Saves the file info as it's being displayed to the database
-	 * @return
+	 * @return true if the file has been saved
 	 */
 	private boolean saveUpdatedFileInfo() {
 		DOFileInfo fileInfo;

@@ -324,8 +324,17 @@ public class FileImportHelper {
 			}
 		}
 		
-		//clean the name according to some predefined and customizable rules
-		String cleanFileName = getCleanName(fileInfo.getFileName(false));
+		//either use the name of the video or the clean file name
+		String cleanName = null;
+		if(fileInfo instanceof DOVideoFileInfo) {
+			DOVideoFileInfo videoFileInfo = (DOVideoFileInfo) fileInfo;
+			if(!videoFileInfo.getName().equals("")) {
+				cleanName = videoFileInfo.getName();
+			}
+		}
+		if(cleanName == null) {
+			cleanName = getCleanName(fileInfo.getFileName(false));
+		}
 		String filePath = fileInfo.getFilePath();
 
 		Map<String, FileImportPlugin> queriedPlugins = new HashMap<String, FileImportPlugin>();  //key=plugin name, value = plugin
@@ -335,7 +344,7 @@ public class FileImportHelper {
 		//configured priorities to retrieve the information
 		for(FileProperty fileProperty : FileProperty.values()) {
 			if(!fileProperty.toString().startsWith("VIDEO_")){
-				//we only want to import properties for video files; discard the rest
+				//we only want to import properties for video files for now; discard the rest
 				continue;
 			}
 			
@@ -373,7 +382,7 @@ public class FileImportHelper {
 				//get the plugin from the cached list of plugins or create it and 
 				//add it to the cache if it doesn't exist
 				if(!queriedPlugins.containsKey(engineName)) {
-					FileImportPlugin p = initPlugin(engineName, cleanFileName, filePath);
+					FileImportPlugin p = initPlugin(engineName, cleanName, filePath);
 					if(p == null) {
 						failedImportPluginNames.add(engineName);
 						continue;
@@ -436,7 +445,7 @@ public class FileImportHelper {
 				if(queriedPlugins.containsKey(engineName)) {
 					p = queriedPlugins.get(engineName);					
 				} else {
-					p = initPlugin(engineName, cleanFileName, filePath);
+					p = initPlugin(engineName, cleanName, filePath);
 					if(p == null) {
 						failedImportPluginNames.add(engineName);
 						continue;
@@ -500,7 +509,7 @@ public class FileImportHelper {
 					log.error(String.format("Failed to copy cover from %s to %s", fiSource.getThumbnailPath(), saveFileName), e);
 				}
 				break;
-			case FILE_CONTAINS_TAG:				
+			case FILE_CONTAINS_TAG:
 				//merge tags
 				Map<String, List<String>> allTags = fiDestination.getTags();
 				Map<String, List<String>> newTags = fiSource.getTags();
@@ -530,7 +539,8 @@ public class FileImportHelper {
 
 
 	/**
-	 * Updates the fields configured in propertiesToUse from fiSource to fiDestination
+	 * Updates the fields configured in propertiesToUse from fiSource to fiDestination.
+	 *
 	 * @param fiSource the source
 	 * @param fiDestination the destination
 	 * @param propertiesToUse the list of properties to copy from the source to the destination
@@ -603,7 +613,8 @@ public class FileImportHelper {
 	}
 	
 	/**
-	 * Initializes a plugin and loads the data for the given cleanFileName and/or filePath
+	 * Initializes a plugin and loads the data for the given cleanFileName and/or filePath.
+	 *
 	 * @param engineName the name of the import engine to use
 	 * @param cleanFileName the cleaned name that will be passed on to the plugin for query
 	 * @param filePath the file path that will be passed on to the plugin for query
@@ -651,6 +662,7 @@ public class FileImportHelper {
 
 	/**
 	 * Sets the value in the fileInfo for the fileProperty if it is valid, throws a FilePropertyImportException otherwise
+	 * 
 	 * @param value the value to set
 	 * @param fileProperty the file property to set in fileinfo
 	 * @param fileInfo the specified file property will be set in this fileInfo

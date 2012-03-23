@@ -425,6 +425,35 @@ public class DOFileInfo {
 		return actif;
 	}
 
+	/**
+	 * Merge properties and tags.
+	 *
+	 * @param fileInfo the file info
+	 */
+	public void mergePropertiesAndTags(DOFileInfo fileInfo) {
+		if(fileInfo.getThumbnailPath() != null && !fileInfo.getThumbnailPath().equals("")) {
+			fileInfo.setThumbnailPath(fileInfo.getThumbnailPath());
+		}
+		
+		//merge tags
+		Map<String, List<String>> allTags = getTags();
+		Map<String, List<String>> newTags = fileInfo.getTags();
+		
+		for (String tagName : newTags.keySet()) {
+			if (!allTags.containsKey(tagName)) {
+				allTags.put(tagName, new ArrayList<String>());
+			}
+
+			List<String> allTagValues = allTags.get(tagName);
+			List<String> newTagValues = newTags.get(tagName);
+			for (String tagValue : newTagValues) {
+				if (!allTagValues.contains(tagValue)) {
+					allTagValues.add(tagValue);
+				}
+			}
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -466,7 +495,7 @@ public class DOFileInfo {
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
-	public int hashCode(){
+	public int hashCode() {
 		int hashCode = 24 + getId();
 		hashCode *= 24 + getFolderPath().hashCode();
 		hashCode *= 24 + getFileName().hashCode();
@@ -486,24 +515,24 @@ public class DOFileInfo {
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
-    @Override
-	public DOFileInfo clone() {
-		DOFileInfo fi = new DOFileInfo();
-		fi.setFolderPath(getFolderPath());
-		fi.setFileName(getFileName());
-		fi.setType(getType());
-		fi.setDateLastUpdatedDb(getDateLastUpdatedDb());
-		fi.setDateInsertedDb(getDateInsertedDb());
-		fi.setDateModifiedOs(getDateModifiedOs());
-		fi.setTags(getTags());
-		fi.setThumbnailPath(getThumbnailPath());
-		fi.setSize(getSize());		
-		fi.setPlayCount(getPlayCount());
-		fi.setActive(isActive());
-		fi.playHistory = playHistory;
-		return fi;
-	}
-    
+//    @Override
+//	public DOFileInfo clone() {
+//		DOFileInfo fi = new DOFileInfo();
+//		fi.setFolderPath(getFolderPath());
+//		fi.setFileName(getFileName());
+//		fi.setType(getType());
+//		fi.setDateLastUpdatedDb(getDateLastUpdatedDb());
+//		fi.setDateInsertedDb(getDateInsertedDb());
+//		fi.setDateModifiedOs(getDateModifiedOs());
+//		fi.setTags(getTags());
+//		fi.setThumbnailPath(getThumbnailPath());
+//		fi.setSize(getSize());		
+//		fi.setPlayCount(getPlayCount());
+//		fi.setActive(isActive());
+//		fi.playHistory = playHistory;
+//		return fi;
+//	}
+	
     /**
      * Fires a property changed event.
      *
@@ -514,6 +543,5 @@ public class DOFileInfo {
     	for(ActionListener l : propertyChangeListeners) {
     		l.actionPerformed(e);
     	}
-    }
-	
+    }	
 }

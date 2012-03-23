@@ -13,6 +13,8 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -29,15 +31,17 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
+import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.helpers.DLNAHelper;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
+import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
 import net.pms.medialibrary.gui.dialogs.ImageViewer;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.transferhandlers.FileInfoCoverTransferHandler;
 import net.pms.medialibrary.gui.shared.JHeader;
 
-public class VideoFileInfoPanel extends JPanel {
+public class VideoFileInfoPanel extends JPanel implements IFilePropertiesEditor {
 	private static final long serialVersionUID = 3818830578372058006L;
 	private static final Logger log = LoggerFactory.getLogger(VideoFileInfoPanel.class);
 	private ImageIcon videoCoverImage;
@@ -59,13 +63,14 @@ public class VideoFileInfoPanel extends JPanel {
 	}
 
 	public VideoFileInfoPanel(DOVideoFileInfo fileInfo) {
-		build(fileInfo);
 		this.fileInfo = fileInfo;
+		build();
 		
 		fileInfo.addPropertyChangeListener(thumbnailChangeListener);
 	}
 
-	private void build(final DOVideoFileInfo fileInfo) {
+	@Override
+	public void build() {
 		setLayout(new GridLayout());
 		
 		PanelBuilder builder;
@@ -229,6 +234,40 @@ public class VideoFileInfoPanel extends JPanel {
 	
 	public void dispose() {
 		fileInfo.removePropertyChangeListener(thumbnailChangeListener);
+	}
+
+	@Override
+	public void updateFileInfo(DOFileInfo fileInfo) {
+		if(!(fileInfo instanceof DOVideoFileInfo)) {
+			return;
+		}
+		
+		DOVideoFileInfo videoFileInfo = (DOVideoFileInfo) fileInfo;
+		
+		videoFileInfo.setSize(this.fileInfo.getSize());
+		videoFileInfo.setDateLastUpdatedDb(this.fileInfo.getDateInsertedDb());
+		videoFileInfo.setDateLastUpdatedDb(this.fileInfo.getDateLastUpdatedDb());
+		videoFileInfo.setDateModifiedOs(this.fileInfo.getDateModifiedOs());
+		videoFileInfo.getPlayHistory().addAll(this.fileInfo.getPlayHistory());
+		videoFileInfo.setPlayCount(this.fileInfo.getPlayCount());
+		videoFileInfo.setFileName(this.fileInfo.getFileName());
+		videoFileInfo.setFolderPath(this.fileInfo.getFolderPath());
+		videoFileInfo.setDurationSec(this.fileInfo.getDurationSec());
+		videoFileInfo.setWidth(this.fileInfo.getWidth());
+		videoFileInfo.setHeight(this.fileInfo.getHeight());
+		videoFileInfo.setCodecV(this.fileInfo.getCodecV());
+		videoFileInfo.setContainer(this.fileInfo.getContainer());
+		videoFileInfo.setBitrate(this.fileInfo.getBitrate());
+		videoFileInfo.setBitsPerPixel(this.fileInfo.getBitsPerPixel());
+		videoFileInfo.setMimeType(this.fileInfo.getMimeType());
+		videoFileInfo.setFrameRate(this.fileInfo.getFrameRate());
+		videoFileInfo.setAudioCodes(this.fileInfo.getAudioCodes());
+		videoFileInfo.setSubtitlesCodes(this.fileInfo.getSubtitlesCodes());
+	}
+
+	@Override
+	public List<ConditionType> getPropertiesToUpdate() {
+		return new ArrayList<ConditionType>();
 	}
 	
 }

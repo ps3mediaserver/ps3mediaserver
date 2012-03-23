@@ -520,6 +520,73 @@ public class DOVideoFileInfo extends DOFileInfo {
 		if(muxingMode == null) muxingMode = "";
 		return muxingMode;
 	}
+	public void mergePropertiesAndTags(DOFileInfo fileInfo) {
+		super.mergePropertiesAndTags(fileInfo);
+		
+		if(!(fileInfo instanceof DOVideoFileInfo)) {
+			return;
+		}
+		
+		DOVideoFileInfo videoFileInfo = (DOVideoFileInfo) fileInfo;
+		if(!videoFileInfo.getName().equals("")) {
+			setName(videoFileInfo.getName());
+		}
+		if(!videoFileInfo.getOriginalName().equals("")) {
+			setOriginalName(videoFileInfo.getOriginalName());
+		}
+		if(!videoFileInfo.getSortName().equals("")) {
+			setSortName(videoFileInfo.getSortName());
+		}
+		if(videoFileInfo.getYear() > 0) {
+			setYear(videoFileInfo.getYear());
+		}
+		if(!videoFileInfo.getDirector().equals("")) {
+			setDirector(videoFileInfo.getDirector());
+		}
+		if(!videoFileInfo.getImdbId().equals("")) {
+			setImdbId(videoFileInfo.getImdbId());
+		}
+		if(!videoFileInfo.getHomepageUrl().equals("")) {
+			setHomepageUrl(videoFileInfo.getHomepageUrl());
+		}
+		if(!videoFileInfo.getTrailerUrl().equals("")) {
+			setTrailerUrl(videoFileInfo.getTrailerUrl());
+		}
+		if(videoFileInfo.getTmdbId() > 0) {
+			setTmdbId(videoFileInfo.getTmdbId());
+		}
+		if(videoFileInfo.getRating().getRatingPercent() > 0) {
+			getRating().setRatingPercent(videoFileInfo.getRating().getRatingPercent());
+		}
+		if(videoFileInfo.getRating().getVotes() > 0) {
+			getRating().setVotes(videoFileInfo.getRating().getVotes());
+		}
+		if(!videoFileInfo.getAgeRating().getReason().equals("")) {
+			getAgeRating().setReason(videoFileInfo.getAgeRating().getReason());
+		}
+		if(!videoFileInfo.getAgeRating().getLevel().equals("")) {
+			getAgeRating().setLevel(videoFileInfo.getAgeRating().getLevel());
+		}
+		if(!videoFileInfo.getTagLine().equals("")) {
+			setTagLine(videoFileInfo.getTagLine());
+		}
+		if(videoFileInfo.getBudget() > 0) {
+			setBudget(videoFileInfo.getBudget());
+		}
+		if(!videoFileInfo.getOverview().equals("")) {
+			setOverview(videoFileInfo.getOverview());
+		}
+		if(videoFileInfo.getRevenue() > 0) {
+			setRevenue(videoFileInfo.getRevenue());
+		}
+		
+		List<String> genres = getGenres();
+		for(String genre : videoFileInfo.getGenres()) {
+			if(!genres.contains(genre)) {
+				genres.add(genre);
+			}
+		}
+	}
 
 	@Override
 	public String toString() {

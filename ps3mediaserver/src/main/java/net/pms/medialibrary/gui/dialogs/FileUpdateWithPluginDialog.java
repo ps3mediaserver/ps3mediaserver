@@ -138,6 +138,7 @@ public class FileUpdateWithPluginDialog extends JDialog {
 				String value = tfValue.getText();
 				FileImportPlugin plugin = ((FileImportPluginWrapper)cbPlugins.getSelectedItem()).getFileImportPlugin();
 				
+				bImport.setEnabled(false);
 				DefaultListModel listModel = (DefaultListModel)lResults.getModel();
 				listModel.removeAllElements();
 				

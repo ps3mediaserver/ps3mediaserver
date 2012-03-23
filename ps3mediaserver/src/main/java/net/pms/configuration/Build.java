@@ -1,7 +1,5 @@
 package net.pms.configuration;
 
-import com.sun.jna.Platform;
-
 import org.apache.commons.lang.StringUtils;
 
 // a one-stop class for values and methods specific to custom PMS builds
@@ -56,7 +54,7 @@ public class Build {
 	 * @return True if this build can be updated, false otherwise.
 	 */
 	public static boolean isUpdatable() {
-		return IS_UPDATABLE && Platform.isWindows() && getUpdateServerURL() != null;
+		return IS_UPDATABLE;
 	}
 
 	/**
