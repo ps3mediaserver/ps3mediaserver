@@ -70,7 +70,7 @@
 	<!--
 		For debugging purposes it can be handy to define custom levels for
 		specific classes or packages. For example:
-		
+
 	<logger name="net.pms.dlna.DLNAResource" level="ALL" />
 	<logger name="net.pms.network.RequestHandlerV2" level="ALL" />
 	<logger name="net.pms.util" level="ALL" />
@@ -80,7 +80,7 @@
 	<root level="DEBUG">
 		<appender-ref ref="traces" />
 		<appender-ref ref="console" />
-		
+
 		<!--
 			If unlimited growth of debug.log is not desired use the
 			appender-ref "debug.log.10MB" instead of "debug.log".
