@@ -694,7 +694,12 @@ public class FileImportHelper {
 			} catch (IOException e) {
 				//do nothing
 			}
-			fileInfo.setThumbnailPath(coverPath);
+			
+			if(new File(coverPath).exists()) {
+				fileInfo.setThumbnailPath(coverPath);
+			} else {
+				throw new FilePropertyImportException(fileProperty, null, String.class, ExceptionType.NoResult);
+			}
 			break;
 		case VIDEO_CERTIFICATION:
 			validateStringValue(value, fileProperty);

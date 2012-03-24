@@ -84,10 +84,7 @@ public class FullDataCollector {
     				DOVideoFileInfo tmpVideoFileInfo = new DOVideoFileInfo();
     				tmpVideoFileInfo.setFolderPath(folderPath);
     				tmpVideoFileInfo.setFileName(fileName);
-    				tmpVideoFileInfo.setSortName(fileName);
-    				tmpVideoFileInfo.setName(fileName);
     				tmpVideoFileInfo.setType(FileType.VIDEO);
-    				
     				//get the information from pms internal util (mediainfo or ffmpeg)
     				populateMovieInfo(tmpVideoFileInfo);
     				
@@ -95,6 +92,13 @@ public class FullDataCollector {
     				if(mf.isFileImportEnabled()) {
     					FileImportHelper.updateFileInfo(mf.getFileImportTemplate(), tmpVideoFileInfo);
     					//TODO: Parametrize the creation of the sort name
+    					tmpVideoFileInfo.setSortName(tmpVideoFileInfo.getName());
+    				}
+    				
+    				if(tmpVideoFileInfo.getName().equals("")) {
+    					tmpVideoFileInfo.setName(tmpVideoFileInfo.getFileName(false));
+    				}
+    				if(tmpVideoFileInfo.getSortName().equals("")) {
     					tmpVideoFileInfo.setSortName(tmpVideoFileInfo.getName());
     				}
     				
