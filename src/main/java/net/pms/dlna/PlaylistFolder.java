@@ -122,7 +122,8 @@ public class PlaylistFolder extends DLNAResource {
 							} else {
 								title = line;
 							}
-						} else if (!line.startsWith("#")) {
+						} else if (!line.startsWith("#") && !line.matches("^\\s*$")) {
+							// Non-comment and non-empty line contains the filename
 							fileName = line;
 							Entry entry = new Entry();
 							entry.fileName = fileName;
