@@ -1,5 +1,7 @@
 package net.pms.medialibrary.storage;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +30,7 @@ import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.enumarations.SortOption;
 import net.pms.medialibrary.commons.enumarations.MediaLibraryConstants.MetaDataKeys;
 import net.pms.medialibrary.commons.exceptions.StorageException;
+import net.pms.medialibrary.commons.helpers.FileImportHelper;
 import net.pms.medialibrary.commons.interfaces.IMediaLibraryStorage;
 
 public class MediaLibraryStorage implements IMediaLibraryStorage {		
@@ -387,6 +390,8 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 	public void insertFileInfo(DOFileInfo fileInfo) {
 		String statusMsg = null;
 		
+		updateCover(fileInfo);
+		
 		switch(fileInfo.getType()){
 			case AUDIO:
 			try {
@@ -417,9 +422,25 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 		}
 	}
 
+	private void updateCover(DOFileInfo fileInfo) {
+		//copy the thumbnail if required
+		File thumbnailFile = new File(fileInfo.getThumbnailPath());
+		String coverPath = FileImportHelper.getCoverPath(fileInfo.getThumbnailPath(), fileInfo);
+		if(thumbnailFile.exists() && !fileInfo.getThumbnailPath().equals(coverPath)) {
+			try {
+				FileImportHelper.copyFile(thumbnailFile, new File(coverPath), true);
+				fileInfo.setThumbnailPath(coverPath);
+			} catch (IOException e) {
+				log.error("Failed to copy cover while importing a file info", e);
+			}
+		}
+	}
+
 	@Override
 	public void updateFileInfo(DOFileInfo fileInfo) {
 		String statusMsg = null;
+		
+		updateCover(fileInfo);
 		
 		switch(fileInfo.getType()){
 			case AUDIO:

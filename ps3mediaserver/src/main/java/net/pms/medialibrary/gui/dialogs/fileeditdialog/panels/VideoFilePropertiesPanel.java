@@ -249,11 +249,13 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		fiVideo.setTagLine(hTagLine.getText().trim());
 		fiVideo.setOverview(taOverview.getText().trim());
 		
-		fiVideo.getGenres().clear();
 		Map<String, List<String>> tags = pGenres.getTags();
+		List<String> newGenres = new ArrayList<String>();
 		if (tags.keySet().contains(GENRES_NAME)) {
-			fiVideo.setGenres(tags.get(GENRES_NAME));
+			newGenres = tags.get(GENRES_NAME);
 		}
+		fiVideo.setGenres(newGenres);
+			
 	}
 
 	@Override

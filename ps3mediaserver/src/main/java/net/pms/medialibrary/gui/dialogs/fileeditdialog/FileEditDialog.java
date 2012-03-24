@@ -9,20 +9,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
-import net.pms.medialibrary.commons.dataobjects.DOAudioFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
-import net.pms.medialibrary.commons.dataobjects.DOImageFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
-import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.helpers.FileImportHelper;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
@@ -37,7 +31,6 @@ import net.pms.medialibrary.storage.MediaLibraryStorage;
  */
 public class FileEditDialog extends JDialog {
 	private static final long serialVersionUID = 2921067184273978956L;
-	private static final Logger log = LoggerFactory.getLogger(FileEditDialog.class);
 	private final int MIN_BUTTON_WIDTH = 60;
 
 	private EditMode editMode;
@@ -217,26 +210,12 @@ public class FileEditDialog extends JDialog {
 			FileImportPlugin plugin = dialog.getPlugin();
 			
 			//get the updated file info
-			DOFileInfo newFileInfo = new DOFileInfo();
 			DOFileInfo ff = getEditingFileInfo();
-			if(ff instanceof DOVideoFileInfo) {
-				newFileInfo = new DOVideoFileInfo();
-			} else if(ff instanceof DOAudioFileInfo) {
-				newFileInfo = new DOAudioFileInfo();
-			} else if(ff instanceof DOImageFileInfo) {
-				newFileInfo = new DOImageFileInfo();
-			}
-			
-			FileImportHelper.updateFileInfo(plugin, newFileInfo);
-			
-			try {
-				DOFileInfo displayedFileInfo = tpFileEdit.getDisplayedFileInfo();
-				displayedFileInfo.mergePropertiesAndTags(newFileInfo);
-				tpFileEdit.setContent(displayedFileInfo);
-			} catch (ConditionTypeException e) {
-				log.error("Failed to get the displayed file info", e);
-				//TODO: show error dialog
-			}
+			DOFileInfo displayedFileInfo = tpFileEdit.getDisplayedFileInfo();
+			displayedFileInfo.mergePropertiesAndTags(ff);
+			FileImportHelper.updateFileInfo(plugin, displayedFileInfo);
+
+			tpFileEdit.setContent(displayedFileInfo);
 		}
 	}
 

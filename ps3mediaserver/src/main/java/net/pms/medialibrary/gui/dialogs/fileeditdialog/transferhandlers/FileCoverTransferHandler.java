@@ -5,6 +5,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,7 @@ import javax.swing.TransferHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.pms.PMS;
 import net.pms.medialibrary.commons.helpers.FileImportHelper;
 
 public class FileCoverTransferHandler  extends TransferHandler {
@@ -23,17 +25,12 @@ public class FileCoverTransferHandler  extends TransferHandler {
 	private static final Logger log = LoggerFactory.getLogger(FileCoverTransferHandler.class);
 
 	private static final DataFlavor flavors[] = { DataFlavor.javaFileListFlavor /*, DataFlavor.imageFlavor*/ };
-
-	private String saveFilePath;
-
+	public static final String TMP_FILENAME = "tmp_cover.jpg";
 	protected List<String> supportedIconExtensions = Arrays.asList("png", "jpg", "jpeg", "bmp");
-	
+	private boolean hasCoverChanged = false;
 	private List<ActionListener> coverChangedListeners = new ArrayList<ActionListener>();
-	
-	public FileCoverTransferHandler(String coverPath) {
-		saveFilePath = coverPath;
-	}
-	
+	private String coverPath;
+
 	public void addCoverChangedListeners(ActionListener coverChangedListener) {
 		coverChangedListeners.add(coverChangedListener);
 	}
@@ -86,8 +83,9 @@ public class FileCoverTransferHandler  extends TransferHandler {
 						}
 						
 						//copy the image
-						FileImportHelper.copyFile(new File(sourceFileName), new File(getSaveFilePath()), true);
+						importCover(sourceFileName);
 						
+						hasCoverChanged = true;
 						fireCoverChanged();
 					}
 					return true;
@@ -97,12 +95,37 @@ public class FileCoverTransferHandler  extends TransferHandler {
 			}
 		return false;
 	}
-
-	public String getSaveFilePath() {
-		return saveFilePath;
+	
+	public void setCoverPath(String coverPath) {
+		this.coverPath = coverPath;
 	}
 
-	public void setSaveFilePath(String saveFilePath) {
-		this.saveFilePath = saveFilePath;
+	public String getCoverPath() {
+		if(coverPath == null) coverPath = getDropCoverPath();
+		return coverPath;
+	}
+
+	public String getDropCoverPath() {
+		try {
+			return PMS.getConfiguration().getTempFolder() + File.separator + TMP_FILENAME;
+		} catch (IOException e) {
+			return "";
+		}
+	}
+	
+	public void importCover(String coverPath) {
+		File coverToCopy = new File(coverPath);
+		try {
+			String filePath = getDropCoverPath();
+			FileImportHelper.copyFile(coverToCopy, new File(filePath), true);
+			this.coverPath = filePath;
+			hasCoverChanged = true;
+		} catch (IOException e) {
+			log.error(String.format("Failed to copy file '%s' to '%s'", coverPath, getCoverPath()), e);
+		}
+	}
+	
+	public boolean hasCoverChanged() {
+		return hasCoverChanged;
 	}
 }

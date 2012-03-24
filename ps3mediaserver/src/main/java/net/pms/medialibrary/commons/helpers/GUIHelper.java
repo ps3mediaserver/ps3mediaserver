@@ -40,10 +40,24 @@ public class GUIHelper {
 	 * Method used to resize images to fit the cover into the label
 	 * @param srcImg source image icon
 	 * @param h height of the image
+	 * @param maxWidth 
 	 * @return resized image icon
 	 */
-	public static ImageIcon getScaledImage(ImageIcon srcImg, int h) {
+	public static ImageIcon getScaledImage(ImageIcon srcImg, int h, int maxWidth) {
 		int w = srcImg.getIconWidth() * h / srcImg.getIconHeight();
+		
+		//respect the max width constraint
+		if(w > maxWidth) {
+			w = maxWidth;
+			h = srcImg.getIconHeight() * w / srcImg.getIconWidth();
+		}
+		
+		//don't make the image bigger then its original size
+		if(w > srcImg.getIconWidth() || h > srcImg.getIconHeight()) {
+			w = srcImg.getIconWidth();
+			h = srcImg.getIconHeight();
+		}
+		
 		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = resizedImg.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);

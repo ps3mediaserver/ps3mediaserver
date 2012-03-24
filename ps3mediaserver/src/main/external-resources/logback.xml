@@ -27,7 +27,7 @@
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<!-- Only log INFO and higher -->
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>INFO</level>
+			<level>DEBUG</level>
 		</filter>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<pattern>[%18.18thread] %-5level %d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n</pattern>

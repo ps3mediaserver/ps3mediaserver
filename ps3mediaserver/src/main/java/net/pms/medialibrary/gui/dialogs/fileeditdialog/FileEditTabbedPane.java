@@ -20,12 +20,12 @@ import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOImageFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
-import net.pms.medialibrary.commons.exceptions.ConditionTypeException;
 import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.panels.FileCoverPanel;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.panels.FileTagsPanel;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.panels.VideoFileInfoPanel;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.panels.VideoFilePropertiesPanel;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.transferhandlers.FileCoverTransferHandler;
 
 /**
  * Groups the info, properties and tags panels in a tabbed pane. Different
@@ -83,7 +83,7 @@ public class FileEditTabbedPane extends JTabbedPane {
 		pProperties = new JPanel();
 		tagsPanel = new FileTagsPanel(isMultiEdit ? new HashMap<String, List<String>>() : fileInfo.getTags(), true);
 		try {
-			coverPanel = new FileCoverPanel(PMS.getConfiguration().getTempFolder().getAbsolutePath() + File.separator + "tmp_cover.jpg");
+			coverPanel = new FileCoverPanel(PMS.getConfiguration().getTempFolder().getAbsolutePath() + File.separator + FileCoverTransferHandler.TMP_FILENAME);
 		} catch (IOException e) {
 			log.error("Failed to get temp folder location", e);
 		}
@@ -119,7 +119,7 @@ public class FileEditTabbedPane extends JTabbedPane {
 		}
 	}
 
-	public DOFileInfo getDisplayedFileInfo() throws ConditionTypeException {
+	public DOFileInfo getDisplayedFileInfo() {
 		DOFileInfo newFileInfo = null;
 		if (fileInfo instanceof DOVideoFileInfo) {
 			newFileInfo = new DOVideoFileInfo();

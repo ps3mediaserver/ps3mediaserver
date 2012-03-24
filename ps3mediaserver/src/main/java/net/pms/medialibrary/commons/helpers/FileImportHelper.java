@@ -500,14 +500,15 @@ public class FileImportHelper {
 		for(ConditionType ct : propertiesToUse) {
 			switch (ct) {
 			case FILE_THUMBNAILPATH:
-				//copy the temporary file
-				String saveFileName = FileImportHelper.getCoverPath(fiSource.getThumbnailPath(), fiDestination);
+				String coverPath = fiSource.getThumbnailPath();
 				try {
-					FileImportHelper.copyFile(fiSource.getThumbnailPath(), saveFileName, true);
-					fiDestination.setThumbnailPath(saveFileName);
+					String savePath = getTmpCoverPath(fiSource.getThumbnailPath(), fiSource);
+					FileImportHelper.saveUrlToFile(fiSource.getThumbnailPath(), savePath);
+					coverPath = savePath;
 				} catch (IOException e) {
-					log.error(String.format("Failed to copy cover from %s to %s", fiSource.getThumbnailPath(), saveFileName), e);
+					//do nothing
 				}
+				fiDestination.setThumbnailPath(coverPath);
 				break;
 			case FILE_CONTAINS_TAG:
 				//merge tags
@@ -548,6 +549,17 @@ public class FileImportHelper {
 	private static void updateFileInfo(DOVideoFileInfo fiSource, DOVideoFileInfo fiDestination, List<ConditionType> propertiesToUse) {
 		for(ConditionType ct : propertiesToUse) {
 			switch (ct) {
+			case FILE_THUMBNAILPATH:
+				String coverPath = fiSource.getThumbnailPath();
+				try {
+					String savePath = getTmpCoverPath(fiSource.getThumbnailPath(), fiSource);
+					FileImportHelper.saveUrlToFile(fiSource.getThumbnailPath(), savePath);
+					coverPath = savePath;
+				} catch (IOException e) {
+					//do nothing
+				}
+				fiDestination.setThumbnailPath(coverPath);
+				break;
 			case VIDEO_CERTIFICATION:
 				fiDestination.getAgeRating().setLevel(fiSource.getAgeRating().getLevel());
 				break;
@@ -671,6 +683,19 @@ public class FileImportHelper {
 	@SuppressWarnings("unchecked")
 	private static void setValue(Object value, FileProperty fileProperty, DOVideoFileInfo fileInfo) throws FilePropertyImportException {		
 		switch (fileProperty) {
+		case VIDEO_COVERURL:
+			validateStringValue(value, fileProperty);
+			String coverUrl = (String) value;
+			String coverPath = null;
+			try {
+				String savePath = getTmpCoverPath(coverUrl, fileInfo);
+				FileImportHelper.saveUrlToFile(coverUrl, savePath);
+				coverPath = savePath;
+			} catch (IOException e) {
+				//do nothing
+			}
+			fileInfo.setThumbnailPath(coverPath);
+			break;
 		case VIDEO_CERTIFICATION:
 			validateStringValue(value, fileProperty);
 			fileInfo.getAgeRating().setLevel((String)value);
@@ -682,17 +707,6 @@ public class FileImportHelper {
 		case VIDEO_BUDGET:
 			validateIntegerValue(value, fileProperty);
 			fileInfo.setBudget((Integer)value);
-			break;
-		case VIDEO_COVERURL:
-			validateStringValue(value, fileProperty);
-			String saveFileName = getCoverPath((String) value, fileInfo);
-			try {
-				saveUrlToFile((String) value, saveFileName);
-				fileInfo.setThumbnailPath(saveFileName);
-			} catch (IOException e) {
-				log.error(String.format("Failed to save cover url='%s' to file='%s'", value, saveFileName), e);
-				throw new FilePropertyImportException(fileProperty, null, String.class, ExceptionType.ProcessingFailed);
-			}
 			break;
 		case VIDEO_DIRECTOR:
 			validateStringValue(value, fileProperty);
@@ -791,6 +805,19 @@ public class FileImportHelper {
 		if(coverPath != null && coverPath.contains(".")) {
 			String ext = coverPath.substring(coverPath.lastIndexOf('.'), coverPath.length());
 			res = MediaLibraryConfiguration.getInstance().getPictureSaveFolderPath() + fileInfo.getFileName().replaceAll("\\\\|/|:|\\*|\\?|\"|<|>|\\|", "_") + ".cover" + ext;			
+		}
+		return res;
+	}
+	
+	private static String getTmpCoverPath(String coverPath, DOFileInfo fileInfo) {
+		String res = null;
+		if(coverPath != null && coverPath.contains(".")) {
+			String ext = coverPath.substring(coverPath.lastIndexOf('.'), coverPath.length());
+			try {
+				res = PMS.getConfiguration().getTempFolder() + File.separator + fileInfo.getFileName().replaceAll("\\\\|/|:|\\*|\\?|\"|<|>|\\|", "_") + ".cover" + ext;
+			} catch (IOException e) {
+				res = "";
+			}			
 		}
 		return res;
 	}

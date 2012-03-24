@@ -38,15 +38,15 @@ import net.pms.medialibrary.commons.helpers.DLNAHelper;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.IFilePropertiesEditor;
 import net.pms.medialibrary.gui.dialogs.ImageViewer;
-import net.pms.medialibrary.gui.dialogs.fileeditdialog.transferhandlers.FileInfoCoverTransferHandler;
+import net.pms.medialibrary.gui.dialogs.fileeditdialog.transferhandlers.FileCoverTransferHandler;
 import net.pms.medialibrary.gui.shared.JHeader;
 
 public class VideoFileInfoPanel extends JPanel implements IFilePropertiesEditor {
 	private static final long serialVersionUID = 3818830578372058006L;
 	private static final Logger log = LoggerFactory.getLogger(VideoFileInfoPanel.class);
+	private static final int MAX_COVER_WIDTH = 300;
 	private ImageIcon videoCoverImage;
 	private DOVideoFileInfo fileInfo;
-	private String videoCoverPath;
 	private JLabel lCover;
 	
 	private ActionListener thumbnailChangeListener = new ActionListener() {
@@ -57,6 +57,7 @@ public class VideoFileInfoPanel extends JPanel implements IFilePropertiesEditor 
 			}
 		}
 	};
+	private FileCoverTransferHandler lCoverTransferHandler;
 
 	public VideoFileInfoPanel() {
 		this(new DOVideoFileInfo());
@@ -87,9 +88,23 @@ public class VideoFileInfoPanel extends JPanel implements IFilePropertiesEditor 
 		builder.add(lTitle, cc.xyw(2, 2, 3));
 
 		// Add cover
+		lCoverTransferHandler = new FileCoverTransferHandler();
+		lCoverTransferHandler.addCoverChangedListeners(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					videoCoverImage = new ImageIcon(ImageIO.read(new File(lCoverTransferHandler.getCoverPath())));
+					resizeCover();
+				} catch (IOException e) {
+					log.error("Failed to load cover from " + lCoverTransferHandler.getCoverPath(), e);
+				}
+			}
+		});
+
 		lCover = new JLabel();
 		lCover.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		lCover.setTransferHandler(new FileInfoCoverTransferHandler(fileInfo));
+		lCover.setTransferHandler(lCoverTransferHandler);
 		lCover.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -104,6 +119,17 @@ public class VideoFileInfoPanel extends JPanel implements IFilePropertiesEditor 
 				}
 			}
 		});
+		
+		File imageFile = new File(fileInfo.getThumbnailPath());
+		if(imageFile.isFile()) {
+			//show the cover if it exists
+			try {
+				videoCoverImage = new ImageIcon(ImageIO.read(new File(imageFile.getAbsolutePath())));
+				lCoverTransferHandler.setCoverPath(imageFile.getAbsolutePath());
+			} catch (IOException e) {
+				log.error("Failed to load cover from " + imageFile.getAbsolutePath(), e);
+			}
+		}
 		addComponentListener(new ComponentAdapter() {
 			
 			@Override
@@ -122,6 +148,8 @@ public class VideoFileInfoPanel extends JPanel implements IFilePropertiesEditor 
 		builder.add(getInformationsPanel(fileInfo), cc.xy(4, 4));		
 		
 		add(builder.getPanel());
+		
+		resizeCover();
 	}
 	
 	private Component getInformationsPanel(DOVideoFileInfo fileInfo) {		
@@ -207,28 +235,17 @@ public class VideoFileInfoPanel extends JPanel implements IFilePropertiesEditor 
 	 * @param height the height to set for the image
 	 */
 	public void resizeCover(int height) {
-		//refresh the cover if it has changed
-		if(videoCoverPath == null || !videoCoverPath.equals(fileInfo.getThumbnailPath())) {			
-			File imageFile = new File(fileInfo.getThumbnailPath());
-			if(imageFile.isFile()) {
-				//show the cover if it exists
-				try {
-					videoCoverImage = new ImageIcon(ImageIO.read(new File(imageFile.getAbsolutePath())));
-				} catch (IOException e) {
-					log.error("Failed to load cover from " + imageFile.getAbsolutePath(), e);
-				}
-			} else {
-				//show the no image image
-				try {
-					videoCoverImage = new ImageIcon(ImageIO.read(getClass().getResource("/resources/images/cover_no_image.png")));
-				} catch (IOException e) {
-					log.error("Failed to load default image when no cover is available", e);
-				}
-			}			
+		if(videoCoverImage == null) {
+			//show the default image if none has been loaded
+			try {
+				videoCoverImage = new ImageIcon(ImageIO.read(getClass().getResource("/resources/images/cover_no_image.png")));
+			} catch (IOException e) {
+				log.error("Failed to load default image when no cover is available", e);
+			}
 		}
 		
 		if(height > 0) {
-			lCover.setIcon(GUIHelper.getScaledImage(videoCoverImage, height));
+			lCover.setIcon(GUIHelper.getScaledImage(videoCoverImage, height, MAX_COVER_WIDTH));
 		}
 	}
 	
@@ -245,7 +262,7 @@ public class VideoFileInfoPanel extends JPanel implements IFilePropertiesEditor 
 		DOVideoFileInfo videoFileInfo = (DOVideoFileInfo) fileInfo;
 		
 		videoFileInfo.setSize(this.fileInfo.getSize());
-		videoFileInfo.setDateLastUpdatedDb(this.fileInfo.getDateInsertedDb());
+		videoFileInfo.setDateInsertedDb(this.fileInfo.getDateInsertedDb());
 		videoFileInfo.setDateLastUpdatedDb(this.fileInfo.getDateLastUpdatedDb());
 		videoFileInfo.setDateModifiedOs(this.fileInfo.getDateModifiedOs());
 		videoFileInfo.getPlayHistory().addAll(this.fileInfo.getPlayHistory());
@@ -263,6 +280,8 @@ public class VideoFileInfoPanel extends JPanel implements IFilePropertiesEditor 
 		videoFileInfo.setFrameRate(this.fileInfo.getFrameRate());
 		videoFileInfo.setAudioCodes(this.fileInfo.getAudioCodes());
 		videoFileInfo.setSubtitlesCodes(this.fileInfo.getSubtitlesCodes());
+		
+		videoFileInfo.setThumbnailPath(lCoverTransferHandler.getCoverPath());
 	}
 
 	@Override

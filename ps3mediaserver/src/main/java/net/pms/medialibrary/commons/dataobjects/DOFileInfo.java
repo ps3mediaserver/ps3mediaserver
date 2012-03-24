@@ -432,7 +432,7 @@ public class DOFileInfo {
 	 */
 	public void mergePropertiesAndTags(DOFileInfo fileInfo) {
 		if(fileInfo.getThumbnailPath() != null && !fileInfo.getThumbnailPath().equals("")) {
-			fileInfo.setThumbnailPath(fileInfo.getThumbnailPath());
+			setThumbnailPath(fileInfo.getThumbnailPath());
 		}
 		
 		//merge tags

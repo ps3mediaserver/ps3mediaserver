@@ -70,22 +70,22 @@ public class FileCoverPanel extends JPanel implements IFilePropertiesEditor {
 		lCover.setIcon(coverImage);		
 		lCover.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		
-		transferHandler = new FileCoverTransferHandler(coverPath);
+		transferHandler = new FileCoverTransferHandler();
 		transferHandler.addCoverChangedListeners(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					coverImage = new ImageIcon(ImageIO.read(new File(transferHandler.getSaveFilePath())));
+					coverImage = new ImageIcon(ImageIO.read(new File(transferHandler.getCoverPath())));
 				} catch (IOException ex) {
-					log.error("Failed to load default cover from " + transferHandler.getSaveFilePath(), ex);
+					log.error("Failed to load default cover from " + transferHandler.getCoverPath(), ex);
 				}
 				cbCoverEnabled.setSelected(true);
 				resizeCover();
 			}
-		});
-		
+		});		
 		lCover.setTransferHandler(transferHandler);
+		
 		lCover.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -137,7 +137,7 @@ public class FileCoverPanel extends JPanel implements IFilePropertiesEditor {
 	 */
 	public void resizeCover(int height) {
 		if(height > 0) {
-			lCover.setIcon(GUIHelper.getScaledImage(coverImage, height));
+			lCover.setIcon(GUIHelper.getScaledImage(coverImage, height, Integer.MAX_VALUE));
 		}
 	}
 
