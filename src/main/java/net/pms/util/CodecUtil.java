@@ -167,18 +167,39 @@ public class CodecUtil {
 		return null;
 	}
 
-	public static String getMixerOutput(boolean pcmonly, int nbchannels) {
+	public static String getMixerOutput(boolean pcmonly, int nbOutputChannels) {
+		// for reference
+		// Channel Arrangement for Multi Channel Audio Formats
+		// http://avisynth.org/mediawiki/GetChannel
+		// http://flac.sourceforge.net/format.html#frame_header
+		// http://msdn.microsoft.com/en-us/windows/hardware/gg463006.aspx#E6C
+		// http://labs.divx.com/node/44
+		// http://lists.mplayerhq.hu/pipermail/mplayer-users/2006-October/063511.html
+		//
+		// Format				Chan 0	Chan 1	Chan 2	Chan 3	Chan 4	Chan 5
+		// 1.0 WAV/FLAC/MP3/WMA	FC
+		// 2.0 WAV/FLAC/MP3/WMA	FL		FR
+		// 4.0 WAV/FLAC/MP3/WMA	FL		FR		SL		SR
+		// 5.0 WAV/FLAC/MP3/WMA	FL		FR		FC		SL		SR
+		// 5.1 WAV/FLAC/MP3/WMA	FL		FR		FC		LFE		SL		SR
+		// 5.1 AC3				FL		FC		FR		SL		SR		LFE
+		// 5.1 DTS/AAC			FC		FL		FR		SL		SR		LFE
+		// 5.1 AIFF				FL		SL		FC		FR		SR		LFE
+		//
+		//  FL : Front Left
+		//  FC : Front Center
+		//  FR : Front Right
+		//  SL : Surround Left
+		//  SR : Surround Right
+		//  LFE : Low Frequency Effects (Sub)
 		String mixer = "volume=0";
-		if (pcmonly) { // we are using real PCM output
-			// thanks to JR Cash and his 5.1 sample
-			// et merci Yann :p
-			if (nbchannels == 5) /* Were missing an LFE channel so create one from the fronts */ {
-				mixer = "channels=6:6:0:0:1:1:3:2:5:3:4:4:2:5,sub=80:5";
+		if (pcmonly) { // we are using real PCM output and have to remap channels from AC3
+			if (nbOutputChannels <= 2) {
+				// remap and downmixing to 2 channels
+				mixer = "pan=2:1:0:0.707:0.707:0:1:1:0:0:1:1:1";
 			} else {
-				mixer = "channels=6:6:0:0:1:1:3:2:5:3:4:4:2:5";
-			}
-			if (nbchannels <= 2) { // downmixing to 2 channels
-				mixer = "pan=2:1:0:0:1:1:0:0:1:0.707:0.707:1:1";
+				// remap and leave 5.1
+				mixer = "channels=6:6:0:0:1:2:2:1:3:4:4:5:5:3";
 			}
 		}
 		return mixer;
