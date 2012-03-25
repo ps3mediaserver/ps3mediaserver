@@ -208,7 +208,7 @@ public class IpFilter {
 		setRawFilter(f);
 	}
 
-	public String getRawFilter() {
+	public synchronized String getRawFilter() {
 		return rawFilter;
 	}
 
