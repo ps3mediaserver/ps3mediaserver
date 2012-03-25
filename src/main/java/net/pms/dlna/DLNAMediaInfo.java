@@ -1092,17 +1092,40 @@ public class DLNAMediaInfo implements Cloneable {
 	}
 
 	public String toString() {
-		String s = "container: " + getContainer() + " / bitrate: " + getBitrate() + " / size: " + getSize() + " / codecV: " + getCodecV() + " / duration: " + getDurationString() + " / width: " + getWidth() + " / height: " + getHeight() + " / frameRate: " + getFrameRate() + " / thumb size : " + (getThumb() != null ? getThumb().length : 0) + " / muxingMode: " + getMuxingMode();
+		StringBuilder sb = new StringBuilder();
+		sb.append("container: ").append(getContainer())
+	          .append(" / bitrate: ").append(getBitrate())
+		  .append(" / size: ").append(getSize())
+		  .append(" / codecV: ").append(getCodecV())
+		  .append(" / duration: ").append(getDurationString())
+		  .append(" / width: ").append(getWidth())
+		  .append(" / height: ").append(getHeight())
+		  .append(" / frameRate: ").append(getFrameRate())
+		  .append(" / thumb size : ").append((getThumb() != null ? getThumb().length : 0))
+		  .append(" / muxingMode: ").append(getMuxingMode());
 		for (DLNAMediaAudio audio : getAudioCodes()) {
-			s += "\n\taudio: id=" + audio.getId() + " / lang: " + audio.getLang() + " / flavor: " + audio.getFlavor() + " / codec: " + audio.getCodecA() + " / sf:" + audio.getSampleFrequency() + " / na: " + audio.getNrAudioChannels() + " / bs: " + audio.getBitsperSample();
+			sb.append("\n\taudio: id=").append(audio.getId())
+			  .append(" / lang: ").append(audio.getLang())
+			  .append(" / flavor: ").append(audio.getLang())
+			  .append(" / codec: ").append(audio.getCodecA())
+			  .append(" / sf:").append(audio.getSampleFrequency())
+			  .append(" / na: ").append(audio.getNrAudioChannels())
+			  .append(" / bs: ").append(audio.getBitsperSample());
 			if (audio.getArtist() != null) {
-				s += " / " + audio.getArtist() + "|" + audio.getAlbum() + "|" + audio.getSongname() + "|" + audio.getYear() + "|" + audio.getTrack();
+				sb.append(" / ").append(audio.getArtist())
+				  .append("|").append(audio.getAlbum())
+				  .append("|").append(audio.getSongname())
+				  .append("|").append(audio.getYear())
+				  .append("|").append(audio.getTrack());
 			}
 		}
 		for (DLNAMediaSubtitle sub : getSubtitlesCodes()) {
-			s += "\n\tsub: id=" + sub.getId() + " / lang: " + sub.getLang() + " / flavor: " + sub.getFlavor() + " / type: " + sub.getType();
+			sb.append("\n\tsub: id=").append(sub.getId())
+			  .append(" / lang: ").append(sub.getLang())
+			  .append(" / flavor: ").append(sub.getFlavor())
+			  .append(" / type: ").append(sub.getType());
 		}
-		return s;
+		return sb.toString();
 	}
 
 	public InputStream getThumbnailInputStream() {
