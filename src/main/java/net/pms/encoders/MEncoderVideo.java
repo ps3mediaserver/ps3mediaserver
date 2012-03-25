@@ -1850,7 +1850,7 @@ public class MEncoderVideo extends Player {
 				StreamModifier sm = new StreamModifier();
 				sm.setPcm(pcm);
 				sm.setDtsembed(dts);
-				sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid));
+				sm.setNbchannels(sm.isDtsembed() ? 2 : configuration.getAudioChannelCount());
 				sm.setSampleFrequency(48000);
 				sm.setBitspersample(16);
 				String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());

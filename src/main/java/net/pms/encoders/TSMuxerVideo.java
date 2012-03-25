@@ -247,7 +247,7 @@ public class TSMuxerVideo extends Player {
 						StreamModifier sm = new StreamModifier();
 						sm.setPcm(pcm);
 						sm.setDtsembed(dts);
-						sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid));
+						sm.setNbchannels(sm.isDtsembed() ? 2 : configuration.getAudioChannelCount());
 						sm.setSampleFrequency(params.aid.getSampleRate() < 48000 ? 48000 : params.aid.getSampleRate());
 						sm.setBitspersample(16);
 						String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());
@@ -344,7 +344,7 @@ public class TSMuxerVideo extends Player {
 							StreamModifier sm = new StreamModifier();
 							sm.setPcm(pcm);
 							sm.setDtsembed(dts);
-							sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, audio));
+							sm.setNbchannels(sm.isDtsembed() ? 2 : configuration.getAudioChannelCount());
 							sm.setSampleFrequency(48000);
 							sm.setBitspersample(16);
 							if (!params.mediaRenderer.isMuxDTSToMpeg()) {
