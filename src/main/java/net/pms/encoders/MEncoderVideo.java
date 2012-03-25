@@ -1787,7 +1787,7 @@ public class MEncoderVideo extends Player {
 				if (pcm && !channels_filter_present) {
 					cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 					cmdArray[cmdArray.length - 2] = "-af";
-					cmdArray[cmdArray.length - 1] = CodecUtil.getMixerOutput(true, configuration.getAudioChannelCount());
+					cmdArray[cmdArray.length - 1] = CodecUtil.getMixerOutput(true, configuration.getAudioChannelCount(), configuration.getAudioChannelCount());
 				}
 
 				pw = new ProcessWrapperImpl(cmdArray, params);
@@ -1854,10 +1854,10 @@ public class MEncoderVideo extends Player {
 				StreamModifier sm = new StreamModifier();
 				sm.setPcm(pcm);
 				sm.setDtsembed(dts);
-				sm.setNbchannels(sm.isDtsembed() ? 2 : configuration.getAudioChannelCount());
+				sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid));
 				sm.setSampleFrequency(48000);
 				sm.setBitspersample(16);
-				String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());
+				String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels(), configuration.getAudioChannelCount());
 
 				// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
 				// -mc 0.1 make the DTS-HD extraction works better with latest mencoder builds, and makes no impact on the regular DTS one

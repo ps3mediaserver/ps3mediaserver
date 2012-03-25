@@ -249,10 +249,10 @@ public class TSMuxerVideo extends Player {
 						StreamModifier sm = new StreamModifier();
 						sm.setPcm(pcm);
 						sm.setDtsembed(dtsRemux);
-						sm.setNbchannels(sm.isDtsembed() ? 2 : configuration.getAudioChannelCount());
+						sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid));
 						sm.setSampleFrequency(params.aid.getSampleRate() < 48000 ? 48000 : params.aid.getSampleRate());
 						sm.setBitspersample(16);
-						String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());
+						String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels(), configuration.getAudioChannelCount());
 						ffmpegLPCMextract = new String[]{
 							mencoderPath,
 							"-ss", "0",
@@ -347,13 +347,13 @@ public class TSMuxerVideo extends Player {
 							StreamModifier sm = new StreamModifier();
 							sm.setPcm(pcm);
 							sm.setDtsembed(dtsRemux);
-							sm.setNbchannels(sm.isDtsembed() ? 2 : configuration.getAudioChannelCount());
-							sm.setSampleFrequency(48000);
+							sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, audio));
+							sm.setSampleFrequency(audio.getSampleRate() < 48000 ? 48000 : audio.getSampleRate());
 							sm.setBitspersample(16);
 							if (!params.mediaRenderer.isMuxDTSToMpeg()) {
 								ffAudioPipe[i].setModifier(sm);
 							}
-							String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels());
+							String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels(), configuration.getAudioChannelCount());
 							ffmpegLPCMextract = new String[]{
 								mencoderPath,
 								"-ss", "0",

@@ -100,7 +100,7 @@ public class CodecUtil {
 
 	public static int getRealChannelCount(PmsConfiguration configuration, DLNAMediaAudio audio) {
 		int channelCount = configuration.getAudioChannelCount();
-		if (audio.getNrAudioChannels() > 0 && audio.getNrAudioChannels() < channelCount) {
+		if (audio.getNrAudioChannels() > 0 && audio.getNrAudioChannels() != channelCount) {
 			channelCount = audio.getNrAudioChannels();
 		}
 		return channelCount;
@@ -167,7 +167,7 @@ public class CodecUtil {
 		return null;
 	}
 
-	public static String getMixerOutput(boolean pcmonly, int nbOutputChannels) {
+	public static String getMixerOutput(boolean pcmonly, int nbInputChannels, int nbOutputChannels) {
 		// for reference
 		// Channel Arrangement for Multi Channel Audio Formats
 		// http://avisynth.org/mediawiki/GetChannel
@@ -195,17 +195,21 @@ public class CodecUtil {
 		//  LFE : Low Frequency Effects (Sub)
 		String mixer = "volume=0";
 		if (pcmonly) { 
-			// we are using PCM output and have to manually remap channels because of incorrect mencoder's PCM mappings 
-			// (as of r34814 / SB28) 
-			if (nbOutputChannels <= 2) {
-				// remap and downmix to 2 channels
-				// as of mencoder r34814 '-af pan' do nothing (LFE is missing from right channel)
-				// same thing for AC3 transcoding. Thats why we should always use 5.1 output on PS3MS configuration
-				// and leave stereo downmixing to PS3!
-				mixer = "pan=2:1:0:0:1:0:1:0.707:0.707:1:0:1:1";
-			} else {
-				// remap and leave 5.1
-				mixer = "channels=6:6:0:0:1:1:2:5:3:2:4:4:5:3";
+			if (nbInputChannels == 6) {
+				// we are using PCM output and have to manually remap channels because of incorrect mencoder's PCM mappings 
+				// (as of r34814 / SB28) 
+				if (nbOutputChannels <= 2) {
+					// remap and downmix to 2 channels
+					// as of mencoder r34814 '-af pan' do nothing (LFE is missing from right channel)
+					// same thing for AC3 transcoding. Thats why we should always use 5.1 output on PS3MS configuration
+					// and leave stereo downmixing to PS3!
+					mixer = "pan=2:1:0:0:1:0:1:0.707:0.707:1:0:1:1";
+				} else {
+					// remap and leave 5.1
+					mixer = "channels=6:6:0:0:1:1:2:5:3:2:4:4:5:3";
+				}
+			} else if (nbInputChannels == 2) {
+				// do nothing for stereo tracks
 			}
 		}
 		return mixer;
