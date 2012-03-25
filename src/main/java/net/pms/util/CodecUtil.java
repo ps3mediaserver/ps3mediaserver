@@ -182,6 +182,7 @@ public class CodecUtil {
 		// 4.0 WAV/FLAC/MP3/WMA	FL		FR		SL		SR
 		// 5.0 WAV/FLAC/MP3/WMA	FL		FR		FC		SL		SR
 		// 5.1 WAV/FLAC/MP3/WMA	FL		FR		FC		LFE		SL		SR
+		// 5.1 PCM (mencoder)	FL		FR		SR		FC		SL		LFE
 		// 5.1 AC3				FL		FC		FR		SL		SR		LFE
 		// 5.1 DTS/AAC			FC		FL		FR		SL		SR		LFE
 		// 5.1 AIFF				FL		SL		FC		FR		SR		LFE
@@ -193,13 +194,18 @@ public class CodecUtil {
 		//  SR : Surround Right
 		//  LFE : Low Frequency Effects (Sub)
 		String mixer = "volume=0";
-		if (pcmonly) { // we are using real PCM output and have to remap channels from AC3
+		if (pcmonly) { 
+			// we are using PCM output and have to manually remap channels because of incorrect mencoder's PCM mappings 
+			// (as of r34814 / SB28) 
 			if (nbOutputChannels <= 2) {
-				// remap and downmixing to 2 channels
-				mixer = "pan=2:1:0:0.707:0.707:0:1:1:0:0:1:1:1";
+				// remap and downmix to 2 channels
+				// as of mencoder r34814 '-af pan' do nothing (LFE is missing from right channel)
+				// same thing for AC3 transcoding. Thats why we should always use 5.1 output on PS3MS configuration
+				// and leave stereo downmixing to PS3!
+				mixer = "pan=2:1:0:0:1:0:1:0.707:0.707:1:0:1:1";
 			} else {
 				// remap and leave 5.1
-				mixer = "channels=6:6:0:0:1:2:2:1:3:4:4:5:5:3";
+				mixer = "channels=6:6:0:0:1:1:2:5:3:2:4:4:5:3";
 			}
 		}
 		return mixer;
