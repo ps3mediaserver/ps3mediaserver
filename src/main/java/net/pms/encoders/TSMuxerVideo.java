@@ -238,7 +238,7 @@ public class TSMuxerVideo extends Player {
 									params.aid.isMP3() ||
 									params.aid.isAAC() ||
 									params.aid.isVorbis() ||
-									params.aid.isWMA() ||
+									// params.aid.isWMA() ||
 									params.aid.isMpegAudio()
 								)
 							)
@@ -335,7 +335,7 @@ public class TSMuxerVideo extends Player {
 										audio.isMP3() ||
 										audio.isAAC() ||
 										audio.isVorbis() ||
-										audio.isWMA() ||
+										// audio.isWMA() ||
 										audio.isMpegAudio()
 									)
 								)
@@ -452,7 +452,7 @@ public class TSMuxerVideo extends Player {
 							params.aid.isMP3() ||
 							params.aid.isAAC() ||
 							params.aid.isVorbis() ||
-							params.aid.isWMA() ||
+							// params.aid.isWMA() ||
 							params.aid.isMpegAudio()
 						)
 					)
@@ -492,7 +492,7 @@ public class TSMuxerVideo extends Player {
 								params.aid.isMP3() ||
 								params.aid.isAAC() ||
 								params.aid.isVorbis() ||
-								params.aid.isWMA() ||
+								// params.aid.isWMA() ||
 								params.aid.isMpegAudio()
 							)
 						)

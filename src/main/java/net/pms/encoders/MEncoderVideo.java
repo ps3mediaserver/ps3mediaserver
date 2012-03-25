@@ -1258,7 +1258,9 @@ public class MEncoderVideo extends Player {
 						params.aid.isMP3() ||
 						params.aid.isAAC() ||
 						params.aid.isVorbis() ||
-						params.aid.isWMA() ||
+						// disable WMA to LPCM transcoding because of mencoder's channel mapping bug
+						// (see CodecUtil.getMixerOutput)
+						// params.aid.isWMA() ||
 						params.aid.isMpegAudio()
 					)
 				)
