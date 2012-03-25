@@ -152,6 +152,8 @@ public class MediaInfoParser {
 								currentAudioTrack.setAlbum(ovalue);
 							} else if (key.equals("Performer") && step == MediaInfo.StreamKind.General) {
 								currentAudioTrack.setArtist(ovalue);
+							} else if (key.equals("Genre") && step == MediaInfo.StreamKind.General) {
+								currentAudioTrack.setGenre(ovalue);
 							} else if (key.equals("Recorded_Date") && step == MediaInfo.StreamKind.General) {
 								try {
 									currentAudioTrack.setYear(Integer.parseInt(value));

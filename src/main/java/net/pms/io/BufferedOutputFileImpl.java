@@ -454,7 +454,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			long scr_14_00 = ((buffer[m3] & 3) << 13) + (buffer[m2] << 5) + ((buffer[m1] & 248) >> 3);
 
 			long scr = (scr_32_30 << 30) + (scr_29_15 << 15) + scr_14_00;
-			long scr_new = scr + (offset_sec * 90000);
+			long scr_new = scr + (90000L * offset_sec);
 
 			long scr_32_30_new = (scr_new & 7516192768L) >> 30;  // 111000000000000000000000000000000
 			long scr_29_15_new = (scr_new & 1073709056L) >> 15;  // 000111111111111111000000000000000
