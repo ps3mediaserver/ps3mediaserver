@@ -1230,41 +1230,43 @@ public class MEncoderVideo extends Player {
 
 		oaccopy = false;
 		if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
+			// AC3 remux takes priority
 			oaccopy = true;
-		}
-
-		dts = configuration.isDTSEmbedInPCM() && 
-			(
-				!dvd ||
-				configuration.isMencoderRemuxMPEG2()
-			) && params.aid != null &&
-			params.aid.isDTS() &&
-			!avisynth() &&
-			params.mediaRenderer.isDTSPlayable();
-		pcm = configuration.isMencoderUsePcm() &&
-			(
-				!dvd || 
-				configuration.isMencoderRemuxMPEG2()
-			) && 
-			params.aid != null &&
-			(
-				params.aid.isDTS() ||
-				params.aid.isLossless() ||
-				params.aid.isTrueHD() ||
+		} else {
+			// now check for DTS remux and LPCM streaming
+			dts = configuration.isDTSEmbedInPCM() &&
 				(
-					!configuration.isMencoderUsePcmForHQAudioOnly() &&
+					!dvd ||
+					configuration.isMencoderRemuxMPEG2()
+				) && params.aid != null &&
+				params.aid.isDTS() &&
+				!avisynth() &&
+				params.mediaRenderer.isDTSPlayable();
+			pcm = configuration.isMencoderUsePcm() &&
+				(
+					!dvd ||
+					configuration.isMencoderRemuxMPEG2()
+				) &&
+				params.aid != null &&
+				(
+					params.aid.isDTS() ||
+					params.aid.isLossless() ||
+					params.aid.isTrueHD() ||
 					(
-						params.aid.isAC3() ||
-						params.aid.isMP3() ||
-						params.aid.isAAC() ||
-						params.aid.isVorbis() ||
-						// disable WMA to LPCM transcoding because of mencoder's channel mapping bug
-						// (see CodecUtil.getMixerOutput)
-						// params.aid.isWMA() ||
-						params.aid.isMpegAudio()
+						!configuration.isMencoderUsePcmForHQAudioOnly() &&
+						(
+							params.aid.isAC3() ||
+							params.aid.isMP3() ||
+							params.aid.isAAC() ||
+							params.aid.isVorbis() ||
+							// disable WMA to LPCM transcoding because of mencoder's channel mapping bug
+							// (see CodecUtil.getMixerOutput)
+							// params.aid.isWMA() ||
+							params.aid.isMpegAudio()
+						)
 					)
-				)
-			) && params.mediaRenderer.isLPCMPlayable();
+				) && params.mediaRenderer.isLPCMPlayable();
+		}
 
 		if (dts || pcm) {
 			if (dts) {
