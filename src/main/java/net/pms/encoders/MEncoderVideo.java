@@ -926,7 +926,7 @@ public class MEncoderVideo extends Player {
 			public void actionPerformed(ActionEvent e) {
 				Color newColor = JColorChooser.showDialog(
 					(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-					"Choose Subtitles Color",
+					Messages.getString("MEncoderVideo.125"),
 					subColor.getBackground());
 				if (newColor != null) {
 					subColor.setBackground(newColor);
