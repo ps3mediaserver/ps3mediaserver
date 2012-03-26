@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<!-- PMS consists of two major parts: PMS itself and the third party software 
+		needed to run it. While PMS itself is 100% pure Java, some of the third party 
+		software is not. This means building a platform specific distribution boils 
+		down to first building the pms.jar and then assembling all application resources. 
+		Note that Maven 3 does not automatically install all dependencies, unlike 
+		Maven 2. To install all dependencies to your local repository, run the following 
+		commands: mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external 
+		mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external 
+		To build PMS, do: mvn clean package After building, the "target" directory 
+		will contain the binary. To generate a full source code report, do: mvn site 
+		After generating, the "target/site" directory will contain the reports. -->
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.pms</groupId>
+	<artifactId>pms-global</artifactId>
+	<name>PS3 Media Server MLX</name>
+	<packaging>pom</packaging>
+	<version>1.52.1_mlx_v0.7-SNAPSHOT</version>
+	<url>http://www.ps3mediaserver.org/</url>
+	<inceptionYear>2008</inceptionYear>
+
+	<organization>
+		<name>PS3 Media Server MLX</name>
+		<url>http://www.ps3mediaserver.org/</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License version 2</name>
+			<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+			<distribution>manual</distribution>
+		</license>
+	</licenses>
+
+	<description>
+		PS3 Media Server is a cross-platform DLNA-compliant UPnP Media Server.
+		Originally written to support the PlayStation 3, PS3 Media Server has been
+		expanded to support a range of other media renderers, including smartphones,
+		televisions, music players and more.
+	</description>
+
+	<scm>
+		<connection>scm:git:git://github.com/taconaut/pms-mlx.git</connection>
+		<developerConnection>scm:git:git://github.com/taconaut/pms-mlx.git</developerConnection>
+		<tag>master</tag>
+		<url>https://github.com/taconaut/pms-mlx.git</url>
+	</scm>
+
+	<issueManagement>
+		<system>Github</system>
+		<url>https://github.com/taconaut/pms-mlx/issues</url>
+	</issueManagement>
+
+	<modules>
+		<module>ps3mediaserver</module>
+		<module>plugins</module>
+		<module>pms-package</module>
+	</modules>
+
+	<properties>
+		<pms-version>1.52.1_mlx_v0.7-SNAPSHOT</pms-version>
+		<bundle-name>pms-${pms-version}</bundle-name>
+		<pms-name>PS3 Media Server MLX</pms-name>
+		<logback-classic-version>1.0.0</logback-classic-version>
+		<logback-core-version>1.0.0</logback-core-version>
+		<slf4j-version>1.6.4</slf4j-version>
+		<jgoodies-forms-version>1.4.2</jgoodies-forms-version>
+
+		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
+		<jcalendar-version>1.1.1</jcalendar-version>
+		<jgoodies-binding-version>2.5.1</jgoodies-binding-version>
+		<jgoodies-common-version>1.2.1</jgoodies-common-version>
+		<jgoodies-looks-version>2.4.2</jgoodies-looks-version>
+		<jtmdb-version>1.9.15</jtmdb-version>
+		<junrar-version>0.5</junrar-version>
+		<mediautil-version>1.0</mediautil-version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>ossrh</id>
+			<name>Sonatype OSS Repository</name>
+			<url>http://oss.sonatype.org/content/groups/public</url>
+			<layout>default</layout>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<repositories>
+		<!-- Java.net -->
+		<repository>
+			<id>java.net</id>
+			<name>Java.net Repository</name>
+			<url>http://download.java.net/maven/2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
+		<!-- netty -->
+		<repository>
+			<id>jboss</id>
+			<url>http://repository.jboss.org/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
+		<!-- GSON -->
+		<repository>
+			<id>google-gson</id>
+			<name>google-gson</name>
+			<url>https://google-gson.googlecode.com/svn/mavenrepo/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
+		<!-- JBoss.org repository -->
+		<repository>
+			<id>jboss.releases</id>
+			<name>JBoss releases</name>
+			<url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback-classic-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback-core-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>forms</artifactId>
+			<version>${jgoodies-forms-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.beanshell</groupId>
+			<artifactId>bsh-core</artifactId>
+			<version>2.0b4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.7</version>
+			<exclusions>
+				<!-- no need for commons-logging, as jcl-over-slf4j provides the impl -->
+				<exclusion>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+			<exclusions>
+				<!-- no need for commons-logging, as jcl-over-slf4j provides the impl -->
+				<exclusion>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.3.162</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.sanselan</groupId>
+			<artifactId>sanselan</artifactId>
+			<version>0.97-incubator</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>1.7.1</version>
+		</dependency>
+
+		<!-- originally, hamcrest-all 1.2RC2 for the artifact change, see: https://code.google.com/p/hamcrest/issues/detail?id=12#c54 
+			TODO: verify if needed -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-integration</artifactId>
+			<version>1.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.netty</groupId>
+			<artifactId>netty</artifactId>
+			<version>3.2.4.Final</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>net.java.dev.rome</groupId>
+			<artifactId>rome</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jvnet.winp</groupId>
+			<artifactId>winp</artifactId>
+			<version>1.14</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org</groupId>
+			<artifactId>jaudiotagger</artifactId>
+			<version>2.0.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>3.2.5</version>
+		</dependency>
+
+		<!-- XXX: not Mavenized: http://www.jgoodies.com/downloads/libraries.html -->
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>binding</artifactId>
+			<version>${jgoodies-binding-version}</version>
+		</dependency>
+
+		<!-- XXX: not Mavenized: http://www.jgoodies.com/downloads/libraries.html -->
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>common</artifactId>
+			<version>${jgoodies-common-version}</version>
+		</dependency>
+
+		<!-- XXX: not Mavenized: http://www.jgoodies.com/downloads/libraries.html -->
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>looks</artifactId>
+			<version>${jgoodies-looks-version}</version>
+		</dependency>
+
+		<!-- XXX: not Mavenized: http://github.com/edmund-wagner/junrar -->
+		<dependency>
+			<groupId>de.innosystec</groupId>
+			<artifactId>java-unrar</artifactId>
+			<version>${junrar-version}</version>
+		</dependency>
+
+		<!-- XXX: not Mavenized: https://code.google.com/p/cuelib/ -->
+		<dependency>
+			<groupId>jwbroek.cuelib</groupId>
+			<artifactId>cuelib</artifactId>
+			<version>${cuelib-version}</version>
+		</dependency>
+
+		<!-- XXX: not Mavenized: http://sourceforge.net/projects/mediachest/ -->
+		<dependency>
+			<groupId>mediautil</groupId>
+			<artifactId>mediautil</artifactId>
+			<version>${mediautil-version}</version>
+		</dependency>
+
+		<!-- XXX: not Mavenized: http://jtmdb.sourceforge.net/ -->
+		<dependency>
+			<groupId>net.sf</groupId>
+			<artifactId>jtmdb</artifactId>
+			<version>${jtmdb-version}</version>
+		</dependency>
+
+		<!-- XXX: not Mavenized: http://flib.sourceforge.net/JCalendar/doc/index.html -->
+		<dependency>
+			<groupId>org.freixas</groupId>
+			<artifactId>jcalendar</artifactId>
+			<version>${jcalendar-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>3.0</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<defaultGoal>assembly:assembly</defaultGoal>
+		<plugins>
+
+			<!-- This plugin will take care of installing the external dependencies 
+				that do not exist in a public Maven repository. That is why we store some 
+				jar files in the "src/main/external-resources/lib" directory and have this 
+				plugin take care of the installation at build time. Note: The plugin does 
+				not work automatically in Maven 3. To install the required dependencies execute 
+				the following commands: mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external 
+				mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external 
+				Checksums can be calculated with "openssl sha1 [filename]". See: http://code.google.com/p/maven-external-dependency-plugin/issues/detail?id=8#c4 -->
+			<plugin>
+				<groupId>com.savage7.maven.plugins</groupId>
+				<artifactId>maven-external-dependency-plugin</artifactId>
+				<version>0.4</version>
+				<inherited>false</inherited>
+				<configuration>
+					<stagingDirectory>${project.build.directory}/dependencies/</stagingDirectory>
+					<createChecksum>true</createChecksum>
+					<skipChecksumVerification>false</skipChecksumVerification>
+					<force>false</force>
+					<artifactItems>
+
+						<artifactItem>
+							<groupId>com.jgoodies</groupId>
+							<artifactId>binding</artifactId>
+							<version>${jgoodies-binding-version}</version>
+							<packaging>jar</packaging>
+							<install>true</install>
+							<force>false</force>
+							<downloadUrl>http://www.jgoodies.com/download/libraries/{artifactId}/jgoodies-{artifactId}-{_version}.zip</downloadUrl>
+							<checksum>52f3f7647cbb356c940beec74cebc66f0c9e2239</checksum>
+							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
+							<extractFileChecksum>4ff916c4e7b59749b0240aaf2f68cb555355d95b</extractFileChecksum>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>com.jgoodies</groupId>
+							<artifactId>common</artifactId>
+							<version>${jgoodies-common-version}</version>
+							<packaging>jar</packaging>
+							<install>true</install>
+							<force>false</force>
+							<downloadUrl>http://www.jgoodies.com/download/libraries/{artifactId}/jgoodies-{artifactId}-{_version}.zip</downloadUrl>
+							<checksum>5a4cf9866a7339e64e52f46101b5b13fe50b9c80</checksum>
+							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
+							<extractFileChecksum>f3955d59f2263fb889b02febec74377647a2eaba</extractFileChecksum>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>com.jgoodies</groupId>
+							<artifactId>forms</artifactId>
+							<version>${jgoodies-forms-version}</version>
+							<packaging>jar</packaging>
+							<install>true</install>
+							<force>false</force>
+							<downloadUrl>http://www.jgoodies.com/download/libraries/{artifactId}/jgoodies-{artifactId}-{_version}.zip</downloadUrl>
+							<checksum>83bb8780a38cb6bc854964da298f0f657868871d</checksum>
+							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
+							<extractFileChecksum>de8a67990cbeae62910cc2022f06c466476f2f2b</extractFileChecksum>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>com.jgoodies</groupId>
+							<artifactId>looks</artifactId>
+							<version>${jgoodies-looks-version}</version>
+							<packaging>jar</packaging>
+							<install>true</install>
+							<force>false</force>
+							<downloadUrl>http://www.jgoodies.com/download/libraries/{artifactId}/jgoodies-{artifactId}-{_version}.zip</downloadUrl>
+							<checksum>ccba2963e63c8349f8a16a10abfd5102a94a182b</checksum>
+							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
+							<extractFileChecksum>535745c08e342f7ea78556baad44a4a52ffb7863</extractFileChecksum>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>jwbroek.cuelib</groupId>
+							<artifactId>cuelib</artifactId>
+							<version>${cuelib-version}</version>
+							<packaging>jar</packaging>
+							<downloadUrl>http://cuelib.googlecode.com/files/cuelib-${cuelib-version}.jar</downloadUrl>
+							<checksum>d03b6b960b3b83a2a419e8b5f07b6ba4bd18387b</checksum>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>de.innosystec</groupId>
+							<artifactId>java-unrar</artifactId>
+							<version>${junrar-version}</version>
+							<packaging>jar</packaging>
+							<install>true</install>
+							<force>false</force>
+							<downloadUrl>http://cloud.github.com/downloads/edmund-wagner/junrar/java-unrar-${junrar-version}.zip</downloadUrl>
+							<checksum>1e621c27dba2feeac400a96042f55775dc47f990</checksum>
+							<extractFile>java-unrar-${junrar-version}/java-unrar-${junrar-version}.jar</extractFile>
+							<extractFileChecksum>111074096b6bdce79fa09842143c336a5cf64fcb</extractFileChecksum>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>mediautil</groupId>
+							<artifactId>mediautil</artifactId>
+							<version>${mediautil-version}</version>
+							<packaging>jar</packaging>
+							<install>true</install>
+							<force>false</force>
+							<downloadUrl>http://downloads.sourceforge.net/project/mediachest/MediaUtil/Version%201.0/mediautil-1.zip</downloadUrl>
+							<checksum>aa7ae51bb24a9268a8e57c6afe478c4293f84fda</checksum>
+							<extractFile>mediautil-${mediautil-version}/mediautil-${mediautil-version}.jar</extractFile>
+							<extractFileChecksum>e843cd55def75dce57123c79b7f36caca4841466</extractFileChecksum>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>net.sf</groupId>
+							<artifactId>jtmdb</artifactId>
+							<version>${jtmdb-version}</version>
+							<packaging>jar</packaging>
+							<downloadUrl>http://downloads.sourceforge.net/project/{artifactId}/{artifactId}-{version}.{packaging}</downloadUrl>
+							<checksum>fe0c543233f5c0249f37349f5733886c8633bd39</checksum>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>org.freixas</groupId>
+							<artifactId>jcalendar</artifactId>
+							<version>${jcalendar-version}</version>
+							<packaging>jar</packaging>
+							<downloadUrl>http://downloads.sourceforge.net/project/flib/flib/FLib%20{version}/{artifactId}.{packaging}</downloadUrl>
+							<checksum>83eb4b1a4823daf3b5bea61958cf6097930f74fb</checksum>
+						</artifactItem>
+
+					</artifactItems>
+
+				</configuration>
+
+				<executions>
+
+					<execution>
+						<id>clean-external-dependencies</id>
+						<phase>clean</phase>
+						<goals>
+							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:clean-external -->
+							<goal>clean-external</goal>
+						</goals>
+					</execution>
+
+					<execution>
+						<id>resolve-install-external-dependencies</id>
+						<!-- Not bound to a phase, you need to execute these manually. See 
+							above -->
+						<!-- phase>process-resources</phase -->
+						<goals>
+							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external -->
+							<goal>resolve-external</goal>
+
+							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external -->
+							<goal>install-external</goal>
+						</goals>
+					</execution>
+				</executions>
+
+			</plugin>
+
+		</plugins>
+	</build>
+</project>
