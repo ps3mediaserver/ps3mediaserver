@@ -183,6 +183,7 @@ public class CodecUtil {
 		// 5.0 WAV/FLAC/MP3/WMA	FL		FR		FC		SL		SR
 		// 5.1 WAV/FLAC/MP3/WMA	FL		FR		FC		LFE		SL		SR
 		// 5.1 PCM (mencoder)	FL		FR		SR		FC		SL		LFE
+		// 7.1 PCM (mencoder)	FL		SL		RR		SR		FR		LFE		RL		FC
 		// 5.1 AC3				FL		FC		FR		SL		SR		LFE
 		// 5.1 DTS/AAC			FC		FL		FR		SL		SR		LFE
 		// 5.1 AIFF				FL		SL		FC		FR		SR		LFE
@@ -195,7 +196,7 @@ public class CodecUtil {
 		//  LFE : Low Frequency Effects (Sub)
 		String mixer = "volume=0";
 		if (pcmonly) { 
-			if (nbInputChannels == 6) {
+			if (nbInputChannels == 6) { // 5.1
 				// we are using PCM output and have to manually remap channels because of incorrect mencoder's PCM mappings 
 				// (as of r34814 / SB28) 
 				if (nbOutputChannels <= 2) {
@@ -208,7 +209,11 @@ public class CodecUtil {
 					// remap and leave 5.1
 					mixer = "channels=6:6:0:0:1:1:2:5:3:2:4:4:5:3";
 				}
-			} else if (nbInputChannels == 2) {
+			} else if (nbInputChannels == 8) { // 7.1
+				// remap and leave 7.1
+				// inputs to PCM encoder are FL:0 FR:1 RL:2 RR:3 FC:4 LFE:5 SL:6 SR:7
+				mixer = "channels=8:8:0:0:1:4:2:7:3:5:4:1:5:3:6:6:7:2";
+			} else if (nbInputChannels == 2) { // 2.0
 				// do nothing for stereo tracks
 			}
 		}
