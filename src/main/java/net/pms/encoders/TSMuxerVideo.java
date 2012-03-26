@@ -231,7 +231,7 @@ public class TSMuxerVideo extends Player {
 					pcm = configuration.isMencoderUsePcm() &&
 						(
 							params.aid.isLossless() ||
-							params.aid.isDTS() ||
+							(params.aid.isDTS() && params.aid.getNrAudioChannels() <= 6) ||
 							params.aid.isTrueHD() ||
 							(
 								!configuration.isMencoderUsePcmForHQAudioOnly() &&
@@ -329,7 +329,7 @@ public class TSMuxerVideo extends Player {
 						pcm = configuration.isMencoderUsePcm() &&
 							(
 								audio.isLossless() ||
-								audio.isDTS() ||
+								(audio.isDTS() && audio.getNrAudioChannels() <= 6) ||
 								audio.isTrueHD() ||
 								(
 									!configuration.isMencoderUsePcmForHQAudioOnly() &&
@@ -448,7 +448,7 @@ public class TSMuxerVideo extends Player {
 			pcm = configuration.isMencoderUsePcm() &&
 				(
 					params.aid.isLossless() ||
-					params.aid.isDTS() ||
+					(params.aid.isDTS() && params.aid.getNrAudioChannels() <= 6) ||
 					params.aid.isTrueHD() ||
 					(
 						!configuration.isMencoderUsePcmForHQAudioOnly() &&
@@ -495,7 +495,7 @@ public class TSMuxerVideo extends Player {
 				pcm = configuration.isMencoderUsePcm() &&
 					(
 						lang.isLossless() ||
-						lang.isDTS() ||
+						(lang.isDTS() && lang.getNrAudioChannels() <= 6) ||
 						lang.isTrueHD() ||
 						(
 							!configuration.isMencoderUsePcmForHQAudioOnly() &&

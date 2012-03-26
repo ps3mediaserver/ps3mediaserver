@@ -1249,7 +1249,7 @@ public class MEncoderVideo extends Player {
 				) &&
 				params.aid != null &&
 				(
-					params.aid.isDTS() ||
+					(params.aid.isDTS() && params.aid.getNrAudioChannels() <= 6) || // disable 7.1 DTS-HD => LPCM because of channels mapping bug
 					params.aid.isLossless() ||
 					params.aid.isTrueHD() ||
 					(
