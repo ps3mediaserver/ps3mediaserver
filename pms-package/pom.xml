@@ -4,6 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>pms-package</artifactId>
+	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>net.pms</groupId>
@@ -13,12 +14,13 @@
 
 	<properties>
 		<pms-target>../ps3mediaserver/target</pms-target>
-		<project.binaries>../ps3mediaserver/target/bin</project.binaries>
-		<!-- Snapshots should get their binaries from the trunk, releases from a tag -->
+		<project.binaries>${project.basedir}/target/bin</project.binaries>
+		<!-- Snapshots should get their binaries from the trunk, releases from 
+			a tag -->
 		<project.binaries-base>http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver</project.binaries-base>
 		<!-- <project.binaries-base>http://ps3mediaserver.googlecode.com/svn/tags/1.40.0</project.binaries-base> -->
 		<maven.nsis.project.template>${project.basedir}/src/main/external-resources/nsis/project.jelly</maven.nsis.project.template>
-		<project.external-resources>${project.basedir}/src/main/external-resources</project.external-resources>
+		<project.external-resources>${project.basedir}/../ps3mediaserver/src/main/external-resources</project.external-resources>
 	</properties>
 
 	<dependencies>
@@ -36,7 +38,8 @@
 	</dependencies>
 
 	<profiles>
-		<!-- Windows profile: takes care of building the final package for Microsoft Windows -->
+		<!-- Windows profile: takes care of building the final package for Microsoft 
+			Windows -->
 		<profile>
 			<id>windows</id>
 			<activation>
@@ -89,7 +92,8 @@
 										<mkdir dir="${project.binaries}/win32/mplayer" />
 										<mkdir dir="${project.binaries}/win32/service" />
 
-										<!-- Download all necessary Windows binaries. Keep the same structure because NSIS expects it that way. -->
+										<!-- Download all necessary Windows binaries. Keep the same structure 
+											because NSIS expects it that way. -->
 										<get src="${project.binaries-base}/MediaInfo.dll" dest="${project.binaries}/MediaInfo.dll"
 											usetimestamp="true" />
 										<get src="${project.binaries-base}/MediaInfo64.dll" dest="${project.binaries}/MediaInfo64.dll"
@@ -358,14 +362,13 @@
 								<configuration>
 									<target>
 										<!-- Copy the pms-x.x.x-jar-with-dependencies.jar to pms.jar -->
-										<copy
-											file="${pms-target}/pms-${project.version}-jar-with-dependencies.jar"
+										<copy file="${pms-target}/${bundle-name}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
 
 										<!-- MediaInfo library needs to be in the standard library path 
 											to be found -->
-										<copy file="${project.binaries}/MediaInfo.dll" todir="${project.basedir}" />
-										<copy file="${project.binaries}/MediaInfo64.dll" todir="${project.basedir}" />
+										<copy file="${pms-target}/MediaInfo.dll" todir="${project.basedir}" />
+										<copy file="${pms-target}/MediaInfo64.dll" todir="${project.basedir}" />
 									</target>
 								</configuration>
 							</execution>
@@ -459,8 +462,7 @@
 								</goals>
 								<configuration>
 									<target>
-										<copy
-											file="${pms-target}/pms-${project.version}-jar-with-dependencies.jar"
+										<copy file="${pms-target}/${bundle-name}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
 									</target>
 								</configuration>
@@ -496,7 +498,8 @@
 		</profile>
 
 
-		<!-- Mac OSX profile: takes care of building the final package for Mac OSX -->
+		<!-- Mac OSX profile: takes care of building the final package for Mac 
+			OSX -->
 		<profile>
 			<id>osx</id>
 			<activation>
@@ -568,7 +571,7 @@
 									<target>
 										<!-- Make sure the target folder exists -->
 										<mkdir
-											dir="${project.build.directory}/${project.build.finalName}-distribution" />
+											dir="${project.build.directory}/${bundle-name}-distribution" />
 
 										<!-- Create the shortcut to the Applications folder -->
 										<exec executable="/usr/bin/osascript">
@@ -578,7 +581,7 @@
 											<arg value="set src to POSIX file &quot;/Applications&quot;" />
 											<arg value="-e" />
 											<arg
-												value="set dest to POSIX file &quot;${project.build.directory}/${project.build.finalName}-distribution&quot;" />
+												value="set dest to POSIX file &quot;${project.build.directory}/${bundle-name}-distribution&quot;" />
 											<arg value="-e" />
 											<arg value="make new alias file to folder src at folder dest" />
 											<arg value="-e" />
@@ -590,7 +593,8 @@
 						</executions>
 					</plugin>
 
-					<!-- Plugin to assemble the PMS files in the right place before creating the App Bundle and DMG disk image. -->
+					<!-- Plugin to assemble the PMS files in the right place before creating 
+						the App Bundle and DMG disk image. -->
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
@@ -621,29 +625,33 @@
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>osxappbundle-maven-plugin</artifactId>
 						<version>1.0-alpha-2</version>
+						<configuration>
+							<mainClass>net.pms.PMS</mainClass>
+							<additionalClasspath>
+								<path>${project.build.directory}/pms.jar</path>
+							</additionalClasspath>
+							<buildDirectory>${project.build.directory}/${bundle-name}-distribution</buildDirectory>
+							<diskImageFile>${project.build.directory}/${bundle-name}.dmg</diskImageFile>
+							<zipFile>${project.build.directory}/${bundle-name}-app.zip</zipFile>
+							<javaApplicationStub>/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub</javaApplicationStub>
+							<bundleName>${bundle-name}</bundleName>
+							<iconFile>${project.external-resources}/osx/pms.icns</iconFile>
+							<version>${pms-version}</version>
+							<jvmVersion>1.6+</jvmVersion>
+							<!-- Options to the JVM, will be used as the value of VMOptions in 
+								Info.plist. -->
+							<vmOptions>-Xmx1024M -Xss16M -Dsun.java2d.d3d=false
+								-Dfile.encoding=UTF-8 -Djava.net.preferIPv4Stack=true -jar</vmOptions>
+							<dictionaryFile>${project.external-resources}/osx/Info.plist-template.xml</dictionaryFile>
+							<internetEnable>false</internetEnable>
+							<additionalResources />
+						</configuration>
 						<executions>
 							<execution>
 								<phase>package</phase>
 								<goals>
 									<goal>bundle</goal>
 								</goals>
-								<configuration>
-									<mainClass>net.pms.PMS</mainClass>
-									<buildDirectory>${project.build.directory}/${bundle-name}-distribution</buildDirectory>
-									<diskImageFile>${project.build.directory}/${bundle-name}.dmg</diskImageFile>
-									<zipFile>${project.build.directory}/${bundle-name}-app.zip</zipFile>
-									<javaApplicationStub>/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub</javaApplicationStub>
-									<bundleName>${pms-name}</bundleName>
-									<iconFile>${project.external-resources}/osx/pms.icns</iconFile>
-									<version>${pms-version}</version>
-									<jvmVersion>1.6+</jvmVersion>
-									<!-- Options to the JVM, will be used as the value of VMOptions in Info.plist. -->
-									<vmOptions>-Xmx1024M -Xss16M -Dsun.java2d.d3d=false
-										-Dfile.encoding=UTF-8 -Djava.net.preferIPv4Stack=true -jar</vmOptions>
-									<dictionaryFile>${project.external-resources}/osx/Info.plist-template.xml</dictionaryFile>
-									<internetEnable>false</internetEnable>
-									<additionalResources />
-								</configuration>
 							</execution>
 						</executions>
 					</plugin>
@@ -652,4 +660,42 @@
 		</profile>
 	</profiles>
 
+	<build>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-antrun-plugin
+										</artifactId>
+										<versionRange>
+											[1.7,)
+										</versionRange>
+										<goals>
+											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>

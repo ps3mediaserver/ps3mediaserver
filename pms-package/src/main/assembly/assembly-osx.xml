@@ -19,8 +19,8 @@
 	<fileSets>
 		<!-- Include the unzipped binaries -->
 		<fileSet>
-			<directory>${project.binaries}/osx</directory>
-			<outputDirectory>${project.name}.app/Contents/Resources/Java/osx</outputDirectory>
+			<directory>${project.binaries}</directory>
+			<outputDirectory>${project.build.directory}/${bundle-name}.app/Contents/Resources/Java/osx</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<fileMode>0755</fileMode>
 			<includes>
@@ -34,7 +34,7 @@
 		<!-- Include unzipped libmediainfo.dylib -->
 		<fileSet>
 			<directory>${project.binaries}</directory>
-			<outputDirectory>${project.name}.app/Contents/Resources/Java</outputDirectory>
+			<outputDirectory>${project.build.directory}/${bundle-name}.app/Contents/Resources/Java</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
 				<include>libmediainfo.dylib</include>
@@ -43,8 +43,8 @@
 
 		<!-- Include documentation -->
 		<fileSet>
-			<directory>${project.basedir}</directory>
-			<outputDirectory>${project.name}.app/Contents/Resources/Java</outputDirectory>
+			<directory>${project.basedir}/../ps3mediaserver</directory>
+			<outputDirectory>${project.build.directory}/${bundle-name}.app/Contents/Resources/Java</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
 				<include>README.md</include>
@@ -56,7 +56,7 @@
 		<!-- Include JavaApplicationStub.setenv -->
 		<fileSet>
 			<directory>${project.external-resources}/osx</directory>
-			<outputDirectory>${project.name}.app/Contents/MacOS</outputDirectory>
+			<outputDirectory>${project.build.directory}/${bundle-name}.app/Contents/MacOS</outputDirectory>
 			<fileMode>0755</fileMode>
 			<includes>
 				<include>JavaApplicationStub.setenv</include>
@@ -66,7 +66,7 @@
 		<!-- Include fontconfig files -->
 		<fileSet>
 			<directory>${project.external-resources}/osx/fonts</directory>
-			<outputDirectory>${project.name}.app/Contents/Resources/Java/fonts</outputDirectory>
+			<outputDirectory>${project.build.directory}/${bundle-name}.app/Contents/Resources/Java/fonts</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
 				<include>*</include>
@@ -76,7 +76,7 @@
 		<!-- Include configuration files -->
 		<fileSet>
 			<directory>${project.external-resources}</directory>
-			<outputDirectory>${project.name}.app/Contents/Resources/Java</outputDirectory>
+			<outputDirectory>${project.build.directory}/${bundle-name}.app/Contents/Resources/Java</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
 				<include>PMS.conf</include>
