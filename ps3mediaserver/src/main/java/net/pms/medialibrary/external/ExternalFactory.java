@@ -129,6 +129,8 @@ public class ExternalFactory {
 		if (nJars == 0) {
 			log.info("No plugins found");
 			return;
+		} else {
+			log.info(String.format("%s jars found in plugins dir", nJars));
 		}
 
 		List<URL> jarURLList = new ArrayList<URL>();
@@ -156,6 +158,7 @@ public class ExternalFactory {
 
 		while (resources.hasMoreElements()) {
 			URL url = resources.nextElement();
+			log.debug(String.format("Start registering plugin with URL=", url.getPath()));
 			try {
 				InputStreamReader in = new InputStreamReader(url.openStream());
 				char[] name = new char[512];

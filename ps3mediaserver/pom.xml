@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>pms</artifactId>
+	<artifactId>pms-mlx</artifactId>
 	<parent>
 		<groupId>net.pms</groupId>
 		<artifactId>pms-global</artifactId>
@@ -12,7 +12,7 @@
 
 	<properties>
 		<finalName>PS3 Media Server MLX</finalName>
-		<fileName>${project.name}-${project.version}</fileName>
+		<fileName>pms-${project.version}</fileName>
 
 		<!-- NSIS needs a version without "-SNAPSHOT" or "-b1" -->
 		<project.version.short>1.51.0</project.version.short>
@@ -911,7 +911,7 @@
 								<id>build-setup-windows</id>
 								<configuration>
 									<makensisBin>${project.external-resources}/third-party/nsis/makensis.exe</makensisBin>
-									<outputFile>${project.build.directory}/${project.name}-${version}-windows-setup.exe</outputFile>
+									<outputFile>${project.build.directory}/${fileName}-windows-setup.exe</outputFile>
 									<setupScript>${project.external-resources}/nsis/setup.nsi</setupScript>
 								</configuration>
 								<phase>package</phase>
@@ -972,7 +972,7 @@
 								<configuration>
 									<target>
 										<copy
-											file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
+											file="${project.basedir}/target/${project.name}-${version}-jar-with-dependencies.jar"
 											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
 									</target>
 								</configuration>
@@ -1143,18 +1143,16 @@
 								</goals>
 								<configuration>
 									<mainClass>net.pms.PMS</mainClass>
-									<buildDirectory>${project.build.directory}/${fileName}-distribution</buildDirectory>
+									<buildDirectory>${project.build.directory}/${project.build.finalName}-distribution</buildDirectory>
 									<diskImageFile>${project.build.directory}/${fileName}.dmg</diskImageFile>
-									<zipFile>${project.build.directory}/${fileName}-app.zip</zipFile>
+									<zipFile>${project.build.directory}/${project.build.finalName}-app.zip</zipFile>
 									<javaApplicationStub>/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub</javaApplicationStub>
-									<bundleName>${finalName}</bundleName>
+									<bundleName>${project.name}</bundleName>
 									<iconFile>${project.basedir}/target/bin/pms.icns</iconFile>
 									<version>${project.version}</version>
 									<jvmVersion>1.6+</jvmVersion>
-									<!-- Options to the JVM, will be used as the value of VMOptions 
-										in Info.plist. -->
-									<vmOptions>-Xmx1024M -Xss16M -Dfile.encoding=UTF-8
-										-Djava.net.preferIPv4Stack=true -jar</vmOptions>
+									<!-- Options to the JVM, will be used as the value of VMOptions in Info.plist. -->
+									<vmOptions>-Xmx1024M -Xss16M -Dfile.encoding=UTF-8 -Dsun.java2d.d3d=false -Djava.net.preferIPv4Stack=true -jar</vmOptions>
 									<dictionaryFile>${project.external-resources}/osx/Info.plist-template.xml</dictionaryFile>
 									<internetEnable>false</internetEnable>
 									<additionalClasspath />
