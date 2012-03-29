@@ -44,7 +44,7 @@ import net.pms.medialibrary.gui.shared.JHeader;
 public class VideoFileInfoPanel extends JPanel implements IFilePropertiesEditor {
 	private static final long serialVersionUID = 3818830578372058006L;
 	private static final Logger log = LoggerFactory.getLogger(VideoFileInfoPanel.class);
-	private static final int MAX_COVER_WIDTH = 300;
+	private static final int MAX_COVER_WIDTH = 250;
 	private ImageIcon videoCoverImage;
 	private DOVideoFileInfo fileInfo;
 	private JLabel lCover;

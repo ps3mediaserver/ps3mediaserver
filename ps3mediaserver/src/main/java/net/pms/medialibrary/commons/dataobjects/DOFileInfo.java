@@ -324,7 +324,7 @@ public class DOFileInfo {
 	 * @param thumbnailPath the new thumbnail path
 	 */
 	public void setThumbnailPath(String thumbnailPath) {
-		if(!getThumbnailPath().equals(thumbnailPath)) {
+		if(!getThumbnailPath().equals(thumbnailPath) && new File(thumbnailPath).exists()) {
 		    this.thumbnailPath = thumbnailPath;
 		    firepropertyChangedEvent(ConditionType.FILE_THUMBNAILPATH);
 	    }

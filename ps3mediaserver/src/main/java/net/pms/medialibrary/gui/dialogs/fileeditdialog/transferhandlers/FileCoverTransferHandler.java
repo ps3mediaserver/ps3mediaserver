@@ -30,6 +30,7 @@ public class FileCoverTransferHandler  extends TransferHandler {
 	private boolean hasCoverChanged = false;
 	private List<ActionListener> coverChangedListeners = new ArrayList<ActionListener>();
 	private String coverPath;
+	private boolean hasCoverBeenSet = false;
 
 	public void addCoverChangedListeners(ActionListener coverChangedListener) {
 		coverChangedListeners.add(coverChangedListener);
@@ -98,6 +99,7 @@ public class FileCoverTransferHandler  extends TransferHandler {
 	
 	public void setCoverPath(String coverPath) {
 		this.coverPath = coverPath;
+		hasCoverBeenSet = true;
 	}
 
 	public String getCoverPath() {
@@ -107,7 +109,7 @@ public class FileCoverTransferHandler  extends TransferHandler {
 
 	public String getDropCoverPath() {
 		try {
-			return PMS.getConfiguration().getTempFolder() + File.separator + TMP_FILENAME;
+			return hasCoverBeenSet ? PMS.getConfiguration().getTempFolder() + File.separator + TMP_FILENAME : "";
 		} catch (IOException e) {
 			return "";
 		}
@@ -116,12 +118,14 @@ public class FileCoverTransferHandler  extends TransferHandler {
 	public void importCover(String coverPath) {
 		File coverToCopy = new File(coverPath);
 		try {
+			hasCoverBeenSet = true;
 			String filePath = getDropCoverPath();
 			FileImportHelper.copyFile(coverToCopy, new File(filePath), true);
 			this.coverPath = filePath;
 			hasCoverChanged = true;
 		} catch (IOException e) {
 			log.error(String.format("Failed to copy file '%s' to '%s'", coverPath, getCoverPath()), e);
+			hasCoverBeenSet = false;
 		}
 	}
 	
