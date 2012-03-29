@@ -335,6 +335,8 @@ public class FileDisplayTable extends JPanel {
 		//listen for cell edit events to update the changes in the DB
 		CellEditorListener cellEditorListener = new CellEditorListener() {
 
+			private boolean propertyChanged;
+
 			@Override
 			public void editingStopped(ChangeEvent e) {
 				if(getSelectedFiles().size() != 1) {
@@ -356,9 +358,17 @@ public class FileDisplayTable extends JPanel {
 						break;
 					}
 				}
-				
+
+				propertyChanged = false;
 				if (fileInfo instanceof DOVideoFileInfo) {
 					DOVideoFileInfo video = (DOVideoFileInfo) fileInfo;
+					fileInfo.addPropertyChangeListener(new ActionListener() {
+						
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							propertyChanged = true;
+						}
+					});
 
 					if (obj instanceof String) {
 						String newVal = (String) obj;
@@ -422,7 +432,9 @@ public class FileDisplayTable extends JPanel {
 					}
 				}
 				
-				MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
+				if(propertyChanged) {
+					MediaLibraryStorage.getInstance().updateFileInfo(fileInfo);
+				}
 			}
 
 			@Override
