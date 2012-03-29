@@ -23,6 +23,7 @@ import net.pms.dlna.RarredFile;
 import net.pms.dlna.RealFile;
 import net.pms.dlna.ZippedFile;
 import net.pms.dlna.virtual.VirtualFolder;
+import net.pms.formats.FormatFactory;
 
 public class FileSystemResource extends VirtualFolder {
 	private static final Logger log = LoggerFactory.getLogger(FileSystemResource.class);
@@ -132,7 +133,7 @@ public class FileSystemResource extends VirtualFolder {
 						present = true;
 					}
 				}
-				if (!present && (f.isDirectory() || PMS.get().getAssociatedExtension(f.getName()) != null))
+				if (!present && (f.isDirectory() || FormatFactory.getAssociatedExtension(f.getName()) != null))
 					addedFiles.add(f);
 			}
 			i++;
@@ -146,7 +147,7 @@ public class FileSystemResource extends VirtualFolder {
 			if(isFirstUse){
 				discoverable.add(f);
 			} else {
-				addChild(new RealFile(f));				
+				addChild(new RealFile(f));
 			}
 		}
 
@@ -162,8 +163,9 @@ public class FileSystemResource extends VirtualFolder {
 	public boolean analyzeChildren(int count) {
 		int currentChildrenCount = getChildren().size();
 		while ((getChildren().size() - currentChildrenCount) < count || count == -1) {
-			if (discoverable.size() == 0)
+			if (discoverable.size() == 0) {
 				break;
+			}
 			manageFile(discoverable.remove(0));
 		}
 		return discoverable.size() == 0;
@@ -220,7 +222,7 @@ public class FileSystemResource extends VirtualFolder {
 			}
 			for (File child : children) {
 				if (child.isFile()) {
-					if (PMS.get().getAssociatedExtension(child.getName()) != null || isFileRelevant(child)) {
+					if (FormatFactory.getAssociatedExtension(child.getName()) != null || isFileRelevant(child)) {
 						excludeNonRelevantFolder = false;
 						break;
 					}
