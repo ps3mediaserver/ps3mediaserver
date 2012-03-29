@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 
+import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
 
@@ -189,9 +190,16 @@ public class DLNAMediaDatabase implements Runnable {
 				executeUpdate(conn, "CREATE TABLE REGEXP_RULES ( ID VARCHAR2(255) PRIMARY KEY, RULE VARCHAR2(255), ORDR NUMERIC);");
 				executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '###', '(?i)^\\W.+', 0 );");
 				executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '0-9', '(?i)^\\d.+', 1 );");
-				for (int i = 65; i <= 90; i++) {
-					executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '" + ((char) i) + "', '(?i)^" + ((char) i) + ".+', " + (i - 63) + " );");
+
+				// Retrieve the alphabet property value and split it
+				String[] chars = Messages.getString("DLNAMediaDatabase.1").split(",");
+
+				for (int i = 0; i < chars.length; i++) {
+					// Create regexp rules for characters with a sort order based on the property value
+					executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '" + chars[i] + "', '(?i)^" + chars[i] + ".+', "
+							+ (i + 2) + " );");
 				}
+
 				logger.debug("Database initialized");
 			} catch (SQLException se) {
 				logger.info("Error in table creation: " + se.getMessage());
