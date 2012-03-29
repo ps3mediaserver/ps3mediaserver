@@ -192,6 +192,15 @@ public class DLNAMediaDatabase implements Runnable {
 				for (int i = 65; i <= 90; i++) {
 					executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '" + ((char) i) + "', '(?i)^" + ((char) i) + ".+', " + (i - 63) + " );");
 				}
+				{
+				    	int i, j;
+					i = 198; j = 28;
+					executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '" + ((char) i) + "', '(?i)^" + ((char) i) + ".+', " + j + " );");
+					i = 216; j = 29;
+					executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '" + ((char) i) + "', '(?i)^" + ((char) i) + ".+', " + j + " );");
+					i = 197; j = 30;
+					executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '" + ((char) i) + "', '(?i)^" + ((char) i) + ".+', " + j + " );");
+				}
 				logger.debug("Database initialized");
 			} catch (SQLException se) {
 				logger.info("Error in table creation: " + se.getMessage());
