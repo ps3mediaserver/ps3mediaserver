@@ -1785,9 +1785,12 @@ public class MEncoderVideo extends Player {
 				cmdArray[cmdArray.length - 1] = pipe.getInputPipe();
 
 				if (pcm && !channels_filter_present) {
-					cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
-					cmdArray[cmdArray.length - 2] = "-af";
-					cmdArray[cmdArray.length - 1] = CodecUtil.getMixerOutput(true, configuration.getAudioChannelCount(), configuration.getAudioChannelCount());
+					String mixer = CodecUtil.getMixerOutput(true, configuration.getAudioChannelCount(), configuration.getAudioChannelCount());
+					if (StringUtils.isNotBlank(mixer)) {
+						cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
+						cmdArray[cmdArray.length - 2] = "-af";
+						cmdArray[cmdArray.length - 1] = mixer;
+					}
 				}
 
 				pw = new ProcessWrapperImpl(cmdArray, params);
@@ -1874,7 +1877,7 @@ public class MEncoderVideo extends Player {
 					"-noskip",
 					(aid == null) ? "-quiet" : "-aid", (aid == null) ? "-quiet" : aid,
 					"-oac", sm.isDtsembed() ? "copy" : "pcm",
-					(mixer != null && !channels_filter_present) ? "-af" : "-quiet", (mixer != null && !channels_filter_present) ? mixer : "-quiet",
+					(StringUtils.isNotBlank(mixer) && !channels_filter_present) ? "-af" : "-quiet", (StringUtils.isNotBlank(mixer) && !channels_filter_present) ? mixer : "-quiet",
 					"-srate", "48000",
 					"-o", ffAudioPipe.getInputPipe()
 				};

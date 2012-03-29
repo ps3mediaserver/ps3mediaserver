@@ -50,6 +50,7 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -267,7 +268,7 @@ public class TSMuxerVideo extends Player {
 							"-mc", sm.isDtsembed() ? "0.1" : "0",
 							"-noskip",
 							"-oac", sm.isDtsembed() ? "copy" : "pcm",
-							mixer != null ? "-af" : "-quiet", mixer != null ? mixer : "-quiet",
+							StringUtils.isNotBlank(mixer) ? "-af" : "-quiet", StringUtils.isNotBlank(mixer) ? mixer : "-quiet",
 							singleMediaAudio ? "-quiet" : "-aid", singleMediaAudio ? "-quiet" : ("" + params.aid.getId()),
 							"-srate", "48000",
 							"-o", ffAudioPipe[0].getInputPipe()
@@ -368,7 +369,7 @@ public class TSMuxerVideo extends Player {
 								"-mc", sm.isDtsembed() ? "0.1" : "0",
 								"-noskip",
 								"-oac", sm.isDtsembed() ? "copy" : "pcm",
-								mixer != null ? "-af" : "-quiet", mixer != null ? mixer : "-quiet",
+								StringUtils.isNotBlank(mixer) ? "-af" : "-quiet", StringUtils.isNotBlank(mixer) ? mixer : "-quiet",
 								singleMediaAudio ? "-quiet" : "-aid", singleMediaAudio ? "-quiet" : ("" + audio.getId()),
 								"-srate", "48000",
 								"-o", ffAudioPipe[i].getInputPipe()

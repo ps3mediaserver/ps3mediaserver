@@ -194,7 +194,7 @@ public class CodecUtil {
 		//  SL : Surround Left
 		//  SR : Surround Right
 		//  LFE : Low Frequency Effects (Sub)
-		String mixer = "volume=0";
+		String mixer = null;
 		if (pcmonly) { 
 			if (nbInputChannels == 6) { // 5.1
 				// we are using PCM output and have to manually remap channels because of incorrect mencoder's PCM mappings 
