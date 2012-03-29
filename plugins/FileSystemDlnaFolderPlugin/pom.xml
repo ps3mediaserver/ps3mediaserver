@@ -24,7 +24,13 @@
 	<description>
         Plugin which can be added to the DLNA tree which
         will add DLNA folders corresponding to the file system
-  </description>
+  	</description>
+
+	<properties>
+		<finalName>filesystemfolderplugin-${version}</finalName>
+		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
+		<plugin-jar-name>dlnatreefolder.filesystem.jar</plugin-jar-name>
+	</properties>
 
 	<build>
 		<plugins>
@@ -35,6 +41,27 @@
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>copy-plugin</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+
+						<configuration>
+							<target>
+								<copy file="${project.basedir}/target/${finalName}.jar" tofile="${plugin-folder}/${plugin-jar-name}"
+									overwrite="true" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

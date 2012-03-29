@@ -107,7 +107,7 @@ public class ExternalFactory {
 		log.info("Searching for plugins in " + pluginDirectory.getAbsolutePath());
 
 		if (!pluginDirectory.exists()) {
-			log.warn("Plugin directory doesn't exist: " + pluginDirectory);
+			log.warn("Plugin directory doesn't exist: " + pluginDirectory.getAbsolutePath());
 			return;
 		}
 

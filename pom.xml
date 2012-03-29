@@ -58,7 +58,6 @@
 	<modules>
 		<module>ps3mediaserver</module>
 		<module>plugins</module>
-		<module>pms-package</module>
 	</modules>
 
 	<properties>

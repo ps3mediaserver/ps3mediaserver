@@ -2009,6 +2009,7 @@ public class PmsConfiguration {
 	}
 
 	public String getPluginDirectory() {
+		logger.info("PropertiesUtil.getProjectProperties().get(\"project.plugins.dir\"):" + PropertiesUtil.getProjectProperties().get("project.plugins.dir"));
 		return getString(KEY_PLUGIN_DIRECTORY, PropertiesUtil.getProjectProperties().get("project.plugins.dir"));
 	}
 
