@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.pms</groupId>
-			<artifactId>pms</artifactId>
+			<artifactId>pms-mlx</artifactId>
 			<version>1.52.1_mlx_v0.7-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
