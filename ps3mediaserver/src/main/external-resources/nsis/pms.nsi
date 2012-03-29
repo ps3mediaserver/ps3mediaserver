@@ -6,11 +6,11 @@
 !include "..\..\..\..\target\project.nsh"
 !include "..\..\..\..\target\extra.nsh"
 
-Name "PMS"
-Caption "${PROJECT_NAME}"
+Name "PMS-MLX"
+Caption "${PROJECT_FINALNAME}"
 Icon "${PROJECT_BASEDIR}\src\main\external-resources\icon.ico"
  
-VIAddVersionKey "ProductName" "${PROJECT_NAME}"
+VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
 VIAddVersionKey "Comments" ""
 VIAddVersionKey "CompanyName" "${PROJECT_ORGANIZATION_NAME}"
 VIAddVersionKey "LegalTrademarks" ""
@@ -21,7 +21,6 @@ VIProductVersion "${PROJECT_VERSION_SHORT}.0"
  
 !define JARPATH "${PROJECT_BUILD_DIR}\pms.jar"
 !define CLASS "net.pms.PMS"
-!define PRODUCT_NAME "PMS"
  
 ; Definitions for Java 7.0
 !define JRE_VERSION "7.0"
@@ -50,7 +49,7 @@ Section ""
  
   ; change for your purpose (-jar etc.)
   ${GetParameters} $1
-  StrCpy $0 '"$R0" -classpath update.jar;pms.jar -Xmx1024M -Djava.net.preferIPv4Stack=true -Dsun.java2d.d3d=false -Dfile.encoding=UTF-8 ${CLASS} $1'
+  StrCpy $0 '"$R0" -classpath update.jar;pms.jar -Xmx1024M -Dsun.java2d.d3d=false -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 ${CLASS} $1'
  
   SetOutPath $EXEDIR
   Exec $0

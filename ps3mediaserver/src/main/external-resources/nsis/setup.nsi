@@ -5,13 +5,13 @@
 !include "..\..\..\..\target\project.nsh"
 !include "..\..\..\..\target\extra.nsh"
 
-!define REG_KEY_UNINSTALL "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}"
-!define REG_KEY_SOFTWARE "SOFTWARE\${PROJECT_NAME}"
+!define REG_KEY_UNINSTALL "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
+!define REG_KEY_SOFTWARE "SOFTWARE\${PRODUCT_NAME}"
 
 RequestExecutionLevel admin
 
-Name "${PROJECT_NAME}"
-InstallDir "$PROGRAMFILES\${PROJECT_NAME}"
+Name "${PRODUCT_NAME}"
+InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 
 ;Get install folder from registry for updates
 InstallDirRegKey HKCU "${REG_KEY_SOFTWARE}" ""
@@ -39,7 +39,7 @@ SetCompressorDictSize 32
 ShowUninstDetails show
 
 Function CreateDesktopShortcut
-  CreateShortCut "$DESKTOP\${PROJECT_NAME}.lnk" "$INSTDIR\PMS.exe"
+  CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\PMS.exe"
 FunctionEnd
 
 Section "Program Files"
@@ -71,7 +71,7 @@ Section "Program Files"
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\uninst.exe"
 
-  WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayName" "${PROJECT_NAME}"
+  WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayName" "${PRODUCT_NAME}"
   WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayIcon" "$INSTDIR\icon.ico"
   WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayVersion" "${PROJECT_VERSION}"
   WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "Publisher" "${PROJECT_ORGANIZATION_NAME}"
@@ -91,10 +91,10 @@ SectionEnd
 
 Section "Start Menu Shortcuts"
   SetShellVarContext all
-  CreateDirectory "$SMPROGRAMS\${PROJECT_NAME}"
-  CreateShortCut "$SMPROGRAMS\${PROJECT_NAME}\${PROJECT_NAME}.lnk" "$INSTDIR\PMS.exe" "" "$INSTDIR\PMS.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PROJECT_NAME}\${PROJECT_NAME} (Select Profile).lnk" "$INSTDIR\PMS.exe" "profiles" "$INSTDIR\PMS.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PROJECT_NAME}\Uninstall.lnk" "$INSTDIR\uninst.exe" "" "$INSTDIR\uninst.exe" 0
+  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk" "$INSTDIR\PMS.exe" "" "$INSTDIR\PMS.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME} (Select Profile).lnk" "$INSTDIR\PMS.exe" "profiles" "$INSTDIR\PMS.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$INSTDIR\uninst.exe" "" "$INSTDIR\uninst.exe" 0
 SectionEnd
 
 Section "Uninstall"
@@ -120,15 +120,15 @@ Section "Uninstall"
   Delete /REBOOTOK "$INSTDIR\icon.ico"
   RMDir /REBOOTOK "$INSTDIR"
 
-  Delete /REBOOTOK "$DESKTOP\${PROJECT_NAME}.lnk"
-  RMDir /REBOOTOK "$SMPROGRAMS\${PROJECT_NAME}"
-  Delete /REBOOTOK "$SMPROGRAMS\${PROJECT_NAME}\${PROJECT_NAME}.lnk"
-  Delete /REBOOTOK "$SMPROGRAMS\${PROJECT_NAME}\${PROJECT_NAME} (Select Profile).lnk"
-  Delete /REBOOTOK "$SMPROGRAMS\${PROJECT_NAME}\Uninstall.lnk"
+  Delete /REBOOTOK "$DESKTOP\${PRODUCT_NAME}.lnk"
+  RMDir /REBOOTOK "$SMPROGRAMS\${PRODUCT_NAME}"
+  Delete /REBOOTOK "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk"
+  Delete /REBOOTOK "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME} (Select Profile).lnk"
+  Delete /REBOOTOK "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk"
 
   DeleteRegKey HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}"
   DeleteRegKey HKCU "${REG_KEY_SOFTWARE}"
 
-  nsSCM::Stop "${PROJECT_NAME}"
-  nsSCM::Remove "${PROJECT_NAME}"
+  nsSCM::Stop "${PRODUCT_NAME}"
+  nsSCM::Remove "${PRODUCT_NAME}"
 SectionEnd
