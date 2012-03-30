@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>WebDlnaFolderPlugin</artifactId>
+	<version>1</version>
+	<packaging>jar</packaging>
+
+	<parent>
+		<groupId>net.pms</groupId>
+		<artifactId>pms-plugins</artifactId>
+		<version>1.52.1_mlx_v0.7-SNAPSHOT</version>
+	</parent>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License version 2</name>
+			<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+			<distribution>manual</distribution>
+		</license>
+	</licenses>
+
+
+	<properties>
+		<finalName>webdlnafolderplugin-${version}</finalName>
+		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
+		<plugin-jar-name>dlnatreefolder.web.jar</plugin-jar-name>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>copy-plugin</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+
+						<configuration>
+							<target>
+								<copy file="${project.basedir}/target/${finalName}.jar" tofile="${plugin-folder}/${plugin-jar-name}"
+									overwrite="true" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<description>Adds a web folder</description>
+</project>

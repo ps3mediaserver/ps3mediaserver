@@ -21,10 +21,6 @@
 		</license>
 	</licenses>
 
-	<description>
-        Plugin which can be added to the DLNA tree which
-        will add DLNA folders corresponding to the file system
-  	</description>
 
 	<properties>
 		<finalName>filesystemfolderplugin-${version}</finalName>
@@ -65,4 +61,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	<description>Plugin which will merge all configured file system folders into one.</description>
 </project>

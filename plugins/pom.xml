@@ -13,7 +13,16 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>FileSystemDlnaFolderPlugin</module>
+		<module>FileSystemDlnaFolderPlugin</module>   
+		<module>ImdbMovieImportPlugin</module>
+		<module>iPhotoDlnaFolderPlugin</module> 
+		<module>iTunesDlnaFolderPlugin</module>   
+		<module>PlayCountWatcherPlugin</module>
+		<module>TmdbMovieImportPlugin</module>
+		<module>TmdbRater</module>     
+		<module>VideoSettingsDlnaFolderPlugin</module>
+		<module>WebDlnaFolderPlugin</module>
+		<module>WebservicePlugin</module>
 	</modules>
 
 	<dependencies>
