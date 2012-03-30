@@ -42,9 +42,10 @@ public abstract class ServiceBase {
 	 */
 	public void shutdown() {
 		log.info("Shut down " + getClass().getName());
-		if (endpoint != null)
+		if (endpoint != null){
 			endpoint.stop();
-		endpoint = null;
+			endpoint = null;
+		}
 	}
 
 }

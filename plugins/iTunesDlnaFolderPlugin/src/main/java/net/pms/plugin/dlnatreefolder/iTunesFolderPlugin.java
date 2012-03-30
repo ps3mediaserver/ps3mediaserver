@@ -51,7 +51,7 @@ public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
 		ArrayList<?> PlaylistTracks;
 
 		try {
-			String iTunesFile = getiTunesFile(Platform.isMac());
+			String iTunesFile = getiTunesFile();
 			if(iTunesFile != null && (new File(iTunesFile)).exists()) {
 				iTunesLib = Plist.load(URLDecoder.decode(iTunesFile, System.getProperty("file.encoding")));     // loads the (nested) properties.
 				Tracks = (HashMap<?, ?>) iTunesLib.get("Tracks");       // the list of tracks
@@ -84,43 +84,45 @@ public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
 		return res;
 	}
 	
-	@SuppressWarnings("deprecation")
-	private String getiTunesFile(boolean isOsx) throws Exception {
+	private String getiTunesFile() throws Exception {
 		String line = null;
 		String iTunesFile = null;
-		if(Platform.isMac()) {
+		if (Platform.isMac()) {
 			Process prc = Runtime.getRuntime().exec("defaults read com.apple.iApps iTunesRecentDatabases");
 			BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
-			if ((line = in.readLine()) != null) {
-				line = in.readLine();           //we want the 2nd line
-				line = line.trim();             //remove extra spaces
+
+			// we want the 2nd line
+			if ((line = in.readLine()) != null && (line = in.readLine()) != null) {
+				line = line.trim(); // remove extra spaces
 				line = line.substring(1, line.length() - 1); // remove quotes and spaces
 				URI tURI = new URI(line);
-				iTunesFile = URLDecoder.decode(tURI.toURL().getFile());
+				iTunesFile = URLDecoder.decode(tURI.toURL().getFile(), "UTF8");
 			}
-			if (in != null)
+			if (in != null) {
 				in.close();
+			}
 		} else if (Platform.isWindows()) {
 			Process prc = Runtime.getRuntime().exec("reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\" /v \"My Music\"");
 			BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
 			String location = null;
-			while((line = in.readLine()) != null) {
+			while ((line = in.readLine()) != null) {
 				final String LOOK_FOR = "REG_SZ";
-				if(line.contains(LOOK_FOR)) {
+				if (line.contains(LOOK_FOR)) {
 					location = line.substring(line.indexOf(LOOK_FOR) + LOOK_FOR.length()).trim();
 				}
 			}
-			if (in != null)
+			if (in != null) {
 				in.close();
-			if(location != null) {
+			}
+			if (location != null) {
 				// add the itunes folder to the end
 				location = location + "\\iTunes\\iTunes Music Library.xml";
 				iTunesFile = location;
 			} else {
-				log.warn("Could not find the My Music folder");
+				log.info("Could not find the My Music folder");
 			}
 		}
-		
+
 		return iTunesFile;
 	}
 
@@ -160,7 +162,7 @@ public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
 	@Override
     public boolean isAvailable() {
 		try {
-			String iTunesFile = getiTunesFile(Platform.isMac());
+			String iTunesFile = getiTunesFile();
 			if(System.getProperty("os.name").toLowerCase().indexOf( "nix") < 0 && iTunesFile != null && (new File(iTunesFile)).exists()) {
 				return true;
 	        }

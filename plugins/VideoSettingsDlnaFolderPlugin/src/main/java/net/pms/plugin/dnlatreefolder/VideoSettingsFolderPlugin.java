@@ -101,6 +101,14 @@ public class VideoSettingsFolderPlugin implements DlnaTreeFolderPlugin {
 				return PMS.getConfiguration().getSkipLoopFilterEnabled();
 			}
 		});
+
+		vf.addChild(new VirtualVideoAction(Messages.getString("TrTab2.28"), PMS.getConfiguration().isDTSEmbedInPCM()) {
+			@Override
+			public boolean enable() {
+				PMS.getConfiguration().setDTSEmbedInPCM(!PMS.getConfiguration().isDTSEmbedInPCM());
+				return PMS.getConfiguration().isDTSEmbedInPCM();
+			}
+		});
 		
 		vf.addChild(new VirtualVideoAction(Messages.getString("PMS.27"), true) {
 			public boolean enable() {
@@ -163,7 +171,7 @@ public class VideoSettingsFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public int getVersion() {
-		return 1;
+		return 2;
 	}
 
 	@Override
