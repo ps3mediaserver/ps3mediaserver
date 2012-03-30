@@ -214,7 +214,7 @@ public class TmdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public int getVersion() {
-		return 2;
+		return 3;
 	}
 
 	@Override

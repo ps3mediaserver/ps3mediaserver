@@ -703,9 +703,6 @@ public class FileDisplayTable extends JPanel {
 		};
 		
 		FileImportHelper.updateFileInfos(template, filesToUpdate, true, progressReporter);
-		for (DOFileInfo updatedFileInfo : filesToUpdate) {
-			MediaLibraryStorage.getInstance().updateFileInfo(updatedFileInfo);
-		}
 	}
 
 	private void tagSelectedFiles(DOQuickTagEntry quickTag) {

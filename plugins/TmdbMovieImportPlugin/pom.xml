@@ -4,7 +4,6 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>TmdbMovieImportPlugin</artifactId>
-	<version>2</version>
 	<packaging>jar</packaging>
 	<description>Plugin used to import properties and tags for video files from TMDB</description>
 
@@ -62,4 +61,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	<version>3-SNAPSHOT</version>
 </project>

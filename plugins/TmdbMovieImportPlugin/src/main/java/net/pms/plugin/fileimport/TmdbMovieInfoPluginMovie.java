@@ -1,5 +1,7 @@
 package net.pms.plugin.fileimport;
 
+import java.util.Calendar;
+
 import net.sf.jtmdb.Movie;
 
 public class TmdbMovieInfoPluginMovie {
@@ -13,12 +15,13 @@ public class TmdbMovieInfoPluginMovie {
 		return movie;
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public String toString() {
 		String res = "";
 		if(movie != null) {
-			String.format("%s (%s)", movie.getName(), movie.getReleasedDate().getYear());
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(movie.getReleasedDate());
+			res = String.format("%s (%s)", movie.getName(), movie.getReleasedDate() == null ? null : cal.get(Calendar.YEAR));
 		}
 		return res;
 	}

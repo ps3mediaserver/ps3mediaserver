@@ -8,6 +8,9 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -17,6 +20,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.pms.PMS;
 import net.pms.medialibrary.commons.enumarations.FileProperty;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.exceptions.FileImportException;
@@ -25,13 +29,37 @@ import net.pms.medialibrary.external.FileImportPlugin;
 /** 
  * Class used to collect information about a movie from tmdb
  * 
+ * Some properties can be configured in pms.cnf:<br>
+ * - imdb_cover_width (int): returns the original cover if its width is smaller then the set value, or the one resized to this value. Default is 320px<br>
+ * - imdb_plot (long/short): long or short plot. Default is long<br>
+ * - imdb_use_rotten_tomatoes (true/false): if true, the rotten tomatoes rating will be used. Default is false<br>
+ * 
  * @author pw
  *
  */
 public class ImdbMovieImportPlugin implements FileImportPlugin {	
 	private static final Logger log = LoggerFactory.getLogger(ImdbMovieImportPlugin.class);
 	
+	private static final Dictionary<String, String> tags; //key=tag name, value=value to query on imdb
+	
+	static {
+		tags = new Hashtable<String, String>();
+		tags.put("Actor", "Actors");
+		tags.put("Writer", "Writer");
+	}
+	
 	private JSONObject movieObject;
+	private boolean useRottenTomatoes = false;
+	
+	public ImdbMovieImportPlugin() {
+		//load the rotten tomatoes property
+		Object useRottenTomatoesObj = PMS.getConfiguration().getCustomProperty("imdb_use_rotten_tomatoes");
+		if(useRottenTomatoesObj != null) {
+			if(useRottenTomatoesObj.equals("true")) {
+				useRottenTomatoes = true;
+			}
+		}
+	}
 
 	@Override
 	public String getName() {
@@ -40,7 +68,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public int getVersion() {
-		return 1;
+		return 2;
 	}
 
 	@Override
@@ -64,15 +92,13 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 		movieObject = null;
 		
 		try {
-			URL call = new URL("http://www.imdbapi.com/?t=" + URLEncoder.encode(String.format("%s", title), "UTF8"));
-			String jsonString = readUrlResponse(call).trim();
-
-			movieObject = new JSONObject(jsonString.toString());
+			String jsonString = getJsonResponse(title);
+			movieObject = new JSONObject(jsonString);
 			Object response = movieObject.get("Response");
 			if(response == null || response.toString().equals("Parse Error")) {
 				movieObject = null;
 				throw new FileImportException(String.format("Parse error in response when searching for title='%s'", title));
-			}			
+			}
 		} catch (IOException e) {
 			throw new FileImportException(String.format("IOException when trying to query imdb for title='%s'", title), e);
 		} catch (JSONException e) {
@@ -86,7 +112,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 		movieObject = null;
 		
 		try {
-			URL call = new URL("http://www.imdbapi.com/?i=" + id);
+			URL call = new URL(String.format("http://www.imdbapi.com/?i=%s%s", id, getUrlProperties()));
 			String jsonString = readUrlResponse(call).trim();
 
 			movieObject = new JSONObject(jsonString.toString());
@@ -109,18 +135,34 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public boolean isSearchForFilePossible() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public List<Object> searchForFile(String name) {
-		return null;
+		List<Object> res = new ArrayList<Object>();
+		
+		try {
+			String jsonString = getJsonResponse(name);
+			JSONObject jsonObject = new JSONObject(jsonString);
+			Object response = jsonObject.get("Response");
+			if (response != null && !response.toString().equals("Parse Error")) {
+				res.add(new FileSearchObject(jsonObject));
+			}
+		} catch (IOException e) {
+			log.error(String.format("IOException when trying to query imdb for name='%s'", name), e);
+		} catch (JSONException e) {
+			log.error(String.format("JSONException when trying to query imdb for name='%s'", name), e);
+		}
+		
+		return res;
 	}
 
 	@Override
 	public void importFileBySearchObject(Object searchObject) {
-		//do nothing
+		if(searchObject instanceof FileSearchObject) {
+			movieObject = ((FileSearchObject)searchObject).getJsonObject();
+		}
 	}
 
 	@Override
@@ -145,12 +187,29 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 	public Object getFileProperty(FileProperty property) {
 		Object res = null;
 		// return the proper object for every supported file property
+		String queryString;
 		switch (property) {
 		case VIDEO_CERTIFICATION:
 			res = getValue("Rated");
+			//clean out some values
+			if(res != null && (res.toString().equals("Not Rated") || res.toString().equals("N/A") 
+					|| res.toString().equals("o.AI.") || res.toString().equals("Unrated"))) {
+				res = null;
+			}
 			break;
 		case VIDEO_COVERURL:
 			res = getValue("Poster");
+			
+			//use the custom cover width if configured
+			Object customCoverWidth = PMS.getConfiguration().getCustomProperty("imdb_cover_width");
+			if(customCoverWidth != null && !customCoverWidth.equals("")) {
+				try {
+					int customWidth = Integer.parseInt(customCoverWidth.toString());
+					res = ((String)res).replaceAll("SX320", "SX" + customWidth);
+				} catch(NumberFormatException ex) {
+					//do nothing
+				}
+			}
 			break;
 		case VIDEO_DIRECTOR:
 			res = getValue("Director");
@@ -175,18 +234,30 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 			res = getValue("Plot");
 			break;
 		case VIDEO_RATINGPERCENT:
-			Object ratingObj = getValue("Rating");
+			if(useRottenTomatoes) {
+				queryString = "tomatoMeter";
+			} else {
+				queryString = "Rating";				
+			}
+			Object ratingObj = getValue(queryString);
 			if(ratingObj != null) {
 				try {
 					double r = Double.parseDouble(ratingObj.toString());
-					res = (int)(10 * r);
+					if(!useRottenTomatoes) {
+						res = (int)(10 * r);
+					}
 				} catch (NumberFormatException ex) {
 					log.error(String.format("Failed to parse rating='%s' as a double", ratingObj.toString()), ex);
 				}
 			}
 			break;
 		case VIDEO_RATINGVOTERS:
-			ratingObj = getValue("Votes");
+			if(useRottenTomatoes) {
+				queryString = "tomatoReviews";
+			} else {
+				queryString = "Votes";				
+			}
+			ratingObj = getValue(queryString);
 			if(ratingObj != null) {
 				try {
 					res = Integer.parseInt(ratingObj.toString());
@@ -227,13 +298,24 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public List<String> getSupportedTags(FileType fileType) {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.list(tags.keys());
 	}
 
 	@Override
 	public List<String> getTags(String tagName) {
-		return null;
+		List<String> res = new ArrayList<String>();
+		if(tagName != null) {
+			String stringToQuery = tags.get(tagName);
+			if(stringToQuery != null && !stringToQuery.equals("")) {
+				Object value = getValue(stringToQuery);
+				if(value != null && value instanceof String) {
+					for(String tagValue : ((String)value).split(",")) {
+						res.add(tagValue.trim());
+					}
+				}
+			}
+		}
+		return res;
 	}
 
 	@Override
@@ -250,8 +332,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 	 * This method will open a connection to the provided url and return its
 	 * response.
 	 * 
-	 * @param url
-	 *            The url to open a connection to.
+	 * @param url The url to open a connection to.
 	 * @return The respone.
 	 * @throws IOException
 	 */
@@ -267,4 +348,30 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 		return responce.toString();
 	}
 	
+	private String getJsonResponse(String title) throws IOException {
+		URL call = new URL(String.format("http://www.imdbapi.com/?t=%s%s", URLEncoder.encode(String.format("%s", title), "UTF8"), getUrlProperties()));
+		return readUrlResponse(call).trim();
+	}
+	
+	private String getUrlProperties() {
+		String urlProperties = "";
+		
+		//plot
+		Object shortPlotObj = PMS.getConfiguration().getCustomProperty("imdb_plot");
+		if(shortPlotObj != null) {
+			if(shortPlotObj.equals("long")) {
+				urlProperties += "&plot=full";
+			}
+		} else {
+			//use the long plot as default
+			urlProperties += "&plot=full";
+		}
+		
+		//rotten tomatoes
+		if(useRottenTomatoes) {
+			urlProperties += "&tomatoes=true";
+		}
+		
+		return urlProperties;
+	}
 }

@@ -24,6 +24,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOFileImportTemplate;
 import net.pms.medialibrary.commons.dataobjects.DOFileScannerEngineConfiguration;
 import net.pms.medialibrary.commons.enumarations.FileType;
@@ -108,7 +109,7 @@ public class FileImportPropertiesPanel extends JPanel {
 
 	private Component buildTagsPanel() {
 		FormLayout layout = new FormLayout("p, p, p, p, p, p, p, p, p, p, p, p",
-		        "p");
+		        "f:p:g");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(new TitledBorder("Tags"));
 		builder.setOpaque(true);
@@ -205,7 +206,7 @@ public class FileImportPropertiesPanel extends JPanel {
 		//initialize the active plugins list view
 		MultiselectJlist l = new MultiselectJlist(FileImportHelper.getAvailableEngineNames(fileType));
 		l.setCellRenderer(new ActiveEnginesListCellRenderer());
-		l.setBorder(new TitledBorder("Active plugins"));
+		l.setBorder(new TitledBorder(Messages.getString("ML.FileImportPropertiesPanel.title.ActivePlugins")));
 		l.setBackground(getBackground());
 		List<String> activeEngines = template.getEnabledEngines().get(fileType);
 		if(activeEngines != null) {

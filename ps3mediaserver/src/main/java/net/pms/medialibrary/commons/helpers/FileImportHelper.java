@@ -455,6 +455,7 @@ public class FileImportHelper {
 				}
 
 				//handle every tag for the engine
+				Map<String, List<String>> allTags = fileInfo.getTags();
 				for(String tag : tagsForEngines.get(engineName)) {
 					List<String> tagValues;
 					try {
@@ -464,9 +465,7 @@ public class FileImportHelper {
 						log.error(String.format("Failed to get tag '%s' for plugin '%s'", tag, engineName), t);
 						continue;
 					}
-					
-					
-					Map<String, List<String>> allTags = new HashMap<String, List<String>>();
+										
 					if(tagValues != null && tagValues.size() > 0) {
 						if(!allTags.containsKey(tag)){
 							allTags.put(tag, new ArrayList<String>());
@@ -686,20 +685,18 @@ public class FileImportHelper {
 		case VIDEO_COVERURL:
 			validateStringValue(value, fileProperty);
 			String coverUrl = (String) value;
-			String coverPath = null;
 			try {
 				String savePath = getTmpCoverPath(coverUrl, fileInfo);
 				FileImportHelper.saveUrlToFile(coverUrl, savePath);
-				coverPath = savePath;
+				if(new File(savePath).exists()) {
+					fileInfo.setThumbnailPath(savePath);
+				} else {
+					throw new FilePropertyImportException(fileProperty, null, String.class, ExceptionType.NoResult);
+				}
 			} catch (IOException e) {
 				//do nothing
 			}
 			
-			if(new File(coverPath).exists()) {
-				fileInfo.setThumbnailPath(coverPath);
-			} else {
-				throw new FilePropertyImportException(fileProperty, null, String.class, ExceptionType.NoResult);
-			}
 			break;
 		case VIDEO_CERTIFICATION:
 			validateStringValue(value, fileProperty);
