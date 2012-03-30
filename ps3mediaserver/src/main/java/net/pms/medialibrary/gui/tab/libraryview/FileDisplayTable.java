@@ -350,8 +350,17 @@ public class FileDisplayTable extends JPanel {
 
 				Object obj = ((CellEditor) e.getSource()).getCellEditorValue();
 
+				propertyChanged = false;
+				fileInfo.addPropertyChangeListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						propertyChanged = true;
+					}
+				});
+				
 				if (obj instanceof Boolean) {
-					Boolean newVal = (Boolean) obj;
+					boolean newVal = (Boolean) obj;
 					switch (ct) {
 					case FILE_ISACTIF:
 						fileInfo.setActive(newVal);
@@ -359,16 +368,8 @@ public class FileDisplayTable extends JPanel {
 					}
 				}
 
-				propertyChanged = false;
 				if (fileInfo instanceof DOVideoFileInfo) {
 					DOVideoFileInfo video = (DOVideoFileInfo) fileInfo;
-					fileInfo.addPropertyChangeListener(new ActionListener() {
-						
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							propertyChanged = true;
-						}
-					});
 
 					if (obj instanceof String) {
 						String newVal = (String) obj;
