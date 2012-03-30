@@ -82,18 +82,18 @@ public class FileSystemResource extends VirtualFolder {
 			folderPaths = new ArrayList<String>();
 		}
 
+		List<File> rootFolders = Arrays.asList(File.listRoots());
+
 		//Get the list of files and folders contained in the configured folders
 		Map<String, String> mergeFolderPaths = new HashMap<String, String>(); // value=path, key=Name
 		Map<String, String> mergeFilePaths = new HashMap<String, String>(); // value=path, key=Name
 		
 		if(folderPaths.size() == 0){
 			//add all disks if no folder has been configured
-			File[] rootFolders = File.listRoots();
-			
 			for(File f : rootFolders){
-				mergeFolderPaths.put(f.getAbsolutePath(), f.getName());
+				mergeFolderPaths.put(f.getAbsolutePath(), f.getAbsolutePath());
 			}
-			log.info(String.format("Added all disks (%s) because no folder(s) were configured for file system folder %s", mergeFilePaths.size(), getName()));
+			log.info(String.format("Added all disks (%s) because no folders were configured for file system folder %s", mergeFolderPaths.size(), getName()));
 		} else {
 			//add the configured folder(s)
 			for (String folderPath : folderPaths) {
@@ -122,7 +122,7 @@ public class FileSystemResource extends VirtualFolder {
 		int i = 0;
 		for(String s : allPaths) {
 			File f = new File(s);
-			if (!f.isHidden()) {
+			if (!f.isHidden() || rootFolders.contains(f)) {
 				boolean present = false;
 				for(DLNAResource d : getChildren()) {
 					if (i == 0 && (!(d instanceof VirtualFolder) || (d instanceof DVDISOFile))) // specific for video_ts, we need to refresh it
@@ -133,7 +133,7 @@ public class FileSystemResource extends VirtualFolder {
 						present = true;
 					}
 				}
-				if (!present && (f.isDirectory() || FormatFactory.getAssociatedExtension(f.getName()) != null))
+				if (!present && (f.isDirectory() || rootFolders.contains(f) || FormatFactory.getAssociatedExtension(f.getName()) != null))
 					addedFiles.add(f);
 			}
 			i++;
@@ -184,7 +184,8 @@ public class FileSystemResource extends VirtualFolder {
     }
 	
 	private void manageFile(File f) {
-		if ((f.isFile() || f.isDirectory()) && !f.isHidden()) {
+		List<File> rootFolders = Arrays.asList(File.listRoots());
+		if ((f.isFile() || f.isDirectory()) && (!f.isHidden() || rootFolders.contains(f))) {
 			if (f.getName().toLowerCase().endsWith(".zip") || f.getName().toLowerCase().endsWith(".cbz")) {
 				addChild(new ZippedFile(f));
 			} else if (f.getName().toLowerCase().endsWith(".rar") || f.getName().toLowerCase().endsWith(".cbr")) {

@@ -55,7 +55,7 @@ public class ConfigurationPanel extends JPanel {
 	private void init() {
 		pNoSharedFoldersSet = new JPanel();
 		pNoSharedFoldersSet.setLayout(new GridLayout());
-		pNoSharedFoldersSet.add(new JLabel("No shared folders set"));
+		pNoSharedFoldersSet.add(new JLabel("No shared folders set. All disks will be shared"));
 
 		bAddFolder = new JButton("Add Folder");
 		rebuildPanel();
