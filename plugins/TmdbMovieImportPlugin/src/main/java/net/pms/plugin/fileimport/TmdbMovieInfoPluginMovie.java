@@ -19,9 +19,13 @@ public class TmdbMovieInfoPluginMovie {
 	public String toString() {
 		String res = "";
 		if(movie != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(movie.getReleasedDate());
-			res = String.format("%s (%s)", movie.getName(), movie.getReleasedDate() == null ? null : cal.get(Calendar.YEAR));
+			String yearString = "";
+			if(movie.getReleasedDate() != null) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(movie.getReleasedDate());
+				yearString = String.format(" (%s)", cal.get(Calendar.YEAR));
+			}
+			res = String.format("%s%s", movie.getName(), yearString);
 		}
 		return res;
 	}

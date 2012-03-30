@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -204,7 +205,7 @@ public class FileUpdateWithPluginDialog extends JDialog {
 
 	private void build() {
 		FormLayout layout = new FormLayout("5px, r:p, 5px, p, 5px, f:p:g, 5px",
-										   "5px, p, 5px, p, 5px, p, 5px, p, 5px, f:60:g, 5px, p, 5px");
+										   "5px, p, 5px, p, 5px, p, 5px, p, 5px, f:80:g, 5px, p, 5px");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 
@@ -228,7 +229,9 @@ public class FileUpdateWithPluginDialog extends JDialog {
 		pResultsFiller.setBackground(lResults.getBackground());
 		pResults.add(lResults, BorderLayout.NORTH);
 		pResults.add(pResultsFiller, BorderLayout.CENTER);
-		builder.add(pResults, cc.xyw(2, 10, 5));
+		JScrollPane spResults = new JScrollPane(pResults);
+		spResults.setBorder(BorderFactory.createEmptyBorder());
+		builder.add(spResults, cc.xyw(2, 10, 5));
 
 		builder.add(pButtons, cc.xyw(2, 12, 5));
 		
