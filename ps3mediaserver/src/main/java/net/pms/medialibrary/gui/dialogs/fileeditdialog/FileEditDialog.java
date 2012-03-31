@@ -139,6 +139,8 @@ public class FileEditDialog extends JDialog {
 					tpFileEdit.setContent(fileEditList.getSelected());
 					setTitle(fileEditList.getSelected().getFilePath());
 					refreshButtonStates();
+					validate();
+					repaint();
 				}
 			}
 		});
@@ -157,6 +159,8 @@ public class FileEditDialog extends JDialog {
 					tpFileEdit.setContent(fileEditList.getSelected());
 					setTitle(fileEditList.getSelected().getFilePath());
 					refreshButtonStates();
+					validate();
+					repaint();
 				}
 			}
 		});
@@ -203,7 +207,6 @@ public class FileEditDialog extends JDialog {
 		dialog.pack();
 		dialog.setLocation(GUIHelper.getCenterDialogOnParentLocation(dialog.getSize(), bImportWithPlugin));
 		dialog.setModal(true);
-		dialog.setResizable(false);
 		dialog.setVisible(true);
 		
 		if(dialog.isUpdate()) {

@@ -101,7 +101,7 @@ public class FileTagsPanel extends JPanel {
 	 * @param tags map where the key will be set as a tag name and the values as tag values
 	 */
 	private void build() {
-		setLayout(new BorderLayout(3, 5));
+		setLayout(new BorderLayout(0, 5));
 		removeAll();
 		
 		if(showTitel) {
@@ -148,6 +148,7 @@ public class FileTagsPanel extends JPanel {
 		
 		JPanel pMain = new JPanel(new BorderLayout());
 		pMain.add(spTags, BorderLayout.NORTH);
+		
 		//add a default panel to have the correct backround color for the entire panel
 		pMain.add(new JPanel(), BorderLayout.CENTER);
 		

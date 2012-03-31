@@ -310,7 +310,9 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 				Object value = getValue(stringToQuery);
 				if(value != null && value instanceof String) {
 					for(String tagValue : ((String)value).split(",")) {
-						res.add(tagValue.trim());
+						if(!tagValue.equals("") && !tagValue.equals("N/A")) {
+							res.add(tagValue.trim());
+						}
 					}
 				}
 			}

@@ -9,40 +9,46 @@ import net.pms.plugin.webservice.configuration.ConfigurationWebService;
 import net.pms.plugin.webservice.medialibrary.LibraryWebService;
 
 public class WebServicePlugin implements ExternalListener {
-	private ConfigurationWebService configurationWs;
+	private static Object initializationLocker = new Object();
+	private static Thread thRegister;
+	
+	private static ConfigurationWebService configurationWs;
 	private String configurationWsName = "PmsConfiguration";
 	
-	private LibraryWebService libraryWs;
+	private static LibraryWebService libraryWs;
 	private String libraryWsName = "PmsLibrary";
 	
 	private String hostName;
 	private int port = 54423;
-	
 
 	public WebServicePlugin() {
 		//try to get the host name asynchronously as the server might not be ready when initializing
-		Thread thRegister = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				while(hostName == null) {
-					if(PMS.get().getServer() != null && PMS.get().getServer().getIafinal() != null) {
-						hostName = PMS.get().getServer().getIafinal().getHostName();				
+		synchronized (initializationLocker) {
+			if(thRegister == null) {
+				thRegister = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						while(hostName == null) {
+							if(PMS.get().getServer() != null && PMS.get().getServer().getIafinal() != null) {
+								hostName = PMS.get().getServer().getIafinal().getHostAddress();			
+							}
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								//do nothing;
+							}
+						}
+						configurationWs = new ConfigurationWebService();
+						configurationWs.bind(hostName, port, configurationWsName);
+						
+						libraryWs = new LibraryWebService();
+						libraryWs.bind(hostName, port, libraryWsName);
 					}
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						//do nothing;
-					}
-				}
-				configurationWs = new ConfigurationWebService();
-				configurationWs.bind(hostName, port, configurationWsName);
-				
-				libraryWs = new LibraryWebService();
-				libraryWs.bind(hostName, port, libraryWsName);
+				});
+				thRegister.start();
 			}
-		});
-		thRegister.start();
+		}
 	}
 
 	@Override
@@ -67,5 +73,7 @@ public class WebServicePlugin implements ExternalListener {
 			libraryWs.shutdown();
 			libraryWs = null;
 		}
+		
+		thRegister = null;
 	}
 }

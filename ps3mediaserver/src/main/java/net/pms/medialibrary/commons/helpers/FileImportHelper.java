@@ -324,12 +324,13 @@ public class FileImportHelper {
 			}
 		}
 		
-		//either use the name of the video or the clean file name
+		//either use the name of the video + year or the clean file name
 		String cleanName = null;
 		if(fileInfo instanceof DOVideoFileInfo) {
 			DOVideoFileInfo videoFileInfo = (DOVideoFileInfo) fileInfo;
 			if(!videoFileInfo.getName().equals("")) {
-				cleanName = videoFileInfo.getName();
+				String yearString = videoFileInfo.getYear() == 0 ? "" : String.format(" (%s)", videoFileInfo.getYear());
+				cleanName = videoFileInfo.getName() + yearString;
 			}
 		}
 		if(cleanName == null) {
