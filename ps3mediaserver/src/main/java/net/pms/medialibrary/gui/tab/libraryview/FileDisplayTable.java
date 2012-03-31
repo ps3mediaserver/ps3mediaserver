@@ -608,7 +608,6 @@ public class FileDisplayTable extends JPanel {
 			dialog.pack();
 			dialog.setLocation(GUIHelper.getCenterDialogOnParentLocation(dialog.getSize(), this));
 			dialog.setModal(true);
-			dialog.setResizable(false);
 			dialog.setVisible(true);
 			
 			if(dialog.isUpdate()) {
