@@ -1412,9 +1412,9 @@ public class MEncoderVideo extends Player {
 					}
 					subtitleMargin = subtitleMargin + userMargin;
 
-					sb.append(",MarginV=").append(subtitleMargin).append(" ");
+					sb.append(",MarginV=").append(Math.round(subtitleMargin)).append(" ");
 				} else if (intOCH > 0) {
-					sb.append("-ass-force-style MarginV=").append(subtitleMargin).append(" ");
+					sb.append("-ass-force-style MarginV=").append(Math.round(subtitleMargin)).append(" ");
 				}
 
 				if (params.sid.getType() != DLNAMediaSubtitle.EMBEDDED) {
@@ -1450,7 +1450,7 @@ public class MEncoderVideo extends Player {
 				}
 				subtitleMargin = subtitleMargin + userMargin;
 
-				sb.append(" -subpos ").append(100 - subtitleMargin).append(" ");
+				sb.append(" -subpos ").append(100 - Math.round(subtitleMargin)).append(" ");
 			}
 
 			// Common subtitle options
@@ -1668,7 +1668,7 @@ public class MEncoderVideo extends Player {
 					}
 				}
 
-				vfValueOverscanPrepend.append("softskip,expand=-").append(intOCWPixels).append(":-").append(intOCHPixels);
+				vfValueOverscanPrepend.append("softskip,expand=-").append(Math.round(intOCWPixels)).append(":-").append(Math.round(intOCHPixels));
 				vfValueOverscanMiddle.append(",scale=").append(scaleWidth).append(":").append(scaleHeight);
 			}
 
