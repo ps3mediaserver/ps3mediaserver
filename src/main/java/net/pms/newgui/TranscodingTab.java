@@ -445,7 +445,7 @@ public class TranscodingTab {
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		channels = new JComboBox(new Object[]{"2 channels (Stereo)", "6 channels (5.1)" /*, "8 channels 7.1" */}); // 7.1 not supported by Mplayer :\
+		channels = new JComboBox(new Object[]{Messages.getString("TrTab2.55"),  Messages.getString("TrTab2.56") /*, "8 channels 7.1" */}); // 7.1 not supported by Mplayer :\
 		channels.setEditable(false);
 		if (configuration.getAudioChannelCount() == 2) {
 			channels.setSelectedIndex(0);
