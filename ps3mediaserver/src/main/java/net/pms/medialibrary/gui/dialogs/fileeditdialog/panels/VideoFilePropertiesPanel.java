@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -119,7 +121,15 @@ public class VideoFilePropertiesPanel extends JPanel implements IFilePropertiesE
 		Map<String, List<String>> genresMap = new HashMap<String, List<String>>();
 		Collections.sort(fileInfo.getGenres());
 		genresMap.put(GENRES_NAME, fileInfo.getGenres());
-		pGenres = new FileTagsPanel(genresMap, false);
+		pGenres = new FileTagsPanel(genresMap, false, false);
+		pGenres.addRepaintListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				validate();
+				repaint();
+			}
+		});
 	}
 
 	public void build() {

@@ -3,6 +3,7 @@ package net.pms.medialibrary.gui.dialogs.fileeditdialog.controls;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -17,6 +18,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import net.pms.Messages;
 import net.pms.medialibrary.gui.shared.TagLabel;
 import net.pms.medialibrary.gui.shared.WrapLayout;
 
@@ -28,25 +30,36 @@ import net.pms.medialibrary.gui.shared.WrapLayout;
 public class TagLabelPanel extends JPanel {
 	private static final long serialVersionUID = 4440237111852696163L;
 
+	public static final String ACTION_COMMAND_DELETE = "DeleteTag";
+	
 	private static ImageIcon iiAdd;
+	private ImageIcon iiDelete;
+	
+	private String tagName;
 	
 	//holds the listeners subscribing for delete event notifications
 	private List<ActionListener> tagLabelListeners = new ArrayList<ActionListener>();
 	private TagLabel tlEditing;
 
 	private JPanel pTagValues;
+
 	
 	/**
 	 * Constructor
 	 * @param tagValues the initial tag values
+	 * @param canDelete 
 	 */
-	public TagLabelPanel(List<String> tagValues) {
-		setLayout(new BorderLayout(3, 0));
+	public TagLabelPanel(String tagName, List<String> tagValues, boolean canDelete) {
+		setLayout(new BorderLayout(5, 3));
+		
+		this.tagName = tagName;
 		
 		//add add button
 		initImageIcons();
+		
+		
 		JLabel lAdd = new JLabel(iiAdd);
-		lAdd.setToolTipText("Add");
+		lAdd.setToolTipText(Messages.getString("ML.TagLabelPanel.toolTipAdd"));
 		lAdd.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		lAdd.addMouseListener(new MouseAdapter() {
 			@Override
@@ -54,7 +67,27 @@ public class TagLabelPanel extends JPanel {
 				createNewLabel();
 			}
 		});
-		add(lAdd, BorderLayout.LINE_START);
+		
+		if(canDelete) {
+			JPanel pOptions = new JPanel(new GridLayout(1, 2, 4, 0));
+			pOptions.add(lAdd);
+			
+			JLabel lDelete = new JLabel(iiDelete);
+			lDelete.setToolTipText(Messages.getString("ML.TagLabelPanel.toolTipDelete"));
+			lDelete.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			lDelete.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					fireActionEvent(ACTION_COMMAND_DELETE);
+				}
+			});
+			pOptions.add(lDelete);
+			
+			add(pOptions, BorderLayout.LINE_START);
+		} else {
+			add(lAdd, BorderLayout.LINE_START);
+		}
+		
 		
 		//add all the tag values
 		pTagValues = new JPanel(new WrapLayout(FlowLayout.LEFT, 0, 0));
@@ -64,6 +97,10 @@ public class TagLabelPanel extends JPanel {
 		}
 		add(pTagValues, BorderLayout.CENTER);
 		refreshCommas();
+	}
+	
+	public String getTagName() {
+		return tagName;
 	}
 	
 	/**
@@ -125,6 +162,13 @@ public class TagLabelPanel extends JPanel {
 				//do nothing
 			}
 		}
+		if(iiDelete == null) {
+			try {
+				iiDelete = new ImageIcon(ImageIO.read(getClass().getResource("/resources/images/delete-12.png")));
+			} catch (IOException e1) {
+				//do nothing
+			}
+		}
 	}
 
 	/**
@@ -170,6 +214,7 @@ public class TagLabelPanel extends JPanel {
 					tlEditing.applyEdit();
 					createNewLabel();
 				}
+				
 				//propagate every event
 				fireActionEvent(e.getActionCommand());
 			}

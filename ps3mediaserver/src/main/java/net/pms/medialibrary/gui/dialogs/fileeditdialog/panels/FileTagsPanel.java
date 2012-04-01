@@ -1,14 +1,12 @@
 package net.pms.medialibrary.gui.dialogs.fileeditdialog.panels;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -18,7 +16,6 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,22 +37,48 @@ import net.pms.medialibrary.gui.shared.TagLabel;
 public class FileTagsPanel extends JPanel {
 	private static final long serialVersionUID = 1844931635937843708L;
 	
+	private List<ActionListener> repaintListeners = new ArrayList<ActionListener>();
+	
 	private Map<String, TagLabelPanel> tagPanels = new LinkedHashMap<String, TagLabelPanel>(); //key=tag name, value=panel containing all tag labels
 	private TagLabel tlEditing;
 	
 	private boolean showTitel;
+	private boolean canDelete;
 	
 	private JLabel lTitle;
 	private JButton bAdd;
 
 	/**
 	 * Constructor
+	 * @param showTitel if true, the title will be shown with a button to create new tags
 	 * @param tags map where the key will be set as a tag name and the values as tag values
 	 */
 	public FileTagsPanel(Map<String, List<String>> tags, boolean showTitel) {
+		this(tags, showTitel, true);
+	}
+
+	/**
+	 * Instantiates a new file tags panel.
+	 *
+	 * @param tags map where the key will be set as a tag name and the values as tag values
+	 * @param showTitel if true, the title will be shown with a button to create new tags
+	 * @param canDelete if true, the delete icon which will raise a delete event fill be visible for every tag
+	 */
+	public FileTagsPanel(Map<String, List<String>> tags, boolean showTitel, boolean canDelete) {
 		this.showTitel = showTitel;
+		this.canDelete = canDelete;
 		init(tags, showTitel);
-		build();		
+		build();
+	}
+	
+	public void addRepaintListener(ActionListener repaintListener) {
+		if(!repaintListeners.contains(repaintListener)) {
+			repaintListeners.add(repaintListener);
+		}
+	}
+	
+	public void removeRepaintListener(ActionListener repaintListener) {
+		repaintListeners.remove(repaintListener);
 	}
 	
 	private void init(Map<String, List<String>> tags, boolean showTitel) {		
@@ -77,8 +100,9 @@ public class FileTagsPanel extends JPanel {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						if(tid.getValue() != null && !tid.getValue().equals("")) {
-							TagLabelPanel pTag = createTagLabelPanel(new ArrayList<String>());
-							tagPanels.put(tid.getValue(), pTag);
+							String tagName = tid.getValue();
+							TagLabelPanel pTag = createTagLabelPanel(tagName, new ArrayList<String>());
+							tagPanels.put(tagName, pTag);
 							build();
 						}
 					}
@@ -91,7 +115,7 @@ public class FileTagsPanel extends JPanel {
 		for(String tagName : tagNames) {
 			List<String> tagValues = tags.get(tagName);
 			Collections.sort(tagValues);
-			TagLabelPanel pTag = createTagLabelPanel(tagValues);
+			TagLabelPanel pTag = createTagLabelPanel(tagName, tagValues);
 			tagPanels.put(tagName, pTag);
 		}
 	}
@@ -131,7 +155,7 @@ public class FileTagsPanel extends JPanel {
 			c.gridy = rowIndex++;
 			c.weightx = 0;
 			c.weighty = 0;
-			c.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
+			c.anchor = GridBagConstraints.EAST;
 			pTags.add(lTagName, c);
 			
 			TagLabelPanel pTag = tagPanels.get(tagName);
@@ -139,20 +163,13 @@ public class FileTagsPanel extends JPanel {
 			c.gridx = 1;
 			c.weightx = 1;
 			c.weighty = 1;
-			c.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
 			pTags.add(pTag, c);
 		}
 
 		JScrollPane spTags = new JScrollPane(pTags);
 		spTags.setBorder(BorderFactory.createEmptyBorder());
 		
-		JPanel pMain = new JPanel(new BorderLayout());
-		pMain.add(spTags, BorderLayout.NORTH);
-		
-		//add a default panel to have the correct backround color for the entire panel
-		pMain.add(new JPanel(), BorderLayout.CENTER);
-		
-		add(pMain, BorderLayout.CENTER);		
+		add(spTags, BorderLayout.CENTER);
 	}
 	
 	public Map<String, List<String>> getTags() {
@@ -172,14 +189,15 @@ public class FileTagsPanel extends JPanel {
 	 * @param tagValues the tag values to add
 	 * @return the created TagLabelPanel
 	 */
-	private TagLabelPanel createTagLabelPanel(List<String> tagValues) {
-		final TagLabelPanel tl = new TagLabelPanel(tagValues);
+	private TagLabelPanel createTagLabelPanel(String tagName, List<String> tagValues) {
+		TagLabelPanel tl = new TagLabelPanel(tagName, tagValues, canDelete);
 		
 		//only one item can be edited globally
 		tl.addTagLabelListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				TagLabelPanel tl = (TagLabelPanel) e.getSource();
 				if(e.getActionCommand().equals(TagLabel.ACTION_COMMAND_BEGIN_EDIT)) {
 					//store the label starting to be edited, as it might be removed
 					//when doing a cancel edit
@@ -195,26 +213,19 @@ public class FileTagsPanel extends JPanel {
 					tlEditing = tmpLabel;
 				} else if(e.getActionCommand().equals(TagLabel.ACTION_COMMAND_END_EDIT)) {
 					tlEditing = null;
+				} else if(e.getActionCommand().equals(TagLabelPanel.ACTION_COMMAND_DELETE)) {
+					tagPanels.remove(((TagLabelPanel) e.getSource()).getTagName());
+					build();
 				}
-
+				
 				validate();
 				repaint();
+				
+				for(ActionListener l : repaintListeners) {
+					l.actionPerformed(new ActionEvent(this, 0, e.getActionCommand()));
+				}
 			}
 		});
 		return tl;
-	}
-	
-	public static void main(String[] args) {
-		Map<String, List<String>> tags = new Hashtable<String, List<String>>();
-		tags.put("Actors", Arrays.asList(new String[]{"Brad Pitt","Angelina Jolie","Hans de Franz"}));
-		tags.put("Genres", Arrays.asList(new String[]{"Action","Comedy","Drama", "Romance"}));
-		JDialog dialog = new JDialog();
-		dialog.setSize(new Dimension(400, 200));
-		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		JPanel p = new FileTagsPanel(tags, true);
-		JScrollPane sp = new JScrollPane(p);
-		sp.setPreferredSize(p.getPreferredSize());
-		dialog.getContentPane().add(sp);
-		dialog.setVisible(true);
 	}
 }

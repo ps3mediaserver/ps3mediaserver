@@ -73,7 +73,6 @@ public class FileUpdateWithPluginDialog extends JDialog {
 		((java.awt.Frame)getOwner()).setIconImage(new ImageIcon(getClass().getResource("/resources/images/icon-32.png")).getImage());
 		setTitle(String.format(Messages.getString("ML.FileUpdateWithPluginDialog.Title"), fileInfo.getFileName(true)));
 		setLayout(new GridLayout());
-		setMinimumSize(new Dimension(300, 0));
 		
 		if(fileInfo instanceof DOVideoFileInfo) {
 			DOVideoFileInfo videoFileInfo = (DOVideoFileInfo)fileInfo;

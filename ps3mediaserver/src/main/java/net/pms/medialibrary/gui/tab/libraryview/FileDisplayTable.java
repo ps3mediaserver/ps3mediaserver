@@ -606,6 +606,7 @@ public class FileDisplayTable extends JPanel {
 			DOFileInfo fileInfo = getSelectedFiles().get(0);
 			FileUpdateWithPluginDialog dialog = new FileUpdateWithPluginDialog(fileInfo);
 			dialog.pack();
+			dialog.setMinimumSize(dialog.getSize());
 			dialog.setLocation(GUIHelper.getCenterDialogOnParentLocation(dialog.getSize(), this));
 			dialog.setModal(true);
 			dialog.setVisible(true);

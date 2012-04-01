@@ -121,8 +121,7 @@ public class FileEditDialog extends JDialog {
 			return;
 		}
 
-		tpFileEdit = new FileEditTabbedPane(fileToShow, editMode == EditMode.Multiple);
-		
+		tpFileEdit = new FileEditTabbedPane(fileToShow, editMode == EditMode.Multiple);		
 		
 		//initialize previous and next buttons
 		bPrevious = new JButton(new ImageIcon(getClass().getResource("/resources/images/previous-16.png")));
@@ -139,8 +138,6 @@ public class FileEditDialog extends JDialog {
 					tpFileEdit.setContent(fileEditList.getSelected());
 					setTitle(fileEditList.getSelected().getFilePath());
 					refreshButtonStates();
-					validate();
-					repaint();
 				}
 			}
 		});
@@ -159,8 +156,6 @@ public class FileEditDialog extends JDialog {
 					tpFileEdit.setContent(fileEditList.getSelected());
 					setTitle(fileEditList.getSelected().getFilePath());
 					refreshButtonStates();
-					validate();
-					repaint();
 				}
 			}
 		});
@@ -205,6 +200,7 @@ public class FileEditDialog extends JDialog {
 	private void updateWithPlugin() {
 		FileUpdateWithPluginDialog dialog = new FileUpdateWithPluginDialog(editMode == EditMode.Linked ? fileEditList.getSelected() : fileInfo);
 		dialog.pack();
+		dialog.setMinimumSize(dialog.getSize());
 		dialog.setLocation(GUIHelper.getCenterDialogOnParentLocation(dialog.getSize(), bImportWithPlugin));
 		dialog.setModal(true);
 		dialog.setVisible(true);
