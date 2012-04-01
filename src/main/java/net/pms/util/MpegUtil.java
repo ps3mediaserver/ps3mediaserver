@@ -68,7 +68,7 @@ public class MpegUtil {
 				// check pts
 				if ((buffer[diff] & 128) == 128 && (buffer[diff + 2] & 32) == 32
 						&& (pts.get(id) == null || (pts.get(id) != null && end))) {
-					pts.put(id, new Integer(getTS(buffer, diff + 3)));
+					pts.put(id, Integer.valueOf(getTS(buffer, diff + 3)));
 				}
 			}
 		}
