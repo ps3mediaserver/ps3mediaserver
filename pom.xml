@@ -19,7 +19,7 @@
 	<artifactId>pms-global</artifactId>
 	<name>PS3 Media Server MLX</name>
 	<packaging>pom</packaging>
-	<version>1.52.1_mlx_v0.7-SNAPSHOT</version>
+	<version>1.52.1_mlx_v0.7</version>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
 
@@ -61,7 +61,7 @@
 	</modules>
 
 	<properties>
-		<pms-version>1.52.1_mlx_v0.7-SNAPSHOT</pms-version>
+		<pms-version>1.52.1_mlx_v0.7</pms-version>
 		<bundle-name>pms-${pms-version}</bundle-name>
 		<pms-name>PS3 Media Server MLX</pms-name>
 		<logback-classic-version>1.0.0</logback-classic-version>

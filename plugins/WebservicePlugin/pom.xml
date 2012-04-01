@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>net.pms</groupId>
 		<artifactId>pms-plugins</artifactId>
-		<version>1.52.1_mlx_v0.7-SNAPSHOT</version>
+		<version>1.52.1_mlx_v0.7</version>
 	</parent>
 
 	<licenses>

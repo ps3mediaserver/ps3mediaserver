@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.pms</groupId>
 		<artifactId>pms-global</artifactId>
-		<version>1.52.1_mlx_v0.7-SNAPSHOT</version>
+		<version>1.52.1_mlx_v0.7</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>net.pms</groupId>
 			<artifactId>pms-mlx</artifactId>
-			<version>1.52.1_mlx_v0.7-SNAPSHOT</version>
+			<version>1.52.1_mlx_v0.7</version>
 		</dependency>
 	</dependencies>
 </project>
