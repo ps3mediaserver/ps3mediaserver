@@ -208,7 +208,7 @@ public class MapFile extends DLNAResource {
 				Collections.sort(files, new Comparator<File>() {
 
 					public int compare(File f1, File f2) {
-						return Long.valueOf(f1.lastModified()).compareTo(Long.valueOf(f2.lastModified()));
+						return new Long(f1.lastModified()).compareTo(new Long(f2.lastModified()));
 					}
 				});
 				break;
@@ -216,7 +216,7 @@ public class MapFile extends DLNAResource {
 				Collections.sort(files, new Comparator<File>() {
 
 					public int compare(File f1, File f2) {
-						return Long.valueOf(f2.lastModified()).compareTo(Long.valueOf(f1.lastModified()));
+						return new Long(f2.lastModified()).compareTo(new Long(f1.lastModified()));
 					}
 				});
 				break;
