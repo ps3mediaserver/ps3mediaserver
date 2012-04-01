@@ -24,7 +24,7 @@
 
 
 	<properties>
-		<finalName>tmdbrater-${version}</finalName>
+		<finalName>TmdbRater-${version}</finalName>
 		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
 		<plugin-jar-name>filedetail.tmdbrater.jar</plugin-jar-name>
 	</properties>

@@ -5,6 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>iPhotoDlnaFolderPlugin</artifactId>
 	<packaging>jar</packaging>
+	<version>2</version>
+	<description>This plugin will add a folder containing the iPhoto library</description>
 
 	<parent>
 		<groupId>net.pms</groupId>
@@ -22,7 +24,7 @@
 
 
 	<properties>
-		<finalName>iphotodlnafolderplugin-${version}</finalName>
+		<finalName>iPhotoDlnaFolderPlugin-${version}</finalName>
 		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
 		<plugin-jar-name>dlnatreefolder.iphoto.jar</plugin-jar-name>
 	</properties>
@@ -60,6 +62,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<version>2-SNAPSHOT</version>
-	<description>This plugin will add a folder containing the iPhoto library</description>
 </project>

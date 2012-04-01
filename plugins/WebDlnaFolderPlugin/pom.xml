@@ -23,7 +23,7 @@
 
 
 	<properties>
-		<finalName>webdlnafolderplugin-${version}</finalName>
+		<finalName>WebDlnaFolderPlugin-${version}</finalName>
 		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
 		<plugin-jar-name>dlnatreefolder.web.jar</plugin-jar-name>
 	</properties>

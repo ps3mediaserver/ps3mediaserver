@@ -5,6 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>TmdbMovieImportPlugin</artifactId>
 	<packaging>jar</packaging>
+	<version>3</version>
 	<description>Plugin used to import properties and tags for video files from TMDB</description>
 
 	<parent>
@@ -23,7 +24,7 @@
 
 
 	<properties>
-		<finalName>tmdbmovieimportPlugin-${version}</finalName>
+		<finalName>TmdbMovieImportPlugin-${version}</finalName>
 		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
 		<plugin-jar-name>fileimport.tmdb.jar</plugin-jar-name>
 	</properties>
@@ -61,5 +62,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<version>3-SNAPSHOT</version>
 </project>

@@ -24,7 +24,7 @@
 
 
 	<properties>
-		<finalName>playcountwatcherplugin-${version}</finalName>
+		<finalName>PlayCountWatcherPlugin-${version}</finalName>
 		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
 		<plugin-jar-name>medialibrary.playcountwatcher.jar</plugin-jar-name>
 	</properties>

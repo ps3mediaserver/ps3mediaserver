@@ -4,7 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>WebservicePlugin</artifactId>
-	<version>2-SNAPSHOT</version>
+	<version>2</version>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -23,7 +23,7 @@
 
 
 	<properties>
-		<finalName>webserviceplugin-${version}</finalName>
+		<finalName>WebservicePlugin-${version}</finalName>
 		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
 		<plugin-jar-name>pmsplugin.webservice.jar</plugin-jar-name>
 	</properties>

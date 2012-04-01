@@ -5,6 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>iTunesDlnaFolderPlugin</artifactId>
 	<packaging>jar</packaging>
+	<version>1</version>
 
 	<parent>
 		<groupId>net.pms</groupId>
@@ -22,7 +23,7 @@
 
 
 	<properties>
-		<finalName>itunesdlnafolderplugin-${version}</finalName>
+		<finalName>iTunesDlnaFolderPlugin-${version}</finalName>
 		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
 		<plugin-jar-name>dlnatreefolder.itunes.jar</plugin-jar-name>
 	</properties>
@@ -60,6 +61,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	<version>1</version>
 	<description>This plugin will add a folder containing the iTunes library</description>
 </project>

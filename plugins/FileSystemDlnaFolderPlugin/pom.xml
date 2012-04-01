@@ -4,7 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>FileSystemFolderPlugin</artifactId>
-	<version>2-SNAPSHOT</version>
+	<version>2</version>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -23,7 +23,7 @@
 
 
 	<properties>
-		<finalName>filesystemfolderplugin-${version}</finalName>
+		<finalName>FileSystemFolderPlugin-${version}</finalName>
 		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
 		<plugin-jar-name>dlnatreefolder.filesystem.jar</plugin-jar-name>
 	</properties>
