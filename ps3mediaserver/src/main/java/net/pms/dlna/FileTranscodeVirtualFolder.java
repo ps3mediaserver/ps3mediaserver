@@ -48,7 +48,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 				Player tsMuxer = null;
 				for (int i = 0; i < child.getExt().getProfiles().size(); i++) {
 					Player pl = PlayerFactory.getPlayer(child.getExt().getProfiles().get(i), child.getExt());
-					if (pl != null && child.getPlayer() != null && !child.getPlayer().equals(pl)) {
+					if (pl != null && !child.getPlayer().equals(pl)) {
 						DLNAResource avisnewChild = child.clone();
 						avisnewChild.setPlayer(pl);
 						avisnewChild.setNoName(true);
@@ -85,7 +85,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 						addChildInternal(newChild);
 						addChapterFile(newChild);
 
-//						logger.debug("Duplicate " + ref.getName() + " with player: " + ref.getPlayer().toString() + " and aid: " + newChild.getMediaAudio().getId() + " and sid: " + newChild.getMediaSubtitle());
+						logger.debug("Duplicate " + ref.getName() + " with player: " + ref.getPlayer().toString() + " and aid: " + newChild.getMediaAudio().getId() + " and sid: " + newChild.getMediaSubtitle());
 					}
 				}
 
