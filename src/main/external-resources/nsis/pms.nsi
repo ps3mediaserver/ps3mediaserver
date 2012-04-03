@@ -169,7 +169,9 @@ FunctionEnd
  
 ; Pass the "javaw.exe" path by $R0
 Function CheckJREVersion
+    ; R1 holds the current JRE version
     Push $R1
+    Push $R2
  
     ; Get the file version of javaw.exe
     ${GetFileVersion} $R0 $R1
@@ -177,17 +179,18 @@ Function CheckJREVersion
     ClearErrors
     
     ; Check if JRE6 is installed
-    ${VersionCompare} ${JRE6_VERSION} $R1 $R1
-    StrCmp $R1 "1" 0 CheckDone
+    ${VersionCompare} ${JRE6_VERSION} $R1 $R2
+    StrCmp $R2 "1" 0 CheckDone
     
     ; Check if JRE7 is installed
-    ${VersionCompare} ${JRE7_VERSION} $R1 $R1
-    StrCmp $R1 "1" 0 CheckDone
+    ${VersionCompare} ${JRE7_VERSION} $R1 $R2
+    StrCmp $R2 "1" 0 CheckDone
     
     SetErrors
  
   CheckDone:
     Pop $R1
+    Pop $R2
 FunctionEnd
 
  
