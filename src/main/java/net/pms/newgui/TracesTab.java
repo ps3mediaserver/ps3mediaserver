@@ -97,7 +97,7 @@ public class TracesTab {
 		jList = new JTextArea();
 		jList.setEditable(false);
 		jList.setBackground(Color.WHITE);
-		jList.setFont(new Font("Courier New", Font.PLAIN, 12));
+		jList.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 		final JPopupMenu popup = new JPopupMenu();
 		JMenuItem defaultItem = new JMenuItem(Messages.getString("TracesTab.3"));
 
