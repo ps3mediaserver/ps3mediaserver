@@ -1,6 +1,7 @@
 package net.pms.plugin.dlnatreefolder;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -11,7 +12,9 @@ import javax.swing.tree.MutableTreeNode;
 import net.pms.dlna.DLNAResource;
 import net.pms.medialibrary.external.DlnaTreeFolderPlugin;
 
-public class FileSystemFolderPlugin implements DlnaTreeFolderPlugin {
+public class FileSystemFolderPlugin implements DlnaTreeFolderPlugin {	
+	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.dlnatreefolder.filesystemfolderpluginmessages.messages");
+	
 	private Configuration      config;
 	private ConfigurationPanel configPanel;
 	private String rootFolderName = "root";
@@ -43,7 +46,7 @@ public class FileSystemFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public String getName() {
-		return "File system";
+		return RESOURCE_BUNDLE.getString("FileSystemFolderPlugin.1");
 	}
 	
 	@Override
@@ -85,7 +88,7 @@ public class FileSystemFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public String getDescription() {
-		return "Lets add one or more folders to the folders that will show up on the renderer. They will show exactly what's contained in the shared folders and update in real time";
+		return RESOURCE_BUNDLE.getString("FileSystemFolderPlugin.2");
 	}
 
 	@Override

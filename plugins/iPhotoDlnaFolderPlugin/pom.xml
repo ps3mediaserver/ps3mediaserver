@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>iPhotoDlnaFolderPlugin</artifactId>
 	<packaging>jar</packaging>
-	<version>2</version>
+	<version>3-SNAPSHOT</version>
 	<description>This plugin will add a folder containing the iPhoto library</description>
 
 	<parent>

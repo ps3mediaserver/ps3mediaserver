@@ -1,15 +1,19 @@
 package net.pms.plugin.startstoplistener;
 
+import java.awt.BorderLayout;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.ResourceBundle;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.RealFile;
@@ -19,9 +23,27 @@ import net.pms.medialibrary.storage.MediaLibraryStorage;
 
 public class PlayCountWatcher implements StartStopListener {
 	private static final Logger log = LoggerFactory.getLogger(PlayCountWatcher.class);
+
+	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.startstoplistener.playcountwatcher.messages");
 	
 	private Queue<QueueItem> playCache = new LinkedList<QueueItem>();
 	private IMediaLibraryStorage storage;
+	
+	private int percentPlayRequired = 80;
+	
+	public PlayCountWatcher() {
+		Object pStr = PMS.getConfiguration().getCustomProperty("PlayCountWatcher_PercentPlayRequired");
+		if(pStr != null && pStr instanceof String) {
+			try {
+				int pInt = Integer.parseInt((String) pStr);
+				if(pInt > 0 && pInt <= 100) {
+					percentPlayRequired = pInt;
+				}
+			} catch(NumberFormatException ex) {
+				log.error(String.format("Failed to read value PlayCountWatcher=%s as Integer", pStr));
+			}
+		}
+	}
 
 	@Override
 	public void donePlaying(DLNAMediaInfo media, DLNAResource resource) {
@@ -53,7 +75,7 @@ public class PlayCountWatcher implements StartStopListener {
 		if(playLengthSec > 0){
 			String filePath = ((RealFile)resource).getFile().getAbsolutePath();
 			int fullLengthSec = (int)media.getDurationInSeconds();
-			int minPlayLogLength = (int) (fullLengthSec * 0.8);
+			int minPlayLogLength = (int) (fullLengthSec * (percentPlayRequired / 100));
 			if(log.isDebugEnabled()) log.debug(String.format("Stopped playing %s (%s) after %s seconds. Min play length for loging %ss", resource.getName(), resource.getInternalId(), playLengthSec, minPlayLogLength));
 			if(playLengthSec > minPlayLogLength){
 				storage.updatePlayCount(filePath, playLengthSec, new Date());
@@ -70,12 +92,15 @@ public class PlayCountWatcher implements StartStopListener {
 
 	@Override
 	public JComponent config() {
-		return new JLabel("A file counts as played if it's being stopped or ends after more then 80% of its play time.");
+		JPanel p = new JPanel(new BorderLayout(0, 5));
+		p.add(new JLabel(String.format(RESOURCE_BUNDLE.getString("PlayCountWatcher.1"), percentPlayRequired)), BorderLayout.NORTH);
+		p.add(new JLabel(RESOURCE_BUNDLE.getString("PlayCountWatcher.3")), BorderLayout.SOUTH);
+		return p;
 	}
 
 	@Override
 	public String name() {
-		return "Increments play counts for the media library";
+		return RESOURCE_BUNDLE.getString("PlayCountWatcher.2");
 	}
 
 	@Override

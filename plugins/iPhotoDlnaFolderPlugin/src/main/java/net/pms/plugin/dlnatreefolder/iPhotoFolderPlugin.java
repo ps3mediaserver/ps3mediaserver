@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -27,6 +28,8 @@ import net.pms.xmlwise.Plist;
 
 public class iPhotoFolderPlugin implements DlnaTreeFolderPlugin {
 	private static final Logger log = LoggerFactory.getLogger(iPhotoFolderPlugin.class);
+	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.dlnatreefolder.iphotofolderplugin.messages");
+	
 	private String rootFolderName = "root";
 
 	public iPhotoFolderPlugin() {
@@ -128,12 +131,12 @@ public class iPhotoFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public int getVersion() {
-		return 2;
+		return 3;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Allows to share the iPhoto pictures";
+		return RESOURCE_BUNDLE.getString("iPhotoFolderPlugin.Description");
 	}
 
 	@Override

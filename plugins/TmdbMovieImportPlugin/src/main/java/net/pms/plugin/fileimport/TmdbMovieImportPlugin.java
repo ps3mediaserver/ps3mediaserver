@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.swing.JComponent;
 
@@ -29,6 +30,7 @@ import net.sf.jtmdb.Studio;
  */
 public class TmdbMovieImportPlugin implements FileImportPlugin {
 	private static final Logger log = LoggerFactory.getLogger(TmdbMovieImportPlugin.class);
+	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.fileimport.tmdbmovieimportpluginmessages.messages");
 	
 	//available tags
 	private enum Tag {
@@ -214,7 +216,7 @@ public class TmdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public int getVersion() {
-		return 3;
+		return 4;
 	}
 
 	@Override
@@ -309,7 +311,7 @@ public class TmdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public String getDescription() {
-		return "Lets import information about movies from tmdb";
+		return RESOURCE_BUNDLE.getString("TmdbMovieImportPlugin.Description");
 	}
 
 	@Override

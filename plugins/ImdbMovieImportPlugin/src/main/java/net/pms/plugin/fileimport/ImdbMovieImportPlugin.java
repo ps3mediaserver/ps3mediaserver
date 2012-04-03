@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.swing.JComponent;
 
@@ -39,6 +40,7 @@ import net.pms.medialibrary.external.FileImportPlugin;
  */
 public class ImdbMovieImportPlugin implements FileImportPlugin {	
 	private static final Logger log = LoggerFactory.getLogger(ImdbMovieImportPlugin.class);
+	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.fileimport.imdbmovieimportpluginmessages.messages");
 	
 	private static final Dictionary<String, String> tags; //key=tag name, value=value to query on imdb
 	
@@ -68,12 +70,12 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public int getVersion() {
-		return 2;
+		return 3;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Imports movie information from IMDB using services provided by http://www.imdbapi.com";
+		return RESOURCE_BUNDLE.getString("ImdbMovieImportPlugin.Description");
 	}
 
 	@Override

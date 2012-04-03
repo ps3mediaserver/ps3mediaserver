@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import javax.swing.Icon;
@@ -27,11 +28,8 @@ import net.pms.medialibrary.external.DlnaTreeFolderPlugin;
 
 public class WebFolderPlugin implements DlnaTreeFolderPlugin {
 	private static final Logger log = LoggerFactory.getLogger(WebFolderPlugin.class);
+	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.dlnatreefolder.webfolderpluginmessages.messages");
 	private String rootFolderName = "root";
-
-	public WebFolderPlugin() {
-		if(log.isDebugEnabled()) log.debug("WebSpecialFolder constructed");
-	}
 
 	@Override
 	public JPanel getConfigurationPanel() {
@@ -128,7 +126,7 @@ public class WebFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public String getName() {
-		return "Web";
+		return RESOURCE_BUNDLE.getString("WebFolderPlugin.1");
 	}
 
 	@Override
@@ -163,12 +161,12 @@ public class WebFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public int getVersion() {
-		return 1;
+		return 2;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Online sources can be configured here";
+		return RESOURCE_BUNDLE.getString("WebFolderPlugin.2");
 	}
 
 	@Override

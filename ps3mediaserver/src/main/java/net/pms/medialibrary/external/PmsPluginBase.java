@@ -3,16 +3,17 @@ package net.pms.medialibrary.external;
 import javax.swing.JComponent;
 
 /**
- * Base class shared by all pms-mlx plugins. 
+ * Base class shared by all pms-mlx plugins.
+ * 
  * @author pw
- *
+ * 
  */
 public interface PmsPluginBase {
 
 	/**
-	 * The name of the plugin. Once the plugin has been released, this name
-	 * shouldn't be changed, as it gets used as an identifier on rare occasions
-	 * (for FileImportPlugins)
+	 * The name of the plugin.<br>
+	 * For FileImportPlugins, the name should not be changed once it has been
+	 * released as it is being used as an identifier.
 	 * 
 	 * @return plugin name
 	 */
@@ -22,7 +23,7 @@ public interface PmsPluginBase {
 	 * Version of the plugin. This number should be incremented for every
 	 * release<br>
 	 * If different versions of the same plugin are contained in the plugins
-	 * folder, only the one with the highest version number will be loaded
+	 * folder, only the one with the highest version number will be loaded.
 	 * 
 	 * @return version of the plugin
 	 */
@@ -30,7 +31,7 @@ public interface PmsPluginBase {
 
 	/**
 	 * Gets the description that will be shown in pms for the plugin. It should
-	 * be localized
+	 * be localized.
 	 * 
 	 * @return Description of what the plugin does
 	 */

@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -29,6 +30,8 @@ import net.pms.xmlwise.Plist;
 
 public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
 	private static final Logger log = LoggerFactory.getLogger(iTunesFolderPlugin.class);
+	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.dlnatreefolder.itunesfolderpluginmessages.messages");
+	
 	private String rootFolderName = "root";
 
 	public iTunesFolderPlugin() {
@@ -172,12 +175,12 @@ public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public int getVersion() {
-		return 1;
+		return 2;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Allows to share the music through iTunes";
+		return RESOURCE_BUNDLE.getString("iPhotoFolderPlugin.Description");
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -48,7 +49,7 @@ public class FolderEntry extends JPanel {
 	private void init() {
 		tfFolderPath = new JTextField();
 
-		bBrowse = new JButton("Browse");
+		bBrowse = new JButton(FileSystemFolderPlugin.RESOURCE_BUNDLE.getString("FolderEntry.1"));
 		bBrowse.addActionListener(new ActionListener() {
 
 			@Override
@@ -62,7 +63,7 @@ public class FolderEntry extends JPanel {
 			}
 		});
 
-		bRemove = new JButton("Remove");
+		bRemove = new JButton(new ImageIcon(getClass().getResource("/resources/images/tp_remove.png")));
 		bRemove.addActionListener(new ActionListener() {
 
 			@Override
@@ -91,7 +92,7 @@ public class FolderEntry extends JPanel {
 		builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 
-		builder.addLabel("Shared folder", cc.xy(1, 1));
+		builder.addLabel(FileSystemFolderPlugin.RESOURCE_BUNDLE.getString("FolderEntry.2"), cc.xy(1, 1));
 		builder.add(tfFolderPath, cc.xy(3, 1));
 		builder.add(bBrowse, cc.xy(5, 1));
 		builder.add(bRemove, cc.xy(7, 1));

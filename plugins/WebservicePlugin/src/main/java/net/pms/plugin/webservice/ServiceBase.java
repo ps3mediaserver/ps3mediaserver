@@ -41,11 +41,12 @@ public abstract class ServiceBase {
 	 * Stop the webservice
 	 */
 	public void shutdown() {
-		log.info("Shut down " + getClass().getName());
+		log.debug("Shut down " + getClass().getName());
 		if (endpoint != null){
 			endpoint.stop();
 			endpoint = null;
 		}
+		log.info(getClass().getName() + " has been properly shut down");
 	}
 
 }

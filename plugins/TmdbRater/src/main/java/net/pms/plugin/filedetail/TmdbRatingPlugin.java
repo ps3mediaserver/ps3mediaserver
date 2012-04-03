@@ -2,6 +2,7 @@ package net.pms.plugin.filedetail;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ResourceBundle;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -18,6 +19,8 @@ import net.pms.medialibrary.external.FileDetailPlugin;
 import net.pms.medialibrary.external.TreeEntry;
 
 public class TmdbRatingPlugin implements FileDetailPlugin {
+	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.filedetail.tmdbratermessages.messages");
+	
 	private DOVideoFileInfo video;
 	private String displayName;
 	private static Icon ratingIcon;
@@ -38,7 +41,7 @@ public class TmdbRatingPlugin implements FileDetailPlugin {
 
 	@Override
     public String getName() {
-	    return "Rate on TMDb";
+	    return RESOURCE_BUNDLE.getString("TmdbRatingPlugin.Name");
     }
 
 	@Override
@@ -107,12 +110,12 @@ public class TmdbRatingPlugin implements FileDetailPlugin {
 
 	@Override
 	public int getVersion() {
-		return 1;
+		return 2;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Lets you rate movies on tmdb directly from your sofa";
+		return RESOURCE_BUNDLE.getString("");
 	}
 
 	@Override

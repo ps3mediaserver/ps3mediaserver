@@ -1,6 +1,8 @@
 package net.pms.plugin.dnlatreefolder;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -20,10 +22,8 @@ import net.pms.medialibrary.external.DlnaTreeFolderPlugin;
 
 public class VideoSettingsFolderPlugin implements DlnaTreeFolderPlugin {
 	private static final Logger log = LoggerFactory.getLogger(VideoSettingsFolderPlugin.class);
+	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.dnlatreefolder.videosettingsfolderpluginmessages.messages");
 	private String rootFolderName = "root";
-
-	public VideoSettingsFolderPlugin() {
-	}
 
 	@Override
 	public JPanel getConfigurationPanel() {
@@ -127,7 +127,6 @@ public class VideoSettingsFolderPlugin implements DlnaTreeFolderPlugin {
 				return true;
 			}
 		});
-		//vf.closeChildren(0, false);
 		return vf;
 	}
 
@@ -138,7 +137,8 @@ public class VideoSettingsFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public String getName() {
-		return "Video Properties";
+		return RESOURCE_BUNDLE.getString("VideoSettingsFolderPlugin.1");
+//		return "Video Settings";
 	}
 	
 	@Override
@@ -171,12 +171,13 @@ public class VideoSettingsFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public int getVersion() {
-		return 2;
+		return 3;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Shows a folder containing some commently used configurations to be changed directly from your sofa.";
+		return RESOURCE_BUNDLE.getString("VideoSettingsFolderPlugin.2");
+//		return "";
 	}
 
 	@Override

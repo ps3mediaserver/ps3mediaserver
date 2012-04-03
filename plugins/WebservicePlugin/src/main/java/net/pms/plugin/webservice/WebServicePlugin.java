@@ -1,5 +1,7 @@
 package net.pms.plugin.webservice;
 
+import java.util.ResourceBundle;
+
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
@@ -9,6 +11,8 @@ import net.pms.plugin.webservice.configuration.ConfigurationWebService;
 import net.pms.plugin.webservice.medialibrary.LibraryWebService;
 
 public class WebServicePlugin implements ExternalListener {
+	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.webservice.webservicepluginmessages.messages");
+	
 	private static Object initializationLocker = new Object();
 	private static Thread thRegister;
 	
@@ -55,12 +59,12 @@ public class WebServicePlugin implements ExternalListener {
 	public JComponent config() {
 		String libraryEndPoint = "http://" + hostName + ":" + port + "/" + libraryWsName + "?wsdl";
 		String configEndPoint = "http://" + hostName + ":" + port + "/" + configurationWsName + "?wsdl";
-		return new JLabel(String.format("<html>This plugin exposes webservices and can't be configured.<br><br>%s<br>%s</html>", libraryEndPoint, configEndPoint));
+		return new JLabel(String.format("<html>%s<br><br>%s<br>%s</html>", RESOURCE_BUNDLE.getString("WebServicePlugin.2"), libraryEndPoint, configEndPoint));
 	}
 
 	@Override
 	public String name() {
-		return "Web service plugin";
+		return RESOURCE_BUNDLE.getString("WebServicePlugin.1");
 	}
 
 	@Override

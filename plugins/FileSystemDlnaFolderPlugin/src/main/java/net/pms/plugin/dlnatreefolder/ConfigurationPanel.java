@@ -55,9 +55,9 @@ public class ConfigurationPanel extends JPanel {
 	private void init() {
 		pNoSharedFoldersSet = new JPanel();
 		pNoSharedFoldersSet.setLayout(new GridLayout());
-		pNoSharedFoldersSet.add(new JLabel("No shared folders set. All disks will be shared"));
+		pNoSharedFoldersSet.add(new JLabel(FileSystemFolderPlugin.RESOURCE_BUNDLE.getString("ConfigurationPanel.1")));
 
-		bAddFolder = new JButton("Add Folder");
+		bAddFolder = new JButton(FileSystemFolderPlugin.RESOURCE_BUNDLE.getString("ConfigurationPanel.2"));
 		rebuildPanel();
 		bAddFolder.addActionListener(new ActionListener() {
 
@@ -70,7 +70,7 @@ public class ConfigurationPanel extends JPanel {
 
 	private void addFolderEntry(String folderPath) {
 		if (sharedFolders.size() >= 20) {
-			JOptionPane.showMessageDialog(this, "You can add a maximum of 20 folders to the list");
+			JOptionPane.showMessageDialog(this, FileSystemFolderPlugin.RESOURCE_BUNDLE.getString("ConfigurationPanel.3"));
 			return;
 		}
 
