@@ -533,35 +533,35 @@ public class MEncoderVideo extends Player {
 		builder.addLabel(Messages.getString("MEncoderVideo.11"), cc.xy(1, 31));
 		Object data[] = new Object[]{
 			configuration.getMencoderSubCp(),
-			"cp1250  /* Windows - Eastern Europe */",
-			"cp1251  /* Windows - Cyrillic */",
-			"cp1252  /* Windows - Western Europe */",
-			"cp1253  /* Windows - Greek */",
-			"cp1254  /* Windows - Turkish */",
-			"cp1255  /* Windows - Hebrew */",
-			"cp1256  /* Windows - Arabic */",
-			"cp1257  /* Windows - Baltic */",
-			"cp1258  /* Windows - Vietnamese */",
-			"ISO-8859-1 /* Western Europe */",
-			"ISO-8859-2 /* Western and Central Europe */",
-			"ISO-8859-3 /* Western Europe and South European */",
-			"ISO-8859-4 /* Western Europe and Baltic countries */",
-			"ISO-8859-5 /* Cyrillic alphabet */",
-			"ISO-8859-6 /* Arabic */",
-			"ISO-8859-7 /* Greek */",
-			"ISO-8859-8 /* Hebrew */",
-			"ISO-8859-9 /* Western Europe with amended Turkish */",
-			"ISO-8859-10 /* Western Europe with Nordic languages */",
-			"ISO-8859-11 /* Thai */",
-			"ISO-8859-13 /* Baltic languages plus Polish */",
-			"ISO-8859-14 /* Celtic languages */",
-			"ISO-8859-15 /* Added the Euro sign */",
-			"ISO-8859-16 /* Central European languages */",
-			"cp932   /* Japanese */",
-			"cp936   /* Chinese */",
-			"cp949   /* Korean */",
-			"cp950   /* Big5, Taiwanese, Cantonese */", 
-			"UTF-8   /* Unicode */"
+			Messages.getString("MEncoderVideo.96"),
+			Messages.getString("MEncoderVideo.97"),
+			Messages.getString("MEncoderVideo.98"),
+			Messages.getString("MEncoderVideo.99"),
+			Messages.getString("MEncoderVideo.100"),
+			Messages.getString("MEncoderVideo.101"),
+			Messages.getString("MEncoderVideo.102"),
+			Messages.getString("MEncoderVideo.103"),
+			Messages.getString("MEncoderVideo.104"),
+			Messages.getString("MEncoderVideo.105"),
+			Messages.getString("MEncoderVideo.106"),
+			Messages.getString("MEncoderVideo.107"),
+			Messages.getString("MEncoderVideo.108"),
+			Messages.getString("MEncoderVideo.109"),
+			Messages.getString("MEncoderVideo.110"),
+			Messages.getString("MEncoderVideo.111"),
+			Messages.getString("MEncoderVideo.112"),
+			Messages.getString("MEncoderVideo.113"),
+			Messages.getString("MEncoderVideo.114"),
+			Messages.getString("MEncoderVideo.115"),
+			Messages.getString("MEncoderVideo.116"),
+			Messages.getString("MEncoderVideo.117"),
+			Messages.getString("MEncoderVideo.118"),			
+			Messages.getString("MEncoderVideo.119"),
+			Messages.getString("MEncoderVideo.120"),
+			Messages.getString("MEncoderVideo.121"),
+			Messages.getString("MEncoderVideo.122"),
+			Messages.getString("MEncoderVideo.123"),
+			Messages.getString("MEncoderVideo.124")
 		};
 		MyComboBoxModel cbm = new MyComboBoxModel(data);
 
@@ -926,7 +926,7 @@ public class MEncoderVideo extends Player {
 			public void actionPerformed(ActionEvent e) {
 				Color newColor = JColorChooser.showDialog(
 					(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-					"Choose Subtitles Color",
+					Messages.getString("MEncoderVideo.125"),
 					subColor.getBackground());
 				if (newColor != null) {
 					subColor.setBackground(newColor);
@@ -1412,9 +1412,9 @@ public class MEncoderVideo extends Player {
 					}
 					subtitleMargin = subtitleMargin + userMargin;
 
-					sb.append(",MarginV=").append(Math.round(subtitleMargin)).append(" ");
+					sb.append(",MarginV=").append(subtitleMargin).append(" ");
 				} else if (intOCH > 0) {
-					sb.append("-ass-force-style MarginV=").append(Math.round(subtitleMargin)).append(" ");
+					sb.append("-ass-force-style MarginV=").append(subtitleMargin).append(" ");
 				}
 
 				if (params.sid.getType() != DLNAMediaSubtitle.EMBEDDED) {
@@ -1450,7 +1450,7 @@ public class MEncoderVideo extends Player {
 				}
 				subtitleMargin = subtitleMargin + userMargin;
 
-				sb.append(" -subpos ").append(100 - Math.round(subtitleMargin)).append(" ");
+				sb.append(" -subpos ").append(100 - subtitleMargin).append(" ");
 			}
 
 			// Common subtitle options
@@ -1668,7 +1668,7 @@ public class MEncoderVideo extends Player {
 					}
 				}
 
-				vfValueOverscanPrepend.append("softskip,expand=-").append(Math.round(intOCWPixels)).append(":-").append(Math.round(intOCHPixels));
+				vfValueOverscanPrepend.append("softskip,expand=-").append(intOCWPixels).append(":-").append(intOCHPixels);
 				vfValueOverscanMiddle.append(",scale=").append(scaleWidth).append(":").append(scaleHeight);
 			}
 
@@ -1777,8 +1777,8 @@ public class MEncoderVideo extends Player {
 			int newWidth;
 			int newHeight;
 
-			newWidth  = Math.round(media.getWidth() / 4) * 4;
-			newHeight = Math.round(media.getHeight() / 4) * 4;
+			newWidth  = (media.getWidth() / 4) * 4;
+			newHeight = (media.getHeight() / 4) * 4;
 
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-vf";

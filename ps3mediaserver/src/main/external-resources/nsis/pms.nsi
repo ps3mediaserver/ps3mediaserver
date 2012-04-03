@@ -22,8 +22,9 @@ VIProductVersion "${PROJECT_VERSION_SHORT}.0"
 !define JARPATH "${PROJECT_BUILD_DIR}\pms.jar"
 !define CLASS "net.pms.PMS"
  
-; Definitions for Java 7.0
-!define JRE_VERSION "7.0"
+; Definitions for Java
+!define JRE6_VERSION "6.0"
+!define JRE7_VERSION "7.0"
 !define JRE_URL "http://download.oracle.com/otn-pub/java/jdk/7u3-b05/jre-7u3-windows-i586.exe"
 !define JRE64_URL "http://download.oracle.com/otn-pub/java/jdk/7u3-b05/jre-7u3-windows-x64.exe"
  
@@ -136,7 +137,7 @@ Function GetJRE
  
   DownloadJRE:
     Call ElevateToAdmin
-    MessageBox MB_ICONINFORMATION "${PRODUCT_NAME} uses Java Runtime Environment ${JRE_VERSION}, it will now be downloaded and installed."
+    MessageBox MB_ICONINFORMATION "${PRODUCT_NAME} uses Java Runtime Environment ${JRE7_VERSION}, it will now be downloaded and installed."
     StrCpy $2 "$TEMP\Java Runtime Environment.exe"
     nsisdl::download /TIMEOUT=30000 ${JRE_URL} $2
     Pop $R0 ;Get the return value
@@ -167,19 +168,28 @@ FunctionEnd
  
 ; Pass the "javaw.exe" path by $R0
 Function CheckJREVersion
+    ; R1 holds the current JRE version
     Push $R1
+    Push $R2
  
     ; Get the file version of javaw.exe
     ${GetFileVersion} $R0 $R1
-    ${VersionCompare} ${JRE_VERSION} $R1 $R1
  
-    ; Check whether $R1 != "1"
     ClearErrors
-    StrCmp $R1 "1" 0 CheckDone
+    
+    ; Check if JRE6 is installed
+    ${VersionCompare} ${JRE6_VERSION} $R1 $R2
+    StrCmp $R2 "1" 0 CheckDone
+    
+    ; Check if JRE7 is installed
+    ${VersionCompare} ${JRE7_VERSION} $R1 $R2
+    StrCmp $R2 "1" 0 CheckDone
+    
     SetErrors
  
   CheckDone:
     Pop $R1
+    Pop $R2
 FunctionEnd
 
  

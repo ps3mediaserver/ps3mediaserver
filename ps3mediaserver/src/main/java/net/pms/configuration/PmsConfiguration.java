@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import net.pms.io.SystemUtils;
-import net.pms.util.PropertiesUtil;
+import net.pms.Messages;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -181,16 +181,7 @@ public class PmsConfiguration {
 	// the default profile name displayed on the renderer
 	private static String HOSTNAME;
 
-	private static final String DEFAULT_AVI_SYNTH_SCRIPT =
-		"#AviSynth script is now fully customisable !\n"
-		+ "#You must use the following variables (\"clip\" being the avisynth variable of the movie):\n"
-		+ "#<movie>: insert the complete DirectShowSource instruction [ clip=DirectShowSource(movie, convertfps) ]\n"
-		+ "#<sub>: insert the complete TextSub/VobSub instruction if there's any detected srt/sub/idx/ass subtitle file\n"
-		+ "#<moviefilename>: variable of the movie filename, if you want to do all this by yourself\n"
-		+ "#Be careful, the custom script MUST return the clip object\n"
-		+ "<movie>\n"
-		+ "<sub>\n"
-		+ "return clip";
+	private static String DEFAULT_AVI_SYNTH_SCRIPT;
 	private static final String BUFFER_TYPE_FILE = "file";
 	private static final int MAX_MAX_MEMORY_BUFFER_SIZE = 400;
 	private static final char LIST_SEPARATOR = ',';
@@ -357,6 +348,17 @@ public class PmsConfiguration {
 		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
 		Locale.setDefault(new Locale(getLanguage()));
+		// set DEFAULT_AVI_SYNTH_SCRIPT properly according to language
+		DEFAULT_AVI_SYNTH_SCRIPT = 
+				  Messages.getString("MEncoderAviSynth.4")
+				+ Messages.getString("MEncoderAviSynth.5")
+				+ Messages.getString("MEncoderAviSynth.6")
+				+ Messages.getString("MEncoderAviSynth.7")
+				+ Messages.getString("MEncoderAviSynth.8")
+				+ Messages.getString("MEncoderAviSynth.9")
+				+ Messages.getString("MEncoderAviSynth.10")
+				+ Messages.getString("MEncoderAviSynth.11")
+				+ Messages.getString("MEncoderAviSynth.12");
 	}
 
 	/**
@@ -2009,7 +2011,7 @@ public class PmsConfiguration {
 	}
 
 	public String getPluginDirectory() {
-		return getString(KEY_PLUGIN_DIRECTORY, PropertiesUtil.getProjectProperties().get("project.plugins.dir"));
+		return getString(KEY_PLUGIN_DIRECTORY, "plugins");
 	}
 
 	public void setPluginDirectory(String value) {
