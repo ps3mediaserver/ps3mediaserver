@@ -4,6 +4,7 @@ Changelog:
 1.??.? -
 
 	Re-fix NPE when toggling HTTP Engine V2
+	Fix global custom MEncoder options
 
 1.52.1 - 2012-04-06
 

@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CueFolder extends DLNAResource {
-	private static final Logger logger = LoggerFactory.getLogger(CueFolder.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CueFolder.class);
 	private File playlistfile;
 
 	public File getPlaylistfile() {
@@ -72,7 +72,7 @@ public class CueFolder extends DLNAResource {
 			try {
 				sheet = CueParser.parse(playlistfile);
 			} catch (IOException e) {
-				logger.info("Error in parsing cue: " + e.getMessage());
+				LOGGER.info("Error in parsing cue: " + e.getMessage());
 				return;
 			}
 
@@ -101,7 +101,7 @@ public class CueFolder extends DLNAResource {
 							}
 							prec.getSplitRange().setEnd(end);
 							prec.getMedia().setDuration(prec.getSplitRange().getDuration());
-							logger.debug("Track #" + i + " split range: " + prec.getSplitRange().getStartOrZero() + " - " + prec.getSplitRange().getDuration());
+							LOGGER.debug("Track #" + i + " split range: " + prec.getSplitRange().getStartOrZero() + " - " + prec.getSplitRange().getDuration());
 						}
 						Position start = track.getIndices().get(0).getPosition();
 						RealFile r = new RealFile(new File(playlistfile.getParentFile(), f.getFile()));
@@ -117,27 +117,34 @@ public class CueFolder extends DLNAResource {
 						}
 						r.getSplitRange().setStart(getTime(start));
 						r.setSplitTrack(i + 1);
+
 						if (r.getPlayer() == null) { // assign a splitter engine if file is natively supported by renderer
 							if (defaultPlayer == null) {
 								if (r.getExt() == null) {
-									logger.error("No file format known for file \"" + r.getName()
-											+ "\", assuming it is a video for now.");
+									LOGGER.error("No file format known for file \"{}\", assuming it is a video for now.", r.getName());
+									// XXX aren't players supposed to be singletons?
+									// NOTE: needs new signature for getPlayer():
+									// PlayerFactory.getPlayer(MEncoderVideo.class)
 									defaultPlayer = new MEncoderVideo(PMS.getConfiguration());
 								} else {
 									if (r.getExt().isAudio()) {
+										// XXX PlayerFactory.getPlayer(MPlayerAudio.class)
 										defaultPlayer = new MPlayerAudio(PMS.getConfiguration());
 									} else {
+										// XXX PlayerFactory.getPlayer(MEncoderVideo.class)
 										defaultPlayer = new MEncoderVideo(PMS.getConfiguration());
 									}
 								}
 							}
+
 							r.setPlayer(defaultPlayer);
 						}
+
 						if (r.getMedia() != null) {
 							try {
 								r.setMedia((DLNAMediaInfo) originalMedia.clone());
 							} catch (CloneNotSupportedException e) {
-								logger.info("Error in cloning media info: " + e.getMessage());
+								LOGGER.info("Error in cloning media info: " + e.getMessage());
 							}
 							if (r.getMedia() != null && r.getMedia().getFirstAudioTrack() != null) {
 								if (r.getExt().isAudio()) {
@@ -167,7 +174,7 @@ public class CueFolder extends DLNAResource {
 						DLNAResource prec = addedResources.get(addedResources.size() - 1);
 						prec.getSplitRange().setEnd(prec.getMedia().getDurationInSeconds());
 						prec.getMedia().setDuration(prec.getSplitRange().getDuration());
-						logger.debug("Track #" + childrenNumber() + " split range: " + prec.getSplitRange().getStartOrZero() + " - " + prec.getSplitRange().getDuration());
+						LOGGER.debug("Track #" + childrenNumber() + " split range: " + prec.getSplitRange().getStartOrZero() + " - " + prec.getSplitRange().getDuration());
 					}
 
 					PMS.get().storeFileInCache(playlistfile, Format.PLAYLIST);
