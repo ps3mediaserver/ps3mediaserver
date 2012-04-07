@@ -5,6 +5,7 @@ Changelog:
 
 	Re-fix NPE when toggling HTTP Engine V2
 	Fix global custom MEncoder options
+	Fix startup for symlinked PMS.sh (#1356) (thanks, Matthijs)
 
 1.52.1 - 2012-04-06
 

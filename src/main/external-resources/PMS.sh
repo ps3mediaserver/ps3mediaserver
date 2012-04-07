@@ -1,27 +1,27 @@
 #!/bin/sh
 
-DIRNAME=`dirname $0`
-
+CMD=`readlink -f $0`
+DIRNAME=`dirname $CMD`
 
 # OS specific support (must be 'true' or 'false').
 cygwin=false;
 case "`uname`" in
-CYGWIN*)
-cygwin=true
-;;
+    CYGWIN*)
+        cygwin=true
+        ;;
 esac
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched
 if $cygwin ; then
-[ -n "$PMS_HOME" ] &&
-PMS_HOME=`cygpath --unix "$PMS_HOME"`
-[ -n "$JAVA_HOME" ] &&
-JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
+    [ -n "$PMS_HOME" ] &&
+		PMS_HOME=`cygpath --unix "$PMS_HOME"`
+    [ -n "$JAVA_HOME" ] &&
+		JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
 fi
 
 # Setup PMS_HOME
 if [ "x$PMS_HOME" = "x" ]; then
-	PMS_HOME=$DIRNAME
+    PMS_HOME=$DIRNAME
 fi
 
 export PMS_HOME
@@ -30,11 +30,11 @@ cd $PMS_HOME
 
 # Setup the JVM
 if [ "x$JAVA" = "x" ]; then
-	if [ "x$JAVA_HOME" != "x" ]; then
+    if [ "x$JAVA_HOME" != "x" ]; then
 		JAVA="$JAVA_HOME/bin/java"
-	else
+    else
 		JAVA="java"
-	fi
+    fi
 fi
 
 # Setup the classpath
@@ -44,8 +44,8 @@ PMS_JARS="update.jar:pms.jar"
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
-	PMS_HOME=`cygpath --path --windows "$PMS_HOME"`
-	JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
+    PMS_HOME=`cygpath --path --windows "$PMS_HOME"`
+    JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
 fi
 
 # Execute the JVM
