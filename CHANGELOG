@@ -1,6 +1,10 @@
 Changelog:
 ==========
 
+1.??.? -
+
+	Re-fix NPE when toggling HTTP Engine V2
+
 1.52.1 - 2012-04-06
 
 	Updated MPlayer to SB29 which fixes AC3 audio sync
