@@ -18,8 +18,6 @@
  */
 package net.pms.util;
 
-import net.pms.encoders.MEncoderVideo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * Derived from the mpeg4ip project and the ToNMT tool
  */
 public class AVCHeader {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MEncoderVideo.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AVCHeader.class);
 
 	private byte[] buffer;
 	private int currentBit;

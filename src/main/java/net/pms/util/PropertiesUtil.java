@@ -20,8 +20,6 @@ package net.pms.util;
 
 import java.io.IOException;
 
-import net.pms.PMS;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +27,7 @@ public class PropertiesUtil {
 	/**
 	 * Logs messages to all different channels.
 	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(PMS.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesUtil.class);
 
 	/**
 	 * General properties for the PMS project.
