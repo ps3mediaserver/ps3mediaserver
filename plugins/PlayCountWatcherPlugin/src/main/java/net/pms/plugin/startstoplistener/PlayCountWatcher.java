@@ -29,7 +29,7 @@ public class PlayCountWatcher implements StartStopListener {
 	private Queue<QueueItem> playCache = new LinkedList<QueueItem>();
 	private IMediaLibraryStorage storage;
 	
-	private int percentPlayRequired = 80;
+	private double percentPlayRequired = 80;
 	
 	public PlayCountWatcher() {
 		Object pStr = PMS.getConfiguration().getCustomProperty("PlayCountWatcher_PercentPlayRequired");
@@ -80,7 +80,7 @@ public class PlayCountWatcher implements StartStopListener {
 			if(playLengthSec > minPlayLogLength){
 				storage.updatePlayCount(filePath, playLengthSec, new Date());
 				if(log.isInfoEnabled()) log.info(String.format("Updated play count for %s (%s) after %s seconds. Min play length for loging %ss", resource.getName(), resource.getInternalId(), playLengthSec, minPlayLogLength));
-			}		
+			}
 		}
 	}
 
