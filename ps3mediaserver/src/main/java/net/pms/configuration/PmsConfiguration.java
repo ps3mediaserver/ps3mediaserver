@@ -109,7 +109,7 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_ASS_SHADOW = "mencoder_ass_shadow";
 	private static final String KEY_MENCODER_AUDIO_LANGS = "mencoder_audiolangs";
 	private static final String KEY_MENCODER_AUDIO_SUB_LANGS = "mencoder_audiosublangs";
-	private static final String KEY_MENCODER_DECODE = "mencoder_decode";
+	private static final String KEY_MENCODER_CUSTOM_OPTIONS = "mencoder_decode"; // TODO (breaking change): should be renamed to e.g. mencoder_custom_options
 	private static final String KEY_MENCODER_DISABLE_SUBS = "mencoder_disablesubs";
 	private static final String KEY_MENCODER_FONT_CONFIG = "mencoder_fontconfig";
 	private static final String KEY_MENCODER_FONT = "mencoder_font";
@@ -160,7 +160,7 @@ public class PmsConfiguration {
 	private static final String KEY_SORT_METHOD = "key_sort_method";
 	private static final String KEY_SUBS_COLOR = "subs_color";
 	private static final String KEY_TEMP_FOLDER_PATH = "temp";
-	private static final String KEY_THUMBNAIL_GENERATION_ENABLED = "thumbnails"; // TODO should be renamed e.g. "generate_thumbnails" at some stage
+	private static final String KEY_THUMBNAIL_GENERATION_ENABLED = "thumbnails"; // TODO (breaking change): should be renamed to e.g. generate_thumbnails
 	private static final String KEY_THUMBNAIL_SEEK_POS = "thumbnail_seek_pos";
 	private static final String KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS = "transcode_block_multiple_connections";
 	private static final String KEY_TRANSCODE_KEEP_FIRST_CONNECTION = "transcode_keep_first_connection";
@@ -1043,19 +1043,41 @@ public class PmsConfiguration {
 	}
 
 	/**
+	 * @deprecated Use {@link #getMencoderCustomOptions()} instead.
+	 * <p>
 	 * Returns custom commandline options to pass on to MEncoder.
 	 * @return The custom options string.
 	 */
+	@Deprecated
 	public String getMencoderDecode() {
-		return getString(KEY_MENCODER_DECODE, "");
+		return getMencoderCustomOptions();
+	}
+
+	/**
+	 * Returns custom commandline options to pass on to MEncoder.
+	 * @return The custom options string.
+	 */
+	public String getMencoderCustomOptions() {
+		return getString(KEY_MENCODER_CUSTOM_OPTIONS, "");
+	}
+
+	/**
+	 * @deprecated Use {@link #setMencoderCustomOptions(String)} instead.
+	 * <p>
+	 * Sets custom commandline options to pass on to MEncoder.
+	 * @param value The custom options string.
+	 */
+	@Deprecated
+	public void setMencoderDecode(String value) {
+		setMencoderCustomOptions(value);
 	}
 
 	/**
 	 * Sets custom commandline options to pass on to MEncoder.
 	 * @param value The custom options string.
 	 */
-	public void setMencoderDecode(String value) {
-		configuration.setProperty(KEY_MENCODER_DECODE, value);
+	public void setMencoderCustomOptions(String value) {
+		configuration.setProperty(KEY_MENCODER_CUSTOM_OPTIONS, value);
 	}
 
 	/**
@@ -1297,7 +1319,7 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #setThumbnailGenerationEnabled()} instead.
+	 * @deprecated Use {@link #setThumbnailGenerationEnabled(boolean)} instead.
 	 * <p>
 	 * Sets the thumbnail generation option.
 	 * This only determines whether a thumbnailer (e.g. dcraw, MPlayer)

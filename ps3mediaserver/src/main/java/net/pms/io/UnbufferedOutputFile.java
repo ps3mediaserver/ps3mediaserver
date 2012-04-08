@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UnbufferedOutputFile implements BufferedOutputFile {
 
-	private static final Logger logger = LoggerFactory.getLogger(BufferedOutputFileImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(UnbufferedOutputFile.class);
 	
 	private PipedOutputStream pipedOutputStream;
 	private PipedInputStream pipedInputStream;

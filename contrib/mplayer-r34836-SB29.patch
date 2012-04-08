@@ -1,0 +1,653 @@
+Index: configure
+===================================================================
+--- configure	(revision 34836)
++++ configure	(working copy)
+@@ -565,6 +565,7 @@
+   --with-install=PATH    path to a custom install program
+ 
+ Advanced options:
++  --flavor=system           build a specified target system
+   --enable-mmx              enable MMX [autodetect]
+   --enable-mmxext           enable MMX2 (Pentium III, Athlon) [autodetect]
+   --enable-3dnow            enable 3DNow! [autodetect]
+@@ -617,6 +618,7 @@
+ # GOTCHA: the variables below defines the default behavior for autodetection
+ # and have - unless stated otherwise - at least 2 states : yes no
+ # If autodetection is available then the third state is: auto
++_flavor=none
+ _mmx=auto
+ _3dnow=auto
+ _3dnowext=auto
+@@ -1006,6 +1008,9 @@
+   --disable-debug)
+     _debug=
+     ;;
++  --flavor=*)
++    _flavor=`echo $ac_option | cut -d '=' -f 2`
++    ;;
+   --enable-runtime-cpudetection)    _runtime_cpudetection=yes   ;;
+   --disable-runtime-cpudetection)   _runtime_cpudetection=no    ;;
+   --enable-cross-compile)           _cross_compile=yes          ;;
+@@ -2573,6 +2578,72 @@
+   test -n "$cflags_stackrealign" && echores "yes" || echores "no"
+ fi # if darwin && test "$cc_vendor" = "gnu" ; then
+ 
++# user selected target system
++if test "$_runtime_cpudetection" = no ; then
++    case "$host_arch-$cc_vendor-$_flavor" in
++        *-none) ;; # No flavor, standard build
++        i386-gnu-pentium4|i386-gnu-p4)
++         _mmx=yes
++         _mmxext=yes
++         _3dnow=auto
++         _3dnowext=auto
++         test $_sse = "auto" && _sse=yes
++         test $_sse2 = "auto" && _sse2=yes
++         _mcpu=$cpuopt=pentium4
++         _march=-march=pentium4
++         ;;
++        i386-gnu-pentium3|i386-gnu-p3)
++         ## Not tested
++         _mmx=yes
++         _mmxext=yes
++         _3dnow=auto
++         _3dnowext=auto
++         test $_sse = "auto" && _sse=yes
++         _sse2=auto
++         _mcpu=$cpuopt=pentium3
++         _march=-march=pentium3
++         ;;
++        i386-gnu-athlon)
++         _mmx=yes
++         _mmxext=yes
++         _3dnow=yes
++         _3dnowext=yes
++         _sse=auto
++         _sse2=auto
++         _mcpu=$cpuopt=athlon
++         _march=-march=athlon
++         ;;
++        i386-gnu-athlon-xp)
++         _mmx=yes
++         _mmxext=yes
++         _3dnow=yes
++         _3dnowext=yes
++         test $_sse = "auto" && _sse=yes
++         _sse2=auto
++         _mcpu=$cpuopt=athlon-xp
++         _march=-march=athlon-xp
++         ;;
++        i386-gnu-k8)
++         _mmx=yes
++         _mmxext=yes
++         _3dnow=yes
++         _3dnowext=yes
++         test $_sse = "auto" && _sse=yes
++         test $_sse2 = "auto" && _sse2=yes
++         _mcpu=$cpuopt=k8
++         _march=-march=k8
++         ;;
++        *)
++         echo "Invalid/unsupported target system $host_arch-$cc_vendor-$_flavor"
++         exit 1
++         ;;
++    esac
++    if test "$_flavor" != none ; then
++        # move this to case if adding different cpu
++        iproc=686
++        _optimizing="Custom Target $_flavor"
++    fi
++fi
+ 
+ # Checking for CFLAGS
+ _install_strip="-s"
+@@ -3476,10 +3547,17 @@
+ if test "$_memalign" = yes ; then
+   def_memalign='#define HAVE_MEMALIGN 1'
+ else
++  if mingw32 ; then
++    _memalign=yes
++    def_memalign='#define HAVE_MEMALIGN 1'
++    def_map_memalign='extern void *memalign(unsigned int boundary, unsigned int size);'
++    res_comment="emulated"
++  else
+   def_memalign='#define HAVE_MEMALIGN 0'
+   def_map_memalign='#define memalign(a, b) malloc(b)'
+   darwin || def_memalign_hack='#define CONFIG_MEMALIGN_HACK 1'
+ fi
++fi
+ echores "$_memalign"
+ 
+ 
+@@ -7701,6 +7779,10 @@
+ done
+ libs_mplayer=$ld_tmp
+ 
++if mingw32 ; then
++ libs_mplayer="$libs_mplayer osdep/alloc-win.c"
++ libs_mencoder="$libs_mencoder osdep/alloc-win.c"
++fi
+ 
+ #############################################################################
+ 
+Index: libao2/ao_sdl.c
+===================================================================
+--- libao2/ao_sdl.c	(revision 34836)
++++ libao2/ao_sdl.c	(working copy)
+@@ -143,7 +143,7 @@
+ 	mp_msg(MSGT_AO,MSGL_INFO,MSGTR_AO_SDL_INFO, rate, (channels > 1) ? "Stereo" : "Mono", af_fmt2str_short(format));
+ 
+ 	if(ao_subdevice) {
+-		setenv("SDL_AUDIODRIVER", ao_subdevice, 1);
++		putenv("SDL_AUDIODRIVER=1");
+ 		mp_msg(MSGT_AO,MSGL_INFO,MSGTR_AO_SDL_DriverInfo, ao_subdevice);
+ 	}
+ 
+Index: libvo/sdl_common.c
+===================================================================
+--- libvo/sdl_common.c	(revision 34836)
++++ libvo/sdl_common.c	(working copy)
+@@ -64,7 +64,7 @@
+         if (WinID > 0) {
+             char envstr[20];
+             snprintf(envstr, sizeof(envstr), "0x%"PRIx64, WinID);
+-            setenv("SDL_WINDOWID", envstr, 1);
++            putenv("SDL_WINDOWID=1");
+         }
+         if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_NOPARACHUTE) < 0)
+             return 0;
+@@ -126,7 +126,7 @@
+     if (geometry_xy_changed) {
+         char envstr[20];
+         snprintf(envstr, sizeof(envstr), "%i,%i", vo_dx, vo_dy);
+-        setenv("SDL_VIDEO_WINDOW_POS", envstr, 1);
++        putenv("SDL_VIDEO_WINDOW_POS=1");
+     }
+     s = SDL_SetVideoMode(vo_dwidth, vo_dheight, bpp, flags);
+     if (!s) {
+Index: libvo/vo_sdl.c
+===================================================================
+--- libvo/vo_sdl.c	(revision 34836)
++++ libvo/vo_sdl.c	(working copy)
+@@ -1334,17 +1334,17 @@
+     mp_msg(MSGT_VO,MSGL_DBG3, "SDL: Opening Plugin\n");
+ 
+     if(sdl_driver) {
+-        setenv("SDL_VIDEODRIVER", sdl_driver, 1);
++        putenv("SDL_VIDEODRIVER=1");
+     free(sdl_driver);
+     }
+ 
+     /* does the user want SDL to try and force Xv */
+-    if(sdl_forcexv)	setenv("SDL_VIDEO_X11_NODIRECTCOLOR", "1", 1);
+-    else setenv("SDL_VIDEO_X11_NODIRECTCOLOR", "0", 1);
++    if(sdl_forcexv)	putenv("SDL_VIDEO_X11_NODIRECTCOLOR=1");
++    else putenv("SDL_VIDEO_X11_NODIRECTCOLOR=0");
+ 
+     /* does the user want to disable Xv and use software scaling instead */
+-    if(sdl_hwaccel) setenv("SDL_VIDEO_YUV_HWACCEL", "1", 1);
+-    else setenv("SDL_VIDEO_YUV_HWACCEL", "0", 1);
++    if(sdl_hwaccel) putenv("SDL_VIDEO_YUV_HWACCEL=1");
++    else putenv("SDL_VIDEO_YUV_HWACCEL=0");
+ 
+     /* default to no fullscreen mode, we'll set this as soon we have the avail. modes */
+     priv->fullmode = -2;
+Index: mencoder.c
+===================================================================
+--- mencoder.c	(revision 34836)
++++ mencoder.c	(working copy)
+@@ -139,6 +139,7 @@
+ int benchmark=0;
+ 
+ // A-V sync:
++int delay_corrected=1;
+ static float default_max_pts_correction=-1;//0.01f;
+ static float max_pts_correction=0;//default_max_pts_correction;
+ static float c_total=0;
+@@ -1539,11 +1540,18 @@
+           ((ds_tell(d_audio)-sh_audio->a_in_buffer_len)/sh_audio->audio.dwSampleSize) :
+           (d_audio->block_no); // <- used for VBR audio
+         a_pts=samples*(float)sh_audio->audio.dwScale/(float)sh_audio->audio.dwRate;
++	delay_corrected=1;
+     } else
+ #endif
+     {
+-      // PTS = (last timestamp) + (bytes after last timestamp)/(bytes per sec)
+-      a_pts=calc_a_pts(sh_audio, d_audio);
++        // PTS = (last timestamp) + (bytes after last timestamp)/(bytes per sec)
++        #ifdef CONFIG_DVDREAD
++            a_pts=d_audio->pts;
++            if(!delay_corrected) if(a_pts) delay_corrected=1;
++            a_pts+=(ds_tell_pts(d_audio)-sh_audio->a_in_buffer_len)/(float)sh_audio->i_bps;
++        #else
++            a_pts=calc_a_pts(sh_audio, d_audio);
++        #endif
+     }
+     v_pts=sh_video ? sh_video->pts : d_video->pts;
+     // av = compensated (with out buffering delay) A-V diff
+Index: mp_msg.c
+===================================================================
+--- mp_msg.c	(revision 34836)
++++ mp_msg.c	(working copy)
+@@ -34,6 +34,26 @@
+ /* maximum message length of mp_msg */
+ #define MSGSIZE_MAX 3072
+ 
++#ifdef _WIN32
++#define WIN32_LEAN_AND_MEAN
++#include <windows.h>
++#include <io.h>
++#define hSTDOUT GetStdHandle(STD_OUTPUT_HANDLE)
++static short stdoutAttrs = 0;
++static const unsigned char ansi2win32[10] = {
++    0,
++    FOREGROUND_RED,
++    FOREGROUND_GREEN,
++    FOREGROUND_GREEN | FOREGROUND_RED,
++    FOREGROUND_BLUE,
++    FOREGROUND_BLUE  | FOREGROUND_RED,
++    FOREGROUND_BLUE  | FOREGROUND_GREEN,
++    FOREGROUND_BLUE  | FOREGROUND_GREEN | FOREGROUND_RED,
++    FOREGROUND_BLUE  | FOREGROUND_GREEN | FOREGROUND_RED,
++    FOREGROUND_BLUE  | FOREGROUND_GREEN | FOREGROUND_RED
++};
++#endif
++
+ int mp_msg_levels[MSGT_MAX]; // verbose level of this module. initialized to -2
+ int mp_msg_level_all = MSGL_STATUS;
+ int verbose = 0;
+@@ -77,6 +97,15 @@
+ }
+ 
+ void mp_msg_init(void){
++#ifdef _WIN32
++    CONSOLE_SCREEN_BUFFER_INFO cinfo;
++    long cmode = 0;
++    GetConsoleMode(hSTDOUT, &cmode);
++    cmode |= (ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT);
++    SetConsoleMode(hSTDOUT, cmode);
++    GetConsoleScreenBufferInfo(hSTDOUT, &cinfo);
++    stdoutAttrs = cinfo.wAttributes;
++#endif
+     int i;
+     char *env = getenv("MPLAYER_VERBOSE");
+     if (env)
+@@ -111,7 +140,11 @@
+     }
+ #endif
+     if (mp_msg_color)
++#ifdef _WIN32
++        SetConsoleTextAttribute(hSTDOUT, ansi2win32[c] | FOREGROUND_INTENSITY);
++#else
+         fprintf(stream, "\033[%d;3%dm", c >> 3, c & 7);
++#endif
+ }
+ 
+ static void print_msg_module(FILE* stream, int mod)
+@@ -168,11 +201,19 @@
+ 
+     if (!mp_msg_module)
+         return;
++#ifdef _WIN32
+     if (mp_msg_color)
++        SetConsoleTextAttribute(hSTDOUT, ansi2win32[c2&7] | FOREGROUND_INTENSITY);
++    fprintf(stream, "%9s", module_text[mod]);
++    if (mp_msg_color)
++        SetConsoleTextAttribute(hSTDOUT, stdoutAttrs);
++#else
++    if (mp_msg_color)
+         fprintf(stream, "\033[%d;3%dm", c2 >> 3, c2 & 7);
+     fprintf(stream, "%9s", module_text[mod]);
+     if (mp_msg_color)
+         fprintf(stream, "\033[0;37m");
++#endif
+     fprintf(stream, ": ");
+ }
+ 
+@@ -240,6 +281,10 @@
+ 
+     fprintf(stream, "%s", tmp);
+     if (mp_msg_color)
++#ifdef _WIN32
++        SetConsoleTextAttribute(hSTDOUT, stdoutAttrs);
++#else
+         fprintf(stream, "\033[0m");
++#endif
+     fflush(stream);
+ }
+Index: mpcommon.c
+===================================================================
+--- mpcommon.c	(revision 34836)
++++ mpcommon.c	(working copy)
+@@ -538,40 +538,46 @@
+ /// Returns a_pts
+ double calc_a_pts(sh_audio_t *sh_audio, demux_stream_t *d_audio)
+ {
+-    double a_pts;
+-    if(!sh_audio || !d_audio)
+-        return MP_NOPTS_VALUE;
+-    // first calculate the end pts of audio that has been output by decoder
+-    a_pts = sh_audio->pts;
+-    // If we cannot get any useful information at all from the demuxer layer
+-    // just count the decoded bytes. This is still better than constantly
+-    // resetting to 0.
+-    if (sh_audio->pts_bytes && a_pts == MP_NOPTS_VALUE &&
+-        !d_audio->pts && !sh_audio->i_bps)
+-        a_pts = 0;
+-    if (a_pts != MP_NOPTS_VALUE)
+-        // Good, decoder supports new way of calculating audio pts.
+-        // sh_audio->pts is the timestamp of the latest input packet with
+-        // known pts that the decoder has decoded. sh_audio->pts_bytes is
+-        // the amount of bytes the decoder has written after that timestamp.
+-        a_pts += sh_audio->pts_bytes / (double) sh_audio->o_bps;
+-    else {
+-        // Decoder doesn't support new way of calculating pts (or we're
+-        // being called before it has decoded anything with known timestamp).
+-        // Use the old method of audio pts calculation: take the timestamp
+-        // of last packet with known pts the decoder has read data from,
+-        // and add amount of bytes read after the beginning of that packet
+-        // divided by input bps. This will be inaccurate if the input/output
+-        // ratio is not constant for every audio packet or if it is constant
+-        // but not accurately known in sh_audio->i_bps.
++    #ifdef CONFIG_DVDREAD
++        float a_pts = 0.;
++        if (sh_audio)
++            a_pts = d_audio->pts + (ds_tell_pts(d_audio) - sh_audio->a_in_buffer_len)/(float)sh_audio->i_bps;
++    #else
++        double a_pts;
++        if(!sh_audio || !d_audio)
++            return MP_NOPTS_VALUE;
++        // first calculate the end pts of audio that has been output by decoder
++        a_pts = sh_audio->pts;
++        // If we cannot get any useful information at all from the demuxer layer
++        // just count the decoded bytes. This is still better than constantly
++        // resetting to 0.
++        if (sh_audio->pts_bytes && a_pts == MP_NOPTS_VALUE &&
++            !d_audio->pts && !sh_audio->i_bps)
++            a_pts = 0;
++        if (a_pts != MP_NOPTS_VALUE)
++            // Good, decoder supports new way of calculating audio pts.
++            // sh_audio->pts is the timestamp of the latest input packet with
++            // known pts that the decoder has decoded. sh_audio->pts_bytes is
++            // the amount of bytes the decoder has written after that timestamp.
++            a_pts += sh_audio->pts_bytes / (double) sh_audio->o_bps;
++        else {
++            // Decoder doesn't support new way of calculating pts (or we're
++            // being called before it has decoded anything with known timestamp).
++            // Use the old method of audio pts calculation: take the timestamp
++            // of last packet with known pts the decoder has read data from,
++            // and add amount of bytes read after the beginning of that packet
++            // divided by input bps. This will be inaccurate if the input/output
++            // ratio is not constant for every audio packet or if it is constant
++            // but not accurately known in sh_audio->i_bps.
+ 
+-        a_pts = d_audio->pts;
+-        // ds_tell_pts returns bytes read after last timestamp from
+-        // demuxing layer, decoder might use sh_audio->a_in_buffer for bytes
+-        // it has read but not decoded
+-        if (sh_audio->i_bps)
+-            a_pts += (ds_tell_pts(d_audio) - sh_audio->a_in_buffer_len) /
+-                     (double)sh_audio->i_bps;
+-    }
++            a_pts = d_audio->pts;
++            // ds_tell_pts returns bytes read after last timestamp from
++            // demuxing layer, decoder might use sh_audio->a_in_buffer for bytes
++            // it has read but not decoded
++            if (sh_audio->i_bps)
++                a_pts += (ds_tell_pts(d_audio) - sh_audio->a_in_buffer_len) /
++                         (double)sh_audio->i_bps;
++        }
++    #endif
+     return a_pts;
+ }
+Index: mplayer.c
+===================================================================
+--- mplayer.c	(revision 34836)
++++ mplayer.c	(working copy)
+@@ -145,6 +145,12 @@
+ float start_volume = -1;
+ double start_pts   = MP_NOPTS_VALUE;
+ char *heartbeat_cmd;
++
++#ifdef CONFIG_FONTCONFIG
++#include <fontconfig/fontconfig.h>
++extern int FcDebugVal;
++#endif
++
+ static int max_framesize;
+ 
+ int noconsolecontrols;
+@@ -525,10 +531,6 @@
+             (mpctx->sh_video && video_start_pts < start_pts))
+             start_pts = video_start_pts;
+     }
+-    if (start_pts != MP_NOPTS_VALUE)
+-        mp_msg(MSGT_IDENTIFY, MSGL_INFO, "ID_START_TIME=%.2f\n", start_pts);
+-    else
+-        mp_msg(MSGT_IDENTIFY, MSGL_INFO, "ID_START_TIME=unknown\n");
+     mp_msg(MSGT_IDENTIFY, MSGL_INFO, "ID_LENGTH=%.2f\n", demuxer_get_time_length(mpctx->demuxer));
+     mp_msg(MSGT_IDENTIFY, MSGL_INFO, "ID_SEEKABLE=%d\n",
+            mpctx->stream->seek && (!mpctx->demuxer || mpctx->demuxer->seekable));
+@@ -3025,7 +3027,15 @@
+         gui(GUI_SET_CONTEXT, mpctx);
+         gui(GUI_SET_STATE, (void *)(filename ? GUI_PLAY : GUI_STOP));
+     }
++#else
++    /* force cache creation here and display fontconfig scan activity */     
++    FcDebugVal = 128;
++#ifdef _WIN32
++    FcConfigEnableHome(FcFalse);
+ #endif
++    FcInit();
++    FcDebugVal = 0;
++#endif
+ 
+ // ******************* Now, let's see the per-file stuff ********************
+ 
+Index: osdep/alloc-win.c
+===================================================================
+--- osdep/alloc-win.c	(revision 0)
++++ osdep/alloc-win.c	(working copy)
+@@ -0,0 +1,185 @@
++#define DEFAULT_ALIGNMENT   16
++//#define DEBUG_ALLOC
++
++/*
++  __mingw_aligned_malloc and friends, implemented using Microsoft's public
++  interfaces and with the help of the algorithm description provided
++  by Wu Yongwei: http://sourceforge.net/mailarchive/message.php?msg_id=3847075
++
++  I hereby place this implementation in the public domain.
++               -- Steven G. Johnson (stevenj@alum.mit.edu)
++*/
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <errno.h>
++#include <stddef.h>             /* ptrdiff_t */
++#include <string.h>             /* memmove */
++
++#include <windows.h>
++
++#ifdef DEBUG_ALLOC
++#undef fprintf
++extern int fprintf (FILE *__stream, const char *__format, ...);
++#define TRACE(...) fprintf(stderr, __VA_ARGS__)
++#else
++#define TRACE(...)
++#endif
++
++#define WILL_WRAP(size, alignment) (size > (0xffffffff - (alignment + sizeof (void *))))
++
++#ifdef HAVE_STDINT_H
++#  include <stdint.h>           /* uintptr_t */
++#else
++#  define uintptr_t size_t
++#endif
++
++#define NOT_POWER_OF_TWO(n) (((n) & ((n) - 1)))
++#define UI(p) ((uintptr_t) (p))
++#define CP(p) ((char *) p)
++
++#define PTR_ALIGN(p0, alignment, offset)                                \
++            ((void *) (((UI(p0) + (alignment + sizeof(void*)) + offset) \
++                        & (~UI(alignment - 1)))                         \
++                       - offset))
++
++/* Pointer must sometimes be aligned; assume sizeof(void*) is a power of two. */
++#define ORIG_PTR(p) (*(((void **) (UI(p) & (~UI(sizeof(void*) - 1)))) - 1))
++
++static void *
++__mingw_aligned_offset_malloc (size_t size, size_t alignment, size_t offset)
++{
++  void *p0, *p;
++
++  if (NOT_POWER_OF_TWO (alignment))
++    {
++      errno = EINVAL;
++      return ((void *) 0);
++    }
++  if ((size == 0) || WILL_WRAP(size, alignment))
++    return ((void *) 0);
++  if (alignment < sizeof (void *))
++    alignment = sizeof (void *);
++
++  /* Including the extra sizeof(void*) is overkill on a 32-bit
++     machine, since malloc is already 8-byte aligned, as long
++     as we enforce alignment >= 8 ...but oh well.  */
++
++  p0 = HeapAlloc (GetProcessHeap(), 0, size + (alignment + sizeof (void *)));
++  if (!p0)
++    return ((void *) 0);
++  p = PTR_ALIGN (p0, alignment, offset);
++  ORIG_PTR (p) = p0;
++  return p;
++}
++
++static void *
++__mingw_aligned_malloc (size_t size, size_t alignment)
++{
++  return __mingw_aligned_offset_malloc (size, alignment, 0);
++}
++
++static void
++__mingw_aligned_free (void *memblock)
++{
++  if (memblock)
++    HeapFree(GetProcessHeap(), 0, ORIG_PTR (memblock));
++}
++
++static void *
++__mingw_aligned_offset_realloc (void *memblock, size_t size,
++                                size_t alignment, size_t offset)
++{
++  void *p0, *p;
++  ptrdiff_t shift;
++
++  if (!memblock)
++    return __mingw_aligned_offset_malloc (size, alignment, offset);
++  if (NOT_POWER_OF_TWO (alignment))
++    goto bad;
++  if ((size == 0) || WILL_WRAP(size, alignment))
++    {
++      __mingw_aligned_free (memblock);
++      return ((void *) 0);
++    }
++  if (alignment < sizeof (void *))
++    alignment = sizeof (void *);
++
++  p0 = ORIG_PTR (memblock);
++  /* It is an error for the alignment to change. */
++  if (memblock != PTR_ALIGN (p0, alignment, offset))
++    goto bad;
++  shift = CP (memblock) - CP (p0);
++
++  p0 = HeapReAlloc(GetProcessHeap(), 0, p0, size + (alignment + sizeof (void *)));
++  if (!p0)
++    return ((void *) 0);
++  p = PTR_ALIGN (p0, alignment, offset);
++
++  /* Relative shift of actual data may be different from before, ugh.  */
++  if (shift != CP (p) - CP (p0))
++    /* ugh, moves more than necessary if size is increased.  */
++    memmove (CP (p), CP (p0) + shift, size);
++
++  ORIG_PTR (p) = p0;
++  return p;
++
++bad:
++  errno = EINVAL;
++  return ((void *) 0);
++}
++
++static void *
++__mingw_aligned_realloc (void *memblock, size_t size, size_t alignment)
++{
++  return __mingw_aligned_offset_realloc (memblock, size, alignment, 0);
++}
++
++/* WRAPPERS */
++
++void *malloc(size_t size)
++{
++    void *p = __mingw_aligned_malloc(size, DEFAULT_ALIGNMENT);
++    TRACE("MALLOC(%d) = %p\n", size, p);
++    return p;
++}
++
++void *memalign(size_t boundary, size_t size)
++{
++    void *p = __mingw_aligned_malloc(size, boundary);
++    TRACE("MEMALIGN(%d, %d) = %p\n", boundary, size, p);
++    return p;
++}
++
++void *calloc(size_t nmemb, size_t size)
++{
++    size_t sz = nmemb * size;
++    char *d = __mingw_aligned_malloc(sz, DEFAULT_ALIGNMENT);
++    memset(d, 0, sz);
++    TRACE("CALLOC(%d, %d) = %p\n", nmemb, size, d);
++    return d;
++}
++
++void *realloc(void *ptr, size_t size)
++{
++    void *p = __mingw_aligned_realloc(ptr, size, DEFAULT_ALIGNMENT);
++    TRACE("REALLOC(%p, %d) = %p\n", ptr, size, p);
++    return p;
++}
++
++void free(void *ptr)
++{
++    TRACE("FREE(%p)\n", ptr);
++    __mingw_aligned_free(ptr);
++}
++
++char *strdup(const char *s)
++{
++    char *d;
++    size_t size = strlen(s) + 1;
++    d = __mingw_aligned_malloc(size, DEFAULT_ALIGNMENT);
++    memcpy(d, s, size - 1);
++    d[size - 1] = 0;
++    TRACE("STRDUP(%p) = %p\n", s, d);
++    return d;
++}
+\ No newline at end of file
+Index: version.sh
+===================================================================
+--- version.sh	(revision 34836)
++++ version.sh	(working copy)
+@@ -17,9 +17,9 @@
+ version=$svn_revision
+ fi
+ 
+-NEW_REVISION="#define VERSION \"${version}${extra}\""
++NEW_REVISION="#define VERSION \"SB29\""
+ OLD_REVISION=$(head -n 1 version.h 2> /dev/null)
+-TITLE='#define MP_TITLE "%s "VERSION" (C) 2000-2012 MPlayer Team\n"'
++TITLE='#define MP_TITLE "%s "VERSION" (C) 2000-2012 MPlayer Team\nCustom build by SubJunk, http://www.spirton.com\n\n"'
+ 
+ # Update version.h only on revision changes to avoid spurious rebuilds
+ if test "$NEW_REVISION" != "$OLD_REVISION"; then

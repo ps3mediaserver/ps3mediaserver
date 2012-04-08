@@ -109,7 +109,8 @@ public class HTTPServer implements Runnable {
 			group = new DefaultChannelGroup("myServer");
 			factory = new NioServerSocketChannelFactory(
 				Executors.newCachedThreadPool(),
-				Executors.newCachedThreadPool());
+				Executors.newCachedThreadPool()
+			);
 			ServerBootstrap bootstrap = new ServerBootstrap(factory);
 			HttpServerPipelineFactory pipeline = new HttpServerPipelineFactory(group);
 			bootstrap.setPipelineFactory(pipeline);
@@ -144,25 +145,38 @@ public class HTTPServer implements Runnable {
 		return ia != null;
 	}
 
+	// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=10689&p=48811#p48811
+	//
+	// avoid a NPE when a) switching HTTP Engine versions and b) restarting the HTTP server
+	// by cleaning up based on what's in use (not null) rather than the config state, which
+	// might be inconsistent.
+	//
+	// NOTE: there's little in the way of cleanup to do here as PMS.reset() discards the old
+	// server and creates a new one
 	public void stop() {
 		logger.info("Stopping server on host " + hostName + " and port " + port + "...");
-		if (!PMS.getConfiguration().isHTTPEngineV2()) {
+
+		if (runnable != null) { // HTTP Engine V1
 			runnable.interrupt();
-			runnable = null;
+		}
+
+		if (serverSocket != null) { // HTTP Engine V1
 			try {
 				serverSocket.close();
 				serverSocketChannel.close();
 			} catch (IOException e) {
 				logger.debug("Caught exception", e);
 			}
-		} else if (channel != null) {
+		} else if (channel != null) { // HTTP Engine V2
 			if (group != null) {
 				group.close().awaitUninterruptibly();
 			}
+
 			if (factory != null) {
 				factory.releaseExternalResources();
 			}
 		}
+
 		NetworkConfiguration.forgetConfiguration();
 	}
 

@@ -1,11 +1,22 @@
 Changelog:
 ==========
 
-1.??.? - 2012-??-??
+1.??.? -
+
+	Re-fix NPE when toggling HTTP Engine V2
+	Fix global custom MEncoder options
+	Fix startup for symlinked PMS.sh (#1356) (thanks, Matthijs)
+
+1.52.1 - 2012-04-06
+
+	Updated MPlayer to SB29 which fixes AC3 audio sync
+	Allow JRE 6 instead of just JRE 7
 	Language updates:
 		- added Turkish (thanks, BrYaNT!)
+		- updated Bulgarian (thanks, JORDITO!)
 		- updated Catalan (thanks, aseques!)
 		- updated Czech (thanks, valib!)
+		- updated English labels
 	Reading genre from media (thanks, nielsb!)
 
 1.52.0 - 2012-03-22
