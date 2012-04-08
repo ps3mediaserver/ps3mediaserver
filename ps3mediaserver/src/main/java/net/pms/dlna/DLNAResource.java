@@ -295,7 +295,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @since 1.50
 	 * @see #addChildInternal(DLNAResource)
 	 */
-	public void setId(String id) {
+	protected void setId(String id) {
 		this.id = id;
 	}
 
@@ -1018,7 +1018,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 
 	@Override
-	public DLNAResource clone() {
+	protected DLNAResource clone() {
 		DLNAResource o = null;
 		try {
 			o = (DLNAResource) super.clone();
@@ -1755,7 +1755,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param media The object containing detailed information.
 	 * @since 1.50
 	 */
-	public void setMedia(DLNAMediaInfo media) {
+	protected void setMedia(DLNAMediaInfo media) {
 		this.media = media;
 	}
 
@@ -1777,7 +1777,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param mediaAudio The audio object containing detailed information.
 	 * @since 1.50
 	 */
-	public void setMediaAudio(DLNAMediaAudio mediaAudio) {
+	protected void setMediaAudio(DLNAMediaAudio mediaAudio) {
 		this.media_audio = mediaAudio;
 	}
 
@@ -1788,7 +1788,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @return The subtitle object containing detailed information.
 	 * @since 1.50
 	 */
-	public DLNAMediaSubtitle getMediaSubtitle() {
+	protected DLNAMediaSubtitle getMediaSubtitle() {
 		return media_subtitle;
 	}
 
@@ -1799,7 +1799,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param mediaSubtitle The subtitle object containing detailed information.
 	 * @since 1.50
 	 */
-	public void setMediaSubtitle(DLNAMediaSubtitle mediaSubtitle) {
+	protected void setMediaSubtitle(DLNAMediaSubtitle mediaSubtitle) {
 		this.media_subtitle = mediaSubtitle;
 	}
 
@@ -1839,7 +1839,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param player The player object to set.
 	 * @since 1.50
 	 */
-	public void setPlayer(Player player) {
+	protected void setPlayer(Player player) {
 		this.player = player;
 	}
 
@@ -1944,7 +1944,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param noName Set to true if the resource is nameless.
 	 * @since 1.50
 	 */
-	public void setNoName(boolean noName) {
+	protected void setNoName(boolean noName) {
 		this.noName = noName;
 	}
 
@@ -2033,7 +2033,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @return True if transcoding should be skipped, false otherwise.
 	 * @since 1.50
 	 */
-	public boolean isSkipTranscode() {
+	protected boolean isSkipTranscode() {
 		return skipTranscode;
 	}
 

@@ -71,7 +71,7 @@ public class StatusTab {
 
 	public JComponent build() {
 		FormLayout layout = new FormLayout(
-			"3, pref:grow, 3",
+			"0:grow, pref, 0:grow",
 			"pref, 9dlu, pref, 3dlu, pref, 15dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 5dlu, p");
 
 		PanelBuilder builder = new PanelBuilder(layout);

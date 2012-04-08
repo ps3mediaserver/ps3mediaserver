@@ -462,6 +462,7 @@ public class MediaInfoParser {
 			}
 			int msl = token.indexOf("ms");
 			if (msl == -1) {
+				// Only check if ms was not found
 				int sl = token.indexOf("s");
 				if (sl > -1) {
 					s = Integer.parseInt(token.substring(0, sl).trim());

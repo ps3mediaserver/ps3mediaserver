@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import net.pms.io.SystemUtils;
-import net.pms.util.PropertiesUtil;
 import net.pms.Messages;
 
 import org.apache.commons.configuration.Configuration;
@@ -2034,7 +2033,7 @@ public class PmsConfiguration {
 	}
 
 	public String getPluginDirectory() {
-		return getString(KEY_PLUGIN_DIRECTORY, PropertiesUtil.getProjectProperties().get("project.plugins.dir"));
+		return getString(KEY_PLUGIN_DIRECTORY, "plugins");
 	}
 
 	public void setPluginDirectory(String value) {

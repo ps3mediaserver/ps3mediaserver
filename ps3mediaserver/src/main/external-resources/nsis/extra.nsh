@@ -6,5 +6,3 @@
 
 !define PROJECT_VERSION_SHORT "${project.version.short}"
 !define PROJECT_BINARIES "${project.binaries}"
-!define PRODUCT_NAME "${finalName}"
-!define FILE_NAME "${fileName}"
