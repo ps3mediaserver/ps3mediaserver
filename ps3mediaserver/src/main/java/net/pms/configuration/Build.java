@@ -1,7 +1,5 @@
 package net.pms.configuration;
 
-import com.sun.jna.Platform;
-
 import org.apache.commons.lang.StringUtils;
 
 // a one-stop class for values and methods specific to custom PMS builds
@@ -19,7 +17,7 @@ public class Build {
 	private static final String UPDATE_SERVER_URL = REPO + "/master/src/main/external-resources/update/update_3.properties";
 
 	// if false, manual and automatic update checks are unconditionally disabled
-	private static final boolean IS_UPDATABLE = true;
+	private static final boolean IS_UPDATABLE = false;
 
 	/**
 	 * the name of the subdirectory under which PMS config files are stored for this build.
@@ -48,16 +46,15 @@ public class Build {
 	 * 
 	 * @return The profile directory name
 	 */
-
-	private static final String PROFILE_DIRECTORY_NAME = "PMS";
+	private static final String PROFILE_DIRECTORY_NAME = "pms-mlx";
 
 	/**
 	 * Determines whether or not this PMS build can be updated to a more
-	 * recent version.
+	 * recent version. 
 	 * @return True if this build can be updated, false otherwise.
 	 */
 	public static boolean isUpdatable() {
-		return IS_UPDATABLE && Platform.isWindows() && getUpdateServerURL() != null;
+		return IS_UPDATABLE;
 	}
 
 	/**
@@ -71,7 +68,7 @@ public class Build {
 	/**
 	 * Returns the {@link #PROFILE_DIRECTORY_NAME} where configuration files
 	 * for this version of PMS are stored.
-	 *
+	 *  
 	 * @return The profile directory name
 	 */
 	public static String getProfileDirectoryName() {

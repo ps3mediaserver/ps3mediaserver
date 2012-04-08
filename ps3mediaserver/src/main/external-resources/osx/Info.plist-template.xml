@@ -18,7 +18,7 @@
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleSignature</key>
-		<string>PS3M</string>
+		<string>PS3M-MLX</string>
 		<key>CFBundleIconFile</key>
 		<string>${iconFile}</string>
 		<key>Java</key>

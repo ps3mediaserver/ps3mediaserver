@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
 import net.pms.util.FileUtil;
@@ -59,7 +60,7 @@ public class RealFile extends MapFile {
 		}
 		boolean valid = file.exists() && (getExt() != null || file.isDirectory());
 
-		if (valid && getParent().getDefaultRenderer() != null && getParent().getDefaultRenderer().isMediaParserV2()) {
+		if (valid && getParent() != null && getParent().getDefaultRenderer() != null && getParent().getDefaultRenderer().isMediaParserV2()) {
 			// we need to resolve the dlna resource now
 			run();
 			if (getMedia() != null && getMedia().getThumb() == null && getType() != Format.AUDIO) // MediaInfo retrieves cover art now
@@ -178,7 +179,7 @@ public class RealFile extends MapFile {
 				}
 				found = !getMedia().isMediaparsed() && !getMedia().isParsing();
 				if (getExt() != null) {
-					getExt().parse(getMedia(), input, getType(), getParent().getDefaultRenderer());
+					getExt().parse(getMedia(), input, getType(), getParent()!= null ? getParent().getDefaultRenderer() : RendererConfiguration.getDefaultConf());
 				} else //don't think that will ever happen
 				{
 					getMedia().parse(input, getExt(), getType(), false);

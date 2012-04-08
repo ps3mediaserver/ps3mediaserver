@@ -29,8 +29,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.ListIterator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -149,13 +150,13 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
-	public ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
+	public List<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
 	@Deprecated
-	public ArrayList<DLNAMediaSubtitle> subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
+	public List<DLNAMediaSubtitle> subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
@@ -248,7 +249,14 @@ public class DLNAMediaInfo implements Cloneable {
 	 */
 	@Deprecated
 	public boolean encrypted;
+	private int thumbnailSeekPos = -1;
+	
 
+	/**
+	 * Configure this media info based on the renderer possibilities. It should have been named as 'configureMuxable'.
+	 * @param mediaRenderer
+	 * @return
+	 */
 	public boolean isMuxable(RendererConfiguration mediaRenderer) {
 		// temporary fix: MediaInfo support will take care of this in the future
 
@@ -321,7 +329,7 @@ public class DLNAMediaInfo implements Cloneable {
 			args[0] = PMS.getConfiguration().getFfmpegAlternativePath();
 		}
 		args[1] = "-ss";
-		args[2] = "" + PMS.getConfiguration().getThumbnailSeekPos();
+		args[2] = "" + getThumbnailSeekPos();
 		args[3] = "-i";
 		if (media.getFile() != null) {
 			args[4] = ProcessUtil.getShortFileNameIfWideChars(media.getFile().getAbsolutePath());
@@ -374,8 +382,9 @@ public class DLNAMediaInfo implements Cloneable {
 		String args[] = new String[14];
 		args[0] = PMS.getConfiguration().getMplayerPath();
 		args[1] = "-ss";
-		boolean toolong = getDurationInSeconds() < PMS.getConfiguration().getThumbnailSeekPos();
-		args[2] = "" + (toolong ? (getDurationInSeconds() / 2) : PMS.getConfiguration().getThumbnailSeekPos());
+		int th = getThumbnailSeekPos();
+		boolean toolong = getDurationInSeconds() < th;
+		args[2] = "" + (toolong ? (getDurationInSeconds() / 2) : th);
 		args[3] = "-quiet";
 		if (media.getFile() != null) {
 			args[4] = ProcessUtil.getShortFileNameIfWideChars(media.getFile().getAbsolutePath());
@@ -1285,6 +1294,14 @@ public class DLNAMediaInfo implements Cloneable {
 		}
 		return returnData;
 	}
+	
+	int getThumbnailSeekPos() {
+	    return thumbnailSeekPos >= 0 ? thumbnailSeekPos : PMS.getConfiguration().getThumbnailSeekPos();	    
+	}
+	
+	public void setThumbnailSeekPos(int thumbnailSeekPos) {
+		this.thumbnailSeekPos = thumbnailSeekPos;
+	}
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
@@ -1468,7 +1485,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @return the audioCodes
 	 * @since 1.50
 	 */
-	public ArrayList<DLNAMediaAudio> getAudioCodes() {
+	public List<DLNAMediaAudio> getAudioCodes() {
 		return audioCodes;
 	}
 
@@ -1476,7 +1493,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @param audioCodes the audioCodes to set
 	 * @since 1.50
 	 */
-	public void setAudioCodes(ArrayList<DLNAMediaAudio> audioCodes) {
+	public void setAudioCodes(List<DLNAMediaAudio> audioCodes) {
 		this.audioCodes = audioCodes;
 	}
 
@@ -1484,7 +1501,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @return the subtitlesCodes
 	 * @since 1.50
 	 */
-	public ArrayList<DLNAMediaSubtitle> getSubtitlesCodes() {
+	public List<DLNAMediaSubtitle> getSubtitlesCodes() {
 		return subtitlesCodes;
 	}
 
@@ -1492,7 +1509,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @param subtitlesCodes the subtitlesCodes to set
 	 * @since 1.50
 	 */
-	public void setSubtitlesCodes(ArrayList<DLNAMediaSubtitle> subtitlesCodes) {
+	public void setSubtitlesCodes(List<DLNAMediaSubtitle> subtitlesCodes) {
 		this.subtitlesCodes = subtitlesCodes;
 	}
 
