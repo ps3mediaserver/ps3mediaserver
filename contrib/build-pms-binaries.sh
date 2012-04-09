@@ -1213,11 +1213,11 @@ build_mplayer() {
 
     if is_osx; then
         # OSX
-        set_flags
 
-        # Extra flags for compiling mplayer
-        export CFLAGS="-O4 -fomit-frame-pointer -pipe $CFLAGS"
-        export CXXFLAGS="-O4 -fomit-frame-pointer -pipe $CXXFLAGS"
+        # Flags for compiling mplayer
+        export CFLAGS="-O4 -fomit-frame-pointer -pipe -mmacosx-version-min=${OSX_VERSION} -arch $ARCHITECTURE -I$TARGET/include"
+        export CXXFLAGS="-O4 -fomit-frame-pointer -pipe mmacosx-version-min=${OSX_VERSION} -arch $ARCHITECTURE -I$TARGET/include"
+        export LDFLAGS="-mmacosx-version-min=${OSX_VERSION} -arch $ARCHITECTURE -L$TARGET/lib"
 
         # /usr/bin/gcc gives compile errors for MPlayer on OSX Lion.
         # See https://svn.macports.org/ticket/30279
