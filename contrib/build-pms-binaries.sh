@@ -665,7 +665,7 @@ build_ffmpeg() {
     fi
 
     # Apply SB patch that was used for the Windows version
-    patch -p1 < ./../../../../contrib/mplayer-r34836-SB29-ffmpeg-49891784.patch
+    patch -p1 < ./../../../../contrib/mplayer-r34849-SB30-ffmpeg-58c25724.patch
     exit_on_error
 
     $MAKE -j$THREADS
