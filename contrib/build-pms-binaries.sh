@@ -2,8 +2,8 @@
 #
 # build-pms-osx.sh
 #
-# Version: 2.1.0
-# Last updated: 2012-02-06
+# Version: 2.1.1
+# Last updated: 2012-04-09
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -40,9 +40,13 @@
 #
 # REQUIREMENTS
 #
+# Sources for libraries and tools must be downloaded manually with the
+# provided download script. Before running this script, run:
+#
+#    ./download-pms-binaries-source.sh
+# 
 # Some Developer tools need to be installed manually. The script detects
-# this and provides help. Sources for libraries and tools will be
-# downloaded automatically.
+# this and provides help.
 #
 #
 # ACKNOWLEDGEMENTS
@@ -384,8 +388,10 @@ initialize() {
     WORKDIR=`pwd`
 
     # Directories for statically compiled libraries
+    BUILD="$WORKDIR/../target/bin-tools/build"
+    SRC="$WORKDIR/../target/bin-tools/src"
     TARGET="$WORKDIR/../target/bin-tools/target"
-    SRC="$WORKDIR/../target/bin-tools/build"
+    createdir "$BUILD"
     createdir "$SRC"
     createdir "$TARGET"
     
@@ -507,10 +513,10 @@ EOM
 #
 build_bzip2() {
     start_build bzip2
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d bzip2-$VERSION_BZIP2 ]; then
-        $TAR zxf ./../src/bzip2-$VERSION_BZIP2.tar.gz
+        $TAR zxf $SRC/bzip2-$VERSION_BZIP2.tar.gz
         exit_on_error
     fi
 
@@ -536,10 +542,10 @@ build_bzip2() {
 #
 build_dcraw() {
     start_build dcraw
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d dcraw-$VERSION_DCRAW ]; then
-        $TAR zxf ./../src/dcraw-$VERSION_DCRAW.tar.gz
+        $TAR zxf $SRC/dcraw-$VERSION_DCRAW.tar.gz
         exit_on_error
         mv ./dcraw ./dcraw-$VERSION_DCRAW
     fi
@@ -564,10 +570,10 @@ build_dcraw() {
 #
 build_enca() {
     start_build enca
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d enca-$VERSION_ENCA ]; then
-        $TAR zxf ./../src/enca-$VERSION_ENCA.tar.gz
+        $TAR zxf $SRC/enca-$VERSION_ENCA.tar.gz
         exit_on_error
     fi
 
@@ -588,10 +594,10 @@ build_enca() {
 #
 build_expat() {
     start_build expat
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d expat-$VERSION_EXPAT ]; then
-        $TAR zxf ./../src/expat-$VERSION_EXPAT.tar.gz
+        $TAR zxf $SRC/expat-$VERSION_EXPAT.tar.gz
         exit_on_error
     fi
 
@@ -611,10 +617,10 @@ build_expat() {
 #
 build_faad2() {
     start_build faad2
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d faad2-$VERSION_FAAD2 ]; then
-        $TAR zxf ./../src/faad2-$VERSION_FAAD2.tar.gz
+        $TAR zxf $SRC/faad2-$VERSION_FAAD2.tar.gz
         exit_on_error
     fi
 
@@ -634,9 +640,9 @@ build_faad2() {
 #
 build_ffmpeg() {
     start_build ffmpeg
-    cd $SRC
+    cd $BUILD
     
-    cp -af ./../src/ffmpeg ./
+    cp -af $SRC/ffmpeg ./
     exit_on_error
     cd ffmpeg
     exit_on_error
@@ -681,10 +687,10 @@ build_ffmpeg() {
 #
 build_flac() {
     start_build flac
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d flac-$VERSION_FLAC ]; then
-        $TAR zxf ./../src/flac-$VERSION_FLAC.tar.gz
+        $TAR zxf $SRC/flac-$VERSION_FLAC.tar.gz
         exit_on_error
     fi
 
@@ -710,7 +716,7 @@ build_flac() {
     if is_linux; then
       # compile statically linked flac binary
       cd src/flac
-      $GCC -static -Wl,--strip-all -I$TARGET/include -O3 -funroll-loops -finline-functions -Wall -W -Winline $CFLAGS $LDFLAGS  -o flac analyze.o decode.o encode.o foreign_metadata.o main.o local_string_utils.o utils.o vorbiscomment.o  -L$TARGET/lib ../../src/share/grabbag/.libs/libgrabbag.a ../../src/share/getopt/libgetopt.a ../../src/share/replaygain_analysis/.libs/libreplaygain_analysis.a ../../src/share/replaygain_synthesis/.libs/libreplaygain_synthesis.a ../../src/share/utf8/.libs/libutf8.a ../../src/libFLAC/.libs/libFLAC.a -L$TARGET/lib $TARGET/lib/libogg.a $TARGET/lib/libiconv.a -lm
+      $GCC -static -Wl,--strip-all -I$TARGET/include -O3 -funroll-loops -finline-functions -Wall -W -Winline $CFLAGS $LDFLAGS  -o flac analyze.o decode.o encode.o foreign_metadata.o main.o local_string_utils.o utils.o vorbiscomment.o  -L$TARGET/lib ../../src/share/grabbag/.libs/libgrabbag.a ../../src/share/getopt/libgetopt.a ../../src/share/replaygain_analysis/.libs/libreplaygain_analysis.a ../../src/share/replaygain_synthesis/.libs/libreplaygain_synthesis.a ../../src/shar$SRClibs/libutf8.a ../../src/libFLAC/.libs/libFLAC.a -L$TARGET/lib $TARGET/lib/libogg.a $TARGET/lib/libiconv.a -lm
       exit_on_error
       cd ../..
     fi
@@ -725,10 +731,10 @@ build_flac() {
 #
 build_fontconfig() {
     start_build fontconfig
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d fontconfig-$VERSION_FONTCONFIG ]; then
-        $TAR zxf ./../src/fontconfig-$VERSION_FONTCONFIG.tar.gz
+        $TAR zxf $SRC/fontconfig-$VERSION_FONTCONFIG.tar.gz
         exit_on_error
     fi
 
@@ -765,10 +771,10 @@ build_fontconfig() {
 #
 build_freetype() {
     start_build freetype
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d freetype-$VERSION_FREETYPE ]; then
-        $TAR zxf ./../src/freetype-$VERSION_FREETYPE.tar.gz
+        $TAR zxf $SRC/freetype-$VERSION_FREETYPE.tar.gz
         exit_on_error
     fi
 
@@ -790,10 +796,10 @@ build_freetype() {
 #
 build_fribidi() {
     start_build fribidi
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d fribidi-$VERSION_FRIBIDI ]; then
-        $TAR zxf ./../src/fribidi-$VERSION_FRIBIDI.tar.gz
+        $TAR zxf $SRC/fribidi-$VERSION_FRIBIDI.tar.gz
         exit_on_error
     fi
 
@@ -813,10 +819,10 @@ build_fribidi() {
 #
 build_giflib() {
     start_build giflib
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d giflib-$VERSION_GIFLIB ]; then
-        $TAR xjf ./../src/giflib-$VERSION_GIFLIB.tar.bz2
+        $TAR xjf $SRC/giflib-$VERSION_GIFLIB.tar.bz2
         exit_on_error
     fi
 
@@ -836,10 +842,10 @@ build_giflib() {
 #
 build_iconv() {
     start_build iconv
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d libiconv-$VERSION_ICONV ]; then
-        $TAR zxf ./../src/libiconv-$VERSION_ICONV.tar.gz
+        $TAR zxf $SRC/libiconv-$VERSION_ICONV.tar.gz
         exit_on_error
     fi
 
@@ -859,10 +865,10 @@ build_iconv() {
 #
 build_jpeg() {
     start_build jpeg
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d jpeg-$VERSION_JPEG ]; then
-        $TAR zxf ./../src/jpegsrc.v$VERSION_JPEG.tar.gz
+        $TAR zxf $SRC/jpegsrc.v$VERSION_JPEG.tar.gz
         exit_on_error
     fi
 
@@ -882,10 +888,10 @@ build_jpeg() {
 #
 build_lame() {
     start_build lame
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d lame-$VERSION_LAME ]; then
-        $TAR zxf ./../src/lame-$VERSION_LAME.tar.gz
+        $TAR zxf $SRC/lame-$VERSION_LAME.tar.gz
         exit_on_error
     fi
 
@@ -905,9 +911,9 @@ build_lame() {
 #
 build_libbluray() {
     start_build libbluray
-    cd $SRC
+    cd $BUILD
 
-    cp -a ./../src/libbluray ./
+    cp -a $SRC/libbluray ./
     exit_on_error
     cd libbluray
     exit_on_error
@@ -927,10 +933,10 @@ build_libbluray() {
 #
 build_libdca() {
     start_build libdca
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d libdca-$VERSION_LIBDCA ]; then
-        $TAR xjf ./../src/libdca-$VERSION_LIBDCA.tar.bz2
+        $TAR xjf $SRC/libdca-$VERSION_LIBDCA.tar.bz2
         exit_on_error
     fi
 
@@ -950,10 +956,10 @@ build_libdca() {
 #
 build_libdv() {
     start_build libdv
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d libdv-$VERSION_LIBDV ]; then
-        $TAR zxf ./../src/libdv-$VERSION_LIBDV.tar.gz
+        $TAR zxf $SRC/libdv-$VERSION_LIBDV.tar.gz
         exit_on_error
     fi
 
@@ -982,10 +988,10 @@ build_libdv() {
 #
 build_libmad() {
     start_build libmad
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d libmad-$VERSION_LIBMAD ]; then
-        $TAR zxf ./../src/libmad-$VERSION_LIBMAD.tar.gz
+        $TAR zxf $SRC/libmad-$VERSION_LIBMAD.tar.gz
         exit_on_error
     fi
 
@@ -1005,14 +1011,14 @@ build_libmad() {
 #
 build_libmediainfo() {
     start_build libmediainfo
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d libmediainfo_$VERSION_LIBMEDIAINFO ]; then
         if is_osx; then
-          $TAR xjf ./../src/libmediainfo_$VERSION_LIBMEDIAINFO.tar.bz2 -s /MediaInfoLib/libmediainfo_$VERSION_LIBMEDIAINFO/
+          $TAR xjf $SRC/libmediainfo_$VERSION_LIBMEDIAINFO.tar.bz2 -s /MediaInfoLib/libmediainfo_$VERSION_LIBMEDIAINFO/
           exit_on_error
         else
-          $TAR xjf ./../src/libmediainfo_$VERSION_LIBMEDIAINFO.tar.bz2
+          $TAR xjf $SRC/libmediainfo_$VERSION_LIBMEDIAINFO.tar.bz2
           exit_on_error
           mv ./MediaInfoLib/ ./libmediainfo_$VERSION_LIBMEDIAINFO
         fi        
@@ -1039,10 +1045,10 @@ build_libmediainfo() {
 #
 build_libpng() {
     start_build libpng
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d libpng-$VERSION_LIBPNG ]; then
-        $TAR zxf ./../src/libpng-$VERSION_LIBPNG.tar.gz
+        $TAR zxf $SRC/libpng-$VERSION_LIBPNG.tar.gz
         exit_on_error
     fi
 
@@ -1062,10 +1068,10 @@ build_libpng() {
 #
 build_libogg() {
     start_build libogg
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d libogg-$VERSION_LIBOGG ]; then
-        $TAR zxf ./../src/libogg-$VERSION_LIBOGG.tar.gz
+        $TAR zxf $SRC/libogg-$VERSION_LIBOGG.tar.gz
         exit_on_error
     fi
 
@@ -1085,10 +1091,10 @@ build_libogg() {
 #
 build_libvorbis() {
     start_build libvorbis
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d libvorbis-$VERSION_LIBVORBIS ]; then
-        $TAR zxf ./../src/libvorbis-$VERSION_LIBVORBIS.tar.gz
+        $TAR zxf $SRC/libvorbis-$VERSION_LIBVORBIS.tar.gz
         exit_on_error
     fi
 
@@ -1108,10 +1114,10 @@ build_libvorbis() {
 #
 build_libtheora() {
     start_build libtheora
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d libtheora-$VERSION_LIBTHEORA ]; then
-        $TAR xjf ./../src/libtheora-$VERSION_LIBTHEORA.tar.bz2
+        $TAR xjf $SRC/libtheora-$VERSION_LIBTHEORA.tar.bz2
         exit_on_error
     fi
 
@@ -1132,10 +1138,10 @@ build_libtheora() {
 #
 build_libzen() {
     start_build libzen
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d libzen_$VERSION_LIBZEN ]; then
-        $TAR xjf ./../src/libzen_$VERSION_LIBZEN.tar.bz2
+        $TAR xjf $SRC/libzen_$VERSION_LIBZEN.tar.bz2
         exit_on_error
 
         # For consistency and the check above have the same directory name as the .bz2 file available
@@ -1167,10 +1173,10 @@ build_libzen() {
 #
 build_lzo() {
     start_build lzo
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d lzo-$VERSION_LZO ]; then
-        $TAR zxf ./../src/lzo-$VERSION_LZO.tar.gz
+        $TAR zxf $SRC/lzo-$VERSION_LZO.tar.gz
         exit_on_error
     fi
 
@@ -1200,16 +1206,16 @@ build_lzo() {
 #
 build_mplayer() {
     start_build mplayer
-    cd $SRC
+    cd $BUILD
 
-    cp -a ./../src/mplayer ./
+    cp -a $SRC/mplayer ./
     exit_on_error
     cd mplayer
     exit_on_error
 
     # Copy ffmpeg source to avoid making another git clone by configure
     rm -rf ffmpeg
-    cp -rf $SRC/ffmpeg .
+    cp -rf $BUILD/ffmpeg .
 
     if is_osx; then
         # OSX
@@ -1268,7 +1274,7 @@ build_mplayer() {
 
     # Remove the ffmpeg directory and copy the compiled ffmpeg again to avoid "make" rebuilding it
     rm -rf ffmpeg
-    cp -rf $SRC/ffmpeg .
+    cp -rf $BUILD/ffmpeg .
 
     $MAKE -j$THREADS
     exit_on_error
@@ -1283,10 +1289,10 @@ build_mplayer() {
 #
 build_ncurses() {
     start_build ncurses
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d ncurses-$VERSION_NCURSES ]; then
-        $TAR zxf ./../src/ncurses-$VERSION_NCURSES.tar.gz
+        $TAR zxf $SRC/ncurses-$VERSION_NCURSES.tar.gz
         exit_on_error
     fi
 
@@ -1306,9 +1312,9 @@ build_ncurses() {
 #
 build_ps3mediaserver() {
     start_build ps3mediaserver
-    cd $SRC
+    cd $BUILD
 
-    cp -a ./../src/ps3mediaserver ./
+    cp -a $SRC/ps3mediaserver ./
     exit_on_error
     cd ps3mediaserver
     exit_on_error
@@ -1367,13 +1373,13 @@ build_ps3mediaserver() {
 #
 build_tsmuxer() {
     start_build tsmuxer
-    cd $SRC
+    cd $BUILD
 
     if is_osx; then
         if [ ! -d tsMuxeR_${VERSION_TSMUXER} ]; then
             createdir tsMuxeR_${VERSION_TSMUXER}
             # Nothing to build. Just open the disk image, copy the binary and detach the disk image
-            $HDID ./../src/tsMuxeR__${VERSION_TSMUXER}.dmg
+            $HDID $SRC/tsMuxeR__${VERSION_TSMUXER}.dmg
             exit_on_error
             cp -f /Volumes/tsMuxeR/tsMuxerGUI.app/Contents/MacOS/tsMuxeR tsMuxeR_${VERSION_TSMUXER}/tsMuxeR
             $HDIUTIL detach /Volumes/tsMuxeR
@@ -1382,7 +1388,7 @@ build_tsmuxer() {
         if [ ! -d tsMuxeR_$VERSION_TSMUXER ]; then
             createdir tsMuxeR_$VERSION_TSMUXER
             cd tsMuxeR_$VERSION_TSMUXER
-            $TAR xzf ./../../src/tsMuxeR_$VERSION_TSMUXER.tar.gz
+            $TAR xzf $SRC/tsMuxeR_${VERSION_TSMUXER}.tar.gz
             exit_on_error
             cd ..
         fi
@@ -1399,9 +1405,9 @@ build_tsmuxer() {
 #
 build_x264() {
     start_build x264
-    cd $SRC
+    cd $BUILD
 
-    cp -a ./../src/x264 ./
+    cp -a $SRC/x264 ./
     exit_on_error
     cd x264
     exit_on_error
@@ -1437,10 +1443,10 @@ build_x264() {
 #
 build_xvid() {
     start_build xvid
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d xvidcore-$VERSION_XVID ]; then
-        $TAR zxf ./../src/xvidcore-$VERSION_XVID.tar.gz
+        $TAR zxf $SRC/xvidcore-$VERSION_XVID.tar.gz
         exit_on_error
         mv xvidcore xvidcore-$VERSION_XVID
     fi
@@ -1475,10 +1481,10 @@ build_xvid() {
 #
 build_zlib() {
     start_build zlib
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d zlib-$VERSION_ZLIB ]; then
-        $TAR xzf ./../src/zlib-$VERSION_ZLIB.tar.gz
+        $TAR xzf $SRC/zlib-$VERSION_ZLIB.tar.gz
         exit_on_error
     fi
 
@@ -1510,10 +1516,10 @@ build_zlib() {
 #
 build_yasm() {
     start_build yasm
-    cd $SRC
+    cd $BUILD
 
     if [ ! -d yasm-$VERSION_YASM ]; then
-        $TAR zxf ./../src/yasm-$VERSION_YASM.tar.gz
+        $TAR zxf $SRC/yasm-$VERSION_YASM.tar.gz
         exit_on_error
     fi
 
