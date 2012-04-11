@@ -9,7 +9,7 @@
 	<description>Plugin which will merge all configured file system folders into one.</description>
 
 	<parent>
-		<groupId>net.pms</groupId>
+		<groupId>github.com.taconaut</groupId>
 		<artifactId>pms-plugins</artifactId>
 		<version>1.52.1_mlx_v0.8-SNAPSHOT</version>
 	</parent>
@@ -24,7 +24,7 @@
 
 
 	<properties>
-		<finalName>FileSystemFolderPlugin-${version}</finalName>
+		<finalName>FileSystemFolderPlugin-${project.version}</finalName>
 		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
 		<plugin-jar-name>dlnatreefolder.filesystem.jar</plugin-jar-name>
 	</properties>

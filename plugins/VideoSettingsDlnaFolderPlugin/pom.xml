@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 
 	<parent>
-		<groupId>net.pms</groupId>
+		<groupId>github.com.taconaut</groupId>
 		<artifactId>pms-plugins</artifactId>
 		<version>1.52.1_mlx_v0.8-SNAPSHOT</version>
 	</parent>
@@ -23,7 +23,7 @@
 
 
 	<properties>
-		<finalName>VideoSettingsDlnaFolderPlugin-${version}</finalName>
+		<finalName>VideoSettingsDlnaFolderPlugin-${project.version}</finalName>
 		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
 		<plugin-jar-name>dlnatreefolder.videosettings.jar</plugin-jar-name>
 	</properties>

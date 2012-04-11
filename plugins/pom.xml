@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<parent>
-		<groupId>net.pms</groupId>
+		<groupId>github.com.taconaut</groupId>
 		<artifactId>pms-global</artifactId>
 		<version>1.52.1_mlx_v0.8-SNAPSHOT</version>
 	</parent>
@@ -27,7 +27,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>net.pms</groupId>
+			<groupId>github.com.taconaut</groupId>
 			<artifactId>pms-mlx</artifactId>
 			<version>1.52.1_mlx_v0.8-SNAPSHOT</version>
 		</dependency>

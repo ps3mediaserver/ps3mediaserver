@@ -9,7 +9,7 @@
 	<version>2-SNAPSHOT</version>
 
 	<parent>
-		<groupId>net.pms</groupId>
+		<groupId>github.com.taconaut</groupId>
 		<artifactId>pms-plugins</artifactId>
 		<version>1.52.1_mlx_v0.8-SNAPSHOT</version>
 	</parent>
@@ -24,7 +24,7 @@
 
 
 	<properties>
-		<finalName>PlayCountWatcherPlugin-${version}</finalName>
+		<finalName>PlayCountWatcherPlugin-${project.version}</finalName>
 		<plugin-folder>../../ps3mediaserver/src/main/external-resources/plugins</plugin-folder>
 		<plugin-jar-name>medialibrary.playcountwatcher.jar</plugin-jar-name>
 	</properties>
