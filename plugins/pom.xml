@@ -18,6 +18,7 @@
 		<module>iPhotoDlnaFolderPlugin</module> 
 		<module>iTunesDlnaFolderPlugin</module>   
 		<module>PlayCountWatcherPlugin</module>
+		<module>ShutdownPlugin</module>
 		<module>TmdbMovieImportPlugin</module>
 		<module>TmdbRater</module>     
 		<module>VideoSettingsDlnaFolderPlugin</module>
