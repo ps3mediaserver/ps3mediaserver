@@ -1,3 +1,21 @@
+/*
+ * PS3 Media Server, for streaming any medias to your PS3.
+ * Copyright (C) 2008  A.Brochard
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package net.pms.dlna;
 
 import java.io.File;
@@ -25,6 +43,12 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.jna.Platform;
 
+/**
+ * This class provides methods for creating and maintaining the database where
+ * media information is stored. Scanning media and interpreting the data is
+ * intensive, so the database is used to cache scanned information to be reused
+ * later.
+ */
 public class DLNAMediaDatabase implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaDatabase.class);
 	private String url;
@@ -32,6 +56,22 @@ public class DLNAMediaDatabase implements Runnable {
 	public static final String NONAME = "###";
 	private Thread scanner;
 	private JdbcConnectionPool cp;
+
+	// Database column sizes
+	private final int SIZE_CODECV = 32;
+	private final int SIZE_FRAMERATE = 32;
+	private final int SIZE_ASPECT = 32;
+	private final int SIZE_CONTAINER = 32;
+	private final int SIZE_MODEL = 128;
+	private final int SIZE_MUXINGMODE = 32;
+	private final int SIZE_LANG = 3;
+	private final int SIZE_FLAVOR = 128;
+	private final int SIZE_SAMPLEFREQ = 16;
+	private final int SIZE_CODECA = 32;
+	private final int SIZE_ALBUM = 255;
+	private final int SIZE_ARTIST = 255;
+	private final int SIZE_SONGNAME = 255;
+	private final int SIZE_GENRE = 64;
 
 	public DLNAMediaDatabase(String name) {
 		dir = "database";
@@ -138,45 +178,45 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append(", WIDTH             INT");
 				sb.append(", HEIGHT            INT");
 				sb.append(", SIZE              NUMERIC");
-				sb.append(", CODECV            VARCHAR2(32)");
-				sb.append(", FRAMERATE         VARCHAR2(16)");
-				sb.append(", ASPECT            VARCHAR2(16)");
+				sb.append(", CODECV            VARCHAR2(").append(SIZE_CODECV).append(")");
+				sb.append(", FRAMERATE         VARCHAR2(").append(SIZE_FRAMERATE).append(")");
+				sb.append(", ASPECT            VARCHAR2(").append(SIZE_ASPECT).append(")");
 				sb.append(", BITSPERPIXEL      INT");
 				sb.append(", THUMB             BINARY");
-				sb.append(", CONTAINER         VARCHAR2(32)");
-				sb.append(", MODEL             VARCHAR2(128)");
+				sb.append(", CONTAINER         VARCHAR2(").append(SIZE_CONTAINER).append(")");
+				sb.append(", MODEL             VARCHAR2(").append(SIZE_MODEL).append(")");
 				sb.append(", EXPOSURE          INT");
 				sb.append(", ORIENTATION       INT");
 				sb.append(", ISO               INT");
-				sb.append(", MUXINGMODE        VARCHAR2(32)");
+				sb.append(", MUXINGMODE        VARCHAR2(").append(SIZE_MUXINGMODE).append(")");
 				sb.append(", constraint PK1 primary key (FILENAME, MODIFIED, ID))");
 				executeUpdate(conn, sb.toString());
 				sb = new StringBuilder();
 				sb.append("CREATE TABLE AUDIOTRACKS (");
 				sb.append("  FILEID            INT              NOT NULL");
 				sb.append(", ID                INT              NOT NULL");
-				sb.append(", LANG              VARCHAR2(3)");
-				sb.append(", FLAVOR            VARCHAR2(128)");
+				sb.append(", LANG              VARCHAR2(").append(SIZE_LANG).append(")");
+				sb.append(", FLAVOR            VARCHAR2(").append(SIZE_FLAVOR).append(")");
 				sb.append(", NRAUDIOCHANNELS   NUMERIC");
-				sb.append(", SAMPLEFREQ        VARCHAR2(16)");
-				sb.append(", CODECA            VARCHAR2(32)");
+				sb.append(", SAMPLEFREQ        VARCHAR2(").append(SIZE_SAMPLEFREQ).append(")");
+				sb.append(", CODECA            VARCHAR2(").append(SIZE_CODECA).append(")");
 				sb.append(", BITSPERSAMPLE     INT");
-				sb.append(", ALBUM             VARCHAR2(255)");
-				sb.append(", ARTIST            VARCHAR2(255)");
-				sb.append(", SONGNAME          VARCHAR2(255)");
-				sb.append(", GENRE             VARCHAR2(64)");
+				sb.append(", ALBUM             VARCHAR2(").append(SIZE_ALBUM).append(")");
+				sb.append(", ARTIST            VARCHAR2(").append(SIZE_ARTIST).append(")");
+				sb.append(", SONGNAME          VARCHAR2(").append(SIZE_SONGNAME).append(")");
+				sb.append(", GENRE             VARCHAR2(").append(SIZE_GENRE).append(")");
 				sb.append(", YEAR              INT");
 				sb.append(", TRACK             INT");
 				sb.append(", DELAY             INT");
-				sb.append(", MUXINGMODE        VARCHAR2(32)");
+				sb.append(", MUXINGMODE        VARCHAR2(").append(SIZE_MUXINGMODE).append(")");
 				sb.append(", constraint PKAUDIO primary key (FILEID, ID))");
 				executeUpdate(conn, sb.toString());
 				sb = new StringBuilder();
 				sb.append("CREATE TABLE SUBTRACKS (");
 				sb.append("  FILEID            INT              NOT NULL");
 				sb.append(", ID                INT              NOT NULL");
-				sb.append(", LANG              VARCHAR2(3)");
-				sb.append(", FLAVOR            VARCHAR2(128)");
+				sb.append(", LANG              VARCHAR2(").append(SIZE_LANG).append(")");
+				sb.append(", FLAVOR            VARCHAR2(").append(SIZE_FLAVOR).append(")");
 				sb.append(", TYPE              INT");
 				sb.append(", constraint PKSUB primary key (FILEID, ID))");
 
@@ -358,21 +398,21 @@ public class DLNAMediaDatabase implements Runnable {
 				ps.setInt(6, media.getWidth());
 				ps.setInt(7, media.getHeight());
 				ps.setLong(8, media.getSize());
-				ps.setString(9, media.getCodecV());
-				ps.setString(10, media.getFrameRate());
-				ps.setString(11, media.getAspect());
+				ps.setString(9, truncate(media.getCodecV(), SIZE_CODECV));
+				ps.setString(10, truncate(media.getFrameRate(), SIZE_FRAMERATE));
+				ps.setString(11, truncate(media.getAspect(), SIZE_ASPECT));
 				ps.setInt(12, media.getBitsPerPixel());
 				ps.setBytes(13, media.getThumb());
-				ps.setString(14, media.getContainer());
+				ps.setString(14, truncate(media.getContainer(), SIZE_CONTAINER));
 				if (media.getExtras() != null) {
-					ps.setString(15, media.getExtrasAsString());
+					ps.setString(15, truncate(media.getExtrasAsString(), SIZE_MODEL));
 				} else {
-					ps.setString(15, media.getModel());
+					ps.setString(15, truncate(media.getModel(), SIZE_MODEL));
 				}
 				ps.setInt(16, media.getExposure());
 				ps.setInt(17, media.getOrientation());
 				ps.setInt(18, media.getIso());
-				ps.setString(19, media.getMuxingModeAudio());
+				ps.setString(19, truncate(media.getMuxingModeAudio(), SIZE_MUXINGMODE));
 
 			} else {
 				ps.setString(4, null);
@@ -408,20 +448,20 @@ public class DLNAMediaDatabase implements Runnable {
 					insert.clearParameters();
 					insert.setInt(1, id);
 					insert.setInt(2, audio.getId());
-					insert.setString(3, audio.getLang());
-					insert.setString(4, audio.getFlavor());
+					insert.setString(3, truncate(audio.getLang(), SIZE_LANG));
+					insert.setString(4, truncate(audio.getFlavor(), SIZE_FLAVOR));
 					insert.setInt(5, audio.getNrAudioChannels());
-					insert.setString(6, audio.getSampleFrequency());
-					insert.setString(7, audio.getCodecA());
+					insert.setString(6, truncate(audio.getSampleFrequency(), SIZE_SAMPLEFREQ));
+					insert.setString(7, truncate(audio.getCodecA(), SIZE_CODECA));
 					insert.setInt(8, audio.getBitsperSample());
-					insert.setString(9, StringUtils.trimToEmpty(audio.getAlbum()));
-					insert.setString(10, StringUtils.trimToEmpty(audio.getArtist()));
-					insert.setString(11, StringUtils.trimToEmpty(audio.getSongname()));
-					insert.setString(12, StringUtils.trimToEmpty(audio.getGenre()));
+					insert.setString(9, truncate(StringUtils.trimToEmpty(audio.getAlbum()), SIZE_ALBUM));
+					insert.setString(10, truncate(StringUtils.trimToEmpty(audio.getArtist()), SIZE_ARTIST));
+					insert.setString(11, truncate(StringUtils.trimToEmpty(audio.getSongname()), SIZE_SONGNAME));
+					insert.setString(12, truncate(StringUtils.trimToEmpty(audio.getGenre()), SIZE_GENRE));
 					insert.setInt(13, audio.getYear());
 					insert.setInt(14, audio.getTrack());
 					insert.setInt(15, audio.getDelay());
-					insert.setString(16, StringUtils.trimToEmpty(audio.getMuxingModeAudio()));
+					insert.setString(16, truncate(StringUtils.trimToEmpty(audio.getMuxingModeAudio()), SIZE_MUXINGMODE));
 					insert.executeUpdate();
 				}
 
@@ -433,8 +473,8 @@ public class DLNAMediaDatabase implements Runnable {
 						insert.clearParameters();
 						insert.setInt(1, id);
 						insert.setInt(2, sub.getId());
-						insert.setString(3, sub.getLang());
-						insert.setString(4, sub.getFlavor());
+						insert.setString(3, truncate(sub.getLang(), SIZE_LANG));
+						insert.setString(4, truncate(sub.getFlavor(), SIZE_FLAVOR));
 						insert.setInt(5, sub.getType());
 						insert.executeUpdate();
 					}
@@ -658,5 +698,35 @@ public class DLNAMediaDatabase implements Runnable {
 			}
 		}
 		PMS.get().getFrame().setStatusLine(null);
+	}
+
+	/**
+	 * Truncate the string to a given length. If the given string is
+	 * <code>null</code> or has a size smaller than the given limit, it is 
+	 * returned as is. Otherwise it is truncated at the character limit and
+	 * returned. If limit <= 0, the empty string "" is returned.
+	 * <p>
+	 * For example <code>truncate("abcde", 3)</code> returns <code>"abc"</code>
+	 * 
+	 * @param str The string to truncate. 
+	 * @param limit The number of characters allowed.
+	 * @return The truncated string.
+	 */
+	private String truncate(String str, int limit) {
+		if (str == null) {
+			return null;
+		}
+
+		if (limit <= 0) {
+			return "";
+		}
+
+		if (str.length() < limit) {
+			// No need to truncate the string
+			return str;
+		} else {
+			// Truncate the string to the given limit
+			return str.substring(0, limit - 1);
+		}
 	}
 }
