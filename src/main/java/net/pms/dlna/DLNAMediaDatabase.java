@@ -566,7 +566,7 @@ public class DLNAMediaDatabase implements Runnable {
 
 			rs.close();
 			ps.close();
-			PMS.get().getFrame().setStatusLine("Cleanup database... 0%");
+			PMS.get().getFrame().setStatusLine(Messages.getString("DLNAMediaDatabase.2") + " 0%");
 			int i = 0;
 			int oldpercent = 0;
 
@@ -583,7 +583,7 @@ public class DLNAMediaDatabase implements Runnable {
 					i++;
 					int newpercent = i * 100 / count;
 					if (newpercent > oldpercent) {
-						PMS.get().getFrame().setStatusLine("Cleanup database... " + newpercent + "%");
+						PMS.get().getFrame().setStatusLine(Messages.getString("DLNAMediaDatabase.2") + newpercent + "%");
 						oldpercent = newpercent;
 					}
 				}
@@ -683,7 +683,7 @@ public class DLNAMediaDatabase implements Runnable {
 
 	public void compact() {
 		logger.info("Compacting database...");
-		PMS.get().getFrame().setStatusLine("Compacting database...");
+		PMS.get().getFrame().setStatusLine(Messages.getString("DLNAMediaDatabase.3"));
 		String file = "database/backup.sql";
 		try {
 			Script.execute(url, "sa", "", file);
