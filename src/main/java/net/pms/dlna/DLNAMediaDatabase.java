@@ -124,7 +124,7 @@ public class DLNAMediaDatabase implements Runnable {
 				executeUpdate(conn, "DROP TABLE AUDIOTRACKS");
 				executeUpdate(conn, "DROP TABLE SUBTRACKS");
 			} catch (SQLException se) {
-//				logger.debug("Caught exception", se);
+				logger.debug("Caught exception", se);
 			}
 			try {
 				StringBuilder sb = new StringBuilder();
