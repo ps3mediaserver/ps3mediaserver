@@ -194,7 +194,7 @@ public class RootFolder extends DLNAResource {
 					child.setDefaultRenderer(resource.getDefaultRenderer());
 					String trace = null;
 					if (child instanceof RealFile) {
-						trace = "Scanning Folder: " + child.getName();
+						trace = Messages.getString("DLNAMediaDatabase.4") + " " + child.getName();
 					}
 					if (trace != null) {
 						logger.debug(trace);
