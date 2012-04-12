@@ -149,6 +149,12 @@
 	</repositories>
 
 	<dependencies>
+	
+	  <dependency>
+      <groupId>github.com.taconaut</groupId>
+      <artifactId>jtmdb</artifactId>
+      <version>1.9.17</version>
+    </dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
