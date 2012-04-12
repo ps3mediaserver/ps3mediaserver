@@ -12,15 +12,16 @@ import javax.swing.JComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.savvasdalkitsis.jtmdb.CastInfo;
+import com.github.savvasdalkitsis.jtmdb.Genre;
+import com.github.savvasdalkitsis.jtmdb.Movie;
+import com.github.savvasdalkitsis.jtmdb.Studio;
+
 import net.pms.medialibrary.commons.enumarations.FileProperty;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.exceptions.FileImportException;
 import net.pms.medialibrary.commons.helpers.TmdbHelper;
 import net.pms.medialibrary.external.FileImportPlugin;
-import net.sf.jtmdb.CastInfo;
-import net.sf.jtmdb.Genre;
-import net.sf.jtmdb.Movie;
-import net.sf.jtmdb.Studio;
 
 /** 
  * Class used to collect information about a movie from tmdb

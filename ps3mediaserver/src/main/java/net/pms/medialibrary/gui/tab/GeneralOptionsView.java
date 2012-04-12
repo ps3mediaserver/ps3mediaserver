@@ -41,8 +41,8 @@ import net.pms.medialibrary.gui.dialogs.ScanFolderDialog;
 import net.pms.medialibrary.library.LibraryManager;
 import net.pms.medialibrary.scanner.FileScanner;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
-import net.sf.jtmdb.Session;
 
+import com.github.savvasdalkitsis.jtmdb.Session;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;

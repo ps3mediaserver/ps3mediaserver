@@ -6,12 +6,13 @@ import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.savvasdalkitsis.jtmdb.Movie;
+import com.github.savvasdalkitsis.jtmdb.ServerResponse;
+import com.github.savvasdalkitsis.jtmdb.Session;
+
 import net.pms.dlna.DLNAResource;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.helpers.TmdbHelper;
-import net.sf.jtmdb.Movie;
-import net.sf.jtmdb.ServerResponse;
-import net.sf.jtmdb.Session;
 
 public class RatingResource extends DLNAResource {
 	private static final Logger log = LoggerFactory.getLogger(RatingResource.class);

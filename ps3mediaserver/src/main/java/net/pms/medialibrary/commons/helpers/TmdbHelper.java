@@ -9,14 +9,15 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.savvasdalkitsis.jtmdb.Auth;
+import com.github.savvasdalkitsis.jtmdb.GeneralSettings;
+import com.github.savvasdalkitsis.jtmdb.Pair;
+import com.github.savvasdalkitsis.jtmdb.ServerResponse;
+import com.github.savvasdalkitsis.jtmdb.Session;
+
 import net.pms.Messages;
 import net.pms.medialibrary.commons.enumarations.MediaLibraryConstants.MetaDataKeys;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
-import net.sf.jtmdb.Auth;
-import net.sf.jtmdb.GeneralSettings;
-import net.sf.jtmdb.Pair;
-import net.sf.jtmdb.ServerResponse;
-import net.sf.jtmdb.Session;
 
 public class TmdbHelper {
 	private static final Logger log = LoggerFactory.getLogger(TmdbHelper.class);

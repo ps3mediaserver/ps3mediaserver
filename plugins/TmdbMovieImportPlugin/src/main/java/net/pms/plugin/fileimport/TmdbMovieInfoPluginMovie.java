@@ -2,7 +2,7 @@ package net.pms.plugin.fileimport;
 
 import java.util.Calendar;
 
-import net.sf.jtmdb.Movie;
+import com.github.savvasdalkitsis.jtmdb.Movie;
 
 public class TmdbMovieInfoPluginMovie {
 	private Movie movie;
