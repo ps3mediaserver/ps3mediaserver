@@ -86,7 +86,6 @@
 		<jgoodies-binding-version>2.5.1</jgoodies-binding-version>
 		<jgoodies-common-version>1.2.1</jgoodies-common-version>
 		<jgoodies-looks-version>2.4.2</jgoodies-looks-version>
-		<jtmdb-version>1.9.15</jtmdb-version>
 		<junrar-version>0.5</junrar-version>
 		<mediautil-version>1.0</mediautil-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -354,13 +353,6 @@
 			<groupId>mediautil</groupId>
 			<artifactId>mediautil</artifactId>
 			<version>${mediautil-version}</version>
-		</dependency>
-
-		<!-- XXX: not Mavenized: http://jtmdb.sourceforge.net/ -->
-		<dependency>
-			<groupId>net.sf</groupId>
-			<artifactId>jtmdb</artifactId>
-			<version>${jtmdb-version}</version>
 		</dependency>
 
 		<!-- XXX: not Mavenized: http://flib.sourceforge.net/JCalendar/doc/index.html -->
