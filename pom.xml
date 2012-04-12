@@ -102,6 +102,16 @@
 	</pluginRepositories>
 
 	<repositories>
+		<!-- Sonatype -->
+		<repository>
+			<id>sonatype.org</id>
+			<name>Sonatype Repository</name>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		
 		<!-- Java.net -->
 		<repository>
 			<id>java.net</id>
