@@ -269,15 +269,6 @@
 						</artifactItem>
 
 						<artifactItem>
-							<groupId>net.sf</groupId>
-							<artifactId>jtmdb</artifactId>
-							<version>${jtmdb-version}</version>
-							<packaging>jar</packaging>
-							<downloadUrl>http://downloads.sourceforge.net/project/{artifactId}/{artifactId}-{version}.{packaging}</downloadUrl>
-							<checksum>fe0c543233f5c0249f37349f5733886c8633bd39</checksum>
-						</artifactItem>
-
-						<artifactItem>
 							<groupId>org.freixas</groupId>
 							<artifactId>jcalendar</artifactId>
 							<version>${jcalendar-version}</version>
