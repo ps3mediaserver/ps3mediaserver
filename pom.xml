@@ -111,16 +111,17 @@
 		<maven.nsis.project.template>${project.basedir}/src/main/external-resources/nsis/project.jelly</maven.nsis.project.template>
 	</properties>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>ossrh</id>
-			<name>Sonatype OSS Repository</name>
-			<url>http://oss.sonatype.org/content/groups/public</url>
-			<layout>default</layout>
-		</pluginRepository>
-	</pluginRepositories>
-
 	<repositories>
+		<!-- Sonatype -->
+		<repository>
+			<id>sonatype.org</id>
+			<name>Sonatype Repository</name>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		
 		<!-- Java.net -->
 		<repository>
 			<id>java.net</id>
