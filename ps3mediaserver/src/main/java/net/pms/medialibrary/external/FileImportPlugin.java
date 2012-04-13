@@ -32,6 +32,8 @@ public interface FileImportPlugin extends PmsPluginBase {
 	 *            file name but it might have been modified (cleaned)
 	 * @param filePath
 	 *            the absolute path of the file to import
+	 * @see #getFileProperty(FileProperty property)
+	 * @see #getTags(String tagName)
 	 */
 	public void importFile(String title, String filePath)
 			throws FileImportException;
@@ -47,6 +49,9 @@ public interface FileImportPlugin extends PmsPluginBase {
 	 * @param id
 	 *            the id for which the plugin should search. E.g. the tmdb
 	 *            plugin will accept the tmdbId, the one for imdb the imdbId
+	 * @see #getFileProperty(FileProperty property)
+	 * @see #getTags(String tagName)
+	 * @see #isImportByIdPossible()
 	 */
 	public void importFileById(String id) throws FileImportException;
 
@@ -54,6 +59,7 @@ public interface FileImportPlugin extends PmsPluginBase {
 	 * Tells if it is possible to call importById
 	 * 
 	 * @return true if it is possible to import file info by id, false otherwise
+	 * @see #importFileById(String id)
 	 */
 	public boolean isImportByIdPossible();
 
@@ -63,6 +69,7 @@ public interface FileImportPlugin extends PmsPluginBase {
 	 * 
 	 * @return true if searchForFile and importFileBySearchObject can be called,
 	 *         false otherwise
+	 * @see #searchForFile(String name)
 	 */
 	public boolean isSearchForFilePossible();
 
@@ -77,6 +84,7 @@ public interface FileImportPlugin extends PmsPluginBase {
 	 *            the string to search for
 	 * @return a list of Objects containing possible results, where
 	 *         Object.toString() has to return a comprehensive name for the user
+	 * @see #isSearchForFilePossible()
 	 */
 	public List<Object> searchForFile(String name);
 
@@ -87,6 +95,7 @@ public interface FileImportPlugin extends PmsPluginBase {
 	 * @param searchObject
 	 *            the object containing the required information to collect the
 	 *            import data
+	 * @see #searchForFile(String name)
 	 */
 	public void importFileBySearchObject(Object searchObject);
 
@@ -95,6 +104,7 @@ public interface FileImportPlugin extends PmsPluginBase {
 	 * call getFileProperty()
 	 * 
 	 * @return the list of supported file properties
+	 * @see #getFileProperty(FileProperty property)
 	 */
 	public List<FileProperty> getSupportedFileProperties();
 
@@ -102,8 +112,8 @@ public interface FileImportPlugin extends PmsPluginBase {
 	 * Returns the value for the file property. A generic object can be
 	 * returned, but it will be checked in pms-mlx if the correct type has been
 	 * returned for the FileProperty.<br>
-	 * If no value could be found, null should be returned. For integers < 0
-	 * will be handled the same way as well as an empty String for String values<br>
+	 * If no value could be found, null should be returned. Integers < 0 will be
+	 * handled the same way as well as an empty String for String values<br>
 	 * <br>
 	 * Expected values for file types:<br>
 	 * VIDEO_CERTIFICATION = String<br>
@@ -143,21 +153,23 @@ public interface FileImportPlugin extends PmsPluginBase {
 
 	/**
 	 * Gets the list of supported tag names for a file type.<br>
-	 * Beside the predefined FileProperties, custom tags consisting of a
-	 * key-value pair can be configured. E.g. key=Actor, value=Jeff Bridges or
-	 * key=language, value=German. This method will return the keys.<br>
-	 * A valid file tag contains only alphanumeric characters (a-z, 0-9). All
+	 * Beside the predefined file properties, custom tags consisting of a
+	 * key-value pair can be configured.<br>
+	 * E.g. key=Actor, value=Jeff Bridges or key=language, value=German. This
+	 * method will return the keys.<br>
+	 * A valid tag name contains only alphanumeric characters (a-z, 0-9). All
 	 * tag names which aren't alphanumeric will be discarded!
 	 * 
 	 * @param fileType
 	 *            The file type for which to get the tags. Only file types
 	 *            returned by getSupportedFileTypes() will be queried
 	 * @return the list of tag names for which getTags can be called with
+	 * @see #getTags(String tagName)
 	 */
 	public List<String> getSupportedTags(FileType fileType);
 
 	/**
-	 * Returns a list of values for the tag. A key can have multiple values!
+	 * Returns a list of values associated with the tag name.
 	 * 
 	 * @param tagName
 	 *            name of the tag
@@ -166,7 +178,7 @@ public interface FileImportPlugin extends PmsPluginBase {
 	public List<String> getTags(String tagName);
 
 	/**
-	 * Returns the list of supported file types (audio, video, picture)
+	 * Returns the list of supported file types (audio, video and/or picture)
 	 * 
 	 * @return supported file types
 	 */
@@ -174,9 +186,9 @@ public interface FileImportPlugin extends PmsPluginBase {
 
 	/**
 	 * Some web sites don't allow more then x/requests per second. If the value
-	 * returned by this method is > 0 pms will ensure that two successive calls
-	 * to a importFile method have a timespan of at least minPollingInterval in
-	 * milliseconds
+	 * returned by this method is > 0, pms will ensure that two successive calls
+	 * to a import file method of the same plugin have a time span of at least
+	 * minPollingInterval in milliseconds
 	 * 
 	 * @return minimum polling interval in milliseconds
 	 */

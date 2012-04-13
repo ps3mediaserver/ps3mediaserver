@@ -288,7 +288,7 @@ public class TmdbMovieImportPlugin implements FileImportPlugin {
 		case VIDEO_RATINGVOTERS:
 			return movie == null ? null : movie.getVotes();
 		case VIDEO_REVENUE:
-		    return movie == null ? null : movie.getRevenue();
+		    return movie == null ? null : (int)movie.getRevenue();
 		case VIDEO_TAGLINE:
 		    return movie == null ? null : movie.getTagline();
 		case VIDEO_TMDBID:
