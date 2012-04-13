@@ -108,15 +108,21 @@ public class DOFileInfo {
 		try { retVal = retVal.replace("%is_actif", String.valueOf(isActive())); } catch(Exception ex){ }
 		
 		String tagPrefix = "%tag_";
-		if(displayNameMask.contains(tagPrefix)) {
-			int tagNameStartIndex = displayNameMask.indexOf(tagPrefix) + tagPrefix.length();
-			int tagNameEndIndex = displayNameMask.indexOf(" ", tagNameStartIndex);
-			if(tagNameEndIndex == -1) {
-				tagNameEndIndex = displayNameMask.length();
-			} else {
-				
+		while(retVal.contains(tagPrefix)) {
+			int tagNameStartIndex = retVal.indexOf(tagPrefix) + tagPrefix.length();
+			int tagNameEndIndex = -1;
+			for(int i = tagNameStartIndex; i < retVal.length(); i++) {
+				char currentChar = retVal.charAt(i);
+				if(!Character.isLetterOrDigit(currentChar)) {
+					tagNameEndIndex = i;
+					break;
+				}
 			}
-			String tagName = displayNameMask.substring(tagNameStartIndex, tagNameEndIndex);
+			if(tagNameEndIndex == -1) {
+				tagNameEndIndex = retVal.length();
+			}
+			
+			String tagName = retVal.substring(tagNameStartIndex, tagNameEndIndex);
 			String tagsString = "";
 			StringBuilder sb = new StringBuilder();
 			if(getTags() != null && getTags().containsKey(tagName)){
