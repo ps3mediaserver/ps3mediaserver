@@ -42,6 +42,12 @@ public class MediaLibraryRealFile extends RealFile {
 		setFileType(fileType);
 		setFileInfo(fileInfo);
 		setDisplayProperties(displayProperties);
+
+		//set the base file if we are a folder rather then a file
+		if (displayProperties.getFileDisplayType() == FileDisplayType.FOLDER) {
+			fileBase = MediaLibraryStorage.getInstance().getFileFolder(displayProperties.getTemplate().getId());
+			handleFileFolderDisplayNameMasks(fileBase);
+		}
 	}
 	
 	@Override
@@ -50,7 +56,12 @@ public class MediaLibraryRealFile extends RealFile {
 	}
 
 	private MediaLibraryRealFile(DOFileEntryBase fileBase, DOFileInfo fileInfo, FileDisplayProperties displayProperties, FileType fileType) {
-		this(fileInfo, displayProperties, fileType);
+		super(new File(fileInfo.getFilePath()));
+
+		setFileType(fileType);
+		setFileInfo(fileInfo);
+		setDisplayProperties(displayProperties);
+		
 		this.fileBase = fileBase;
 	}
 
@@ -104,18 +115,14 @@ public class MediaLibraryRealFile extends RealFile {
 
 	@Override
 	public void discoverChildren() {
-		if (getDisplayProperties().getFileDisplayType() == FileDisplayType.FOLDER
-				&& (fileBase == null || fileBase instanceof DOFileEntryFolder)) {
-			DOFileEntryFolder fileFolder = (DOFileEntryFolder) fileBase;
-			if (fileFolder == null) {
-				fileFolder = MediaLibraryStorage.getInstance().getFileFolder(displayProperties.getTemplate().getId());
-				handleFileFolderDisplayNameMasks(fileFolder);
-			}
-
-			for (DOFileEntryBase entry : fileFolder.getChildren()) {
+		if (fileBase != null && fileBase instanceof DOFileEntryFolder) {
+			//show all children if we are a DOFileEntryFolder
+			for (DOFileEntryBase entry : ((DOFileEntryFolder) fileBase).getChildren()) {
 				if (entry instanceof DOFileEntryFolder) {
+					//add a DOFileEntryFolder as child
 					addChild(new MediaLibraryRealFile(entry, getFileInfo(), getDisplayProperties(), getFileType()));
 				} else if (entry instanceof DOFileEntryFile) {
+					//add a file (either as single entry or as a transcode file selection)
 					DOFileEntryFile file = (DOFileEntryFile) entry;
 					MediaLibraryRealFile newChild = new MediaLibraryRealFile(entry, getFileInfo(), getDisplayProperties(), getFileType());
 					switch (file.getFileDisplayMode()) {
@@ -127,11 +134,13 @@ public class MediaLibraryRealFile extends RealFile {
 							break;
 					}
 				} else if (entry instanceof DOFileEntryInfo) {
+					//add a DOFileEntryInfo
 					String[] filesToDisplay = DLNAHelper.getSplitLines(fileInfo.getDisplayString(entry.getDisplayNameMask()), entry.getMaxLineLength());
 					for(String f : filesToDisplay){
 						addChild(new MediaLibraryFileInfo(f, getCoverPath(entry.getThumbnailPriorities(), getFileInfo())));						
 					}
 				}else if (entry instanceof DOFileEntryPlugin && fileInfo instanceof DOVideoFileInfo) {
+					//add a FileDetailPlugin
 					FileDetailPlugin pl = ((DOFileEntryPlugin) entry).getPlugin();
 					if(pl.isAvailable()){
 						pl.setVideo((DOVideoFileInfo) fileInfo);
@@ -154,7 +163,7 @@ public class MediaLibraryRealFile extends RealFile {
 			thumbPath = getCoverPath(fileBase.getThumbnailPriorities(), getFileInfo());
 		}
 		
-		//show the default icone if no thumbnail has been found
+		//show the default icon if no thumbnail has been found
 		if(thumbPath == null){
 			return getResourceInputStream("images/icon-256.png");
 		}

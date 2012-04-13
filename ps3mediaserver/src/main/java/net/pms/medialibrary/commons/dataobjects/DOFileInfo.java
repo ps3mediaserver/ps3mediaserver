@@ -112,7 +112,9 @@ public class DOFileInfo {
 			int tagNameStartIndex = displayNameMask.indexOf(tagPrefix) + tagPrefix.length();
 			int tagNameEndIndex = displayNameMask.indexOf(" ", tagNameStartIndex);
 			if(tagNameEndIndex == -1) {
-				tagNameEndIndex = displayNameMask.length() - 1;
+				tagNameEndIndex = displayNameMask.length();
+			} else {
+				
 			}
 			String tagName = displayNameMask.substring(tagNameStartIndex, tagNameEndIndex);
 			String tagsString = "";

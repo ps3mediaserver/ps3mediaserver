@@ -9,6 +9,7 @@ public class ImageHelper {
 
 	public static InputStream getScaledInputStream(String sourceFilePath,
 			int destWidth, int destHeight) throws IOException {
+		//TODO: either remove or implement this method
 		File picFile = new File(sourceFilePath);
 		if (!picFile.exists()) {
 			return null;
