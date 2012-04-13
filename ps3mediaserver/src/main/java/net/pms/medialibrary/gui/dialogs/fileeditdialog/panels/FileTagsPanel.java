@@ -17,10 +17,12 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import net.pms.Messages;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
@@ -92,22 +94,7 @@ public class FileTagsPanel extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				final TextInputDialog tid = new TextInputDialog(Messages.getString("ML.FileTagsPanel.TagName"), "");
-				tid.setModal(true);
-				tid.setLocation(GUIHelper.getCenterDialogOnParentLocation(tid.getSize(), bAdd));
-				tid.addAddValueListener(new ActionListener() {
-					
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if(tid.getValue() != null && !tid.getValue().equals("")) {
-							String tagName = tid.getValue();
-							TagLabelPanel pTag = createTagLabelPanel(tagName, new ArrayList<String>());
-							tagPanels.put(tagName, pTag);
-							build();
-						}
-					}
-				});
-				tid.setVisible(true);
+				handleAddTag();
 			}
 		});		
 
@@ -118,6 +105,41 @@ public class FileTagsPanel extends JPanel {
 			TagLabelPanel pTag = createTagLabelPanel(tagName, tagValues);
 			tagPanels.put(tagName, pTag);
 		}
+	}
+
+	private void handleAddTag() {
+		final TextInputDialog tid = new TextInputDialog(Messages.getString("ML.FileTagsPanel.TagName"), "");
+		tid.setModal(true);
+		tid.setLocation(GUIHelper.getCenterDialogOnParentLocation(tid.getSize(), bAdd));
+		tid.addAddValueListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(tid.getValue() != null) {
+					//don't allow tag names containing which are empty or not alpha numeric
+					if(tid.getValue().equals("")) {
+						JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(getTopLevelAncestor()), 
+								Messages.getString("ML.FileTagsPanel.BlankTagNameError"), 
+								Messages.getString("ML.FileTagsPanel.TagCreationErrorHeader"), 
+								JOptionPane.WARNING_MESSAGE);
+						return;
+					} else if (!tid.getValue().matches("[a-zA-Z0-9]*")) {
+						JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(getTopLevelAncestor()), 
+								Messages.getString("ML.FileTagsPanel.NonAlphaNumericTagNameError"), 
+								Messages.getString("ML.FileTagsPanel.TagCreationErrorHeader"), 
+								JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+					
+					String tagName = tid.getValue();
+					TagLabelPanel pTag = createTagLabelPanel(tagName, new ArrayList<String>());
+					tagPanels.put(tagName, pTag);
+					build();
+					tid.dispose();
+				}
+			}
+		});
+		tid.setVisible(true);
 	}
 
 	/**

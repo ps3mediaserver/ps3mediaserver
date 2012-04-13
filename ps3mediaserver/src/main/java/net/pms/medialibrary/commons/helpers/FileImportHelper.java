@@ -277,6 +277,11 @@ public class FileImportHelper {
 		List<String> supportedTags = plugin.getSupportedTags(fileInfo.getType());
 		if(supportedTags != null) {
 			for (String tag : supportedTags) {
+				if(!tag.matches("[a-zA-Z0-9]*")) {
+					log.warn("Don't collect the tag with name='%s', because only alphanumeric tag names (a-z 0-9) are allowed");
+					continue;
+				}
+				
 				List<String> tagValues;
 				try {
 					tagValues = plugin.getTags(tag);

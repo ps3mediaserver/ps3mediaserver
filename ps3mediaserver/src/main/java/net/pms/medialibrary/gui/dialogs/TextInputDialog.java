@@ -77,7 +77,6 @@ public class TextInputDialog extends JDialog {
 				for(ActionListener l : actionAddValueListeners) {
 					l.actionPerformed(new ActionEvent(new Object(), 0, "Add"));
 				}
-				dispose();
 			}
 		});
 
