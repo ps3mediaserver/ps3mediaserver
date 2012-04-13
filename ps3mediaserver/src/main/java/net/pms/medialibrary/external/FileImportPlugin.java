@@ -142,10 +142,12 @@ public interface FileImportPlugin extends PmsPluginBase {
 	public Object getFileProperty(FileProperty property);
 
 	/**
-	 * Gets the list of supported tags for a file type Beside the predefined
-	 * FileProperties, custom tags consisting of a key-value pair can be
-	 * configured. E.g. key=Actor, value=Jeff Bridges or key=language,
-	 * value=German. This method will return the keys
+	 * Gets the list of supported tag names for a file type.<br>
+	 * Beside the predefined FileProperties, custom tags consisting of a
+	 * key-value pair can be configured. E.g. key=Actor, value=Jeff Bridges or
+	 * key=language, value=German. This method will return the keys.<br>
+	 * A valid file tag contains only alphanumeric characters (a-z, 0-9). All
+	 * tag names which aren't alphanumeric will be discarded!
 	 * 
 	 * @param fileType
 	 *            The file type for which to get the tags. Only file types

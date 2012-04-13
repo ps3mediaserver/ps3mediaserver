@@ -276,38 +276,38 @@ public class FileImportHelper {
 		// load tags
 		List<String> supportedTags = plugin.getSupportedTags(fileInfo.getType());
 		if(supportedTags != null) {
-			for (String tag : supportedTags) {
-				if(!tag.matches("[a-zA-Z0-9]*")) {
-					log.warn("Don't collect the tag with name='%s', because only alphanumeric tag names (a-z 0-9) are allowed");
+			for (String tagName : supportedTags) {
+				if(!tagName.matches("[a-zA-Z0-9]*")) {
+					log.warn(String.format("Don't collect the tag with name='%s', because only alphanumeric tag names (a-z 0-9) are allowed", tagName));
 					continue;
 				}
 				
 				List<String> tagValues;
 				try {
-					tagValues = plugin.getTags(tag);
+					tagValues = plugin.getTags(tagName);
 				} catch (Throwable t) {
 					// catch throwable for every external call to avoid a plugin crashing pms
-					log.error(String.format("Failed to get tag '%s' for plugin '%s'", tag, plugin.getName()), t);
+					log.error(String.format("Failed to get tag '%s' for plugin '%s'", tagName, plugin.getName()), t);
 					continue;
 				}
 	
 				Map<String, List<String>> allTags = new HashMap<String, List<String>>();
 				if (tagValues != null && tagValues.size() > 0) {
-					if (!allTags.containsKey(tag)) {
-						allTags.put(tag, new ArrayList<String>());
+					if (!allTags.containsKey(tagName)) {
+						allTags.put(tagName, new ArrayList<String>());
 					}
 	
 					// make sure the values are unique for a tag and that they have been trimmed
-					List<String> uniqueTagValues = allTags.get(tag);
+					List<String> uniqueTagValues = allTags.get(tagName);
 					for (String tagValue : tagValues) {
 						tagValue = tagValue.trim();
 						if (!uniqueTagValues.contains(tagValue)) {
-							log.trace(String.format("Added tag %s=%s for file %s", tag, tagValue, fileInfo.getFilePath()));
+							log.trace(String.format("Added tag %s=%s for file %s", tagName, tagValue, fileInfo.getFilePath()));
 							uniqueTagValues.add(tagValue);
 						}
 					}
 	
-					fileInfo.getTags().put(tag, uniqueTagValues);
+					fileInfo.getTags().put(tagName, uniqueTagValues);
 				}
 				fileInfo.setTags(allTags);
 			}
@@ -973,7 +973,16 @@ public class FileImportHelper {
 		for(FileImportPlugin p : ExternalFactory.getFileImportPlugins()) {
 			//only add engine names which are configured to allow the current file type and have at least one tag
 			if(template.getEnabledEngines().get(fileType).contains(p.getName()) && p.getSupportedFileTypes().contains(fileType)) {
-				List<String> supportedTags = p.getSupportedTags(fileType);
+				List<String> supportedTags = new ArrayList<String>();
+				for(String tagName :  p.getSupportedTags(fileType)) {
+					if(tagName.matches("[a-zA-Z0-9]*")) {
+						supportedTags.add(tagName);
+					} else {
+						//don't allow tag names which aren't alphanumeric
+						log.warn(String.format("Don't use the tag with name='%s', because only alphanumeric tag names (a-z 0-9) are allowed", tagName));
+					}
+				}
+				
 				if(supportedTags != null) {
 					res.put(p.getName(), supportedTags);
 				}
