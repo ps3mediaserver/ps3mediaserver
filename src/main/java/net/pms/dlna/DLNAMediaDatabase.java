@@ -76,7 +76,15 @@ public class DLNAMediaDatabase implements Runnable {
 	private final int SIZE_ARTIST = 255;
 	private final int SIZE_SONGNAME = 255;
 	private final int SIZE_GENRE = 64;
+	
+	@Deprecated
+	public static int DBcount;
 
+
+	public int getDBcount() {
+		return DBcount;
+	}
+	
 	public DLNAMediaDatabase(String name) {
 		dir = "database";
 		DBname = name;
@@ -124,7 +132,7 @@ public class DLNAMediaDatabase implements Runnable {
 	}
 
 	public void init(boolean force) {
-		int count = -1;
+
 		String version = null;
 		Connection conn = null;
 		ResultSet rs = null;
@@ -173,7 +181,7 @@ public class DLNAMediaDatabase implements Runnable {
             	stmt = conn.createStatement();
             	rs = stmt.executeQuery("SELECT count(*) FROM FILES");
             	if (rs.next()) {
-            		count = rs.getInt(1);
+            		DBcount = rs.getInt(1);
             	}
             	rs.close();
             	stmt.close();
@@ -193,7 +201,7 @@ public class DLNAMediaDatabase implements Runnable {
         }
 
 		boolean force_reinit = !PMS.getVersion().equals(version); // here we can force a deletion for a specific version
-		if (force || count == -1 || force_reinit) {
+		if (force || DBcount == -1 || force_reinit) {
 			logger.debug("Database will be (re)initialized");
 //			if (force_reinit) {
 //				JOptionPane.showMessageDialog(
@@ -293,7 +301,7 @@ public class DLNAMediaDatabase implements Runnable {
 			    close(conn);
 			}
 		} else {
-			logger.debug("Database file count: " + count);
+			logger.debug("Database file count: " + DBcount);
 			logger.debug("Database version: " + version);
 		}
 	}
