@@ -44,8 +44,8 @@ First all required software has to be installed:
     * (Windows) http://www.oracle.com/technetwork/java/javase/downloads/index.html 
         - Be sure to remember the install location. 
     * (Linux)   `sudo apt-get install sun-java6-jdk`
-    * (Mac OSX) http://developer.apple.com/technologies/xcode.html
-
+    * (Mac OSX) https://developer.apple.com/downloads/index.action?name=for%20Xcode%20-
+	- Look for java Developer Package
 
  2. Download and install Git:
 
@@ -56,12 +56,14 @@ First all required software has to be installed:
           select "Checkout Windows-style, commit Unix-style line endings".
     * (Linux)   `sudo apt-get install git-core git-gui git-doc`
     * (Mac OSX) http://git-scm.com/
+	- If you are using brew (http://mxcl.github.com/homebrew/) you just have
+	  to do 'brew install git'
 
  3. Download and extract Maven:
 
     * (Windows) http://maven.apache.org/download.html
     * (Linux)   `sudo apt-get install maven3`
-    * (Mac OSX) (nothing to do, automatically installed with XCode in step 1)
+    * (Mac OSX) (nothing to do, automatically installed with java for XCode in step 1)
 
     Be sure to remember the extract location.
 
