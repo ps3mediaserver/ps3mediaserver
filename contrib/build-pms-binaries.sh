@@ -2,8 +2,8 @@
 #
 # build-pms-osx.sh
 #
-# Version: 2.1.1
-# Last updated: 2012-04-09
+# Version: 2.1.2
+# Last updated: 2012-04-18
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -160,7 +160,8 @@ check_binary() {
 It seems you are missing Xcode from Apple ("ant"), which is required to run this script.
 
 Please go to http://developer.apple.com/technologies/xcode.html, create a free
-Apple developer account and download Xcode and install it.
+Apple developer account and download Xcode and install it. After installation,
+install the "Command Line Tools" under "Preferences... > Downloads > Components".
 
 EOM
             else
@@ -174,13 +175,76 @@ EOM
             fi
             exit;;
         
-        gcc|g++|make|autoconf|automake)
+        gcc|g++|make|patch)
             if is_osx; then
                 cat >&2 << EOM
 It seems you are missing Xcode from Apple ("$BINARY"), which is required to run this script.
 
 Please go to http://developer.apple.com/technologies/xcode.html, create a free
-Apple developer account and download Xcode and install it.
+Apple developer account and download Xcode and install it. After installation,
+install the "Command Line Tools" under "Preferences... > Downloads > Components".
+
+EOM
+            else
+                cat >&2 << EOM
+It seems you are missing gcc/g++ or make.
+You can install them with following command on Debian based systems (Debian, Ubuntu, etc):
+
+    sudo apt-get install build-essential
+
+EOM
+            fi
+            exit;;
+
+        autoconf|autoreconf)
+            if is_osx; then
+                cat >&2 << EOM
+It seems you are missing Xcode from Apple ("$BINARY"), which is required to run this script.
+
+Please go to http://developer.apple.com/technologies/xcode.html, create a free
+Apple developer account and download Xcode and install it. After installation,
+install the "Command Line Tools" under "Preferences... > Downloads > Components".
+
+Note: The Command Line Tools for Xcode 4.3 are missing essential build tools.
+You can download and install $BINARY with the following commands:
+
+    curl -O http://mirrors.kernel.org/gnu/autoconf/autoconf-2.68.tar.gz
+    tar xzvf autoconf-2.68.tar.gz 
+    cd autoconf-2.68
+    ./configure --prefix=/usr/local
+    make
+    sudo make install
+
+EOM
+            else
+                cat >&2 << EOM
+It seems you are missing autoconf.
+You can install it with following command on Debian based systems (Debian, Ubuntu, etc):
+
+    sudo apt-get install autoconf
+
+EOM
+            fi
+            exit;;
+
+        automake)
+            if is_osx; then
+                cat >&2 << EOM
+It seems you are missing Xcode from Apple ("$BINARY"), which is required to run this script.
+
+Please go to http://developer.apple.com/technologies/xcode.html, create a free
+Apple developer account and download Xcode and install it. After installation,
+install the "Command Line Tools" under "Preferences... > Downloads > Components".
+
+Note: The Command Line Tools for Xcode 4.3 are missing essential build tools.
+You can download and install $BINARY with the following commands:
+
+    curl -O http://mirrors.kernel.org/gnu/automake/automake-1.11.tar.gz
+    tar xzvf automake-1.11.tar.gz 
+    cd automake-1.11
+    ./configure --prefix=/usr/local
+    make
+    sudo make install
 
 EOM
             else
@@ -200,7 +264,19 @@ EOM
 It seems you are missing Xcode from Apple ("$BINARY"), which is required to run this script.
 
 Please go to http://developer.apple.com/technologies/xcode.html, create a free
-Apple developer account and download Xcode and install it.
+Apple developer account and download Xcode and install it. After installation,
+install the "Command Line Tools" under "Preferences... > Downloads > Components".
+
+Note: The Command Line Tools for Xcode 4.3 are missing essential build tools.
+You can download and install $BINARY with the following commands:
+
+    curl -O http://mirrors.kernel.org/gnu/libtool/libtool-2.4.tar.gz
+    tar xzvf libtool-2.4.tar.gz
+    cd libtool-2.4
+    ./configure --prefix=/usr/local
+    make
+    sudo make install
+    sudo ln -s /usr/local/bin/libtoolize /usr/local/bin/glibtoolize
 
 EOM
             else
@@ -220,7 +296,8 @@ EOM
 It seems you are missing Xcode from Apple ("mvn"), which is required to run this script.
 
 Please go to http://developer.apple.com/technologies/xcode.html, create a free
-Apple developer account and download Xcode and install it.
+Apple developer account and download Xcode and install it. After installation,
+install the "Command Line Tools" under "Preferences... > Downloads > Components".
 
 EOM
             else
@@ -240,7 +317,8 @@ EOM
 It seems you are missing Xcode from Apple ("javac"), which is required to run this script.
 
 Please go to http://developer.apple.com/technologies/xcode.html, create a free
-Apple developer account and download Xcode and install it.
+Apple developer account and download Xcode and install it. After installation,
+install the "Command Line Tools" under "Preferences... > Downloads > Components".
 
 EOM
             else
@@ -320,22 +398,23 @@ ANT=`check_binary ant`
 GCC=`check_binary gcc`
 GPP=`check_binary g++`
 JAVAC=`check_binary javac`
+AUTOMAKE=`check_binary automake`
+AUTOCONF=`check_binary autoconf`
 LIBTOOL=`check_binary libtool`
 MAKE=`check_binary make`
 MVN=`check_binary mvn`
+PATCH=`check_binary patch`
 SED=`check_binary sed`
 TAR=`check_binary tar`
 YASM=`check_binary yasm`
 UNZIP=`check_binary unzip`
 
 if is_osx; then
-    GCC2=`check_binary gcc-4.2`
+    GCC2=$GCC
     HDID=`check_binary hdid`
     HDIUTIL=`check_binary hdiutil`
 else
     GCC2=$GCC
-    AUTOMAKE=`check_binary automake`
-    AUTOCONF=`check_binary autoconf`
     STRIP=`check_binary strip`
     PKG_CONFIG=`check_binary pkg-config`
 fi
@@ -387,14 +466,18 @@ exit_on_error() {
 initialize() {
     WORKDIR=`pwd`
 
+    # Avoid having ".." in the path reference to avoid problems with symlinks
+    cd ..
+    PARENTDIR=`pwd`
+
     # Directories for statically compiled libraries
-    BUILD="$WORKDIR/../target/bin-tools/build"
-    SRC="$WORKDIR/../target/bin-tools/src"
-    TARGET="$WORKDIR/../target/bin-tools/target"
+    BUILD="$PARENTDIR/target/bin-tools/build"
+    SRC="$PARENTDIR/target/bin-tools/src"
+    TARGET="$PARENTDIR/target/bin-tools/target"
     createdir "$BUILD"
     createdir "$SRC"
     createdir "$TARGET"
-    
+
     if is_linux; then    
       THREADS=$(cat /proc/cpuinfo | grep processor | wc -l)
     fi
@@ -445,13 +528,34 @@ set_flags() {
     if is_osx; then
         # Minimum OSX version as target
         OSX_VERSION=10.6
+
+        if [ -d /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs ]; then
+            # Xcode 4.3+
+            SDK_PATH="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs"
+        else
+            # Xcode < 4.2
+            if [ -d /Developer/SDKs ]; then
+                SDK_PATH="/Developer/SDKs"
+            else
+                cat << EOM
+It seems you are missing Xcode.
+
+Please go to http://developer.apple.com/technologies/xcode.html, create a free
+Apple developer account and download Xcode and install it. After installation,
+install the "Command Line Tools" under "Preferences... > Downloads > Components".
+
+EOM
+                exit;
+            fi
+	fi
+
         CFLAGS="$CFLAGS -mmacosx-version-min=${OSX_VERSION}"
-        CFLAGS="$CFLAGS -isystem /Developer/SDKs/MacOSX${OSX_VERSION}.sdk"
+        CFLAGS="$CFLAGS -isystem ${SDK_PATH}/MacOSX${OSX_VERSION}.sdk"
         CXXFLAGS="$CXXFLAGS -mmacosx-version-min=${OSX_VERSION}"
-        CXXFLAGS="$CXXFLAGS -isysroot /Developer/SDKs/MacOSX${OSX_VERSION}.sdk"
+        CXXFLAGS="$CXXFLAGS -isysroot ${SDK_PATH}/MacOSX${OSX_VERSION}.sdk"
         LDFLAGS="$LDFLAGS -mmacosx-version-min=${OSX_VERSION}"
-        LDFLAGS="$LDFLAGS -isysroot /Developer/SDKs/MacOSX${OSX_VERSION}.sdk"
-        LDFLAGS="$LDFLAGS -Wl,-syslibroot,/Developer/SDKs/MacOSX${OSX_VERSION}.sdk"
+        LDFLAGS="$LDFLAGS -isysroot ${SDK_PATH}/MacOSX${OSX_VERSION}.sdk"
+        LDFLAGS="$LDFLAGS -Wl,-syslibroot,${SDK_PATH}/MacOSX${OSX_VERSION}.sdk"
     fi
 
     if [ "$1" != "" ]; then
@@ -671,7 +775,7 @@ build_ffmpeg() {
     fi
 
     # Apply SB patch that was used for the Windows version
-    patch -p1 < ./../../../../contrib/mplayer-r34866-SB31-ffmpeg-58c25724.patch
+    $PATCH -p1 < $WORKDIR/mplayer-r34866-SB31-ffmpeg-58c25724.patch
     exit_on_error
 
     $MAKE -j$THREADS
@@ -1229,7 +1333,7 @@ build_mplayer() {
         # See https://svn.macports.org/ticket/30279
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../../../contrib/mplayer-r34866-SB31.patch
+        $PATCH -p0 < $WORKDIR/mplayer-r34866-SB31.patch
         exit_on_error
 
         # Theora and vorbis support seems broken in this revision, disable it for now
@@ -1248,11 +1352,11 @@ build_mplayer() {
         export LDFLAGS="$LDFLAGS -O4 -fomit-frame-pointer -pipe"
 
         # Apply SB patch that was used for the Windows version
-        patch -p0 < ./../../../../contrib/mplayer-r34866-SB31.patch
+        $PATCH -p0 < $WORKDIR/mplayer-r34866-SB31.patch
         exit_on_error
 
         # mplayer configure patch for r34587-SB22
-        patch -p0 < ./../../../../contrib/mplayer-r34587-configure.patch
+        $PATCH -p0 < $WORKDIR/mplayer-r34587-configure.patch
         exit_on_error
 
         # libvorbis support seems broken in this revision, disable it for now
@@ -1379,9 +1483,11 @@ build_tsmuxer() {
         if [ ! -d tsMuxeR_${VERSION_TSMUXER} ]; then
             createdir tsMuxeR_${VERSION_TSMUXER}
             # Nothing to build. Just open the disk image, copy the binary and detach the disk image
-            $HDID $SRC/tsMuxeR__${VERSION_TSMUXER}.dmg
+            $HDID $SRC/tsMuxeR_${VERSION_TSMUXER}.dmg
             exit_on_error
+
             cp -f /Volumes/tsMuxeR/tsMuxerGUI.app/Contents/MacOS/tsMuxeR tsMuxeR_${VERSION_TSMUXER}/tsMuxeR
+            exit_on_error
             $HDIUTIL detach /Volumes/tsMuxeR
         fi
     else
@@ -1546,7 +1652,7 @@ fi
 initialize
 
 # Build static libraries to link against
-# build_yasm # for systems where YASM version is below 1.0.0
+#build_yasm # for systems where YASM version is below 1.0.0
 build_zlib
 build_bzip2
 build_expat
@@ -1566,6 +1672,7 @@ build_libdv
 build_libmad
 build_libzen
 # Note: libmediainfo requires libzen to build
+# FIXME: problem building
 build_libmediainfo
 build_libpng
 build_libogg

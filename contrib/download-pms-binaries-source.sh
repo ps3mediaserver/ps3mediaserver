@@ -711,7 +711,7 @@ download_tsmuxer() {
 
     if is_osx; then
         if [ ! -f tsMuxeR-${VERSION_TSMUXER}.dmg ]; then
-            $CURL --referer "http://www.videohelp.com/tools/tsMuxeR" -L http://www.videohelp.com/download/tsMuxeR__${VERSION_TSMUXER}.dmg > tsMuxeR__${VERSION_TSMUXER}.dmg
+            $CURL --referer "http://www.videohelp.com/tools/tsMuxeR" -L http://www.videohelp.com/download/tsMuxeR_${VERSION_TSMUXER}.dmg > tsMuxeR_${VERSION_TSMUXER}.dmg
             exit_on_error
         fi
     else
