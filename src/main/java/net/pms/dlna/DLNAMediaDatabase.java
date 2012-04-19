@@ -77,16 +77,13 @@ public class DLNAMediaDatabase implements Runnable {
 	private final int SIZE_ARTIST = 255;
 	private final int SIZE_SONGNAME = 255;
 	private final int SIZE_GENRE = 64;
-	
-//	@Deprecated
-	public static int DBcount;
+	private static int DBcount;
 
-
-	public static int getDBcount() {
+	public  static int getDBcount() {
 		return DBcount;
 	}
 	
-	public static int setDBcount(int value) {
+	public  static int setDBcount(int value) {
 		return DBcount = value;
 	}
 	
@@ -620,7 +617,6 @@ public class DLNAMediaDatabase implements Runnable {
 			ps = conn.prepareStatement("SELECT COUNT(*) FROM FILES");
 			rs = ps.executeQuery();
 			DBcount = 0;
-
 			if (rs.next()) {
 				DBcount = rs.getInt(1);
 			}
@@ -648,6 +644,7 @@ public class DLNAMediaDatabase implements Runnable {
 						oldpercent = newpercent;
 					}
 				}
+				DBcount = rs.getInt(1);
 			}
 		} catch (SQLException se) {
 			logger.error(null, se);
