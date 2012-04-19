@@ -34,6 +34,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -82,6 +83,7 @@ public class NavigationShareTab {
 	private JCheckBox itunes;
 	private JButton select;
 	private JButton cachereset;
+	private JLabel dbcount;
 
 	public DefaultListModel getDf() {
 		return df;
@@ -172,6 +174,7 @@ public class NavigationShareTab {
 		builder.addLabel(Messages.getString("FoldTab.18"), cc.xyw(1, 23, 3));
 		builder.add(sortmethod, cc.xyw(4, 23, 4));
 
+		builder.add(dbcount, cc.xyw(9, 23, 2));
 
 		cmp = builderSharedFolder.addSeparator(Messages.getString("FoldTab.7"), cc.xyw(1, 1, 6));
 		cmp = (JComponent) cmp.getComponent(0);
@@ -202,6 +205,7 @@ public class NavigationShareTab {
 		return scrollPane;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void initSimpleComponents(CellConstraints cc) {
 		// Generate thumbnails
 		thumbgenCheckBox = new JCheckBox(Messages.getString("NetworkTab.2"));
@@ -525,6 +529,9 @@ public class NavigationShareTab {
 				}
 			}
 		});
+		
+		// Count DB
+		dbcount = new JLabel("Pocet zaznamu:" + IntegerToString(DLNAMediaDatabase.DBcount));
 	}
 
 	private PanelBuilder initSharedFoldersGuiComponents(CellConstraints cc) {
