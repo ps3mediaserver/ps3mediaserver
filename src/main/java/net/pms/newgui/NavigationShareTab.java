@@ -83,8 +83,7 @@ public class NavigationShareTab {
 	private JCheckBox itunes;
 	private JButton select;
 	private JButton cachereset;
-	private JLabel dbcount;
-
+	private static JLabel dbcount;
 	public DefaultListModel getDf() {
 		return df;
 	}
@@ -531,7 +530,11 @@ public class NavigationShareTab {
 		});
 		
 		// Count DB
-		dbcount = new JLabel("Pocet zaznamu:" + IntegerToString(DLNAMediaDatabase.DBcount));
+		dbcount = new JLabel("");
+	}
+	
+	public static void UpdateDbcoutValue(){
+		dbcount.setText(Messages.getString("FoldTab.35") + Integer.toString(DLNAMediaDatabase.getDBcount()));
 	}
 
 	private PanelBuilder initSharedFoldersGuiComponents(CellConstraints cc) {

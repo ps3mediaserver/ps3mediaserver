@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
+import net.pms.newgui.NavigationShareTab;
 
 import org.apache.commons.lang.StringUtils;
 import org.h2.jdbcx.JdbcConnectionPool;
@@ -77,12 +78,16 @@ public class DLNAMediaDatabase implements Runnable {
 	private final int SIZE_SONGNAME = 255;
 	private final int SIZE_GENRE = 64;
 	
-	@Deprecated
+//	@Deprecated
 	public static int DBcount;
 
 
-	public int getDBcount() {
+	public static int getDBcount() {
 		return DBcount;
+	}
+	
+	public static int setDBcount(int value) {
+		return DBcount = value;
 	}
 	
 	public DLNAMediaDatabase(String name) {
@@ -183,6 +188,7 @@ public class DLNAMediaDatabase implements Runnable {
             	if (rs.next()) {
             		DBcount = rs.getInt(1);
             	}
+    			NavigationShareTab.UpdateDbcoutValue();
             	rs.close();
             	stmt.close();
 
@@ -293,7 +299,8 @@ public class DLNAMediaDatabase implements Runnable {
 					executeUpdate(conn, "INSERT INTO REGEXP_RULES VALUES ( '" + chars[i] + "', '(?i)^" + chars[i] + ".+', "
 							+ (i + 2) + " );");
 				}
-
+	        	DBcount = 0;
+				NavigationShareTab.UpdateDbcoutValue();
 				logger.debug("Database initialized");
 			} catch (SQLException se) {
 				logger.info("Error in table creation: " + se.getMessage());
@@ -612,19 +619,19 @@ public class DLNAMediaDatabase implements Runnable {
 			conn = getConnection();
 			ps = conn.prepareStatement("SELECT COUNT(*) FROM FILES");
 			rs = ps.executeQuery();
-			int count = 0;
+			DBcount = 0;
 
 			if (rs.next()) {
-				count = rs.getInt(1);
+				DBcount = rs.getInt(1);
 			}
-
+			NavigationShareTab.UpdateDbcoutValue();
 			rs.close();
 			ps.close();
 			PMS.get().getFrame().setStatusLine(Messages.getString("DLNAMediaDatabase.2") + " 0%");
 			int i = 0;
 			int oldpercent = 0;
 
-			if (count > 0) {
+			if (DBcount > 0) {
 				ps = conn.prepareStatement("SELECT FILENAME, MODIFIED, ID FROM FILES", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
 				rs = ps.executeQuery();
 				while (rs.next()) {
@@ -635,7 +642,7 @@ public class DLNAMediaDatabase implements Runnable {
 						rs.deleteRow();
 					}
 					i++;
-					int newpercent = i * 100 / count;
+					int newpercent = i * 100 / DBcount;
 					if (newpercent > oldpercent) {
 						PMS.get().getFrame().setStatusLine(Messages.getString("DLNAMediaDatabase.2") + newpercent + "%");
 						oldpercent = newpercent;
