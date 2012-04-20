@@ -79,11 +79,11 @@ public class DLNAMediaDatabase implements Runnable {
 	private final int SIZE_GENRE = 64;
 	private static int DBcount;
 
-	public  static int getDBcount() {
+	public static int getDBcount() {
 		return DBcount;
 	}
 	
-	public  static int setDBcount(int value) {
+	public static int setDBcount(int value) {
 		return DBcount = value;
 	}
 	

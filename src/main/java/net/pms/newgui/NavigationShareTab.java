@@ -173,7 +173,7 @@ public class NavigationShareTab {
 		builder.addLabel(Messages.getString("FoldTab.18"), cc.xyw(1, 23, 3));
 		builder.add(sortmethod, cc.xyw(4, 23, 4));
 
-		builder.add(dbcount, cc.xyw(9, 23, 2));
+		builder.add(dbcount, cc.xyw(8, 23, 3));
 
 		cmp = builderSharedFolder.addSeparator(Messages.getString("FoldTab.7"), cc.xyw(1, 1, 6));
 		cmp = (JComponent) cmp.getComponent(0);
@@ -534,7 +534,7 @@ public class NavigationShareTab {
 	}
 	
 	public static void UpdateDbcoutValue(){
-		dbcount.setText(Messages.getString("FoldTab.35") + Integer.toString(DLNAMediaDatabase.getDBcount()));
+		dbcount.setText("      " + Messages.getString("FoldTab.35") + Integer.toString(DLNAMediaDatabase.getDBcount()));
 	}
 
 	private PanelBuilder initSharedFoldersGuiComponents(CellConstraints cc) {
