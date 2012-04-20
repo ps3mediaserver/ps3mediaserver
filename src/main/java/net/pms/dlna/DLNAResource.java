@@ -572,7 +572,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								DLNAResource newChild = child.clone();
 								newChild.setPlayer(pl);
 								newChild.setMedia(child.getMedia());
-								vf.addChild(newChild);
+								vf.addChildInternal(newChild);
 							}
 						}
 
