@@ -60,6 +60,7 @@ public class UPNPHelper {
 	 * IPv6 Multicast channel reserved for SSDP by Internet Assigned Numbers Authority (IANA).
 	 * MUST be [FF02::C].
 	 */
+	@SuppressWarnings("unused")
 	private final static String IPV6_UPNP_HOST = "[FF02::C]";
 
 	/**

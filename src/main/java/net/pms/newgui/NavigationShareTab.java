@@ -59,8 +59,8 @@ import com.sun.jna.Platform;
 public class NavigationShareTab {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NavigationShareTab.class);
 	public static final String ALL_DRIVES = Messages.getString("FoldTab.0");
-	private JList FList;
-	private DefaultListModel df;
+	private JList<String> FList;
+	private DefaultListModel<String> df;
 	private JCheckBox hidevideosettings;
 	private JCheckBox hidetranscode;
 	private JCheckBox hidemedialibraryfolder;
@@ -75,8 +75,8 @@ public class NavigationShareTab {
 	private JCheckBox image_thumb;
 	private JCheckBox cacheenable;
 	private JCheckBox archive;
-	private JComboBox sortmethod;
-	private JComboBox audiothumbnail;
+	private JComboBox<?> sortmethod;
+	private JComboBox<?> audiothumbnail;
 	private JTextField defaultThumbFolder;
 	private JCheckBox iphoto;
 	private JCheckBox aperture;
@@ -84,7 +84,7 @@ public class NavigationShareTab {
 	private JButton select;
 	private JButton cachereset;
 	private static JLabel dbcount;
-	public DefaultListModel getDf() {
+	public DefaultListModel<String> getDf() {
 		return df;
 	}
 	private final PmsConfiguration configuration;
@@ -179,7 +179,7 @@ public class NavigationShareTab {
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		df = new DefaultListModel();
+		df = new DefaultListModel<String>();
 		File[] folders = PMS.get().getFoldersConf(false);
 		if (folders != null && folders.length > 0) {
 			for (File file : folders) {
@@ -188,7 +188,7 @@ public class NavigationShareTab {
 		} else {
 			df.addElement(ALL_DRIVES);
 		}
-		FList = new JList();
+		FList = new JList<String>();
 		FList.setModel(df);
 		JScrollPane pane = new JScrollPane(FList);
 		builderSharedFolder.add(pane, cc.xyw(1, 5, 6));
@@ -204,7 +204,6 @@ public class NavigationShareTab {
 		return scrollPane;
 	}
 
-	@SuppressWarnings("deprecation")
 	private void initSimpleComponents(CellConstraints cc) {
 		// Generate thumbnails
 		thumbgenCheckBox = new JCheckBox(Messages.getString("NetworkTab.2"));
@@ -279,7 +278,7 @@ public class NavigationShareTab {
 
 		// AudioThumbnailMethod
 		final KeyedComboBoxModel thumbKCBM = new KeyedComboBoxModel(new Object[]{"0", "1", "2"}, new Object[]{Messages.getString("FoldTab.15"), Messages.getString("FoldTab.23"), Messages.getString("FoldTab.24")});
-		audiothumbnail = new JComboBox(thumbKCBM);
+		audiothumbnail = new JComboBox<Object>(thumbKCBM);
 		audiothumbnail.setEditable(false);
 
 		thumbKCBM.setSelectedKey("" + configuration.getAudioThumbnailMethod());
@@ -510,7 +509,7 @@ public class NavigationShareTab {
 				Messages.getString("FoldTab.17")
 			}
 		);
-		sortmethod = new JComboBox(kcbm);
+		sortmethod = new JComboBox<Object>(kcbm);
 		sortmethod.setEditable(false);
 
 		kcbm.setSelectedKey("" + configuration.getSortMethod());
@@ -558,9 +557,9 @@ public class NavigationShareTab {
 				//int returnVal = chooser.showDialog((Component) e.getSource(), Messages.getString("FoldTab.9"));
 				int returnVal = chooser.showOpenDialog((Component) e.getSource());
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					((DefaultListModel) FList.getModel()).add(FList.getModel().getSize(), chooser.getSelectedFile().getAbsolutePath());
+					((DefaultListModel<String>) FList.getModel()).add(FList.getModel().getSize(), chooser.getSelectedFile().getAbsolutePath());
 					if (FList.getModel().getElementAt(0).equals(ALL_DRIVES)) {
-						((DefaultListModel) FList.getModel()).remove(0);
+						((DefaultListModel<String>) FList.getModel()).remove(0);
 					}
 					updateModel();
 				}
@@ -572,9 +571,9 @@ public class NavigationShareTab {
 		but2.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				if (FList.getSelectedIndex() > -1) {
-					((DefaultListModel) FList.getModel()).remove(FList.getSelectedIndex());
+					((DefaultListModel<String>) FList.getModel()).remove(FList.getSelectedIndex());
 					if (FList.getModel().getSize() == 0) {
-						((DefaultListModel) FList.getModel()).add(0, ALL_DRIVES);
+						((DefaultListModel<String>) FList.getModel()).add(0, ALL_DRIVES);
 					}
 					updateModel();
 				}
@@ -587,7 +586,7 @@ public class NavigationShareTab {
 		// but3.setBorder(BorderFactory.createEmptyBorder());
 		but3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DefaultListModel model = ((DefaultListModel) FList.getModel());
+				DefaultListModel<String> model = ((DefaultListModel<String>) FList.getModel());
 				for (int i = 0; i < model.size() - 1; i++) {
 					if (FList.isSelectedIndex(i)) {
 						String value = model.get(i).toString();
@@ -607,7 +606,7 @@ public class NavigationShareTab {
 		//  but4.setBorder(BorderFactory.createEmptyBorder());
 		but4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DefaultListModel model = ((DefaultListModel) FList.getModel());
+				DefaultListModel<String> model = ((DefaultListModel<String>) FList.getModel());
 				for (int i = 1; i < model.size(); i++) {
 					if (FList.isSelectedIndex(i)) {
 						String value = model.get(i).toString();

@@ -107,7 +107,7 @@ public class MEncoderVideo extends Player {
 	private JTextField forcedtags;
 	private JTextField defaultaudiosubs;
 	private JTextField defaultfont;
-	private JComboBox subcp;
+	private JComboBox<?> subcp;
 	private JTextField subq;
 	private JCheckBox forcefps;
 	private JCheckBox yadif;
@@ -606,7 +606,7 @@ public class MEncoderVideo extends Player {
 		};
 
 		MyComboBoxModel cbm = new MyComboBoxModel(data);
-		subcp = new JComboBox(cbm);
+		subcp = new JComboBox<Object>(cbm);
 
 		subcp.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {

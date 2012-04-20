@@ -25,6 +25,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
+@SuppressWarnings("rawtypes")
 public class ListCellRenderer implements javax.swing.ListCellRenderer {
 	protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 

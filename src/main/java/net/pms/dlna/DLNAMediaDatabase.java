@@ -83,7 +83,7 @@ public class DLNAMediaDatabase implements Runnable {
 		return DBcount;
 	}
 	
-	public static int setDBcount(int value) {
+	public int setDBcount(int value) {
 		return DBcount = value;
 	}
 	

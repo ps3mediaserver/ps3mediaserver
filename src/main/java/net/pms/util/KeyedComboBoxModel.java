@@ -60,7 +60,7 @@ import javax.swing.event.ListDataListener;
  * @author Thomas Morgner
  * @author mail@tcox.org (Added generics)
  */
-public class KeyedComboBoxModel implements ComboBoxModel {
+public class KeyedComboBoxModel implements ComboBoxModel<Object> {
 	/**
 	 * The internal data carrier to map keys to values and vice versa.
 	 */
