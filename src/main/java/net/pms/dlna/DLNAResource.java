@@ -46,6 +46,7 @@ import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
+import net.pms.dlna.virtual.ShuffleFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
@@ -84,6 +85,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAResource.class);
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
+	protected static final String SHUFFLE_FOLDER = "#--SHUFFLE--#";
 	protected static final String TRANSCODE_FOLDER = "#--TRANSCODE--#";
 	private final Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
 	private static final int STOP_PLAYING_DELAY = 4000;
@@ -112,6 +114,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	@Deprecated
 	protected Format ext;
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
+	protected String displayNamePrefix;
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
@@ -556,6 +564,18 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							isIncompatible = true;
 						}
 
+						// Shuffle folder
+						if (child.getExt().isVideo()) {
+							vf = getShuffleFolder(true);
+
+							if (vf != null) {
+								DLNAResource newChild = child.clone();
+								newChild.setPlayer(pl);
+								newChild.setMedia(child.getMedia());
+								vf.addChild(newChild);
+							}
+						}
+
 						// Force transcoding if
 						// 1- MediaInfo support detected the file was not matched with supported codec configs and no SkipTranscode extension forced by user
 						// or 2- ForceTranscode extension forced by user
@@ -625,6 +645,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param create
 	 * @return
 	 */
+	protected static TranscodeVirtualFolder transcodeFolder = null;
 	TranscodeVirtualFolder getTranscodeFolder(boolean create) {
 		if (!isTranscodeFolderAvailable()) {
 			return null;
@@ -632,17 +653,37 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		if (PMS.getConfiguration().getHideTranscodeEnabled()) {
 			return null;
 		}
-		// search for transcode folder
-		for (DLNAResource r : getChildren()) {
-			if (r instanceof TranscodeVirtualFolder) {
-				return (TranscodeVirtualFolder) r;
-			}
-		}
+	
+		if (transcodeFolder != null)
+			return transcodeFolder;
+
 		if (create) {
-			TranscodeVirtualFolder vf = new TranscodeVirtualFolder(null);
-			addChildInternal(vf);
-			return vf;
+			transcodeFolder = new TranscodeVirtualFolder(null);
+			addChildInternal(transcodeFolder);
+			return transcodeFolder;
 		}
+		return null;
+	}
+
+	/**
+	 * Return a virtual folder encompassing a shuffled list of children
+	 * @param create
+	 * @return
+	 */
+	protected static ShuffleFolder shuffleFolder = null;
+	ShuffleFolder getShuffleFolder(boolean create) {
+		// TODO: check configuration file to see if we should add
+		// a shuffle folder
+
+		if (shuffleFolder != null)
+			return shuffleFolder;
+
+		if (create) {
+			shuffleFolder = new ShuffleFolder();
+			addChildInternal(shuffleFolder);
+			return shuffleFolder;
+		}
+
 		return null;
 	}
 
@@ -894,6 +935,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		if (this instanceof RealFile && PMS.getConfiguration().isHideExtensions() && !isFolder()) {
 			name = FileUtil.getFileNameWithoutExtension(name);
 		}
+
+		if (getDisplayNamePrefix() != null) {
+			name = getDisplayNamePrefix() + name;
+		}
+
 		if (getPlayer() != null) {
 			if (isNoName()) {
 				name = "[" + getPlayer().name() + "]";
@@ -1736,6 +1782,20 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	protected void setExt(Format ext) {
 		this.ext = ext;
+	}
+
+	/**
+	 * TODO: Document 
+	 */
+	public String getDisplayNamePrefix() {
+		return displayNamePrefix;
+	}
+
+	/**
+	 * TODO: Document
+	 */
+	public void setDisplayNamePrefix(String prefix) {
+		this.displayNamePrefix = prefix;
 	}
 
 	/**
