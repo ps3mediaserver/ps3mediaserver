@@ -80,6 +80,7 @@ public class NavigationShareTab {
 	private JCheckBox iphoto;
 	private JCheckBox aperture;
 	private JCheckBox itunes;
+	private JCheckBox shuffleFolder;
 	private JButton select;
 	private JButton cachereset;
 
@@ -171,6 +172,8 @@ public class NavigationShareTab {
 
 		builder.addLabel(Messages.getString("FoldTab.18"), cc.xyw(1, 23, 3));
 		builder.add(sortmethod, cc.xyw(4, 23, 4));
+
+		builder.add(shuffleFolder, cc.xyw(8, 23, 3));
 
 
 		cmp = builderSharedFolder.addSeparator(Messages.getString("FoldTab.7"), cc.xyw(1, 1, 6));
@@ -487,6 +490,18 @@ public class NavigationShareTab {
 		aperture.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setApertureEnabled((e.getStateChange() == ItemEvent.SELECTED));
+			}
+		});
+
+		// ShuffleFolder enabled
+		shuffleFolder = new JCheckBox(Messages.getString("FoldTab.35"));
+		shuffleFolder.setContentAreaFilled(false);
+		if (configuration.getShuffleFolderEnabled()) {
+			shuffleFolder.setSelected(true);
+		}
+		shuffleFolder.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setShuffleFolderEnabled((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 

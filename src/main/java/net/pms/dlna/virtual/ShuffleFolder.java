@@ -20,7 +20,6 @@ package net.pms.dlna.virtual;
 
 import net.pms.PMS;
 import net.pms.dlna.DLNAResource;
-import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
 import java.util.List;
 import java.util.Collections;
@@ -29,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ShuffleFolder extends VirtualFolder {
-	private static final Logger logger = LoggerFactory.getLogger(ShuffleFolder.class);
 	private boolean resolved;
 
 	public ShuffleFolder() {
@@ -39,8 +37,6 @@ public class ShuffleFolder extends VirtualFolder {
 	@Override
 	public void resolve() {
 		super.resolve();
-
-		logger.debug("Shuffling children...");		
 
 		List<DLNAResource> shuffledChildren = getChildren();
 		Collections.shuffle(shuffledChildren);

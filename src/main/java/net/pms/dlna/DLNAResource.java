@@ -654,8 +654,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			return null;
 		}
 	
-		if (transcodeFolder != null)
+		if (transcodeFolder != null) {
 			return transcodeFolder;
+		}
 
 		if (create) {
 			transcodeFolder = new TranscodeVirtualFolder(null);
@@ -672,11 +673,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	protected static ShuffleFolder shuffleFolder = null;
 	ShuffleFolder getShuffleFolder(boolean create) {
-		// TODO: check configuration file to see if we should add
-		// a shuffle folder
+		if (PMS.getConfiguration().getShuffleFolderEnabled() == false) {
+			return null;
+		}
 
-		if (shuffleFolder != null)
+		if (shuffleFolder != null) {
 			return shuffleFolder;
+		}
 
 		if (create) {
 			shuffleFolder = new ShuffleFolder();
@@ -1785,14 +1788,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**
-	 * TODO: Document 
+	 * Returns a string that is to be appended to the beginning of the calculated
+	 * display name. Default is null. 
 	 */
 	public String getDisplayNamePrefix() {
 		return displayNamePrefix;
 	}
 
 	/**
-	 * TODO: Document
+	 * Set the display name prefix, a string appended to the beginning of the
+	 * calculated display name.
 	 */
 	public void setDisplayNamePrefix(String prefix) {
 		this.displayNamePrefix = prefix;
