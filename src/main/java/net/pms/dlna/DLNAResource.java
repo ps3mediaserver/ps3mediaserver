@@ -498,6 +498,19 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					setSkipTranscode(child.getExt().skip(PMS.getConfiguration().getNoTranscode(), getDefaultRenderer() != null ? getDefaultRenderer().getStreamedExtensions() : null));
 				}
 
+				// Shuffle folder
+				if (!allChildrenAreFolders && child.getExt().isVideo()) {
+					vf = getShuffleFolder(true);
+					
+					if (vf != null) {
+						DLNAResource newChild = child.clone();
+						newChild.setPlayer(child.getPlayer());
+						newChild.setMedia(child.getMedia());
+						vf.addChildInternal(newChild);
+					}
+				}
+
+
 				if (child.getExt() != null && (child.getExt().transcodable() || parserV2) && (child.getMedia() == null || parserV2)) {
 					if (!parserV2) {
 						child.setMedia(new DLNAMediaInfo());
@@ -564,18 +577,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							isIncompatible = true;
 						}
 
-						// Shuffle folder
-						if (child.getExt().isVideo()) {
-							vf = getShuffleFolder(true);
-
-							if (vf != null) {
-								DLNAResource newChild = child.clone();
-								newChild.setPlayer(pl);
-								newChild.setMedia(child.getMedia());
-								vf.addChildInternal(newChild);
-							}
-						}
-
+						
 						// Force transcoding if
 						// 1- MediaInfo support detected the file was not matched with supported codec configs and no SkipTranscode extension forced by user
 						// or 2- ForceTranscode extension forced by user
@@ -645,7 +647,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param create
 	 * @return
 	 */
-	protected static TranscodeVirtualFolder transcodeFolder = null;
 	TranscodeVirtualFolder getTranscodeFolder(boolean create) {
 		if (!isTranscodeFolderAvailable()) {
 			return null;
@@ -654,12 +655,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			return null;
 		}
 	
-		if (transcodeFolder != null) {
-			return transcodeFolder;
+		for (DLNAResource r : getChildren()) {
+			if ((r instanceof TranscodeVirtualFolder) == true)
+				return (TranscodeVirtualFolder) r;
 		}
 
 		if (create) {
-			transcodeFolder = new TranscodeVirtualFolder(null);
+			TranscodeVirtualFolder transcodeFolder = new TranscodeVirtualFolder(null);
 			addChildInternal(transcodeFolder);
 			return transcodeFolder;
 		}
@@ -671,18 +673,18 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param create
 	 * @return
 	 */
-	protected static ShuffleFolder shuffleFolder = null;
 	ShuffleFolder getShuffleFolder(boolean create) {
 		if (PMS.getConfiguration().getShuffleFolderEnabled() == false) {
 			return null;
 		}
-
-		if (shuffleFolder != null) {
-			return shuffleFolder;
+		
+		for (DLNAResource r : getChildren()) {
+			if ((r instanceof ShuffleFolder) == true)
+				return (ShuffleFolder) r;
 		}
 
 		if (create) {
-			shuffleFolder = new ShuffleFolder();
+			ShuffleFolder shuffleFolder = new ShuffleFolder();
 			addChildInternal(shuffleFolder);
 			return shuffleFolder;
 		}
