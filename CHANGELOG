@@ -7,6 +7,7 @@ Changelog:
 	Fix global custom MEncoder options
 	Fix startup for symlinked PMS.sh (#1356) (thanks, Matthijs!)
 	Added documentation to PMS.conf (thanks, Hagar!)
+	Updated JNA to support multiarch directories on Linux (#1152)
 
 1.52.1 - 2012-04-06
 
