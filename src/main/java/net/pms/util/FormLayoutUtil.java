@@ -21,9 +21,6 @@ package net.pms.util;
 import java.awt.ComponentOrientation;
 import java.awt.Insets;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormSpec.DefaultAlignment;
@@ -37,7 +34,6 @@ import com.jgoodies.forms.layout.FormSpec.DefaultAlignment;
  * Based on the jgoodies ComponenOrientationExample tutorial code.
  */
 public class FormLayoutUtil {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FormLayoutUtil.class);
 
 	/**
 	 * Flips the default alignment of the given column specification and returns
@@ -163,7 +159,6 @@ public class FormLayoutUtil {
 	 */
 	private static CellConstraints flipHorizontally(CellConstraints cc, int columnCount) {
 		CellConstraints flipped = flipHorizontally(cc);
-		LOGGER.info("columnCount: (" + columnCount + ") + 1 - gridX (" + cc.gridX + ") - gridWidth (" + cc.gridWidth + ") + 1 = " + (columnCount + 1 - cc.gridX - cc.gridWidth + 1));
 		flipped.gridX = columnCount + 1 - cc.gridX - cc.gridWidth + 1;
 
 		return flipped;
