@@ -18,15 +18,18 @@
  */
 package net.pms.encoders;
 
+import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Locale;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
@@ -44,6 +47,7 @@ import net.pms.io.StreamModifier;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.util.CodecUtil;
+import net.pms.util.FormLayoutUtil;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
@@ -55,6 +59,9 @@ import org.slf4j.LoggerFactory;
 
 public class TSMuxerVideo extends Player {
 	private static final Logger logger = LoggerFactory.getLogger(TSMuxerVideo.class);
+	private static final String COL_SPEC = "left:pref, 0:grow";
+	private static final String ROW_SPEC = "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow";
+
 	public static final String ID = "tsmuxer";
 	private PmsConfiguration configuration;
 
@@ -543,9 +550,12 @@ public class TSMuxerVideo extends Player {
 
 	@Override
 	public JComponent config() {
-		FormLayout layout = new FormLayout(
-			"left:pref, 0:grow",
-			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow");
+		// Apply the orientation for the locale
+		Locale locale = new Locale(configuration.getLanguage());
+		ComponentOrientation orientation = ComponentOrientation.getOrientation(locale);
+		String colSpec = FormLayoutUtil.getColSpec(COL_SPEC, orientation);
+		FormLayout layout = new FormLayout(colSpec, ROW_SPEC);
+
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.EMPTY_BORDER);
 		builder.setOpaque(false);
@@ -553,7 +563,7 @@ public class TSMuxerVideo extends Player {
 		CellConstraints cc = new CellConstraints();
 
 
-		JComponent cmp = builder.addSeparator(Messages.getString("TSMuxerVideo.3"), cc.xyw(2, 1, 1));
+		JComponent cmp = builder.addSeparator(Messages.getString("TSMuxerVideo.3"), FormLayoutUtil.flip(cc.xyw(2, 1, 1), colSpec, orientation));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
@@ -567,7 +577,7 @@ public class TSMuxerVideo extends Player {
 				configuration.setTsmuxerForceFps(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
-		builder.add(tsmuxerforcefps, cc.xy(2, 3));
+		builder.add(tsmuxerforcefps, FormLayoutUtil.flip(cc.xy(2, 3), colSpec, orientation));
 
 		muxallaudiotracks = new JCheckBox(Messages.getString("TSMuxerVideo.19"));
 		muxallaudiotracks.setContentAreaFilled(false);
@@ -580,9 +590,14 @@ public class TSMuxerVideo extends Player {
 				configuration.setMuxAllAudioTracks(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
-		builder.add(muxallaudiotracks, cc.xy(2, 5));
+		builder.add(muxallaudiotracks, FormLayoutUtil.flip(cc.xy(2, 5), colSpec, orientation));
 
-		return builder.getPanel();
+		JPanel panel = builder.getPanel();
+
+		// Apply the orientation to the panel and all components in it
+		panel.applyComponentOrientation(orientation);
+
+		return panel;
 	}
 
 	public boolean isInternalSubtitlesSupported() {

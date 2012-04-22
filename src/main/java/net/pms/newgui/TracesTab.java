@@ -19,6 +19,7 @@
 package net.pms.newgui;
 
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -28,6 +29,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -38,7 +40,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import net.pms.Messages;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.logging.LoggingConfigFileLoader;
+import net.pms.util.FormLayoutUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +53,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class TracesTab {
 	private static final Logger logger = LoggerFactory.getLogger(TracesTab.class);
+	private PmsConfiguration configuration;
 
 	class PopupTriggerMouseListener extends MouseAdapter {
 		private JPopupMenu popup;
@@ -79,13 +84,22 @@ public class TracesTab {
 	}
 	private JTextArea jList;
 
+	TracesTab(PmsConfiguration configuration) {
+		this.configuration = configuration;
+	}
+
 	public JTextArea getList() {
 		return jList;
 	}
 
 	public JComponent build() {
+		// Apply the orientation for the locale
+		Locale locale = new Locale(configuration.getLanguage());
+		ComponentOrientation orientation = ComponentOrientation.getOrientation(locale);
+		String colSpec = FormLayoutUtil.getColSpec("left:pref, 10:grow", orientation);
+
 		FormLayout layout = new FormLayout(
-			"left:pref, 10:grow",
+			colSpec,
 			"fill:10:grow, p");
 		PanelBuilder builder = new PanelBuilder(layout);
 		//  builder.setBorder(Borders.DLU14_BORDER);

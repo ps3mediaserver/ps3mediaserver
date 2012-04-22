@@ -18,6 +18,7 @@
  */
 package net.pms.newgui;
 
+import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -25,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -34,6 +36,8 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import net.pms.Messages;
+import net.pms.configuration.PmsConfiguration;
+import net.pms.util.FormLayoutUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +51,7 @@ public class StatusTab {
 
 	private static final int MAX_RENDERERS = 10;
 	private ImagePanel imagePanel;
+	private PmsConfiguration configuration;
 	private ImagePanel renderers[] = new ImagePanel[MAX_RENDERERS];
 	private JLabel rendererLabels[] = new JLabel[MAX_RENDERERS];
 	private int numRenderers;
@@ -56,6 +61,10 @@ public class StatusTab {
 	private long rc = 0;
 	private long peak;
 	private DecimalFormat formatter = new DecimalFormat("#,###");
+
+	StatusTab(PmsConfiguration configuration) {
+		this.configuration = configuration;
+	}
 
 	public JProgressBar getJpb() {
 		return jpb;
@@ -70,8 +79,13 @@ public class StatusTab {
 	}
 
 	public JComponent build() {
+		// Apply the orientation for the locale
+		Locale locale = new Locale(configuration.getLanguage());
+		ComponentOrientation orientation = ComponentOrientation.getOrientation(locale);
+		String colSpec = FormLayoutUtil.getColSpec("0:grow, pref, 0:grow", orientation);
+
 		FormLayout layout = new FormLayout(
-			"0:grow, pref, 0:grow",
+			colSpec,
 			"pref, 9dlu, pref, 3dlu, pref, 15dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 5dlu, p");
 
 		PanelBuilder builder = new PanelBuilder(layout);
@@ -79,27 +93,27 @@ public class StatusTab {
 		builder.setOpaque(true);
 		CellConstraints cc = new CellConstraints();
 
-		JComponent cmp = builder.addSeparator(Messages.getString("StatusTab.2"), cc.xy(2, 1));
+		JComponent cmp = builder.addSeparator(Messages.getString("StatusTab.2"), FormLayoutUtil.flip(cc.xy(2, 1), colSpec, orientation));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		jl = new JLabel(Messages.getString("StatusTab.3"));
 
-		builder.add(jl, cc.xy(2, 3));
+		builder.add(jl, FormLayoutUtil.flip(cc.xy(2, 3), colSpec, orientation));
 		imagePanel = buildImagePanel("/resources/images/connect_no-220.png");
-		builder.add(imagePanel, cc.xy(2, 5, "center, fill"));
+		builder.add(imagePanel, FormLayoutUtil.flip(cc.xy(2, 5, "center, fill"), colSpec, orientation));
 
 		jpb = new JProgressBar(0, 100);
 		jpb.setStringPainted(true);
 		jpb.setString(Messages.getString("StatusTab.5"));
 
-		builder.addLabel(Messages.getString("StatusTab.6"), cc.xy(2, 7));
-		builder.add(jpb, cc.xy(2, 9));
-		//builder.addLabel(Messages.getString("StatusTab.7"),  cc.xy(2,  11));
+		builder.addLabel(Messages.getString("StatusTab.6"), FormLayoutUtil.flip(cc.xy(2, 7), colSpec, orientation));
+		builder.add(jpb, FormLayoutUtil.flip(cc.xy(2, 9), colSpec, orientation));
+		//builder.addLabel(Messages.getString("StatusTab.7"),  FormLayoutUtil.flip(cc.xy(2,  11), colSpec, orientation));
 		jio = new JLabel(Messages.getString("StatusTab.8"));
-		builder.add(jio, cc.xy(2, 13));
+		builder.add(jio, FormLayoutUtil.flip(cc.xy(2, 13), colSpec, orientation));
 
-		cmp = builder.addSeparator(Messages.getString("StatusTab.9"), cc.xy(2, 15));
+		cmp = builder.addSeparator(Messages.getString("StatusTab.9"), FormLayoutUtil.flip(cc.xy(2, 15), colSpec, orientation));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
@@ -118,6 +132,10 @@ public class StatusTab {
 		builder.add(rendererBuilder.getPanel(), cc.xy(2, 17));
 
 		JPanel panel = builder.getPanel();
+
+		// Apply the orientation to the panel and all components in it
+		panel.applyComponentOrientation(orientation);
+
 		JScrollPane scrollPane = new JScrollPane(
 			panel,
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
