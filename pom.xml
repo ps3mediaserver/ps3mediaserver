@@ -71,6 +71,14 @@
 		<!-- NSIS needs a version without "-SNAPSHOT" or "-b1" -->
 		<project.version.short>1.51.0</project.version.short>
 
+		<!--
+			JNA 3.4.0 solves issue #1152, but causes a bug in Windows.
+			The version is therefore overruled in the Windows profile.
+			This property should be removed when Windows can use the
+			same version.
+		-->
+		<jna-version>3.4.0</jna-version>
+
 		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
 		<jgoodies-common-version>1.2.1</jgoodies-common-version>
 		<jgoodies-forms-version>1.4.2</jgoodies-forms-version>
@@ -284,15 +292,10 @@
 			<version>2.0.3</version>
 		</dependency>
 
-		<!--
-			Careful about updating the JNA library, it makes Java crash when
-			browsing folders with files in them on Windows (reproduced with 3.4.0).
-			Updating would fix issue #1152, though.
-		-->
 		<dependency>
 			<groupId>net.java.dev.jna</groupId>
 			<artifactId>jna</artifactId>
-			<version>3.2.5</version>
+			<version>${jna-version}</version>
 		</dependency>
 
 		<!-- XXX: not Mavenized: http://www.jgoodies.com/downloads/libraries.html -->
@@ -876,7 +879,14 @@
 					<family>windows</family>
 				</os>
 			</activation>
-			
+
+			<properties>
+				<!--
+					Last known JNA version known not to cause a Java crash
+					when browsing folders with files in them on Windows.
+				-->
+				<jna-version>3.2.5</jna-version>
+			</properties>			
 
 			<pluginRepositories>
 				<pluginRepository>
