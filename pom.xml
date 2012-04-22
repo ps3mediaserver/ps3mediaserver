@@ -1497,8 +1497,7 @@
 									<jvmVersion>1.6+</jvmVersion>
 									<!-- Options to the JVM, will be used as the value of VMOptions 
 										in Info.plist. -->
-									<vmOptions>-Xmx768M -Xss16M -Dfile.encoding=UTF-8
-										-Djava.net.preferIPv4Stack=true -jar</vmOptions>
+									<vmOptions>-Xmx768M -Xss16M -Dfile.encoding=UTF-8 -Djava.net.preferIPv4Stack=true -jar</vmOptions>
 									<dictionaryFile>${project.external-resources}/osx/Info.plist-template.xml</dictionaryFile>
 									<internetEnable>false</internetEnable>
 									<additionalClasspath />
