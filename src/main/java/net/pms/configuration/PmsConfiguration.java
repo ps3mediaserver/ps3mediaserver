@@ -154,6 +154,7 @@ public class PmsConfiguration {
 	private static final String KEY_SERVER_HOSTNAME = "hostname";
 	private static final String KEY_SERVER_PORT = "port";
 	private static final String KEY_SHARES = "shares";
+	private static final String KEY_SHUFFLE_FOLDER = "show_shuffle_folder";
 	private static final String KEY_SKIP_LOOP_FILTER_ENABLED = "skiploopfilter";
 	private static final String KEY_SKIP_NETWORK_INTERFACES = "skip_network_interfaces";
 	private static final String KEY_SORT_METHOD = "key_sort_method";
@@ -203,6 +204,7 @@ public class PmsConfiguration {
 			KEY_SORT_METHOD,
 			KEY_HIDE_EMPTY_FOLDERS,
 			KEY_HIDE_TRANSCODE_FOLDER,
+			KEY_SHUFFLE_FOLDER,
 			KEY_HIDE_MEDIA_LIBRARY_FOLDER,
 			KEY_OPEN_ARCHIVES,
 			KEY_USE_CACHE,
@@ -2083,5 +2085,13 @@ public class PmsConfiguration {
 
 	public void removeConfigurationListener(ConfigurationListener l) {
 		configuration.removeConfigurationListener(l);
+	}
+
+	public boolean getShuffleFolderEnabled() {
+		return getBoolean(KEY_SHUFFLE_FOLDER, false);
+	}
+
+	public void setShuffleFolderEnabled(boolean value) {
+		configuration.setProperty(KEY_SHUFFLE_FOLDER, value);
 	}
 }

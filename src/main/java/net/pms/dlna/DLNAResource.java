@@ -46,6 +46,7 @@ import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
+import net.pms.dlna.virtual.ShuffleFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
@@ -84,6 +85,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAResource.class);
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
+	protected static final String SHUFFLE_FOLDER = "#--SHUFFLE--#";
 	protected static final String TRANSCODE_FOLDER = "#--TRANSCODE--#";
 	private final Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
 	private static final int STOP_PLAYING_DELAY = 4000;
@@ -112,6 +114,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	@Deprecated
 	protected Format ext;
+
+	/**
+	 * @deprecated Use standard getter and setter to access this variable.
+	 */
+	@Deprecated
+	protected String displayNamePrefix;
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
@@ -490,6 +498,19 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					setSkipTranscode(child.getExt().skip(PMS.getConfiguration().getNoTranscode(), getDefaultRenderer() != null ? getDefaultRenderer().getStreamedExtensions() : null));
 				}
 
+				// Shuffle folder
+				if (!allChildrenAreFolders && child.getExt().isVideo()) {
+					vf = getShuffleFolder(true);
+					
+					if (vf != null) {
+						DLNAResource newChild = child.clone();
+						newChild.setPlayer(child.getPlayer());
+						newChild.setMedia(child.getMedia());
+						vf.addChildInternal(newChild);
+					}
+				}
+
+
 				if (child.getExt() != null && (child.getExt().transcodable() || parserV2) && (child.getMedia() == null || parserV2)) {
 					if (!parserV2) {
 						child.setMedia(new DLNAMediaInfo());
@@ -556,6 +577,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							isIncompatible = true;
 						}
 
+						
 						// Force transcoding if
 						// 1- MediaInfo support detected the file was not matched with supported codec configs and no SkipTranscode extension forced by user
 						// or 2- ForceTranscode extension forced by user
@@ -632,17 +654,41 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		if (PMS.getConfiguration().getHideTranscodeEnabled()) {
 			return null;
 		}
-		// search for transcode folder
+	
 		for (DLNAResource r : getChildren()) {
-			if (r instanceof TranscodeVirtualFolder) {
+			if ((r instanceof TranscodeVirtualFolder) == true)
 				return (TranscodeVirtualFolder) r;
-			}
 		}
+
 		if (create) {
-			TranscodeVirtualFolder vf = new TranscodeVirtualFolder(null);
-			addChildInternal(vf);
-			return vf;
+			TranscodeVirtualFolder transcodeFolder = new TranscodeVirtualFolder(null);
+			addChildInternal(transcodeFolder);
+			return transcodeFolder;
 		}
+		return null;
+	}
+
+	/**
+	 * Return a virtual folder encompassing a shuffled list of children
+	 * @param create
+	 * @return
+	 */
+	ShuffleFolder getShuffleFolder(boolean create) {
+		if (PMS.getConfiguration().getShuffleFolderEnabled() == false) {
+			return null;
+		}
+		
+		for (DLNAResource r : getChildren()) {
+			if ((r instanceof ShuffleFolder) == true)
+				return (ShuffleFolder) r;
+		}
+
+		if (create) {
+			ShuffleFolder shuffleFolder = new ShuffleFolder();
+			addChildInternal(shuffleFolder);
+			return shuffleFolder;
+		}
+
 		return null;
 	}
 
@@ -894,6 +940,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		if (this instanceof RealFile && PMS.getConfiguration().isHideExtensions() && !isFolder()) {
 			name = FileUtil.getFileNameWithoutExtension(name);
 		}
+
+		if (getDisplayNamePrefix() != null) {
+			name = getDisplayNamePrefix() + name;
+		}
+
 		if (getPlayer() != null) {
 			if (isNoName()) {
 				name = "[" + getPlayer().name() + "]";
@@ -1736,6 +1787,22 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	protected void setExt(Format ext) {
 		this.ext = ext;
+	}
+
+	/**
+	 * Returns a string that is to be appended to the beginning of the calculated
+	 * display name. Default is null. 
+	 */
+	public String getDisplayNamePrefix() {
+		return displayNamePrefix;
+	}
+
+	/**
+	 * Set the display name prefix, a string appended to the beginning of the
+	 * calculated display name.
+	 */
+	public void setDisplayNamePrefix(String prefix) {
+		this.displayNamePrefix = prefix;
 	}
 
 	/**
