@@ -1408,6 +1408,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						public void run() {
 							if (refCount == 1) {
 								LOGGER.info(String.format("renderer: %s, file: %s", rendererId, getSystemName()));
+								PMS.get().getFrame().setStatusLine("");
 
 								for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 									if (listener instanceof StartStopListener) {
@@ -1437,7 +1438,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		new Thread(defer, "StopPlaying Event Deferrer").start();
 	}
 
-	/**Returns an InputStream of this DLNAResource that starts at a given time, if possible. Very useful if video chapters are being used.
+	/**
+	 * Returns an InputStream of this DLNAResource that starts at a given time, if possible. Very useful if video chapters are being used.
 	 * @param range
 	 * @param mediarenderer
 	 * @return The inputstream
