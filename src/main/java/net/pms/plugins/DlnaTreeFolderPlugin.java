@@ -1,4 +1,4 @@
-package net.pms.medialibrary.external;
+package net.pms.plugins;
 
 import java.io.IOException;
 import javax.swing.Icon;
@@ -19,15 +19,15 @@ import net.pms.dlna.DLNAResource;
  * @author pw
  * 
  */
-public interface DlnaTreeFolderPlugin extends PmsPluginBase {
+public interface DlnaTreeFolderPlugin extends PluginBase {
 
 	/***
 	 * Gets the icon that will show in the context menu of the JTree in the Tree
 	 * view when extending 'Add'. The icon should have a size of 16x16px.
 	 * 
-	 * @return the plugin icon
+	 * @return the icon icon to show in the tree
 	 */
-	Icon getIcon();
+	Icon getTreeNodeIcon();
 
 	/***
 	 * The name set through this method has to be used as the name for the root

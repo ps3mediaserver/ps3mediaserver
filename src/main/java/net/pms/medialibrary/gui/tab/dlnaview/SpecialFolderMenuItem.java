@@ -2,7 +2,7 @@ package net.pms.medialibrary.gui.tab.dlnaview;
 
 import javax.swing.JMenuItem;
 
-import net.pms.medialibrary.external.DlnaTreeFolderPlugin;
+import net.pms.plugins.DlnaTreeFolderPlugin;
 
 public class SpecialFolderMenuItem extends JMenuItem {
     private static final long serialVersionUID = -2269678999237368235L;

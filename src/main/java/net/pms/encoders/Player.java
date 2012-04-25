@@ -33,12 +33,11 @@ import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
-import net.pms.external.ExternalFactory;
-import net.pms.external.ExternalListener;
-import net.pms.external.FinalizeTranscoderArgsListener;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
+import net.pms.plugins.FinalizeTranscoderArgsListener;
+import net.pms.plugins.PluginsFactory;
 import net.pms.util.FileUtil;
 import net.pms.util.Iso639;
 
@@ -67,10 +66,8 @@ public abstract class Player {
 		new ArrayList<FinalizeTranscoderArgsListener>();
 
 	public static void initializeFinalizeTranscoderArgsListeners() {
-		for (ExternalListener listener : ExternalFactory.getExternalListeners()) {
-			if (listener instanceof FinalizeTranscoderArgsListener) {
-				finalizeTranscodeArgsListeners.add((FinalizeTranscoderArgsListener) listener);
-			}
+		for (FinalizeTranscoderArgsListener listener : PluginsFactory.getFinalizeTranscoderArgsListeners()) {
+			finalizeTranscodeArgsListeners.add((FinalizeTranscoderArgsListener) listener);
 		}
 	}
 

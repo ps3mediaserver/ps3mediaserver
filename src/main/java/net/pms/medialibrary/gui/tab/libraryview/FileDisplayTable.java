@@ -60,7 +60,6 @@ import net.pms.medialibrary.commons.helpers.FileImportHelper;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
 import net.pms.medialibrary.commons.interfaces.IProgress;
-import net.pms.medialibrary.external.FileImportPlugin;
 import net.pms.medialibrary.gui.dialogs.FileImportTemplateDialog;
 import net.pms.medialibrary.gui.dialogs.FileUpdateWithPluginDialog;
 import net.pms.medialibrary.gui.dialogs.fileeditdialog.FileEditDialog;
@@ -71,6 +70,7 @@ import net.pms.medialibrary.gui.shared.ETable;
 import net.pms.medialibrary.gui.shared.JCustomCheckBoxMenuItem;
 import net.pms.medialibrary.gui.shared.SpringUtilities;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
+import net.pms.plugins.FileImportPlugin;
 
 public class FileDisplayTable extends JPanel {
 	private static final long serialVersionUID = -3062848510551753642L;

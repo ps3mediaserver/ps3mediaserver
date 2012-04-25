@@ -50,9 +50,9 @@ import net.pms.medialibrary.commons.exceptions.FileImportException;
 import net.pms.medialibrary.commons.exceptions.FilePropertyImportException;
 import net.pms.medialibrary.commons.exceptions.FilePropertyImportException.ExceptionType;
 import net.pms.medialibrary.commons.interfaces.IProgress;
-import net.pms.medialibrary.external.ExternalFactory;
-import net.pms.medialibrary.external.FileImportPlugin;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
+import net.pms.plugins.FileImportPlugin;
+import net.pms.plugins.PluginsFactory;
 
 public class FileImportHelper {
 	private static final Logger log = LoggerFactory.getLogger(FileImportHelper.class);
@@ -75,7 +75,7 @@ public class FileImportHelper {
 		List<DOFileScannerEngineConfiguration> res = new ArrayList<DOFileScannerEngineConfiguration>();
 		
 		//get the list of available plugins and create a map containing all available engines for a file property
-		List<FileImportPlugin> importPlugins = ExternalFactory.getFileImportPlugins();
+		List<FileImportPlugin> importPlugins = PluginsFactory.getFileImportPlugins();
 		Map<FileProperty, List<String>> filePropertyEngineNames = new HashMap<FileProperty, List<String>>();
 		for(FileProperty fp : FileProperty.values()) {
 			List<String> engineNames = new ArrayList<String>();
@@ -324,7 +324,7 @@ public class FileImportHelper {
 		//lazy-load file import plugins
 		if(fileImportPlugins == null) {
 			fileImportPlugins = new HashMap<String, FileImportPlugin>();
-			for(FileImportPlugin p : ExternalFactory.getFileImportPlugins()){
+			for(FileImportPlugin p : PluginsFactory.getFileImportPlugins()){
 				fileImportPlugins.put(p.getName(), p);
 			}
 		}
@@ -948,7 +948,7 @@ public class FileImportHelper {
 	public static List<String> getAvailableEngineNames(FileType fileType) {
 		List<String> res = new ArrayList<String>();
 		
-		for(FileImportPlugin p : ExternalFactory.getFileImportPlugins()) {
+		for(FileImportPlugin p : PluginsFactory.getFileImportPlugins()) {
 			try {
 				if(p.getSupportedFileTypes().contains(fileType)) {
 					res.add(p.getName());
@@ -970,7 +970,7 @@ public class FileImportHelper {
 	 */
 	public static Map<String, List<String>> getTagNamesPerEngine(FileType fileType, DOFileImportTemplate template) {
 		Map<String, List<String>> res = new HashMap<String, List<String>>();
-		for(FileImportPlugin p : ExternalFactory.getFileImportPlugins()) {
+		for(FileImportPlugin p : PluginsFactory.getFileImportPlugins()) {
 			//only add engine names which are configured to allow the current file type and have at least one tag
 			if(template.getEnabledEngines().get(fileType).contains(p.getName()) && p.getSupportedFileTypes().contains(fileType)) {
 				List<String> supportedTags = new ArrayList<String>();

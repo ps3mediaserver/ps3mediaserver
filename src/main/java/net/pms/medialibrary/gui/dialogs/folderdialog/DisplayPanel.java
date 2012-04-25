@@ -80,11 +80,11 @@ import net.pms.medialibrary.commons.exceptions.TemplateException;
 import net.pms.medialibrary.commons.helpers.FolderHelper;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.IMediaLibraryStorage;
-import net.pms.medialibrary.external.ExternalFactory;
-import net.pms.medialibrary.external.FileDetailPlugin;
 import net.pms.medialibrary.gui.dialogs.ConfigureFileEntryDialog;
 import net.pms.medialibrary.gui.dialogs.FileEntryPluginDialog;
 import net.pms.medialibrary.gui.shared.FileDisplayPanel;
+import net.pms.plugins.FileDetailPlugin;
+import net.pms.plugins.PluginsFactory;
 
 class DisplayPanel extends JPanel {
 	private static final Logger log = LoggerFactory.getLogger(DisplayPanel.class);
@@ -606,7 +606,7 @@ class DisplayPanel extends JPanel {
 		mAdd.addSeparator();
 		
 		//Get, sort and add plugins to context menu
-		List<FileDetailPlugin> plugins = ExternalFactory.getFileEntries();
+		List<FileDetailPlugin> plugins = PluginsFactory.getFileDetailPlugins();
 		Collections.sort(plugins, new Comparator<FileDetailPlugin>() {
 			@Override
             public int compare(FileDetailPlugin o1, FileDetailPlugin o2) {

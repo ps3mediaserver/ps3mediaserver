@@ -20,7 +20,6 @@ package net.pms.newgui;
 
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -47,8 +46,6 @@ import javax.swing.SwingUtilities;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
-import net.pms.external.ExternalFactory;
-import net.pms.external.ExternalListener;
 import net.pms.util.KeyedComboBoxModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -72,7 +69,6 @@ public class NetworkTab {
 	private JComboBox langs;
 	private JComboBox networkinterfacesCBX;
 	private JTextField ip_filter;
-	private JPanel pPlugins;
 	private final PmsConfiguration configuration;
 
 	NetworkTab(PmsConfiguration configuration) {
@@ -314,47 +310,11 @@ public class NetworkTab {
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-
-		pPlugins = new JPanel(new GridLayout());
-		pPlugins.setBorder(null);
-		pPlugins.setBackground(null);
-		builder.add(pPlugins, cc.xyw(1, 39, 9));
-
 		JPanel panel = builder.getPanel();
 		JScrollPane scrollPane = new JScrollPane(
 			panel,
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		return scrollPane;
-	}
-
-	public void addPlugins() {
-		FormLayout layout = new FormLayout(
-				"fill:10:grow",
-				"p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p");
-		PanelBuilder builder = new PanelBuilder(layout);
-
-		CellConstraints cc = new CellConstraints();
-		int i = 1;
-		for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
-			if (i >= 30) {
-				logger.warn("Plugin limit of 30 has been reached");
-				break;
-			}
-			JButton bPlugin = new JButton(listener.name());
-			// listener to show option screen
-			bPlugin.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JOptionPane.showOptionDialog(
-							(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), listener.config(),
-							"Options", JOptionPane.CLOSED_OPTION,
-							JOptionPane.PLAIN_MESSAGE, null, null, null);
-				}
-			});
-			builder.add(bPlugin, cc.xy(1, i++));
-		}
-		pPlugins.add(builder.getPanel());
 	}
 }

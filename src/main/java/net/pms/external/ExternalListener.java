@@ -5,6 +5,8 @@ import javax.swing.JComponent;
 /**
  * Base interface for pms plugins. Classes implementing this interface and
  * packaged as pms plugins will show up in the plugins section of the GUI.
+ * 
+ * @Deprecated
  */
 public interface ExternalListener {
 	/**

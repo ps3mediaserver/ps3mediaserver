@@ -52,16 +52,14 @@ import net.pms.encoders.Player;
 import net.pms.encoders.PlayerFactory;
 import net.pms.encoders.TSMuxerVideo;
 import net.pms.encoders.VideoLanVideoStreaming;
-import net.pms.external.AdditionalResourceFolderListener;
-import net.pms.external.ExternalFactory;
-import net.pms.external.ExternalListener;
-import net.pms.external.StartStopListener;
 import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.SizeLimitInputStream;
 import net.pms.network.HTTPResource;
+import net.pms.plugins.PluginsFactory;
+import net.pms.plugins.StartStopListener;
 import net.pms.util.FileUtil;
 import net.pms.util.ImagesUtil;
 import net.pms.util.Iso639;
@@ -581,16 +579,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								LOGGER.trace("Duplicate " + child.getName() + " with player: " + pl.toString());
 
 								vf.addChild(fileFolder);
-							}
-						}
-
-						for (ExternalListener listener : ExternalFactory.getExternalListeners()) {
-							if (listener instanceof AdditionalResourceFolderListener) {
-								try {
-									((AdditionalResourceFolderListener) listener).addAdditionalFolder(this, child);
-								} catch (Throwable t) {
-									LOGGER.error(String.format("Failed to add add additional folder for listener of type=%s", listener.getClass()), t);
-								}
 							}
 						}
 					} else if (!child.getExt().isCompatible(child.getMedia(),getDefaultRenderer()) && !child.isFolder()) {
@@ -1356,21 +1344,19 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					public void run() {
 						LOGGER.info(String.format("renderer: %s, file: %s", rendererId, getSystemName()));
 
-						for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
-							if (listener instanceof StartStopListener) {
-								// run these asynchronously for slow handlers (e.g. logging, scrobbling)
-								Runnable fireStartStopEvent = new Runnable() {
-									@Override
-									public void run() {
-										try {
-											((StartStopListener) listener).nowPlaying(getMedia(), self);
-										} catch (Throwable t) {
-											LOGGER.error(String.format("Notification of startPlaying event failed for StartStopListener %s", listener.getClass()), t);
-										}
+						for (final StartStopListener plugin : PluginsFactory.getStartStopListeners()) {
+							// run these asynchronously for slow handlers (e.g. logging, scrobbling)
+							Runnable fireStartStopEvent = new Runnable() {
+								@Override
+								public void run() {
+									try {
+										((StartStopListener) plugin).nowPlaying(getMedia(), self);
+									} catch (Throwable t) {
+										LOGGER.error(String.format("Notification of startPlaying event failed for StartStopListener %s", plugin.getClass()), t);
 									}
-								};
-								new Thread(fireStartStopEvent, "StartPlaying Event for " + listener.name()).start();
-							}
+								}
+							};
+							new Thread(fireStartStopEvent, "StartPlaying Event for " + plugin.getName()).start();
 						}
 					}
 				};
@@ -1409,21 +1395,19 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							if (refCount == 1) {
 								LOGGER.info(String.format("renderer: %s, file: %s", rendererId, getSystemName()));
 
-								for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
-									if (listener instanceof StartStopListener) {
-										// run these asynchronously for slow handlers (e.g. logging, scrobbling)
-										Runnable fireStartStopEvent = new Runnable() {
-											@Override
-											public void run() {
-												try {
-													((StartStopListener) listener).donePlaying(getMedia(), self);
-												} catch (Throwable t) {
-													LOGGER.error(String.format("Notification of donePlaying event failed for StartStopListener %s", listener.getClass()), t);
-												}
+								for (final StartStopListener listener : PluginsFactory.getStartStopListeners()) {
+									// run these asynchronously for slow handlers (e.g. logging, scrobbling)
+									Runnable fireStartStopEvent = new Runnable() {
+										@Override
+										public void run() {
+											try {
+												((StartStopListener) listener).donePlaying(getMedia(), self);
+											} catch (Throwable t) {
+												LOGGER.error(String.format("Notification of donePlaying event failed for StartStopListener %s", listener.getClass()), t);
 											}
-										};
-										new Thread(fireStartStopEvent, "StopPlaying Event for " + listener.name()).start();
-									}
+										}
+									};
+									new Thread(fireStartStopEvent, "StopPlaying Event for " + listener.getName()).start();
 								}
 							}
 						}

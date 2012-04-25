@@ -2,7 +2,7 @@ package net.pms.medialibrary.gui.dialogs.folderdialog;
 
 import javax.swing.JMenuItem;
 
-import net.pms.medialibrary.external.FileDetailPlugin;
+import net.pms.plugins.FileDetailPlugin;
 
 public class FileEntryPluginMenuItem extends JMenuItem {
     private static final long serialVersionUID = -6237466696454071444L;

@@ -29,7 +29,7 @@ import java.util.StringTokenizer;
 
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
-import net.pms.external.StartStopListenerDelegate;
+import net.pms.plugins.StartStopListenerDelegate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

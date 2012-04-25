@@ -1,4 +1,4 @@
-package net.pms.medialibrary.external;
+package net.pms.plugins;
 
 import java.io.IOException;
 
@@ -16,7 +16,7 @@ import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
  * @author pw
  * 
  */
-public interface FileDetailPlugin extends PmsPluginBase {
+public interface FileDetailPlugin extends PluginBase {
 	/**
 	 * Must return true if it's a folder, false if it's a file
 	 * 

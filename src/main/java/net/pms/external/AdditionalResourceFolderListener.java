@@ -5,6 +5,8 @@ import net.pms.dlna.DLNAResource;
 /**
  * Classes implementing this interface and packaged as pms plugins will add a
  * single folder to every existing folder
+ * 
+ * @Deprecated
  */
 public interface AdditionalResourceFolderListener extends ExternalListener {
 	/**

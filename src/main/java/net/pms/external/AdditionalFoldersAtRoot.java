@@ -2,11 +2,15 @@ package net.pms.external;
 
 import java.util.Iterator;
 import net.pms.dlna.DLNAResource;
+import net.pms.plugins.DlnaTreeFolderPlugin;
 
 /**
  * Classes implementing this interface and packaged as pms plugins will show 0-n
  * additional folders at the root level when the DLNA tree is being browsed on
  * the renderer
+ * 
+ * @Deprecated
+ * @see DlnaTreeFolderPlugin
  */
 public interface AdditionalFoldersAtRoot extends ExternalListener {
 	/**

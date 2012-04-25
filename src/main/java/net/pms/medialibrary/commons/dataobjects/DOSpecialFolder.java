@@ -1,7 +1,7 @@
 package net.pms.medialibrary.commons.dataobjects;
 
 import net.pms.medialibrary.commons.enumarations.FolderType;
-import net.pms.medialibrary.external.DlnaTreeFolderPlugin;
+import net.pms.plugins.DlnaTreeFolderPlugin;
 
 public class DOSpecialFolder extends DOFolder implements Cloneable {
 	private String        configFilePath;

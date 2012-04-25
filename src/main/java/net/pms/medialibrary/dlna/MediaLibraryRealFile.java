@@ -26,8 +26,8 @@ import net.pms.medialibrary.commons.enumarations.FileDisplayType;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.helpers.DLNAHelper;
 import net.pms.medialibrary.commons.helpers.ImageHelper;
-import net.pms.medialibrary.external.FileDetailPlugin;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
+import net.pms.plugins.FileDetailPlugin;
 
 public class MediaLibraryRealFile extends RealFile {
 	private static final Logger log = LoggerFactory.getLogger(MediaLibraryRealFile.class);

@@ -1,4 +1,4 @@
-package net.pms.medialibrary.external;
+package net.pms.plugins;
 
 import java.util.List;
 
@@ -8,14 +8,14 @@ import net.pms.medialibrary.commons.exceptions.FileImportException;
 
 /**
  * Classes implementing this interface and packaged as plugins will be used by
- * pms-mlx to import additional informations about files while scanning folders
- * or editing files in the library. A file can be of type video, audio or a
+ * pms to import additional informations about files while scanning folders or
+ * editing files in the library. A file can be of type video, audio or a
  * picture.
  * 
  * @author pw
  * 
  */
-public interface FileImportPlugin extends PmsPluginBase {
+public interface FileImportPlugin extends PluginBase {
 
 	/**
 	 * The plugin should import the properties that will be available through

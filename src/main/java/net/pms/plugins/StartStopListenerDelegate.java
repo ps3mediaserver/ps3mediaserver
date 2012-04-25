@@ -1,5 +1,5 @@
 // a utility class, instances of which trigger start/stop callbacks before/after streaming a resource
-package net.pms.external;
+package net.pms.plugins;
 
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;

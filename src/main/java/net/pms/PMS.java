@@ -51,8 +51,6 @@ import net.pms.medialibrary.storage.MediaLibraryStorage;
 import net.pms.dlna.virtual.MediaLibrary;
 import net.pms.encoders.Player;
 import net.pms.encoders.PlayerFactory;
-import net.pms.external.ExternalFactory;
-import net.pms.external.ExternalListener;
 import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
 import net.pms.gui.DummyFrame;
@@ -73,6 +71,7 @@ import net.pms.network.UPNPHelper;
 import net.pms.newgui.GeneralTab;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
+import net.pms.plugins.PluginsFactory;
 import net.pms.update.AutoUpdater;
 import net.pms.util.ProcessUtil;
 import net.pms.util.PropertiesUtil;
@@ -447,15 +446,12 @@ public class PMS {
 		 * this, then a new external listener implementing a new callback should be added
 		 * e.g. StartupListener.registeredExtensions()
 		 */
-		try {
-			ExternalFactory.lookup();
-		} catch (Exception e) {
-			logger.error("Error loading plugins", e);
-		}
+		PluginsFactory.lookup();
 
 		// a static block in Player doesn't work (i.e. is called too late).
 		// this must always be called *after* the plugins have loaded.
 		// here's as good a place as any
+		PluginsFactory.initializeFinalizeTranscoderArgsListeners();
 		Player.initializeFinalizeTranscoderArgsListeners();
 
 		// Initialize a player factory to register all players
@@ -464,8 +460,8 @@ public class PMS {
 		// Add registered player engines
 		frame.addEngines();
 
-		// Instantiate listeners that require registered players.
-		ExternalFactory.instantiateLateListeners();
+		// Initialize the remaining plugins
+		PluginsFactory.initializePlugins();
 
 		boolean binding = false;
 
@@ -519,9 +515,8 @@ public class PMS {
 			@Override
 			public void run() {
 				try {
-					for (ExternalListener l : ExternalFactory.getExternalListeners()) {
-						l.shutdown();
-					}
+					PluginsFactory.shutdownPlugins();
+					
 					UPNPHelper.shutDownListener();
 					UPNPHelper.sendByeBye();
 					logger.debug("Forcing shutdown of all active processes");
@@ -561,11 +556,6 @@ public class PMS {
 	    }
 		
 		FullDataCollector.configure(MediaLibraryConfiguration.getInstance().getPictureSaveFolderPath());
-		try {
-	        net.pms.medialibrary.external.ExternalFactory.lookup();
-        } catch (Exception e) {
-	        logger.error("Failed to load media library plugins", e);
-        }
 		
 		//delete thumbnails for every session
 		File thumbFolder = new File(MediaLibraryConfiguration.getInstance().getPictureSaveFolderPath() + "thumbnails");

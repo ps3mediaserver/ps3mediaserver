@@ -1,4 +1,4 @@
-package net.pms.external;
+package net.pms.plugins;
 
 import java.util.List;
 
@@ -11,11 +11,8 @@ import net.pms.io.OutputParams;
  * Classes implementing this interface and packaged as pms plugins will have the
  * possibility to modify transcoding arguments when a resource is being
  * transcoded
- * 
- * @Deprecated
- * @see net.pms.plugins.FinalizeTranscoderArgsListener
  */
-public interface FinalizeTranscoderArgsListener extends ExternalListener {
+public interface FinalizeTranscoderArgsListener extends PluginBase {
 	/**
 	 * Called before the transcoding of a resource starts to determine the list
 	 * of commands to be used

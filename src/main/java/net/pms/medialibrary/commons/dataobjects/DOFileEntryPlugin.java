@@ -3,7 +3,7 @@ package net.pms.medialibrary.commons.dataobjects;
 import java.util.List;
 
 import net.pms.medialibrary.commons.enumarations.FileDisplayType;
-import net.pms.medialibrary.external.FileDetailPlugin;
+import net.pms.plugins.FileDetailPlugin;
 
 
 public class DOFileEntryPlugin extends DOFileEntryBase {

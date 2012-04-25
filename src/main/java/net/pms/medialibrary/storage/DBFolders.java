@@ -27,8 +27,8 @@ import net.pms.medialibrary.commons.enumarations.FolderType;
 import net.pms.medialibrary.commons.enumarations.SortOption;
 import net.pms.medialibrary.commons.enumarations.ThumbnailPrioType;
 import net.pms.medialibrary.commons.exceptions.StorageException;
-import net.pms.medialibrary.external.ExternalFactory;
-import net.pms.medialibrary.external.DlnaTreeFolderPlugin;
+import net.pms.plugins.DlnaTreeFolderPlugin;
+import net.pms.plugins.PluginsFactory;
 
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.slf4j.Logger;
@@ -523,7 +523,7 @@ class DBFolders extends DBBase {
     			res.setConfigFilePath(rs.getString(2));
     			
     			//load and configure the special folder
-    			DlnaTreeFolderPlugin sf = ExternalFactory.getSpecialFolderByName(className);
+    			DlnaTreeFolderPlugin sf = PluginsFactory.getDlnaTreeFolderPluginByName(className);
     			sf.setDisplayName(f.getName());
     			
     			File configFile = new File(res.getConfigFilePath());    			

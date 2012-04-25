@@ -67,12 +67,12 @@ import net.pms.medialibrary.commons.helpers.FileHelper;
 import net.pms.medialibrary.commons.helpers.FolderComparator;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.IMediaLibraryStorage;
-import net.pms.medialibrary.external.ExternalFactory;
-import net.pms.medialibrary.external.DlnaTreeFolderPlugin;
 import net.pms.medialibrary.gui.dialogs.AddAutoFolderDialog;
 import net.pms.medialibrary.gui.dialogs.SpecialFolderDialog;
 import net.pms.medialibrary.gui.dialogs.folderdialog.FolderDialog;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
+import net.pms.plugins.DlnaTreeFolderPlugin;
+import net.pms.plugins.PluginsFactory;
 
 public class DLNAViewTree extends JTree {
 	private static final Logger log = LoggerFactory.getLogger(DLNAViewTree.class);
@@ -559,7 +559,7 @@ public class DLNAViewTree extends JTree {
 		addMenu.add(addFolderItem);
 		addMenu.add(addAutoFolderItem);
 		
-		List<DlnaTreeFolderPlugin> specialFolders = ExternalFactory.getSpecialFolders();
+		List<DlnaTreeFolderPlugin> specialFolders = PluginsFactory.getDlnaTreeFolderPlugins();
 		Collections.sort(specialFolders, new Comparator<DlnaTreeFolderPlugin>() {
 
 			@Override
@@ -572,7 +572,7 @@ public class DLNAViewTree extends JTree {
     		addMenu.addSeparator();
     		for (DlnaTreeFolderPlugin f : specialFolders) {
     			SpecialFolderMenuItem miSpecialFolder = new SpecialFolderMenuItem(f);
-    			miSpecialFolder.setIcon(f.getIcon());
+    			miSpecialFolder.setIcon(f.getTreeNodeIcon());
     			miSpecialFolder.addActionListener(new ActionListener() {
     
     				@Override

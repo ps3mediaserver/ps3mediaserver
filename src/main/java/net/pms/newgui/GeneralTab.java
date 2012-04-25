@@ -45,9 +45,9 @@ import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.Build;
 import net.pms.configuration.PmsConfiguration;
-import net.pms.external.ExternalFactory;
-import net.pms.external.ExternalListener;
 import net.pms.network.NetworkConfiguration;
+import net.pms.plugins.PluginBase;
+import net.pms.plugins.PluginsFactory;
 import net.pms.util.KeyedComboBoxModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -349,18 +349,18 @@ public class GeneralTab {
 
 		CellConstraints cc = new CellConstraints();
 		int i = 1;
-		for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
+		for (final PluginBase plugin : PluginsFactory.getPlugins()) {
 			if (i > 30) {
 				logger.warn("Plugin limit of 30 has been reached");
 				break;
 			}
-			JButton bPlugin = new JButton(listener.name());
+			JButton bPlugin = new JButton(plugin.getName());
 			// listener to show option screen
 			bPlugin.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), 
-							listener.config(), "Options", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+							plugin.getGlobalConfigurationPanel(), "Options", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
 				}
 			});
 			builder.add(bPlugin, cc.xy(1, i++));

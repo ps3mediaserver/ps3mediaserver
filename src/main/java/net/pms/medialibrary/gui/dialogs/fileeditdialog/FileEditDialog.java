@@ -20,9 +20,9 @@ import net.pms.medialibrary.commons.enumarations.ConditionType;
 import net.pms.medialibrary.commons.helpers.FileImportHelper;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.FileEditLinkedList;
-import net.pms.medialibrary.external.FileImportPlugin;
 import net.pms.medialibrary.gui.dialogs.FileUpdateWithPluginDialog;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
+import net.pms.plugins.FileImportPlugin;
 
 /**
  * Dialog used to visualize and edit file properties and tags

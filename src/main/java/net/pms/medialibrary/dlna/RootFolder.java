@@ -7,10 +7,9 @@ import net.pms.configuration.MapFileConfiguration;
 import net.pms.dlna.DLNAResource;
 import net.pms.external.AdditionalFolderAtRoot;
 import net.pms.external.AdditionalFoldersAtRoot;
-import net.pms.external.ExternalFactory;
-import net.pms.external.ExternalListener;
 import net.pms.medialibrary.commons.dataobjects.DOMediaLibraryFolder;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
+import net.pms.plugins.PluginsFactory;
 
 public class RootFolder extends MediaLibraryFolder{
 	private MediaLibraryFolder rootFolder;
@@ -60,16 +59,13 @@ public class RootFolder extends MediaLibraryFolder{
 	}
 	
 	private void addAdditionalFoldersAtRoot() {
-		for(ExternalListener l : ExternalFactory.getExternalListeners()){
-			if(l instanceof AdditionalFolderAtRoot){
-				AdditionalFolderAtRoot nf = (AdditionalFolderAtRoot)l;
-				addChild(nf.getChild());
-			} else if(l instanceof AdditionalFoldersAtRoot){
-				AdditionalFoldersAtRoot nfs = (AdditionalFoldersAtRoot)l;
-				DLNAResource child;
-				while((child = nfs.getChildren().next()) != null){
-					addChild(child);
-				}
+		for(AdditionalFolderAtRoot l : PluginsFactory.getAdditionalFolderAtRootList()) {
+			addChild(l.getChild());			
+		}
+		for(AdditionalFoldersAtRoot l : PluginsFactory.getAdditionalFoldersAtRootList()) {
+			DLNAResource child;
+			while((child = l.getChildren().next()) != null){
+				addChild(child);
 			}
 		}
 	}

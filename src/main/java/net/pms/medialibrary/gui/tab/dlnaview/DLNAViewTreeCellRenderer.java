@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import net.pms.medialibrary.commons.MediaLibraryConfiguration;
 import net.pms.medialibrary.commons.dataobjects.*;
-import net.pms.medialibrary.external.FileDetailPlugin;
-import net.pms.medialibrary.external.TreeEntry;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
+import net.pms.plugins.FileDetailPlugin;
+import net.pms.plugins.TreeEntry;
 
 public class DLNAViewTreeCellRenderer extends DefaultTreeCellRenderer {
 	private static final long serialVersionUID = 4620499669832969867L;
@@ -153,9 +153,9 @@ public class DLNAViewTreeCellRenderer extends DefaultTreeCellRenderer {
 			} else if (userObject instanceof DOSpecialFolder) {
 				DOSpecialFolder sf = (DOSpecialFolder)userObject;
     			if(sf.getSpecialFolderImplementation() != null && sf.getSpecialFolderImplementation().getTreeNode() == null){
-    				icon = getNoChildPossibleIcon(sf.getSpecialFolderImplementation().getIcon());
+    				icon = getNoChildPossibleIcon(sf.getSpecialFolderImplementation().getTreeNodeIcon());
     			}else {
-    				icon = sf.getSpecialFolderImplementation().getIcon();    				
+    				icon = sf.getSpecialFolderImplementation().getTreeNodeIcon();    				
     			}
 			} else if (userObject instanceof TreeEntry) {
 				TreeEntry te = (TreeEntry) userObject;

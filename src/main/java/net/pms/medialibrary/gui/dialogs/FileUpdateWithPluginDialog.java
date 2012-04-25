@@ -37,8 +37,8 @@ import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.enumarations.FileProperty;
-import net.pms.medialibrary.external.ExternalFactory;
-import net.pms.medialibrary.external.FileImportPlugin;
+import net.pms.plugins.FileImportPlugin;
+import net.pms.plugins.PluginsFactory;
 
 public class FileUpdateWithPluginDialog extends JDialog {
 	private static final long serialVersionUID = 3602614964875257644L;
@@ -241,7 +241,7 @@ public class FileUpdateWithPluginDialog extends JDialog {
 		if(rbId.isSelected()) {
 			//update plugins combo box
 			cbPlugins.removeAllItems();
-			for(FileImportPlugin fileImportPlugin : ExternalFactory.getFileImportPlugins()) {
+			for(FileImportPlugin fileImportPlugin : PluginsFactory.getFileImportPlugins()) {
 				if(fileImportPlugin.isImportByIdPossible()) {
 					cbPlugins.addItem(new FileImportPluginWrapper(fileImportPlugin));
 				}
@@ -256,7 +256,7 @@ public class FileUpdateWithPluginDialog extends JDialog {
 		} else if(rbName.isSelected()) {
 			//update plugins combo box
 			cbPlugins.removeAllItems();
-			for(FileImportPlugin fileImportPlugin : ExternalFactory.getFileImportPlugins()) {
+			for(FileImportPlugin fileImportPlugin : PluginsFactory.getFileImportPlugins()) {
 				if(fileImportPlugin.isSearchForFilePossible()) {
 					cbPlugins.addItem(new FileImportPluginWrapper(fileImportPlugin));
 				}

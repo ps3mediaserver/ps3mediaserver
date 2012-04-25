@@ -1,4 +1,4 @@
-package net.pms.external;
+package net.pms.plugins;
 
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
@@ -6,11 +6,8 @@ import net.pms.dlna.DLNAResource;
 /**
  * Classes implementing this interface and packaged as pms plugins will be
  * notified when a resources starts or stops being played
- * 
- * @Deprecated
- * @see net.pms.plugins.StartStopListener
  */
-public interface StartStopListener extends ExternalListener {
+public interface StartStopListener extends PluginBase {
 	/**
 	 * Called when a resource starts playing
 	 * @param media the DLNAMediaInfo for the resource being played

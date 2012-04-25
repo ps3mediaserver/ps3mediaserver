@@ -17,8 +17,8 @@ import net.pms.medialibrary.commons.enumarations.FileDisplayMode;
 import net.pms.medialibrary.commons.enumarations.FileDisplayType;
 import net.pms.medialibrary.commons.enumarations.ThumbnailPrioType;
 import net.pms.medialibrary.commons.exceptions.StorageException;
-import net.pms.medialibrary.external.ExternalFactory;
-import net.pms.medialibrary.external.FileDetailPlugin;
+import net.pms.plugins.FileDetailPlugin;
+import net.pms.plugins.PluginsFactory;
 
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.slf4j.Logger;
@@ -113,7 +113,7 @@ class DBFileFolder extends DBBase {
 						break;
 					case PLUGIN:
 		    			try {
-		    				FileDetailPlugin plugin = ExternalFactory.getFileEntryPluginByName(pluginName);
+		    				FileDetailPlugin plugin = PluginsFactory.getFileDetailPluginByName(pluginName);
 							DOFileEntryPlugin fep = new DOFileEntryPlugin(id, baseFolder, posInParent, displayNameMask, thumbnailPriorities, maxLineLength, plugin, pluginConfigFilePath);
 							baseFolder.getChildren().add(fep);
 		    			} catch(Exception ex) {
