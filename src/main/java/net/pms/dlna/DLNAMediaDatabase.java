@@ -129,7 +129,7 @@ public class DLNAMediaDatabase implements Runnable {
 		ResultSet rs = null;
 		Statement stmt = null;
 		
-		if (new File(cachedir + "\\" + cachename + ".data.db").exists()) {
+		if (new File(cachedir + File.separator + cachename + ".data.db").exists()) {
             try {	// Check if the cache is not severely damaged (wrong checksum)
             	conn = getConnection();
             } catch (SQLException se) {
@@ -145,8 +145,9 @@ public class DLNAMediaDatabase implements Runnable {
             	close(conn);
     		}
         }
-        if (new File(cachedir + "\\" + cachename + ".data.db").exists()) {
+        if (new File(cachedir + File.separator + cachename + ".data.db").exists()) {
        		try {
+       			dbcount = 0;
        			conn = getConnection();
        			stmt = conn.createStatement();
        			rs = stmt.executeQuery("SELECT count(*) FROM FILES");
