@@ -1488,34 +1488,79 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_USE_CACHE, value);
 	}
 
+	/**
+	 * Set to true if PMS should pass the flag "convertfps=true" to AviSynth.
+	 *
+	 * @param value True if PMS should pass the flag.
+	 */
 	public void setAvisynthConvertFps(boolean value) {
 		configuration.setProperty(KEY_AVISYNTH_CONVERT_FPS, value);
 	}
 
+	/**
+	 * Returns true if PMS should pass the flag "convertfps=true" to AviSynth.
+	 *
+	 * @return True if PMS should pass the flag.
+	 */
 	public boolean getAvisynthConvertFps() {
 		return getBoolean(KEY_AVISYNTH_CONVERT_FPS, true);
 	}
 
+	/**
+	 * Returns the template for the AviSynth script. The script string can
+	 * contain the character "\u0001", which should be treated as the newline
+	 * separator character.
+	 *
+	 * @return The AviSynth script template.
+	 */
 	public String getAvisynthScript() {
 		return getString(KEY_AVISYNTH_SCRIPT, DEFAULT_AVI_SYNTH_SCRIPT);
 	}
 
+	/**
+	 * Sets the template for the AviSynth script. The script string may contain
+	 * the character "\u0001", which will be treated as newline character.
+	 *
+	 * @param value The AviSynth script template.
+	 */
 	public void setAvisynthScript(String value) {
 		configuration.setProperty(KEY_AVISYNTH_SCRIPT, value);
 	}
 
+	/**
+	 * Returns additional codec specific configuration options for MEncoder.
+	 *
+	 * @return The configuration options.
+	 */
 	public String getCodecSpecificConfig() {
 		return getString(KEY_CODEC_SPEC_SCRIPT, "");
 	}
 
+	/**
+	 * Sets additional codec specific configuration options for MEncoder.
+	 *
+	 * @param value The additional configuration options.
+	 */
 	public void setCodecSpecificConfig(String value) {
 		configuration.setProperty(KEY_CODEC_SPEC_SCRIPT, value);
 	}
 
+	/**
+	 * Returns the maximum size (in MB) that PMS should use for buffering
+	 * audio.
+	 *
+	 * @return The maximum buffer size.
+	 */
 	public int getMaxAudioBuffer() {
 		return getInt(KEY_MAX_AUDIO_BUFFER, 100);
 	}
 
+	/**
+	 * Returns the minimum size (in MB) that PMS should use for the buffer used
+	 * for streaming media.
+	 *
+	 * @return The minimum buffer size.
+	 */
 	public int getMinStreamBuffer() {
 		return getInt(KEY_MIN_STREAM_BUFFER, 1);
 	}
