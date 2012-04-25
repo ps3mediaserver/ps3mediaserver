@@ -33,6 +33,7 @@ import net.pms.PMS;
 import net.pms.plugins.wrappers.AdditionalFolderAtRootWrapper;
 import net.pms.plugins.wrappers.AdditionalFoldersAtRootWrapper;
 import net.pms.plugins.wrappers.BaseWrapper;
+import net.pms.plugins.wrappers.ExternalListenerWrapper;
 import net.pms.plugins.wrappers.FinalizeTranscoderArgsListenerWrapper;
 import net.pms.plugins.wrappers.StartStopListenerWrapper;
 
@@ -393,6 +394,8 @@ public class PluginsFactory {
 			wp = new FinalizeTranscoderArgsListenerWrapper((net.pms.external.FinalizeTranscoderArgsListener) listener);
 		} else if(listener instanceof net.pms.external.StartStopListener) {
 			wp = new StartStopListenerWrapper((net.pms.external.StartStopListener) listener);
+		} else if(listener != null) {
+			wp = new ExternalListenerWrapper(listener);
 		}
 		
 		if(wp != null) {
