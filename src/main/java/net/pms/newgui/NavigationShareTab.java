@@ -146,7 +146,7 @@ public class NavigationShareTab {
 
 		builder.add(thumbgenCheckBox, FormLayoutUtil.flip(cc.xyw(1, 3, 3), colSpec, orientation));
 		builder.addLabel(Messages.getString("NetworkTab.16"), FormLayoutUtil.flip(cc.xyw(4, 3, 3), colSpec, orientation));
-		builder.add(seekpos, FormLayoutUtil.flip(cc.xyw(6, 3, 2), colSpec, orientation));
+		builder.add(seekpos, FormLayoutUtil.flip(cc.xyw(6, 3, 1), colSpec, orientation));
 
 		builder.add(mplayer_thumb, FormLayoutUtil.flip(cc.xyw(1, 5, 3), colSpec, orientation));
 		builder.add(dvdiso_thumb, FormLayoutUtil.flip(cc.xyw(3, 5, 3), colSpec, orientation));
@@ -154,7 +154,7 @@ public class NavigationShareTab {
 		builder.add(image_thumb, FormLayoutUtil.flip(cc.xyw(1, 7, 3), colSpec, orientation));
 
 		builder.addLabel(Messages.getString("FoldTab.26"), FormLayoutUtil.flip(cc.xyw(1, 9, 3), colSpec, orientation));
-		builder.add(audiothumbnail, FormLayoutUtil.flip(cc.xyw(4, 9, 4), colSpec, orientation));
+		builder.add(audiothumbnail, FormLayoutUtil.flip(cc.xyw(4, 9, 3), colSpec, orientation));
 
 		builder.addLabel(Messages.getString("FoldTab.27"), FormLayoutUtil.flip(cc.xyw(1, 11, 1), colSpec, orientation));
 		builder.add(defaultThumbFolder, FormLayoutUtil.flip(cc.xyw(4, 11, 3), colSpec, orientation));
@@ -177,11 +177,11 @@ public class NavigationShareTab {
 		builder.add(aperture, FormLayoutUtil.flip(cc.xyw(8, 19, 3), colSpec, orientation));
 
 		builder.add(cacheenable, FormLayoutUtil.flip(cc.xy(1, 21), colSpec, orientation));
-		builder.add(cachereset, FormLayoutUtil.flip(cc.xyw(4, 21, 4), colSpec, orientation));
+		builder.add(cachereset, FormLayoutUtil.flip(cc.xyw(4, 21, 3), colSpec, orientation));
 		builder.add(hidemedialibraryfolder, FormLayoutUtil.flip(cc.xyw(8, 21, 3), colSpec, orientation));
 
 		builder.addLabel(Messages.getString("FoldTab.18"), FormLayoutUtil.flip(cc.xyw(1, 23, 3), colSpec, orientation));
-		builder.add(sortmethod, FormLayoutUtil.flip(cc.xyw(4, 23, 4), colSpec, orientation));
+		builder.add(sortmethod, FormLayoutUtil.flip(cc.xyw(4, 23, 3), colSpec, orientation));
 
 		builder.add(builderSharedFolder.getPanel(), FormLayoutUtil.flip(cc.xyw(1, 27, 10), colSpec, orientation));
 
