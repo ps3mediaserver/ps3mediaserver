@@ -182,7 +182,7 @@ public class NavigationShareTab {
 		builder.add(cachereset, FormLayoutUtil.flip(cc.xyw(4, 21, 4), colSpec, orientation));
 		builder.add(hidemedialibraryfolder, FormLayoutUtil.flip(cc.xyw(8, 21, 3), colSpec, orientation));
 		
-		builder.add(cachecount, FormLayoutUtil.flip(cc.xyw(9, 23, 2), colSpec, orientation) );
+		builder.add(cachecount, FormLayoutUtil.flip(cc.xyw(8, 23, 3), colSpec, orientation) );
 		
 		builder.addLabel(Messages.getString("FoldTab.18"), FormLayoutUtil.flip(cc.xyw(1, 23, 3), colSpec, orientation));
 		builder.add(sortmethod, FormLayoutUtil.flip(cc.xyw(4, 23, 4), colSpec, orientation));
