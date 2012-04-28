@@ -314,6 +314,9 @@ public class PMS {
 		}
 		
 		RendererConfiguration.loadRendererConfigurations();
+
+		//initialize plugins early
+		PluginsFactory.lookup();
 		
 		initMediaLibrary();
 
@@ -437,16 +440,6 @@ public class PMS {
 		System.setErr(new PrintStream(new SystemErrWrapper(), true));
 
 		server = new HTTPServer(configuration.getServerPort());
-
-		/*
-		 * XXX: keep this here (i.e. after registerExtensions and before registerPlayers) so that plugins
-		 * can register custom players correctly (e.g. in the GUI) and/or add/replace custom formats
-		 *
-		 * XXX: if a plugin requires initialization/notification even earlier than
-		 * this, then a new external listener implementing a new callback should be added
-		 * e.g. StartupListener.registeredExtensions()
-		 */
-		PluginsFactory.lookup();
 
 		// a static block in Player doesn't work (i.e. is called too late).
 		// this must always be called *after* the plugins have loaded.

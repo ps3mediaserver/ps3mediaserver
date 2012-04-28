@@ -430,7 +430,7 @@ public class PluginsFactory {
 	private static <T> List<T> getPlugins(Class<T> c) {
 		List<T> res = new ArrayList<T>();
 		for (PluginBase p : plugins) {
-			if (p.getClass().equals(c)) {
+			if (c.isAssignableFrom(p.getClass())) {
 				res.add((T) p);
 			}
 		}
