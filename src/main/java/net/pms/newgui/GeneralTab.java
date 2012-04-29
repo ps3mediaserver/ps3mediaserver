@@ -118,7 +118,7 @@ public class GeneralTab {
 				FormLayoutUtil.flip(cc.xy(1, 7), colSpec, orientation));
 		final KeyedComboBoxModel kcbm = new KeyedComboBoxModel(new Object[] {
 				"ar", "bg", "ca", "zhs", "zht", "cz", "da", "nl", "en", "fi", "fr",
-				"de", "el", "he", "is", "it", "ja", "ko", "no", "pl", "pt", "br",
+				"de", "el", "iw", "is", "it", "ja", "ko", "no", "pl", "pt", "br",
 				"ro", "ru", "sl", "es", "sv", "tr" }, new Object[] {
 				"Arabic", "Bulgarian", "Catalan", "Chinese (Simplified)",
 				"Chinese (Traditional)", "Czech", "Danish", "Dutch", "English",
