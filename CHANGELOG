@@ -8,6 +8,10 @@ Changelog:
 	Fix startup for symlinked PMS.sh (#1356) (thanks, Matthijs!)
 	Added documentation to PMS.conf (thanks, Hagar!)
 	Updated JNA to support multiarch directories on Linux (#1152)
+	Added GUI support for right-to-left languages
+	Language updates:
+		- added Arabic
+		- added Hebrew (thanks, zvi-yamin!)
 
 1.52.1 - 2012-04-06
 
