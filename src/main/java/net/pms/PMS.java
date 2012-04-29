@@ -71,6 +71,7 @@ import net.pms.network.UPNPHelper;
 import net.pms.newgui.GeneralTab;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
+import net.pms.notification.NotificationCenter;
 import net.pms.plugins.PluginsFactory;
 import net.pms.update.AutoUpdater;
 import net.pms.util.ProcessUtil;
@@ -444,7 +445,6 @@ public class PMS {
 		// a static block in Player doesn't work (i.e. is called too late).
 		// this must always be called *after* the plugins have loaded.
 		// here's as good a place as any
-		PluginsFactory.initializeFinalizeTranscoderArgsListeners();
 		Player.initializeFinalizeTranscoderArgsListeners();
 
 		// Initialize a player factory to register all players
@@ -456,6 +456,8 @@ public class PMS {
 		// Initialize the remaining plugins
 		PluginsFactory.initializePlugins();
 
+		NotificationCenter.post("Plugins", "All plugins have been initialized", null);
+		
 		boolean binding = false;
 
 		try {
