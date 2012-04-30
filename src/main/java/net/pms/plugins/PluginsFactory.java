@@ -450,12 +450,11 @@ public class PluginsFactory {
 		try {
 			Class<?> clLauncher = classLoader.loadClass(className);
 			Object instance = clLauncher.newInstance();
-			if (instance.getClass().isAssignableFrom(c)) {
+			if (c.isAssignableFrom(instance.getClass())) {
 				res = (T) instance;
 			}
 		} catch (Exception ex) {
-			LOGGER.error("Failed to resolve plugin by name for " + className,
-					ex);
+			LOGGER.error("Failed to resolve plugin by name for " + className, ex);
 		}
 		return res;
 	}
