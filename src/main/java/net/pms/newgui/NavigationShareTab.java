@@ -36,6 +36,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -91,7 +92,8 @@ public class NavigationShareTab {
 	private JCheckBox itunes;
 	private JButton select;
 	private JButton cachereset;
-
+	private static JLabel cachecount;
+	
 	public DefaultListModel getDf() {
 		return df;
 	}
@@ -179,7 +181,9 @@ public class NavigationShareTab {
 		builder.add(cacheenable, FormLayoutUtil.flip(cc.xy(1, 21), colSpec, orientation));
 		builder.add(cachereset, FormLayoutUtil.flip(cc.xyw(4, 21, 3), colSpec, orientation));
 		builder.add(hidemedialibraryfolder, FormLayoutUtil.flip(cc.xyw(8, 21, 3), colSpec, orientation));
-
+		
+		builder.add(cachecount, FormLayoutUtil.flip(cc.xyw(8, 23, 3), colSpec, orientation) );
+		
 		builder.addLabel(Messages.getString("FoldTab.18"), FormLayoutUtil.flip(cc.xyw(1, 23, 3), colSpec, orientation));
 		builder.add(sortmethod, FormLayoutUtil.flip(cc.xyw(4, 23, 3), colSpec, orientation));
 
@@ -519,6 +523,9 @@ public class NavigationShareTab {
 				}
 			}
 		});
+		
+		// Cache count
+		cachecount = new JLabel("");
 	}
 
 	private PanelBuilder initSharedFoldersGuiComponents(CellConstraints cc) {
@@ -673,5 +680,9 @@ public class NavigationShareTab {
 	public void setScanLibraryEnabled(boolean enabled) {
 		but5.setEnabled(enabled);
 		but5.setIcon(LooksFrame.readImageIcon("search-32.png"));
+	}
+
+	public static void setCacheRecords(int cacheRecords) {
+		cachecount.setText(Messages.getString("FoldTab.35") + cacheRecords);
 	}
 }
