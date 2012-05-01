@@ -4,7 +4,9 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 
 /**
- * Base class shared by all pms plugins.
+ * Base class shared by all pms plugins.<br>
+ * This interface should never be implemented. Use the {@link Plugin} interface
+ * instead if no additional functionality is required
  * 
  * @author pw
  * 

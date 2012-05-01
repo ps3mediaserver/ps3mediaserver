@@ -59,6 +59,7 @@ import net.pms.configuration.PmsConfiguration;
 import net.pms.gui.IFrame;
 import net.pms.io.WindowsNamedPipe;
 import net.pms.medialibrary.gui.tab.MediaLibraryTab;
+import net.pms.newgui.plugins.PluginsTab;
 import net.pms.newgui.update.AutoUpdateDialog;
 import net.pms.update.AutoUpdater;
 import net.pms.util.PropertiesUtil;
@@ -362,6 +363,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		tabbedPane.addTab(Messages.getString("LooksFrame.20"),/* readImageIcon("advanced-16.png"),*/ nt.build());
 		tabbedPane.addTab(Messages.getString("LooksFrame.22"), /*readImageIcon("bookmark-16.png"),*/ ft.build());
 		tabbedPane.addTab(Messages.getString("ML.Tab.Header"),/*  readImageIcon("mail_new-16.png"), */new MediaLibraryTab().build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.27"),/*  readImageIcon("mail_new-16.png"), */new PluginsTab());
 		tabbedPane.addTab(Messages.getString("LooksFrame.21"),/* readImageIcon("player_play-16.png"),*/ tr.build());
 		tabbedPane.addTab(Messages.getString("LooksFrame.24"), /* readImageIcon("mail_new-16.png"), */ new HelpTab().build());
 		tabbedPane.addTab(Messages.getString("LooksFrame.25"), /*readImageIcon("documentinfo-16.png"),*/ new AboutTab().build());
