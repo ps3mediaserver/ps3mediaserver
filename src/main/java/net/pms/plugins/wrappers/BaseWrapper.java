@@ -4,9 +4,9 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 
 import net.pms.external.ExternalListener;
-import net.pms.plugins.PluginBase;
+import net.pms.plugins.Plugin;
 
-public abstract class BaseWrapper implements PluginBase {
+public abstract class BaseWrapper implements Plugin {
 	private ExternalListener listener;
 	
 	public BaseWrapper(ExternalListener listener) {

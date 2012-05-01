@@ -37,14 +37,23 @@ public class PluginGroupPanel extends JPanel {
 	 * @param name the header text
 	 * @param plugins list of plugins
 	 */
-	public PluginGroupPanel(String name, List<PluginBase> plugins) {
+	public PluginGroupPanel(String header, List<PluginBase> plugins) {
 		setLayout(new GridLayout());
-		header = name;
+		
+		setHeader(header);
 		this.plugins = plugins;
 		
 		build();
 	}
+	
+	public String getHeader() {
+		return header;
+	}
 
+	public void setHeader(String header) {
+		this.header = header;
+	}
+	
 	/**
 	 * Builds the panel
 	 */

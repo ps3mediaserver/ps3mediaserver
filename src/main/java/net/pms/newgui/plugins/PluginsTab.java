@@ -8,11 +8,14 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -164,11 +167,20 @@ public class PluginsTab extends JPanel {
 		    GridBagConstraints gbc = new GridBagConstraints();
 		    gbc.weightx = 1;
 			int y = 0;
-		    for(Class<?> c : pluginGroups.keySet()) {
+			List<PluginGroupPanel> pgs = Arrays.asList(pluginGroups.values().toArray(new PluginGroupPanel[pluginGroups.size()]));
+			Collections.sort(pgs, new Comparator<PluginGroupPanel>() {
+
+				@Override
+				public int compare(PluginGroupPanel o1, PluginGroupPanel o2) {
+					return o1.getHeader().compareTo(o2.getHeader());
+				}
+			});
+			
+		    for(PluginGroupPanel pg : pgs) {
 			    gbc.fill = GridBagConstraints.HORIZONTAL;
 			    gbc.gridx = 0;
 			    gbc.gridy = y++;
-				pAllPlugins.add(pluginGroups.get(c), gbc);
+				pAllPlugins.add(pg, gbc);
 				//don't add the top padding to the top element
 			    gbc.insets = new Insets(10, 0, 0, 0);
 			}
