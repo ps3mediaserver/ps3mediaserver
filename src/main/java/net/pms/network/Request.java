@@ -341,8 +341,8 @@ public class Request extends HTTPResource {
 				inputStream.read(b);
 				String s = new String(b);
 				s = s.replace("uuid:1234567890TOTO", PMS.get().usn());//.substring(0, PMS.get().usn().length()-2));
-				s = s.replace("<host>", PMS.get().getServer().getHost());
-				s = s.replace("<port>", "" + PMS.get().getServer().getPort());
+				s = s.replace("[host]", PMS.get().getServer().getHost());
+				s = s.replace("[port]", "" + PMS.get().getServer().getPort());
 				if (xbox) {
 					logger.debug("DLNA changes for Xbox360");
 					s = s.replace("PS3 Media Server", "PS3 Media Server [" + profileName + "] : Windows Media Connect");

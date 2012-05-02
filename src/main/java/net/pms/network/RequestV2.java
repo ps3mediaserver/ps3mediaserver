@@ -446,8 +446,8 @@ public class RequestV2 extends HTTPResource {
 				s = s.replace("uuid:1234567890TOTO", PMS.get().usn());//.substring(0, PMS.get().usn().length()-2));
 				String profileName = PMS.getConfiguration().getProfileName();
 				if (PMS.get().getServer().getHost() != null) {
-					s = s.replace("<host>", PMS.get().getServer().getHost());
-					s = s.replace("<port>", "" + PMS.get().getServer().getPort());
+					s = s.replace("[host]", PMS.get().getServer().getHost());
+					s = s.replace("[port]", "" + PMS.get().getServer().getPort());
 				}
 				if (xbox) {
 					logger.debug("DLNA changes for Xbox360");
