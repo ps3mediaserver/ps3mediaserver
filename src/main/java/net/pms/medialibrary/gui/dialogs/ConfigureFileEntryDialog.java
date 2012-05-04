@@ -39,7 +39,7 @@ public class ConfigureFileEntryDialog extends JDialog {
 	private DOFileEntryFolder                 parent;
 
 	public ConfigureFileEntryDialog(DOFileEntryBase fileEntry, DOFileEntryFolder parent, FileType fileType) {
-		((java.awt.Frame) this.getOwner()).setIconImage(new ImageIcon(FolderDialog.class.getResource("/resources/images/icon-32.png")).getImage());
+		((java.awt.Frame) this.getOwner()).setIconImage(new ImageIcon(FolderDialog.class.getResource("/resources/images/icon-16.png")).getImage());
 		setMinimumSize(new Dimension(600, 0));
 		pFilterFile = new FileDisplayPanel(fileEntry, fileType);
 		fileEntryType = fileEntry.getFileEntryType();

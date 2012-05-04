@@ -70,7 +70,7 @@ public class FileUpdateWithPluginDialog extends JDialog {
 
 	
 	public FileUpdateWithPluginDialog(DOFileInfo fileInfo) {
-		((java.awt.Frame)getOwner()).setIconImage(new ImageIcon(getClass().getResource("/resources/images/icon-32.png")).getImage());
+		((java.awt.Frame)getOwner()).setIconImage(new ImageIcon(getClass().getResource("/resources/images/icon-16.png")).getImage());
 		setTitle(String.format(Messages.getString("ML.FileUpdateWithPluginDialog.Title"), fileInfo.getFileName(true)));
 		setLayout(new GridLayout());
 		

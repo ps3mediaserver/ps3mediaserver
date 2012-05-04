@@ -1,5 +1,6 @@
 package net.pms.medialibrary.gui.dialogs;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ import net.pms.medialibrary.gui.dialogs.folderdialog.FolderDialog;
 
 public class SpecialFolderDialog extends JDialog {
 	private static final long                       serialVersionUID = -3958360301187444404L;
+	private final int MIN_BUTTON_WIDTH = 60;
+
 	private DOSpecialFolder                         specialFolder;
 	private JPanel                                  pButtons;
 	private JTextField                              tfName;
@@ -31,7 +34,7 @@ public class SpecialFolderDialog extends JDialog {
 	private List<SpecialFolderDialogActionListener> dialogListeners  = new ArrayList<SpecialFolderDialogActionListener>();
 
 	public SpecialFolderDialog(DOSpecialFolder f) {
-		((java.awt.Frame)this.getOwner()).setIconImage(new ImageIcon(FolderDialog.class.getResource("/resources/images/icon-32.png")).getImage());
+		((java.awt.Frame)this.getOwner()).setIconImage(new ImageIcon(FolderDialog.class.getResource("/resources/images/icon-16.png")).getImage());
 		init();
 
 		setTitle(f.getSpecialFolderImplementation().getName());
@@ -64,6 +67,7 @@ public class SpecialFolderDialog extends JDialog {
 		tfName = new JTextField();
 
 		JButton bSave = new JButton(Messages.getString("ML.SpecialFolderDialog.bSave"));
+		if (bSave.getPreferredSize().width < MIN_BUTTON_WIDTH) bSave.setPreferredSize(new Dimension(MIN_BUTTON_WIDTH, bSave.getPreferredSize().height));
 		bSave.addActionListener(new ActionListener() {
 
 			@Override
@@ -73,6 +77,7 @@ public class SpecialFolderDialog extends JDialog {
 		});
 
 		JButton bApply = new JButton(Messages.getString("ML.SpecialFolderDialog.bApply"));
+		if (bApply.getPreferredSize().width < MIN_BUTTON_WIDTH) bSave.setPreferredSize(new Dimension(MIN_BUTTON_WIDTH, bApply.getPreferredSize().height));
 		bApply.addActionListener(new ActionListener() {
 
 			@Override
@@ -82,6 +87,7 @@ public class SpecialFolderDialog extends JDialog {
 		});
 
 		JButton bCancel = new JButton(Messages.getString("ML.SpecialFolderDialog.bCancel"));
+		if (bCancel.getPreferredSize().width < MIN_BUTTON_WIDTH) bSave.setPreferredSize(new Dimension(MIN_BUTTON_WIDTH, bCancel.getPreferredSize().height));
 		bCancel.addActionListener(new ActionListener() {
 
 			@Override

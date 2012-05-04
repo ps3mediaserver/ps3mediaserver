@@ -1,12 +1,16 @@
 package net.pms.newgui.plugins;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.slf4j.Logger;
@@ -17,6 +21,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import net.pms.Messages;
+import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.plugins.PluginBase;
 
 /**
@@ -34,15 +39,19 @@ public class PluginGroupPanel extends JPanel {
 	
 	/**
 	 * Builds a new panel with the list of plugins under a separator showing the name
-	 * @param name the header text
+	 * @param header the header text
 	 * @param plugins list of plugins
 	 */
-	public PluginGroupPanel(String name, List<PluginBase> plugins) {
+	public PluginGroupPanel(String header, List<PluginBase> plugins) {
 		setLayout(new GridLayout());
-		header = name;
+		this.header = header;
 		this.plugins = plugins;
 		
 		build();
+	}
+	
+	public String getHeader() {
+		return header;
 	}
 
 	/**
@@ -65,11 +74,13 @@ public class PluginGroupPanel extends JPanel {
 
 			CellConstraints cc = new CellConstraints();
 			
-			//add header
-			builder.addSeparator(header, cc.xyw(2, 2, 9));
+			//add header			
+			JComponent cmp = builder.addSeparator(header, cc.xyw(2, 2, 9));
+			cmp = (JComponent) cmp.getComponent(0);
+			cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 			
 			int row = 4;
-			for(PluginBase plugin : plugins) {
+			for(final PluginBase plugin : plugins) {
 				Icon icon = null;
 				try {
 					icon = plugin.getPluginIcon();
@@ -110,7 +121,7 @@ public class PluginGroupPanel extends JPanel {
 				}
 				builder.addLabel(shortDescription, cc.xy(8, row));
 					
-				JButton bConfig = new JButton();
+				final JButton bConfig = new JButton();
 				try {
 					if(plugin.getGlobalConfigurationPanel() == null) {
 						bConfig.setText(Messages.getString("PluginGroupPanel.1"));
@@ -121,6 +132,20 @@ public class PluginGroupPanel extends JPanel {
 					//catch throwable for every external call to avoid having a plugin crash pms
 					log.error(String.format("Failed to load configuration panel for plugin '%s'", plugin == null ? "null" : plugin.getName()), t);
 				}
+				bConfig.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						PluginDetailDialog pdd = new PluginDetailDialog(plugin);
+						pdd.setMinimumSize(new Dimension(200, 80));
+						pdd.setSize(new Dimension(450, 340));
+						pdd.setLocation(GUIHelper.getCenterDialogOnParentLocation(pdd.getSize(), bConfig));
+						pdd.setModal(true);
+						pdd.setVisible(true);
+
+						log.info("width=" + pdd.getWidth() + ", height=" + pdd.getHeight());
+					}
+				});
 				builder.add(bConfig, cc.xy(10, row));
 				
 				row += 2;

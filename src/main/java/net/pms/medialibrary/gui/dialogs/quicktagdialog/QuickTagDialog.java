@@ -33,7 +33,7 @@ public class QuickTagDialog extends JDialog {
 	private FileType fileType;
 
 	public QuickTagDialog(FileType fileType) {
-		((java.awt.Frame)getOwner()).setIconImage(new ImageIcon(getClass().getResource("/resources/images/icon-32.png")).getImage());
+		((java.awt.Frame)getOwner()).setIconImage(new ImageIcon(getClass().getResource("/resources/images/icon-16.png")).getImage());
 		setTitle(Messages.getString("ML.QuickTagDialog.Title"));
 		
 		List<DOQuickTagEntry> quickTagEntries = MediaLibraryStorage.getInstance().getQuickTagEntries();

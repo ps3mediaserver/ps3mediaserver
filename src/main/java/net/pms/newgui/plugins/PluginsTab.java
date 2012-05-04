@@ -8,6 +8,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -22,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import net.pms.Messages;
+import net.pms.newgui.components.ComboBoxItem;
 import net.pms.plugins.DlnaTreeFolderPlugin;
 import net.pms.plugins.FileDetailPlugin;
 import net.pms.plugins.FileImportPlugin;
@@ -157,18 +159,27 @@ public class PluginsTab extends JPanel {
 				break;
 			}
 		}
-		
 		if(classToShow.equals(Object.class)) {
 			//special case where the object class is being used to show all plugin types
+			List<PluginGroupPanel> groupNames = Arrays.asList(pluginGroups.values().toArray(new PluginGroupPanel[pluginGroups.size()]));
+			Collections.sort(groupNames, new Comparator<PluginGroupPanel>() {
+
+				@Override
+				public int compare(PluginGroupPanel arg0, PluginGroupPanel arg1) {
+					return arg0.getHeader().compareTo(arg1.getHeader());
+				}
+				
+			});
+			
 			JPanel pAllPlugins = new JPanel(new GridBagLayout());
 		    GridBagConstraints gbc = new GridBagConstraints();
 		    gbc.weightx = 1;
 			int y = 0;
-		    for(Class<?> c : pluginGroups.keySet()) {
+		    for(PluginGroupPanel pgp : groupNames) {
 			    gbc.fill = GridBagConstraints.HORIZONTAL;
 			    gbc.gridx = 0;
 			    gbc.gridy = y++;
-				pAllPlugins.add(pluginGroups.get(c), gbc);
+				pAllPlugins.add(pgp, gbc);
 				//don't add the top padding to the top element
 			    gbc.insets = new Insets(10, 0, 0, 0);
 			}

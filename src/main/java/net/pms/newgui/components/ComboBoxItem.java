@@ -1,4 +1,4 @@
-package net.pms.newgui.plugins;
+package net.pms.newgui.components;
 
 public class ComboBoxItem<T> {
 	private String displayName;

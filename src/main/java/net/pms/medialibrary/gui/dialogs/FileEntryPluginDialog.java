@@ -35,7 +35,7 @@ public class FileEntryPluginDialog extends JDialog {
 	private List<FileEntryPluginDialogActionListener> dialogListeners  = new ArrayList<FileEntryPluginDialogActionListener>();
 
 	public FileEntryPluginDialog(DOFileEntryPlugin pluginEntry, boolean isNew) {
-		((java.awt.Frame)this.getOwner()).setIconImage(new ImageIcon(FolderDialog.class.getResource("/resources/images/icon-32.png")).getImage());
+		((java.awt.Frame)this.getOwner()).setIconImage(new ImageIcon(FolderDialog.class.getResource("/resources/images/icon-16.png")).getImage());
 		init();
 
 		setPluginEntry(pluginEntry);

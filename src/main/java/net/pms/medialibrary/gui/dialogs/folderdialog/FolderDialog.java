@@ -65,7 +65,7 @@ public class FolderDialog extends JDialog {
 		
 		setMinimumSize(new Dimension(810, 100));
 		
-		((java.awt.Frame)getOwner()).setIconImage(new ImageIcon(FolderDialog.class.getResource("/resources/images/icon-32.png")).getImage());
+		((java.awt.Frame)getOwner()).setIconImage(new ImageIcon(FolderDialog.class.getResource("/resources/images/icon-16.png")).getImage());
 		
 		isInitializing = true;
 		init();
