@@ -2,8 +2,8 @@
 #
 # build-pms-osx.sh
 #
-# Version: 2.1.2
-# Last updated: 2012-04-18
+# Version: 2.1.3
+# Last updated: 2012-05-04
 # Authors: Patrick Atoon, Happy-Neko
 #
 #
@@ -1132,6 +1132,11 @@ build_libmediainfo() {
     cd Project/GNU/Library
 
     set_flags
+
+    if is_osx; then
+        # Fix for broken compilation because of unknown token PKG_CHECK_MODULES
+        $SED -i -e "s/PKG_CHECK_MODULES/#PKG_CHECK_MODULES/" configure.ac
+    fi
 
     # Note: libmediainfo requires libzen source to compile
     ./autogen
