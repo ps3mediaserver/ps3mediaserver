@@ -775,7 +775,7 @@ build_ffmpeg() {
     fi
 
     # Apply SB patch that was used for the Windows version
-    $PATCH -p1 < $WORKDIR/mplayer-r34866-SB31-ffmpeg-58c25724.patch
+    $PATCH -p1 < $WORKDIR/mplayer-ffmpeg.patch
     exit_on_error
 
     $MAKE -j$THREADS
@@ -1333,7 +1333,7 @@ build_mplayer() {
         # See https://svn.macports.org/ticket/30279
 
         # Apply SB patch that was used for the Windows version
-        $PATCH -p0 < $WORKDIR/mplayer-r34883-SB32.patch
+        $PATCH -p0 < $WORKDIR/mplayer.patch
         exit_on_error
 
         # Theora and vorbis support seems broken in this revision, disable it for now
@@ -1352,11 +1352,11 @@ build_mplayer() {
         export LDFLAGS="$LDFLAGS -O4 -fomit-frame-pointer -pipe"
 
         # Apply SB patch that was used for the Windows version
-        $PATCH -p0 < $WORKDIR/mplayer-r34883-SB32.patch
+        $PATCH -p0 < $WORKDIR/mplayer.patch
         exit_on_error
 
-        # mplayer configure patch for r34587-SB22
-        $PATCH -p0 < $WORKDIR/mplayer-r34587-configure.patch
+        # mplayer configure patch
+        $PATCH -p0 < $WORKDIR/mplayer-configure.patch
         exit_on_error
 
         # libvorbis support seems broken in this revision, disable it for now
