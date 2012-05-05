@@ -337,30 +337,11 @@ public class PluginsFactory {
 	 */
 	public static void initializePlugins() {
 		for (PluginBase p : plugins) {
-			if (!(p instanceof FinalizeTranscoderArgsListener)) {
-				try {
-					p.initialize();
-				} catch (Throwable t) {
-					// catch throwable for every external call to avoid plugins crashing pms
-					LOGGER.error("Failed to initialize a plugin", t);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Initializes FinalizeTranscoderArgsListeners. This is a special case, because 
-	 * they have to be loaded before pms is ready
-	 */
-	public static void initializeFinalizeTranscoderArgsListeners() {
-		for(PluginBase p : plugins) {
-			if(p instanceof FinalizeTranscoderArgsListener) {
-				try {
-					p.initialize();
-				} catch (Throwable t) {
-					// catch throwable for every external call to avoid plugins crashing pms
-					LOGGER.error("Failed to initialize a plugin", t);
-				}
+			try {
+				p.initialize();
+			} catch (Throwable t) {
+				// catch throwable for every external call to avoid plugins crashing pms
+				LOGGER.error("Failed to initialize a plugin", t);
 			}
 		}
 	}
