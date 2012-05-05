@@ -393,7 +393,7 @@ public class PMS {
 		logger.info("Profile name: " + configuration.getProfileName());
 		logger.info("");
 
-		RendererConfiguration.loadRendererConfigurations();
+		RendererConfiguration.loadRendererConfigurations(configuration);
 
 		logger.info("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");

@@ -33,6 +33,7 @@ public class RendererConfiguration {
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(RendererConfiguration.class);
 	private static ArrayList<RendererConfiguration> renderersConfs;
+	private static PmsConfiguration pmsConfiguration;
 	private static RendererConfiguration defaultConf;
 	private static Map<InetAddress, RendererConfiguration> addressAssociation = new HashMap<InetAddress, RendererConfiguration>();
 
@@ -40,8 +41,15 @@ public class RendererConfiguration {
 		return defaultConf;
 	}
 
-	public static void loadRendererConfigurations() {
+	/**
+	 * Load all renderer configuration files and set up the default renderer.
+	 *
+	 * @param pmsConf
+	 */
+	public static void loadRendererConfigurations(PmsConfiguration pmsConf) {
+		pmsConfiguration = pmsConf;
 		renderersConfs = new ArrayList<RendererConfiguration>();
+
 		try {
 			defaultConf = new RendererConfiguration();
 		} catch (ConfigurationException e) {
@@ -69,6 +77,29 @@ public class RendererConfiguration {
 				}
 			}
 		}
+
+		if (renderersConfs.size() > 0) {
+			// See if a different default configuration was configured
+			String rendererFallback = pmsConfiguration.getRendererDefault();
+
+			if (rendererFallback != null && !"".equals(rendererFallback)) {
+				RendererConfiguration fallbackConf = getRendererConfigurationByName(rendererFallback);
+
+				if (fallbackConf != null) {
+					// A valid fallback configuration was set, use it as default.
+					defaultConf = fallbackConf;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns the list of all renderer configurations.
+	 *
+	 * @return The list of all configurations.
+	 */
+	public static ArrayList<RendererConfiguration> getAllRendererConfigurations() {
+		return renderersConfs;
 	}
 
 	protected static File getRenderersDir() {
@@ -127,9 +158,16 @@ public class RendererConfiguration {
 	 * @return The matching renderer configuration or <code>null</code>.
 	 */
 	public static RendererConfiguration getRendererConfigurationByUA(String userAgentString) {
-		for (RendererConfiguration r : renderersConfs) {
-			if (r.matchUserAgent(userAgentString)) {
-				return manageRendererMatch(r);
+		if (pmsConfiguration.isRendererForceDefault()) {
+			// Force default renderer
+			logger.trace("Forcing renderer match to \"" + defaultConf.getRendererName() + "\"");
+			return manageRendererMatch(defaultConf);
+		} else {
+			// Try to find a match
+			for (RendererConfiguration r : renderersConfs) {
+				if (r.matchUserAgent(userAgentString)) {
+					return manageRendererMatch(r);
+				}
 			}
 		}
 		return null;
@@ -160,11 +198,18 @@ public class RendererConfiguration {
 	 * @return The matching renderer configuration or <code>null</code>.
 	 */
 	public static RendererConfiguration getRendererConfigurationByUAAHH(String header) {
-		for (RendererConfiguration r : renderersConfs) {
-			if (StringUtils.isNotBlank(r.getUserAgentAdditionalHttpHeader()) && header.startsWith(r.getUserAgentAdditionalHttpHeader())) {
-				String value = header.substring(header.indexOf(":", r.getUserAgentAdditionalHttpHeader().length()) + 1);
-				if (r.matchAdditionalUserAgent(value)) {
-					return manageRendererMatch(r);
+		if (pmsConfiguration.isRendererForceDefault()) {
+			// Force default renderer
+			logger.trace("Forcing renderer match to \"" + defaultConf.getRendererName() + "\"");
+			return manageRendererMatch(defaultConf);
+		} else {
+			// Try to find a match
+			for (RendererConfiguration r : renderersConfs) {
+				if (StringUtils.isNotBlank(r.getUserAgentAdditionalHttpHeader()) && header.startsWith(r.getUserAgentAdditionalHttpHeader())) {
+					String value = header.substring(header.indexOf(":", r.getUserAgentAdditionalHttpHeader().length()) + 1);
+					if (r.matchAdditionalUserAgent(value)) {
+						return manageRendererMatch(r);
+					}
 				}
 			}
 		}

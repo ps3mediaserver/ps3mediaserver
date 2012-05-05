@@ -12,6 +12,7 @@ Changelog:
 	Language updates:
 		- added Arabic
 		- added Hebrew (thanks, zvi-yamin!)
+	Added option to select and force the default renderer
 
 1.52.1 - 2012-04-06
 
