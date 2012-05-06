@@ -83,6 +83,9 @@ import net.pms.medialibrary.commons.interfaces.IMediaLibraryStorage;
 import net.pms.medialibrary.gui.dialogs.ConfigureFileEntryDialog;
 import net.pms.medialibrary.gui.dialogs.FileEntryPluginDialog;
 import net.pms.medialibrary.gui.shared.FileDisplayPanel;
+import net.pms.notifications.NotificationCenter;
+import net.pms.notifications.NotificationSubscriber;
+import net.pms.notifications.types.PluginEvent;
 import net.pms.plugins.FileDetailPlugin;
 import net.pms.plugins.PluginsFactory;
 
@@ -142,6 +145,16 @@ class DisplayPanel extends JPanel {
 		setLayout(new GridLayout());
 		initContextMenu();
 		init();
+		initPluginChangeListener();
+	}
+
+	private void initPluginChangeListener() {
+		NotificationCenter.getInstance(PluginEvent.class).subscribe(new NotificationSubscriber<PluginEvent>() {			
+			@Override
+			public void onMessage(PluginEvent obj) {
+				refreshAddMenu(true);
+			}
+		});
 	}
 
 	void setFileType(FileType fileType) {
@@ -579,7 +592,6 @@ class DisplayPanel extends JPanel {
 				addNode(FileDisplayType.INFO);
 			}
 		});
-		mAdd.add(miAddInfo);
 
 		miAddFolder = new JMenuItem(Messages.getString("ML.DisplayPanel.Menu.AddFolder"));
 		miAddFolder.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "filefolder-16.png")));
@@ -590,7 +602,6 @@ class DisplayPanel extends JPanel {
 				addNode(FileDisplayType.FOLDER);
 			}
 		});
-		mAdd.add(miAddFolder);
 
 		miAddFile = new JMenuItem(Messages.getString("ML.DisplayPanel.Menu.AddFile"));
 		miAddFile.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "filefolderfile_single-16.png")));
@@ -601,68 +612,8 @@ class DisplayPanel extends JPanel {
 				addNode(FileDisplayType.FILE);
 			}
 		});
-		mAdd.add(miAddFile);
 		
-		mAdd.addSeparator();
-		
-		//Get, sort and add plugins to context menu
-		List<FileDetailPlugin> plugins = PluginsFactory.getFileDetailPlugins();
-		Collections.sort(plugins, new Comparator<FileDetailPlugin>() {
-			@Override
-            public int compare(FileDetailPlugin o1, FileDetailPlugin o2) {
-	            return o1.getName().compareTo(o2.getName());
-            }
-		});
-		
-		for(FileDetailPlugin entry : plugins){
-			if(entry.isAvailable()){
-    			FileEntryPluginMenuItem dynItem = new FileEntryPluginMenuItem(entry);
-    			dynItem.addActionListener(new ActionListener() {
-    				
-    				@Override
-    				public void actionPerformed(ActionEvent e) {
-    					if (tree.getSelectionPath() != null) {						
-    						DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
-    						if (parent.getUserObject() instanceof DOFileEntryFolder) {
-    							DOFileEntryFolder parentFolder = (DOFileEntryFolder) parent.getUserObject();
-    							FileDetailPlugin plugin = ((FileEntryPluginMenuItem)e.getSource()).getPlugin();
-    
-    							String configDir = PMS.getConfiguration().getProfileDirectory() + File.separatorChar + "mlx_fileentry_plugin_configs" + File.separatorChar;		
-    							File cfgDir = new File(configDir);
-    							if(!cfgDir.isDirectory()){
-    								cfgDir.mkdirs();
-    							}
-    							
-    							File configFile;
-    							int i = 1;
-    							do {
-    								configFile = new File(configDir + plugin.getClass().getSimpleName() + "_" + i++ + ".cfg");
-    							} while (configFile.exists());
-    							
-    							DOFileEntryPlugin fileEntry = new DOFileEntryPlugin(-1, parentFolder, 0, "", parentFolder.getThumbnailPriorities(), parentFolder.getMaxLineLength(), plugin, configFile.getAbsolutePath());
-    							
-    							if(plugin.getConfigurationPanel() != null){
-    								if(configFile.exists()){
-    									try {
-    	                                    plugin.loadConfiguration(configFile.getAbsolutePath());
-                                        } catch (IOException ex) {
-    	                                    log.error(String.format("Failed to load configuration file %s for plugin of type %s", configFile.getAbsoluteFile(), plugin.getClass().getName()), ex);
-                                        }
-    								}
-                                    showPluginDialog(fileEntry, true);
-    							} else {
-    								DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(fileEntry);
-    								treeModel.insertNodeInto(newNode, (MutableTreeNode) tree.getSelectionPath().getLastPathComponent(), 0);
-    								tree.setSelectionPath(new TreePath(newNode.getPath()));
-    								tree.startEditingAtPath(tree.getSelectionPath());
-    							}
-    						}
-    					}
-    				}
-    			});
-    			mAdd.add(dynItem);
-    		}			
-		}
+		refreshAddMenu(false);
 
 		miRename = new JMenuItem(Messages.getString("ML.DisplayPanel.Menu.Rename"));
 		miRename.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "rename-16.png")));
@@ -696,6 +647,77 @@ class DisplayPanel extends JPanel {
 		treeContextMenu.add(miEdit);
 		treeContextMenu.add(miRename);
 		treeContextMenu.add(miRemove);
+	}
+
+	private void refreshAddMenu(boolean refreshPlugins) {
+		mAdd.add(miAddInfo);
+		mAdd.add(miAddFolder);
+		mAdd.add(miAddFile);
+		
+		if(refreshPlugins) {			
+			//Get, sort and add plugins to context menu
+			List<FileDetailPlugin> plugins = PluginsFactory.getFileDetailPlugins();
+			if(plugins.size() > 0) {
+				mAdd.addSeparator();
+				
+				Collections.sort(plugins, new Comparator<FileDetailPlugin>() {
+					@Override
+		            public int compare(FileDetailPlugin o1, FileDetailPlugin o2) {
+			            return o1.getName().compareTo(o2.getName());
+		            }
+				});
+				
+				for(FileDetailPlugin entry : plugins){
+					if(entry.isAvailable()){
+		    			FileEntryPluginMenuItem dynItem = new FileEntryPluginMenuItem(entry);
+		    			dynItem.addActionListener(new ActionListener() {
+		    				
+		    				@Override
+		    				public void actionPerformed(ActionEvent e) {
+		    					if (tree.getSelectionPath() != null) {						
+		    						DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
+		    						if (parent.getUserObject() instanceof DOFileEntryFolder) {
+		    							DOFileEntryFolder parentFolder = (DOFileEntryFolder) parent.getUserObject();
+		    							FileDetailPlugin plugin = ((FileEntryPluginMenuItem)e.getSource()).getPlugin();
+		    
+		    							String configDir = PMS.getConfiguration().getProfileDirectory() + File.separatorChar + "mlx_fileentry_plugin_configs" + File.separatorChar;		
+		    							File cfgDir = new File(configDir);
+		    							if(!cfgDir.isDirectory()){
+		    								cfgDir.mkdirs();
+		    							}
+		    							
+		    							File configFile;
+		    							int i = 1;
+		    							do {
+		    								configFile = new File(configDir + plugin.getClass().getSimpleName() + "_" + i++ + ".cfg");
+		    							} while (configFile.exists());
+		    							
+		    							DOFileEntryPlugin fileEntry = new DOFileEntryPlugin(-1, parentFolder, 0, "", parentFolder.getThumbnailPriorities(), parentFolder.getMaxLineLength(), plugin, configFile.getAbsolutePath());
+		    							
+		    							if(plugin.getConfigurationPanel() != null){
+		    								if(configFile.exists()){
+		    									try {
+		    	                                    plugin.loadConfiguration(configFile.getAbsolutePath());
+		                                        } catch (IOException ex) {
+		    	                                    log.error(String.format("Failed to load configuration file %s for plugin of type %s", configFile.getAbsoluteFile(), plugin.getClass().getName()), ex);
+		                                        }
+		    								}
+		                                    showPluginDialog(fileEntry, true);
+		    							} else {
+		    								DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(fileEntry);
+		    								treeModel.insertNodeInto(newNode, (MutableTreeNode) tree.getSelectionPath().getLastPathComponent(), 0);
+		    								tree.setSelectionPath(new TreePath(newNode.getPath()));
+		    								tree.startEditingAtPath(tree.getSelectionPath());
+		    							}
+		    						}
+		    					}
+		    				}
+		    			});
+		    			mAdd.add(dynItem);
+		    		}			
+				}
+			}
+		}
 	}
 
 	private void showPluginDialog(DOFileEntryPlugin plugin, boolean isNew) {

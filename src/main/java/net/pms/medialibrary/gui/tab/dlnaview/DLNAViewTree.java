@@ -71,6 +71,9 @@ import net.pms.medialibrary.gui.dialogs.AddAutoFolderDialog;
 import net.pms.medialibrary.gui.dialogs.SpecialFolderDialog;
 import net.pms.medialibrary.gui.dialogs.folderdialog.FolderDialog;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
+import net.pms.notifications.NotificationCenter;
+import net.pms.notifications.NotificationSubscriber;
+import net.pms.notifications.types.PluginEvent;
 import net.pms.plugins.DlnaTreeFolderPlugin;
 import net.pms.plugins.PluginsFactory;
 
@@ -104,6 +107,7 @@ public class DLNAViewTree extends JTree {
 		this.mediaLibraryStorage = storage;
 		initContextMenu();
 		initTreeView();
+		initPluginChangeListener();
 	}
 
 	public void setDisplayItems(boolean value) {
@@ -119,6 +123,15 @@ public class DLNAViewTree extends JTree {
 	
 	public void setLibraryShowListener(LibraryShowListener libraryShowListener){
 		this.libraryShowListener = libraryShowListener;
+	}
+
+	private void initPluginChangeListener() {
+		NotificationCenter.getInstance(PluginEvent.class).subscribe(new NotificationSubscriber<PluginEvent>() {			
+			@Override
+			public void onMessage(PluginEvent obj) {
+				refreshAddMenu(true);
+			}
+		});
 	}
 
 	/**
@@ -556,34 +569,7 @@ public class DLNAViewTree extends JTree {
 			}
 		});
 
-		addMenu.add(addFolderItem);
-		addMenu.add(addAutoFolderItem);
-		
-		List<DlnaTreeFolderPlugin> specialFolders = PluginsFactory.getDlnaTreeFolderPlugins();
-		Collections.sort(specialFolders, new Comparator<DlnaTreeFolderPlugin>() {
-
-			@Override
-            public int compare(DlnaTreeFolderPlugin o1, DlnaTreeFolderPlugin o2) {
-	            return o1.getName().compareToIgnoreCase(o2.getName());
-            }
-		});
-
-		if(specialFolders.size() > 0) {
-    		addMenu.addSeparator();
-    		for (DlnaTreeFolderPlugin f : specialFolders) {
-    			SpecialFolderMenuItem miSpecialFolder = new SpecialFolderMenuItem(f);
-    			miSpecialFolder.setIcon(f.getTreeNodeIcon());
-    			miSpecialFolder.addActionListener(new ActionListener() {
-    
-    				@Override
-    				public void actionPerformed(ActionEvent e) {
-    					addSpecialFolderRequested(((SpecialFolderMenuItem) e.getSource()).getSpecialFolder());
-    				}
-    			});
-    			addMenu.add(miSpecialFolder);
-    		}
-		}
-
+		refreshAddMenu(false);
 
 		editItem = new JMenuItem(Messages.getString("ML.ContextMenu.EDIT"));
 		editItem.setIcon(new ImageIcon(getClass().getResource(iconsFolder + "edit-16.png")));
@@ -625,6 +611,39 @@ public class DLNAViewTree extends JTree {
 				pasteNode();
 			}
 		});
+	}
+
+	private void refreshAddMenu(boolean refreshPlugins) {
+		addMenu.removeAll();
+		
+		addMenu.add(addFolderItem);
+		addMenu.add(addAutoFolderItem);
+		
+		if(refreshPlugins) {
+			List<DlnaTreeFolderPlugin> dlnaTreeFolders = PluginsFactory.getDlnaTreeFolderPlugins();
+			Collections.sort(dlnaTreeFolders, new Comparator<DlnaTreeFolderPlugin>() {
+				@Override
+	            public int compare(DlnaTreeFolderPlugin o1, DlnaTreeFolderPlugin o2) {
+		            return o1.getName().compareToIgnoreCase(o2.getName());
+	            }
+			});
+	
+			if(dlnaTreeFolders.size() > 0) {
+	    		addMenu.addSeparator();
+	    		for (DlnaTreeFolderPlugin f : dlnaTreeFolders) {
+	    			SpecialFolderMenuItem miSpecialFolder = new SpecialFolderMenuItem(f);
+	    			miSpecialFolder.setIcon(f.getTreeNodeIcon());
+	    			miSpecialFolder.addActionListener(new ActionListener() {
+	    
+	    				@Override
+	    				public void actionPerformed(ActionEvent e) {
+	    					addSpecialFolderRequested(((SpecialFolderMenuItem) e.getSource()).getSpecialFolder());
+	    				}
+	    			});
+	    			addMenu.add(miSpecialFolder);
+	    		}
+			}
+		}
 	}
 
 	private Point centerDialogOnScreen(Dimension dialogSize) {

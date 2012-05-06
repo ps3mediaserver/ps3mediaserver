@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class exposes methods to subscribe and unsubscribe {@link NotificationSubscriber} 
  * to be notified of messages posted to the message queue.<br>
@@ -15,15 +18,21 @@ import java.util.concurrent.Executors;
  * @author pw
  */
 public class NotificationCenter<T> {
+	private static final Logger log = LoggerFactory.getLogger(NotificationCenter.class);
+	
 	/**
 	 * Holds a map of instances of {@link NotificationCenter} per {@link Class}
 	 */
-	private static Map<Class<?>, NotificationCenter<?>> notificationCenters = new Hashtable<Class<?>, NotificationCenter<?>>();	
+	private static Map<Class<?>, NotificationCenter<?>> notificationCenters = new Hashtable<Class<?>, NotificationCenter<?>>();
+	
 	/**
 	 * TODO: figure out how to manage the multiple threads best.
 	 */
 	private static ExecutorService executorService = Executors.newFixedThreadPool(50);
 	
+	/**
+	 * The subscribers to notify when a message is being posted to the queue
+	 */
 	private List<NotificationSubscriber<T>> subscribers = new ArrayList<NotificationSubscriber<T>>();
 
 	/**
@@ -55,11 +64,12 @@ public class NotificationCenter<T> {
 	 * @param subscriber the subscriber to notify
 	 */
 	public void subscribe(NotificationSubscriber<T> subscriber) {
-		if (!subscribers.contains(subscriber)) {
-			subscribers.add(subscriber);
+		synchronized (subscribers) {
+			if (!subscribers.contains(subscriber)) {
+				subscribers.add(subscriber);
+			}
 		}
 	}
-
 
 	/**
 	 * Stop notifying the subscriber of messages being posted to the queue
@@ -67,7 +77,9 @@ public class NotificationCenter<T> {
 	 * @param subscriber the subscriber to remove
 	 */
 	public void unsubscribe(NotificationSubscriber<T> subscriber) {
-		subscribers.remove(subscriber);
+		synchronized (subscribers) {
+			subscribers.remove(subscriber);
+		}
 	}
 
 	/**
@@ -78,13 +90,17 @@ public class NotificationCenter<T> {
 	 * @param obj the object to post
 	 */
 	public void post(final T obj) {
+		log.debug(String.format("Posting %s to queue of type %s", obj.toString(), obj.getClass().getSimpleName()));
+		synchronized (subscribers) {
 			for (final NotificationSubscriber<T> subscriber : subscribers) {
-				executorService.execute(new Runnable() {					
+				executorService.execute(new Runnable() {
 					@Override
 					public void run() {
+						Thread.currentThread().setName("Notify" + obj.getClass().getSimpleName());
 						subscriber.onMessage(obj);
 					}
 				});
 			}
+		}
 	}
 }

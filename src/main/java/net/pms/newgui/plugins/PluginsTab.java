@@ -24,6 +24,9 @@ import javax.swing.JScrollPane;
 
 import net.pms.Messages;
 import net.pms.newgui.components.ComboBoxItem;
+import net.pms.notifications.NotificationCenter;
+import net.pms.notifications.NotificationSubscriber;
+import net.pms.notifications.types.PluginEvent;
 import net.pms.plugins.DlnaTreeFolderPlugin;
 import net.pms.plugins.FileDetailPlugin;
 import net.pms.plugins.FileImportPlugin;
@@ -51,10 +54,28 @@ public class PluginsTab extends JPanel {
 	 * Creates a new instance of the panel, which is ready to use
 	 */
 	public PluginsTab() {
-		setLayout(new BorderLayout(0, 5));
-		
+		setLayout(new BorderLayout(0, 5));		
+		initPluginChangeListener();
+	}
+
+	private void initPluginChangeListener() {
+		NotificationCenter.getInstance(PluginEvent.class).subscribe(new NotificationSubscriber<PluginEvent>() {			
+			@Override
+			public void onMessage(PluginEvent obj) {
+				refreshPlugins();
+			}
+		});
+	}
+
+	@SuppressWarnings("unchecked")
+	private void refreshPlugins() {
+		ComboBoxItem<Class<?>> selected = null;
+		Object selectedItem;
+		if(cbPluginType != null && (selectedItem = cbPluginType.getSelectedItem()) != null && selectedItem instanceof ComboBoxItem<?>) {
+			selected = (ComboBoxItem<Class<?>>) selectedItem;
+		}
 		init();
-		build(Object.class);
+		build(selected == null ? Object.class : selected.getValue());
 	}
 
 	/**
