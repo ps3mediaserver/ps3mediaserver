@@ -648,7 +648,9 @@ public class PmsConfiguration {
 
 	/**
 	 * Returns the preferred maximum size for the transcoding memory buffer in megabytes.
-	 * The value returned has a top limit of 600. Default value is 400.
+	 * The value returned has a top limit of {@link #MAX_MAX_MEMORY_BUFFER_SIZE}. Default
+	 * value is 400.
+	 *
 	 * @return The maximum memory buffer size.
 	 */
 	public int getMaxMemoryBufferSize() {
@@ -665,7 +667,8 @@ public class PmsConfiguration {
 
 	/**
 	 * Set the preferred maximum for the transcoding memory buffer in megabytes. The top
-	 * limit for the value is 600.
+	 * limit for the value is {@link #MAX_MAX_MEMORY_BUFFER_SIZE}.
+	 *
 	 * @param value The maximum buffer size.
 	 */
 	public void setMaxMemoryBufferSize(int value) {
