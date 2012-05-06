@@ -37,6 +37,7 @@ import net.pms.dlna.Range;
 import net.pms.external.StartStopListenerDelegate;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +45,7 @@ public class Request extends HTTPResource {
 	private static final Logger logger = LoggerFactory.getLogger(Request.class);
 	private final static String CRLF = "\r\n";
 	private final static String HTTP_200_OK = "HTTP/1.1 200 OK";
+	private final static String HTTP_500 = "HTTP/1.1 500 Internal Server Error";
 	private final static String HTTP_206_OK = "HTTP/1.1 206 Partial Content";
 	private final static String HTTP_200_OK_10 = "HTTP/1.0 200 OK";
 	private final static String HTTP_206_OK_10 = "HTTP/1.0 206 Partial Content";
@@ -51,7 +53,7 @@ public class Request extends HTTPResource {
 	private final static String CONTENT_TYPE = "Content-Type: text/xml; charset=\"utf-8\"";
 	private static SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
 	private final String method;
-	private final String argument;
+	private String argument;
 	private String soapaction;
 	private String content;
 	private OutputStream output;
@@ -169,13 +171,24 @@ public class Request extends HTTPResource {
 		if (lowRange != 0 || highRange != 0) {
 			output(output, http10 ? HTTP_206_OK_10 : HTTP_206_OK);
 		} else {
-			output(output, http10 ? HTTP_200_OK_10 : HTTP_200_OK);
+			if (soapaction != null && soapaction.indexOf("ContentDirectory:1#X_GetFeatureList") > -1) {
+				//  If we don't return a 500 error, Samsung 2012 TVs time out.
+				output(output, HTTP_500);
+			} else {
+				output(output, http10 ? HTTP_200_OK_10 : HTTP_200_OK);
+			}
 		}
 
 		StringBuilder response = new StringBuilder();
 		DLNAResource dlna = null;
 		boolean xbox = mediaRenderer.isXBOX();
 
+		// Samsung 2012 TVs have a problematic preceding slash that needs to be removed.
+		if (argument.startsWith("/")) {
+			logger.trace("Stripping preceding slash from: " + argument);
+			argument = argument.substring(1);
+		}
+		
 		if ((method.equals("GET") || method.equals("HEAD")) && argument.startsWith("console/")) {
 			output(output, "Content-Type: text/html");
 			response.append(HTMLConsole.servePage(argument.substring(8)));
@@ -375,7 +388,7 @@ public class Request extends HTTPResource {
 			}
 			response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 			response.append(CRLF);
-		} else if (method.equals("POST") && argument.equals("upnp/control/connection_manager")) {
+		} else if (method.equals("POST") && argument.endsWith("upnp/control/connection_manager")) {
 			output(output, CONTENT_TYPE_UTF8);
 			if (soapaction.indexOf("ConnectionManager:1#GetProtocolInfo") > -1) {
 				response.append(HTTPXMLHelper.XML_HEADER);
@@ -387,7 +400,7 @@ public class Request extends HTTPResource {
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
 			}
-		} else if (method.equals("POST") && argument.equals("upnp/control/content_directory")) {
+		} else if (method.equals("POST") && argument.endsWith("upnp/control/content_directory")) {
 			output(output, CONTENT_TYPE_UTF8);
 			if (soapaction.indexOf("ContentDirectory:1#GetSystemUpdateID") > -1) {
 				response.append(HTTPXMLHelper.XML_HEADER);
@@ -408,6 +421,15 @@ public class Request extends HTTPResource {
 				response.append(HTTPXMLHelper.SOAP_ENCODING_HEADER);
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SORTCAPS_RESPONSE);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
+				response.append(CRLF);
+			} else if (soapaction.indexOf("ContentDirectory:1#X_GetFeatureList") > -1) {  // Added for Samsung 2012 TVs
+				response.append(HTTPXMLHelper.XML_HEADER);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SOAP_ENCODING_HEADER);
+				response.append(CRLF);
+				response.append(HTTPXMLHelper.SAMSUNG_ERROR_RESPONSE);
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
