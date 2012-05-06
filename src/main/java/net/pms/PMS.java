@@ -319,6 +319,8 @@ public class PMS {
 
 		//initialize plugins early
 		PluginsFactory.lookup();
+
+		RendererConfiguration.loadRendererConfigurations(configuration);
 		
 		initMediaLibrary();
 
@@ -403,8 +405,6 @@ public class PMS {
 
 		logger.info("Profile name: " + configuration.getProfileName());
 		logger.info("");
-
-		RendererConfiguration.loadRendererConfigurations(configuration);
 
 		logger.info("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
@@ -549,10 +549,11 @@ public class PMS {
 	        System.exit(1);
 	    }
 		
-		FullDataCollector.configure(MediaLibraryConfiguration.getInstance().getPictureSaveFolderPath());
+	    String picFolderPath = MediaLibraryConfiguration.getInstance().getPictureSaveFolderPath();
+		FullDataCollector.configure(picFolderPath);
 		
 		//delete thumbnails for every session
-		File thumbFolder = new File(MediaLibraryConfiguration.getInstance().getPictureSaveFolderPath() + "thumbnails");
+		File thumbFolder = new File(picFolderPath + "thumbnails");
 		if(!thumbFolder.isDirectory()){
 			thumbFolder.mkdirs();
 		} else {
