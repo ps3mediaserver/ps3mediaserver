@@ -316,8 +316,6 @@ public class PMS {
 			String serverURL = Build.getUpdateServerURL();
 			autoUpdater = new AutoUpdater(serverURL, getVersion());
 		}
-		
-		RendererConfiguration.loadRendererConfigurations();
 
 		//initialize plugins early
 		PluginsFactory.lookup();
@@ -405,6 +403,8 @@ public class PMS {
 
 		logger.info("Profile name: " + configuration.getProfileName());
 		logger.info("");
+
+		RendererConfiguration.loadRendererConfigurations(configuration);
 
 		logger.info("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
@@ -899,6 +899,7 @@ public class PMS {
 			createInstance(); 
 		} catch (Throwable t) {
 			System.err.println("Configuration error: " + t.getMessage());
+			logger.error("Configuration error", t);
 			JOptionPane.showMessageDialog(null, "Configuration error:"+t.getMessage(), "Error initalizing PMS!", JOptionPane.ERROR_MESSAGE);
 		}
 	}

@@ -19,12 +19,14 @@
 package net.pms.newgui;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -341,19 +343,32 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			quit.setEnabled(false);
 		}
 		toolBar.add(new JPanel());
+
+		// Apply the orientation to the toolbar and all components in it
+		Locale locale = new Locale(configuration.getLanguage());
+		ComponentOrientation orientation = ComponentOrientation.getOrientation(locale);
+		toolBar.applyComponentOrientation(orientation);
+
 		panel.add(toolBar, BorderLayout.NORTH);
 		panel.add(buildMain(), BorderLayout.CENTER);
 		status = new JLabel(" ");
 		status.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(0, 5, 0, 5)));
+		status.setComponentOrientation(orientation);
+
+		// Calling applyComponentOrientation() here would be ideal.
+		// Alas it horribly mutilates the layout of several tabs.
+		//panel.applyComponentOrientation(orientation);
 		panel.add(status, BorderLayout.SOUTH);
+
+
 		return panel;
 	}
 
 	public JComponent buildMain() {
 		JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
 
-		st = new StatusTab();
-		tt = new TracesTab();
+		st = new StatusTab(configuration);
+		tt = new TracesTab(configuration);
 		tr = new TranscodingTab(configuration);
 		nt = new GeneralTab(configuration);
 		ft = new NavigationShareTab(configuration);
@@ -369,6 +384,14 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		tabbedPane.addTab(Messages.getString("LooksFrame.25"), /*readImageIcon("documentinfo-16.png"),*/ new AboutTab().build());
 
 		tabbedPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		// Set the orientation of the tabbedPane. Note: not using
+		// applyComponentOrientation() here on purpose as it will horribly
+		// mutilate the layout of several tabs.
+		Locale locale = new Locale(configuration.getLanguage());
+		ComponentOrientation orientation = ComponentOrientation.getOrientation(locale);
+		tabbedPane.setComponentOrientation(orientation);
+
 		return tabbedPane;
 	}
 
@@ -472,6 +495,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 
 	@Override
 	public void serverReady() {
+		nt.addRenderers();
 	}
 
 	@Override

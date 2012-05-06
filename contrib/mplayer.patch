@@ -1,6 +1,6 @@
 Index: configure
 ===================================================================
---- configure	(revision 34866)
+--- configure	(revision 34883)
 +++ configure	(working copy)
 @@ -565,6 +565,7 @@
    --with-install=PATH    path to a custom install program
@@ -132,7 +132,7 @@ Index: configure
  
 Index: etc/codecs.conf
 ===================================================================
---- etc/codecs.conf	(revision 34866)
+--- etc/codecs.conf	(revision 34883)
 +++ etc/codecs.conf	(working copy)
 @@ -4081,7 +4081,98 @@
    out UYVY
@@ -235,7 +235,7 @@ Index: etc/codecs.conf
  ;=============================================================================
 Index: libao2/ao_sdl.c
 ===================================================================
---- libao2/ao_sdl.c	(revision 34866)
+--- libao2/ao_sdl.c	(revision 34883)
 +++ libao2/ao_sdl.c	(working copy)
 @@ -143,7 +143,7 @@
  	mp_msg(MSGT_AO,MSGL_INFO,MSGTR_AO_SDL_INFO, rate, (channels > 1) ? "Stereo" : "Mono", af_fmt2str_short(format));
@@ -248,7 +248,7 @@ Index: libao2/ao_sdl.c
  
 Index: libmpcodecs/vd.c
 ===================================================================
---- libmpcodecs/vd.c	(revision 34866)
+--- libmpcodecs/vd.c	(revision 34883)
 +++ libmpcodecs/vd.c	(working copy)
 @@ -40,6 +40,7 @@
  extern const vd_functions_t mpcodecs_vd_ffmpeg;
@@ -432,9 +432,22 @@ Index: libmpcodecs/vd_dsnative.c
 +    return mpi;
 +}
 \ No newline at end of file
+Index: libmpcodecs/ve_lavc.c
+===================================================================
+--- libmpcodecs/ve_lavc.c	(revision 34883)
++++ libmpcodecs/ve_lavc.c	(working copy)
+@@ -291,7 +291,7 @@
+ 	{"top", &lavc_param_top, CONF_TYPE_INT, CONF_RANGE, -1, 1, NULL},
+         {"qns", &lavc_param_qns, CONF_TYPE_INT, CONF_RANGE, 0, 1000000, NULL},
+         {"nssew", &lavc_param_nssew, CONF_TYPE_INT, CONF_RANGE, 0, 1000000, NULL},
+-	{"threads", &lavc_param_threads, CONF_TYPE_INT, CONF_RANGE, 1, 8, NULL},
++	{"threads", &lavc_param_threads, CONF_TYPE_INT, CONF_RANGE, 1, 16, NULL},
+ 	{"turbo", &lavc_param_turbo, CONF_TYPE_FLAG, 0, 0, 1, NULL},
+         {"skip_threshold", &lavc_param_skip_threshold, CONF_TYPE_INT, CONF_RANGE, 0, 1000000, NULL},
+         {"skip_factor", &lavc_param_skip_factor, CONF_TYPE_INT, CONF_RANGE, 0, 1000000, NULL},
 Index: libvo/sdl_common.c
 ===================================================================
---- libvo/sdl_common.c	(revision 34866)
+--- libvo/sdl_common.c	(revision 34883)
 +++ libvo/sdl_common.c	(working copy)
 @@ -64,7 +64,7 @@
          if (WinID > 0) {
@@ -456,7 +469,7 @@ Index: libvo/sdl_common.c
      if (!s) {
 Index: libvo/vo_sdl.c
 ===================================================================
---- libvo/vo_sdl.c	(revision 34866)
+--- libvo/vo_sdl.c	(revision 34883)
 +++ libvo/vo_sdl.c	(working copy)
 @@ -1334,17 +1334,17 @@
      mp_msg(MSGT_VO,MSGL_DBG3, "SDL: Opening Plugin\n");
@@ -483,7 +496,7 @@ Index: libvo/vo_sdl.c
      priv->fullmode = -2;
 Index: Makefile
 ===================================================================
---- Makefile	(revision 34866)
+--- Makefile	(revision 34883)
 +++ Makefile	(working copy)
 @@ -270,6 +270,7 @@
                                          libmpcodecs/ad_twin.c \
@@ -495,7 +508,7 @@ Index: Makefile
                                          libmpdemux/demux_avs.c \
 Index: mencoder.c
 ===================================================================
---- mencoder.c	(revision 34866)
+--- mencoder.c	(revision 34883)
 +++ mencoder.c	(working copy)
 @@ -139,6 +139,7 @@
  int benchmark=0;
@@ -528,7 +541,7 @@ Index: mencoder.c
      // av = compensated (with out buffering delay) A-V diff
 Index: mp_msg.c
 ===================================================================
---- mp_msg.c	(revision 34866)
+--- mp_msg.c	(revision 34883)
 +++ mp_msg.c	(working copy)
 @@ -34,6 +34,26 @@
  /* maximum message length of mp_msg */
@@ -618,7 +631,7 @@ Index: mp_msg.c
  }
 Index: mpcommon.c
 ===================================================================
---- mpcommon.c	(revision 34866)
+--- mpcommon.c	(revision 34883)
 +++ mpcommon.c	(working copy)
 @@ -544,40 +544,46 @@
  /// Returns a_pts
@@ -703,7 +716,7 @@ Index: mpcommon.c
  }
 Index: mplayer.c
 ===================================================================
---- mplayer.c	(revision 34866)
+--- mplayer.c	(revision 34883)
 +++ mplayer.c	(working copy)
 @@ -145,6 +145,12 @@
  float start_volume = -1;
@@ -729,7 +742,7 @@ Index: mplayer.c
      mp_msg(MSGT_IDENTIFY, MSGL_INFO, "ID_LENGTH=%.2f\n", demuxer_get_time_length(mpctx->demuxer));
      mp_msg(MSGT_IDENTIFY, MSGL_INFO, "ID_SEEKABLE=%d\n",
             mpctx->stream->seek && (!mpctx->demuxer || mpctx->demuxer->seekable));
-@@ -3048,7 +3050,15 @@
+@@ -3050,7 +3052,15 @@
          gui(GUI_SET_CONTEXT, mpctx);
          gui(GUI_SET_STATE, (void *)(filename ? GUI_PLAY : GUI_STOP));
      }
@@ -938,14 +951,14 @@ Index: osdep/alloc-win.c
 \ No newline at end of file
 Index: version.sh
 ===================================================================
---- version.sh	(revision 34866)
+--- version.sh	(revision 34883)
 +++ version.sh	(working copy)
 @@ -17,9 +17,9 @@
  version=$svn_revision
  fi
  
 -NEW_REVISION="#define VERSION \"${version}${extra}\""
-+NEW_REVISION="#define VERSION \"SB31\""
++NEW_REVISION="#define VERSION \"SB32\""
  OLD_REVISION=$(head -n 1 version.h 2> /dev/null)
 -TITLE='#define MP_TITLE "%s "VERSION" (C) 2000-2012 MPlayer Team\n"'
 +TITLE='#define MP_TITLE "%s "VERSION" (C) 2000-2012 MPlayer Team\nCustom build by SubJunk, http://www.spirton.com\n\n"'

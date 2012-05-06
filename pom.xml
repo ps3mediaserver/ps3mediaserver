@@ -97,6 +97,14 @@
 		<buildName>${project.name}-${project.version}</buildName>
 		<jcalendar-version>1.1.1</jcalendar-version>
 		<jgoodies-binding-version>2.5.1</jgoodies-binding-version>
+		
+		<!--
+			JNA 3.4.0 solves issue #1152, but causes a bug in Windows.
+			The version is therefore overruled in the Windows profile.
+			This property should be removed when Windows can use the
+			same version.
+		-->
+		<jna-version>3.4.0</jna-version>
 
 		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
 		<jgoodies-common-version>1.2.1</jgoodies-common-version>
@@ -328,7 +336,7 @@
 		<dependency>
 			<groupId>net.java.dev.jna</groupId>
 			<artifactId>jna</artifactId>
-			<version>3.2.5</version>
+			<version>${jna-version}</version>
 		</dependency>
 
 		<!-- XXX: not Mavenized: http://www.jgoodies.com/downloads/libraries.html -->
@@ -474,6 +482,10 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<!-- Force language because JUnit tests depend on english language strings -->
+						<argLine>-Duser.language=en</argLine>
+					</configuration>
 					<version>2.11</version>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
@@ -906,6 +918,13 @@
 				</os>
 			</activation>
 
+			<properties>
+				<!--
+					Last known JNA version known not to cause a Java crash
+					when browsing folders with files in them on Windows.
+				-->
+				<jna-version>3.2.5</jna-version>
+			</properties>			
 
 			<pluginRepositories>
 				<pluginRepository>

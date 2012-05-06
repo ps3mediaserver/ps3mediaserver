@@ -151,6 +151,8 @@ public class PmsConfiguration {
 	private static final String KEY_PLUGIN_DIRECTORY = "plugins";
 	private static final String KEY_PREVENTS_SLEEP = "prevents_sleep_mode";
 	private static final String KEY_PROFILE_NAME = "name";
+	private static final String KEY_RENDERER_DEFAULT = "renderer_default";
+	private static final String KEY_RENDERER_FORCE_DEFAULT = "renderer_force_default";
 	private static final String KEY_PROXY_SERVER_PORT = "proxy";
 	private static final String KEY_SERVER_HOSTNAME = "hostname";
 	private static final String KEY_SERVER_PORT = "port";
@@ -335,15 +337,37 @@ public class PmsConfiguration {
 		}
 	}
 
+	/**
+	 * Default constructor that will attempt to load the PMS configuration file
+	 * from the profile path.
+	 *
+	 * @throws ConfigurationException
+	 * @throws IOException
+	 */
 	public PmsConfiguration() throws ConfigurationException, IOException {
+		this(true);
+	}
+
+	/**
+	 * Constructor that will initialize the PMS configuration.
+	 *
+	 * @param loadFile Set to true to attempt to load the PMS configuration
+	 * 					file from the profile path. Set to false to skip
+	 * 					loading.
+	 * @throws ConfigurationException
+	 * @throws IOException
+	 */
+	public PmsConfiguration(boolean loadFile) throws ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration();
 		configuration.setListDelimiter((char) 0);
 		configuration.setFileName(PROFILE_PATH);
 
-		File pmsConfFile = new File(PROFILE_PATH);
-
-		if (pmsConfFile.exists() && pmsConfFile.isFile()) {
-			configuration.load(PROFILE_PATH);
+		if (loadFile) {
+			File pmsConfFile = new File(PROFILE_PATH);
+	
+			if (pmsConfFile.exists() && pmsConfFile.isFile()) {
+				configuration.load(PROFILE_PATH);
+			}
 		}
 
 		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
@@ -625,7 +649,9 @@ public class PmsConfiguration {
 
 	/**
 	 * Returns the preferred maximum size for the transcoding memory buffer in megabytes.
-	 * The value returned has a top limit of 600. Default value is 400.
+	 * The value returned has a top limit of {@link #MAX_MAX_MEMORY_BUFFER_SIZE}. Default
+	 * value is 400.
+	 *
 	 * @return The maximum memory buffer size.
 	 */
 	public int getMaxMemoryBufferSize() {
@@ -642,7 +668,8 @@ public class PmsConfiguration {
 
 	/**
 	 * Set the preferred maximum for the transcoding memory buffer in megabytes. The top
-	 * limit for the value is 600.
+	 * limit for the value is {@link #MAX_MAX_MEMORY_BUFFER_SIZE}.
+	 *
 	 * @param value The maximum buffer size.
 	 */
 	public void setMaxMemoryBufferSize(int value) {
@@ -1489,34 +1516,79 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_USE_CACHE, value);
 	}
 
+	/**
+	 * Set to true if PMS should pass the flag "convertfps=true" to AviSynth.
+	 *
+	 * @param value True if PMS should pass the flag.
+	 */
 	public void setAvisynthConvertFps(boolean value) {
 		configuration.setProperty(KEY_AVISYNTH_CONVERT_FPS, value);
 	}
 
+	/**
+	 * Returns true if PMS should pass the flag "convertfps=true" to AviSynth.
+	 *
+	 * @return True if PMS should pass the flag.
+	 */
 	public boolean getAvisynthConvertFps() {
 		return getBoolean(KEY_AVISYNTH_CONVERT_FPS, true);
 	}
 
+	/**
+	 * Returns the template for the AviSynth script. The script string can
+	 * contain the character "\u0001", which should be treated as the newline
+	 * separator character.
+	 *
+	 * @return The AviSynth script template.
+	 */
 	public String getAvisynthScript() {
 		return getString(KEY_AVISYNTH_SCRIPT, DEFAULT_AVI_SYNTH_SCRIPT);
 	}
 
+	/**
+	 * Sets the template for the AviSynth script. The script string may contain
+	 * the character "\u0001", which will be treated as newline character.
+	 *
+	 * @param value The AviSynth script template.
+	 */
 	public void setAvisynthScript(String value) {
 		configuration.setProperty(KEY_AVISYNTH_SCRIPT, value);
 	}
 
+	/**
+	 * Returns additional codec specific configuration options for MEncoder.
+	 *
+	 * @return The configuration options.
+	 */
 	public String getCodecSpecificConfig() {
 		return getString(KEY_CODEC_SPEC_SCRIPT, "");
 	}
 
+	/**
+	 * Sets additional codec specific configuration options for MEncoder.
+	 *
+	 * @param value The additional configuration options.
+	 */
 	public void setCodecSpecificConfig(String value) {
 		configuration.setProperty(KEY_CODEC_SPEC_SCRIPT, value);
 	}
 
+	/**
+	 * Returns the maximum size (in MB) that PMS should use for buffering
+	 * audio.
+	 *
+	 * @return The maximum buffer size.
+	 */
 	public int getMaxAudioBuffer() {
 		return getInt(KEY_MAX_AUDIO_BUFFER, 100);
 	}
 
+	/**
+	 * Returns the minimum size (in MB) that PMS should use for the buffer used
+	 * for streaming media.
+	 *
+	 * @return The minimum buffer size.
+	 */
 	public int getMinStreamBuffer() {
 		return getInt(KEY_MIN_STREAM_BUFFER, 1);
 	}
@@ -2019,6 +2091,61 @@ public class PmsConfiguration {
 
 	public void setAudioResample(boolean value) {
 		configuration.setProperty(KEY_AUDIO_RESAMPLE, value);
+	}
+
+	/**
+	 * Returns the name of the renderer to fall back on when header matching
+	 * fails. PMS will recognize the configured renderer instead of "Unknown
+	 * renderer". Default value is "", which means PMS will return the unknown
+	 * renderer when no match can be made.
+	 *
+	 * @return The name of the renderer PMS should fall back on when header
+	 * 			matching fails.
+	 * @see #isRendererForceDefault()
+	 */
+	public String getRendererDefault() {
+		return getString(KEY_RENDERER_DEFAULT, "");
+	}
+
+	/**
+	 * Sets the name of the renderer to fall back on when header matching
+	 * fails. PMS will recognize the configured renderer instead of "Unknow
+	 * renderer". Set to "" to make PMS return the unknown renderer when no
+	 * match can be made.
+	 *
+	 * @param value The name of the renderer to fall back on. This has to be
+	 * 				<code>""</code> or a case insensitive match with the name
+	 * 				used in any render configuration file.
+	 * @see #setRendererForceDefault(boolean)
+	 */
+	public void setRendererDefault(String value) {
+		configuration.setProperty(KEY_RENDERER_DEFAULT, value);
+	}
+
+	/**
+	 * Returns true when PMS should not try to guess connecting renderers
+	 * and instead force picking the defined fallback renderer. Default
+	 * value is false, which means PMS will attempt to recognize connecting
+	 * renderers by their headers.
+	 *
+	 * @return True when the fallback renderer should always be picked.
+	 * @see #getRendererDefault()
+	 */
+	public boolean isRendererForceDefault() {
+		return getBoolean(KEY_RENDERER_FORCE_DEFAULT, false);
+	}
+
+	/**
+	 * Set to true when PMS should not try to guess connecting renderers
+	 * and instead force picking the defined fallback renderer. Set to false
+	 * to make PMS attempt to recognize connecting renderers by their headers.
+	 *
+	 * @param value Set to true when the fallback renderer should always be
+	 *				picked.
+	 * @see #setRendererDefault(String)
+	 */
+	public void setRendererForceDefault(boolean value) {
+		configuration.setProperty(KEY_RENDERER_FORCE_DEFAULT, value);
 	}
 
 	public String getVirtualFolders() {

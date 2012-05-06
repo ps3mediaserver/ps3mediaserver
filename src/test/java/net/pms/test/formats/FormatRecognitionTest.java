@@ -69,8 +69,18 @@ public class FormatRecognitionTest {
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         context.reset(); 
 
+		PmsConfiguration pmsConf = null;
+
+		try {
+			pmsConf = new PmsConfiguration(false);
+		} catch (IOException e) {
+			// This should be impossible since no configuration file will be loaded.
+		} catch (ConfigurationException e) {
+			// This should be impossible since no configuration file will be loaded.
+		}
+
 		// Initialize the RendererConfiguration
-		RendererConfiguration.loadRendererConfigurations();
+		RendererConfiguration.loadRendererConfigurations(pmsConf);
 
 		mediaInfoParserIsValid = MediaInfoParser.isValid();
 	}
