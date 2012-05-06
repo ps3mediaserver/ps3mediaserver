@@ -20,7 +20,6 @@ package net.pms.newgui;
 
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -46,8 +45,6 @@ import net.pms.PMS;
 import net.pms.configuration.Build;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.network.NetworkConfiguration;
-import net.pms.plugins.PluginBase;
-import net.pms.plugins.PluginsFactory;
 import net.pms.util.KeyedComboBoxModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -72,7 +69,6 @@ public class GeneralTab {
 	private JComboBox networkinterfacesCBX;
 	private JTextField ip_filter;
 	private JTextField maxbitrate;
-	private JPanel pPlugins;
 	private final PmsConfiguration configuration;
 
 	GeneralTab(PmsConfiguration configuration) {
@@ -317,13 +313,6 @@ public class GeneralTab {
 		});
 		builder.add(preventSleep, cc.xyw(1, 37, 9));
 
-		cmp = builder.addSeparator(Messages.getString("NetworkTab.34"), cc.xyw(1, 39, 9));
-		cmp = (JComponent) cmp.getComponent(0);
-		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-
-		pPlugins = new JPanel(new GridLayout());
-		builder.add(pPlugins, cc.xyw(1, 41, 9));
-
 		JPanel panel = builder.getPanel();
 		JScrollPane scrollPane = new JScrollPane(
 			panel,
@@ -339,32 +328,5 @@ public class GeneralTab {
 		names.add(0, "");
 		final KeyedComboBoxModel networkInterfaces = new KeyedComboBoxModel(keys.toArray(), names.toArray());
 		return networkInterfaces;
-	}
-
-	public void addPlugins() {
-		FormLayout layout = new FormLayout(
-				"fill:10:grow",
-				"p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p, p");
-		PanelBuilder builder = new PanelBuilder(layout);
-
-		CellConstraints cc = new CellConstraints();
-		int i = 1;
-		for (final PluginBase plugin : PluginsFactory.getPlugins()) {
-			if (i > 30) {
-				logger.warn("Plugin limit of 30 has been reached");
-				break;
-			}
-			JButton bPlugin = new JButton(plugin.getName());
-			// listener to show option screen
-			bPlugin.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), 
-							plugin.getGlobalConfigurationPanel(), "Options", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-				}
-			});
-			builder.add(bPlugin, cc.xy(1, i++));
-		}
-		pPlugins.add(builder.getPanel());
 	}
 }

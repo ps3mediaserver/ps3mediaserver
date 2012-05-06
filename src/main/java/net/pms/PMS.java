@@ -71,8 +71,11 @@ import net.pms.network.UPNPHelper;
 import net.pms.newgui.GeneralTab;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
-import net.pms.notification.NotificationCenter;
+import net.pms.notifications.NotificationCenter;
+import net.pms.notifications.types.PluginEvent;
+import net.pms.notifications.types.PluginEvent.Event;
 import net.pms.plugins.PluginsFactory;
+import net.pms.plugins.notifications.StartStopNotifier;
 import net.pms.update.AutoUpdater;
 import net.pms.util.ProcessUtil;
 import net.pms.util.PropertiesUtil;
@@ -442,21 +445,11 @@ public class PMS {
 
 		server = new HTTPServer(configuration.getServerPort());
 
-		// a static block in Player doesn't work (i.e. is called too late).
-		// this must always be called *after* the plugins have loaded.
-		// here's as good a place as any
-		Player.initializeFinalizeTranscoderArgsListeners();
-
 		// Initialize a player factory to register all players
 		PlayerFactory.initialize(configuration);
 
 		// Add registered player engines
 		frame.addEngines();
-
-		// Initialize the remaining plugins
-		PluginsFactory.initializePlugins();
-
-		NotificationCenter.post("Plugins", "All plugins have been initialized", null);
 		
 		boolean binding = false;
 
@@ -498,10 +491,16 @@ public class PMS {
 			logger.info("A tiny cache admin interface is available at: http://" + server.getHost() + ":" + server.getPort() + "/console/home");
 		}
 
+		// Initialize the remaining plugins
+		PluginsFactory.initializePlugins();
+		NotificationCenter.getInstance(PluginEvent.class).post(new PluginEvent(Event.PluginsLoaded));
+
 		// XXX: this must be called:
 		//     a) *after* loading plugins i.e. plugins register root folders then RootFolder.discoverChildren adds them
 		//     b) *after* mediaLibrary is initialized, if enabled (above)
 		getRootFolder(RendererConfiguration.getDefaultConf());
+		
+		StartStopNotifier.initialize();
 
 		frame.serverReady();
 

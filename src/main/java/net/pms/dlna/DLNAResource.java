@@ -58,7 +58,9 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.SizeLimitInputStream;
 import net.pms.network.HTTPResource;
-import net.pms.plugins.PluginsFactory;
+import net.pms.notifications.NotificationCenter;
+import net.pms.notifications.types.StartStopEvent;
+import net.pms.notifications.types.StartStopEvent.Event;
 import net.pms.plugins.StartStopListener;
 import net.pms.util.FileUtil;
 import net.pms.util.ImagesUtil;
@@ -1331,6 +1333,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	public void startPlaying(final String rendererId) {
 		final String requestId = getRequestId(rendererId);
 		synchronized (requestIdToRefcount) {
+			
 			Integer temp = requestIdToRefcount.get(requestId);
 			if (temp == null) {
 				temp = 0;
@@ -1338,30 +1341,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			final Integer refCount = temp;
 			requestIdToRefcount.put(requestId, refCount + 1);
 			if (refCount == 0) {
-				final DLNAResource self = this;
-				Runnable r = new Runnable() {
-					@Override
-					public void run() {
-						LOGGER.info(String.format("renderer: %s, file: %s", rendererId, getSystemName()));
-
-						for (final StartStopListener plugin : PluginsFactory.getStartStopListeners()) {
-							// run these asynchronously for slow handlers (e.g. logging, scrobbling)
-							Runnable fireStartStopEvent = new Runnable() {
-								@Override
-								public void run() {
-									try {
-										((StartStopListener) plugin).nowPlaying(getMedia(), self);
-									} catch (Throwable t) {
-										LOGGER.error(String.format("Notification of startPlaying event failed for StartStopListener %s", plugin.getClass()), t);
-									}
-								}
-							};
-							new Thread(fireStartStopEvent, "StartPlaying Event for " + plugin.getName()).start();
-						}
-					}
-				};
-
-				new Thread(r, "StartPlaying Event").start();
+				NotificationCenter.getInstance(StartStopEvent.class).post(new StartStopEvent(this, Event.Start));
 			}
 		}
 	}
@@ -1388,32 +1368,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					assert refCount != null;
 					assert refCount > 0;
 					requestIdToRefcount.put(requestId, refCount - 1);
-
-					Runnable r = new Runnable() {
-						@Override
-						public void run() {
-							if (refCount == 1) {
-								LOGGER.info(String.format("renderer: %s, file: %s", rendererId, getSystemName()));
-
-								for (final StartStopListener listener : PluginsFactory.getStartStopListeners()) {
-									// run these asynchronously for slow handlers (e.g. logging, scrobbling)
-									Runnable fireStartStopEvent = new Runnable() {
-										@Override
-										public void run() {
-											try {
-												((StartStopListener) listener).donePlaying(getMedia(), self);
-											} catch (Throwable t) {
-												LOGGER.error(String.format("Notification of donePlaying event failed for StartStopListener %s", listener.getClass()), t);
-											}
-										}
-									};
-									new Thread(fireStartStopEvent, "StopPlaying Event for " + listener.getName()).start();
-								}
-							}
-						}
-					};
-
-					new Thread(r, "StopPlaying Event").start();
+					if (refCount == 1) {
+						NotificationCenter.getInstance(StartStopEvent.class).post(new StartStopEvent(self, Event.Stop));
+					}
 				}
 			}
 		};

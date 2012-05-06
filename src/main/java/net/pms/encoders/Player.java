@@ -36,6 +36,10 @@ import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
+import net.pms.notifications.NotificationCenter;
+import net.pms.notifications.NotificationSubscriber;
+import net.pms.notifications.types.PluginEvent;
+import net.pms.notifications.types.PluginEvent.Event;
 import net.pms.plugins.FinalizeTranscoderArgsListener;
 import net.pms.plugins.PluginsFactory;
 import net.pms.util.FileUtil;
@@ -62,10 +66,30 @@ public abstract class Player {
 	public abstract String[] args();
 	public abstract String mimeType();
 	public abstract String executable();
-	private static List<FinalizeTranscoderArgsListener> finalizeTranscodeArgsListeners =
-		new ArrayList<FinalizeTranscoderArgsListener>();
-
-	public static void initializeFinalizeTranscoderArgsListeners() {
+	private static List<FinalizeTranscoderArgsListener> finalizeTranscodeArgsListeners;
+	
+	static {
+		if(finalizeTranscodeArgsListeners == null) {
+			loadFinalizeTranscodeArgsListeners();
+		}
+		
+		NotificationCenter.getInstance(PluginEvent.class).subscribe(new NotificationSubscriber<PluginEvent>() {			
+			@Override
+			public void onMessage(PluginEvent obj) {
+				if(obj.getEvent() == Event.PluginsLoaded) {
+					loadFinalizeTranscodeArgsListeners();
+				}
+			}
+		});
+	}
+	
+	private static synchronized void loadFinalizeTranscodeArgsListeners() {
+		if(finalizeTranscodeArgsListeners == null) {
+			finalizeTranscodeArgsListeners = new ArrayList<FinalizeTranscoderArgsListener>();
+		} else {
+			finalizeTranscodeArgsListeners.clear();			
+		}
+		
 		for (FinalizeTranscoderArgsListener listener : PluginsFactory.getFinalizeTranscoderArgsListeners()) {
 			finalizeTranscodeArgsListeners.add((FinalizeTranscoderArgsListener) listener);
 		}

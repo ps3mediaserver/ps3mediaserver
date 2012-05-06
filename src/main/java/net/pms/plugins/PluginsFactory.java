@@ -131,10 +131,7 @@ public class PluginsFactory {
 	public static List<net.pms.external.AdditionalFolderAtRoot> getAdditionalFolderAtRootList() {
 		List<net.pms.external.AdditionalFolderAtRoot> res = new ArrayList<net.pms.external.AdditionalFolderAtRoot>();
 		for(AdditionalFolderAtRootWrapper wp : getPlugins(AdditionalFolderAtRootWrapper.class)) {
-			net.pms.external.ExternalListener l = wp.getListener();
-			if(l instanceof net.pms.external.AdditionalFolderAtRoot) {
-				res.add((net.pms.external.AdditionalFolderAtRoot) l);
-			}
+			res.add(wp.getFolder());
 		}
 		return res;
 	}
@@ -147,10 +144,7 @@ public class PluginsFactory {
 	public static List<net.pms.external.AdditionalFoldersAtRoot> getAdditionalFoldersAtRootList() {
 		List<net.pms.external.AdditionalFoldersAtRoot> res = new ArrayList<net.pms.external.AdditionalFoldersAtRoot>();
 		for(AdditionalFoldersAtRootWrapper wp : getPlugins(AdditionalFoldersAtRootWrapper.class)) {
-			net.pms.external.ExternalListener l = wp.getListener();
-			if(l instanceof net.pms.external.AdditionalFoldersAtRoot) {
-				res.add((net.pms.external.AdditionalFoldersAtRoot) l);
-			}
+			res.add(wp.getFolders());
 		}
 		return res;
 	}
@@ -162,7 +156,6 @@ public class PluginsFactory {
 	 */
 	public static DlnaTreeFolderPlugin getDlnaTreeFolderPluginByName(String className) {
 		DlnaTreeFolderPlugin plugin =  getPluginByName(DlnaTreeFolderPlugin.class, className);
-		plugin.initialize();
 		return plugin;
 	}
 
@@ -174,7 +167,6 @@ public class PluginsFactory {
 	 */
 	public static FileDetailPlugin getFileDetailPluginByName(String className) {
 		FileDetailPlugin plugin =  getPluginByName(FileDetailPlugin.class, className);
-		plugin.initialize();
 		return plugin;
 	}
 
@@ -186,7 +178,6 @@ public class PluginsFactory {
 	 */
 	public static FileImportPlugin getFileImportPluginByName(String className) {
 		FileImportPlugin plugin =  getPluginByName(FileImportPlugin.class, className);
-		plugin.initialize();
 		return plugin;
 	}
 
@@ -237,7 +228,6 @@ public class PluginsFactory {
 	 */
 	public static void lookup() {
 		File pluginDirectory = new File(PMS.getConfiguration().getPluginDirectory());
-		LOGGER.info("Searching for plugins in " + pluginDirectory.getAbsolutePath());
 
 		if (!pluginDirectory.exists()) {
 			LOGGER.warn("Plugin directory doesn't exist: " + pluginDirectory);
@@ -249,6 +239,8 @@ public class PluginsFactory {
 			return;
 		}
 
+		LOGGER.info("Searching for plugins in " + pluginDirectory.getAbsolutePath());
+		
 		// Filter all .jar files from the plugin directory
 		File[] jarFiles = pluginDirectory.listFiles(
 			new FileFilter() {
@@ -426,16 +418,17 @@ public class PluginsFactory {
 	 * @return a plugin instance of the specified type or null if none can be found
 	 */
 	@SuppressWarnings("unchecked")
-	private static <T> T getPluginByName(Class<T> c, String className) {
+	private static <T extends PluginBase> T getPluginByName(Class<T> c, String className) {
 		T res = null;
 		try {
 			Class<?> clLauncher = classLoader.loadClass(className);
 			Object instance = clLauncher.newInstance();
 			if (c.isAssignableFrom(instance.getClass())) {
 				res = (T) instance;
+				res.initialize();
 			}
-		} catch (Exception ex) {
-			LOGGER.error("Failed to resolve plugin by name for " + className, ex);
+		} catch (Throwable t) {
+			LOGGER.error("Failed to load plugin by name for " + className, t);
 		}
 		return res;
 	}

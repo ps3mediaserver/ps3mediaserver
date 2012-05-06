@@ -472,7 +472,6 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 
 	@Override
 	public void serverReady() {
-		nt.addPlugins();
 	}
 
 	@Override
