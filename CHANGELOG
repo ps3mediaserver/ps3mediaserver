@@ -1,7 +1,7 @@
 Changelog:
 ==========
 
-1.??.? -
+1.53.0 - ????-??-??
 
 	Re-fix NPE when toggling HTTP Engine V2
 	Fix global custom MEncoder options

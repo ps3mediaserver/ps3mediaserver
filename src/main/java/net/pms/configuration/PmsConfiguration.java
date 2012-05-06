@@ -150,9 +150,9 @@ public class PmsConfiguration {
 	private static final String KEY_PLUGIN_DIRECTORY = "plugins";
 	private static final String KEY_PREVENTS_SLEEP = "prevents_sleep_mode";
 	private static final String KEY_PROFILE_NAME = "name";
+	private static final String KEY_PROXY_SERVER_PORT = "proxy";
 	private static final String KEY_RENDERER_DEFAULT = "renderer_default";
 	private static final String KEY_RENDERER_FORCE_DEFAULT = "renderer_force_default";
-	private static final String KEY_PROXY_SERVER_PORT = "proxy";
 	private static final String KEY_SERVER_HOSTNAME = "hostname";
 	private static final String KEY_SERVER_PORT = "port";
 	private static final String KEY_SHARES = "shares";
@@ -2108,7 +2108,7 @@ public class PmsConfiguration {
 
 	/**
 	 * Sets the name of the renderer to fall back on when header matching
-	 * fails. PMS will recognize the configured renderer instead of "Unknow
+	 * fails. PMS will recognize the configured renderer instead of "Unknown
 	 * renderer". Set to "" to make PMS return the unknown renderer when no
 	 * match can be made.
 	 *
