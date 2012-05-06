@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -48,9 +49,12 @@ public class RendererConfigurationTest {
 
 	@Before
 	public void setUp() {
-        // Silence all log messages from the PMS code that is being tested
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        context.reset(); 
+		// Silence all log messages from the PMS code that is being tested
+		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+		context.reset(); 
+		
+		// Set locale to EN to ignore translations for renderers
+		Locale.setDefault(Locale.ENGLISH);
 
 		// Cases that are too generic should not match anything
 		testCases.put("User-Agent: UPnP/1.0 DLNADOC/1.50", null);

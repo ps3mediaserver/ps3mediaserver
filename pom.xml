@@ -433,6 +433,10 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<!-- Force language because JUnit tests depend on english language strings -->
+						<argLine>-Duser.language=en</argLine>
+					</configuration>
 					<version>2.11</version>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
