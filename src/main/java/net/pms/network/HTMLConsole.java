@@ -44,7 +44,6 @@ public class HTMLConsole {
 		}
 
 		if (resource.equals("stop") && configuration.getUseCache() && database.isScanLibraryRunning()) {
-			database.stopScanLibrary();
 			sb.append("<p align=center><b>Scan stopped!</b></p><br>");
 		}
 

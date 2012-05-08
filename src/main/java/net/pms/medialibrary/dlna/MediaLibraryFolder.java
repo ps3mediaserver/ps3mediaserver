@@ -1,3 +1,21 @@
+/*
+ * PS3 Media Server, for streaming any medias to your PS3.
+ * Copyright (C) 2012  Ph.Waeber
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package net.pms.medialibrary.dlna;
 
 import java.io.File;
@@ -26,37 +44,62 @@ import net.pms.medialibrary.commons.enumarations.FileDisplayType;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 
+/**
+ * When adding a file as a folder, this class is being used
+ */
 public class MediaLibraryFolder extends VirtualFolder {
 	private static final Logger log = LoggerFactory.getLogger(MediaLibraryFolder.class);
 	private DOMediaLibraryFolder folder;
 	private boolean isUpdating = false;
 
+	/**
+	 * Instantiates a new media library folder.
+	 *
+	 * @param folder the folder
+	 */
 	public MediaLibraryFolder(DOMediaLibraryFolder folder) {
 		super(folder.getName(), null);
 
 		setFolder(folder);
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.DLNAResource#isRefreshNeeded()
+	 */
 	@Override
 	public boolean isRefreshNeeded() {
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.DLNAResource#isTranscodeFolderAvailable()
+	 */
 	@Override
 	public boolean isTranscodeFolderAvailable() {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.virtual.VirtualFolder#isFolder()
+	 */
 	@Override
 	public boolean isFolder() {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.DLNAResource#discoverChildren()
+	 */
 	@Override
 	public void discoverChildren() {
 		refreshChildren();
 	}
 
+	/**
+	 * Adds the child folder.
+	 *
+	 * @param f the f
+	 */
 	private void addChildFolder(DOFolder f) {
 		if (f instanceof DOMediaLibraryFolder) {
 			addChild(new MediaLibraryFolder((DOMediaLibraryFolder) f));
@@ -65,6 +108,9 @@ public class MediaLibraryFolder extends VirtualFolder {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.DLNAResource#refreshChildren()
+	 */
 	@Override
 	public boolean refreshChildren() {
 		if (isUpdating) return false;
@@ -185,6 +231,11 @@ public class MediaLibraryFolder extends VirtualFolder {
 		return nodeRefreshed;
 	}
 	
+	/**
+	 * This method decides if a zip, rar, iso, m3u or cue folder should be added
+	 *
+	 * @param fileInfo the file info to check
+	 */
 	private void manageFile(DOFileInfo fileInfo) {
 		File f = new File(fileInfo.getFilePath());
 		if ((f.isFile() || f.isDirectory()) && !f.isHidden()) {
@@ -211,10 +262,11 @@ public class MediaLibraryFolder extends VirtualFolder {
 		}
 	}
 
-	/***
+	/**
+	 * *
 	 * Updates the folder if the one retrieved from the DB is more recent then
-	 * the used one
-	 * 
+	 * the used one.
+	 *
 	 * @return true if the folder has been updated
 	 */
 	private void updateFolder() {
@@ -228,20 +280,36 @@ public class MediaLibraryFolder extends VirtualFolder {
 		setFolder(newFolder);
 	}
 
+	/**
+	 * Sets the folder.
+	 *
+	 * @param folder the new folder
+	 */
 	public void setFolder(DOMediaLibraryFolder folder) {
 		name = folder.getName();
 		this.folder = folder;
 	}
 
+	/**
+	 * Gets the folder.
+	 *
+	 * @return the folder
+	 */
 	public DOMediaLibraryFolder getFolder() {
 		return folder;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.DLNAResource#toString()
+	 */
 	@Override
 	public String toString() {
 		return getName();
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof MediaLibraryFolder)) {

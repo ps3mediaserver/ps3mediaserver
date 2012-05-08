@@ -1,3 +1,21 @@
+/*
+ * PS3 Media Server, for streaming any medias to your PS3.
+ * Copyright (C) 2012  Ph.Waeber
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package net.pms.medialibrary.dlna;
 
 import java.io.BufferedOutputStream;
@@ -19,23 +37,44 @@ import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 
+/**
+ * If showing a file as a folder, this class can be added
+ * to have an entry with an icon and a name. When played,
+ * the thumbnail will be converted to a video to be shown
+ * full screen
+ */
 public class MediaLibraryFileInfo extends VirtualFolder {
 	private static final Logger log = LoggerFactory.getLogger(MediaLibraryFileInfo.class);
 	private final String GEN_MOVIE_NAME = "tmp_vid.mpg";
 
+	/**
+	 * Instantiates a new media library file info.
+	 *
+	 * @param displayName the display name
+	 * @param thumbnailIcon the thumbnail icon
+	 */
 	public MediaLibraryFileInfo(String displayName, String thumbnailIcon) {
 		super(displayName, thumbnailIcon);
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.DLNAResource#isTranscodeFolderAvailable()
+	 */
 	@Override
 	public boolean isTranscodeFolderAvailable() {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.virtual.VirtualFolder#isFolder()
+	 */
 	public boolean isFolder() {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.virtual.VirtualFolder#getThumbnailInputStream()
+	 */
 	@Override
 	public InputStream getThumbnailInputStream() {
 		InputStream res = null;
@@ -47,25 +86,43 @@ public class MediaLibraryFileInfo extends VirtualFolder {
 		return res;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.virtual.VirtualFolder#getName()
+	 */
 	@Override
 	public String getName() {
 		return name;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.virtual.VirtualFolder#length()
+	 */
 	@Override
 	public long length() {
 		return 0;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.virtual.VirtualFolder#lastModified()
+	 */
 	public long lastModified() {
 		return 0;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.virtual.VirtualFolder#getSystemName()
+	 */
 	@Override
 	public String getSystemName() {
 		return getName();
 	}
 	
+	/**
+	 * Creates a short video showing the thumbnail.
+	 * This allows to view the cover full screen when browsing on the ps3
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private void createVideo() throws IOException {
 		String picFolderPath = PMS.getConfiguration().getTempFolder().getAbsolutePath() + File.separator + "thumb_video_pics" + File.separator;
 		if(!new File(picFolderPath).isDirectory()){
@@ -131,6 +188,12 @@ public class MediaLibraryFileInfo extends VirtualFolder {
 		pw.run();
 	}
 	
+	/**
+	 * Saves the thumbnail.
+	 *
+	 * @param saveFilePath the save file path
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private void saveThumbnail(String saveFilePath) throws IOException {
 		File thumbFile = new File(saveFilePath);
 		if(thumbFile.exists()){
@@ -155,6 +218,9 @@ public class MediaLibraryFileInfo extends VirtualFolder {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.virtual.VirtualFolder#getInputStream()
+	 */
 	public InputStream getInputStream() throws IOException {
 		
 		createVideo();
@@ -175,6 +241,13 @@ public class MediaLibraryFileInfo extends VirtualFolder {
 	static final int    BUFF_SIZE = 100000;
 	static final byte[] buffer    = new byte[BUFF_SIZE];
 
+	/**
+	 * Copies a file
+	 *
+	 * @param from the from
+	 * @param to the to
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static void copy(String from, String to) throws IOException {
 		InputStream in = null;
 		OutputStream out = null;
