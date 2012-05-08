@@ -18,7 +18,7 @@
 	<artifactId>pms</artifactId>
 	<name>PS3 Media Server MLX</name>
 	<packaging>jar</packaging>
-	<version>1.52.2-mlx_0.9-SNAPSHOT</version>
+	<version>1.53.0-mlx_0.9-SNAPSHOT</version>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
 

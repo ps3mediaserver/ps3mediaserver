@@ -1123,7 +1123,7 @@ public class MEncoderVideo extends Player {
 		if (overriddenMainArgs != null) {
 			// add the sanitized custom MEncoder options.
 			// not cached because they may be changed on the fly in the GUI
-			// XXX if/when we upgrade to org.apache.commons.lang3:
+			// TODO if/when we upgrade to org.apache.commons.lang3:
 			// args = ArrayUtils.addAll(defaultArgs, sanitizeArgs(overriddenMainArgs))
 			String[] sanitizedCustomArgs = sanitizeArgs(overriddenMainArgs);
 			args = new String[defaultArgs.length + sanitizedCustomArgs.length];
@@ -1558,7 +1558,7 @@ public class MEncoderVideo extends Player {
 
 					// set subtitles font
 					if (configuration.getMencoderFont() != null && configuration.getMencoderFont().length() > 0) {
-						// set font with -font option, workarond for
+						// set font with -font option, workaround for
 						// https://github.com/Happy-Neko/ps3mediaserver/commit/52e62203ea12c40628de1869882994ce1065446a#commitcomment-990156 bug
 						sb.append(" -font ").append(configuration.getMencoderFont()).append(" ");
 						sb.append(" -ass-force-style FontName=").append(configuration.getMencoderFont()).append(",");
