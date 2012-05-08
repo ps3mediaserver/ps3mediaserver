@@ -1,16 +1,15 @@
 package net.pms.external;
 
 import net.pms.dlna.DLNAResource;
-import net.pms.plugins.DlnaTreeFolderPlugin;
 
 /**
  * Classes implementing this interface and packaged as pms plugins will show one
  * additional folder at the root level when the DLNA tree is being browsed on
  * the renderer
  * 
- * @Deprecated
- * @see DlnaTreeFolderPlugin
+ * @see net.pms.plugins.DlnaTreeFolderPlugin
  */
+@Deprecated
 public interface AdditionalFolderAtRoot extends ExternalListener {
 	/**
 	 * Gets the DLNAResource that will be added to the root folder. If it is

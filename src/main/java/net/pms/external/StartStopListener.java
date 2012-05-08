@@ -7,9 +7,9 @@ import net.pms.dlna.DLNAResource;
  * Classes implementing this interface and packaged as pms plugins will be
  * notified when a resources starts or stops being played
  * 
- * @Deprecated
  * @see net.pms.plugins.StartStopListener
  */
+@Deprecated
 public interface StartStopListener extends ExternalListener {
 	/**
 	 * Called when a resource starts playing
