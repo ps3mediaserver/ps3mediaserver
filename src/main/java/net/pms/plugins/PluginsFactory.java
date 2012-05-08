@@ -128,6 +128,7 @@ public class PluginsFactory {
 	 *
 	 * @return the additional folder at root list
 	 */
+	@SuppressWarnings("deprecation")
 	public static List<net.pms.external.AdditionalFolderAtRoot> getAdditionalFolderAtRootList() {
 		List<net.pms.external.AdditionalFolderAtRoot> res = new ArrayList<net.pms.external.AdditionalFolderAtRoot>();
 		for(AdditionalFolderAtRootWrapper wp : getPlugins(AdditionalFolderAtRootWrapper.class)) {
@@ -141,6 +142,7 @@ public class PluginsFactory {
 	 *
 	 * @return the additional folders at root list
 	 */
+	@SuppressWarnings("deprecation")
 	public static List<net.pms.external.AdditionalFoldersAtRoot> getAdditionalFoldersAtRootList() {
 		List<net.pms.external.AdditionalFoldersAtRoot> res = new ArrayList<net.pms.external.AdditionalFoldersAtRoot>();
 		for(AdditionalFoldersAtRootWrapper wp : getPlugins(AdditionalFoldersAtRootWrapper.class)) {
@@ -226,6 +228,7 @@ public class PluginsFactory {
 	 * class. This main plugin class is then loaded and an instance is created
 	 * and registered for later use.
 	 */
+	@SuppressWarnings("deprecation")
 	public static void lookup() {
 		File pluginDirectory = new File(PMS.getConfiguration().getPluginDirectory());
 
@@ -357,6 +360,7 @@ public class PluginsFactory {
 	 * transition to the new plugin system smooth
 	 * @param listener
 	 */
+	@SuppressWarnings("deprecation")
 	private static void registerOldPlugin(net.pms.external.ExternalListener listener) {
 		BaseWrapper wp = null;
 		if(listener instanceof net.pms.external.AdditionalFolderAtRoot) {
