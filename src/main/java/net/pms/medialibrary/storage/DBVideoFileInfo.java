@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,10 +51,15 @@ class DBVideoFileInfo extends DBFileInfo {
 		Connection conn = null;
 		ResultSet rs = null;
 		PreparedStatement stmt = null;
+		Savepoint savePoint = null;
 
 		// Delete all entries related to video files in the DB
 		try {
 			conn = cp.getConnection();
+			
+			//prepare for rollback
+			conn.setAutoCommit(false);
+			savePoint = conn.setSavepoint();
 			
 			//get all filePaths
 			String statement = "SELECT FILE.ID, FILE.FOLDERPATH, FILE.FILENAME" +
@@ -73,10 +79,16 @@ class DBVideoFileInfo extends DBFileInfo {
 					res++;
 				}
 			}
+			conn.commit();
         } catch (SQLException e) {
+			try {
+				conn.rollback(savePoint);
+			} catch (SQLException e1) {
+				log.error("Failed to roll back transaction to save point after a problem occured while cleaning videos", e);
+			}
 			throw new StorageException("Failed to clear videos properly", e);
         } finally {
-			close(conn, stmt, rs);
+			close(conn, stmt, rs, savePoint);
         }
 		
 		return res;
@@ -87,10 +99,15 @@ class DBVideoFileInfo extends DBFileInfo {
 		Connection conn = null;
 		ResultSet rs = null;
 		PreparedStatement stmt = null;
+		Savepoint savePoint = null;
 
 		// Delete all entries related to video files in the DB
 		try {
 			conn = cp.getConnection();
+
+			//prepare for rollback
+			conn.setAutoCommit(false);
+			savePoint = conn.setSavepoint();
 			
 			//clear audio tracks
 			stmt = conn.prepareStatement("DELETE FROM VIDEOAUDIO");
@@ -115,12 +132,18 @@ class DBVideoFileInfo extends DBFileInfo {
 					throw new StorageException("Failed to clear video id=" + fileIdStr + " properly", e);
 		        }
 			}
-			
+
+			conn.commit();
 			res = nbDeletedVideos;
         } catch (SQLException e) {
+			try {
+				conn.rollback(savePoint);
+			} catch (SQLException e1) {
+				log.error("Failed to roll back transaction to save point after a problem occured during delete", e);
+			}
 			throw new StorageException("Failed to clear videos properly", e);
         } finally {
-			close(conn, stmt, rs);
+			close(conn, stmt, rs, savePoint);
         }
         
         return res;
@@ -129,14 +152,26 @@ class DBVideoFileInfo extends DBFileInfo {
 	void deleteVideo(long fileId) throws StorageException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
+		Savepoint savePoint = null;
 		
 		try {
 			conn = cp.getConnection();
+			
+			//prepare for rollback
+			conn.setAutoCommit(false);
+			savePoint = conn.setSavepoint();
+			
 			deleteVideo(fileId, conn, stmt);
+			conn.commit();
         } catch (SQLException e) {
+			try {
+				conn.rollback(savePoint);
+			} catch (SQLException e1) {
+				log.error("Failed to roll back transaction to save point after a problem occured during delete", e);
+			}
 			throw new StorageException("Failed to delete video with id=" + fileId, e);
 		} finally {
-			close(conn, stmt);
+			close(conn, stmt, savePoint);
         }
 	}
 	
@@ -530,13 +565,20 @@ class DBVideoFileInfo extends DBFileInfo {
     }
 
 	void insertVideoFileInfo(DOVideoFileInfo fileInfo) throws StorageException {
-		super.insertFileInfo(fileInfo);		
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		Savepoint savePoint = null;
 
-		try {
+		try {			
 			conn = cp.getConnection();
+			
+			//prepare transaction
+			conn.setAutoCommit(false);
+			savePoint = conn.setSavepoint();
+			
+			super.insertFileInfo(fileInfo, conn, stmt, rs);
 
 			stmt = conn.prepareStatement("INSERT INTO VIDEO (FILEID, AGERATINGLEVEL, AGERATINGREASON, RATINGPERCENT, RATINGVOTERS"
 			        + ", DIRECTOR, TAGLINE, ASPECTRATIO, BITRATE, BITSPERPIXEL, CODECV, DURATIONSEC, CONTAINER, DVDTRACK, FRAMERATE, MIMETYPE, MODEL, MUXABLE"
@@ -579,22 +621,36 @@ class DBVideoFileInfo extends DBFileInfo {
 			stmt.executeUpdate();
 
 			insertOrUpdateVideoPropertyLists(fileInfo, stmt, conn);
+			
+			conn.commit();
 		} catch (Exception e) {
+			try {
+				conn.rollback(savePoint);
+			} catch (SQLException e1) {
+				log.error("Failed to roll back transaction to save point after a problem occured during insert", e);
+			}
 			throw new StorageException("Failed to insert video file info " + fileInfo.getFilePath(), e);
 		} finally {
-			close(conn, stmt);
+			close(conn, stmt, rs, savePoint);
 		}
 	}
 
 	void updateFileInfo(DOVideoFileInfo fileInfo) throws StorageException {
-		//update the properties from the super class
-		super.updateFileInfo(fileInfo);
 		
 		Connection conn = null;
 		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		Savepoint savePoint = null;
 
 		try {
 			conn = cp.getConnection();
+			
+			//prepare for rollback
+			conn.setAutoCommit(false);
+			savePoint = conn.setSavepoint();
+			
+			//update the properties from the super class
+			super.updateFileInfo(fileInfo, conn, stmt, rs);
 			
 			//update video properties
     		stmt = conn.prepareStatement("UPDATE VIDEO SET AGERATINGLEVEL = ?, AGERATINGREASON = ?, RATINGPERCENT = ?, RATINGVOTERS = ?"
@@ -638,11 +694,18 @@ class DBVideoFileInfo extends DBFileInfo {
     		stmt.executeUpdate();
 
     		insertOrUpdateVideoPropertyLists(fileInfo, stmt, conn);
-    	} catch (Exception e) {
+			
+			conn.commit();
+		} catch (Exception e) {
+			try {
+				conn.rollback(savePoint);
+			} catch (SQLException e1) {
+				log.error("Failed to roll back transaction to save point after a problem occured during update", e);
+			}
 			throw new StorageException("Failed to update video file info " + fileInfo.getFilePath(), e);
-    	} finally {
-			close(conn, stmt);
-    	}	    
+		} finally {
+			close(conn, stmt, rs, savePoint);
+		}
     }
 
 	private void insertOrUpdateVideoPropertyLists(DOVideoFileInfo videoFileInfo, PreparedStatement stmt, Connection conn) throws StorageException{
@@ -745,24 +808,24 @@ class DBVideoFileInfo extends DBFileInfo {
 	
 	private void deleteVideo(long fileId, Connection conn, PreparedStatement stmt) throws StorageException {
 		String fileIdStr = "";
-		try{
+		try {
 			fileIdStr = String.valueOf(fileId);
-			
+
 			stmt = conn.prepareStatement("DELETE FROM VIDEO WHERE FILEID = ?");
 			stmt.setLong(1, fileId);
-	        stmt.executeUpdate();
+			stmt.executeUpdate();
 
 			stmt = conn.prepareStatement("DELETE FROM VIDEOAUDIO WHERE FILEID = ?");
 			stmt.setLong(1, fileId);
-	        stmt.executeUpdate();
+			stmt.executeUpdate();
 
 			stmt = conn.prepareStatement("DELETE FROM SUBTITLES WHERE FILEID = ?");
 			stmt.setLong(1, fileId);
-	        stmt.executeUpdate();
-	        
-	        super.delete(fileId);
+			stmt.executeUpdate();
+
+			super.deleteFile(fileId, conn, stmt);
 		} catch (SQLException e) {
 			throw new StorageException("Failed to clear video id=" + fileIdStr + " properly", e);
-        }		
+		}
 	}
 }
