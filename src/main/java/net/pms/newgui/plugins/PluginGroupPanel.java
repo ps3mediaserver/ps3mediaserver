@@ -137,8 +137,11 @@ public class PluginGroupPanel extends JPanel {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 						PluginDetailDialog pdd = new PluginDetailDialog(plugin);
-						pdd.setMinimumSize(new Dimension(200, 80));
-						pdd.setSize(new Dimension(450, 340));
+						pdd.setMinimumSize(new Dimension(250, 200));
+						pdd.pack();
+						int width = pdd.getWidth() < 450 ? 450 : pdd.getWidth();
+						int height = pdd.getHeight() < 300 ? 300 : pdd.getHeight();
+						pdd.setSize(new Dimension(width, height));
 						pdd.setLocation(GUIHelper.getCenterDialogOnParentLocation(pdd.getSize(), bConfig));
 						pdd.setModal(true);
 						pdd.setVisible(true);

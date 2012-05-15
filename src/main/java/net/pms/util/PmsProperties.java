@@ -33,8 +33,17 @@ public class PmsProperties {
 	 * @throws IOException
 	 */
 	public void loadFromResourceFile(String filename) throws IOException {
-		InputStream inputStream = getClass().getResourceAsStream(filename);
+		loadFromResourceFile(filename, getClass());
+	}
 
+	/**
+	 * Initialize from a properties file.
+	 * @param filename The properties file.
+	 * @param c the class for which the resource will be loaded
+	 * @throws IOException
+	 */
+	public void loadFromResourceFile(String filename, Class<?> c) throws IOException {
+		InputStream inputStream = c.getResourceAsStream(filename);
 		try {
 			properties.load(inputStream);
 		} finally {

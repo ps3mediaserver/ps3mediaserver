@@ -110,7 +110,7 @@ public interface FileImportPlugin extends PluginBase {
 
 	/**
 	 * Returns the value for the file property. A generic object can be
-	 * returned, but it will be checked in pms-mlx if the correct type has been
+	 * returned, but it will be checked in pms if the correct type has been
 	 * returned for the FileProperty.<br>
 	 * If no value could be found, null should be returned. Integers < 0 will be
 	 * handled the same way as well as an empty String for String values<br>

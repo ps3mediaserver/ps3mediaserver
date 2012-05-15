@@ -48,6 +48,7 @@ public class PluginDetailDialog extends JDialog {
 	private void build() {
 		Component comp = null;
 		JPanel pAbout = new PluginAboutPanel(plugin);
+		pAbout.setPreferredSize(new Dimension(0, 0));
 		if(plugin.getGlobalConfigurationPanel() == null) {
 			comp = pAbout;
 			setTitle(Messages.getString("PluginGroupPanel.1"));
