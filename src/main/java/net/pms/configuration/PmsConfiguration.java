@@ -34,6 +34,7 @@ import net.pms.io.SystemUtils;
 import net.pms.util.PropertiesUtil;
 import net.pms.Messages;
 
+import net.pms.util.PropertiesUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
@@ -274,10 +275,12 @@ public class PmsConfiguration {
 	private static final String ENV_PROFILE_PATH = "PMS_PROFILE";
 	private static final String PROFILE_DIRECTORY; // path to directory containing PMS config files
 	private static final String PROFILE_PATH; // abs path to profile file e.g. /path/to/PMS.conf
+    private static final String SKEL_PROFILE_PATH ; // abs path to skel (default) profile file e.g. /etc/skel/.config/ps3mediaserver/PMS.conf
+                                                    // "project.skelprofile.dir" project property
 	private static final String PROPERTY_PROFILE_PATH = "pms.profile.path";
 
 	static {
-		// first try the system property, typically set via the profile chooser
+        // first try the system property, typically set via the profile chooser
 		String profile = System.getProperty(PROPERTY_PROFILE_PATH);
 
 		// failing that, try the environment variable
@@ -335,6 +338,13 @@ public class PmsConfiguration {
 
 			PROFILE_PATH = FilenameUtils.normalize(new File(PROFILE_DIRECTORY, DEFAULT_PROFILE_FILENAME).getAbsolutePath());
 		}
+        // set SKEL_PROFILE_PATH for Linux systems
+        String skelDir = PropertiesUtil.getProjectProperties().get("project.skelprofile.dir");
+        if (Platform.isLinux() && StringUtils.isNotBlank(skelDir)) {
+            SKEL_PROFILE_PATH = FilenameUtils.normalize(new File(new File(skelDir, PROFILE_DIRECTORY_NAME).getAbsolutePath(), DEFAULT_PROFILE_FILENAME).getAbsolutePath());
+        } else {
+            SKEL_PROFILE_PATH = null;
+        }
 	}
 
 	/**
@@ -360,17 +370,25 @@ public class PmsConfiguration {
 	public PmsConfiguration(boolean loadFile) throws ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration();
 		configuration.setListDelimiter((char) 0);
-		configuration.setFileName(PROFILE_PATH);
 
 		if (loadFile) {
 			File pmsConfFile = new File(PROFILE_PATH);
 	
-			if (pmsConfFile.exists() && pmsConfFile.isFile()) {
+			if (pmsConfFile.isFile() && pmsConfFile.canRead()) {
 				configuration.load(PROFILE_PATH);
-			}
+			} else if (SKEL_PROFILE_PATH != null) {
+                File pmsSkelConfFile = new File(SKEL_PROFILE_PATH);
+                if (pmsSkelConfFile.isFile() && pmsSkelConfFile.canRead()) {
+                    // load defaults from skel file, save them later to PROFILE_PATH
+                    configuration.load(pmsSkelConfFile);
+                    logger.info("Default configuration loaded from " + SKEL_PROFILE_PATH);
+                }
+            }
 		}
 
-		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
+        configuration.setPath(PROFILE_PATH);
+
+        tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
 		Locale.setDefault(new Locale(getLanguage()));
 		// set DEFAULT_AVI_SYNTH_SCRIPT properly according to language

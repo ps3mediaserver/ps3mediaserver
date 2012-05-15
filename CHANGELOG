@@ -14,6 +14,7 @@ Changelog:
 		- added Hebrew (thanks, zvi-yamin!)
 	Added option to select and force the default renderer
 	Fixed Samsung 2012 TVs timeout (thanks, troop!)
+	Added support for D-link DSM-510 (thanks, glenrocks!)
 	
 
 1.52.1 - 2012-04-06

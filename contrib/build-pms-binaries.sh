@@ -1677,7 +1677,6 @@ build_libdv
 build_libmad
 build_libzen
 # Note: libmediainfo requires libzen to build
-# FIXME: problem building
 build_libmediainfo
 build_libpng
 build_libogg
