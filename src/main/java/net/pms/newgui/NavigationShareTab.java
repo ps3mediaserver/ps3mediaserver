@@ -640,7 +640,6 @@ public class NavigationShareTab {
 								"Question",
 								JOptionPane.YES_NO_OPTION);
 							if (option == JOptionPane.YES_OPTION) {
-								database.stopScanLibrary();
 								PMS.get().getFrame().setStatusLine(null);
 								but5.setIcon(LooksFrame.readImageIcon("search-32.png"));
 							}

@@ -1,3 +1,21 @@
+/*
+ * PS3 Media Server, for streaming any medias to your PS3.
+ * Copyright (C) 2012  Ph.Waeber
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package net.pms.medialibrary.dlna;
 
 import java.io.File;
@@ -29,6 +47,10 @@ import net.pms.medialibrary.commons.helpers.ImageHelper;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 import net.pms.plugins.FileDetailPlugin;
 
+/**
+ * Use this class to show a file in the dlna tree. It will either show a 
+ * single file or folder depending on the configuration
+ */
 public class MediaLibraryRealFile extends RealFile {
 	private static final Logger log = LoggerFactory.getLogger(MediaLibraryRealFile.class);
 	private DOFileInfo            fileInfo;
@@ -36,6 +58,13 @@ public class MediaLibraryRealFile extends RealFile {
 	private FileType              fileType;
 	private DOFileEntryBase     fileBase;
 
+	/**
+	 * Instantiates a new media library real file.
+	 *
+	 * @param fileInfo the file info
+	 * @param displayProperties the display properties
+	 * @param fileType the file type
+	 */
 	public MediaLibraryRealFile(DOFileInfo fileInfo, FileDisplayProperties displayProperties, FileType fileType) {
 		super(new File(fileInfo.getFilePath()));
 
@@ -49,12 +78,15 @@ public class MediaLibraryRealFile extends RealFile {
 			handleFileFolderDisplayNameMasks(fileBase);
 		}
 	}
-	
-	@Override
-	public boolean isTranscodeFolderAvailable() {
-		return false;
-	}
 
+	/**
+	 * Instantiates a new media library real file.
+	 *
+	 * @param fileBase the file base
+	 * @param fileInfo the file info
+	 * @param displayProperties the display properties
+	 * @param fileType the file type
+	 */
 	private MediaLibraryRealFile(DOFileEntryBase fileBase, DOFileInfo fileInfo, FileDisplayProperties displayProperties, FileType fileType) {
 		super(new File(fileInfo.getFilePath()));
 
@@ -64,12 +96,20 @@ public class MediaLibraryRealFile extends RealFile {
 		
 		this.fileBase = fileBase;
 	}
+	
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.DLNAResource#isTranscodeFolderAvailable()
+	 */
+	@Override
+	public boolean isTranscodeFolderAvailable() {
+		return false;
+	}
 
-	/***
+	/**
 	 * This method will replace the configurable string values with their actual
-	 * value in all file entries and sub folders
-	 * 
-	 * @param file
+	 * value in all file entries and sub folders.
+	 *
+	 * @param file the file
 	 */
 	private void handleFileFolderDisplayNameMasks(DOFileEntryBase file) {
 		file.setDisplayNameMask(fileInfo.getDisplayString(file.getDisplayNameMask()));
@@ -80,16 +120,25 @@ public class MediaLibraryRealFile extends RealFile {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.RealFile#getName()
+	 */
 	@Override
 	public String getName() {
 		return fileBase == null ? fileInfo.getDisplayString(displayProperties.getDisplayNameMask()) : fileBase.getDisplayNameMask();
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.RealFile#isFolder()
+	 */
 	@Override
 	public boolean isFolder() {
 		return fileBase == null ? displayProperties.getFileDisplayType() == FileDisplayType.FOLDER : fileBase.getFileEntryType() == FileDisplayType.FOLDER;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.RealFile#resolve()
+	 */
 	@Override
 	public void resolve() {
 		if (displayProperties.getFileDisplayType() == FileDisplayType.FILE
@@ -108,11 +157,17 @@ public class MediaLibraryRealFile extends RealFile {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.MapFile#analyzeChildren(int)
+	 */
 	@Override
 	public boolean analyzeChildren(int count) {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.MapFile#discoverChildren()
+	 */
 	@Override
 	public void discoverChildren() {
 		if (fileBase != null && fileBase instanceof DOFileEntryFolder) {
@@ -152,6 +207,9 @@ public class MediaLibraryRealFile extends RealFile {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.RealFile#getThumbnailInputStream()
+	 */
 	@Override
 	public InputStream getThumbnailInputStream() throws IOException {
 		String thumbPath;
@@ -172,6 +230,13 @@ public class MediaLibraryRealFile extends RealFile {
 		return ImageHelper.getScaledInputStream(thumbPath, 320, 240);
 	}
 	
+	/**
+	 * Gets the cover path. Depending on the thumnail prios, either a thumbnail will be generated, or a picture used.
+	 *
+	 * @param thumnailPrios the thumnail prios
+	 * @param fileInfo the file info
+	 * @return the absolute cover path or null if no cover could be found
+	 */
 	private String getCoverPath(List<DOThumbnailPriority> thumnailPrios, DOFileInfo fileInfo) {
 		File coverFile = null;
 		for (DOThumbnailPriority prio : thumnailPrios) {
@@ -234,6 +299,9 @@ public class MediaLibraryRealFile extends RealFile {
 		return coverFile == null ? null : coverFile.getAbsolutePath();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof MediaLibraryRealFile)) { 
@@ -249,30 +317,64 @@ public class MediaLibraryRealFile extends RealFile {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.pms.dlna.MapFile#toString()
+	 */
 	@Override
 	public String toString() {
 		return getName();
 	}
+	
+	/**
+	 * Sets the file type.
+	 *
+	 * @param fileType the new file type
+	 */
 	public void setFileType(FileType fileType) {
 		this.fileType = fileType;
 	}
 
+	/**
+	 * Gets the file type.
+	 *
+	 * @return the file type
+	 */
 	public FileType getFileType() {
 		return fileType;
 	}
 
+	/**
+	 * Sets the display properties.
+	 *
+	 * @param displayProperties the new display properties
+	 */
 	public void setDisplayProperties(FileDisplayProperties displayProperties) {
 		this.displayProperties = displayProperties;
 	}
 
+	/**
+	 * Gets the display properties.
+	 *
+	 * @return the display properties
+	 */
 	public FileDisplayProperties getDisplayProperties() {
 		return displayProperties;
 	}
 
+	/**
+	 * Sets the file info.
+	 *
+	 * @param fileInfo the new file info
+	 */
 	public void setFileInfo(DOFileInfo fileInfo) {
 		this.fileInfo = fileInfo;
 	}
 
+	/**
+	 * Gets the file info.
+	 *
+	 * @return the file info
+	 */
 	public DOFileInfo getFileInfo() {
 		return fileInfo;
 	}
