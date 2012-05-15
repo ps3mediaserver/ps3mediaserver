@@ -41,22 +41,19 @@ import org.h2.jdbcx.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DBInitializer {
+class DBInitializer extends DBBase {
 	private static final Logger log = LoggerFactory.getLogger(DBInitializer.class);
 
 	private final String DB_VERSION = "0.8";
 	
 	private String name;
 	private IMediaLibraryStorage storage;
-	private JdbcConnectionPool cp;
 
-	DBInitializer(String name, IMediaLibraryStorage storage){
-		if(log.isDebugEnabled()) log.debug("Initializing DBInitializer with name '" + name + "'");
-		
+	DBInitializer(String name, IMediaLibraryStorage storage) {
+		super(null);
 		this.name = name;
 		this.storage = storage;
 		cp = getConnectionPool();
-		
 		if(log.isInfoEnabled()) log.info("DBInitializer initialized");
 	}
 
@@ -133,7 +130,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			res = false;
 		} finally {
-			DBBase.close(conn, stmt);
+			close(conn, stmt);
     	}
     	
     	return res;
@@ -153,7 +150,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			//do nothing
 		} finally {
-			DBBase.close(conn, stmt);
+			close(conn, stmt);
     	}
     	
     	return res;		
@@ -586,7 +583,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed ti initialize database ", se);
 		} finally {
-			DBBase.close(conn, stmt);
+			close(conn, stmt);
 		}
 	}
 	
@@ -697,7 +694,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.1 to 0.2", se);
 		} finally {
-			DBBase.close(conn, stmt);
+			close(conn, stmt);
     	}
 	}
 
@@ -735,7 +732,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.2 to 0.3", se);
 		} finally {
-			DBBase.close(conn, stmt);
+			close(conn, stmt);
     	}
 	}
 
@@ -764,7 +761,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.3 to 0.4", se);
 		} finally {
-			DBBase.close(conn, stmt);
+			close(conn, stmt);
     	}
 	}
 
@@ -901,7 +898,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.4 to 0.5", se);
 		} finally {
-			DBBase.close(conn, stmt);
+			close(conn, stmt);
     	}
 	}
 
@@ -921,7 +918,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.5 to 0.6", se);
 		} finally {
-			DBBase.close(conn, stmt);
+			close(conn, stmt);
     	}
 	}
 
@@ -941,7 +938,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.6 to 0.7", se);
 		} finally {
-			DBBase.close(conn, stmt);
+			close(conn, stmt);
     	}
 	}
 
@@ -961,7 +958,7 @@ class DBInitializer {
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.7 to 0.8", se);
 		} finally {
-			DBBase.close(conn, stmt);
+			close(conn, stmt);
     	}
 	}
 	
@@ -982,7 +979,7 @@ class DBInitializer {
 			log.error(String.format("Failed to insert TABLECOLUMNCONFIGURATION for columnIndex=%s, width=%s, fileType=%s, conditionType=%s", 
 					c.getColumnIndex(), c.getWidth(), fileType, c.getConditionType()), se);
 		} finally {
-			DBBase.close(conn, stmt);
+			close(conn, stmt);
 		}
 	}
 }
