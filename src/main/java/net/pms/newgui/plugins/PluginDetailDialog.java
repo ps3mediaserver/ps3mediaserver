@@ -51,13 +51,11 @@ public class PluginDetailDialog extends JDialog {
 		pAbout.setPreferredSize(new Dimension(0, 0));
 		if(plugin.getGlobalConfigurationPanel() == null) {
 			comp = pAbout;
-			setTitle(Messages.getString("PluginGroupPanel.1"));
 		} else {
 			JTabbedPane tpPlugin = new JTabbedPane();
 			tpPlugin.addTab(Messages.getString("PluginGroupPanel.2"), plugin.getGlobalConfigurationPanel());
 			tpPlugin.addTab(Messages.getString("PluginGroupPanel.1"), pAbout);
 			comp = tpPlugin;
-			setTitle(Messages.getString("PluginGroupPanel.2"));
 		}
 
 		getContentPane().add(comp, BorderLayout.CENTER);

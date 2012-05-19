@@ -52,7 +52,6 @@ import net.pms.medialibrary.commons.enumarations.ScanState;
 import net.pms.medialibrary.commons.exceptions.InitialisationException;
 import net.pms.medialibrary.commons.exceptions.ScanStateException;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
-import net.pms.medialibrary.commons.helpers.TmdbHelper;
 import net.pms.medialibrary.commons.interfaces.IFileScannerEventListener;
 import net.pms.medialibrary.commons.interfaces.ILibraryManagerEventListener;
 import net.pms.medialibrary.gui.dialogs.ScanFolderDialog;
@@ -60,7 +59,6 @@ import net.pms.medialibrary.library.LibraryManager;
 import net.pms.medialibrary.scanner.FileScanner;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 
-import com.github.savvasdalkitsis.jtmdb.Session;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -92,9 +90,6 @@ public class GeneralOptionsView extends JPanel {
 	private ManagedFoldersPanel       pManagedFolders;
 
 	private JComponent                pOptions;
-
-	private JLabel lTmdbUser;
-
 	public GeneralOptionsView() {
 		libConfig = MediaLibraryConfiguration.getInstance();
 
@@ -371,21 +366,6 @@ public class GeneralOptionsView extends JPanel {
 
 		cbOmitFiltering = new JCheckBox(Messages.getString("ML.General.OmitPrefixes.Filter"));
 		builder.add(cbOmitFiltering, cc.xy(11, 3));
-		
-		//tmdb account
-		builder.addLabel(Messages.getString("ML.GeneralOptionsView.TmdbHeader"), cc.xy(1, 5));
-		lTmdbUser = new JLabel();
-		builder.add(lTmdbUser, cc.xy(3, 5));
-		JButton bSetTmdbUser = new JButton(Messages.getString("ML.GeneralOptionsView.ButtonSetUser"));
-		bSetTmdbUser.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Session s = TmdbHelper.createSession(lTmdbUser.getTopLevelAncestor());
-				setSession(s);
-			}
-		});
-		builder.add(bSetTmdbUser, cc.xy(5, 5));
 
 		//set initial values
 		tfPictureFolderPathValue.setText(libConfig.getPictureSaveFolderPath());
@@ -400,20 +380,8 @@ public class GeneralOptionsView extends JPanel {
 		tfOmitPrefix.setText(prefixes);
 		cbOmitSorting.setSelected(omitCfg.isSorting());
 		cbOmitFiltering.setSelected(omitCfg.isFiltering());
-		
-		setSession(TmdbHelper.getSession());
 
 		return builder.getPanel();
-	}
-	
-	private void setSession(Session session){
-		if(session != null){
-			lTmdbUser.setText(" " + session.getUserName());
-			lTmdbUser.setFont(lTmdbUser.getFont().deriveFont(Font.PLAIN));
-		} else {
-			lTmdbUser.setText(" " + Messages.getString("ML.GeneralOptionsView.NoTmdbUser"));
-			lTmdbUser.setFont(lTmdbUser.getFont().deriveFont(Font.ITALIC));
-		}
 	}
 
 	private JComponent buildLibrary() {

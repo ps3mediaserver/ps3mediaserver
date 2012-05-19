@@ -86,7 +86,7 @@ import net.pms.medialibrary.commons.helpers.FolderComparator;
 import net.pms.medialibrary.commons.helpers.GUIHelper;
 import net.pms.medialibrary.commons.interfaces.IMediaLibraryStorage;
 import net.pms.medialibrary.gui.dialogs.AddAutoFolderDialog;
-import net.pms.medialibrary.gui.dialogs.SpecialFolderDialog;
+import net.pms.medialibrary.gui.dialogs.PluginFolderDialog;
 import net.pms.medialibrary.gui.dialogs.folderdialog.FolderDialog;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 import net.pms.notifications.NotificationCenter;
@@ -325,7 +325,7 @@ public class DLNAViewTree extends JTree {
     								
     								editItem.setEnabled(true);
     								if(selNode.getUserObject() instanceof DOSpecialFolder){
-    									if(((DOSpecialFolder)selNode.getUserObject()).getSpecialFolderImplementation().getConfigurationPanel() == null){
+    									if(((DOSpecialFolder)selNode.getUserObject()).getSpecialFolderImplementation().getInstanceConfigurationPanel() == null){
     										editItem.setEnabled(false);
     									}
     								}
@@ -420,7 +420,7 @@ public class DLNAViewTree extends JTree {
 		DOSpecialFolder sf = new DOSpecialFolder(configFile.getAbsolutePath(), f, "", -1, ((DOMediaLibraryFolder)parentFolder.getUserObject()).getId(), getNewFolderInsertPosition(parentFolder));
 		if(sf.getSpecialFolderImplementation() != null){
 			sf.setName(sf.getSpecialFolderImplementation().getName());
-    		if(sf.getSpecialFolderImplementation().getConfigurationPanel() != null){
+    		if(sf.getSpecialFolderImplementation().getInstanceConfigurationPanel() != null){
     			showSpecialFolderDialog(sf);
     		} else {
     			mediaLibraryStorage.insertFolder(sf);
@@ -440,11 +440,11 @@ public class DLNAViewTree extends JTree {
 	}
 
 	private void showSpecialFolderDialog(DOSpecialFolder sf) {
-		if(sf == null || sf.getSpecialFolderImplementation() == null || sf.getSpecialFolderImplementation().getConfigurationPanel() == null){
+		if(sf == null || sf.getSpecialFolderImplementation() == null || sf.getSpecialFolderImplementation().getInstanceConfigurationPanel() == null){
 			return;
 		}
 		
-		SpecialFolderDialog d = new SpecialFolderDialog(sf);
+		PluginFolderDialog d = new PluginFolderDialog(sf);
 		d.addSpecialFolderDialogActionListener(new SpecialFolderDialogActionListener() {
 
 			@Override
@@ -499,7 +499,7 @@ public class DLNAViewTree extends JTree {
     				}
     			} else if (((DefaultMutableTreeNode) selNode).getUserObject() instanceof DOSpecialFolder) {
     				DOSpecialFolder sf = (DOSpecialFolder) ((DefaultMutableTreeNode) selNode).getUserObject();
-    				if(sf.getSpecialFolderImplementation() != null && sf.getSpecialFolderImplementation().getConfigurationPanel() != null){
+    				if(sf.getSpecialFolderImplementation() != null && sf.getSpecialFolderImplementation().getInstanceConfigurationPanel() != null){
         				showSpecialFolderDialog(sf);
     				} else {
     					startEditingAtPath(new TreePath(((DefaultMutableTreeNode) selNode).getPath()));
@@ -1275,7 +1275,7 @@ public class DLNAViewTree extends JTree {
 	}
 
 	private void handleSpecialFolderDialogActionReceived(SpecialFolderDialogActionEvent e) {
-		SpecialFolderDialog d = (SpecialFolderDialog) e.getSource();
+		PluginFolderDialog d = (PluginFolderDialog) e.getSource();
 		boolean doInsert = false;
 		switch (e.getActionType()) {
 			case OK:
@@ -1314,7 +1314,7 @@ public class DLNAViewTree extends JTree {
 
 	private void saveSpecialFolder(DOSpecialFolder specialFolder) {
 		try {
-			specialFolder.getSpecialFolderImplementation().saveConfiguration(specialFolder.getConfigFilePath());
+			specialFolder.getSpecialFolderImplementation().saveInstanceConfiguration(specialFolder.getConfigFilePath());
 			if(log.isDebugEnabled()) log.debug(String.format("Successfully saved SpecialFolder of type '%s' to '%s'", specialFolder.getSpecialFolderImplementation().getClass().getSimpleName(), specialFolder.getConfigFilePath()));
 		} catch (FileNotFoundException ex) {
 			String msg = String.format(Messages.getString("ML.DLNAViewTree.SaveSpecialFolderError.FileNotFound"), specialFolder.getConfigFilePath());

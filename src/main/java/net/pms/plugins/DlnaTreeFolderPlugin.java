@@ -46,7 +46,7 @@ public interface DlnaTreeFolderPlugin extends PluginBase {
 	 * @return the panel to configure the plugin or null if no configuration is
 	 *         required
 	 */
-	JPanel getConfigurationPanel();
+	JPanel getInstanceConfigurationPanel();
 
 	/***
 	 * Gets the file or folder that will be displayed on the renderer
@@ -78,7 +78,7 @@ public interface DlnaTreeFolderPlugin extends PluginBase {
 	 * @param saveFilePath
 	 *            The path to which the configuration has to be saved to
 	 */
-	void saveConfiguration(String saveFilePath) throws IOException;
+	void saveInstanceConfiguration(String saveFilePath) throws IOException;
 
 	/**
 	 * Load the configuration from the specified path to restore the same state
@@ -91,7 +91,7 @@ public interface DlnaTreeFolderPlugin extends PluginBase {
 	 * @exception IOException
 	 *                can be thrown when the file couldn't be loaded
 	 */
-	void loadConfiguration(String saveFilePath) throws IOException;
+	void loadInstanceConfiguration(String saveFilePath) throws IOException;
 
 	/**
 	 * If true is being returned, the plugin will show up in the context menu.<br>

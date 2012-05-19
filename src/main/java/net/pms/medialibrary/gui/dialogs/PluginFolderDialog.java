@@ -41,7 +41,7 @@ import net.pms.medialibrary.commons.events.SpecialFolderDialogActionEvent;
 import net.pms.medialibrary.commons.events.SpecialFolderDialogActionListener;
 import net.pms.medialibrary.gui.dialogs.folderdialog.FolderDialog;
 
-public class SpecialFolderDialog extends JDialog {
+public class PluginFolderDialog extends JDialog {
 	private static final long                       serialVersionUID = -3958360301187444404L;
 	private final int MIN_BUTTON_WIDTH = 60;
 
@@ -51,7 +51,7 @@ public class SpecialFolderDialog extends JDialog {
 
 	private List<SpecialFolderDialogActionListener> dialogListeners  = new ArrayList<SpecialFolderDialogActionListener>();
 
-	public SpecialFolderDialog(DOSpecialFolder f) {
+	public PluginFolderDialog(DOSpecialFolder f) {
 		((java.awt.Frame)this.getOwner()).setIconImage(new ImageIcon(FolderDialog.class.getResource("/resources/images/icon-16.png")).getImage());
 		init();
 
@@ -140,7 +140,7 @@ public class SpecialFolderDialog extends JDialog {
 		builder.add(tfName, cc.xy(4, 2));
 		builder.addSeparator("", cc.xyw(2, 4, 3));
 
-		builder.add(getSpecialFolder().getSpecialFolderImplementation().getConfigurationPanel(), cc.xyw(2, 6, 3));
+		builder.add(getSpecialFolder().getSpecialFolderImplementation().getInstanceConfigurationPanel(), cc.xyw(2, 6, 3));
 		builder.addSeparator("", cc.xyw(2, 8, 3));
 		builder.add(pButtons, cc.xyw(2, 10, 3));
 

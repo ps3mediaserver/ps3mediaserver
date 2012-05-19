@@ -553,7 +553,7 @@ class DBFolders extends DBBase {
     				}
     				
     				//load the config
-    				sf.loadConfiguration(res.getConfigFilePath());
+    				sf.loadInstanceConfiguration(res.getConfigFilePath());
     			} catch(Exception ex) {
     				log.error(String.format("Failed to load configuration file '%s' for SpecialFolder of type '%s'", res.getConfigFilePath(), className), ex);
     			} catch(Throwable t) {
