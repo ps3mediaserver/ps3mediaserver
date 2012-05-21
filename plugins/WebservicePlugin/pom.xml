@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>WebservicePlugin</artifactId>
+	<artifactId>pms-webservice-plugin</artifactId>
 	<version>3.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<description>This plugin exposes the pms configuration which can be set, read and saved through a SOAP web service</description>
@@ -22,4 +22,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	<groupId>github.com.taconaut</groupId>
 </project>

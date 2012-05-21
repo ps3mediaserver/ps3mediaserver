@@ -29,7 +29,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>github.com.taconaut</groupId>
-	<artifactId>pms-global</artifactId>
+	<artifactId>pms-parent</artifactId>
 	<name>PS3 Media Server MLX</name>
 	<packaging>pom</packaging>
 	<version>1.52.1_mlx_v0.8-SNAPSHOT</version>
@@ -77,6 +77,7 @@
 	<modules>
 		<module>ps3mediaserver</module>
 		<module>plugins</module>
+		<module>packaging</module>
 	</modules>
 
 	<developers>
