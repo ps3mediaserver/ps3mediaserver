@@ -1063,45 +1063,6 @@
 							</execution>
 						</executions>
 					</plugin>
-
-					<!-- Plugin to build a Windows installer using the nullsoft scriptable 
-						install system (NSIS) The "generate-project" goal generates a file "target/project.nsh", 
-						which contains the definitions for project variables like "${PROJECT_BASEDIR}" 
-						that can be used in the "pms.nsi" and "setup.nsi" files. -->
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>nsis-maven-plugin</artifactId>
-						<version>1.0-SNAPSHOT</version>
-						<executions>
-							<execution>
-								<id>build-pms-windows</id>
-								<configuration>
-									<makensisBin>${project.external-resources}/third-party/nsis/makensis.exe</makensisBin>
-									<outputFile>${project.build.directory}/PMS.exe</outputFile>
-									<setupScript>${project.external-resources}/nsis/pms.nsi</setupScript>
-								</configuration>
-								<phase>package</phase>
-								<goals>
-									<goal>generate-project</goal>
-									<goal>compile</goal>
-								</goals>
-							</execution>
-
-							<execution>
-								<id>build-setup-windows</id>
-								<configuration>
-									<makensisBin>${project.external-resources}/third-party/nsis/makensis.exe</makensisBin>
-									<outputFile>${project.build.directory}/${project.artifactId}-${project.version}-windows-setup.exe</outputFile>
-									<setupScript>${project.external-resources}/nsis/setup.nsi</setupScript>
-								</configuration>
-								<phase>package</phase>
-								<goals>
-									<goal>generate-project</goal>
-									<goal>compile</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -1152,30 +1113,6 @@
 									<target>
 										<copy file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar" tofile="${project.basedir}/target/pms.jar" overwrite="true" />
 									</target>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-
-					<!-- Plugin to assemble the PMS distribution file. -->
-					<plugin>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>build-pms-linux</id>
-								<phase>package</phase>
-								<goals>
-									<goal>single</goal>
-								</goals>
-								<configuration>
-									<descriptors>
-										<descriptor>${project.basedir}/src/main/assembly/assembly-linux.xml</descriptor>
-									</descriptors>
-									<archive>
-										<manifest>
-											<mainClass>net.pms.PMS</mainClass>
-										</manifest>
-									</archive>
 								</configuration>
 							</execution>
 						</executions>
@@ -1263,66 +1200,6 @@
 											<arg value="end tell" />
 										</exec>
 									</target>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-
-					<!-- Plugin to assemble the PMS files in the right place before creating 
-						the App Bundle and DMG disk image. -->
-					<plugin>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>make-assembly-osx</id>
-								<phase>package</phase>
-								<goals>
-									<goal>single</goal>
-								</goals>
-								<configuration>
-									<descriptors>
-										<descriptor>${project.basedir}/src/main/assembly/assembly-osx.xml</descriptor>
-									</descriptors>
-									<archive>
-										<manifest>
-											<mainClass>net.pms.PMS</mainClass>
-										</manifest>
-									</archive>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-
-					<!-- Plugin to create the OSX Application Bundle and DMG disk image. 
-						This will automatically copy all dependencies to a local repository, so the 
-						jar-with-dependencies is not needed here. -->
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>osxappbundle-maven-plugin</artifactId>
-						<version>1.0-alpha-2</version>
-						<executions>
-							<execution>
-								<phase>package</phase>
-								<goals>
-									<goal>bundle</goal>
-								</goals>
-								<configuration>
-									<mainClass>net.pms.PMS</mainClass>
-									<buildDirectory>${project.build.directory}/${project.build.finalName}-distribution</buildDirectory>
-									<diskImageFile>${project.build.directory}/${project.build.finalName}.dmg</diskImageFile>
-									<zipFile>${project.build.directory}/${project.build.finalName}-app.zip</zipFile>
-									<javaApplicationStub>/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub</javaApplicationStub>
-									<bundleName>${project.name}</bundleName>
-									<iconFile>${project.basedir}/target/bin/pms.icns</iconFile>
-									<version>${project.version}</version>
-									<jvmVersion>1.6+</jvmVersion>
-									<!-- Options to the JVM, will be used as the value of VMOptions 
-										in Info.plist. -->
-									<vmOptions>-Xmx768M -Xss16M -Dfile.encoding=UTF-8 -Djava.net.preferIPv4Stack=true -jar</vmOptions>
-									<dictionaryFile>${project.external-resources}/osx/Info.plist-template.xml</dictionaryFile>
-									<internetEnable>false</internetEnable>
-									<additionalClasspath />
-									<additionalResources />
 								</configuration>
 							</execution>
 						</executions>
