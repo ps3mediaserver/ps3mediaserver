@@ -16,7 +16,6 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>pms-core</artifactId>
-	<version>1.53.0-mlx_0.9-SNAPSHOT</version>
 
 	<name>PMS Core</name>
 	<packaging>jar</packaging>
