@@ -1,17 +1,19 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
+
 	<artifactId>pms-iphoto-dlna-folder-plugin</artifactId>
-	<packaging>jar</packaging>
 	<version>3.0-SNAPSHOT</version>
+
+	<name>PMS iPhoto DLNA Folder Plugin</name>
 	<description>This plugin will add a folder containing the iPhoto library</description>
+	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>github.com.taconaut</groupId>
-		<artifactId>plugins</artifactId>
-		<version>1</version>
+		<artifactId>pms-plugins</artifactId>
+		<version>1.0.0</version>
 	</parent>
 
 	<build>
@@ -22,5 +24,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<groupId>github.com.taconaut</groupId>
 </project>

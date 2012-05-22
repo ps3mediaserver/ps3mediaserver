@@ -28,11 +28,13 @@
 	-->
 
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>github.com.taconaut</groupId>
-	<artifactId>pms-parent</artifactId>
-	<name>PS3 Media Server MLX</name>
+	<artifactId>pms</artifactId>
+	<version>1.53.0-mlx_0.9-SNAPSHOT</version>
+
 	<packaging>pom</packaging>
-	<version>1.52.1_mlx_v0.8-SNAPSHOT</version>
+	<name>PMS</name>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
 
@@ -75,7 +77,7 @@
 	</parent>
 
 	<modules>
-		<module>ps3mediaserver</module>
+		<module>core</module>
 		<module>plugins</module>
 		<module>packaging</module>
 	</modules>

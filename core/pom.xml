@@ -14,18 +14,19 @@
 		After generating, the "target/site" directory will contain the reports. -->
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>github.com.taconaut</groupId>
-	<artifactId>pms</artifactId>
-	<name>PS3 Media Server MLX</name>
-	<packaging>jar</packaging>
+
+	<artifactId>pms-core</artifactId>
 	<version>1.53.0-mlx_0.9-SNAPSHOT</version>
+
+	<name>PMS Core</name>
+	<packaging>jar</packaging>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
 
 	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
+		<groupId>github.com.taconaut</groupId>
+		<artifactId>pms</artifactId>
+		<version>1.53.0-mlx_0.9-SNAPSHOT</version>
 	</parent>
 
 	<organization>
