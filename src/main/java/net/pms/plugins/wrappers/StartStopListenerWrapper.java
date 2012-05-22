@@ -4,7 +4,6 @@ import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.plugins.StartStopListener;
 
-// TODO: Auto-generated Javadoc
 /**
  * Wraps the old style plugin {@link net.pms.external.StartStopListener} to be used by the new plugin system
  */

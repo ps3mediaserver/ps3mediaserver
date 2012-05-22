@@ -9,8 +9,7 @@ import net.pms.dlna.DLNAResource;
 
 /**
  * Classes implementing this interface and packaged as plugins can be used in
- * pms to add folders that will show up on the renderer anywhere in the
- * tree.<br>
+ * pms to add folders that will show up on the renderer anywhere in the tree.<br>
  * When added to the plugins folder it will show up in the client context menu
  * of the main JTree. When opening the context menu on a folder and expanding
  * the selections in 'Add' the plugin will show up under the separator.<br>
@@ -96,10 +95,9 @@ public interface DlnaTreeFolderPlugin extends PluginBase {
 	/**
 	 * If true is being returned, the plugin will show up in the context menu.<br>
 	 * This method lets check if all parameters for the plugin to work are met.<br>
-	 * E.g. the iPhoto plugin will only show up on Macs, iTunes not on Linux
-	 * etc.
+	 * E.g. TmdbRater needs a valid TMDB user account to be configured.
 	 * 
 	 * @return true if the plugin can be used
 	 */
-	boolean isAvailable();
+	boolean isInstanceAvailable();
 }

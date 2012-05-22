@@ -49,13 +49,29 @@ public class NotificationCenter<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> NotificationCenter<T> getInstance(Class<T> c) {
-		NotificationCenter<?> nc = notificationCenters.get(c);
-		if(nc == null) {
-			nc = new NotificationCenter<T>();
-			notificationCenters.put(c, nc);
+		NotificationCenter<?> nc = null;
+		synchronized (notificationCenters) {
+			nc = notificationCenters.get(c);
+			if(nc == null) {
+				nc = new NotificationCenter<T>();
+				notificationCenters.put(c, nc);
+			}			
 		}
 		
 		return (NotificationCenter<T>) nc;
+	}
+	
+	/**
+	 * Gets an array of classes for which a notification queue has been created
+	 * 
+	 * @return an array of classes for which a notification que has been created
+	 */
+	public static Class<?>[] getExistingMessageQueues() {
+		Class<?>[] res = new Class<?>[0];
+		synchronized (notificationCenters) {
+			res = notificationCenters.keySet().toArray(new Class<?>[notificationCenters.size()]);			
+		}
+		return res;
 	}
 
 	/**

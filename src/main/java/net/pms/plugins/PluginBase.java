@@ -113,4 +113,13 @@ public interface PluginBase {
 	 * 
 	 */
 	public void saveConfiguration();
+
+	/**
+	 * Checks if is plugin available. If this method returns true, all features
+	 * of the plugin will be available for pms. If it returns false, the plugin
+	 * will be shown as disabled in the list of plugins
+	 * 
+	 * @return true, if is plugin available, otherwise false
+	 */
+	public boolean isPluginAvailable();
 }

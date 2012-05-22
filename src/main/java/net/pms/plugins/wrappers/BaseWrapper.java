@@ -116,4 +116,12 @@ public abstract class BaseWrapper implements PluginBase {
 	@Override
 	public void saveConfiguration() {
 	}
+	
+	/* (non-Javadoc)
+	 * @see net.pms.plugins.PluginBase#isPluginAvailable()
+	 */
+	@Override
+	public boolean isPluginAvailable() {
+		return true;
+	}
 }
