@@ -1,7 +1,6 @@
 package net.pms.newgui.plugins;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,8 +19,8 @@ import net.pms.medialibrary.commons.enumarations.DialogActionType;
 import net.pms.plugins.PluginBase;
 
 public class PluginDetailDialog extends JDialog {
-	public static final Logger log = LoggerFactory.getLogger(PluginDetailDialog.class);
 	private static final long serialVersionUID = 8030759789435633435L;
+	private static final Logger log = LoggerFactory.getLogger(PluginDetailDialog.class);
 	private final int MIN_BUTTON_WIDTH = 60;
 	
 	private PluginBase plugin;
@@ -32,8 +31,7 @@ public class PluginDetailDialog extends JDialog {
 		setLayout(new BorderLayout());
 		setTitle(plugin.getName());
 		
-		this.plugin = plugin;
-		
+		this.plugin = plugin;		
 
 		try {
 			hasConfigurationPanel = plugin.getGlobalConfigurationPanel() != null;
@@ -46,19 +44,15 @@ public class PluginDetailDialog extends JDialog {
 	}
 
 	private void build() {
-		Component comp = null;
 		JPanel pAbout = new PluginAboutPanel(plugin);
 		pAbout.setPreferredSize(new Dimension(0, 0));
-		if(plugin.getGlobalConfigurationPanel() == null) {
-			comp = pAbout;
-		} else {
-			JTabbedPane tpPlugin = new JTabbedPane();
+		JTabbedPane tpPlugin = new JTabbedPane();
+		if(plugin.getGlobalConfigurationPanel() != null) {
 			tpPlugin.addTab(Messages.getString("PluginGroupPanel.2"), plugin.getGlobalConfigurationPanel());
-			tpPlugin.addTab(Messages.getString("PluginGroupPanel.1"), pAbout);
-			comp = tpPlugin;
 		}
+		tpPlugin.addTab(Messages.getString("PluginGroupPanel.1"), pAbout);
 
-		getContentPane().add(comp, BorderLayout.CENTER);
+		getContentPane().add(tpPlugin, BorderLayout.CENTER);
 		getContentPane().add(getButtonsPanel(), BorderLayout.SOUTH);
 	}
 	

@@ -145,8 +145,6 @@ public class PluginGroupPanel extends JPanel {
 						pdd.setLocation(GUIHelper.getCenterDialogOnParentLocation(pdd.getSize(), bConfig));
 						pdd.setModal(true);
 						pdd.setVisible(true);
-
-						log.info("width=" + pdd.getWidth() + ", height=" + pdd.getHeight());
 					}
 				});
 				builder.add(bConfig, cc.xy(10, row));
