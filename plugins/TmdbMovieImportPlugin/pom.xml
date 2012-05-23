@@ -19,6 +19,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>github.com.taconaut</groupId>
+			<artifactId>pms-core</artifactId>
+			<version>1.53.0-mlx_0.9-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>github.com.taconaut</groupId>
 			<artifactId>jtmdb</artifactId>
 			<version>1.9.17</version>
 		</dependency>

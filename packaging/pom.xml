@@ -11,7 +11,7 @@
 
 	<name>PMS Packaging</name>
 	<description>This module creates OS specific distribution packages for PMS.</description>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
 
@@ -22,14 +22,18 @@
 	</parent>
 
 	<properties>
-		<project.binaries></project.binaries>
-		<project.binaries-base></project.binaries-base>
+		<project.binaries>${project.basedir}/target/bin</project.binaries>
+
+		<!-- Snapshots should get their binaries from the trunk, releases from a tag -->
+		<project.binaries-base>http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver</project.binaries-base>
+		<!-- <project.binaries-base>http://ps3mediaserver.googlecode.com/svn/tags/1.40.0</project.binaries-base> -->
 	</properties>
 
+	<!-- Dependencies for every jar that needs to be packaged -->
 	<dependencies>
 		<dependency>
 			<groupId>github.com.taconaut</groupId>
-			<artifactId>pms</artifactId>
+			<artifactId>pms-core</artifactId>
 			<version>1.53.0-mlx_0.9-SNAPSHOT</version>
 		</dependency>
 
@@ -116,7 +120,24 @@
 		</resources>
 
 		<plugins>
-			<!-- All plugins are in the OS specific profiles -->
+			<!-- Plugin to assemble the PMS distribution file. -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>build-dependencies</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>${project.basedir}/src/main/assembly/assembly-dependencies.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -334,7 +355,7 @@
 			<activation>
 				<activeByDefault>false</activeByDefault>
 				<os>
-					<family>unix</family>
+					<family>x-unix</family>
 				</os>
 			</activation>
 
@@ -406,14 +427,13 @@
 		</profile>
 
 
-		<!-- Mac OSX profile: takes care of building the final package for Mac 
-			OSX -->
+		<!-- Mac OSX profile: takes care of building the final package for Mac OSX -->
 		<profile>
 			<id>osx</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
 				<os>
-					<family>mac</family>
+					<family>x-mac</family>
 				</os>
 			</activation>
 			<build>
