@@ -74,5 +74,14 @@
 			</includes>
 		</fileSet>
 
+		<!-- Include plugins -->
+		<fileSet>
+			<directory>${project.basedir}/target/${project.artifactId}-${project.version}-assembly-dependencies</directory>
+			<outputDirectory>.</outputDirectory>
+			<fileMode>0644</fileMode>
+			<includes>
+				<include>plugins/**</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 </assembly>
