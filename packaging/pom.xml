@@ -25,12 +25,14 @@
 		<!-- NSIS needs a version without "-SNAPSHOT" or "-b1" -->
 		<project.version.short>1.51.0</project.version.short>
 
+		<project.binaries>${project.basedir}/target/bin</project.binaries>
+		<project.external-resources>${project.basedir}/src/main/external-resources</project.external-resources>
+
 		<!-- The PMS core directory is used to aggregate all files -->
 		<project.core.name>PS3 Media Server MLX</project.core.name>
 		<project.core.basedir>${project.basedir}/../core</project.core.basedir>
 		<project.core.binaries>${project.core.basedir}/target/bin</project.core.binaries>
 		<project.core.external-resources>${project.core.basedir}/src/main/external-resources</project.core.external-resources>
-		<project.binaries>${project.basedir}/target/bin</project.binaries>
 
 		<!-- Snapshots should get their binaries from the trunk, releases from a tag -->
 		<project.binaries-base>http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver</project.binaries-base>
@@ -344,9 +346,9 @@
 							<execution>
 								<id>build-pms-windows</id>
 								<configuration>
-									<makensisBin>${project.core.external-resources}/third-party/nsis/makensis.exe</makensisBin>
+									<makensisBin>${project.external-resources}/third-party/nsis/makensis.exe</makensisBin>
 									<outputFile>${project.build.directory}/PMS.exe</outputFile>
-									<setupScript>${project.core.external-resources}/nsis/pms.nsi</setupScript>
+									<setupScript>${project.external-resources}/nsis/pms.nsi</setupScript>
 								</configuration>
 								<phase>package</phase>
 								<goals>
@@ -358,9 +360,9 @@
 							<execution>
 								<id>build-setup-windows</id>
 								<configuration>
-									<makensisBin>${project.core.external-resources}/third-party/nsis/makensis.exe</makensisBin>
+									<makensisBin>${project.external-resources}/third-party/nsis/makensis.exe</makensisBin>
 									<outputFile>${project.build.directory}/${project.artifactId}-${project.version}-windows-setup.exe</outputFile>
-									<setupScript>${project.core.external-resources}/nsis/setup.nsi</setupScript>
+									<setupScript>${project.external-resources}/nsis/setup.nsi</setupScript>
 								</configuration>
 								<phase>package</phase>
 								<goals>
