@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class BaseConfiguration {
 	private static final Logger log = LoggerFactory.getLogger(BaseConfiguration.class);
 	private Properties properties = new Properties();
-
+	
 	/**
 	 * Saves the properties to the specified file path.<br>
 	 * Sub-directories will be created automatically if needed
@@ -68,10 +68,14 @@ public class BaseConfiguration {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void load(String propertiesFilePath) throws IOException {
-		if (log.isDebugEnabled()) log.debug("Restoring configuration from " + propertiesFilePath);
-		FileInputStream configStream = new FileInputStream(propertiesFilePath);
-		properties.load(configStream);
-		log.info("Loaded configuration from " + propertiesFilePath);
+		if(new File(propertiesFilePath).exists()) {
+			if (log.isDebugEnabled()) log.debug("Restoring configuration from " + propertiesFilePath);
+			FileInputStream configStream = new FileInputStream(propertiesFilePath);
+			properties.load(configStream);
+			log.info("Loaded configuration from " + propertiesFilePath);
+		} else {
+			log.debug("No configuration file found at " + propertiesFilePath);
+		}
 	}
 
 	/**
@@ -89,12 +93,12 @@ public class BaseConfiguration {
 	/**
 	 * Gets the value of type T for the given key. If no value can be found, the default value will be returned
 	 *
-	 * @param <T> the generic type
+	 * @param <T> the generic type. Supported types are String, Integer, Boolean, Enum
 	 * @param key the key
 	 * @param defaultValue the default value
 	 * @return the value
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T> T getValue(String key, T defaultValue) {
 		Object val = properties.get(key);
 		if (val != null && defaultValue != null) {
@@ -102,6 +106,8 @@ public class BaseConfiguration {
 				return (T) (Integer) Integer.parseInt(val.toString());
 			} else if (defaultValue instanceof Boolean) {
 				return (T) (Boolean) Boolean.parseBoolean(val.toString());
+			} else if (defaultValue instanceof Enum) {
+				return (T) Enum.valueOf((Class)defaultValue.getClass(), val.toString());
 			} else if (defaultValue.getClass().isAssignableFrom(val.getClass())) {
 				return (T) val;
 			}
