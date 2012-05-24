@@ -73,15 +73,6 @@
 		</repository>
 	</repositories>
 
-	<dependencies>
-		<dependency>
-			<groupId>github.com.taconaut</groupId>
-			<artifactId>pms</artifactId>
-			<version>1.53.0-mlx_0.9-SNAPSHOT</version>
-			<type>jar</type>
-		</dependency>
-	</dependencies>
-
 	<build>
 		<pluginManagement>
 			<plugins>

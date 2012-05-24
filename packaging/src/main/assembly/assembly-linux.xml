@@ -14,7 +14,7 @@
 	<fileSets>
 		<!-- Include PMS -->
 		<fileSet>
-			<directory>${project.basedir}/target</directory>
+			<directory>${project.core.basedir}/target</directory>
 			<outputDirectory>.</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
@@ -24,7 +24,7 @@
 
 		<!-- Include the tsMuxeR binary -->
 		<fileSet>
-			<directory>${project.binaries}</directory>
+			<directory>${project.core.binaries}</directory>
 			<outputDirectory>linux</outputDirectory>
 			<fileMode>0755</fileMode>
 			<includes>
@@ -34,7 +34,7 @@
 
 		<!-- Include executable script -->
 		<fileSet>
-			<directory>${project.external-resources}</directory>
+			<directory>${project.core.external-resources}</directory>
 			<outputDirectory>.</outputDirectory>
 			<fileMode>0755</fileMode>
 			<lineEnding>unix</lineEnding>
@@ -45,7 +45,7 @@
 
 		<!-- Include documentation -->
 		<fileSet>
-			<directory>${project.basedir}</directory>
+			<directory>${project.core.basedir}</directory>
 			<outputDirectory>.</outputDirectory>
 			<fileMode>0644</fileMode>
 			<lineEnding>unix</lineEnding>
@@ -58,7 +58,7 @@
 
 		<!-- Include configuration files -->
 		<fileSet>
-			<directory>${project.external-resources}</directory>
+			<directory>${project.core.external-resources}</directory>
 			<outputDirectory>.</outputDirectory>
 			<fileMode>0644</fileMode>
 			<lineEnding>unix</lineEnding>
