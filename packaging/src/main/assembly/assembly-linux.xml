@@ -43,6 +43,17 @@
 			</includes>
 		</fileSet>
 
+		<!-- Include README.md -->
+		<fileSet>
+			<directory>${project.core.basedir}/..</directory>
+			<outputDirectory>.</outputDirectory>
+			<fileMode>0644</fileMode>
+			<lineEnding>unix</lineEnding>
+			<includes>
+				<include>README.md</include>
+			</includes>
+		</fileSet>
+
 		<!-- Include documentation -->
 		<fileSet>
 			<directory>${project.core.basedir}</directory>
@@ -50,7 +61,6 @@
 			<fileMode>0644</fileMode>
 			<lineEnding>unix</lineEnding>
 			<includes>
-				<include>README.md</include>
 				<include>CHANGELOG</include>
 				<include>LICENSE.txt</include>
 			</includes>
