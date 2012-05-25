@@ -45,26 +45,26 @@ FunctionEnd
 Section "Program Files"
   SetOutPath "$INSTDIR"
   SetOverwrite on
-  File /r /x "*.conf" /x "*.zip" /x "*.dll" /x "third-party" "${PROJECT_BASEDIR}\src\main\external-resources\plugins"
-  File /r "${PROJECT_BASEDIR}\src\main\external-resources\documentation"
-  File /r "${PROJECT_BASEDIR}\src\main\external-resources\renderers"
+  File /r /x "*.conf" /x "*.zip" /x "*.dll" /x "third-party" "${PROJECT_CORE_BASEDIR}\src\main\external-resources\plugins"
+  File /r "${PROJECT_CORE_BASEDIR}\src\main\external-resources\documentation"
+  File /r "${PROJECT_CORE_BASEDIR}\src\main\external-resources\renderers"
   File /r "${PROJECT_CORE_BINARIES}\win32"
   File /r "${PROJECT_ASSEMBLY_DEPENDENCIES}\plugins"
   File "${PROJECT_BUILD_DIR}\PMS.exe"
-  File "${PROJECT_BASEDIR}\src\main\external-resources\PMS.bat"
-  File "${PROJECT_BUILD_DIR}\pms.jar"
+  File "${PROJECT_CORE_BASEDIR}\src\main\external-resources\PMS.bat"
+  File "${PROJECT_ASSEMBLY_DEPENDENCIES}\pms.jar"
   File "${PROJECT_CORE_BINARIES}\MediaInfo.dll"
   File "${PROJECT_CORE_BINARIES}\MediaInfo64.dll"
-  File "${PROJECT_BASEDIR}\CHANGELOG"
-  File "${PROJECT_BASEDIR}\README.md"
-  File "${PROJECT_BASEDIR}\LICENSE.txt"
-  File "${PROJECT_BASEDIR}\src\main\external-resources\logback.xml"
-  File "${PROJECT_BASEDIR}\src\main\external-resources\icon.ico"
+  File "${PROJECT_CORE_BASEDIR}\CHANGELOG"
+  File "${PROJECT_CORE_BASEDIR}\..\README.md"
+  File "${PROJECT_CORE_BASEDIR}\LICENSE.txt"
+  File "${PROJECT_CORE_BASEDIR}\src\main\external-resources\logback.xml"
+  File "${PROJECT_CORE_BASEDIR}\src\main\external-resources\icon.ico"
 
   ;the user may have set the installation dir
   ;as the profile dir, so we can't clobber this
   SetOverwrite off
-  File "${PROJECT_BASEDIR}\src\main\external-resources\WEB.conf"
+  File "${PROJECT_CORE_BASEDIR}\src\main\external-resources\WEB.conf"
 
   ;Store install folder
   WriteRegStr HKCU "${REG_KEY_SOFTWARE}" "" $INSTDIR
