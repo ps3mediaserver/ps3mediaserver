@@ -12,3 +12,6 @@ target
 pom.xml.releaseBackup
 
 release.properties
+
+core/fonts
+core/src/main/external-resources/plugins/*.jar
