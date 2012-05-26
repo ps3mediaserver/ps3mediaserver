@@ -90,10 +90,12 @@
 		<url>https://github.com/taconaut/pms-mlx/issues</url>
 	</issueManagement>
 
-	<properties>
-		<!-- NSIS needs a version without "-SNAPSHOT" or "-b1" -->
-		<project.version.short>1.51.0</project.version.short>
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://pms.smoeller.de/</url>
+	</ciManagement>
 
+	<properties>
 		<buildName>${project.name}-${project.version}</buildName>
 		<jcalendar-version>1.1.1</jcalendar-version>
 		<jgoodies-binding-version>2.5.1</jgoodies-binding-version>
@@ -620,14 +622,21 @@
 				</executions>
 			</plugin>
 
-			<!-- This plugin will take care of installing the external dependencies 
-				that do not exist in a public Maven repository. That is why we store some 
-				jar files in the "src/main/external-resources/lib" directory and have this 
-				plugin take care of the installation at build time. Note: The plugin does 
-				not work automatically in Maven 3. To install the required dependencies execute 
-				the following commands: mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external 
+			<!-- 
+				This plugin will take care of installing the external dependencies that do
+				not exist in a public Maven repository. That is why we store some jar files
+				in the "src/main/external-resources/lib" directory and have this plugin
+				take care of the installation at build time.
+				
+				Note: The plugin does not work automatically in Maven 3. To install the
+				required dependencies execute the following commands:
+				
+				mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external 
 				mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external 
-				Checksums can be calculated with "openssl sha1 [filename]". See: http://code.google.com/p/maven-external-dependency-plugin/issues/detail?id=8#c4 -->
+				
+				Checksums can be calculated with "openssl sha1 [filename]".
+				See: http://code.google.com/p/maven-external-dependency-plugin/issues/detail?id=8#c4
+			-->
 			<plugin>
 				<groupId>com.savage7.maven.plugins</groupId>
 				<artifactId>maven-external-dependency-plugin</artifactId>
@@ -731,8 +740,7 @@
 
 					<execution>
 						<id>resolve-install-external-dependencies</id>
-						<!-- Not bound to a phase, you need to execute these manually. See 
-							above -->
+						<!-- Not bound to a phase, you need to execute these manually. See above -->
 						<!-- phase>process-resources</phase -->
 						<goals>
 							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external -->
@@ -901,8 +909,7 @@
 
 	<profiles>
 
-		<!-- Windows profile: takes care of building the final package for Microsoft 
-			Windows -->
+		<!-- Windows profile: takes care of building the final package for Microsoft Windows -->
 		<profile>
 			<id>windows</id>
 			<activation>
@@ -1122,8 +1129,7 @@
 		</profile>
 
 
-		<!-- Mac OSX profile: takes care of building the final package for Mac 
-			OSX -->
+		<!-- Mac OSX profile: takes care of building the final package for Mac OSX -->
 		<profile>
 			<id>osx</id>
 			<activation>
@@ -1208,8 +1214,7 @@
 			</build>
 		</profile>
 
-		<!-- This profile allows running PMS from inside Eclipse (Requires a "mvn 
-			clean package" to download the binaries first) -->
+		<!-- This profile allows running PMS from inside Eclipse -->
 		<profile>
 			<id>run-from-eclipse</id>
 			<build>
@@ -1235,9 +1240,4 @@
 			</build>
 		</profile>
 	</profiles>
-
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://pms.smoeller.de/</url>
-	</ciManagement>
 </project>

@@ -18,15 +18,21 @@
 package net.pms.plugin.shutdown;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.tree.MutableTreeNode;
 
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.dlna.virtual.VirtualVideoAction;
 import net.pms.external.AdditionalFolderAtRoot;
 import net.pms.io.Gob;
+import net.pms.plugins.DlnaTreeFolderPlugin;
 import net.pms.util.ProcessUtil;
 
 import org.slf4j.Logger;
@@ -37,7 +43,7 @@ import com.sun.jna.Platform;
 /**
  * This class implements a computer shutdown plugin for PS3 Media Server.
  */
-public class ShutdownPlugin implements AdditionalFolderAtRoot {
+public class ShutdownPlugin implements DlnaTreeFolderPlugin {
 	/**
 	 * Logger for writing messages to the log file.
 	 */
@@ -46,24 +52,38 @@ public class ShutdownPlugin implements AdditionalFolderAtRoot {
 	/**
 	 * Resource bundle that holds the locale dependent messages.
 	 */
-	private static final ResourceBundle MESSAGES = ResourceBundle.getBundle("messages");
+	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("messages");
+
+	private String rootFolderName = RESOURCE_BUNDLE.getString("shutdownplugin.menu.foldername");
+
+	/**
+	 * Properties object to retrieve project properties.
+	 */
+	private Properties properties = new Properties();
 
 	/**
 	 * Constructor for the plugin.
 	 */
 	public ShutdownPlugin() {
-		LOG.info("Initializing shutdown plugin");
+		LOG.trace("Initializing shutdown plugin");
 	}
 
 	/**
-	 * Returns the Computer Shutdown folder and its contents.
-	 * 
-	 * @return The folder
+	 * {@inheritDoc}
 	 */
 	@Override
-	public DLNAResource getChild() {
+	public void shutdown() {
+		LOG.trace("Shutting down shutdown plugin");
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public DLNAResource getDLNAResource() {
 		// Create computer shutdown folder.
-		DLNAResource shutdownFolder = new VirtualFolder(MESSAGES.getString("menu.foldername"), null);
+		DLNAResource shutdownFolder = new VirtualFolder(rootFolderName, null);
 
 		// Add power off menu item
 		shutdownFolder.addChild(getPowerOffAction());
@@ -75,36 +95,11 @@ public class ShutdownPlugin implements AdditionalFolderAtRoot {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JComponent config() {
-		// No configuration needed
-		return null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String name() {
-		return "Shutdown Plugin";
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void shutdown() {
-		LOG.trace("Shutting down shutdown plugin");
-	}
-
-	/**
 	 * Constructs and returns the virtual video action to power off the computer.
 	 * @return The virtual video action.
 	 */
 	private DLNAResource getPowerOffAction() {
-		DLNAResource action = new VirtualVideoAction(MESSAGES.getString("menu.poweroff"), true) {
+		DLNAResource action = new VirtualVideoAction(RESOURCE_BUNDLE.getString("menu.poweroff"), true) {
 			/**
 			 * This method is called when the user selects the menu item.
 			 * @return Always returns true.
@@ -157,7 +152,7 @@ public class ShutdownPlugin implements AdditionalFolderAtRoot {
 	 * @return The virtual video action.
 	 */
 	private DLNAResource getRestartAction() {
-		DLNAResource action = new VirtualVideoAction(MESSAGES.getString("menu.restart"), true) {
+		DLNAResource action = new VirtualVideoAction(RESOURCE_BUNDLE.getString("shutdownplugin.menu.restart"), true) {
 			/**
 			 * This method is called when the user selects the menu item.
 			 * @return Always returns true.
@@ -201,5 +196,141 @@ public class ShutdownPlugin implements AdditionalFolderAtRoot {
 		};
 
 		return action;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JComponent getGlobalConfigurationPanel() {
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getLongDescription() {
+		return RESOURCE_BUNDLE.getString("shutdownplugin.shortdescription");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getName() {
+		return "Shutdown";
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Icon getPluginIcon() {
+		return new ImageIcon(getClass().getResource("/shutdown-icon-32.png"));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getShortDescription() {
+		return RESOURCE_BUNDLE.getString("shutdownplugin.shortdescription");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getUpdateUrl() {
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getVersion() {
+		return properties.getProperty("project.version");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getWebSiteUrl() {
+		return "http://www.ps3mediaserver.org/";
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void initialize() {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void saveConfiguration() {
+		// Do nothing
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPanel getInstanceConfigurationPanel() {
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public MutableTreeNode getTreeNode() {
+		// No mutable tree node
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Icon getTreeNodeIcon() {
+		return new ImageIcon(getClass().getResource("/shutdown-icon-16.png"));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isAvailable() {
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void loadInstanceConfiguration(String configFilePath) throws IOException {
+		// Do nothing
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void saveInstanceConfiguration(String configFilePath) throws IOException {
+		// Do nothing
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setDisplayName(String name) {
+		rootFolderName = name;
 	}
 }

@@ -32,9 +32,33 @@
 
 	<build>
 		<plugins>
+			<!--
+				For debugging purposes it is very handy to have the plugin jar in the core
+				directory. The best way for this would to declare a dependency from the core
+				to this plugin. Instead, to avoid a circular depencency we copy the plugin
+				when it is ready.
+			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>copy-to-core</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<!-- Lose the version string while copying -->
+								<copy
+									file="${project.basedir}/target/${project.build.finalName}.${project.packaging}"
+									tofile="${project.basedir}/../../core/src/main/external-resources/plugins/${project.artifactId}.${project.packaging}" overwrite="true" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
