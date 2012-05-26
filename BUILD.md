@@ -25,12 +25,12 @@ download the latest sources and build PMS:
 
     git clone git://github.com/ps3mediaserver/ps3mediaserver.git
     cd ps3mediaserver
-    mvn package
+    mvn install
 
-The result will be built in the "target" directory:
+The result will be built in the "packaging/target" directory:
 
     (Windows) PMS-setup.exe
-    (Linux)   pms-linux-generic-x.xx.x.tar.gz
+    (Linux)   pms-generic-linux-unix-x.xx.x.tar.gz
     (Mac OSX) pms-macosx-x.xx.x.dmg
 
 
@@ -97,12 +97,12 @@ PMS is now ready to be built.
 
  8. Compile the latest version of PMS:
 
-        mvn package
+        mvn install
 
-The resulting binaries will be built in the "target" directory:
+The resulting binaries will be built in the "packaging/target" directory:
 
     (Windows) PMS-setup.exe
-    (Linux)   pms-linux-generic-x.xx.x.tar.gz
+    (Linux)   pms-generic-linux-unix-x.xx.x.tar.gz
     (Mac OSX) pms-macosx-x.xx.x.dmg
 
 
@@ -115,7 +115,7 @@ These last two commands can easily be automated using a script:
 
     rem build-pms.bat
     start /D ps3mediaserver /wait /b git pull
-    start /D ps3mediaserver /wait /b mvn package
+    start /D ps3mediaserver /wait /b mvn install
 
 
 (Linux, Mac OSX)
@@ -124,7 +124,7 @@ These last two commands can easily be automated using a script:
     # build-pms.sh
     cd ps3mediaserver
     git pull
-    mvn package
+    mvn install
 
 
 Instructions for developers
@@ -176,7 +176,7 @@ to set up Eclipse for development with Maven and Git.
    Projects" from the menu. Select the project "/pom.xml" and press "Finish".
 
    Note: if a project with the same name already exists, click "Advanced" and
-   set the "Name template" to `[artifactId]-YOURNAME` (replace YOURNAME with
+   set the "Name template" to `YOURNAME-[artifactId]` (replace YOURNAME with
    your GitHub name). Then press "Finish".
 
 You now see the sources in Eclipse, but the project is still missing the "Git"
@@ -197,7 +197,7 @@ You can build PMS from Eclipse:
 
  * Create a new run configuration under "Run > Run Configurations...", right
    mouse button on "Maven Build", select "New", Name: `Build PMS`, Goals:
-   `package`. Select the tab "JRE" and add the following VM arguments
+   `install`. Select the tab "JRE" and add the following VM arguments
    `-Xmx1500m -XX:MaxPermSize=256m`. Finally, press the "Apply" button.
 
 You will want to run PMS from Eclipse while developing. This is how you do it:

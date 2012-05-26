@@ -361,7 +361,7 @@
 								<id>build-setup-windows</id>
 								<configuration>
 									<makensisBin>${project.external-resources}/third-party/nsis/makensis.exe</makensisBin>
-									<outputFile>${project.build.directory}/${project.artifactId}-${project.version}-windows-setup.exe</outputFile>
+									<outputFile>${project.build.directory}/${project.parent.artifactId}-${project.parent.version}-windows-setup.exe</outputFile>
 									<setupScript>${project.external-resources}/nsis/setup.nsi</setupScript>
 								</configuration>
 								<phase>package</phase>
@@ -425,6 +425,8 @@
 									<goal>single</goal>
 								</goals>
 								<configuration>
+									<finalName>${project.parent.artifactId}-generic-linux-unix-${project.parent.version}</finalName>
+									<appendAssemblyId>false</appendAssemblyId>
 									<descriptors>
 										<descriptor>${project.basedir}/src/main/assembly/assembly-linux.xml</descriptor>
 									</descriptors>
@@ -499,7 +501,7 @@
 								<configuration>
 									<target>
 										<!-- Make sure the target folder exists -->
-										<mkdir dir="${project.build.directory}/${project.build.finalName}-distribution" />
+										<mkdir dir="${project.build.directory}/${project.parent.artifactId}-macosx-${project.parent.version}" />
 
 										<!-- Create the shortcut to the Applications folder -->
 										<exec executable="/usr/bin/osascript">
@@ -508,7 +510,7 @@
 											<arg value="-e" />
 											<arg value="set src to POSIX file &quot;/Applications&quot;" />
 											<arg value="-e" />
-											<arg value="set dest to POSIX file &quot;${project.build.directory}/${project.build.finalName}-distribution&quot;" />
+											<arg value="set dest to POSIX file &quot;${project.build.directory}/${project.parent.artifactId}-macosx-${project.parent.version}&quot;" />
 											<arg value="-e" />
 											<arg value="make new alias file to folder src at folder dest" />
 											<arg value="-e" />
@@ -532,6 +534,8 @@
 									<goal>single</goal>
 								</goals>
 								<configuration>
+									<finalName>${project.parent.artifactId}-macosx-${project.parent.version}</finalName>
+									<appendAssemblyId>false</appendAssemblyId>
 									<descriptors>
 										<descriptor>${project.basedir}/src/main/assembly/assembly-osx.xml</descriptor>
 									</descriptors>
@@ -560,9 +564,9 @@
 								</goals>
 								<configuration>
 									<mainClass>net.pms.PMS</mainClass>
-									<buildDirectory>${project.build.directory}/${project.build.finalName}-distribution</buildDirectory>
-									<diskImageFile>${project.build.directory}/${project.build.finalName}.dmg</diskImageFile>
-									<zipFile>${project.build.directory}/${project.build.finalName}-app.zip</zipFile>
+									<buildDirectory>${project.build.directory}/${project.parent.artifactId}-macosx-${project.parent.version}</buildDirectory>
+									<diskImageFile>${project.build.directory}/${project.parent.artifactId}-macosx-${project.parent.version}.dmg</diskImageFile>
+									<zipFile>${project.build.directory}/${project.parent.artifactId}-macosx-${project.parent.version}-app.zip</zipFile>
 									<javaApplicationStub>/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub</javaApplicationStub>
 									<bundleName>${project.core.name}</bundleName>
 									<iconFile>${project.core.external-resources}/osx/pms.icns</iconFile>

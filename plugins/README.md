@@ -1,4 +1,5 @@
-pms-plugins
-===========
+plugins
+=======
 
-This repository contains all officially supported plugins
+This directory contains all plugins that are distributed with PMS.
+
