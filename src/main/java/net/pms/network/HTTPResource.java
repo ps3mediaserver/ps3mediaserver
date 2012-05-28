@@ -35,6 +35,7 @@ import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
+import net.pms.util.PropertiesUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,7 +164,7 @@ public class HTTPResource {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		URLConnection conn = url.openConnection();
 		// GameTrailers blocks user-agents that identify themselves as "Java"
-		conn.setRequestProperty("User-agent", "PS3 Media Server " + PMS.getVersion());
+		conn.setRequestProperty("User-agent", PropertiesUtil.getProjectProperties().get("project.name") + " " + PMS.getVersion());
 		InputStream in = conn.getInputStream();
 		FileOutputStream fOUT = null;
 		if (saveOnDisk && f != null) {
