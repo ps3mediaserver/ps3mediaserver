@@ -2,13 +2,16 @@ package net.pms.newgui.plugins;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 import org.slf4j.Logger;
@@ -16,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import net.pms.Messages;
 import net.pms.medialibrary.commons.enumarations.DialogActionType;
+import net.pms.medialibrary.gui.shared.ScrollablePanel;
 import net.pms.plugins.PluginBase;
 
 public class PluginDetailDialog extends JDialog {
@@ -44,13 +48,26 @@ public class PluginDetailDialog extends JDialog {
 	}
 
 	private void build() {
-		JPanel pAbout = new PluginAboutPanel(plugin);
-		pAbout.setPreferredSize(new Dimension(0, 0));
+		//wrap the about panel in a scrollable panel to have the long description
+		//in the about panel use the available width while stretching horizontally
+		//as required
+		ScrollablePanel sp = new ScrollablePanel(new GridLayout());
+		sp.setScrollableWidth( ScrollablePanel.ScrollableSizeHint.FIT );
+		sp.setScrollableHeight(ScrollablePanel.ScrollableSizeHint.STRETCH );
+		sp.setScrollableBlockIncrement(ScrollablePanel.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 200);
+		sp.add(new PluginAboutPanel(plugin));
+		
+		JScrollPane spAbout = new JScrollPane(sp);
+		spAbout.setBorder(BorderFactory.createEmptyBorder());
+		//set the preferred size to 0 to only use the preferred size of the
+		//configuration panel (if it exists) to resize the dialog
+		spAbout.setPreferredSize(new Dimension(0, 0));
+		
 		JTabbedPane tpPlugin = new JTabbedPane();
 		if(plugin.getGlobalConfigurationPanel() != null) {
 			tpPlugin.addTab(Messages.getString("PluginGroupPanel.2"), plugin.getGlobalConfigurationPanel());
 		}
-		tpPlugin.addTab(Messages.getString("PluginGroupPanel.1"), pAbout);
+		tpPlugin.addTab(Messages.getString("PluginGroupPanel.1"), spAbout);
 
 		getContentPane().add(tpPlugin, BorderLayout.CENTER);
 		getContentPane().add(getButtonsPanel(), BorderLayout.SOUTH);

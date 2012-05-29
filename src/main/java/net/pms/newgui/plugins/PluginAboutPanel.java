@@ -34,7 +34,7 @@ public class PluginAboutPanel extends JPanel {
 
 	private void build() {
 		FormLayout layout = new FormLayout(
-				"5px, p, 5px, fill:p:grow, 5px",
+				"5px, p, 5px, f:p:g, 5px, p, 5px",
 				"5px, p, 15px,  p, 5px,  f:p:g, 5px");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
@@ -63,6 +63,15 @@ public class PluginAboutPanel extends JPanel {
 		JLabel lName = builder.addLabel(pluginName, cc.xy(4, 2));
 		lName.setFont(lName.getFont().deriveFont(Font.BOLD));
 
+		String pluginVersion = "";
+		try {
+			pluginVersion = plugin.getVersion();
+		} catch(Throwable t) {
+			//catch throwable for every external call to avoid having a plugin crash pms
+			log.error("Failed to load version for plugin", t);
+		}
+		builder.addLabel(pluginVersion, cc.xy(6, 2));
+
 		String longDescription = "";
 		try {
 			longDescription = "<html>" + plugin.getLongDescription() + "</html>";
@@ -70,7 +79,7 @@ public class PluginAboutPanel extends JPanel {
 			//catch throwable for every external call to avoid having a plugin crash pms
 			log.error(String.format("Failed to load long description for plugin '%s'", plugin == null ? "null" : plugin.getName()), t);
 		}
-		builder.addLabel(longDescription, cc.xyw(2, 4, 3));
+		builder.addLabel(longDescription, cc.xyw(2, 4, 5));
 
 		//web site and update labels
 		String websiteUrl = null;
