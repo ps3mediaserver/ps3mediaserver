@@ -477,13 +477,20 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<configuration>
-						<!-- Force language because JUnit tests depend on english language strings -->
-						<argLine>-Duser.language=en</argLine>
+						<!--
+						    1) Force language because JUnit tests depend on English language strings
+
+							2) Use our JNA dependency rather than the system's - fixes
+							the following error on Linux (Ubuntu 12.04 with system
+							jna-3.2.7.jar via libjna-java):
+
+								There is an incompatible JNA native library installed on this system.
+						-->
+						<argLine>-Duser.language=en -Djna.nosys=true</argLine> <!-- only one argLine element is processed -->
 					</configuration>
 					<version>2.11</version>
 				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>

@@ -29,6 +29,7 @@ Thanks to:
 * ditlew
 * Raptor399
 * renszarv
+* happy.neko
 
 for major code contributions.
 

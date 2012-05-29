@@ -8,6 +8,7 @@ Changelog:
 	Fix startup for symlinked PMS.sh (#1356) (thanks, Matthijs!)
 	Added documentation to PMS.conf (thanks, Hagar!)
 	Updated JNA to support multiarch directories on Linux (#1152)
+	    - Fix test/startup error caused by conflicting JNA versions
 	Added GUI support for right-to-left languages
 	Language updates:
 		- added Arabic
@@ -15,7 +16,6 @@ Changelog:
 	Added option to select and force the default renderer
 	Fixed Samsung 2012 TVs timeout (thanks, troop!)
 	Added support for D-link DSM-510 (thanks, glenrocks!)
-	
 
 1.52.1 - 2012-04-06
 
