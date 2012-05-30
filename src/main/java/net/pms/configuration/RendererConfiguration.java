@@ -32,7 +32,7 @@ public class RendererConfiguration {
 	 * Static section
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(RendererConfiguration.class);
-	private static ArrayList<RendererConfiguration> renderersConfs;
+	private static ArrayList<RendererConfiguration> rendererConfs;
 	private static PmsConfiguration pmsConfiguration;
 	private static RendererConfiguration defaultConf;
 	private static Map<InetAddress, RendererConfiguration> addressAssociation = new HashMap<InetAddress, RendererConfiguration>();
@@ -48,7 +48,7 @@ public class RendererConfiguration {
 	 */
 	public static void loadRendererConfigurations(PmsConfiguration pmsConf) {
 		pmsConfiguration = pmsConf;
-		renderersConfs = new ArrayList<RendererConfiguration>();
+		rendererConfs = new ArrayList<RendererConfiguration>();
 
 		try {
 			defaultConf = new RendererConfiguration();
@@ -69,7 +69,7 @@ public class RendererConfiguration {
 						logger.info("Loading configuration file: " + f.getName());
 						RendererConfiguration r = new RendererConfiguration(f);
 						r.rank = rank++;
-						renderersConfs.add(r);
+						rendererConfs.add(r);
 					} catch (ConfigurationException ce) {
 						logger.info("Error in loading configuration of: " + f.getAbsolutePath());
 					}
@@ -78,7 +78,7 @@ public class RendererConfiguration {
 			}
 		}
 
-		if (renderersConfs.size() > 0) {
+		if (rendererConfs.size() > 0) {
 			// See if a different default configuration was configured
 			String rendererFallback = pmsConfiguration.getRendererDefault();
 
@@ -99,7 +99,7 @@ public class RendererConfiguration {
 	 * @return The list of all configurations.
 	 */
 	public static ArrayList<RendererConfiguration> getAllRendererConfigurations() {
-		return renderersConfs;
+		return rendererConfs;
 	}
 
 	protected static File getRenderersDir() {
@@ -118,7 +118,7 @@ public class RendererConfiguration {
 	private RootFolder rootFolder;
 
 	public static void resetAllRenderers() {
-		for(RendererConfiguration rc : renderersConfs) {
+		for(RendererConfiguration rc : rendererConfs) {
 			rc.rootFolder = null;
 		}
 	}
@@ -164,7 +164,7 @@ public class RendererConfiguration {
 			return manageRendererMatch(defaultConf);
 		} else {
 			// Try to find a match
-			for (RendererConfiguration r : renderersConfs) {
+			for (RendererConfiguration r : rendererConfs) {
 				if (r.matchUserAgent(userAgentString)) {
 					return manageRendererMatch(r);
 				}
@@ -204,7 +204,7 @@ public class RendererConfiguration {
 			return manageRendererMatch(defaultConf);
 		} else {
 			// Try to find a match
-			for (RendererConfiguration r : renderersConfs) {
+			for (RendererConfiguration r : rendererConfs) {
 				if (StringUtils.isNotBlank(r.getUserAgentAdditionalHttpHeader()) && header.startsWith(r.getUserAgentAdditionalHttpHeader())) {
 					String value = header.substring(header.indexOf(":", r.getUserAgentAdditionalHttpHeader().length()) + 1);
 					if (r.matchAdditionalUserAgent(value)) {
@@ -228,7 +228,7 @@ public class RendererConfiguration {
 	 * @since 1.50.1
 	 */
 	public static RendererConfiguration getRendererConfigurationByName(String name) {
-		for (RendererConfiguration conf : renderersConfs) {
+		for (RendererConfiguration conf : rendererConfs) {
 			if (conf.getRendererName().toLowerCase().contains(name.toLowerCase())) {
 				return conf;
 			}
