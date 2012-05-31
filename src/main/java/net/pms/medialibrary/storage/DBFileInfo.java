@@ -213,7 +213,7 @@ class DBFileInfo extends DBBase {
 		}
     }
 
-	protected void insertFileInfo(DOFileInfo fileInfo, Connection conn, PreparedStatement stmt, ResultSet rs) throws SQLException {
+	protected void insertFileInfo(DOFileInfo fileInfo, Connection conn, PreparedStatement stmt, ResultSet rs) throws SQLException {		
 		stmt = conn.prepareStatement("INSERT INTO FILE (FOLDERPATH, FILENAME, TYPE, DATELASTUPDATEDDB, DATEINSERTEDDB, DATEMODIFIEDOS, THUMBNAILPATH, SIZEBYTE, PLAYCOUNT, ENABLED)"
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		stmt.setString(1, fileInfo.getFolderPath());
@@ -241,9 +241,6 @@ class DBFileInfo extends DBBase {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Savepoint savePoint = null;
-
-		fileInfo.setDateInsertedDb(new java.util.Date());
-		fileInfo.setDateLastUpdatedDb(new java.util.Date());
 
 		try {
 			conn = cp.getConnection();
@@ -299,8 +296,6 @@ class DBFileInfo extends DBBase {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Savepoint savePoint = null;
-
-		fileInfo.setDateLastUpdatedDb(new java.util.Date());
 
 		try {
 			conn = cp.getConnection();

@@ -409,6 +409,8 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 		String statusMsg = null;
 		
 		updateCover(fileInfo);
+		fileInfo.setDateInsertedDb(new java.util.Date());
+		fileInfo.setDateLastUpdatedDb(new java.util.Date());
 		
 		switch(fileInfo.getType()){
 			case AUDIO:
@@ -459,6 +461,7 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 		String statusMsg = null;
 		
 		updateCover(fileInfo);
+		fileInfo.setDateLastUpdatedDb(new java.util.Date());
 		
 		switch(fileInfo.getType()){
 			case AUDIO:
