@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BaseConfiguration {
 	private static final Logger log = LoggerFactory.getLogger(BaseConfiguration.class);
-	private Properties properties = new Properties();
+	protected Properties properties = new Properties();
 	
 	/**
 	 * Saves the properties to the specified file path.<br>
