@@ -24,6 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import net.pms.PMS;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +40,15 @@ import org.slf4j.LoggerFactory;
 public class BaseConfiguration {
 	private static final Logger log = LoggerFactory.getLogger(BaseConfiguration.class);
 	protected Properties properties = new Properties();
+	
+	/**
+	 * Gets the path to the folder containing the plugin configurations
+	 * 
+	 * @return the path to the directory containing the plugin configurations
+	 */
+	public String getGlobalConfigurationDirectory() {
+		return PMS.getConfiguration().getProfileDirectory() + File.separator + "plugins" + File.separator + "global" + File.separator;
+	}
 	
 	/**
 	 * Saves the properties to the specified file path.<br>
