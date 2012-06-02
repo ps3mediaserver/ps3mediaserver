@@ -307,7 +307,7 @@ public final class Plist {
 			case INTEGER:
 				return parseInt(element.getValue());
 			case REAL:
-				return Double.valueOf(element.getValue());
+				return parseDouble(element.getValue());
 			case STRING:
 				return element.getValue();
 			case DATE:
@@ -342,6 +342,28 @@ public final class Plist {
 		return l;
 	}
 
+	/**
+	 * Parses a string into a Double
+	 *
+	 * @param value the value as a string.
+	 * @return the Double value of this string.
+	 */
+	private Number parseDouble(String value) {
+		if (value.equals("NaN"))
+		{
+			return Double.NaN;
+		}
+		if (value.equals("-inf"))
+		{
+			return Double.NEGATIVE_INFINITY;
+		}
+		if (value.equals("inf"))
+		{
+			return Double.POSITIVE_INFINITY;
+		}
+		return Double.valueOf(value);
+	}	
+	
 	/**
 	 * Parse a list of xml elements as a plist dict.
 	 *
