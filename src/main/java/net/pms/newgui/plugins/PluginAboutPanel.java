@@ -105,8 +105,9 @@ public class PluginAboutPanel extends JPanel {
 			llUpdate.setEnabled(false);
 		}
 		
-		JPanel pLinks = new JPanel(new FlowLayout(FlowLayout.LEADING, 12, 0));
+		JPanel pLinks = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
 		pLinks.add(llWebSite);
+		pLinks.add(new JLabel("   ")); //separator
 		pLinks.add(llUpdate);
 		
 		builder.add(pLinks, cc.xyw(2, 6, 3, CellConstraints.LEFT, CellConstraints.BOTTOM));
