@@ -52,8 +52,8 @@ public class PluginDetailDialog extends JDialog {
 		//in the about panel use the available width while stretching horizontally
 		//as required
 		ScrollablePanel sp = new ScrollablePanel(new GridLayout());
-		sp.setScrollableWidth( ScrollablePanel.ScrollableSizeHint.FIT );
-		sp.setScrollableHeight(ScrollablePanel.ScrollableSizeHint.STRETCH );
+		sp.setScrollableWidth(ScrollablePanel.ScrollableSizeHint.FIT);
+		sp.setScrollableHeight(ScrollablePanel.ScrollableSizeHint.STRETCH);
 		sp.setScrollableBlockIncrement(ScrollablePanel.VERTICAL, ScrollablePanel.IncrementType.PERCENT, 200);
 		sp.add(new PluginAboutPanel(plugin));
 		
