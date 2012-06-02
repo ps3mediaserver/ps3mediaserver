@@ -306,12 +306,11 @@ public class PluginsFactory {
 				Object instance;
 				try {
 					instance = classLoader.loadClass(pluginMainClassName).newInstance();
-				} catch (ClassNotFoundException ex) {
+				} catch (Throwable t) {
 					// this can happen if a plugin created for a custom build is being dropped inside
 					// the plugins directory of pms. The plugin might implement an interface only
 					// available in the custom build, but not in pms.
-					LOGGER.warn(String.format("The plugin '%s' couldn't be loaded because %s"
-							, pluginMainClassName, ex.getMessage()));
+					LOGGER.warn(String.format("The plugin '%s' couldn't be loaded", pluginMainClassName), t);
 					continue;
 				}
 				if (instance instanceof PluginBase) {
