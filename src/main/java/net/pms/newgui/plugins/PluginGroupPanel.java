@@ -91,7 +91,9 @@ public class PluginGroupPanel extends JPanel {
 				if(icon == null) {
 					icon = new ImageIcon(getClass().getResource("/resources/images/icon-32.png"));
 				}
-				builder.add(new JLabel(icon), cc.xy(2, row));
+				JLabel lIcon = new JLabel(icon);
+				lIcon.setEnabled(plugin.isPluginAvailable());
+				builder.add(lIcon, cc.xy(2, row));
 
 				String pluginName = "";
 				try {
@@ -102,6 +104,7 @@ public class PluginGroupPanel extends JPanel {
 				}
 				JLabel lName = builder.addLabel(pluginName, cc.xy(4, row));
 				lName.setFont(lName.getFont().deriveFont(Font.BOLD));
+				lName.setEnabled(plugin.isPluginAvailable());
 					
 				String pluginVersion = "";
 				try {
@@ -110,7 +113,8 @@ public class PluginGroupPanel extends JPanel {
 					//catch throwable for every external call to avoid having a plugin crash pms
 					log.error(String.format("Failed to load version for plugin '%s'", plugin == null ? "null" : plugin.getName()), t);
 				}
-				builder.addLabel(pluginVersion, cc.xy(6, row));
+				JLabel lPluginVersion = builder.addLabel(pluginVersion, cc.xy(6, row));
+				lPluginVersion.setEnabled(plugin.isPluginAvailable());
 
 				String shortDescription = "";
 				try {
@@ -119,9 +123,11 @@ public class PluginGroupPanel extends JPanel {
 					//catch throwable for every external call to avoid having a plugin crash pms
 					log.error(String.format("Failed to load short description for plugin '%s'", plugin == null ? "null" : plugin.getName()), t);
 				}
-				builder.addLabel(shortDescription, cc.xy(8, row));
+				JLabel lShortDescription = builder.addLabel(shortDescription, cc.xy(8, row));
+				lShortDescription.setEnabled(plugin.isPluginAvailable());
 					
 				final JButton bConfig = new JButton();
+				bConfig.setEnabled(plugin.isPluginAvailable());
 				try {
 					if(plugin.getGlobalConfigurationPanel() == null) {
 						bConfig.setText(Messages.getString("PluginGroupPanel.1"));
