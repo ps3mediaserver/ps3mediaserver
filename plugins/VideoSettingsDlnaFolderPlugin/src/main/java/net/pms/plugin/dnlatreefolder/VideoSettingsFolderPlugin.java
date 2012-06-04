@@ -1,8 +1,6 @@
 package net.pms.plugin.dnlatreefolder;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.Icon;
@@ -21,16 +19,23 @@ import net.pms.dlna.DLNAResource;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.dlna.virtual.VirtualVideoAction;
 import net.pms.plugins.DlnaTreeFolderPlugin;
+import net.pms.util.PmsProperties;
 
 public class VideoSettingsFolderPlugin implements DlnaTreeFolderPlugin {
 	private static final Logger log = LoggerFactory.getLogger(VideoSettingsFolderPlugin.class);
-	private Properties properties = new Properties();
-	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.dnlatreefolder.videosettingsfolderplugin.lang.messages");
+	public static final ResourceBundle messages = ResourceBundle.getBundle("net.pms.plugin.dnlatreefolder.vsfp.lang.messages");
 	private String rootFolderName = "root";
 
-	public VideoSettingsFolderPlugin() {
-		loadProperties();
+	/** Holds only the project version. It's used to always use the maven build number in code */
+	private static final PmsProperties properties = new PmsProperties();
+	static {
+		try {
+			properties.loadFromResourceFile("/videosettingsfolderplugin.properties", VideoSettingsFolderPlugin.class);
+		} catch (IOException e) {
+			log.error("Could not load videosettingsfolderplugin.properties", e);
+		}
 	}
+
 	@Override
 	public JPanel getInstanceConfigurationPanel() {
 		return null;
@@ -143,7 +148,7 @@ public class VideoSettingsFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public String getName() {
-		return RESOURCE_BUNDLE.getString("VideoSettingsFolderPlugin.Name");
+		return messages.getString("VideoSettingsFolderPlugin.Name");
 	}
 	
 	@Override
@@ -170,23 +175,23 @@ public class VideoSettingsFolderPlugin implements DlnaTreeFolderPlugin {
     }
 
 	@Override
-    public boolean isAvailable() {
+    public boolean isInstanceAvailable() {
 	    return true;
     }
 
 	@Override
 	public String getVersion() {
-		return properties.getProperty("project.version");
+		return properties.get("project.version");
 	}
 
 	@Override
 	public String getShortDescription() {
-		return RESOURCE_BUNDLE.getString("VideoSettingsFolderPlugin.ShortDescription");
+		return messages.getString("VideoSettingsFolderPlugin.ShortDescription");
 	}
 
 	@Override
 	public String getLongDescription() {
-		return RESOURCE_BUNDLE.getString("VideoSettingsFolderPlugin.LongDescription");
+		return messages.getString("VideoSettingsFolderPlugin.LongDescription");
 	}
 
 	@Override
@@ -221,25 +226,9 @@ public class VideoSettingsFolderPlugin implements DlnaTreeFolderPlugin {
 	@Override
 	public void saveConfiguration() {
 	}
-	
-	/**
-	 * Loads the properties from the plugin properties file
-	 */
-	private void loadProperties() {
-		String fileName = "/videosettingsfolderplugin.properties";
-		InputStream inputStream = getClass().getResourceAsStream(fileName);
-		try {
-			properties.load(inputStream);
-		} catch (Exception e) {
-			log.error("Failed to load properties", e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					log.error("Failed to properly close stream properties", e);
-				}
-			}
-		}
+
+	@Override
+	public boolean isPluginAvailable() {
+		return true;
 	}
 }

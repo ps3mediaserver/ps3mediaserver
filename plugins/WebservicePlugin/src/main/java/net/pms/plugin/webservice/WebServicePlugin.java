@@ -1,26 +1,25 @@
 package net.pms.plugin.webservice;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.pms.PMS;
-import net.pms.plugin.webservice.configuration.ConfigurationWebService;
-import net.pms.plugin.webservice.medialibrary.LibraryWebService;
+import net.pms.plugin.webservice.configuration.GlobalConfiguration;
+import net.pms.plugin.webservice.configurationws.ConfigurationWebService;
+import net.pms.plugin.webservice.medialibraryws.LibraryWebService;
 import net.pms.plugins.Plugin;
+import net.pms.util.PmsProperties;
 
 public class WebServicePlugin implements Plugin {
 	private static final Logger log = LoggerFactory.getLogger(WebServicePlugin.class);
-	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.webservice.webservicepluginmessages.messages");
-	private Properties properties = new Properties();
+	public static final ResourceBundle messages = ResourceBundle.getBundle("net.pms.plugin.webservice.lang.messages");
 	private static Object initializationLocker = new Object();
 	private static Thread thRegister;
 	
@@ -31,22 +30,43 @@ public class WebServicePlugin implements Plugin {
 	private String libraryWsName = "PmsLibrary";
 	
 	private String hostName;
-	private int port = 54423;
-	
-	public WebServicePlugin() {
-		loadProperties();
+
+	/** Holds only the project version. It's used to always use the maven build number in code */
+	private static final PmsProperties properties = new PmsProperties();
+	static {
+		try {
+			properties.loadFromResourceFile("/webserviceplugin.properties", WebServicePlugin.class);
+		} catch (IOException e) {
+			log.error("Could not load webserviceplugin.properties", e);
+		}
 	}
+	
+	/** The global configuration is shared amongst all plugin instances. */
+	private static final GlobalConfiguration globalConfig;
+	static {
+		globalConfig = new GlobalConfiguration();
+		try {
+			globalConfig.load();
+		} catch (IOException e) {
+			log.error("Failed to load global configuration", e);
+		}
+	}
+	
+	/** GUI */
+	private GlobalConfigurationPanel pGlobalConfiguration;
 
 	@Override
 	public JComponent getGlobalConfigurationPanel() {
-		String libraryEndPoint = "http://" + hostName + ":" + port + "/" + libraryWsName + "?wsdl";
-		String configEndPoint = "http://" + hostName + ":" + port + "/" + configurationWsName + "?wsdl";
-		return new JLabel(String.format("<html>%s<br><br>%s<br>%s</html>", RESOURCE_BUNDLE.getString("WebServicePlugin.2"), libraryEndPoint, configEndPoint));
+		if(pGlobalConfiguration == null ) {
+			pGlobalConfiguration = new GlobalConfigurationPanel(globalConfig);
+		}
+		pGlobalConfiguration.applyConfig();
+		return pGlobalConfiguration;
 	}
 
 	@Override
 	public String getName() {
-		return RESOURCE_BUNDLE.getString("WebServicePlugin.1");
+		return messages.getString("WebServicePlugin.1");
 	}
 
 	@Override
@@ -65,23 +85,26 @@ public class WebServicePlugin implements Plugin {
 
 	@Override
 	public String getVersion() {
-		return properties.getProperty("project.version");
+		return properties.get("project.version");
 	}
 
 	@Override
 	public Icon getPluginIcon() {
-		return null;
+		return new ImageIcon(getClass().getResource("/webservice-32.png"));
 	}
 
 	@Override
 	public String getShortDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return messages.getString("WebServicePlugin.ShortDescription");
 	}
 
 	@Override
 	public String getLongDescription() {
-		return null;
+		String libraryEndPoint = "http://" + hostName + ":" + globalConfig.getPort() + "/" + libraryWsName + "?wsdl";
+		String configEndPoint = "http://" + hostName + ":" + globalConfig.getPort() + "/" + configurationWsName + "?wsdl";
+
+		return messages.getString("WebServicePlugin.LongDescription") 
+				+ "<br><br>" + libraryEndPoint + "<br>" + configEndPoint;
 	}
 
 	@Override
@@ -114,10 +137,10 @@ public class WebServicePlugin implements Plugin {
 							}
 						}
 						configurationWs = new ConfigurationWebService();
-						configurationWs.bind(hostName, port, configurationWsName);
+						configurationWs.bind(hostName, globalConfig.getPort(), configurationWsName);
 						
 						libraryWs = new LibraryWebService();
-						libraryWs.bind(hostName, port, libraryWsName);
+						libraryWs.bind(hostName, globalConfig.getPort(), libraryWsName);
 					}
 				});
 				thRegister.start();
@@ -127,26 +150,18 @@ public class WebServicePlugin implements Plugin {
 
 	@Override
 	public void saveConfiguration() {
-	}
-	
-	/**
-	 * Loads the properties from the plugin properties file
-	 */
-	private void loadProperties() {
-		String fileName = "/webserviceplugin.properties";
-		InputStream inputStream = getClass().getResourceAsStream(fileName);
-		try {
-			properties.load(inputStream);
-		} catch (Exception e) {
-			log.error("Failed to load properties", e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					log.error("Failed to properly close stream properties", e);
-				}
+		if(pGlobalConfiguration != null) {
+			pGlobalConfiguration.updateConfiguration(globalConfig);
+			try {
+				globalConfig.save();
+			} catch (IOException e) {
+				log.error("Failed to save global configuration", e);
 			}
 		}
+	}
+
+	@Override
+	public boolean isPluginAvailable() {
+		return true;
 	}
 }

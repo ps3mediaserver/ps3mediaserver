@@ -1,9 +1,7 @@
 package net.pms.plugin.filedetail;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.Icon;
@@ -19,20 +17,44 @@ import org.slf4j.LoggerFactory;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
+import net.pms.plugin.filedetail.tmdbrater.configuration.GlobalConfiguration;
+import net.pms.plugin.filedetail.tmdbrater.dlna.RatingResource;
+import net.pms.plugin.filedetail.tmdbrater.gui.GlobalConfigurationPanel;
 import net.pms.plugins.FileDetailPlugin;
 import net.pms.plugins.TreeEntry;
+import net.pms.util.PmsProperties;
 
 public class TmdbRatingPlugin implements FileDetailPlugin {
 	private static final Logger log = LoggerFactory.getLogger(TmdbRatingPlugin.class);
-	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.filedetail.tmdbrater.lang.messages");
-	private Properties properties = new Properties();
+	public static final ResourceBundle messages = ResourceBundle.getBundle("net.pms.plugin.filedetail.tmdbrater.lang.messages");
 	private DOVideoFileInfo video;
 	private String displayName;
 	private static Icon ratingIcon;
+
+	/** Holds only the project version. It's used to always use the maven build number in code */
+	private static final PmsProperties properties = new PmsProperties();
+	static {
+		try {
+			properties.loadFromResourceFile("/tmdratingplugin.properties", TmdbRatingPlugin.class);
+		} catch (IOException e) {
+			log.error("Could not load tmdratingplugin.properties", e);
+		}
+	}
+	
+	/** The global configuration is shared amongst all plugin instances. */
+	public static final GlobalConfiguration globalConfig;
+	static {
+		globalConfig = new GlobalConfiguration();
+		try {
+			globalConfig.load();
+		} catch (IOException e) {
+			log.error("Failed to load global configuration", e);
+		}
+	}
+	/** GUI */
+	private GlobalConfigurationPanel pGlobalConfiguration;
 	
 	public TmdbRatingPlugin(){
-		loadProperties();
-		
 		if(ratingIcon == null){
 			URL icon = getClass().getResource("/resources/images/star-16.png");
 			if(icon != null) {
@@ -48,7 +70,7 @@ public class TmdbRatingPlugin implements FileDetailPlugin {
 
 	@Override
     public String getName() {
-	    return RESOURCE_BUNDLE.getString("TmdbRatingPlugin.Name");
+	    return messages.getString("TmdbRatingPlugin.Name");
     }
 
 	@Override
@@ -117,17 +139,17 @@ public class TmdbRatingPlugin implements FileDetailPlugin {
 
 	@Override
 	public String getVersion() {
-		return properties.getProperty("project.version");
+		return properties.get("project.version");
 	}
 
 	@Override
 	public String getShortDescription() {
-		return RESOURCE_BUNDLE.getString("TmdbRatingPlugin.ShortDescription");
+		return messages.getString("TmdbRatingPlugin.ShortDescription");
 	}
 
 	@Override
 	public String getLongDescription() {
-		return RESOURCE_BUNDLE.getString("TmdbRatingPlugin.LongDescription");
+		return messages.getString("TmdbRatingPlugin.LongDescription");
 	}
 
 	@Override
@@ -137,7 +159,11 @@ public class TmdbRatingPlugin implements FileDetailPlugin {
 
 	@Override
 	public JComponent getGlobalConfigurationPanel() {
-		return null;
+		if(pGlobalConfiguration == null ) {
+			pGlobalConfiguration = new GlobalConfigurationPanel(globalConfig);
+		}
+		pGlobalConfiguration.applyConfig();
+		return pGlobalConfiguration;
 	}
 
 	@Override
@@ -161,26 +187,18 @@ public class TmdbRatingPlugin implements FileDetailPlugin {
 
 	@Override
 	public void saveConfiguration() {
-	}
-	
-	/**
-	 * Loads the properties from the plugin properties file
-	 */
-	private void loadProperties() {
-		String fileName = "/tmdratingplugin.properties";
-		InputStream inputStream = getClass().getResourceAsStream(fileName);
-		try {
-			properties.load(inputStream);
-		} catch (Exception e) {
-			log.error("Failed to load properties", e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					log.error("Failed to properly close stream properties", e);
-				}
+		if(pGlobalConfiguration != null) {
+			pGlobalConfiguration.updateConfiguration(globalConfig);
+			try {
+				globalConfig.save();
+			} catch (IOException e) {
+				log.error("Failed to save global configuration", e);
 			}
 		}
+	}
+
+	@Override
+	public boolean isPluginAvailable() {
+		return true;
 	}
 }

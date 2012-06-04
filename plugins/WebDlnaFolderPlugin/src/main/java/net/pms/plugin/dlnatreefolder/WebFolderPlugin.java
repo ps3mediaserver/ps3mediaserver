@@ -3,10 +3,8 @@ package net.pms.plugin.dlnatreefolder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
@@ -19,6 +17,7 @@ import javax.swing.tree.MutableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.pms.PMS;
 import net.pms.dlna.AudiosFeed;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.ImagesFeed;
@@ -26,26 +25,63 @@ import net.pms.dlna.VideosFeed;
 import net.pms.dlna.WebAudioStream;
 import net.pms.dlna.WebVideoStream;
 import net.pms.dlna.virtual.VirtualFolder;
+import net.pms.plugin.dlnatreefolder.web.configuration.InstanceConfiguration;
+import net.pms.plugin.dlnatreefolder.web.gui.InstanceConfigurationPanel;
 import net.pms.plugins.DlnaTreeFolderPlugin;
+import net.pms.util.PmsProperties;
 
 public class WebFolderPlugin implements DlnaTreeFolderPlugin {
 	private static final Logger log = LoggerFactory.getLogger(WebFolderPlugin.class);
-	private Properties properties = new Properties();
-	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.dlnatreefolder.webfolderplugin.lang.messages");
+	public static final ResourceBundle messages = ResourceBundle.getBundle("net.pms.plugin.dlnatreefolder.web.lang.messages");
 	private String rootFolderName = "root";
-	
-	public WebFolderPlugin() {
-		loadProperties();
-	}
 
+	/** Holds only the project version. It's used to always use the maven build number in code */
+	private static final PmsProperties properties = new PmsProperties();
+	static {
+		try {
+			properties.loadFromResourceFile("/webfolderplugin.properties", WebFolderPlugin.class);
+		} catch (IOException e) {
+			log.error("Could not load itunesfolderplugin.properties", e);
+		}
+	}
+	
+	/** The instance configuration is shared amongst all plugin instances. */
+	private InstanceConfiguration instanceConfig;
+
+	/** GUI */
+	private InstanceConfigurationPanel pInstanceConfiguration;
+	
 	@Override
 	public JPanel getInstanceConfigurationPanel() {
-		return null;
+		//make sure the instance configuration has been initialized;
+		if(instanceConfig == null) {
+			instanceConfig = new InstanceConfiguration();
+		}
+		
+		//lazy initialize the configuration panel
+		if(pInstanceConfiguration == null ) {
+			if(instanceConfig.getFilePath() == null || !new File(instanceConfig.getFilePath()).exists()) {
+				String profileDir = PMS.getConfiguration().getProfileDirectory();
+				String defaultWebConf = profileDir + File.separatorChar + "web.conf";
+				if(new File(defaultWebConf).exists()) {
+					instanceConfig.setFilePath(defaultWebConf);
+				}			
+			}
+			
+			pInstanceConfiguration = new InstanceConfigurationPanel(instanceConfig.getFilePath());
+		}
+		pInstanceConfiguration.applyConfig();
+		
+		return pInstanceConfiguration;
 	}
 
 	@Override
 	public DLNAResource getDLNAResource() {
-		File webConf = new File("WEB.conf");
+		if( instanceConfig == null) {
+			return null;
+		}
+		
+		File webConf = new File(instanceConfig.getFilePath());
 		DLNAResource res = new VirtualFolder(rootFolderName, null);
 		
 		if (webConf.exists()) {
@@ -131,7 +167,7 @@ public class WebFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public String getName() {
-		return RESOURCE_BUNDLE.getString("WebFolderPlugin.Name");
+		return messages.getString("WebFolderPlugin.Name");
 	}
 
 	@Override
@@ -141,12 +177,16 @@ public class WebFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public void loadInstanceConfiguration(String configFilePath) throws IOException {
-		// Do nothing
+		instanceConfig = new InstanceConfiguration();
+		instanceConfig.load(configFilePath);
 	}
 
 	@Override
 	public void saveInstanceConfiguration(String configFilePath) throws IOException {
-		// Do nothing
+		if(pInstanceConfiguration != null) {
+			pInstanceConfiguration.updateConfiguration(instanceConfig);
+			instanceConfig.save(configFilePath);
+		}
 	}
 
 	@Override
@@ -160,23 +200,23 @@ public class WebFolderPlugin implements DlnaTreeFolderPlugin {
     }
 
 	@Override
-    public boolean isAvailable() {
+    public boolean isInstanceAvailable() {
 	    return true;
     }
 
 	@Override
 	public String getVersion() {
-		return properties.getProperty("project.version");
+		return properties.get("project.version");
 	}
 
 	@Override
 	public String getShortDescription() {
-		return RESOURCE_BUNDLE.getString("WebFolderPlugin.ShortDescription");
+		return messages.getString("WebFolderPlugin.ShortDescription");
 	}
 
 	@Override
 	public String getLongDescription() {
-		return RESOURCE_BUNDLE.getString("WebFolderPlugin.Longescription");
+		return messages.getString("WebFolderPlugin.LongDescription");
 	}
 
 	@Override
@@ -211,25 +251,9 @@ public class WebFolderPlugin implements DlnaTreeFolderPlugin {
 	@Override
 	public void saveConfiguration() {
 	}
-	
-	/**
-	 * Loads the properties from the plugin properties file
-	 */
-	private void loadProperties() {
-		String fileName = "/webfolderplugin.properties";
-		InputStream inputStream = getClass().getResourceAsStream(fileName);
-		try {
-			properties.load(inputStream);
-		} catch (Exception e) {
-			log.error("Failed to load properties", e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					log.error("Failed to properly close stream properties", e);
-				}
-			}
-		}
+
+	@Override
+	public boolean isPluginAvailable() {
+		return true;
 	}
 }

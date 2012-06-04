@@ -30,7 +30,6 @@ import javax.swing.tree.MutableTreeNode;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.dlna.virtual.VirtualVideoAction;
-import net.pms.external.AdditionalFolderAtRoot;
 import net.pms.io.Gob;
 import net.pms.plugins.DlnaTreeFolderPlugin;
 import net.pms.util.ProcessUtil;
@@ -306,14 +305,6 @@ public class ShutdownPlugin implements DlnaTreeFolderPlugin {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isAvailable() {
-		return true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void loadInstanceConfiguration(String configFilePath) throws IOException {
 		// Do nothing
 	}
@@ -332,5 +323,21 @@ public class ShutdownPlugin implements DlnaTreeFolderPlugin {
 	@Override
 	public void setDisplayName(String name) {
 		rootFolderName = name;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isPluginAvailable() {
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isInstanceAvailable() {
+		return true;
 	}
 }

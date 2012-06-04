@@ -31,7 +31,7 @@ import net.pms.xmlwise.Plist;
 public class iPhotoFolderPlugin implements DlnaTreeFolderPlugin {
 	private static final Logger log = LoggerFactory.getLogger(iPhotoFolderPlugin.class);
 	private Properties properties = new Properties();
-	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.dlnatreefolder.iphotofolderplugin.lang.messages");
+	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.dlnatreefolder.iphoto.lang.messages");
 	
 	private String rootFolderName = "root";
 
@@ -124,9 +124,14 @@ public class iPhotoFolderPlugin implements DlnaTreeFolderPlugin {
     }
 
 	@Override
-    public boolean isAvailable() {
+    public boolean isInstanceAvailable() {
 	    return System.getProperty("os.name").toLowerCase().indexOf( "mac" ) >= 0;
     }
+
+	@Override
+	public boolean isPluginAvailable() {
+	    return System.getProperty("os.name").toLowerCase().indexOf( "mac" ) >= 0;
+	}
 
 	@Override
 	public String getVersion() {

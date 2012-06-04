@@ -2,7 +2,6 @@ package net.pms.plugin.fileimport;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -14,7 +13,6 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.Icon;
@@ -26,46 +24,62 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.pms.PMS;
 import net.pms.medialibrary.commons.enumarations.FileProperty;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.exceptions.FileImportException;
+import net.pms.plugin.fileimport.imdb.FileSearchObject;
+import net.pms.plugin.fileimport.imdb.configuration.GlobalConfiguration;
+import net.pms.plugin.fileimport.imdb.configuration.GlobalConfiguration.PlotType;
+import net.pms.plugin.fileimport.imdb.gui.GlobalConfigurationPanel;
 import net.pms.plugins.FileImportPlugin;
+import net.pms.util.PmsProperties;
 
 /** 
- * Class used to collect information about a movie from tmdb
- * 
- * Some properties can be configured in pms.cnf:<br>
- * - imdb_cover_width (int): returns the original cover if its width is smaller then the set value, or the one resized to this value. Default is 320px<br>
- * - imdb_plot (long/short): long or short plot. Default is long<br>
- * - imdb_use_rotten_tomatoes (true/false): if true, the rotten tomatoes rating will be used. Default is false<br>
+ * Class used to collect information about a movie from imdb.<br>
+ * It uses the services provides by http://www.imdbapi.com
  * 
  * @author pw
  *
  */
 public class ImdbMovieImportPlugin implements FileImportPlugin {	
 	private static final Logger log = LoggerFactory.getLogger(ImdbMovieImportPlugin.class);
-	private Properties properties = new Properties();
-	private static int receiveTimeoutMs = 30000;
-	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.fileimport.imdbmovieimportplugin.lang.messages");
+	private JSONObject movieObject;
+
+	/** Resource used for localization */
+	public static final ResourceBundle messages = ResourceBundle.getBundle("net.pms.plugin.fileimport.imdb.lang.messages");
 	
-	private static final Dictionary<String, String> tags; //key=tag name, value=value to query on imdb
-	
+	/** 
+	 * Contains the mapping of tag names and corresponding tags coming from imdb.
+	 * 
+	 * */
+	private static final Dictionary<String, String> tags; //key=tag name, value=value to query on imdb	
 	static {
 		tags = new Hashtable<String, String>();
 		tags.put("Actor", "Actors");
 		tags.put("Writer", "Writer");
 	}
 	
-	private JSONObject movieObject;
-	private boolean useRottenTomatoes = false;
-	
-	public ImdbMovieImportPlugin() {
-		loadProperties();
+	/** Holds only the project version. It's used to always use the maven build number in code */
+	private static final PmsProperties properties = new PmsProperties();
+	static {
 		try {
-			receiveTimeoutMs = Integer.parseInt(properties.getProperty("receiveTimeoutMs"));
-		} catch(Exception ex) {
-			//do nothing; use the default value
+			properties.loadFromResourceFile("/filesystemfolderplugin.properties", ImdbMovieImportPlugin.class);
+		} catch (IOException e) {
+			log.error("Could not load filesystemfolderplugin.properties", e);
+		}
+	}
+
+	/** GUI */
+	private GlobalConfigurationPanel pGlobalConfiguration;
+	
+	/** The global configuration is shared amongst all plugin instances. */
+	private static final GlobalConfiguration globalConfig;
+	static {
+		globalConfig = new GlobalConfiguration();
+		try {
+			globalConfig.load();
+		} catch (IOException e) {
+			log.error("Failed to load global configuration", e);
 		}
 	}
 
@@ -76,17 +90,17 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public String getVersion() {
-		return properties.getProperty("project.version");
+		return properties.get("project.version");
 	}
 
 	@Override
 	public String getShortDescription() {
-		return RESOURCE_BUNDLE.getString("ImdbMovieImportPlugin.ShortDescription");
+		return messages.getString("ImdbMovieImportPlugin.ShortDescription");
 	}
 
 	@Override
 	public String getLongDescription() {
-		return RESOURCE_BUNDLE.getString("ImdbMovieImportPlugin.LongDescription");
+		return messages.getString("ImdbMovieImportPlugin.LongDescription");
 	}
 
 	@Override
@@ -96,7 +110,11 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public JComponent getGlobalConfigurationPanel() {
-		return null;
+		if(pGlobalConfiguration == null ) {
+			pGlobalConfiguration = new GlobalConfigurationPanel(globalConfig);
+		}
+		pGlobalConfiguration.applyConfig();
+		return pGlobalConfiguration;
 	}
 
 	@Override
@@ -211,18 +229,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 			}
 			break;
 		case VIDEO_COVERURL:
-			res = getValue("Poster");
-			
-			//use the custom cover width if configured
-			Object customCoverWidth = PMS.getConfiguration().getCustomProperty("imdb_cover_width");
-			if(customCoverWidth != null && !customCoverWidth.equals("")) {
-				try {
-					int customWidth = Integer.parseInt(customCoverWidth.toString());
-					res = ((String)res).replaceAll("SX320", "SX" + customWidth);
-				} catch(NumberFormatException ex) {
-					//do nothing
-				}
-			}
+			res = ((String) getValue("Poster")).replaceAll("SX320", "SX" + globalConfig.getCoverWidth());
 			break;
 		case VIDEO_DIRECTOR:
 			res = getValue("Director");
@@ -247,7 +254,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 			res = getValue("Plot");
 			break;
 		case VIDEO_RATINGPERCENT:
-			if(useRottenTomatoes) {
+			if(globalConfig.isUseRottenTomatoes()) {
 				queryString = "tomatoMeter";
 			} else {
 				queryString = "Rating";				
@@ -256,7 +263,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 			if(ratingObj != null) {
 				try {
 					double r = Double.parseDouble(ratingObj.toString());
-					if(!useRottenTomatoes) {
+					if(!globalConfig.isUseRottenTomatoes()) {
 						res = (int)(10 * r);
 					}
 				} catch (NumberFormatException ex) {
@@ -265,7 +272,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 			}
 			break;
 		case VIDEO_RATINGVOTERS:
-			if(useRottenTomatoes) {
+			if(globalConfig.isUseRottenTomatoes()) {
 				queryString = "tomatoReviews";
 			} else {
 				queryString = "Votes";				
@@ -355,7 +362,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 		StringBuffer res = new StringBuffer();
 		
 		URLConnection yc = url.openConnection();
-		yc.setReadTimeout(receiveTimeoutMs);
+		yc.setReadTimeout(globalConfig.getReceiveTimeoutSec() * 1000);
 		
 		BufferedReader in = null;
 		try {
@@ -366,7 +373,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 			}
 		}
 		catch(SocketTimeoutException ex) {
-			throw new IOException(String.format("The receive timeout of %sms to call %s has been exceeded", receiveTimeoutMs, url.toString()));
+			throw new IOException(String.format("The receive timeout of %sms to call %s has been exceeded", globalConfig.getReceiveTimeoutSec(), url.toString()));
 		} finally {
 			if(in != null) {
 				in.close();
@@ -385,18 +392,12 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 		String urlProperties = "";
 		
 		//plot
-		Object shortPlotObj = PMS.getConfiguration().getCustomProperty("imdb_plot");
-		if(shortPlotObj != null) {
-			if(shortPlotObj.equals("long")) {
-				urlProperties += "&plot=full";
-			}
-		} else {
-			//use the long plot as default
+		if(globalConfig.getPlotType() == PlotType.Long) {
 			urlProperties += "&plot=full";
 		}
 		
 		//rotten tomatoes
-		if(useRottenTomatoes) {
+		if(globalConfig.isUseRottenTomatoes()) {
 			urlProperties += "&tomatoes=true";
 		}
 		
@@ -420,37 +421,22 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public void initialize() {
-		//load the rotten tomatoes property
-		Object useRottenTomatoesObj = PMS.getConfiguration().getCustomProperty("imdb_use_rotten_tomatoes");
-		if(useRottenTomatoesObj != null) {
-			if(useRottenTomatoesObj.equals("true")) {
-				useRottenTomatoes = true;
+	}
+
+	@Override
+	public void saveConfiguration() {
+		if(pGlobalConfiguration != null) {
+			pGlobalConfiguration.updateConfiguration(globalConfig);
+			try {
+				globalConfig.save();
+			} catch (IOException e) {
+				log.error("Failed to save global configuration", e);
 			}
 		}
 	}
 
 	@Override
-	public void saveConfiguration() {
-	}
-	
-	/**
-	 * Loads the properties from the plugin properties file
-	 */
-	private void loadProperties() {
-		String fileName = "/imdbmovieimportplugin.properties";
-		InputStream inputStream = getClass().getResourceAsStream(fileName);
-		try {
-			properties.load(inputStream);
-		} catch (Exception e) {
-			log.error("Failed to load properties", e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					log.error("Failed to properly close stream properties", e);
-				}
-			}
-		}
+	public boolean isPluginAvailable() {
+		return true;
 	}
 }

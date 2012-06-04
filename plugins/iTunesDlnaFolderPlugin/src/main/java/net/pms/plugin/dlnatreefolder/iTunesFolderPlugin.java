@@ -3,14 +3,12 @@ package net.pms.plugin.dlnatreefolder;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.Icon;
@@ -27,23 +25,58 @@ import com.sun.jna.Platform;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.RealFile;
 import net.pms.dlna.virtual.VirtualFolder;
+import net.pms.plugin.dlnatreefolder.itunes.configuration.InstanceConfiguration;
+import net.pms.plugin.dlnatreefolder.itunes.gui.InstanceConfigurationPanel;
 import net.pms.plugins.DlnaTreeFolderPlugin;
+import net.pms.util.PmsProperties;
 import net.pms.xmlwise.Plist;
 
 public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
 	private static final Logger log = LoggerFactory.getLogger(iTunesFolderPlugin.class);
-	private Properties properties = new Properties();
-	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.dlnatreefolder.itunesfolderplugin.lang.messages");
 	
 	private String rootFolderName = "root";
-
-	public iTunesFolderPlugin() {
-		loadProperties();
+	
+	public static final ResourceBundle messages = ResourceBundle.getBundle("net.pms.plugin.dlnatreefolder.itunes.lang.messages");
+	
+	/** Holds only the project version. It's used to always use the maven build number in code */
+	private static final PmsProperties properties = new PmsProperties();
+	static {
+		try {
+			properties.loadFromResourceFile("/itunesfolderplugin.properties", iTunesFolderPlugin.class);
+		} catch (IOException e) {
+			log.error("Could not load itunesfolderplugin.properties", e);
+		}
 	}
+	
+	/** The instance configuration is shared amongst all plugin instances. */
+	private InstanceConfiguration instanceConfig;
+
+	/** GUI */
+	private InstanceConfigurationPanel pInstanceConfiguration;
 
 	@Override
 	public JPanel getInstanceConfigurationPanel() {
-		return null;
+		//make sure the instance configuration has been initialized;
+		if(instanceConfig == null) {
+			instanceConfig = new InstanceConfiguration();
+		}
+		
+		//lazy initialize the configuration panel
+		if(pInstanceConfiguration == null ) {
+			pInstanceConfiguration = new InstanceConfigurationPanel(instanceConfig);
+		}
+		
+		//make sure the iTunes file path points to an existing file
+		if(instanceConfig.getiTunesFilePath() == null || !new File(instanceConfig.getiTunesFilePath()).exists()) {
+			try {
+				instanceConfig.setiTunesFilePath(getiTunesFile());
+			} catch (Exception e) {
+				log.error("Failed to resolve iTunes file path", e);
+			}
+		}
+		pInstanceConfiguration.applyConfig();
+		
+		return pInstanceConfiguration;
 	}
 
 	@Override
@@ -56,9 +89,18 @@ public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
 		HashMap<?, ?> Tracks;
 		HashMap<?, ?> Track;
 		ArrayList<?> PlaylistTracks;
+		
+		//make sure the iTunes file path points to an existing file
+		if(instanceConfig.getiTunesFilePath() == null || !new File(instanceConfig.getiTunesFilePath()).exists()) {
+			try {
+				instanceConfig.setiTunesFilePath(getiTunesFile());
+			} catch (Exception e) {
+				log.error("Failed to resolve iTunes file path", e);
+			}
+		}
 
 		try {
-			String iTunesFile = getiTunesFile();
+			String iTunesFile = instanceConfig.getiTunesFilePath();
 			if(iTunesFile != null && (new File(iTunesFile)).exists()) {
 				iTunesLib = Plist.load(URLDecoder.decode(iTunesFile, System.getProperty("file.encoding")));     // loads the (nested) properties.
 				Tracks = (HashMap<?, ?>) iTunesLib.get("Tracks");       // the list of tracks
@@ -145,10 +187,16 @@ public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public void loadInstanceConfiguration(String configFilePath) throws IOException {
+		instanceConfig = new InstanceConfiguration();
+		instanceConfig.load(configFilePath);
 	}
 
 	@Override
 	public void saveInstanceConfiguration(String configFilePath) throws IOException {
+		if(pInstanceConfiguration != null) {
+			pInstanceConfiguration.updateConfiguration(instanceConfig);
+			instanceConfig.save(configFilePath);
+		}
 	}
 
 	@Override
@@ -162,29 +210,35 @@ public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
     }
 
 	@Override
-    public boolean isAvailable() {
-		try {
-			String iTunesFile = getiTunesFile();
-			if(System.getProperty("os.name").toLowerCase().indexOf( "nix") < 0 && iTunesFile != null && (new File(iTunesFile)).exists()) {
-				return true;
-	        }
-        } catch (Exception e) {  }
-        return false;
+    public boolean isInstanceAvailable() {
+		String iTunesFile = instanceConfig.getiTunesFilePath();
+		if(isPluginAvailable() && iTunesFile != null && (new File(iTunesFile)).exists()) {
+			return true;
+	    }
+		return false;
     }
 
 	@Override
+	public boolean isPluginAvailable() {
+		if(System.getProperty("os.name").toLowerCase().indexOf("nix") < 0) {
+			return true;
+        }
+        return false;
+	}
+
+	@Override
 	public String getVersion() {
-		return properties.getProperty("project.version");
+		return properties.get("project.version");
 	}
 
 	@Override
 	public String getShortDescription() {
-		return RESOURCE_BUNDLE.getString("iTunesFolderPlugin.ShortDescription");
+		return messages.getString("iTunesFolderPlugin.ShortDescription");
 	}
 
 	@Override
 	public String getLongDescription() {
-		return RESOURCE_BUNDLE.getString("iTunesFolderPlugin.LongDescription");
+		return messages.getString("iTunesFolderPlugin.LongDescription");
 	}
 
 	@Override
@@ -214,6 +268,7 @@ public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
 
 	@Override
 	public void initialize() {
+		instanceConfig = new InstanceConfiguration();
 	}
 
 	@Override
@@ -223,26 +278,5 @@ public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
 	@Override
 	public Icon getTreeNodeIcon() {
 		return new ImageIcon(getClass().getResource("/itunes-16.png"));
-	}
-	
-	/**
-	 * Loads the properties from the plugin properties file
-	 */
-	private void loadProperties() {
-		String fileName = "/itunesfolderplugin.properties";
-		InputStream inputStream = getClass().getResourceAsStream(fileName);
-		try {
-			properties.load(inputStream);
-		} catch (Exception e) {
-			log.error("Failed to load properties", e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					log.error("Failed to properly close stream properties", e);
-				}
-			}
-		}
 	}
 }

@@ -33,10 +33,6 @@ import com.github.savvasdalkitsis.jtmdb.Pair;
 import com.github.savvasdalkitsis.jtmdb.ServerResponse;
 import com.github.savvasdalkitsis.jtmdb.Session;
 
-import net.pms.Messages;
-import net.pms.medialibrary.commons.enumarations.MediaLibraryConstants.MetaDataKeys;
-import net.pms.medialibrary.storage.MediaLibraryStorage;
-
 public class TmdbHelper {
 	private static final Logger log = LoggerFactory.getLogger(TmdbHelper.class);
 	private static Session session;
@@ -47,7 +43,6 @@ public class TmdbHelper {
 		    GeneralSettings.setApiKey("4cdddc892213dd24e5011fd710f8abf0");
 		    Locale l = new Locale(net.pms.PMS.getConfiguration().getLanguage());
 		    GeneralSettings.setAPILocale(l);
-		    //GeneralSettings.setLogEnabled(true);
 		    isInitialized = true;
 		}
 	}
@@ -55,8 +50,8 @@ public class TmdbHelper {
 	public static Session getSession(){
 		if(!isInitialized) initialize();
 		if(session == null){
-			String userName = MediaLibraryStorage.getInstance().getMetaDataValue(MetaDataKeys.TMDB_USER_NAME.toString());
-			String sessionStr = MediaLibraryStorage.getInstance().getMetaDataValue(MetaDataKeys.TMDB_SESSION.toString());
+			String userName = TmdbRatingPlugin.globalConfig.getUserName();
+			String sessionStr = TmdbRatingPlugin.globalConfig.getSession();
 			
 			if(userName != null && sessionStr != null){
 				session = new Session(userName, sessionStr);
@@ -75,7 +70,7 @@ public class TmdbHelper {
 			String token = Auth.getToken();
 			URL authUrl = Auth.authorizeToken(token);
 			java.awt.Desktop.getDesktop().browse(authUrl.toURI());
-			JOptionPane.showMessageDialog(parentComponent, Messages.getString("ML.Messages.CreateTmdbSession"));
+			JOptionPane.showMessageDialog(parentComponent, TmdbRatingPlugin.messages.getString("TmdbHelper.1"));
 
 			Pair<Session, ServerResponse> resp = Auth.getSession(token);
 			if (resp.getSecond() == ServerResponse.SUCCESS) {
@@ -87,9 +82,6 @@ public class TmdbHelper {
 		} catch (Exception e) {
 			log.error("Failed to create session", e);
 		}
-
-		MediaLibraryStorage.getInstance().setMetaDataValue(MetaDataKeys.TMDB_USER_NAME.toString(), session == null ? "" : session.getUserName());
-		MediaLibraryStorage.getInstance().setMetaDataValue(MetaDataKeys.TMDB_SESSION.toString(), session == null ? "" : session.getSession());
 
 		return session;
 	}

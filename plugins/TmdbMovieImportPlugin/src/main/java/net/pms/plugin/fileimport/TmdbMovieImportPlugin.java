@@ -1,12 +1,10 @@
 package net.pms.plugin.fileimport;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.Icon;
@@ -25,6 +23,7 @@ import net.pms.medialibrary.commons.enumarations.FileProperty;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.exceptions.FileImportException;
 import net.pms.plugins.FileImportPlugin;
+import net.pms.util.PmsProperties;
 
 /** 
  * Class used to collect information about a movie from tmdb
@@ -34,8 +33,17 @@ import net.pms.plugins.FileImportPlugin;
  */
 public class TmdbMovieImportPlugin implements FileImportPlugin {
 	private static final Logger log = LoggerFactory.getLogger(TmdbMovieImportPlugin.class);
-	private Properties properties = new Properties();
-	protected static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.fileimport.tmdbmovieimportplugin.lang.messages");
+	public static final ResourceBundle messages = ResourceBundle.getBundle("net.pms.plugin.fileimport.tmdb.lang.messages");
+
+	/** Holds only the project version. It's used to always use the maven build number in code */
+	private static final PmsProperties properties = new PmsProperties();
+	static {
+		try {
+			properties.loadFromResourceFile("/tmdbmovieimportplugin.properties", TmdbMovieImportPlugin.class);
+		} catch (IOException e) {
+			log.error("Could not load filesystemfolderplugin.properties", e);
+		}
+	}
 	
 	//available tags
 	private enum Tag {
@@ -58,11 +66,6 @@ public class TmdbMovieImportPlugin implements FileImportPlugin {
 
 	private final int MAX_RETRIES = 3;
 	private int nbRetriesDone = 0;
-	
-	
-	public TmdbMovieImportPlugin() {
-		loadProperties();
-	}
 
 	@Override
 	public String getName() {
@@ -220,7 +223,7 @@ public class TmdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public String getVersion() {
-		return properties.getProperty("project.version");
+		return properties.get("project.version");
 	}
 
 	@Override
@@ -315,12 +318,12 @@ public class TmdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public String getShortDescription() {
-		return RESOURCE_BUNDLE.getString("TmdbMovieImportPlugin.ShortDescription");
+		return messages.getString("TmdbMovieImportPlugin.ShortDescription");
 	}
 
 	@Override
 	public String getLongDescription() {
-		return RESOURCE_BUNDLE.getString("TmdbMovieImportPlugin.LongDescription");
+		return messages.getString("TmdbMovieImportPlugin.LongDescription");
 	}
 
 	@Override
@@ -388,25 +391,9 @@ public class TmdbMovieImportPlugin implements FileImportPlugin {
 	@Override
 	public void saveConfiguration() {
 	}
-	
-	/**
-	 * Loads the properties from the plugin properties file
-	 */
-	private void loadProperties() {
-		String fileName = "/tmdbmovieimportplugin.properties";
-		InputStream inputStream = getClass().getResourceAsStream(fileName);
-		try {
-			properties.load(inputStream);
-		} catch (Exception e) {
-			log.error("Failed to load properties", e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					log.error("Failed to properly close stream properties", e);
-				}
-			}
-		}
+
+	@Override
+	public boolean isPluginAvailable() {
+		return true;
 	}
 }

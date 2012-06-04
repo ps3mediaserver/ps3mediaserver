@@ -1,10 +1,8 @@
 package net.pms.plugin.startstoplistener;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.Properties;
 import java.util.Queue;
 import java.util.ResourceBundle;
 
@@ -14,27 +12,47 @@ import javax.swing.JComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.RealFile;
+import net.pms.plugin.startstoplistener.pcw.configuration.GlobalConfiguration;
+import net.pms.plugin.startstoplistener.pcw.gui.GlobalConfigurationPanel;
 import net.pms.plugins.StartStopListener;
+import net.pms.util.PmsProperties;
 import net.pms.medialibrary.commons.interfaces.IMediaLibraryStorage;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
 
 public class PlayCountWatcher implements StartStopListener {
 	private static final Logger log = LoggerFactory.getLogger(PlayCountWatcher.class);
-	private Properties properties = new Properties();
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("net.pms.plugin.startstoplistener.playcountwatcher.lang.messages");
+	public static final ResourceBundle messages = ResourceBundle.getBundle("net.pms.plugin.startstoplistener.pcw.lang.messages");
 	
 	private Queue<QueueItem> playCache = new LinkedList<QueueItem>();
 	private IMediaLibraryStorage storage;
-	
-	private double percentPlayRequired = 80;
-	
-	public PlayCountWatcher() {
-		loadProperties();
+
+	/** Holds only the project version. It's used to always use the maven build number in code */
+	private static final PmsProperties properties = new PmsProperties();
+	static {
+		try {
+			properties.loadFromResourceFile("/playcountwatcherplugin.properties", PlayCountWatcher.class);
+		} catch (IOException e) {
+			log.error("Could not load playcountwatcherplugin.properties", e);
+		}
 	}
+	
+	/** The global configuration is shared amongst all plugin instances. */
+	private static final GlobalConfiguration globalConfig;
+	static {
+		globalConfig = new GlobalConfiguration();
+		try {
+			globalConfig.load();
+		} catch (IOException e) {
+			log.error("Failed to load global configuration", e);
+		}
+	}
+	
+	/** GUI */
+
+	private GlobalConfigurationPanel pGlobalConfiguration;
 
 	@Override
 	public void donePlaying(DLNAMediaInfo media, DLNAResource resource) {
@@ -66,7 +84,7 @@ public class PlayCountWatcher implements StartStopListener {
 		if(playLengthSec > 0){
 			String filePath = ((RealFile)resource).getFile().getAbsolutePath();
 			int fullLengthSec = (int)media.getDurationInSeconds();
-			int minPlayLogLength = (int) (fullLengthSec * (percentPlayRequired / 100));
+			int minPlayLogLength = (int) (fullLengthSec * (globalConfig.getPercentPlayedRequired() / 100));
 			if(log.isDebugEnabled()) log.debug(String.format("Stopped playing %s (%s) after %s seconds. Min play length for loging %ss", resource.getName(), resource.getInternalId(), playLengthSec, minPlayLogLength));
 			if(playLengthSec > minPlayLogLength){
 				storage.updatePlayCount(filePath, playLengthSec, new Date());
@@ -83,12 +101,16 @@ public class PlayCountWatcher implements StartStopListener {
 
 	@Override
 	public JComponent getGlobalConfigurationPanel() {
-		return null;
+		if(pGlobalConfiguration == null ) {
+			pGlobalConfiguration = new GlobalConfigurationPanel(globalConfig);
+		}
+		pGlobalConfiguration.applyConfig();
+		return pGlobalConfiguration;
 	}
 
 	@Override
 	public String getName() {
-		return RESOURCE_BUNDLE.getString("PlayCountWatcher.Name");
+		return messages.getString("PlayCountWatcher.Name");
 	}
 
 	@Override
@@ -107,7 +129,7 @@ public class PlayCountWatcher implements StartStopListener {
 
 	@Override
 	public String getVersion() {
-		return properties.getProperty("project.version");
+		return properties.get("project.version");
 	}
 
 	@Override
@@ -117,12 +139,12 @@ public class PlayCountWatcher implements StartStopListener {
 
 	@Override
 	public String getShortDescription() {
-		return RESOURCE_BUNDLE.getString("PlayCountWatcher.ShortDescription");
+		return messages.getString("PlayCountWatcher.ShortDescription");
 	}
 
 	@Override
 	public String getLongDescription() {
-		return String.format(RESOURCE_BUNDLE.getString("PlayCountWatcher.LongDescription"), percentPlayRequired);
+		return messages.getString("PlayCountWatcher.LongDescription");
 	}
 
 	@Override
@@ -137,41 +159,23 @@ public class PlayCountWatcher implements StartStopListener {
 
 	@Override
 	public void initialize() {
-		Object pStr = PMS.getConfiguration().getCustomProperty("PlayCountWatcher_PercentPlayRequired");
-		if(pStr != null && pStr instanceof String) {
+		
+	}
+
+	@Override
+	public void saveConfiguration() {
+		if(pGlobalConfiguration != null) {
+			pGlobalConfiguration.updateConfiguration(globalConfig);
 			try {
-				int pInt = Integer.parseInt((String) pStr);
-				if(pInt > 0 && pInt <= 100) {
-					percentPlayRequired = pInt;
-				}
-			} catch(NumberFormatException ex) {
-				log.error(String.format("Failed to read value PlayCountWatcher=%s as Integer", pStr));
+				globalConfig.save();
+			} catch (IOException e) {
+				log.error("Failed to save global configuration", e);
 			}
 		}
 	}
 
 	@Override
-	public void saveConfiguration() {
-	}
-	
-	/**
-	 * Loads the properties from the plugin properties file
-	 */
-	private void loadProperties() {
-		String fileName = "/playcountwatcherplugin.properties";
-		InputStream inputStream = getClass().getResourceAsStream(fileName);
-		try {
-			properties.load(inputStream);
-		} catch (Exception e) {
-			log.error("Failed to load properties", e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					log.error("Failed to properly close stream properties", e);
-				}
-			}
-		}
+	public boolean isPluginAvailable() {
+		return true;
 	}
 }
