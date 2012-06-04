@@ -34,7 +34,6 @@ import net.pms.io.SystemUtils;
 import net.pms.util.PropertiesUtil;
 import net.pms.Messages;
 
-import net.pms.util.PropertiesUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;

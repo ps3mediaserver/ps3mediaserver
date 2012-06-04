@@ -30,6 +30,9 @@ import java.util.Enumeration;
 import java.util.List;
 
 import net.pms.PMS;
+import net.pms.notifications.NotificationCenter;
+import net.pms.notifications.types.PluginEvent;
+import net.pms.notifications.types.PluginEvent.Event;
 import net.pms.plugins.wrappers.AdditionalFolderAtRootWrapper;
 import net.pms.plugins.wrappers.AdditionalFoldersAtRootWrapper;
 import net.pms.plugins.wrappers.BaseWrapper;
@@ -338,6 +341,7 @@ public class PluginsFactory {
 				LOGGER.error("Failed to initialize a plugin", t);
 			}
 		}
+		NotificationCenter.getInstance(PluginEvent.class).post(new PluginEvent(Event.PluginsLoaded));
 	}
 	
 	/**

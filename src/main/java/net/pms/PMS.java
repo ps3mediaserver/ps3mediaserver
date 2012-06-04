@@ -71,9 +71,6 @@ import net.pms.network.UPNPHelper;
 import net.pms.newgui.GeneralTab;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
-import net.pms.notifications.NotificationCenter;
-import net.pms.notifications.types.PluginEvent;
-import net.pms.notifications.types.PluginEvent.Event;
 import net.pms.plugins.PluginsFactory;
 import net.pms.plugins.notifications.StartStopNotifier;
 import net.pms.update.AutoUpdater;
@@ -317,14 +314,14 @@ public class PMS {
 			autoUpdater = new AutoUpdater(serverURL, getVersion());
 		}
 
-		//initialize plugins early
-		PluginsFactory.lookup();
+		registry = createSystemUtils();
 
 		RendererConfiguration.loadRendererConfigurations(configuration);
+
+		//initialize plugins early
+		PluginsFactory.lookup();
 		
 		initMediaLibrary();
-
-		registry = createSystemUtils();
 
 		if (System.getProperty(CONSOLE) == null) {
 			frame = new LooksFrame(autoUpdater, configuration);
@@ -451,8 +448,10 @@ public class PMS {
 		// Add registered player engines
 		frame.addEngines();
 		
+		// Initialize the plugins before starting the server
+		PluginsFactory.initializePlugins();
+		
 		boolean binding = false;
-
 		try {
 			binding = server.start();
 		} catch (BindException b) {
@@ -490,10 +489,6 @@ public class PMS {
 			mediaLibrary = new MediaLibrary();
 			logger.info("A tiny cache admin interface is available at: http://" + server.getHost() + ":" + server.getPort() + "/console/home");
 		}
-
-		// Initialize the remaining plugins
-		PluginsFactory.initializePlugins();
-		NotificationCenter.getInstance(PluginEvent.class).post(new PluginEvent(Event.PluginsLoaded));
 
 		// XXX: this must be called:
 		//     a) *after* loading plugins i.e. plugins register root folders then RootFolder.discoverChildren adds them
