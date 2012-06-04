@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>pms-plugins</artifactId>
+	<version>1.0.0</version>
+
+	<name>PMS Plugins</name>
+	<description>Base pom used by all official plugins</description>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>github.com.taconaut</groupId>
+		<artifactId>pms</artifactId>
+		<version>1.53.0-mlx_0.9-SNAPSHOT</version>
+	</parent>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License version 2</name>
+			<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+			<distribution>manual</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>taconaut</name>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:taconaut/pms-plugins.git</connection>
+		<developerConnection>scm:git:git@github.com:taconaut/pms-plugins.git</developerConnection>
+		<tag>master</tag>
+		<url>git@github.com:taconaut/pms-plugins.git</url>
+	</scm>
+
+	<issueManagement>
+		<system>Github</system>
+		<url>https://github.com/taconaut/pms-plugins/issues</url>
+	</issueManagement>
+
+	<modules>
+		<module>FileSystemDlnaFolderPlugin</module>
+		<module>ImdbMovieImportPlugin</module>
+		<module>iPhotoDlnaFolderPlugin</module>
+		<module>iTunesDlnaFolderPlugin</module>
+		<module>PlayCountWatcherPlugin</module>
+		<module>ShutdownPlugin</module>
+		<module>TmdbMovieImportPlugin</module>
+		<module>TmdbRater</module>
+		<module>VideoSettingsDlnaFolderPlugin</module>
+		<module>WebDlnaFolderPlugin</module>
+		<module>WebservicePlugin</module>
+	</modules>
+
+	<properties>
+		<finalName>${artifactId}-${project.version}</finalName>
+		<exportFolder>../target</exportFolder>
+	</properties>
+
+	<repositories>
+		<!-- Sonatype -->
+		<repository>
+			<id>sonatype.org</id>
+			<name>Sonatype Repository</name>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.7</version>
+					<executions>
+						<execution>
+							<id>copy-plugin</id>
+							<phase>package</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+							<configuration>
+								<target>
+									<copy file="${project.basedir}/target/${finalName}.jar"
+										tofile="${exportFolder}/${finalName}.jar" overwrite="true" />
+								</target>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
+</project>
