@@ -19,12 +19,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>github.com.taconaut</groupId>
-			<artifactId>pms-core</artifactId>
-			<version>1.53.0-mlx_0.9-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>github.com.taconaut</groupId>
 			<artifactId>jtmdb</artifactId>
 			<version>1.9.17</version>
 		</dependency>
@@ -32,33 +26,35 @@
 
 	<build>
 		<plugins>
-			<!--
-				For debugging purposes it is very handy to have the plugin jar in the core
-				directory. The best way for this would to declare a dependency from the core
-				to this plugin. Instead, to avoid a circular depencency we copy the plugin
-				when it is ready.
-			-->
+			<!-- Include the json libraries with the plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.4</version>
 				<executions>
 					<execution>
-						<id>copy-to-core</id>
-						<phase>package</phase>
+						<id>copy</id>
 						<goals>
-							<goal>run</goal>
+							<goal>unpack</goal>
 						</goals>
 						<configuration>
-							<target>
-								<!-- Lose the version string while copying -->
-								<copy
-									file="${project.basedir}/target/${project.build.finalName}.${project.packaging}"
-									tofile="${project.basedir}/../../core/src/main/external-resources/plugins/${project.artifactId}.${project.packaging}" overwrite="true" />
-							</target>
+							<artifactItems>
+								<artifactItem>
+									<groupId>github.com.taconaut</groupId>
+									<artifactId>jtmdb</artifactId>
+									<version>1.9.17</version>
+								</artifactItem>
+							</artifactItems>
+							<includeArtifactIds>jtmdb</includeArtifactIds>
+							<outputDirectory>${project.build.directory}/classes</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
