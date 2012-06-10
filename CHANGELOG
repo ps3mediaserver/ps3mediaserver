@@ -12,7 +12,7 @@ Changelog:
     Language updates:
         - added Arabic
         - added Hebrew (thanks, zvi-yamin!)
-        - CZE translation update + new labels translated
+        - CZE translation update (thanks, valib)
         - Layout support for right-to-left languages added
     Added option to select and force the default renderer
     Fixed Samsung 2012 TVs timeout (thanks, troop!)
@@ -23,8 +23,8 @@ Changelog:
     Initial fix for Samsung 2012 TVs (thanks, troop!)
     Linux: load system-wide defaults from /etc/skel if user's profile not found
     Added recognition for AcePlayer app (thanks, md.versi!)
-    Fixing parsing of <real> in plist preventing iPhoto libraries from working
-    Added Plugin development guide
+    Fix parsing of <real> in plist preventing iPhoto libraries from working
+    Added Plugin development guide (thanks, glebb)
 
 1.52.1 - 2012-04-06
 
