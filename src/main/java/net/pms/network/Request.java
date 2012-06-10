@@ -429,7 +429,7 @@ public class Request extends HTTPResource {
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_HEADER);
 				response.append(CRLF);
-				response.append(HTTPXMLHelper.SAMSUNG_ERROR_RESPONSE);
+				response.append(HTTPXMLHelper.UPNP_INVALID_ACTION);
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);

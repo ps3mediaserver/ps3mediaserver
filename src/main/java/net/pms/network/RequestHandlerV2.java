@@ -292,11 +292,19 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 				: */HttpVersion.HTTP_1_1,
 				HttpResponseStatus.PARTIAL_CONTENT);
 		} else {
-			response = new DefaultHttpResponse(
+			String soapAction = nettyRequest.getHeader("SOAPACTION");
+
+			if (soapAction != null && soapAction.contains("X_GetFeatureList")) {
+				// Unsupported UPnP action
+				response = new DefaultHttpResponse(
+					HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+			} else {
+				response = new DefaultHttpResponse(
 				/*request.isHttp10() ? HttpVersion.HTTP_1_0
 				: */HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+			}
 		}
-
+		
 		StartStopListenerDelegate startStopListenerDelegate = new StartStopListenerDelegate(ia.getHostAddress());
 
 		try {
