@@ -96,7 +96,7 @@
 
 		<buildName>${project.name}-${project.version}</buildName>
 		<jcalendar-version>1.1.1</jcalendar-version>
-		<jgoodies-binding-version>2.5.1</jgoodies-binding-version>
+		<jgoodies-binding-version>2.6.1</jgoodies-binding-version>
 		
 		<!--
 			JNA 3.4.0 solves issue #1152, but causes a bug in Windows.
@@ -646,6 +646,19 @@
 					<skipChecksumVerification>false</skipChecksumVerification>
 					<force>false</force>
 					<artifactItems>
+					
+						<artifactItem>
+							<groupId>com.jgoodies</groupId>
+							<artifactId>binding</artifactId>
+							<version>${jgoodies-binding-version}</version>
+							<packaging>jar</packaging>
+							<install>true</install>
+							<force>false</force>
+							<downloadUrl>http://www.jgoodies.com/download/libraries/{artifactId}/jgoodies-{artifactId}-{_version}.zip</downloadUrl>
+							<checksum>52be0a826b13cb7bf6a46a3a870aa60e5f9d6f45</checksum>
+							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
+							<extractFileChecksum>f60c6281a5c65e35b29cc41297b496a0df107dd3</extractFileChecksum>
+						</artifactItem>
 
 						<artifactItem>
 							<groupId>com.jgoodies</groupId>
@@ -693,6 +706,15 @@
 							<packaging>jar</packaging>
 							<downloadUrl>http://cuelib.googlecode.com/files/cuelib-${cuelib-version}.jar</downloadUrl>
 							<checksum>d03b6b960b3b83a2a419e8b5f07b6ba4bd18387b</checksum>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>org.freixas</groupId>
+							<artifactId>jcalendar</artifactId>
+							<version>${jcalendar-version}</version>
+							<packaging>jar</packaging>
+							<downloadUrl>http://sourceforge.net/projects/flib/files/flib/FLib%201.1.1/jcalendar.jar</downloadUrl>
+							<checksum>83eb4b1a4823daf3b5bea61958cf6097930f74fb</checksum>
 						</artifactItem>
 
 						<artifactItem>
