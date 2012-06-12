@@ -198,12 +198,12 @@ public class PMS {
 	/**Interface to Windows specific functions, like Windows Registry. registry is set by {@link #init()}.
 	 * @see WinUtils
 	 */
-	private SystemUtils registry;
+	private static SystemUtils registry;
 
 	/**
 	 * @see WinUtils
 	 */
-	public SystemUtils getRegistry() {
+	public static SystemUtils getRegistry() {
 		return registry;
 	}
 
@@ -555,7 +555,6 @@ public class PMS {
 		return mediaLibrary;
 	}
 
-	// FIXME this is duplicated in net/pms/encoders/PlayerFactory.java
 	private SystemUtils createSystemUtils() {
 		if (Platform.isWindows()) {
 			return new WinUtils();
