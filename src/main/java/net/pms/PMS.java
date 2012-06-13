@@ -198,12 +198,12 @@ public class PMS {
 	/**Interface to Windows specific functions, like Windows Registry. registry is set by {@link #init()}.
 	 * @see WinUtils
 	 */
-	private static SystemUtils registry;
+	private SystemUtils registry;
 
 	/**
 	 * @see WinUtils
 	 */
-	public static SystemUtils getRegistry() {
+	public SystemUtils getRegistry() {
 		return registry;
 	}
 

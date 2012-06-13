@@ -74,7 +74,7 @@ public final class PlayerFactory {
 	 * @param configuration The PMS configuration.
 	 */
 	public static void initialize(final PmsConfiguration configuration) {
-		utils = PMS.getRegistry();
+		utils = PMS.get().getRegistry();
 		registerPlayers(configuration);
 	}
 
