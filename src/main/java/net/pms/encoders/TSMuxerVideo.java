@@ -236,8 +236,10 @@ public class TSMuxerVideo extends Player {
 				if (numAudioTracks <= 1) {
 					ffAudioPipe = new PipeIPCProcess[numAudioTracks];
 					ffAudioPipe[0] = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true);
-					ac3Remux = params.aid.isAC3() && configuration.isRemuxAC3();
-					dtsRemux = configuration.isDTSEmbedInPCM() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
+                    // disable AC3 remux for stereo tracks with 384 kbits bitrate and PS3 renderer (PS3 FW bug?)
+                    boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.getRendererName().equalsIgnoreCase("Playstation 3") && params.aid.getNrAudioChannels() == 2) && (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
+					ac3Remux = (params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3());
+                    dtsRemux = configuration.isDTSEmbedInPCM() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
 					pcm = configuration.isMencoderUsePcm() &&
 						!mp4_with_non_h264 &&
 						(
@@ -301,7 +303,7 @@ public class TSMuxerVideo extends Player {
 							"-of", "rawaudio",
 							"-mc", "0",
 							"-noskip",
-							"-oac", (params.aid.isAC3() && configuration.isRemuxAC3()) ? "copy" : "lavc",
+							"-oac", (ac3Remux) ? "copy" : "lavc",
 							params.aid.isAC3() ? "-fafmttag" : "-quiet", params.aid.isAC3() ? "0x2000" : "-quiet",
 							"-lavcopts", "acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + ":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid),
 							"-af", "lavcresample=48000",
@@ -335,7 +337,9 @@ public class TSMuxerVideo extends Player {
 					for (int i = 0; i < media.getAudioCodes().size(); i++) {
 						DLNAMediaAudio audio = media.getAudioCodes().get(i);
 						ffAudioPipe[i] = new PipeIPCProcess(System.currentTimeMillis() + "ffmpeg" + i, System.currentTimeMillis() + "audioout" + i, false, true);
-						ac3Remux = audio.isAC3() && configuration.isRemuxAC3();
+                        // disable AC3 remux for stereo tracks with 384 kbits bitrate and PS3 renderer (PS3 FW bug?)
+                        boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.getRendererName().equalsIgnoreCase("Playstation 3") && audio.getNrAudioChannels() == 2) && (audio.getBitRate() > 370000 && audio.getBitRate() < 400000);
+                        ac3Remux = audio.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3();
 						dtsRemux = configuration.isDTSEmbedInPCM() && audio.isDTS() && params.mediaRenderer.isDTSPlayable();
 						pcm = configuration.isMencoderUsePcm() &&
 							!mp4_with_non_h264 &&
@@ -399,7 +403,7 @@ public class TSMuxerVideo extends Player {
 								"-of", "rawaudio",
 								"-mc", "0",
 								"-noskip",
-								"-oac", (audio.isAC3() && configuration.isRemuxAC3()) ? "copy" : "lavc",
+								"-oac", (ac3Remux) ? "copy" : "lavc",
 								audio.isAC3() ? "-fafmttag" : "-quiet", audio.isAC3() ? "0x2000" : "-quiet",
 								"-lavcopts", "acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") + ":abitrate=" + CodecUtil.getAC3Bitrate(configuration, audio),
 								"-af", "lavcresample=48000",
@@ -457,7 +461,8 @@ public class TSMuxerVideo extends Player {
 			boolean ac3Remux = false;
 			boolean dtsRemux = false;
 			boolean pcm = false;
-			ac3Remux = params.aid.isAC3() && configuration.isRemuxAC3();
+            boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.getRendererName().equalsIgnoreCase("Playstation 3") && params.aid.getNrAudioChannels() == 2) && (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
+            ac3Remux = params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3();
 			dtsRemux = configuration.isDTSEmbedInPCM() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
 			pcm = configuration.isMencoderUsePcm() &&
 				!mp4_with_non_h264 &&
@@ -505,7 +510,8 @@ public class TSMuxerVideo extends Player {
 				boolean ac3Remux = false;
 				boolean dtsRemux = false;
 				boolean pcm = false;
-				ac3Remux = lang.isAC3() && configuration.isRemuxAC3();
+                boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.getRendererName().equalsIgnoreCase("Playstation 3") && lang.getNrAudioChannels() == 2) && (lang.getBitRate() > 370000 && lang.getBitRate() < 400000);
+                ac3Remux = lang.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3();
 				dtsRemux = configuration.isDTSEmbedInPCM() && lang.isDTS() && params.mediaRenderer.isDTSPlayable();
 				pcm = configuration.isMencoderUsePcm() &&
 					!mp4_with_non_h264 &&
