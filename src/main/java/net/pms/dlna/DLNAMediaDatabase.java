@@ -209,7 +209,8 @@ public class DLNAMediaDatabase implements Runnable {
 				sb.append(", TRACK             INT");
 				sb.append(", DELAY             INT");
 				sb.append(", MUXINGMODE        VARCHAR2(").append(SIZE_MUXINGMODE).append(")");
-				sb.append(", constraint PKAUDIO primary key (FILEID, ID))");
+                sb.append(", BITRATE           INT");
+                sb.append(", constraint PKAUDIO primary key (FILEID, ID))");
 				executeUpdate(conn, sb.toString());
 				sb = new StringBuilder();
 				sb.append("CREATE TABLE SUBTRACKS (");
@@ -339,6 +340,7 @@ public class DLNAMediaDatabase implements Runnable {
 					audio.setTrack(subrs.getInt("TRACK"));
 					audio.setDelay(subrs.getInt("DELAY"));
 					audio.setMuxingModeAudio(subrs.getString("MUXINGMODE"));
+                    audio.setBitRate(subrs.getInt("BITRATE"));
 					media.getAudioCodes().add(audio);
 				}
 				subrs.close();
@@ -442,7 +444,7 @@ public class DLNAMediaDatabase implements Runnable {
 			if (media != null && id > -1) {
 				PreparedStatement insert = null;
 				if (media.getAudioCodes().size() > 0) {
-					insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				}
 				for (DLNAMediaAudio audio : media.getAudioCodes()) {
 					insert.clearParameters();
@@ -462,7 +464,8 @@ public class DLNAMediaDatabase implements Runnable {
 					insert.setInt(14, audio.getTrack());
 					insert.setInt(15, audio.getDelay());
 					insert.setString(16, truncate(StringUtils.trimToEmpty(audio.getMuxingModeAudio()), SIZE_MUXINGMODE));
-					insert.executeUpdate();
+                    insert.setInt(17, audio.getBitRate());
+                    insert.executeUpdate();
 				}
 
 				if (media.getSubtitlesCodes().size() > 0) {
