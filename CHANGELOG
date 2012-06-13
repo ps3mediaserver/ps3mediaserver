@@ -6,6 +6,7 @@ Changelog:
     Added LPCM transcoding option for all audio tracks
     Added DTS HD-MA support up to 7.1 channels: DTS core remux, LPCM and AC3 transcoding
     Added Dolby TrueHD support up to 7.1 channels: LPCM (recommended) and AC3 (buggy for 7.1) transcoding
+    Added workaround for 2.0 384 kbits AC3 PS3 audio bug
 
 1.53.0 - 2012-06-11
 
