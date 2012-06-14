@@ -130,7 +130,11 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 		int sr = 0;
 		if (getSampleFrequency() != null && getSampleFrequency().length() > 0) {
 			try {
-				sr = Integer.parseInt(getSampleFrequency());
+                if ("48000 / 24000".equals(getSampleFrequency())) {
+                    sr = 48000;
+                } else {
+                    sr = Integer.parseInt(getSampleFrequency());
+                }
 			} catch (NumberFormatException e) {
 				LOGGER.debug("Could not parse sample rate from \"" + getSampleFrequency() + "\"");
 			}
