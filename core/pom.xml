@@ -49,43 +49,6 @@
 		televisions, music players and more.
 	</description>
 
-	<developers>
-		<developer>
-			<name>shagrath</name>
-		</developer>
-		<developer>
-			<name>tcox</name>
-		</developer>
-		<developer>
-			<name>SubJunk</name>
-		</developer>
-		<developer>
-			<name>taconaut</name>
-		</developer>
-		<developer>
-			<name>tomeko</name>
-		</developer>
-		<developer>
-			<name>chocolateboy</name>
-		</developer>
-		<developer>
-			<name>ditlew</name>
-		</developer>
-		<developer>
-			<name>Raptor399</name>
-		</developer>
-		<developer>
-			<name>renszarv</name>
-		</developer>
-	</developers>
-
-	<scm>
-		<connection>scm:git:git@github.com:taconaut/pms-mlx.git</connection>
-		<developerConnection>scm:git:git@github.com:taconaut/pms-mlx.git</developerConnection>
-		<tag>master</tag>
-		<url>git@github.com:taconaut/pms-mlx.git</url>
-	</scm>
-
 	<issueManagement>
 		<system>Github</system>
 		<url>https://github.com/taconaut/pms-mlx/issues</url>

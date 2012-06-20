@@ -71,28 +71,36 @@
 
 	<developers>
 		<developer>
+			<name>shagrath</name>
+		</developer>
+		<developer>
+			<name>tcox</name>
+		</developer>
+		<developer>
+			<name>SubJunk</name>
+		</developer>
+		<developer>
 			<name>taconaut</name>
 		</developer>
+		<developer>
+			<name>tomeko</name>
+		</developer>
+		<developer>
+			<name>chocolateboy</name>
+		</developer>
+		<developer>
+			<name>ditlew</name>
+		</developer>
+		<developer>
+			<name>Raptor399</name>
+		</developer>
+		<developer>
+			<name>renszarv</name>
+		</developer>
+		<developer>
+			<name>happy.nekko</name>
+		</developer>
 	</developers>
-
-	<properties>
-		<pms-version>1.52.1_mlx_v0.8-SNAPSHOT</pms-version>
-		<bundle-name>pms-${pms-version}</bundle-name>
-		<pms-name>PS3 Media Server MLX</pms-name>
-		<logback-classic-version>1.0.0</logback-classic-version>
-		<logback-core-version>1.0.0</logback-core-version>
-		<slf4j-version>1.6.4</slf4j-version>
-		<jgoodies-forms-version>1.4.2</jgoodies-forms-version>
-
-		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
-		<jcalendar-version>1.1.1</jcalendar-version>
-		<jgoodies-binding-version>2.5.1</jgoodies-binding-version>
-		<jgoodies-common-version>1.2.1</jgoodies-common-version>
-		<jgoodies-looks-version>2.4.2</jgoodies-looks-version>
-		<junrar-version>0.5</junrar-version>
-		<mediautil-version>1.0</mediautil-version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 
 	<pluginRepositories>
 		<pluginRepository>
@@ -102,336 +110,4 @@
 			<layout>default</layout>
 		</pluginRepository>
 	</pluginRepositories>
-
-	<repositories>
-		<!-- Sonatype -->
-		<repository>
-			<id>sonatype.org</id>
-			<name>Sonatype Repository</name>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-
-		<!-- Java.net -->
-		<repository>
-			<id>java.net</id>
-			<name>Java.net Repository</name>
-			<url>http://download.java.net/maven/2/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-
-		<!-- netty -->
-		<repository>
-			<id>jboss</id>
-			<url>http://repository.jboss.org/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-
-		<!-- GSON -->
-		<repository>
-			<id>google-gson</id>
-			<name>google-gson</name>
-			<url>https://google-gson.googlecode.com/svn/mavenrepo/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-
-		<!-- JBoss.org repository -->
-		<repository>
-			<id>jboss.releases</id>
-			<name>JBoss releases</name>
-			<url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
-	<dependencies>
-
-		<dependency>
-			<groupId>github.com.taconaut</groupId>
-			<artifactId>jtmdb</artifactId>
-			<version>1.9.17</version>
-		</dependency>
-
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${logback-classic-version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>${logback-core-version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j-version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>${slf4j-version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.jgoodies</groupId>
-			<artifactId>forms</artifactId>
-			<version>${jgoodies-forms-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.beanshell</groupId>
-			<artifactId>bsh-core</artifactId>
-			<version>2.0b4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.6</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>3.2.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-configuration</groupId>
-			<artifactId>commons-configuration</artifactId>
-			<version>1.7</version>
-			<exclusions>
-				<!-- no need for commons-logging, as jcl-over-slf4j provides the impl -->
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
-			<exclusions>
-				<!-- no need for commons-logging, as jcl-over-slf4j provides the impl -->
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>1.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.3.166</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.sanselan</groupId>
-			<artifactId>sanselan</artifactId>
-			<version>0.97-incubator</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>1.7.1</version>
-		</dependency>
-
-		<!-- originally, hamcrest-all 1.2RC2 for the artifact change, see: https://code.google.com/p/hamcrest/issues/detail?id=12#c54 
-			TODO: verify if needed -->
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-integration</artifactId>
-			<version>1.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jboss.netty</groupId>
-			<artifactId>netty</artifactId>
-			<version>3.2.4.Final</version>
-		</dependency>
-
-
-		<dependency>
-			<groupId>net.java.dev.rome</groupId>
-			<artifactId>rome</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20090211</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jvnet.winp</groupId>
-			<artifactId>winp</artifactId>
-			<version>1.14</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org</groupId>
-			<artifactId>jaudiotagger</artifactId>
-			<version>2.0.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>net.java.dev.jna</groupId>
-			<artifactId>jna</artifactId>
-			<version>3.2.5</version>
-		</dependency>
-
-		<!-- XXX: not Mavenized: http://www.jgoodies.com/downloads/libraries.html -->
-		<dependency>
-			<groupId>com.jgoodies</groupId>
-			<artifactId>binding</artifactId>
-			<version>${jgoodies-binding-version}</version>
-		</dependency>
-
-		<!-- XXX: not Mavenized: http://www.jgoodies.com/downloads/libraries.html -->
-		<dependency>
-			<groupId>com.jgoodies</groupId>
-			<artifactId>common</artifactId>
-			<version>${jgoodies-common-version}</version>
-		</dependency>
-
-		<!-- XXX: not Mavenized: http://www.jgoodies.com/downloads/libraries.html -->
-		<dependency>
-			<groupId>com.jgoodies</groupId>
-			<artifactId>looks</artifactId>
-			<version>${jgoodies-looks-version}</version>
-		</dependency>
-
-		<!-- XXX: not Mavenized: http://github.com/edmund-wagner/junrar -->
-		<dependency>
-			<groupId>de.innosystec</groupId>
-			<artifactId>java-unrar</artifactId>
-			<version>${junrar-version}</version>
-		</dependency>
-
-		<!-- XXX: not Mavenized: https://code.google.com/p/cuelib/ -->
-		<dependency>
-			<groupId>jwbroek.cuelib</groupId>
-			<artifactId>cuelib</artifactId>
-			<version>${cuelib-version}</version>
-		</dependency>
-
-		<!-- XXX: not Mavenized: http://sourceforge.net/projects/mediachest/ -->
-		<dependency>
-			<groupId>mediautil</groupId>
-			<artifactId>mediautil</artifactId>
-			<version>${mediautil-version}</version>
-		</dependency>
-
-		<!-- XXX: not Mavenized: http://flib.sourceforge.net/JCalendar/doc/index.html -->
-		<dependency>
-			<groupId>org.freixas</groupId>
-			<artifactId>jcalendar</artifactId>
-			<version>${jcalendar-version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<version>3.0</version>
-			<scope>test</scope>
-		</dependency>
-
-	</dependencies>
-
-	<build>
-		<plugins>
-			<!-- This plugin will take care of installing the external dependencies 
-				that do not exist in a public Maven repository. That is why we store some 
-				jar files in the "src/main/external-resources/lib" directory and have this 
-				plugin take care of the installation at build time. Note: The plugin does 
-				not work automatically in Maven 3. To install the required dependencies execute 
-				the following commands: mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external 
-				mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external 
-				Checksums can be calculated with "openssl sha1 [filename]". See: http://code.google.com/p/maven-external-dependency-plugin/issues/detail?id=8#c4 -->
-			<plugin>
-				<groupId>com.savage7.maven.plugins</groupId>
-				<artifactId>maven-external-dependency-plugin</artifactId>
-				<version>0.4</version>
-				<inherited>false</inherited>
-				<configuration>
-					<stagingDirectory>${project.build.directory}/dependencies/</stagingDirectory>
-					<createChecksum>true</createChecksum>
-					<skipChecksumVerification>false</skipChecksumVerification>
-					<force>false</force>
-					<artifactItems>
-
-					</artifactItems>
-
-				</configuration>
-
-				<executions>
-
-					<execution>
-						<id>clean-external-dependencies</id>
-						<phase>clean</phase>
-						<goals>
-							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:clean-external -->
-							<goal>clean-external</goal>
-						</goals>
-					</execution>
-
-					<execution>
-						<id>resolve-install-external-dependencies</id>
-						<!-- Not bound to a phase, you need to execute these manually. See  above -->
-						<!-- phase>process-resources</phase -->
-						<goals>
-							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external -->
-							<goal>resolve-external</goal>
-
-							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external -->
-							<goal>install-external</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>
