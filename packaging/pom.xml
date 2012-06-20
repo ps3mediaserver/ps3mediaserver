@@ -657,7 +657,7 @@
 										<chmod dir="${project.binaries}/osx" perm="a+x"
 											includes="*" />
 
-										<copy file="${project.core.external-resources}/osx/pms.icns"
+										<copy file="${project.external-resources}/osx/pms.icns"
 											todir="${project.binaries}" overwrite="true" />
 									</target>
 								</configuration>
@@ -742,14 +742,14 @@
 									<zipFile>${project.build.directory}/${project.parent.artifactId}-macosx-${project.parent.version}-app.zip</zipFile>
 									<javaApplicationStub>/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub</javaApplicationStub>
 									<bundleName>${project.core.name}</bundleName>
-									<iconFile>${project.core.external-resources}/osx/pms.icns</iconFile>
+									<iconFile>${project.external-resources}/osx/pms.icns</iconFile>
 									<version>${project.version}</version>
 									<jvmVersion>1.6+</jvmVersion>
 
 									<!-- Options to the JVM, will be used as the value of VMOptions in Info.plist. -->
 									<vmOptions>-Xmx1024M -Xss16M -Dsun.java2d.d3d=false -Dfile.encoding=UTF-8 -Djava.net.preferIPv4Stack=true -jar</vmOptions>
 									<internetEnable>false</internetEnable>
-									<dictionaryFile>${project.core.external-resources}/osx/Info.plist-template.xml</dictionaryFile>
+									<dictionaryFile>${project.external-resources}/osx/Info.plist-template.xml</dictionaryFile>
 									<additionalClasspath />
 									<additionalResources />
 								</configuration>

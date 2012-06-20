@@ -24,9 +24,6 @@
 			<includes>
 				<include>*</include>
 			</includes>
-			<excludes>
-				<exclude>pms.icns</exclude>
-			</excludes>
 		</fileSet>
 
 		<!-- Include unzipped libmediainfo.dylib -->
@@ -62,7 +59,7 @@
 
 		<!-- Include JavaApplicationStub.setenv -->
 		<fileSet>
-			<directory>${project.core.external-resources}/osx</directory>
+			<directory>${project.external-resources}/osx</directory>
 			<outputDirectory>${project.core.name}.app/Contents/MacOS</outputDirectory>
 			<fileMode>0755</fileMode>
 			<includes>
