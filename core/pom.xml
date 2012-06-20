@@ -1263,9 +1263,6 @@
 										<!-- Make all downloaded binaries executable -->
 										<chmod dir="${project.binaries}/osx" perm="a+x"
 											includes="*" />
-
-										<copy file="${project.external-resources}/osx/pms.icns"
-											todir="${project.binaries}" overwrite="true" />
 									</target>
 								</configuration>
 							</execution>
