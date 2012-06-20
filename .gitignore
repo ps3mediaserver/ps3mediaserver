@@ -8,10 +8,7 @@ libmediainfo.dylib
 MediaInfo.dll
 MediaInfo64.dll
 target
-
-pom.xml.releaseBackup
-
-release.properties
-
+.idea/
+pms.iml
 core/fonts
 core/src/main/external-resources/plugins/*.jar

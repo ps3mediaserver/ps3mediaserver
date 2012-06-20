@@ -22,15 +22,11 @@ package net.pms.encoders;
 import java.io.File;
 import java.util.ArrayList;
 
+import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
-import net.pms.io.BasicSystemUtils;
-import net.pms.io.MacSystemUtils;
-import net.pms.io.SolarisUtils;
 import net.pms.io.SystemUtils;
-import net.pms.io.WinUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,30 +74,8 @@ public final class PlayerFactory {
 	 * @param configuration The PMS configuration.
 	 */
 	public static void initialize(final PmsConfiguration configuration) {
-		utils = createSystemUtils();
+		utils = PMS.get().getRegistry();
 		registerPlayers(configuration);
-	}
-
-	/**
-	 * Creates system utilities. These are needed to determine isAvis() in
-	 * {@link #registerPlayer(Player)}.
-	 *
-	 * @return The system utilities.
-	 */
-	private static SystemUtils createSystemUtils() {
-		if (Platform.isWindows()) {
-			return new WinUtils();
-		} else {
-			if (Platform.isMac()) {
-				return new MacSystemUtils();
-			} else {
-				if (Platform.isSolaris()) {
-					return new SolarisUtils();
-				} else {
-					return new BasicSystemUtils();
-				}
-			}
-		}
 	}
 
 	/**

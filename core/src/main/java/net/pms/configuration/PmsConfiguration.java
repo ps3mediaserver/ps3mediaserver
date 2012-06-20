@@ -137,6 +137,7 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_SUB_FRIBIDI = "mencoder_subfribidi";
 	private static final String KEY_MENCODER_SUB_LANGS = "mencoder_sublangs";
 	private static final String KEY_MENCODER_USE_PCM = "mencoder_usepcm";
+	private static final String KEY_MENCODER_USE_PCM_FOR_HQ_AUDIO_ONLY = "mencoder_usepcm_for_hq_audio_only";
 	private static final String KEY_MENCODER_VOBSUB_SUBTITLE_QUALITY = "mencoder_vobsub_subtitle_quality";
 	private static final String KEY_MENCODER_YADIF = "mencoder_yadif";
 	private static final String KEY_MINIMIZED = "minimized";
@@ -915,6 +916,15 @@ public class PmsConfiguration {
 	}
 
 	/**
+	 * Returns whether or not the Pulse Code Modulation audio format should be
+	 * used only for HQ audio codecs. The default is false.
+	 * @return True if PCM should be used only for HQ audio codecs, false otherwise.
+	 */
+	public boolean isMencoderUsePcmForHQAudioOnly() {
+		return getBoolean(KEY_MENCODER_USE_PCM_FOR_HQ_AUDIO_ONLY, false);
+	}
+
+	/**
 	 * Returns the name of a TrueType font to use for MEncoder subtitles.
 	 * Default is <code>""</code>.
 	 * @return The font name.
@@ -1187,6 +1197,15 @@ public class PmsConfiguration {
 	 */
 	public void setMencoderUsePcm(boolean value) {
 		configuration.setProperty(KEY_MENCODER_USE_PCM, value);
+	}
+
+	/**
+	 * Sets whether or not the Pulse Code Modulation audio format should be
+	 * used only for HQ audio codecs.
+	 * @param value Set to true if PCM should be used only for HQ audio.
+	 */
+	public void setMencoderUsePcmForHQAudioOnly(boolean value) {
+		configuration.setProperty(KEY_MENCODER_USE_PCM_FOR_HQ_AUDIO_ONLY, value);
 	}
 
 	/**
