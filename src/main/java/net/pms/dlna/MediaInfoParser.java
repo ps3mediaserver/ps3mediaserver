@@ -122,6 +122,10 @@ public class MediaInfoParser {
 								if (step == MediaInfo.StreamKind.Audio) {
 									currentAudioTrack.setNrAudioChannels(getNbChannels(value));
 								}
+                            } else if (key.equals("BitRate")) {
+                                if (step == MediaInfo.StreamKind.Audio) {
+                                    currentAudioTrack.setBitRate(getBitrate(value));
+                                }
 							} else if (key.equals("SamplingRate")) {
 								if (step == MediaInfo.StreamKind.Audio) {
 									currentAudioTrack.setSampleFrequency(getSampleFrequency(value));
@@ -383,7 +387,12 @@ public class MediaInfoParser {
 		if (value.contains("/")) {
 			value = value.substring(0, value.indexOf("/")).trim();
 		}
-		return Integer.parseInt(value);
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            logger.info("Unknown bitrate detected. Returning 0.");
+            return 0;
+        }
 	}
 
 	public static int getNbChannels(String value) {
@@ -394,6 +403,10 @@ public class MediaInfoParser {
 
 		// Audio is DTS-ES (6.1 channels) but MEncoder only supports either 2, 4, 6 or 8 for channel values so we use 8
 		if (value.equals("7 / 6")) {
+			value = "8";
+		}
+
+		if (value.contains("8 / 6") || value.contains("6 / 8")) {
 			value = "8";
 		}
 
@@ -416,6 +429,11 @@ public class MediaInfoParser {
 	}
 
 	public static String getSampleFrequency(String value) {
+		// some tracks show several values like "48000 / 48000 / 24000" for HE-AAC
+		// store only first value
+		if (value.indexOf("/") > -1) {
+			value = value.substring(0, value.indexOf("/"));
+		}
 		if (value.indexOf("khz") > -1) {
 			value = value.substring(0, value.indexOf("khz"));
 		}

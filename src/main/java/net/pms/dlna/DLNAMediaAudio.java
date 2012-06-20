@@ -39,6 +39,9 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	@Deprecated
 	public int bitsperSample;
 
+
+    private int bitRate;
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
@@ -127,7 +130,11 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 		int sr = 0;
 		if (getSampleFrequency() != null && getSampleFrequency().length() > 0) {
 			try {
-				sr = Integer.parseInt(getSampleFrequency());
+                if ("48000 / 24000".equals(getSampleFrequency())) {
+                    sr = 48000;
+                } else {
+                    sr = Integer.parseInt(getSampleFrequency());
+                }
 			} catch (NumberFormatException e) {
 				LOGGER.debug("Could not parse sample rate from \"" + getSampleFrequency() + "\"");
 			}
@@ -154,9 +161,9 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	}
 
 	/**
-	 * Returns true if this media uses the TrueHD audio codec, false otherwise.
+	 * Returns true if this media uses the DTS audio codec, false otherwise.
 	 * 
-	 * @return True if the TrueHD audio codec is used.
+	 * @return True if the DTS audio codec is used.
 	 */
 	public boolean isDTS() {
 		return getCodecA() != null && (getCodecA().startsWith("dts") || getCodecA().equalsIgnoreCase("dca") || getCodecA().equalsIgnoreCase("dca (dts)"));
@@ -178,6 +185,42 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 */
 	public boolean isMP3() {
 		return getCodecA() != null && getCodecA().equalsIgnoreCase("mp3");
+	}
+
+	/**
+	 * Returns true if this media uses the AAC audio codec, false otherwise.
+	 *
+	 * @return True if the AAC audio codec is used.
+	 */
+	public boolean isAAC() {
+		return getCodecA() != null && getCodecA().equalsIgnoreCase("aac");
+	}
+
+	/**
+	 * Returns true if this media uses the Ogg Vorbis audio codec, false otherwise.
+	 *
+	 * @return True if the Ogg Vorbis audio codec is used.
+	 */
+	public boolean isVorbis() {
+		return getCodecA() != null && getCodecA().equalsIgnoreCase("vorbis");
+	}
+
+	/**
+	 * Returns true if this media uses the WMA audio codec, false otherwise.
+	 *
+	 * @return True if the WMA audio codec is used.
+	 */
+	public boolean isWMA() {
+		return getCodecA() != null && getCodecA().startsWith("wm");
+	}
+
+	/**
+	 * Returns true if this media uses the Mpeg Audio audio codec, false otherwise.
+	 *
+	 * @return True if the Mpeg Audio audio codec is used.
+	 */
+	public boolean isMpegAudio() {
+		return getCodecA() != null && getCodecA().equalsIgnoreCase("mp2");
 	}
 
 	/**
@@ -259,6 +302,26 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	public void setBitsperSample(int bitsperSample) {
 		this.bitsperSample = bitsperSample;
 	}
+
+    /**
+     * Returns audio bitrate.
+     *
+     * @return Audio bitrate.
+     * @since 1.54
+     */
+    public int getBitRate() {
+        return bitRate;
+    }
+
+    /**
+     * Sets audio bitrate.
+     *
+     * @param bitRate Audio bitrate to set.
+     * @since 1.54
+     */
+    public void setBitRate(int bitRate) {
+        this.bitRate = bitRate;
+    }
 
 	/**
 	 * Returns the sample frequency for the audio.
