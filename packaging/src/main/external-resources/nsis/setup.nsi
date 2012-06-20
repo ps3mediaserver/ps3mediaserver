@@ -5,13 +5,13 @@
 !include "..\..\..\..\target\project.nsh"
 !include "..\..\..\..\target\extra.nsh"
 
-!define REG_KEY_UNINSTALL "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}"
-!define REG_KEY_SOFTWARE "SOFTWARE\${PROJECT_NAME}"
+!define REG_KEY_UNINSTALL "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPLICATION_NAME}"
+!define REG_KEY_SOFTWARE "SOFTWARE\${APPLICATION_NAME}"
 
 RequestExecutionLevel admin
 
-Name "${PROJECT_NAME}"
-InstallDir "$PROGRAMFILES\${PROJECT_NAME}"
+Name "${APPLICATION_NAME}"
+InstallDir "$PROGRAMFILES\${APPLICATION_NAME}"
 
 ;Get install folder from registry for updates
 InstallDirRegKey HKCU "${REG_KEY_SOFTWARE}" ""
@@ -39,7 +39,7 @@ SetCompressorDictSize 32
 ShowUninstDetails show
 
 Function CreateDesktopShortcut
-  CreateShortCut "$DESKTOP\${PROJECT_NAME}.lnk" "$INSTDIR\PMS.exe"
+  CreateShortCut "$DESKTOP\${APPLICATION_NAME}.lnk" "$INSTDIR\PMS.exe"
 FunctionEnd
 
 Section "Program Files"
@@ -48,15 +48,14 @@ Section "Program Files"
   File /r /x "*.conf" /x "*.zip" /x "*.dll" /x "third-party" "${PROJECT_CORE_BASEDIR}\src\main\external-resources\plugins"
   File /r "${PROJECT_CORE_BASEDIR}\src\main\external-resources\documentation"
   File /r "${PROJECT_CORE_BASEDIR}\src\main\external-resources\renderers"
-  File /r "${PROJECT_CORE_BINARIES}\win32"
-  File /r "${PROJECT_CORE_BASEDIR}\src\main\external-resources\plugins"
+  File /r "${PROJECT_BINARIES}\win32"
   File "${PROJECT_BUILD_DIR}\PMS.exe"
-  File "${PROJECT_CORE_BASEDIR}\src\main\external-resources\PMS.bat"
-  File "${PROJECT_ASSEMBLY_DEPENDENCIES}\pms.jar"
-  File "${PROJECT_CORE_BINARIES}\MediaInfo.dll"
-  File "${PROJECT_CORE_BINARIES}\MediaInfo64.dll"
+  File "${PROJECT_BASEDIR}\src\main\external-resources\PMS.bat"
+  File "${PROJECT_BASEDIR}\target\pms.jar"
+  File "${PROJECT_BINARIES}\MediaInfo.dll"
+  File "${PROJECT_BINARIES}\MediaInfo64.dll"
   File "${PROJECT_CORE_BASEDIR}\CHANGELOG"
-  File "${PROJECT_CORE_BASEDIR}\..\README.md"
+  File "${PROJECT_CORE_BASEDIR}\README.md"
   File "${PROJECT_CORE_BASEDIR}\LICENSE.txt"
   File "${PROJECT_CORE_BASEDIR}\src\main\external-resources\logback.xml"
   File "${PROJECT_CORE_BASEDIR}\src\main\external-resources\icon.ico"
@@ -72,7 +71,7 @@ Section "Program Files"
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\uninst.exe"
 
-  WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayName" "${PROJECT_NAME}"
+  WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayName" "${APPLICATION_NAME}"
   WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayIcon" "$INSTDIR\icon.ico"
   WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "DisplayVersion" "${PROJECT_VERSION}"
   WriteRegStr HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}" "Publisher" "${PROJECT_ORGANIZATION_NAME}"
@@ -92,10 +91,10 @@ SectionEnd
 
 Section "Start Menu Shortcuts"
   SetShellVarContext all
-  CreateDirectory "$SMPROGRAMS\${PROJECT_NAME}"
-  CreateShortCut "$SMPROGRAMS\${PROJECT_NAME}\${PROJECT_NAME}.lnk" "$INSTDIR\PMS.exe" "" "$INSTDIR\PMS.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PROJECT_NAME}\${PROJECT_NAME} (Select Profile).lnk" "$INSTDIR\PMS.exe" "profiles" "$INSTDIR\PMS.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PROJECT_NAME}\Uninstall.lnk" "$INSTDIR\uninst.exe" "" "$INSTDIR\uninst.exe" 0
+  CreateDirectory "$SMPROGRAMS\${APPLICATION_NAME}"
+  CreateShortCut "$SMPROGRAMS\${APPLICATION_NAME}\${APPLICATION_NAME}.lnk" "$INSTDIR\PMS.exe" "" "$INSTDIR\PMS.exe" 0
+  CreateShortCut "$SMPROGRAMS\${APPLICATION_NAME}\${APPLICATION_NAME} (Select Profile).lnk" "$INSTDIR\PMS.exe" "profiles" "$INSTDIR\PMS.exe" 0
+  CreateShortCut "$SMPROGRAMS\${APPLICATION_NAME}\Uninstall.lnk" "$INSTDIR\uninst.exe" "" "$INSTDIR\uninst.exe" 0
 SectionEnd
 
 Section "Uninstall"
@@ -121,15 +120,15 @@ Section "Uninstall"
   Delete /REBOOTOK "$INSTDIR\icon.ico"
   RMDir /REBOOTOK "$INSTDIR"
 
-  Delete /REBOOTOK "$DESKTOP\${PROJECT_NAME}.lnk"
-  RMDir /REBOOTOK "$SMPROGRAMS\${PROJECT_NAME}"
-  Delete /REBOOTOK "$SMPROGRAMS\${PROJECT_NAME}\${PROJECT_NAME}.lnk"
-  Delete /REBOOTOK "$SMPROGRAMS\${PROJECT_NAME}\${PROJECT_NAME} (Select Profile).lnk"
-  Delete /REBOOTOK "$SMPROGRAMS\${PROJECT_NAME}\Uninstall.lnk"
+  Delete /REBOOTOK "$DESKTOP\${APPLICATION_NAME}.lnk"
+  RMDir /REBOOTOK "$SMPROGRAMS\${APPLICATION_NAME}"
+  Delete /REBOOTOK "$SMPROGRAMS\${APPLICATION_NAME}\${APPLICATION_NAME}.lnk"
+  Delete /REBOOTOK "$SMPROGRAMS\${APPLICATION_NAME}\${APPLICATION_NAME} (Select Profile).lnk"
+  Delete /REBOOTOK "$SMPROGRAMS\${APPLICATION_NAME}\Uninstall.lnk"
 
   DeleteRegKey HKEY_LOCAL_MACHINE "${REG_KEY_UNINSTALL}"
   DeleteRegKey HKCU "${REG_KEY_SOFTWARE}"
 
-  nsSCM::Stop "${PROJECT_NAME}"
-  nsSCM::Remove "${PROJECT_NAME}"
+  nsSCM::Stop "${APPLICATION_NAME}"
+  nsSCM::Remove "${APPLICATION_NAME}"
 SectionEnd

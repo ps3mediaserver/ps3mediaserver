@@ -2,30 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<!--
-		PMS consists of two major parts: PMS itself and the third party software 
+	<!-- PMS consists of two major parts: PMS itself and the third party software 
 		needed to run it. While PMS itself is 100% pure Java, some of the third party 
 		software is not. This means building a platform specific distribution boils 
 		down to first building the pms.jar and then assembling all application resources. 
-		
-		Note that Maven 3 does not automatically install all dependencies, unlike Maven 2.
-		
-		To install all dependencies to your local repository, run the following commands:
-		
-			mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external 
-			mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external 
-		
-		To build PMS, do:
-		
-			mvn clean package
-		
-		After building, the "target" directory will contain the binary.
-		To generate a full source code report, do:
-		
-			mvn site
-
-		After generating, the "target/site" directory will contain the reports.
-	-->
+		Note that Maven 3 does not automatically install all dependencies, unlike 
+		Maven 2. To install all dependencies to your local repository, run the following 
+		commands: mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external 
+		mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external 
+		To build PMS, do: mvn clean package After building, the "target" directory 
+		will contain the binary. To generate a full source code report, do: mvn site 
+		After generating, the "target/site" directory will contain the reports. -->
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -284,11 +271,8 @@
 			<version>1.7.1</version>
 		</dependency>
 
-		<!--
-			originally, hamcrest-all 1.2RC2 for the artifact change, see:
-			https://code.google.com/p/hamcrest/issues/detail?id=12#c54 
-			TODO: verify if needed
-		-->
+		<!-- originally, hamcrest-all 1.2RC2 for the artifact change, see: https://code.google.com/p/hamcrest/issues/detail?id=12#c54 
+			TODO: verify if needed -->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-integration</artifactId>
@@ -396,4 +380,58 @@
 		</dependency>
 
 	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- This plugin will take care of installing the external dependencies 
+				that do not exist in a public Maven repository. That is why we store some 
+				jar files in the "src/main/external-resources/lib" directory and have this 
+				plugin take care of the installation at build time. Note: The plugin does 
+				not work automatically in Maven 3. To install the required dependencies execute 
+				the following commands: mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external 
+				mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external 
+				Checksums can be calculated with "openssl sha1 [filename]". See: http://code.google.com/p/maven-external-dependency-plugin/issues/detail?id=8#c4 -->
+			<plugin>
+				<groupId>com.savage7.maven.plugins</groupId>
+				<artifactId>maven-external-dependency-plugin</artifactId>
+				<version>0.4</version>
+				<inherited>false</inherited>
+				<configuration>
+					<stagingDirectory>${project.build.directory}/dependencies/</stagingDirectory>
+					<createChecksum>true</createChecksum>
+					<skipChecksumVerification>false</skipChecksumVerification>
+					<force>false</force>
+					<artifactItems>
+
+					</artifactItems>
+
+				</configuration>
+
+				<executions>
+
+					<execution>
+						<id>clean-external-dependencies</id>
+						<phase>clean</phase>
+						<goals>
+							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:clean-external -->
+							<goal>clean-external</goal>
+						</goals>
+					</execution>
+
+					<execution>
+						<id>resolve-install-external-dependencies</id>
+						<!-- Not bound to a phase, you need to execute these manually. See  above -->
+						<!-- phase>process-resources</phase -->
+						<goals>
+							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external -->
+							<goal>resolve-external</goal>
+
+							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external -->
+							<goal>install-external</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

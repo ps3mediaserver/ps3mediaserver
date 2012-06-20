@@ -5,6 +5,8 @@
 ; the nsis-maven-plugin.
 
 !define PROJECT_VERSION_SHORT "${project.version.short}"
-!define PROJECT_CORE_BASEDIR "${project.core.basedir}"
-!define PROJECT_CORE_BINARIES "${project.core.binaries}"
-!define PROJECT_ASSEMBLY_DEPENDENCIES "${project.basedir}/target/${project.artifactId}-${project.version}-assembly-dependencies"
+!define PROJECT_BINARIES "${project.core.binaries}"             
+!define PROJECT_CORE_BASEDIR "${project.core.basedir}"              
+!define PROJECT_CORE_BUILD_DIR "${project.core.basedir}\target"
+!define APPLICATION_NAME "Ps3 Media Server MLX"
+!define APPLICATION_NAME_LONG "Ps3 Media Server {project.version}"

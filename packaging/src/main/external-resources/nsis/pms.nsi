@@ -6,22 +6,22 @@
 !include "..\..\..\..\target\project.nsh"
 !include "..\..\..\..\target\extra.nsh"
 
-Name "PMS-MLX"
-Caption "${PROJECT_NAME}"
-Icon "${PROJECT_BASEDIR}\src\main\external-resources\icon.ico"
+Name "${APPLICATION_NAME}"
+Caption "${APPLICATION_NAME_LONG}"
+Icon "${PROJECT_CORE_BASEDIR}\src\main\external-resources\icon.ico"
  
-VIAddVersionKey "ProductName" "${PROJECT_NAME}"
+VIAddVersionKey "ProductName" "${APPLICATION_NAME}"
 VIAddVersionKey "Comments" ""
 VIAddVersionKey "CompanyName" "${PROJECT_ORGANIZATION_NAME}"
 VIAddVersionKey "LegalTrademarks" ""
 VIAddVersionKey "LegalCopyright" ""
-VIAddVersionKey "FileDescription" "${PROJECT_NAME}"
+VIAddVersionKey "FileDescription" "${APPLICATION_NAME}"
 VIAddVersionKey "FileVersion" "${PROJECT_VERSION}"
 VIProductVersion "${PROJECT_VERSION_SHORT}.0"
  
-!define JARPATH "${PROJECT_BUILD_DIR}\pms.jar"
+!define JARPATH "${PROJECT_BASEDIR}\target\pms.jar"
 !define CLASS "net.pms.PMS"
-!define PRODUCT_NAME "PMS"
+!define PRODUCT_NAME "PMS-MLX"
  
 ; Definitions for Java
 !define JRE6_VERSION "6.0"
