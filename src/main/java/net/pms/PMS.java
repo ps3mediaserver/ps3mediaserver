@@ -291,9 +291,15 @@ public class PMS {
 	 * @return (DLNAMediaDatabase) a reference to the database instance or <b>null</b> if one isn't defined
 	 * (e.g. if the cache is disabled).
 	 */
-	public synchronized DLNAMediaDatabase getDatabase() {
-		return database;
-	}
+    public synchronized DLNAMediaDatabase getDatabase() {
+        if (configuration.getUseCache()) {
+            if (database == null) {
+                initializeDatabase();
+            }
+            return database;
+        }
+        return null;
+    }
 
 	/**Initialisation procedure for PMS.
 	 * @return true if the server has been initialized correctly. false if the server could
