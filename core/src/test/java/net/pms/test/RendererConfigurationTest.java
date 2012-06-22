@@ -69,7 +69,7 @@ public class RendererConfigurationTest {
 		testCases.put("X-AV-Client-Info: av=5.0; cn=\"Sony Corporation\"; mn=\"BRAVIA KDL-32CX520\"; mv=\"1.7\";", "Sony Bravia EX");
 
 		// From Dlink510.conf:
-		testCases.put("User-Agent: DLNADOC/1.50 INTEL_NMPR/2.1", "D-link DSM-510");
+        testCases.put("User-Agent: DLNADOC/1.50 INTEL_NMPR/2.1", "D-Link DSM-510");
 
 		// From iPad-iPhone.conf:
 		testCases.put("User-Agent: 8player lite 2.2.3 (iPad; iPhone OS 5.0.1; nl_NL)", "iPad / iPhone");
