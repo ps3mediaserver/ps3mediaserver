@@ -1893,8 +1893,11 @@ public class MEncoderVideo extends Player {
 
 				// See if the video needs to be scaled down
 				if (
-					(scaleWidth > params.mediaRenderer.getMaxVideoWidth()) ||
-					(scaleHeight > params.mediaRenderer.getMaxVideoHeight())
+					params.mediaRenderer.isVideoRescale() &&
+					(
+						(scaleWidth > params.mediaRenderer.getMaxVideoWidth()) ||
+						(scaleHeight > params.mediaRenderer.getMaxVideoHeight())
+					)
 				) {
 					double overscannedAspectRatio = scaleWidth / scaleHeight;
 					rendererAspectRatio = params.mediaRenderer.getMaxVideoWidth() / params.mediaRenderer.getMaxVideoHeight();
