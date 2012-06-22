@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.savvasdalkitsis.jtmdb.CastInfo;
+import com.savvasdalkitsis.jtmdb.GeneralSettings;
 import com.savvasdalkitsis.jtmdb.Genre;
 import com.savvasdalkitsis.jtmdb.Movie;
 import com.savvasdalkitsis.jtmdb.Studio;
@@ -386,6 +387,7 @@ public class TmdbMovieImportPlugin implements FileImportPlugin {
 
 	@Override
 	public void initialize() {
+	    GeneralSettings.setApiKey("4cdddc892213dd24e5011fd710f8abf0");
 	}
 
 	@Override

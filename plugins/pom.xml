@@ -16,24 +16,6 @@
 		<version>1.54.0-mlx_0.9-SNAPSHOT</version>
 	</parent>
 
-	<developers>
-		<developer>
-			<name>taconaut</name>
-		</developer>
-	</developers>
-
-	<scm>
-		<connection>scm:git:git@github.com:taconaut/pms-plugins.git</connection>
-		<developerConnection>scm:git:git@github.com:taconaut/pms-plugins.git</developerConnection>
-		<tag>master</tag>
-		<url>git@github.com:taconaut/pms-plugins.git</url>
-	</scm>
-
-	<issueManagement>
-		<system>Github</system>
-		<url>https://github.com/taconaut/pms-plugins/issues</url>
-	</issueManagement>
-
 	<modules>
 		<module>FileSystemDlnaFolderPlugin</module>
 		<module>ImdbMovieImportPlugin</module>
