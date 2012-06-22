@@ -29,7 +29,7 @@ public class PlayCountWatcher implements StartStopListener {
 	private Queue<QueueItem> playCache = new LinkedList<QueueItem>();
 	private IMediaLibraryStorage storage;
 
-	/** Holds only the project version. It's used to always use the maven build number in code */
+	/** Holds only the project version. It's used to always use the maven build number to display the version in code */
 	private static final PmsProperties properties = new PmsProperties();
 	static {
 		try {
@@ -51,7 +51,6 @@ public class PlayCountWatcher implements StartStopListener {
 	}
 	
 	/** GUI */
-
 	private GlobalConfigurationPanel pGlobalConfiguration;
 
 	@Override
@@ -65,7 +64,7 @@ public class PlayCountWatcher implements StartStopListener {
 		}
 		
 		//update the play count if 80% of the file has been played. remove it from the cache anyway as it finished playing
-		//TODO: check how this behaves when pausing a stream. Probably not well...
+		//TODO: try to improve this behavior when pausing a stream
 		int playLengthSec = 0;
 		while(true){
 			QueueItem item = playCache.poll();
@@ -83,10 +82,11 @@ public class PlayCountWatcher implements StartStopListener {
 		
 		if(playLengthSec > 0){
 			String filePath = ((RealFile)resource).getFile().getAbsolutePath();
-			int fullLengthSec = (int)media.getDurationInSeconds();
-			int minPlayLogLength = (int) (fullLengthSec * (globalConfig.getPercentPlayedRequired() / 100));
+			int fullLengthSec = (int) media.getDurationInSeconds();
+			int minPlayLogLength = (int) (fullLengthSec * ((double) globalConfig.getPercentPlayedRequired() / 100));
 			if(log.isDebugEnabled()) log.debug(String.format("Stopped playing %s (%s) after %s seconds. Min play length for loging %ss", resource.getName(), resource.getInternalId(), playLengthSec, minPlayLogLength));
-			if(playLengthSec > minPlayLogLength){
+			if(playLengthSec > minPlayLogLength) {
+				//TODO: insert the file with basic info (mencoder/ffmpeg but no plugins) if it hasn't been previously inserted into the library
 				storage.updatePlayCount(filePath, playLengthSec, new Date());
 				if(log.isInfoEnabled()) log.info(String.format("Updated play count for %s (%s) after %s seconds. Min play length for loging %ss", resource.getName(), resource.getInternalId(), playLengthSec, minPlayLogLength));
 			}
