@@ -27,11 +27,11 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.savvasdalkitsis.jtmdb.Auth;
-import com.github.savvasdalkitsis.jtmdb.GeneralSettings;
-import com.github.savvasdalkitsis.jtmdb.Pair;
-import com.github.savvasdalkitsis.jtmdb.ServerResponse;
-import com.github.savvasdalkitsis.jtmdb.Session;
+import com.savvasdalkitsis.jtmdb.Auth;
+import com.savvasdalkitsis.jtmdb.GeneralSettings;
+import com.savvasdalkitsis.jtmdb.Pair;
+import com.savvasdalkitsis.jtmdb.ServerResponse;
+import com.savvasdalkitsis.jtmdb.Session;
 
 public class TmdbHelper {
 	private static final Logger log = LoggerFactory.getLogger(TmdbHelper.class);

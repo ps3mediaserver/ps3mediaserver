@@ -14,10 +14,10 @@ import javax.swing.JComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.savvasdalkitsis.jtmdb.CastInfo;
-import com.github.savvasdalkitsis.jtmdb.Genre;
-import com.github.savvasdalkitsis.jtmdb.Movie;
-import com.github.savvasdalkitsis.jtmdb.Studio;
+import com.savvasdalkitsis.jtmdb.CastInfo;
+import com.savvasdalkitsis.jtmdb.Genre;
+import com.savvasdalkitsis.jtmdb.Movie;
+import com.savvasdalkitsis.jtmdb.Studio;
 
 import net.pms.medialibrary.commons.enumarations.FileProperty;
 import net.pms.medialibrary.commons.enumarations.FileType;
