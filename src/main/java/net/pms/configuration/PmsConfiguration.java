@@ -54,7 +54,7 @@ import com.sun.jna.Platform;
  * file.
  */
 public class PmsConfiguration {
-	private static final Logger logger = LoggerFactory.getLogger(PmsConfiguration.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PmsConfiguration.class);
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final int DEFAULT_SERVER_PORT = 5001;
 
@@ -71,6 +71,9 @@ public class PmsConfiguration {
 	private static final String KEY_AUDIO_THUMBNAILS_METHOD = "audio_thumbnails_method";
 	private static final String KEY_AUTO_UPDATE = "auto_update";
 	private static final String KEY_AVISYNTH_CONVERT_FPS = "avisynth_convertfps";
+	private static final String KEY_AVISYNTH_INTERFRAME = "avisynth_interframe";
+	private static final String KEY_AVISYNTH_INTERFRAME_GPU = "avisynth_interframegpu";
+	private static final String KEY_AVISYNTH_MULTITHREADING = "avisynth_multithreading";
 	private static final String KEY_AVISYNTH_SCRIPT = "avisynth_script";
 	private static final String KEY_BUFFER_TYPE = "buffertype";
 	private static final String KEY_CHAPTER_INTERVAL = "chapter_interval";
@@ -85,6 +88,7 @@ public class PmsConfiguration {
 	private static final String KEY_FFMPEG_SETTINGS = "ffmpeg";
 	private static final String KEY_FIX_25FPS_AV_MISMATCH = "fix_25fps_av_mismatch";
 	private static final String KEY_FORCETRANSCODE = "forcetranscode";
+	private static final String KEY_FOLDER_LIMIT="folder_limit";
 	private static final String KEY_HIDE_EMPTY_FOLDERS = "hide_empty_folders";
 	private static final String KEY_HIDE_ENGINENAMES = "hide_enginenames";
 	private static final String KEY_HIDE_EXTENSIONS = "hide_extensions";
@@ -177,6 +181,7 @@ public class PmsConfiguration {
 	private static final String KEY_UUID = "uuid";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
+	private static final String KEY_BUFFER_MAX = "buffer_max";
 
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
 	// see Build for more details
@@ -187,7 +192,9 @@ public class PmsConfiguration {
 
 	private static String DEFAULT_AVI_SYNTH_SCRIPT;
 	private static final String BUFFER_TYPE_FILE = "file";
-	private static final int MAX_MAX_MEMORY_BUFFER_SIZE = 400;
+	private static final int MAX_MAX_MEMORY_DEFAULT_SIZE = 400;
+	private static final int BUFFER_MEMORY_FACTOR = 368;
+	private static int MAX_MAX_MEMORY_BUFFER_SIZE = MAX_MAX_MEMORY_DEFAULT_SIZE;
 	private static final char LIST_SEPARATOR = ',';
 	private static final String KEY_FOLDERS = "folders";
 	private final PropertiesConfiguration configuration;
@@ -243,7 +250,7 @@ public class PmsConfiguration {
 		under multiple profiles without fiddling with environment variables, properties or
 		command-line arguments.
 
-		1) if PMS_PROFILE is not set, PMS.conf is located in: 
+		1) if PMS_PROFILE is not set, PMS.conf is located in:
 
 			Windows:             %ALLUSERSPROFILE%\$build
 			Mac OS X:            $HOME/Library/Application Support/$build
@@ -351,8 +358,8 @@ public class PmsConfiguration {
 	 * Default constructor that will attempt to load the PMS configuration file
 	 * from the profile path.
 	 *
-	 * @throws ConfigurationException
-	 * @throws IOException
+	 * @throws org.apache.commons.configuration.ConfigurationException
+	 * @throws java.io.IOException
 	 */
 	public PmsConfiguration() throws ConfigurationException, IOException {
 		this(true);
@@ -364,8 +371,8 @@ public class PmsConfiguration {
 	 * @param loadFile Set to true to attempt to load the PMS configuration
 	 * 					file from the profile path. Set to false to skip
 	 * 					loading.
-	 * @throws ConfigurationException
-	 * @throws IOException
+	 * @throws org.apache.commons.configuration.ConfigurationException
+	 * @throws java.io.IOException
 	 */
 	public PmsConfiguration(boolean loadFile) throws ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration();
@@ -381,7 +388,7 @@ public class PmsConfiguration {
                 if (pmsSkelConfFile.isFile() && pmsSkelConfFile.canRead()) {
                     // load defaults from skel file, save them later to PROFILE_PATH
                     configuration.load(pmsSkelConfFile);
-                    logger.info("Default configuration loaded from " + SKEL_PROFILE_PATH);
+                    LOGGER.info("Default configuration loaded from " + SKEL_PROFILE_PATH);
                 }
             }
 		}
@@ -391,17 +398,21 @@ public class PmsConfiguration {
         tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
 		Locale.setDefault(new Locale(getLanguage()));
-		// set DEFAULT_AVI_SYNTH_SCRIPT properly according to language
+
+		// Set DEFAULT_AVI_SYNTH_SCRIPT according to language
 		DEFAULT_AVI_SYNTH_SCRIPT = 
-				  Messages.getString("MEncoderAviSynth.4")
-				+ Messages.getString("MEncoderAviSynth.5")
-				+ Messages.getString("MEncoderAviSynth.6")
-				+ Messages.getString("MEncoderAviSynth.7")
-				+ Messages.getString("MEncoderAviSynth.8")
-				+ Messages.getString("MEncoderAviSynth.9")
-				+ Messages.getString("MEncoderAviSynth.10")
-				+ Messages.getString("MEncoderAviSynth.11")
-				+ Messages.getString("MEncoderAviSynth.12");
+			Messages.getString("MEncoderAviSynth.4") +
+			Messages.getString("MEncoderAviSynth.5") +
+			Messages.getString("MEncoderAviSynth.6") +
+			Messages.getString("MEncoderAviSynth.7") +
+			Messages.getString("MEncoderAviSynth.8") +
+			Messages.getString("MEncoderAviSynth.10") +
+			Messages.getString("MEncoderAviSynth.11");
+
+		long usableMemory = (Runtime.getRuntime().maxMemory() / 1048576) - BUFFER_MEMORY_FACTOR;
+		if (usableMemory > MAX_MAX_MEMORY_DEFAULT_SIZE) {
+			MAX_MAX_MEMORY_BUFFER_SIZE = (int) usableMemory;
+		}
 	}
 
 	/**
@@ -1023,7 +1034,7 @@ public class PmsConfiguration {
 	 * @return True if fontconfig should be used, false otherwise.
 	 */
 	public boolean isMencoderFontConfig() {
-		return getBoolean(KEY_MENCODER_FONT_CONFIG, false);
+		return getBoolean(KEY_MENCODER_FONT_CONFIG, true);
 	}
 
 	/**
@@ -1518,7 +1529,7 @@ public class PmsConfiguration {
 	 * @return True if PMS should hide the folder, false othewise.
 	 */
 	public boolean getHideVideoSettings() {
-		return getBoolean(KEY_HIDE_VIDEO_SETTINGS, false);
+		return getBoolean(KEY_HIDE_VIDEO_SETTINGS, true);
 	}
 
 	/**
@@ -1567,7 +1578,31 @@ public class PmsConfiguration {
 	 * @return True if PMS should pass the flag.
 	 */
 	public boolean getAvisynthConvertFps() {
-		return getBoolean(KEY_AVISYNTH_CONVERT_FPS, true);
+		return getBoolean(KEY_AVISYNTH_CONVERT_FPS, false);
+	}
+
+	public void setAvisynthInterFrame(boolean value) {
+		configuration.setProperty(KEY_AVISYNTH_INTERFRAME, value);
+	}
+
+	public boolean getAvisynthInterFrame() {
+		return getBoolean(KEY_AVISYNTH_INTERFRAME, false);
+	}
+
+	public void setAvisynthInterFrameGPU(boolean value) {
+		configuration.setProperty(KEY_AVISYNTH_INTERFRAME_GPU, value);
+	}
+
+	public boolean getAvisynthInterFrameGPU() {
+		return getBoolean(KEY_AVISYNTH_INTERFRAME_GPU, false);
+	}
+
+	public void setAvisynthMultiThreading(boolean value) {
+		configuration.setProperty(KEY_AVISYNTH_MULTITHREADING, value);
+	}
+
+	public boolean getAvisynthMultiThreading() {
+		return getBoolean(KEY_AVISYNTH_MULTITHREADING, false);
 	}
 
 	/**
@@ -1777,7 +1812,7 @@ public class PmsConfiguration {
 		for (String engineId : input) {
 			if (engineId.startsWith("avs") && !registry.isAvis() && Platform.isWindows()) {
 				if (!avsHackLogged) {
-					logger.info("AviSynth is not installed. You cannot use " + engineId + " as a transcoding engine.");
+					LOGGER.info("AviSynth is not installed. You cannot use " + engineId + " as a transcoding engine.");
 					avsHackLogged = true;
 				}
 				toBeRemoved.add(engineId);
@@ -1791,7 +1826,7 @@ public class PmsConfiguration {
 
 	public void save() throws ConfigurationException {
 		configuration.save();
-		logger.info("Configuration saved to: " + PROFILE_PATH);
+		LOGGER.info("Configuration saved to: " + PROFILE_PATH);
 	}
 
 	public String getFolders() {
@@ -2209,7 +2244,7 @@ public class PmsConfiguration {
 			try {
 				HOSTNAME = InetAddress.getLocalHost().getHostName();
 			} catch (UnknownHostException e) {
-				logger.info("Can't determine hostname");
+				LOGGER.info("Can't determine hostname");
 				HOSTNAME = "unknown host";
 			}
 		}
@@ -2247,5 +2282,13 @@ public class PmsConfiguration {
 
 	public void removeConfigurationListener(ConfigurationListener l) {
 		configuration.removeConfigurationListener(l);
+	}
+	
+	public boolean getFolderLimit() {
+		return getBoolean(KEY_FOLDER_LIMIT, false);
+	}
+	
+	public boolean initBufferMax() {
+		return getBoolean(KEY_BUFFER_MAX, false);
 	}
 }
