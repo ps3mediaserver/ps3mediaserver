@@ -248,7 +248,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 			}
 			break;
 		case VIDEO_IMDBID:
-			res = getValue("ID");
+			res = getValue("imdbID");
 			break;
 		case VIDEO_OVERVIEW:
 			res = getValue("Plot");
@@ -257,7 +257,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 			if(globalConfig.isUseRottenTomatoes()) {
 				queryString = "tomatoMeter";
 			} else {
-				queryString = "Rating";				
+				queryString = "imdbRating";				
 			}
 			Object ratingObj = getValue(queryString);
 			if(ratingObj != null) {
@@ -275,7 +275,7 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 			if(globalConfig.isUseRottenTomatoes()) {
 				queryString = "tomatoReviews";
 			} else {
-				queryString = "Votes";				
+				queryString = "imdbVotes";				
 			}
 			ratingObj = getValue(queryString);
 			if(ratingObj != null) {
