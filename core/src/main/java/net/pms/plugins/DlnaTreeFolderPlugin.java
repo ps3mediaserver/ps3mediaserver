@@ -3,7 +3,6 @@ package net.pms.plugins;
 import java.io.IOException;
 import javax.swing.Icon;
 import javax.swing.JPanel;
-import javax.swing.tree.MutableTreeNode;
 
 import net.pms.dlna.DLNAResource;
 
@@ -54,14 +53,6 @@ public interface DlnaTreeFolderPlugin extends PluginBase {
 	 *         renderer
 	 */
 	DLNAResource getDLNAResource();
-
-	/**
-	 * Gets the tree node that will be shown in the JTree when an instance of
-	 * the plugin gets added
-	 * 
-	 * @return the tree node which will be displayed in the client
-	 */
-	MutableTreeNode getTreeNode();
 
 	/***
 	 * Save the configuration to the specified path to restore the same state as

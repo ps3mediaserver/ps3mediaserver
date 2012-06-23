@@ -15,7 +15,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.tree.MutableTreeNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,11 +202,6 @@ public class iTunesFolderPlugin implements DlnaTreeFolderPlugin {
 	public String toString() {
 		return getName();
 	}
-
-	@Override
-    public MutableTreeNode getTreeNode() {
-	    return null;
-    }
 
 	@Override
     public boolean isInstanceAvailable() {

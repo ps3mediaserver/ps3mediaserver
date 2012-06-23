@@ -25,7 +25,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.tree.MutableTreeNode;
 
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.virtual.VirtualFolder;
@@ -281,15 +280,6 @@ public class ShutdownPlugin implements DlnaTreeFolderPlugin {
 	 */
 	@Override
 	public JPanel getInstanceConfigurationPanel() {
-		return null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public MutableTreeNode getTreeNode() {
-		// No mutable tree node
 		return null;
 	}
 

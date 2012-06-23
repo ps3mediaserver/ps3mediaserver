@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.swing.Icon;
 import javax.swing.JPanel;
-import javax.swing.tree.MutableTreeNode;
 
 import net.pms.dlna.DLNAResource;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
@@ -93,18 +92,6 @@ public interface FileDetailPlugin extends PluginBase {
 	 * @return DLNAResource to show
 	 */
 	DLNAResource getResource();
-
-	/**
-	 * Gets the tree node that will show up in the pms client tree. Either
-	 * return a single node with the same name as the root DLNAResource received
-	 * when calling getResource or better, mimic the same structure as the
-	 * entire DLNAResource received when calling getResource.<br>
-	 * The UserObjects of the nodes MUST be of type
-	 * net.pms.medialibrary.external.TreeEntry in order to be rendered properly
-	 * 
-	 * @return the node to show in the client JTree
-	 */
-	MutableTreeNode getTreeNode();
 
 	/**
 	 * If true is being returned, the plugin will show up in the context menu.<br>

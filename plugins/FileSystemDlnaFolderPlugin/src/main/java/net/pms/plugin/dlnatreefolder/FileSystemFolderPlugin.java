@@ -25,7 +25,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.tree.MutableTreeNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,14 +140,6 @@ public class FileSystemFolderPlugin implements DlnaTreeFolderPlugin {
 	public String toString() {
 		return getName();
 	}
-
-	/* (non-Javadoc)
-	 * @see net.pms.plugins.DlnaTreeFolderPlugin#getTreeNode()
-	 */
-	@Override
-    public MutableTreeNode getTreeNode() {
-	    return null;
-    }
 
 	/* (non-Javadoc)
 	 * @see net.pms.plugins.PluginBase#isPluginAvailable()

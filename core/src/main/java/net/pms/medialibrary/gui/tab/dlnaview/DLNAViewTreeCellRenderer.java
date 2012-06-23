@@ -18,7 +18,6 @@
  */
 package net.pms.medialibrary.gui.tab.dlnaview;
 
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
@@ -37,8 +36,6 @@ import org.slf4j.LoggerFactory;
 import net.pms.medialibrary.commons.MediaLibraryConfiguration;
 import net.pms.medialibrary.commons.dataobjects.*;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
-import net.pms.plugins.FileDetailPlugin;
-import net.pms.plugins.TreeEntry;
 
 public class DLNAViewTreeCellRenderer extends DefaultTreeCellRenderer {
 	private static final long serialVersionUID = 4620499669832969867L;
@@ -170,31 +167,9 @@ public class DLNAViewTreeCellRenderer extends DefaultTreeCellRenderer {
 				icon = ((DOFileEntryPlugin) userObject).getPlugin().getTreeIcon();
 			} else if (userObject instanceof DOSpecialFolder) {
 				DOSpecialFolder sf = (DOSpecialFolder)userObject;
-    			if(sf.getSpecialFolderImplementation() != null && sf.getSpecialFolderImplementation().getTreeNode() == null){
-    				icon = getNoChildPossibleIcon(sf.getSpecialFolderImplementation().getTreeNodeIcon());
-    			}else {
-    				icon = sf.getSpecialFolderImplementation().getTreeNodeIcon();    				
-    			}
-			} else if (userObject instanceof TreeEntry) {
-				TreeEntry te = (TreeEntry) userObject;
-				if(te.getUserObject() instanceof FileDetailPlugin && ((FileDetailPlugin) te.getUserObject()).getTreeNode() == null){
-					icon = getNoChildPossibleIcon(te.getIcon());
-				} else {
-					icon = te.getIcon();					
-				}
+				icon = sf.getSpecialFolderImplementation().getTreeNodeIcon();
 			}
 		}
 		return icon;
 	}
-	
-	private Icon getNoChildPossibleIcon(Icon icon){
-		BufferedImage im = new BufferedImage( icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TRANSLUCENT );
-		Graphics2D g = im.createGraphics();
-		icon.paintIcon( new Canvas(), g, 0, 0 );
-		g.setColor(new Color(149, 149, 149));
-		g.fillRect(13, 13, 3, 3);
-		g.dispose();		
-		return new ImageIcon(im);		
-	}
-
 }

@@ -815,14 +815,6 @@ public class DLNAViewTree extends JTree {
 				log.error(String.format("Failed to load configuration '%s' for plugin '%s'", fileEntryPlugin.getPluginConfigFilePath(), fileEntryPlugin.getPlugin().getName()));
 			}
 			fileEntryPlugin.getPlugin().setVideo(videoFileInfo);
-			if (fileEntryPlugin.getPlugin().getTreeNode() != null) {
-				for (int i = 0; i < fileEntryPlugin.getPlugin().getTreeNode().getChildCount(); i++) {
-					if (fileEntryPlugin.getPlugin().getTreeNode().getChildAt(i) instanceof MutableTreeNode) {
-						MutableTreeNode pluginChild = (MutableTreeNode) fileEntryPlugin.getPlugin().getTreeNode().getChildAt(i);
-						((DefaultTreeModel) treeModel).insertNodeInto(pluginChild, parentNode, i);
-					}
-				}
-			}
 	}
 
 	private int getCutOffPosition(String convertedMask, int maxLineLength) {
@@ -903,13 +895,6 @@ public class DLNAViewTree extends JTree {
 			insertPos = getNewFolderInsertPosition(parentNode);
 		} else {
 			insertPos = f.getPositionInParent();
-		}
-		
-		if(f.getSpecialFolderImplementation().getTreeNode() != null && isDisplayItems()){
-			for(int i = 0; i < f.getSpecialFolderImplementation().getTreeNode().getChildCount(); i++){
-				MutableTreeNode n = (MutableTreeNode) f.getSpecialFolderImplementation().getTreeNode().getChildAt(i);
-				newNode.add(n);
-			}
 		}
 
 		((DefaultTreeModel) getModel()).insertNodeInto(newNode, parentNode, insertPos);

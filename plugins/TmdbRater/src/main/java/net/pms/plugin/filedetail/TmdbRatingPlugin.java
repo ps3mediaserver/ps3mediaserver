@@ -8,8 +8,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,6 @@ import net.pms.plugin.filedetail.tmdbrater.configuration.GlobalConfiguration;
 import net.pms.plugin.filedetail.tmdbrater.dlna.RatingResource;
 import net.pms.plugin.filedetail.tmdbrater.gui.GlobalConfigurationPanel;
 import net.pms.plugins.FileDetailPlugin;
-import net.pms.plugins.TreeEntry;
 import net.pms.util.PmsProperties;
 
 public class TmdbRatingPlugin implements FileDetailPlugin {
@@ -116,17 +113,6 @@ public class TmdbRatingPlugin implements FileDetailPlugin {
 	@Override
     public void setDisplayName(String displayName) {
 	    this.displayName = displayName;
-    }
-
-	@Override
-    public MutableTreeNode getTreeNode() {
-		DefaultMutableTreeNode node = new DefaultMutableTreeNode(getName());
-	    for(int i = 20 ; i >= 0; i--){
-	    	DefaultMutableTreeNode cn = new DefaultMutableTreeNode(new TreeEntry(String.valueOf(((float)i) / 2).replace(".0", ""), ratingIcon));
-	    	node.add(cn);	    	
-	    }
-		
-	    return node;
     }
 
 	@Override

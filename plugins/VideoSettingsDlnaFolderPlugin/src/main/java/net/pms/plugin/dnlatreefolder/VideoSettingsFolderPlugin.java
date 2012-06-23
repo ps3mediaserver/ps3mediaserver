@@ -7,7 +7,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.tree.MutableTreeNode;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
@@ -168,11 +167,6 @@ public class VideoSettingsFolderPlugin implements DlnaTreeFolderPlugin {
 	public String toString() {
 		return getName();
 	}
-
-	@Override
-    public MutableTreeNode getTreeNode() {
-	    return null;
-    }
 
 	@Override
     public boolean isInstanceAvailable() {
