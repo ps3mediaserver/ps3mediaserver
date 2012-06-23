@@ -649,16 +649,18 @@ public class DLNAViewTree extends JTree {
 			if(dlnaTreeFolders.size() > 0) {
 	    		addMenu.addSeparator();
 	    		for (DlnaTreeFolderPlugin f : dlnaTreeFolders) {
-	    			SpecialFolderMenuItem miSpecialFolder = new SpecialFolderMenuItem(f);
-	    			miSpecialFolder.setIcon(f.getTreeNodeIcon());
-	    			miSpecialFolder.addActionListener(new ActionListener() {
-	    
-	    				@Override
-	    				public void actionPerformed(ActionEvent e) {
-	    					addSpecialFolderRequested(((SpecialFolderMenuItem) e.getSource()).getSpecialFolder());
-	    				}
-	    			});
-	    			addMenu.add(miSpecialFolder);
+	    			if(f.isPluginAvailable() && f.isInstanceAvailable()) {
+		    			SpecialFolderMenuItem miSpecialFolder = new SpecialFolderMenuItem(f);
+		    			miSpecialFolder.setIcon(f.getTreeNodeIcon());
+		    			miSpecialFolder.addActionListener(new ActionListener() {
+		    
+		    				@Override
+		    				public void actionPerformed(ActionEvent e) {
+		    					addSpecialFolderRequested(((SpecialFolderMenuItem) e.getSource()).getSpecialFolder());
+		    				}
+		    			});
+		    			addMenu.add(miSpecialFolder);
+	    			}
 	    		}
 			}
 		}
@@ -785,7 +787,7 @@ public class DLNAViewTree extends JTree {
 							populateFileFolderNodes(newNode, fileInfo);
 						} else if (currFile instanceof DOFileEntryPlugin 
 								&& ((DOFileEntryPlugin) currFile).getPlugin() != null 
-								&& ((DOFileEntryPlugin) currFile).getPlugin().isAvailable()
+								&& ((DOFileEntryPlugin) currFile).getPlugin().isInstanceAvailable()
 								&& fileInfo instanceof DOVideoFileInfo) {
 							addPluginChildNodes((DOFileEntryPlugin) currFile, (DOVideoFileInfo) fileInfo, newNode);
 						}

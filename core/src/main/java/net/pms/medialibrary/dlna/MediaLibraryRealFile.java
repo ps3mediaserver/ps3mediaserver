@@ -197,7 +197,7 @@ public class MediaLibraryRealFile extends RealFile {
 				}else if (entry instanceof DOFileEntryPlugin && fileInfo instanceof DOVideoFileInfo) {
 					//add a FileDetailPlugin
 					FileDetailPlugin pl = ((DOFileEntryPlugin) entry).getPlugin();
-					if(pl.isAvailable()){
+					if(pl.isInstanceAvailable()){
 						pl.setVideo((DOVideoFileInfo) fileInfo);
 						pl.setDisplayName(fileInfo.getDisplayString(entry.getDisplayNameMask()));
 						addChild(pl.getResource());

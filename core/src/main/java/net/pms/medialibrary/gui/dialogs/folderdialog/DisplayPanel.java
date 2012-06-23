@@ -686,7 +686,7 @@ class DisplayPanel extends JPanel {
 				});
 				
 				for(FileDetailPlugin entry : plugins){
-					if(entry.isAvailable()){
+					if(entry.isPluginAvailable() && entry.isInstanceAvailable()) {
 		    			FileEntryPluginMenuItem dynItem = new FileEntryPluginMenuItem(entry);
 		    			dynItem.addActionListener(new ActionListener() {
 		    				
@@ -1233,7 +1233,7 @@ class DisplayPanel extends JPanel {
 			for (int i = 0; i < folder.getChildren().size(); i++) {
 				DOFileEntryBase currFile = folder.getChildren().get(i);
 				//don't show unavailable plugins
-				if(currFile instanceof DOFileEntryPlugin && (((DOFileEntryPlugin)currFile).getPlugin() == null || !((DOFileEntryPlugin)currFile).getPlugin().isAvailable())){
+				if(currFile instanceof DOFileEntryPlugin && (((DOFileEntryPlugin)currFile).getPlugin() == null || !((DOFileEntryPlugin)currFile).getPlugin().isInstanceAvailable())){
 					nbMissing++;
 					continue;
 				}

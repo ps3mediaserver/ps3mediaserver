@@ -114,5 +114,5 @@ public interface FileDetailPlugin extends PluginBase {
 	 * 
 	 * @return true if the plugin can be used
 	 */
-	boolean isAvailable();
+	boolean isInstanceAvailable();
 }

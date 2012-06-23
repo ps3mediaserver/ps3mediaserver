@@ -130,7 +130,7 @@ public class TmdbRatingPlugin implements FileDetailPlugin {
     }
 
 	@Override
-    public boolean isAvailable() {
+    public boolean isInstanceAvailable() {
 	    if(TmdbHelper.getSession() != null){
 	    	return true;
 	    }
