@@ -18,12 +18,17 @@
  */
 package net.pms.io;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -80,6 +85,17 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 	private double timeseek;
 	private double timeend;
 	private long packetpos = 0;
+
+	//ms777: added for detailed debugging
+	private final static boolean DETAILED_DEBUG = true;
+	private final static String DETAILED_DEBUG_FOLDER = System.getProperty("user.home")+ "\\desktop\\ps3_log\\";
+	private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd--HH-mm-ss-SSS", Locale.ENGLISH);
+	private FileOutputStream debugRead = null;
+	private PrintStream debugLog = null;
+	private static String MillisToString(long lMillis) {
+		return  sdf.format(new Date(lMillis));
+	}
+
 
 	/**
 	 * Try to increase the size of a memory buffer, while retaining its contents. The
@@ -228,12 +244,30 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 				}
 			}, 0, 2000);
 		}
+		//ms777: added for detailed debugging
+		if (DETAILED_DEBUG) {
+			String sNameWrite = DETAILED_DEBUG_FOLDER + "BufferedOutputFileImpl." + MillisToString(System.currentTimeMillis());
+			try {
+				debugOutput = new FileOutputStream(sNameWrite + ".write.dat");
+				debugRead = new FileOutputStream(sNameWrite + ".read.dat");
+				debugLog = new PrintStream(new FileOutputStream(sNameWrite + ".log"));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} 
+
+		}
+		//ms777 end
+
 	}
 
 	@Override
 	public void close() throws IOException {
 		LOGGER.trace("EOF");
 		eof = true;
+//ms777		
+		if (DETAILED_DEBUG) {
+			debugLog.println(MillisToString(System.currentTimeMillis()) + ": close");
+		}
 	}
 
 	@Override
@@ -296,6 +330,10 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 
 	@Override
 	public void write(byte b[], int off, int len) throws IOException {
+		if (DETAILED_DEBUG) debugLog.println(MillisToString(System.currentTimeMillis()) + ", write: off:"  + off + ", len:" + len + ", buf.len: " + buffer.length+ 
+				 ", writeCount: " + writeCount 
+				 + ", attThreadReadyToStop: " + ((attachedThread==null)?"null":attachedThread.isReadyToStop())
+				 + ", readCount = " + (getCurrentInputStream() != null ? getCurrentInputStream().getReadCount() : "null"));
 		if (debugOutput != null) {
 			debugOutput.write(b, off, len);
 			debugOutput.flush();
@@ -401,6 +439,17 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 	
 	@Override
 	public void write(int b) throws IOException {
+//ms777
+		if (DETAILED_DEBUG) debugLog.println(MillisToString(System.currentTimeMillis()) + ", write: off:"  + 0 + ", len:" + 1 + ", buf.len: " + buffer.length+ 
+				 ", writeCount: " + writeCount 
+				 + ", attThreadReadyToStop: " + ((attachedThread==null)?"null":attachedThread.isReadyToStop())
+				 + ", readCount = " + (getCurrentInputStream() != null ? getCurrentInputStream().getReadCount() : "null"));
+		if (debugOutput != null) {
+			debugOutput.write(b);
+			debugOutput.flush();
+		}
+//ms777 end
+		
 		boolean bb = b % 100000 == 0;
 		WaitBufferedInputStream input = getCurrentInputStream();
 		while (bb && ((input != null && (writeCount - input.getReadCount() > bufferOverflowWarning)) || (input == null && writeCount == bufferOverflowWarning))) {
@@ -640,6 +689,8 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 
 	@Override
 	public int read(boolean firstRead, long readCount, byte buf[], int off, int len) {
+		if (DETAILED_DEBUG) debugLog.println(MillisToString(System.currentTimeMillis()) + ", read: off:" + off + ", len:" + len + ", buf.len: " + buffer.length+ 
+				", readCount: " + readCount + ", writeCount: " + writeCount + ", attThreadReadyToStop: " + ((attachedThread==null)?"null":attachedThread.isReadyToStop()));
 		if (readCount > INITIAL_BUFFER_SIZE && readCount < maxMemorySize) {
 			int newMargin = maxMemorySize - MARGIN_MEDIUM;
 			if (bufferOverflowWarning != newMargin) {
@@ -682,15 +733,37 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 
 		if (mb >= endOF - len) {
 			System.arraycopy(buffer, mb, buf, off, endOF - mb - cut);
+			//ms777
+			if (debugRead!=null) {
+				try {
+					debugRead.write(buf, off, endOF - mb - cut);
+					debugRead.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			//ms777 end
 			return endOF - mb;
 		} else {
 			System.arraycopy(buffer, mb, buf, off, len - cut);
+			//ms777
+			if (debugRead!=null) {
+				try {
+					debugRead.write(buf, off, len - cut);
+					debugRead.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			//ms777 end
 			return len;
 		}
 	}
 
 	@Override
 	public int read(boolean firstRead, long readCount) {
+		if (DETAILED_DEBUG) debugLog.println(MillisToString(System.currentTimeMillis()) + ", read: off:" + 0 + ", len:" + 1 + ", buf.len: " + buffer.length+ 
+				", readCount: " + readCount + ", writeCount: " + writeCount + ", attThreadReadyToStop: " + ((attachedThread==null)?"null":attachedThread.isReadyToStop()));
 		if (readCount > INITIAL_BUFFER_SIZE && readCount < maxMemorySize) {
 			int newMargin = maxMemorySize - MARGIN_MEDIUM;
 			if (bufferOverflowWarning != newMargin) {
@@ -699,6 +772,16 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			this.bufferOverflowWarning = newMargin;
 		}
 		if (eof && readCount >= writeCount) {
+			//ms777
+			if (debugRead!=null) {
+				try {
+					debugRead.write(-1);
+					debugRead.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			//ms777 end
 			return -1;
 		}
 		int c = 0;
@@ -722,8 +805,29 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 		}
 
 		if (buffer == null || !buffered) {
+			//ms777
+			if (debugRead!=null) {
+				try {
+					debugRead.write(-1);
+					debugRead.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			//ms777 end
 			return -1;
 		}
+		//ms777
+		if (debugRead!=null) {
+			try {
+				debugRead.write(0xff & buffer[(int) (readCount % maxMemorySize)]);
+				debugRead.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		//ms777 end
+
 		return 0xff & buffer[(int) (readCount % maxMemorySize)];
 	}
 
@@ -767,6 +871,20 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 
 	@Override
 	public synchronized void reset() {
+//ms777
+		if (DETAILED_DEBUG) {
+			debugLog.println(MillisToString(System.currentTimeMillis()) + ", reset");
+			if (debugRead != null) {
+				try {
+					debugRead.close();
+				} catch (IOException e) {
+					logger.debug("Caught exception", e);
+				}
+			}
+			if (debugLog != null) {
+				debugLog.close();
+			}
+		}
 		if (debugOutput != null) {
 			try {
 				debugOutput.close();
@@ -774,6 +892,7 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 				LOGGER.debug("Caught exception", e);
 			}
 		}
+//ms777 end		
 		timer.cancel();
 		if (buffer != null) {
 			LOGGER.trace("Destroying buffer");
