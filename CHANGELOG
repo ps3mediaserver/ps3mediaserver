@@ -14,6 +14,7 @@ Changelog:
     Fixed bug that occurred when resetting cache
     Made buffer display in megabytes instead of bytes
     Fixed overscan compensation bug on some renderers (thanks to tMH for reporting the bug!)
+    Updated MPlayer for OSX to SB32
 
 1.53.0 - 2012-06-11
 
