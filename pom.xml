@@ -2,17 +2,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<!-- PMS consists of two major parts: PMS itself and the third party software 
+	<!--
+		PMS consists of two major parts: PMS itself and the third party software 
 		needed to run it. While PMS itself is 100% pure Java, some of the third party 
 		software is not. This means building a platform specific distribution boils 
 		down to first building the pms.jar and then assembling all application resources. 
-		Note that Maven 3 does not automatically install all dependencies, unlike 
-		Maven 2. To install all dependencies to your local repository, run the following 
-		commands: mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external 
-		mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external 
-		To build PMS, do: mvn clean package After building, the "target" directory 
-		will contain the binary. To generate a full source code report, do: mvn site 
-		After generating, the "target/site" directory will contain the reports. -->
+		
+		Note that Maven 3 does not automatically install all dependencies, unlike Maven 2.
+		To install all dependencies to your local repository, run the following commands:
+		
+			mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external 
+			mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external 
+		
+		To build PMS, do:
+		
+			mvn clean package
+		
+		After building, the "target" directory will contain the binary.
+		To generate a full source code report, do:
+		
+			mvn site 
+		
+		After generating, the "target/site" directory will contain the reports.
+	-->
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -98,7 +110,7 @@
 			<name>renszarv</name>
 		</developer>
 		<developer>
-			<name>happy.nekko</name>
+			<name>happy.neko</name>
 		</developer>
 	</developers>
 
