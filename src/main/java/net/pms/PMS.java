@@ -19,30 +19,7 @@
 
 package net.pms;
 
-import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.BindException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.logging.LogManager;
-
-import javax.swing.JOptionPane;
-
+import com.sun.jna.Platform;
 import net.pms.configuration.Build;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
@@ -57,20 +34,12 @@ import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
 import net.pms.gui.DummyFrame;
 import net.pms.gui.IFrame;
-import net.pms.io.BasicSystemUtils;
-import net.pms.io.MacSystemUtils;
-import net.pms.io.OutputParams;
-import net.pms.io.OutputTextConsumer;
-import net.pms.io.ProcessWrapperImpl;
-import net.pms.io.SolarisUtils;
-import net.pms.io.SystemUtils;
-import net.pms.io.WinUtils;
+import net.pms.io.*;
 import net.pms.logging.LoggingConfigFileLoader;
 import net.pms.network.HTTPServer;
 import net.pms.network.NetworkConfiguration;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
-import net.pms.newgui.GeneralTab;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
 import net.pms.update.AutoUpdater;
@@ -78,14 +47,26 @@ import net.pms.util.ProcessUtil;
 import net.pms.util.PropertiesUtil;
 import net.pms.util.SystemErrWrapper;
 import net.pms.util.TaskRunner;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jna.Platform;
+import javax.swing.*;
+import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.BindException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.logging.LogManager;
 
 public class PMS {
 	private static final String SCROLLBARS = "scrollbars";
@@ -888,7 +869,6 @@ public class PMS {
 			// as the logging starts immediately and some filters need the PmsConfiguration.
 			LoggingConfigFileLoader.load();
 
-			killOld();
 			// create the PMS instance returned by get()
 			createInstance(); 
 		} catch (Throwable t) {
@@ -1059,56 +1039,5 @@ public class PMS {
 				}
 			}
 		}
-	}
-	
-	///////////////////////////////////////////////////////////////
-	// Restart handling
-	///////////////////////////////////////////////////////////////
-	
-	private static void killOld() {
-		try {
-			killProc();
-		} catch (IOException e) {
-			LOGGER.debug("error killing old proc "+e);
-		}
-		try {
-			dumpPid();
-		} catch (IOException e) {
-			LOGGER.debug("error dumping pid "+e);
-		}
-	}
-	
-	private static void killProc() throws IOException {
-		ProcessBuilder pb=null;
-		BufferedReader in = new BufferedReader(new FileReader("pms.pid"));
-		String pid=in.readLine();
-		in.close();
-		if(Platform.isWindows()) {
-			pb=new ProcessBuilder("taskkill","/F","/PID",pid,"/T");
-		}
-		else if(Platform.isFreeBSD()||Platform.isLinux()||Platform.isOpenBSD()||Platform.isSolaris())
-			pb=new ProcessBuilder("kill","-9",pid);
-		if(pb==null) 
-			return;
-		try {			
-			Process p=pb.start();
-			p.waitFor();
-		} catch (Exception e) {
-			LOGGER.debug("error kill pid "+e);
-		}
-	}
-	
-	public static long getPID() {
-	    String processName =
-	      java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
-	    return Long.parseLong(processName.split("@")[0]);
-	  }
-	
-	private static void dumpPid() throws IOException {
-		FileOutputStream out=new FileOutputStream("pms.pid");
-		String data=String.valueOf(getPID())+"\r\n";
-		out.write(data.getBytes());
-		out.flush();
-		out.close();
 	}
 }

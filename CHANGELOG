@@ -11,7 +11,6 @@ Changelog:
     Added support for LG's Smart TV Upgrader (LG 600ST)
     Added support for Yamaha RX-V671 (thanks, adresd!)
     Added support for OPPO BDP-83 and OPPO BDP-93 (thanks, adresd!)
-    Made program restarts more reliable
     Fixed bug that occurred when resetting cache
     Made buffer display in megabytes instead of bytes
     Fixed overscan compensation bug on some renderers (thanks to tMH for reporting the bug!)
