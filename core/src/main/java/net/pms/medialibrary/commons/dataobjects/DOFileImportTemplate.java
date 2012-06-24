@@ -33,11 +33,12 @@ public class DOFileImportTemplate {
 	private int id = 1;
 	private String name;
 	
-	/** The list of engine configurations. An engine configuration */
+	/** The list of engine configurations. */
 	private List<DOFileScannerEngineConfiguration> engineConfigurations;
 	
 	/** Contains the list of enabled engines configured for a file type */
 	private Map<FileType, List<String>> enabledEnginesForFileType;
+	/** Contains the list of tags for a file type */
 	private Map<FileType, Map<String, List<String>>> enabledTags;
 	
 	/**

@@ -82,6 +82,7 @@ public class FileImportTemplateDialog extends JDialog {
 	}
 	
 	private void initComponents(int fileImportTemplateId) {
+		
 		setIconImage(new ImageIcon(FileImportTemplateDialog.class.getResource("/resources/images/icon-32.png")).getImage());
 		setTitle(Messages.getString("ML.FileImportConfigurationDialog.title"));
 		
@@ -129,14 +130,14 @@ public class FileImportTemplateDialog extends JDialog {
 	}
 
 	private void placeComponents() {
-		FormLayout layout = new FormLayout("3px, p, 3px",
-		        "3px, p, p");
+		FormLayout layout = new FormLayout("3px, f:p:g, 3px",
+		        "3px, f:p:g, p");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setOpaque(true);
 
 		CellConstraints cc = new CellConstraints();
 		
-		builder.add(pTemplateFileProperties, cc.xy(2, 2, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+		builder.add(pTemplateFileProperties, cc.xy(2, 2));
 		
 		//add buttons
 		JPanel bPanel = new JPanel();

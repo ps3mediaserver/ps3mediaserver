@@ -41,8 +41,11 @@ import com.jgoodies.forms.layout.FormLayout;
 import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOFileImportTemplate;
 import net.pms.medialibrary.commons.dataobjects.DOFileScannerEngineConfiguration;
+import net.pms.medialibrary.commons.enumarations.FileProperty;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
+import net.pms.plugins.FileImportPlugin;
+import net.pms.plugins.PluginsFactory;
 
 public class FileImportTemplatePanel extends JPanel {
 	private static final long serialVersionUID = -4447691905844747495L;
@@ -280,6 +283,7 @@ public class FileImportTemplatePanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {				
 				DOFileImportTemplate tmpTemplate = getDisplayedTemplate();
+				
 				fippsAudio.setFileImportTemplate(tmpTemplate);
 				fippsVideo.setFileImportTemplate(tmpTemplate);
 				fippsPictures.setFileImportTemplate(tmpTemplate);

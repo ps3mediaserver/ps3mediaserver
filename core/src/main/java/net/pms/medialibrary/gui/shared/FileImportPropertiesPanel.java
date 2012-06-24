@@ -18,6 +18,7 @@
  */
 package net.pms.medialibrary.gui.shared;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -29,7 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -58,7 +61,7 @@ public class FileImportPropertiesPanel extends JPanel {
 	
 	private MultiselectJlist lActivePlugins;
 	private List<FileScannerSelectorPanel> fssps;
-	private List<MultiselectJlist> lTagsPerEngine;
+	private Map<String, MultiselectJlist> lTagsPerEngine;
 
 	private static boolean isHandlingPluginSelectionChange;
 	
@@ -95,8 +98,10 @@ public class FileImportPropertiesPanel extends JPanel {
 	 */
 	private void prepareComponents(DOFileImportTemplate fileImportTemplate) {
 		fssps = getSelectorPanels(fileImportTemplate, fileType);
-		if(!isHandlingPluginSelectionChange) {
-			lActivePlugins = buildActivePluginsPanel(fileImportTemplate);
+		synchronized (this) {
+			if(!isHandlingPluginSelectionChange) {
+				lActivePlugins = buildActivePluginsPanel(fileImportTemplate);
+			}			
 		}
 		lTagsPerEngine = getTagsPerEngine(fileImportTemplate);
 	}
@@ -126,23 +131,31 @@ public class FileImportPropertiesPanel extends JPanel {
 	
 
 	private Component buildTagsPanel() {
-		FormLayout layout = new FormLayout("p, p, p, p, p, p, p, p, p, p, p, p",
-		        "f:p:g");
+		FormLayout layout = new FormLayout("5px, p, 10px, p, 10px, p, 10px, p, 10px, p, 10px, p, 10px, p, 10px, p, 10px, p, 10px, p, 5px",
+		        "f:130, 5px");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(new TitledBorder("Tags"));
 		builder.setOpaque(true);
 
 		CellConstraints cc = new CellConstraints();
 		
-		int x = 1;
+		int x = 2;
 		int y = 1;
-		for(MultiselectJlist l : lTagsPerEngine) {
-			if(y > 12) {
+		for(String engineName : lTagsPerEngine.keySet()) {
+			if(x > 20) {
 				break;
 			}
 			
-			builder.add(l, cc.xy(x, y));
-			x ++;
+			
+			JScrollPane sp = new JScrollPane(lTagsPerEngine.get(engineName));
+			sp.setBorder(BorderFactory.createEmptyBorder());
+
+			JPanel p = new JPanel(new BorderLayout(0, 3));
+			p.add(new JHeader(engineName), BorderLayout.NORTH);
+			p.add(sp, BorderLayout.CENTER);
+			
+			builder.add(p, cc.xy(x, y));
+			x += 2;
 		}
 		
 		return builder.getPanel();
@@ -180,8 +193,8 @@ public class FileImportPropertiesPanel extends JPanel {
 		return builder.getPanel();
 	}
 	
-	private List<MultiselectJlist> getTagsPerEngine(DOFileImportTemplate fileImportTemplate) {
-		List<MultiselectJlist> res = new ArrayList<MultiselectJlist>();
+	private Map<String, MultiselectJlist> getTagsPerEngine(DOFileImportTemplate fileImportTemplate) {
+		Map<String, MultiselectJlist> res = new HashMap<String, MultiselectJlist>();
 		
 		Map<String, List<String>> availableTags = FileImportHelper.getTagNamesPerEngine(fileType, fileImportTemplate);
 		Map<String, List<String>> enabledTagsForEngines = fileImportTemplate.getEnabledTags().get(fileType);
@@ -193,7 +206,6 @@ public class FileImportPropertiesPanel extends JPanel {
 			MultiselectJlist newList = new MultiselectJlist(currentTags);
 			newList.setBackground(getBackground());
 			newList.setCellRenderer(new ActiveEnginesListCellRenderer());
-			newList.setBorder(new TitledBorder(engineName));
 			
 			List<String> enabledTags = enabledTagsForEngines.get(engineName);
 			if(enabledTags != null && enabledTags.size() > 0) {
@@ -213,8 +225,7 @@ public class FileImportPropertiesPanel extends JPanel {
 				}
 				newList.setSelectedIndices(indexesToSelect);
 			}
-			
-			res.add(newList);
+			res.put(engineName, newList);
 		}
 		
 		return res;
@@ -222,15 +233,15 @@ public class FileImportPropertiesPanel extends JPanel {
 
 	private MultiselectJlist buildActivePluginsPanel(DOFileImportTemplate template) {		
 		//initialize the active plugins list view
-		MultiselectJlist l = new MultiselectJlist(FileImportHelper.getAvailableEngineNames(fileType));
-		l.setCellRenderer(new ActiveEnginesListCellRenderer());
-		l.setBorder(new TitledBorder(Messages.getString("ML.FileImportPropertiesPanel.title.ActivePlugins")));
-		l.setBackground(getBackground());
+		final MultiselectJlist newList = new MultiselectJlist(FileImportHelper.getAvailableEngineNames(fileType));
+		newList.setCellRenderer(new ActiveEnginesListCellRenderer());
+		newList.setBorder(new TitledBorder(Messages.getString("ML.FileImportPropertiesPanel.title.ActivePlugins")));
+		newList.setBackground(getBackground());
 		List<String> activeEngines = template.getEnabledEngines().get(fileType);
 		if(activeEngines != null) {
 			//collect the indexes to select in a List<Integer>
 			List<Integer> engineIndexesToSelect = new ArrayList<Integer>();
-			ListModel model = l.getModel();
+			ListModel model = newList.getModel();
 			for(String engineName : activeEngines) {
 				for(int i = 0; i < model.getSize(); i++){
 					String currentEngine = model.getElementAt(i).toString();
@@ -246,10 +257,10 @@ public class FileImportPropertiesPanel extends JPanel {
 			for(int i = 0; i < engineIndexesToSelect.size(); i++) {
 				indexesToSelect[i] = engineIndexesToSelect.get(i);
 			}
-			l.setSelectedIndices(indexesToSelect);
+			newList.setSelectedIndices(indexesToSelect);
 		}
 		
-		l.addListSelectionListener(new ListSelectionListener() {
+		newList.addListSelectionListener(new ListSelectionListener() {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
@@ -258,15 +269,21 @@ public class FileImportPropertiesPanel extends JPanel {
 					isHandlingPluginSelectionChange = true;					
 				}
 				
-				for(ActionListener l : activePluginsChangedListeners) {
-					l.actionPerformed(new ActionEvent(this, 0, "SelectionChanged"));
+				try {
+					ListModel model = newList.getModel();
+					for(ActionListener l : activePluginsChangedListeners) {
+						for(int i = e.getFirstIndex(); i < e.getLastIndex(); i++) {
+							l.actionPerformed(new ActionEvent(this, newList.isSelectedIndex(i) ? 0 : 1, model.getElementAt(i).toString()));
+						}
+					}
+				} 
+				finally {
+					isHandlingPluginSelectionChange = false;
 				}
-				
-				isHandlingPluginSelectionChange = false;
 			}
 		});
 		
-		return l;
+		return newList;
 	}
 
 	/**
@@ -324,14 +341,14 @@ public class FileImportPropertiesPanel extends JPanel {
 
 	public Map<String, List<String>> getActiveTags() {
 		Map<String, List<String>> res = new HashMap<String, List<String>>();
-		for(MultiselectJlist l : lTagsPerEngine) {
-			Object[] vals = l.getSelectedValues();
+		for(String engineName : lTagsPerEngine.keySet()) {
+			Object[] vals = lTagsPerEngine.get(engineName).getSelectedValues();
 			if(vals != null && vals.length > 0) {
 				List<String> tagNames = new ArrayList<String>();
 				for(int i = 0; i < vals.length; i++) {
 					tagNames.add(vals[i].toString());
 				}
-				res.put(((TitledBorder)l.getBorder()).getTitle(), tagNames);
+				res.put(engineName, tagNames);
 			}
 		}
 		return res;
