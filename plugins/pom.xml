@@ -131,9 +131,22 @@
 				</includes>
 			</resource>
 
+			<!-- Filter properties files -->
 			<resource>
 				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
 				<filtering>true</filtering>
+			</resource>
+
+			<!-- Do not filter non-properties files -->
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+				<filtering>false</filtering>
 			</resource>
 		</resources>
 	</build>
