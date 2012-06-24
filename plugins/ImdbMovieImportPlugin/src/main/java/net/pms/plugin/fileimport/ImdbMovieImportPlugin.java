@@ -280,9 +280,9 @@ public class ImdbMovieImportPlugin implements FileImportPlugin {
 			ratingObj = getValue(queryString);
 			if(ratingObj != null) {
 				try {
-					res = Integer.parseInt(ratingObj.toString());
+					res = Integer.parseInt(ratingObj.toString().replace(",", ""));
 				} catch (NumberFormatException ex) {
-					log.error(String.format("Failed to parse rating='%s' as a double", ratingObj.toString()), ex);
+					log.error(String.format("Failed to parse rating='%s' as a integer", ratingObj.toString()), ex);
 				}
 			}
 			break;
