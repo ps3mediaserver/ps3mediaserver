@@ -670,7 +670,7 @@
 					<execution>
 						<id>resolve-install-external-dependencies</id>
 						<!-- Not bound to a phase, you need to execute these manually. See  above -->
-						<!-- phase>process-resources</phase -->
+						<phase>process-resources</phase>
 						<goals>
 							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external -->
 							<goal>resolve-external</goal>
