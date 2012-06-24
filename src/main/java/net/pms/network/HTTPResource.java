@@ -18,27 +18,20 @@
  */
 package net.pms.network;
 
-import static net.pms.util.StringUtil.convertURLToFileName;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Authenticator;
-import java.net.URL;
-import java.net.URLConnection;
-
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.util.PropertiesUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.net.Authenticator;
+import java.net.URL;
+import java.net.URLConnection;
+
+import static net.pms.util.StringUtil.convertURLToFileName;
 
 /**
  * Implements any item that can be transfered through the HTTP pipes.

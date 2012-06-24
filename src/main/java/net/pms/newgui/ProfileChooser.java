@@ -1,11 +1,10 @@
 package net.pms.newgui;
 
-import java.io.File;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
 import net.pms.Messages;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
 public class ProfileChooser {
 	private static class ProfileChooserFileFilter extends FileFilter {

@@ -1,11 +1,11 @@
 package net.pms.external;
 
-import java.util.List;
-
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.encoders.Player;
 import net.pms.io.OutputParams;
+
+import java.util.List;
 
 /**
  * Classes implementing this interface and packaged as pms plugins will have the

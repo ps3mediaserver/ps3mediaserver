@@ -18,12 +18,11 @@
  */
 package net.pms.util;
 
-import java.awt.ComponentOrientation;
-import java.awt.Insets;
-
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormSpec.DefaultAlignment;
+
+import java.awt.*;
 
 /**
  * Provides some convenience behavior for flipping side in column

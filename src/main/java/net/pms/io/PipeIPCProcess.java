@@ -18,19 +18,17 @@
  */
 package net.pms.io;
 
+import com.sun.jna.Platform;
+import net.pms.util.DTSAudioOutputStream;
+import net.pms.util.H264AnnexBInputStream;
+import net.pms.util.PCMAudioOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-
-import net.pms.util.DTSAudioOutputStream;
-import net.pms.util.H264AnnexBInputStream;
-import net.pms.util.PCMAudioOutputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.sun.jna.Platform;
 
 public class PipeIPCProcess extends Thread implements ProcessWrapper {
 	private static final Logger logger = LoggerFactory.getLogger(PipeIPCProcess.class);

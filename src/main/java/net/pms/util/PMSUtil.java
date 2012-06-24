@@ -1,14 +1,13 @@
 package net.pms.util;
 
+import net.pms.PMS;
+import net.pms.newgui.LooksFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Arrays;
-
-import net.pms.PMS;
-import net.pms.newgui.LooksFrame;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PMSUtil {
 	private static final Logger logger = LoggerFactory.getLogger(PMSUtil.class);

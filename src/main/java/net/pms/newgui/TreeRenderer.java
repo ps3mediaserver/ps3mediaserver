@@ -18,14 +18,12 @@
  */
 package net.pms.newgui;
 
-import java.awt.Component;
-import java.awt.Font;
-
-import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeCellRenderer;
-
 import net.pms.encoders.Player;
 import net.pms.encoders.PlayerFactory;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import java.awt.*;
 
 public class TreeRenderer extends DefaultTreeCellRenderer {
 	private static final long serialVersionUID = 8830634234336247114L;

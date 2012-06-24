@@ -19,9 +19,7 @@
  */
 package net.pms.encoders;
 
-import java.io.File;
-import java.util.ArrayList;
-
+import com.sun.jna.Platform;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.formats.Format;
@@ -30,7 +28,8 @@ import net.pms.io.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jna.Platform;
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * This class handles players. Creating an instance will initialize the list of

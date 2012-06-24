@@ -18,9 +18,9 @@
  */
 package net.pms.formats;
 
-import java.util.ArrayList;
-
 import net.pms.encoders.Player;
+
+import java.util.ArrayList;
 
 public class JPG extends Format {
 	public JPG() {

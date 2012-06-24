@@ -18,13 +18,12 @@
  */
 package net.pms.logging;
 
-import java.io.File;
-import java.io.IOException;
-
+import ch.qos.logback.core.PropertyDefinerBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.core.PropertyDefinerBase;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Logback PropertyDefiner to set the path for the <code>debug.log</code> file.

@@ -18,11 +18,11 @@
  */
 package net.pms.dlna.virtual;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import net.pms.dlna.DLNAResource;
 import net.pms.network.HTTPResource;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Represents a container (folder). This is widely used by the UPNP ContentBrowser service. Child objects are expected in this folder.

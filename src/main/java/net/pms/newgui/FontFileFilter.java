@@ -1,10 +1,9 @@
 package net.pms.newgui;
 
-import java.io.File;
+import net.pms.Messages;
 
 import javax.swing.filechooser.FileFilter;
-
-import net.pms.Messages;
+import java.io.File;
 
 public class FontFileFilter extends FileFilter {
 	@Override

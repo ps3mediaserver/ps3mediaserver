@@ -18,15 +18,15 @@
  */
 package net.pms.dlna.virtual;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.FormatFactory;
 import net.pms.network.HTTPResource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * Implements a container that when browsed, an action will be performed.

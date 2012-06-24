@@ -19,12 +19,12 @@
  */
 package net.pms.util;
 
+import net.pms.dlna.DLNAMediaLang;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
-
-import net.pms.dlna.DLNAMediaLang;
 
 /**
  * This class provides a list of languages mapped to ISO 639 language codes

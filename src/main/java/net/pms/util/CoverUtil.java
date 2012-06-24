@@ -19,15 +19,14 @@
 
 package net.pms.util;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-
 import net.pms.network.HTTPResource;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.HashMap;
 
 public class CoverUtil extends HTTPResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CoverUtil.class);

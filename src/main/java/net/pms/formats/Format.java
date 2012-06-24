@@ -18,17 +18,16 @@
  */
 package net.pms.formats;
 
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.InputFile;
 import net.pms.encoders.Player;
 import net.pms.network.HTTPResource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /**
  * Abstract class to store known information about a given format.

@@ -1,14 +1,14 @@
 package net.pms.io;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MacSystemUtils extends BasicSystemUtils {
 	private final static Logger logger = LoggerFactory.getLogger(MacSystemUtils.class); 
