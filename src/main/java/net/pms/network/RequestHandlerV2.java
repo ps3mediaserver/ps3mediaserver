@@ -159,6 +159,8 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 				String temp = s.nextToken();
 				if (request != null && temp.toUpperCase().equals("SOAPACTION:")) {
 					request.setSoapaction(s.nextToken());
+				} else if (request != null && temp.toUpperCase().equals("CALLBACK:")) {
+					request.setSoapaction(s.nextToken());
 				} else if (headerLine.toUpperCase().indexOf("RANGE: BYTES=") > -1) {
 					String nums = headerLine.substring(
 						headerLine.toUpperCase().indexOf(

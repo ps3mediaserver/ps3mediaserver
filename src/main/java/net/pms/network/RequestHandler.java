@@ -34,27 +34,27 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 
 public class RequestHandler implements Runnable {
-	private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RequestHandler.class);
 	public final static int SOCKET_BUF_SIZE = 32768;
 	private Socket socket;
 	private OutputStream output;
 	private BufferedReader br;
-	
+
 	// Used to filter out known headers when the renderer is not recognized
 	private final static String[] KNOWN_HEADERS = {
-		"Accept",
-		"Accept-Language",
-		"Accept-Encoding",
-		"Callback",
-		"Connection",
-		"Content-Length",
-		"Content-Type",
-		"Date",
-		"Host",
-		"Nt",
-		"Sid",
-		"Timeout",
-		"User-Agent"
+			"Accept",
+			"Accept-Language",
+			"Accept-Encoding",
+			"Callback",
+			"Connection",
+			"Content-Length",
+			"Content-Type",
+			"Date",
+			"Host",
+			"Nt",
+			"Sid",
+			"Timeout",
+			"User-Agent"
 	};
 
 
@@ -67,7 +67,7 @@ public class RequestHandler implements Runnable {
 	public void run() {
 		Request request = null;
 		StartStopListenerDelegate startStopListenerDelegate = new StartStopListenerDelegate(
-			socket.getInetAddress().getHostAddress());
+				socket.getInetAddress().getHostAddress());
 
 		try {
 			int receivedContentLength = -1;
@@ -85,11 +85,11 @@ public class RequestHandler implements Runnable {
 				throw new IOException("Access denied for address " + ia + " based on IP filter");
 			}
 
-			logger.trace("Opened request handler on socket " + socket);
+			LOGGER.trace("Opened request handler on socket " + socket);
 			PMS.get().getRegistry().disableGoToSleep();
 
 			while (headerLine != null && headerLine.length() > 0) {
-				logger.trace("Received on socket: " + headerLine);
+				LOGGER.trace("Received on socket: " + headerLine);
 
 				// The request object is created inside the while loop.
 				if (request != null && request.getMediaRenderer() == null) {
@@ -104,7 +104,7 @@ public class RequestHandler implements Runnable {
 					if (renderer != null) {
 						PMS.get().setRendererfound(renderer);
 						request.setMediaRenderer(renderer);
-						logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on address " + ia);
+						LOGGER.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on address " + ia);
 					}
 				}
 
@@ -120,7 +120,7 @@ public class RequestHandler implements Runnable {
 						PMS.get().setRendererfound(renderer);
 						request.setMediaRenderer(renderer);
 						renderer.associateIP(ia);	// Associate IP address for later requests
-						logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
+						LOGGER.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
 					}
 				}
 				if (renderer == null && headerLine != null && request != null) {
@@ -131,17 +131,19 @@ public class RequestHandler implements Runnable {
 						PMS.get().setRendererfound(renderer);
 						request.setMediaRenderer(renderer);
 						renderer.associateIP(ia);	// Associate IP address for later requests
-						logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
+						LOGGER.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
 					}
 				}
 				try {
 					StringTokenizer s = new StringTokenizer(headerLine);
 					String temp = s.nextToken();
-					if (temp.equals("GET") || temp.equals("POST") || temp.equals("HEAD")) {
+					if (temp.equals("SUBSCRIBE") || temp.equals("GET") || temp.equals("POST") || temp.equals("HEAD")) {
 						request = new Request(temp, s.nextToken().substring(1));
 						if (s.hasMoreTokens() && s.nextToken().equals("HTTP/1.0")) {
 							request.setHttp10(true);
 						}
+					} else if (request != null && temp.toUpperCase().equals("CALLBACK:")) {
+						request.setSoapaction(s.nextToken());
 					} else if (request != null && temp.toUpperCase().equals("SOAPACTION:")) {
 						request.setSoapaction(s.nextToken());
 					} else if (headerLine.toUpperCase().contains("CONTENT-LENGTH:")) {
@@ -178,11 +180,11 @@ public class RequestHandler implements Runnable {
 						}
 						request.setTimeseek(Double.parseDouble(timeseek));
 					} else {
-						 // If we made it to here, none of the previous header checks matched.
-						 // Unknown headers make interesting logging info when we cannot recognize
-						 // the media renderer, so keep track of the truly unknown ones.
+						// If we made it to here, none of the previous header checks matched.
+						// Unknown headers make interesting logging info when we cannot recognize
+						// the media renderer, so keep track of the truly unknown ones.
 						boolean isKnown = false;
-						
+
 						// Try to match possible known headers.
 						for (String knownHeaderString : KNOWN_HEADERS) {
 							if (headerLine.toLowerCase().startsWith(knownHeaderString.toLowerCase())) {
@@ -190,7 +192,7 @@ public class RequestHandler implements Runnable {
 								break;
 							}
 						}
-						
+
 						if (!isKnown) {
 							// Truly unknown header, therefore interesting. Save for later use.
 							unknownHeaders.append(separator + headerLine);
@@ -198,7 +200,7 @@ public class RequestHandler implements Runnable {
 						}
 					}
 				} catch (Exception e) {
-					logger.error("Error in parsing HTTP headers", e);
+					LOGGER.error("Error in parsing HTTP headers", e);
 				}
 
 				headerLine = br.readLine();
@@ -207,24 +209,24 @@ public class RequestHandler implements Runnable {
 			if (request != null) {
 				// Still no media renderer recognized?
 				if (request.getMediaRenderer() == null) {
-					
+
 					// Attempt 4: Not really an attempt; all other attempts to recognize
 					// the renderer have failed. The only option left is to assume the
 					// default renderer.
 					request.setMediaRenderer(RendererConfiguration.getDefaultConf());
-					logger.trace("Using default media renderer " + request.getMediaRenderer().getRendererName());
+					LOGGER.trace("Using default media renderer " + request.getMediaRenderer().getRendererName());
 
 					if (userAgentString != null && !userAgentString.equals("FDSSDP")) {
 						// We have found an unknown renderer
-						logger.info("Media renderer was not recognized. Possible identifying HTTP headers: User-Agent: "	+ userAgentString
+						LOGGER.info("Media renderer was not recognized. Possible identifying HTTP headers: User-Agent: "	+ userAgentString
 								+ ("".equals(unknownHeaders.toString()) ? "" : ", " + unknownHeaders.toString()));
 						PMS.get().setRendererfound(request.getMediaRenderer());
 					}
 				} else {
 					if (userAgentString != null) {
-						logger.trace("HTTP User-Agent: " + userAgentString);
+						LOGGER.trace("HTTP User-Agent: " + userAgentString);
 					}
-					logger.trace("Recognized media renderer " + request.getMediaRenderer().getRendererName());
+					LOGGER.trace("Recognized media renderer " + request.getMediaRenderer().getRendererName());
 				}
 			}
 
@@ -237,7 +239,7 @@ public class RequestHandler implements Runnable {
 			}
 
 			if (request != null) {
-				logger.trace("HTTP: " + request.getArgument() + " / " + request.getLowRange() + "-" + request.getHighRange());
+				LOGGER.trace("HTTP: " + request.getArgument() + " / " + request.getLowRange() + "-" + request.getHighRange());
 			}
 
 			if (request != null) {
@@ -249,13 +251,13 @@ public class RequestHandler implements Runnable {
 			}
 
 		} catch (IOException e) {
-			logger.trace("Unexpected IO error: " + e.getClass() + ": " + e.getMessage());
+			LOGGER.trace("Unexpected IO error: " + e.getClass() + ": " + e.getMessage());
 			if (request != null && request.getInputStream() != null) {
 				try {
-					logger.trace("Closing input stream: " + request.getInputStream());
+					LOGGER.trace("Closing input stream: " + request.getInputStream());
 					request.getInputStream().close();
 				} catch (IOException e1) {
-					logger.error("Error closing input stream", e);
+					LOGGER.error("Error closing input stream", e);
 				}
 			}
 		} finally {
@@ -265,14 +267,14 @@ public class RequestHandler implements Runnable {
 				br.close();
 				socket.close();
 			} catch (IOException e) {
-				logger.error("Error closing connection: ", e);
+				LOGGER.error("Error closing connection: ", e);
 			}
 
 			startStopListenerDelegate.stop();
-			logger.trace("Close connection");
+			LOGGER.trace("Close connection");
 		}
 	}
-	
+
 	/**
 	 * Applies the IP filter to the specified internet address. Returns true
 	 * if the address is not allowed and therefore should be filtered out,
