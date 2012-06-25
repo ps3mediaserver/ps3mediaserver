@@ -1,7 +1,9 @@
 Changelog:
 ==========
 
-1.54.0 - 2012-??-??
+1.55.0 - 2012-??-??
+
+1.54.0 - 2012-06-25
 
     Added LPCM transcoding option for all audio tracks
     Added DTS HD-MA support up to 7.1 channels: DTS core remux, LPCM and AC3 transcoding
@@ -15,6 +17,8 @@ Changelog:
     Made buffer display in megabytes instead of bytes
     Fixed overscan compensation bug on some renderers (thanks to tMH for reporting the bug!)
     Updated MPlayer for OSX to SB32
+    Language updates:
+        - CZE translation update (thanks, valib)
 
 1.53.0 - 2012-06-11
 
