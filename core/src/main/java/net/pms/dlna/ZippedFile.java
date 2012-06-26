@@ -18,21 +18,16 @@
  */
 package net.pms.dlna;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import net.pms.formats.Format;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
-
-import net.pms.formats.Format;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ZippedFile extends DLNAResource {
 	private static final Logger logger = LoggerFactory.getLogger(ZippedFile.class);

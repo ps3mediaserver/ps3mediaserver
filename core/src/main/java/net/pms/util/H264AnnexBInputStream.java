@@ -1,10 +1,10 @@
 package net.pms.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class H264AnnexBInputStream extends InputStream {
 	private static final Logger logger = LoggerFactory.getLogger(H264AnnexBInputStream.class);

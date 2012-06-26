@@ -18,6 +18,19 @@
  */
 package net.pms.network;
 
+import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
+import net.pms.plugins.StartStopListenerDelegate;
+
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.handler.codec.frame.TooLongFrameException;
+import org.jboss.netty.handler.codec.http.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -26,31 +39,6 @@ import java.nio.charset.Charset;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.pms.PMS;
-import net.pms.configuration.RendererConfiguration;
-import net.pms.plugins.StartStopListenerDelegate;
-
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.handler.codec.frame.TooLongFrameException;
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 	private static final Logger logger = LoggerFactory.getLogger(RequestHandlerV2.class);
@@ -171,6 +159,8 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 				StringTokenizer s = new StringTokenizer(headerLine);
 				String temp = s.nextToken();
 				if (request != null && temp.toUpperCase().equals("SOAPACTION:")) {
+					request.setSoapaction(s.nextToken());
+				} else if (request != null && temp.toUpperCase().equals("CALLBACK:")) {
 					request.setSoapaction(s.nextToken());
 				} else if (headerLine.toUpperCase().indexOf("RANGE: BYTES=") > -1) {
 					String nums = headerLine.substring(

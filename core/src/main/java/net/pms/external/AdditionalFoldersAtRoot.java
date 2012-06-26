@@ -1,7 +1,8 @@
 package net.pms.external;
 
-import java.util.Iterator;
 import net.pms.dlna.DLNAResource;
+
+import java.util.Iterator;
 
 /**
  * Classes implementing this interface and packaged as pms plugins will show 0-n

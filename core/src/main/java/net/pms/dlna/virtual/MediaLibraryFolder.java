@@ -1,14 +1,10 @@
 package net.pms.dlna.virtual;
 
+import net.pms.PMS;
+import net.pms.dlna.*;
+
 import java.io.File;
 import java.util.ArrayList;
-
-import net.pms.PMS;
-import net.pms.dlna.DLNAMediaDatabase;
-import net.pms.dlna.DLNAResource;
-import net.pms.dlna.DVDISOFile;
-import net.pms.dlna.PlaylistFolder;
-import net.pms.dlna.RealFile;
 
 public class MediaLibraryFolder extends VirtualFolder {
 	public static final int FILES = 0;

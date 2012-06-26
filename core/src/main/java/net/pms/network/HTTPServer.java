@@ -18,19 +18,8 @@
  */
 package net.pms.network;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.channels.ClosedByInterruptException;
-import java.nio.channels.ServerSocketChannel;
-import java.util.concurrent.Executors;
-
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
-
 import org.apache.commons.lang.StringUtils;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -40,6 +29,12 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.*;
+import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.ServerSocketChannel;
+import java.util.concurrent.Executors;
 
 public class HTTPServer implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(HTTPServer.class);

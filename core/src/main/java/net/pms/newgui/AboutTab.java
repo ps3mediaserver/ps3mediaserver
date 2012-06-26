@@ -18,29 +18,22 @@
  */
 package net.pms.newgui;
 
-import java.awt.Cursor;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import net.pms.Messages;
+import net.pms.PMS;
+import net.pms.util.PropertiesUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-
-import net.pms.Messages;
-import net.pms.PMS;
-import net.pms.util.PropertiesUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 public class AboutTab {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AboutTab.class);

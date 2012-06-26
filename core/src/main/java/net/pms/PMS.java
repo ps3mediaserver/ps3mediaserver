@@ -19,35 +19,11 @@
 
 package net.pms;
 
-import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.BindException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.logging.LogManager;
-
-import javax.swing.JOptionPane;
-
+import com.sun.jna.Platform;
 import net.pms.configuration.Build;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaDatabase;
-import net.pms.medialibrary.commons.MediaLibraryConfiguration;
-import net.pms.medialibrary.dlna.RootFolder;
-import net.pms.medialibrary.scanner.FullDataCollector;
-import net.pms.medialibrary.storage.MediaLibraryStorage;
 import net.pms.dlna.virtual.MediaLibrary;
 import net.pms.encoders.Player;
 import net.pms.encoders.PlayerFactory;
@@ -55,20 +31,16 @@ import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
 import net.pms.gui.DummyFrame;
 import net.pms.gui.IFrame;
-import net.pms.io.BasicSystemUtils;
-import net.pms.io.MacSystemUtils;
-import net.pms.io.OutputParams;
-import net.pms.io.OutputTextConsumer;
-import net.pms.io.ProcessWrapperImpl;
-import net.pms.io.SolarisUtils;
-import net.pms.io.SystemUtils;
-import net.pms.io.WinUtils;
+import net.pms.io.*;
 import net.pms.logging.LoggingConfigFileLoader;
+import net.pms.medialibrary.commons.MediaLibraryConfiguration;
+import net.pms.medialibrary.dlna.RootFolder;
+import net.pms.medialibrary.scanner.FullDataCollector;
+import net.pms.medialibrary.storage.MediaLibraryStorage;
 import net.pms.network.HTTPServer;
 import net.pms.network.NetworkConfiguration;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
-import net.pms.newgui.GeneralTab;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
 import net.pms.plugins.PluginsFactory;
@@ -78,14 +50,26 @@ import net.pms.util.ProcessUtil;
 import net.pms.util.PropertiesUtil;
 import net.pms.util.SystemErrWrapper;
 import net.pms.util.TaskRunner;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jna.Platform;
+import javax.swing.*;
+import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.BindException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.logging.LogManager;
 
 public class PMS {
 	private static final String SCROLLBARS = "scrollbars";

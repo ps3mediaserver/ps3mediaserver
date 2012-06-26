@@ -21,8 +21,6 @@
  */
 package net.pms.network;
 
-import static org.jboss.netty.channel.Channels.*;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.group.ChannelGroup;
@@ -32,6 +30,8 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.stream.ChunkedWriteHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.jboss.netty.channel.Channels.pipeline;
 
 /**
  * @author The Netty Project (netty-dev@lists.jboss.org)

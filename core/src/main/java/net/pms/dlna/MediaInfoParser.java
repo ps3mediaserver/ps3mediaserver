@@ -1,14 +1,13 @@
 package net.pms.dlna;
 
-import java.io.File;
-import java.util.StringTokenizer;
-
 import net.pms.configuration.FormatConfiguration;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.StringTokenizer;
 
 public class MediaInfoParser {
 	private static final Logger logger = LoggerFactory.getLogger(MediaInfoParser.class);

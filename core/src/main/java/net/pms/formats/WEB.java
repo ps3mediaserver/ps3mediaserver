@@ -18,17 +18,12 @@
  */
 package net.pms.formats;
 
-import java.util.ArrayList;
-
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
-import net.pms.encoders.MEncoderWebVideo;
-import net.pms.encoders.MPlayerWebAudio;
-import net.pms.encoders.MPlayerWebVideoDump;
-import net.pms.encoders.Player;
-import net.pms.encoders.VideoLanAudioStreaming;
-import net.pms.encoders.VideoLanVideoStreaming;
+import net.pms.encoders.*;
+
+import java.util.ArrayList;
 
 public class WEB extends Format {
 	/**

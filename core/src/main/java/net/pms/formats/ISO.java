@@ -18,10 +18,10 @@
  */
 package net.pms.formats;
 
-import java.util.ArrayList;
-
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
+
+import java.util.ArrayList;
 
 public class ISO extends MPG {
 	public static final String[] ISO_EXTENSIONS = new String[] { "iso", "img", /*"bin", "mdf", "nrg", "bwt", "cif","ccd", "vcd", "fcd"*/ };

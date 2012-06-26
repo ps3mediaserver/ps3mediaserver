@@ -18,26 +18,15 @@
  */
 package net.pms.network;
 
-import java.io.IOException;
-import java.net.BindException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.NetworkInterface;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Random;
-import java.util.TimeZone;
-
 import net.pms.PMS;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Helper class to handle the UPnP traffic that makes PMS discoverable by other clients.

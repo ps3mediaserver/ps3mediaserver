@@ -1,20 +1,14 @@
 package net.pms.newgui.update;
 
-import java.awt.Dimension;
-import java.awt.Window;
+import net.pms.update.AutoUpdater;
+import net.pms.update.AutoUpdater.State;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
-
-import net.pms.update.AutoUpdater;
-import net.pms.update.AutoUpdater.State;
 
 public class AutoUpdateDialog extends JDialog implements Observer {
 	private static final long serialVersionUID = 3809427933990495309L;

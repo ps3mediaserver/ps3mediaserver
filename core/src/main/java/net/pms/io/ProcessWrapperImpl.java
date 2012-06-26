@@ -18,18 +18,17 @@
  */
 package net.pms.io;
 
+import net.pms.PMS;
+import net.pms.encoders.AviDemuxerInputStream;
+import net.pms.util.ProcessUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.pms.PMS;
-import net.pms.encoders.AviDemuxerInputStream;
-import net.pms.util.ProcessUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	private static final Logger logger = LoggerFactory.getLogger(ProcessWrapperImpl.class);

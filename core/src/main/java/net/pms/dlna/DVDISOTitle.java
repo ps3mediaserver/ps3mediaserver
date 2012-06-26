@@ -18,13 +18,6 @@
  */
 package net.pms.dlna;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.FormatFactory;
@@ -32,10 +25,16 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DVDISOTitle extends DLNAResource {
 	private static final Logger logger = LoggerFactory.getLogger(DVDISOTitle.class);

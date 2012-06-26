@@ -41,11 +41,10 @@
  */
 package net.pms.util;
 
-import java.util.ArrayList;
-
-import javax.swing.ComboBoxModel;
+import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import java.util.ArrayList;
 
 /**
  * The KeyedComboBox model allows to define an internal key (the data element)

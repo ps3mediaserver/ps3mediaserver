@@ -18,18 +18,17 @@
  */
 package net.pms.dlna;
 
+import net.pms.formats.Format;
+import net.pms.util.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import net.pms.formats.Format;
-import net.pms.util.FileUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ZippedEntry extends DLNAResource implements IPushOutput {
 	private static final Logger logger = LoggerFactory.getLogger(ZippedEntry.class);

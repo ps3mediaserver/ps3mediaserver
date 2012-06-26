@@ -18,18 +18,17 @@
  */
 package net.pms.dlna;
 
+import de.innosystec.unrar.Archive;
+import de.innosystec.unrar.exception.RarException;
+import de.innosystec.unrar.rarfile.FileHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
-import de.innosystec.unrar.Archive;
-import de.innosystec.unrar.exception.RarException;
-import de.innosystec.unrar.rarfile.FileHeader;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RarredFile extends DLNAResource {
 	private static final Logger logger = LoggerFactory.getLogger(RarredFile.class);

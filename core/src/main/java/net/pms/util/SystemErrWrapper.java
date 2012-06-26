@@ -1,10 +1,10 @@
 package net.pms.util;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class SystemErrWrapper extends OutputStream {
 	private static final Logger logger = LoggerFactory.getLogger(SystemErrWrapper.class);

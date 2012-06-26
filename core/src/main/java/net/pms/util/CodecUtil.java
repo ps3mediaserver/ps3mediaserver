@@ -19,21 +19,15 @@
  */
 package net.pms.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.sun.jna.Platform;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.sun.jna.Platform;
+import java.io.*;
+import java.util.ArrayList;
 
 public class CodecUtil {
 	private static final Logger logger = LoggerFactory.getLogger(CodecUtil.class);

@@ -18,12 +18,11 @@
  */
 package net.pms.formats;
 
-import java.util.ArrayList;
-
 import net.pms.PMS;
-
 import net.pms.encoders.FFMpegDVRMSRemux;
 import net.pms.encoders.Player;
+
+import java.util.ArrayList;
 
 public class DVRMS extends Format {
 	@Override

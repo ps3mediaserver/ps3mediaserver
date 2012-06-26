@@ -18,15 +18,14 @@
  */
 package net.pms.encoders;
 
-import java.io.IOException;
-
-import javax.swing.JComponent;
-
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
+
+import javax.swing.*;
+import java.io.IOException;
 
 public class MPlayerWebAudio extends MPlayerAudio {
 	public static final String ID = "mplayerwebaudio";

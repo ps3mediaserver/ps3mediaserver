@@ -18,18 +18,17 @@
  */
 package net.pms.dlna;
 
+import de.innosystec.unrar.Archive;
+import de.innosystec.unrar.rarfile.FileHeader;
+import net.pms.formats.Format;
+import net.pms.util.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import net.pms.formats.Format;
-import net.pms.util.FileUtil;
-import de.innosystec.unrar.Archive;
-import de.innosystec.unrar.rarfile.FileHeader;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RarredEntry extends DLNAResource implements IPushOutput {
 	private static final Logger logger = LoggerFactory.getLogger(RarredEntry.class);

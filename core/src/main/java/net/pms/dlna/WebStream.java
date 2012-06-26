@@ -18,12 +18,12 @@
  */
 package net.pms.dlna;
 
+import net.pms.network.HTTPResourceAuthenticator;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import net.pms.network.HTTPResourceAuthenticator;
 
 /**
  * TODO: Change all instance variables to private. For backwards compatibility

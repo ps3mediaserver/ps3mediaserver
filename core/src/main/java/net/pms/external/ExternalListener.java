@@ -1,6 +1,6 @@
 package net.pms.external;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
 /**
  * Base interface for pms plugins. Classes implementing this interface and

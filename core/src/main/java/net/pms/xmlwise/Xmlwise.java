@@ -3,11 +3,11 @@ package net.pms.xmlwise;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.File;
 
 /**
  * Xmlwise convenience methods for loading xml documents and render them into

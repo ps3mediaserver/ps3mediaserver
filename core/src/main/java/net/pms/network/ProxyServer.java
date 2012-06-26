@@ -18,12 +18,12 @@
  */
 package net.pms.network;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ProxyServer extends Thread {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProxyServer.class);

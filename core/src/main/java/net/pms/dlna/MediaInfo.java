@@ -27,20 +27,13 @@
 
 package net.pms.dlna;
 
-import static java.util.Collections.singletonMap;
-
-import java.lang.reflect.Method;
-
+import com.sun.jna.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jna.FunctionMapper;
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.Platform;
-import com.sun.jna.Pointer;
-import com.sun.jna.WString;
+import java.lang.reflect.Method;
+
+import static java.util.Collections.singletonMap;
 
 public class MediaInfo {
 	private static final Logger logger = LoggerFactory.getLogger(MediaInfo.class);

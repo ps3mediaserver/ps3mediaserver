@@ -1,10 +1,10 @@
 package net.pms.io;
 
+import net.pms.newgui.LooksFrame;
+
 import java.io.File;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-
-import net.pms.newgui.LooksFrame;
 
 public interface SystemUtils {
 

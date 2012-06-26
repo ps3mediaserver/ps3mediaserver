@@ -18,11 +18,11 @@
  */
 package net.pms.io;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public abstract class UnusedInputStream extends InputStream {
 	private static final Logger logger = LoggerFactory.getLogger(UnusedInputStream.class);

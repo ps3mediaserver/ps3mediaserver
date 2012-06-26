@@ -18,22 +18,10 @@
  */
 package net.pms.configuration;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
+import com.sun.jna.Platform;
+import net.pms.Messages;
 import net.pms.io.SystemUtils;
 import net.pms.util.PropertiesUtil;
-import net.pms.Messages;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
@@ -44,7 +32,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jna.Platform;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.*;
 
 /**
  * Container for all configurable PMS settings. Settings are typically defined by three things:
@@ -71,9 +63,6 @@ public class PmsConfiguration {
 	private static final String KEY_AUDIO_THUMBNAILS_METHOD = "audio_thumbnails_method";
 	private static final String KEY_AUTO_UPDATE = "auto_update";
 	private static final String KEY_AVISYNTH_CONVERT_FPS = "avisynth_convertfps";
-	private static final String KEY_AVISYNTH_INTERFRAME = "avisynth_interframe";
-	private static final String KEY_AVISYNTH_INTERFRAME_GPU = "avisynth_interframegpu";
-	private static final String KEY_AVISYNTH_MULTITHREADING = "avisynth_multithreading";
 	private static final String KEY_AVISYNTH_SCRIPT = "avisynth_script";
 	private static final String KEY_BUFFER_TYPE = "buffertype";
 	private static final String KEY_CHAPTER_INTERVAL = "chapter_interval";
@@ -88,7 +77,6 @@ public class PmsConfiguration {
 	private static final String KEY_FFMPEG_SETTINGS = "ffmpeg";
 	private static final String KEY_FIX_25FPS_AV_MISMATCH = "fix_25fps_av_mismatch";
 	private static final String KEY_FORCETRANSCODE = "forcetranscode";
-	private static final String KEY_FOLDER_LIMIT="folder_limit";
 	private static final String KEY_HIDE_EMPTY_FOLDERS = "hide_empty_folders";
 	private static final String KEY_HIDE_ENGINENAMES = "hide_enginenames";
 	private static final String KEY_HIDE_EXTENSIONS = "hide_extensions";
@@ -1581,30 +1569,6 @@ public class PmsConfiguration {
 		return getBoolean(KEY_AVISYNTH_CONVERT_FPS, false);
 	}
 
-	public void setAvisynthInterFrame(boolean value) {
-		configuration.setProperty(KEY_AVISYNTH_INTERFRAME, value);
-	}
-
-	public boolean getAvisynthInterFrame() {
-		return getBoolean(KEY_AVISYNTH_INTERFRAME, false);
-	}
-
-	public void setAvisynthInterFrameGPU(boolean value) {
-		configuration.setProperty(KEY_AVISYNTH_INTERFRAME_GPU, value);
-	}
-
-	public boolean getAvisynthInterFrameGPU() {
-		return getBoolean(KEY_AVISYNTH_INTERFRAME_GPU, false);
-	}
-
-	public void setAvisynthMultiThreading(boolean value) {
-		configuration.setProperty(KEY_AVISYNTH_MULTITHREADING, value);
-	}
-
-	public boolean getAvisynthMultiThreading() {
-		return getBoolean(KEY_AVISYNTH_MULTITHREADING, false);
-	}
-
 	/**
 	 * Returns the template for the AviSynth script. The script string can
 	 * contain the character "\u0001", which should be treated as the newline
@@ -2283,11 +2247,7 @@ public class PmsConfiguration {
 	public void removeConfigurationListener(ConfigurationListener l) {
 		configuration.removeConfigurationListener(l);
 	}
-	
-	public boolean getFolderLimit() {
-		return getBoolean(KEY_FOLDER_LIMIT, false);
-	}
-	
+
 	public boolean initBufferMax() {
 		return getBoolean(KEY_BUFFER_MAX, false);
 	}

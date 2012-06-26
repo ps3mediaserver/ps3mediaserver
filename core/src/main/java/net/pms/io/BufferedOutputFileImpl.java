@@ -18,6 +18,11 @@
  */
 package net.pms.io;
 
+import net.pms.Messages;
+import net.pms.PMS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,12 +31,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import net.pms.Messages;
-import net.pms.PMS;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Circular memory buffer that can be used as {@link java.io.OutputStream OutputStream} and

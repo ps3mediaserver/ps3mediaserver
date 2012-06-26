@@ -492,6 +492,30 @@
 										<ignore />
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											com.savage7.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-external-dependency-plugin
+										</artifactId>
+										<versionRange>
+											[0.4,)
+										</versionRange>
+										<goals>
+											<goal>
+												resolve-external
+											</goal>
+											<goal>
+												install-external
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
