@@ -2,6 +2,7 @@ Changelog:
 ==========
 
 1.54.1 - 2012-??-??
+    Optimized CBRVideoBitrate value for Panasonic TVs (thanks, ExSport!) 
 
 1.54.0 - 2012-06-25
 
