@@ -7,6 +7,7 @@ Changelog:
     Language updates:
         - Catalan translation update (thanks, aseques)
     Enabled FFmpeg video player for all platforms
+    Added RendererUniqueID to renderers' configs
 
 1.54.0 - 2012-06-25
 
