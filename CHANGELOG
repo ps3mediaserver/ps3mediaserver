@@ -1,11 +1,12 @@
 Changelog:
 ==========
 
-1.54.1 - 2012-??-??
+1.55.0 - 2012-??-??
 
     Optimized CBRVideoBitrate value for Panasonic TVs (thanks, ExSport!) 
     Language updates:
         - Catalan translation update (thanks, aseques)
+    Enabled FFmpeg video player for all platforms
 
 1.54.0 - 2012-06-25
 
