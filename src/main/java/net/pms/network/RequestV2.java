@@ -44,6 +44,8 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static net.pms.configuration.RendererConfiguration.*;
+
 /**
  * This class handles all forms of incoming HTTP requests by constructing a proper HTTP response. 
  */
@@ -466,7 +468,7 @@ public class RequestV2 extends HTTPResource {
 					s = s.replace("PS3 Media Server", "PS3 Media Server [" + profileName + "]");
 				}
 
-				if (!mediaRenderer.getRendererName().equalsIgnoreCase("Playstation 3")) {
+				if (!mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3)) {
 					// hacky stuff. replace the png icon by a jpeg one. Like mpeg2 remux,
 					// really need a proper format compatibility list by renderer
 					s = s.replace("<mimetype>image/png</mimetype>", "<mimetype>image/jpeg</mimetype>");
