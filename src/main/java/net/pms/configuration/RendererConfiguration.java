@@ -258,10 +258,6 @@ public class RendererConfiguration {
 		return getRendererName().toUpperCase().contains("XBMC");
 	}
 
-	public boolean isPS3() {
-		return getRendererName().toUpperCase().contains("PLAYSTATION") || getRendererName().toUpperCase().contains("PS3");
-	}
-
 	public boolean isBRAVIA() {
 		return getRendererName().toUpperCase().contains("BRAVIA");
 	}
@@ -689,7 +685,7 @@ public class RendererConfiguration {
 		if (isMediaParserV2()) {
 			return getFormatConfiguration().isMpeg2Supported();
 		}
-		return isPS3();
+		return getRendererName().equalsIgnoreCase("Playstation 3");
 	}
 
 	/**
