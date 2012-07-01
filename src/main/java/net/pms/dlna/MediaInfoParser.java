@@ -113,6 +113,8 @@ public class MediaInfoParser {
 								media.setHeight(getPixelValue(value));
 							} else if (key.equals("FrameRate")) {
 								media.setFrameRate(getFPSValue(value));
+							} else if (key.equals("FrameRateMode")) {
+								media.setFrameRateMode(getFrameRateModeValue(value));
 							} else if (key.equals("OverallBitRate")) {
 								if (step == MediaInfo.StreamKind.General) {
 									media.setBitrate(getBitrate(value));
@@ -443,6 +445,14 @@ public class MediaInfoParser {
 	public static String getFPSValue(String value) {
 		if (value.indexOf("fps") > -1) {
 			value = value.substring(0, value.indexOf("fps"));
+		}
+		value = value.trim();
+		return value;
+	}
+
+	public static String getFrameRateModeValue(String value) {
+		if (value.indexOf("/") > -1) {
+			value = value.substring(0, value.indexOf("/"));
 		}
 		value = value.trim();
 		return value;
