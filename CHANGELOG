@@ -3,11 +3,12 @@ Changelog:
 
 1.55.0 - 2012-??-??
 
+    Enabled FFmpeg video player for all platforms
     Optimized CBRVideoBitrate value for Panasonic TVs (thanks, ExSport!) 
+    Added RendererUniqueID to renderers' configs
+    Added new renderer: Sony SMP-N100 (thanks, guillepalao)
     Language updates:
         - Catalan translation update (thanks, aseques)
-    Enabled FFmpeg video player for all platforms
-    Added RendererUniqueID to renderers' configs
 
 1.54.0 - 2012-06-25
 
