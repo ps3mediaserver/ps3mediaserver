@@ -498,7 +498,9 @@ download_libpng() {
     cd $SRC
 
     if [ ! -f libpng-${VERSION_LIBPNG}.tar.gz ]; then
-        download http://downloads.sourceforge.net/project/libpng/libpng15/older-releases/${VERSION_LIBPNG}/libpng-${VERSION_LIBPNG}.tar.gz
+        # One of these two, depending on whether we use the latest release
+        #download http://downloads.sourceforge.net/project/libpng/libpng15/older-releases/${VERSION_LIBPNG}/libpng-${VERSION_LIBPNG}.tar.gz
+        download http://downloads.sourceforge.net/project/libpng/libpng15/${VERSION_LIBPNG}/libpng-${VERSION_LIBPNG}.tar.gz
         exit_on_error
     fi
 }
@@ -793,4 +795,4 @@ download_enca
 download_ffmpeg
 download_mplayer
 download_tsmuxer
-download_ps3mediaserver
+#download_ps3mediaserver
