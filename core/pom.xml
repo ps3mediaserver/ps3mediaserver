@@ -60,20 +60,11 @@
 	</ciManagement>
 
 	<properties>
-		<jcalendar-version>1.1.1</jcalendar-version>
-		<jgoodies-binding-version>2.5.1</jgoodies-binding-version>
-
 		<!-- JNA 3.4.0 solves issue #1152, but causes a bug in Windows. The version 
 			is therefore overruled in the Windows profile. This property should be removed 
 			when Windows can use the same version. -->
 		<jna-version>3.4.0</jna-version>
 
-		<cuelib-version>1.2.1-2008-06-13</cuelib-version>
-		<jgoodies-common-version>1.2.1</jgoodies-common-version>
-		<jgoodies-forms-version>1.4.2</jgoodies-forms-version>
-		<jgoodies-looks-version>2.4.2</jgoodies-looks-version>
-		<junrar-version>0.5</junrar-version>
-		<mediautil-version>1.0</mediautil-version>
 		<slf4j-version>1.6.4</slf4j-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.external-resources>${project.basedir}/src/main/external-resources</project.external-resources>
@@ -86,7 +77,7 @@
 
 		<maven.nsis.project.template>${project.basedir}/src/main/external-resources/nsis/project.jelly</maven.nsis.project.template>
 	</properties>
-
+		
 	<repositories>
 		<!-- Sonatype -->
 		<repository>
@@ -580,131 +571,6 @@
 					<dependenciesAsLibraries>true</dependenciesAsLibraries>
 					<useFullNames>false</useFullNames>
 				</configuration>
-			</plugin>
-
-			<!-- This plugin will take care of installing the external dependencies 
-				that do not exist in a public Maven repository. That is why we store some 
-				jar files in the "src/main/external-resources/lib" directory and have this 
-				plugin take care of the installation at build time. Note: The plugin does 
-				not work automatically in Maven 3. To install the required dependencies execute 
-				the following commands: mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external 
-				mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external 
-				Checksums can be calculated with "openssl sha1 [filename]". See: http://code.google.com/p/maven-external-dependency-plugin/issues/detail?id=8#c4 -->
-			<plugin>
-				<groupId>com.savage7.maven.plugins</groupId>
-				<artifactId>maven-external-dependency-plugin</artifactId>
-				<version>0.4</version>
-				<inherited>false</inherited>
-				<configuration>
-					<stagingDirectory>${project.build.directory}/dependencies/</stagingDirectory>
-					<createChecksum>true</createChecksum>
-					<skipChecksumVerification>false</skipChecksumVerification>
-					<force>false</force>
-					<artifactItems>
-
-						<artifactItem>
-							<groupId>com.jgoodies</groupId>
-							<artifactId>common</artifactId>
-							<version>${jgoodies-common-version}</version>
-							<packaging>jar</packaging>
-							<install>true</install>
-							<force>false</force>
-							<downloadUrl>http://www.jgoodies.com/download/libraries/{artifactId}/jgoodies-{artifactId}-{_version}.zip</downloadUrl>
-							<checksum>5a4cf9866a7339e64e52f46101b5b13fe50b9c80</checksum>
-							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
-							<extractFileChecksum>f3955d59f2263fb889b02febec74377647a2eaba</extractFileChecksum>
-						</artifactItem>
-
-						<artifactItem>
-							<groupId>com.jgoodies</groupId>
-							<artifactId>forms</artifactId>
-							<version>${jgoodies-forms-version}</version>
-							<packaging>jar</packaging>
-							<install>true</install>
-							<force>false</force>
-							<downloadUrl>http://www.jgoodies.com/download/libraries/{artifactId}/jgoodies-{artifactId}-{_version}.zip</downloadUrl>
-							<checksum>83bb8780a38cb6bc854964da298f0f657868871d</checksum>
-							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
-							<extractFileChecksum>de8a67990cbeae62910cc2022f06c466476f2f2b</extractFileChecksum>
-						</artifactItem>
-
-						<artifactItem>
-							<groupId>com.jgoodies</groupId>
-							<artifactId>looks</artifactId>
-							<version>${jgoodies-looks-version}</version>
-							<packaging>jar</packaging>
-							<install>true</install>
-							<force>false</force>
-							<downloadUrl>http://www.jgoodies.com/download/libraries/{artifactId}/jgoodies-{artifactId}-{_version}.zip</downloadUrl>
-							<checksum>ccba2963e63c8349f8a16a10abfd5102a94a182b</checksum>
-							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
-							<extractFileChecksum>535745c08e342f7ea78556baad44a4a52ffb7863</extractFileChecksum>
-						</artifactItem>
-
-						<artifactItem>
-							<groupId>jwbroek.cuelib</groupId>
-							<artifactId>cuelib</artifactId>
-							<version>${cuelib-version}</version>
-							<packaging>jar</packaging>
-							<downloadUrl>http://cuelib.googlecode.com/files/cuelib-${cuelib-version}.jar</downloadUrl>
-							<checksum>d03b6b960b3b83a2a419e8b5f07b6ba4bd18387b</checksum>
-						</artifactItem>
-
-						<artifactItem>
-							<groupId>de.innosystec</groupId>
-							<artifactId>java-unrar</artifactId>
-							<version>${junrar-version}</version>
-							<packaging>jar</packaging>
-							<install>true</install>
-							<force>false</force>
-							<downloadUrl>http://cloud.github.com/downloads/edmund-wagner/junrar/java-unrar-${junrar-version}.zip</downloadUrl>
-							<checksum>1e621c27dba2feeac400a96042f55775dc47f990</checksum>
-							<extractFile>java-unrar-${junrar-version}/java-unrar-${junrar-version}.jar</extractFile>
-							<extractFileChecksum>111074096b6bdce79fa09842143c336a5cf64fcb</extractFileChecksum>
-						</artifactItem>
-
-						<artifactItem>
-							<groupId>mediautil</groupId>
-							<artifactId>mediautil</artifactId>
-							<version>${mediautil-version}</version>
-							<packaging>jar</packaging>
-							<install>true</install>
-							<force>false</force>
-							<downloadUrl>http://downloads.sourceforge.net/project/mediachest/MediaUtil/Version%201.0/mediautil-1.zip</downloadUrl>
-							<checksum>aa7ae51bb24a9268a8e57c6afe478c4293f84fda</checksum>
-							<extractFile>mediautil-${mediautil-version}/mediautil-${mediautil-version}.jar</extractFile>
-							<extractFileChecksum>e843cd55def75dce57123c79b7f36caca4841466</extractFileChecksum>
-						</artifactItem>
-
-					</artifactItems>
-
-				</configuration>
-
-				<executions>
-
-					<execution>
-						<id>clean-external-dependencies</id>
-						<phase>clean</phase>
-						<goals>
-							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:clean-external -->
-							<goal>clean-external</goal>
-						</goals>
-					</execution>
-
-					<execution>
-						<id>resolve-install-external-dependencies</id>
-						<!-- Not bound to a phase, you need to execute these manually. See  above -->
-						<phase>process-resources</phase>
-						<goals>
-							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external -->
-							<goal>resolve-external</goal>
-
-							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external -->
-							<goal>install-external</goal>
-						</goals>
-					</execution>
-				</executions>
-
 			</plugin>
 
 			<plugin>
