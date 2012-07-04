@@ -1337,6 +1337,10 @@ build_mplayer() {
         # /usr/bin/gcc gives compile errors for MPlayer on OSX Lion.
         # See https://svn.macports.org/ticket/30279
 
+        # Apply SB patch that was used for the Windows version
+        $PATCH -p0 < $WORKDIR/mplayer.patch
+        exit_on_error
+
         # Theora and vorbis support seems broken in this revision, disable it for now
         ./configure --cc=$GCC2 --disable-x11 --disable-gl --disable-qtx \
               --with-freetype-config=$TARGET/bin/freetype-config --prefix=$TARGET
@@ -1351,6 +1355,10 @@ build_mplayer() {
         set_flags
         export CFLAGS="$CFLAGS -O4 -fomit-frame-pointer -pipe"
         export LDFLAGS="$LDFLAGS -O4 -fomit-frame-pointer -pipe"
+
+        # Apply SB patch that was used for the Windows version
+        $PATCH -p0 < $WORKDIR/mplayer.patch
+        exit_on_error
 
         # mplayer configure patch
         $PATCH -p0 < $WORKDIR/mplayer-configure.patch
@@ -1689,4 +1697,4 @@ build_ffmpeg
 build_mplayer
 
 # Build PS3 Media Server itself
-#build_ps3mediaserver
+# build_ps3mediaserver
