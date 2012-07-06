@@ -4,7 +4,7 @@ import com.sun.jna.Platform;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
-import net.pms.dlna.MediaInfoParser;
+import net.pms.dlna.LibMediaInfoParser;
 import net.pms.dlna.RootFolder;
 import net.pms.formats.Format;
 import net.pms.network.HTTPResource;
@@ -870,15 +870,15 @@ public class RendererConfiguration {
 	}
 
 	public boolean isMediaParserV2() {
-		return getBoolean(MEDIAPARSERV2, false) && MediaInfoParser.isValid();
+		return getBoolean(MEDIAPARSERV2, false) && LibMediaInfoParser.isValid();
 	}
 
 	public boolean isMediaParserV2ThumbnailGeneration() {
-		return getBoolean(MEDIAPARSERV2_THUMB, false) && MediaInfoParser.isValid();
+		return getBoolean(MEDIAPARSERV2_THUMB, false) && LibMediaInfoParser.isValid();
 	}
 
 	public boolean isForceJPGThumbnails() {
-		return (getBoolean(FORCE_JPG_THUMBNAILS, false) && MediaInfoParser.isValid()) || isBRAVIA();
+		return (getBoolean(FORCE_JPG_THUMBNAILS, false) && LibMediaInfoParser.isValid()) || isBRAVIA();
 	}
 
 	public boolean isShowAudioMetadata() {
@@ -890,7 +890,7 @@ public class RendererConfiguration {
 	}
 
 	public boolean isDLNATreeHack() {
-		return getBoolean(DLNA_TREE_HACK, false) && MediaInfoParser.isValid();
+		return getBoolean(DLNA_TREE_HACK, false) && LibMediaInfoParser.isValid();
 	}
 
 	/**

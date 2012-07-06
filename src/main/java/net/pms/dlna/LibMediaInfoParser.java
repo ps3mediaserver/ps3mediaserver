@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.StringTokenizer;
 
-public class MediaInfoParser {
-	private static final Logger logger = LoggerFactory.getLogger(MediaInfoParser.class);
+public class LibMediaInfoParser {
+	private static final Logger logger = LoggerFactory.getLogger(LibMediaInfoParser.class);
 	private static MediaInfo MI;
 	private static Base64 base64;
 
