@@ -24,7 +24,7 @@ import static org.fest.assertions.Assertions.*;
 
 public class SubtitleTypeTest {
 	@Test
-	public void testGetSubtitleTypeByFileExtension_matchingTypes() throws Exception {
+	public void testGetSubtitleTypeByFileExtension_matchingExtensions() throws Exception {
 		assertThat(SubtitleType.getSubtitleTypeByFileExtension("srt")).isEqualTo(SubtitleType.SUBRIP);
 		assertThat(SubtitleType.getSubtitleTypeByFileExtension("txt")).isEqualTo(SubtitleType.TEXT);
 		assertThat(SubtitleType.getSubtitleTypeByFileExtension("sub")).isEqualTo(SubtitleType.MICRODVD);
@@ -32,6 +32,23 @@ public class SubtitleTypeTest {
 		assertThat(SubtitleType.getSubtitleTypeByFileExtension("ssa")).isEqualTo(SubtitleType.ASS);
 		assertThat(SubtitleType.getSubtitleTypeByFileExtension("ass")).isEqualTo(SubtitleType.ASS);
 		assertThat(SubtitleType.getSubtitleTypeByFileExtension("idx")).isEqualTo(SubtitleType.VOBSUB);
+	}
+
+	@Test
+	public void testGetSubtitleTypeByFileExtension_descriptions() throws Exception {
+		assertThat(SubtitleType.getSubtitleTypeByFileExtension("srt").getDescription()).isEqualTo("SubRip");
+		assertThat(SubtitleType.getSubtitleTypeByFileExtension("txt").getDescription()).isEqualTo("Text file");
+		assertThat(SubtitleType.getSubtitleTypeByFileExtension("sub").getDescription()).isEqualTo("MicroDVD");
+		assertThat(SubtitleType.getSubtitleTypeByFileExtension("smi").getDescription()).isEqualTo("SAMI");
+		assertThat(SubtitleType.getSubtitleTypeByFileExtension("ssa").getDescription()).isEqualTo("SubStation Alpha / Advanced SubStation Alpha");
+		assertThat(SubtitleType.getSubtitleTypeByFileExtension("ass").getDescription()).isEqualTo("SubStation Alpha / Advanced SubStation Alpha");
+		assertThat(SubtitleType.getSubtitleTypeByFileExtension("idx").getDescription()).isEqualTo("VobSub");
+	}
+
+	@Test
+	public void testGetSubtitleTypeByFileExtension_descriptionsForUnknownAndEmbedded() throws Exception {
+		assertThat(SubtitleType.UNKNOWN.getDescription()).isEqualTo("Unknown");
+		assertThat(SubtitleType.EMBEDDED.getDescription()).isEqualTo("Embedded");
 	}
 
 	@Test
