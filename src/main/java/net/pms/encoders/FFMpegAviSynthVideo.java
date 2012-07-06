@@ -82,12 +82,12 @@ public class FFMpegAviSynthVideo extends FFMpegVideo {
 		String subLine = null;
 		if (subTrack != null && PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
 			logger.trace("Avisynth script: Using sub track: " + subTrack);
-			if (subTrack.getFile() != null) {
+			if (subTrack.getExternalFile() != null) {
 				String function = "TextSub";
 				if (subTrack.getType() == DLNAMediaSubtitle.VOBSUB) {
 					function = "VobSub";
 				}
-				subLine = "clip=" + function + "(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(subTrack.getFile().getAbsolutePath()) + "\")";
+				subLine = "clip=" + function + "(clip, \"" + ProcessUtil.getShortFileNameIfWideChars(subTrack.getExternalFile().getAbsolutePath()) + "\")";
 			}
 		}
 

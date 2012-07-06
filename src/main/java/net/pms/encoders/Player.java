@@ -251,8 +251,8 @@ public abstract class Player {
 								logger.trace("Forcing preferred subtitles : " + sub.getLang() + "/" + sub.getFlavor());
 								logger.trace("Forced subtitles track : " + sub);
 
-								if (sub.getFile() != null) {
-									logger.trace("Found external forced file : " + sub.getFile().getAbsolutePath());
+								if (sub.getExternalFile() != null) {
+									logger.trace("Found external forced file : " + sub.getExternalFile().getAbsolutePath());
 								}
 								params.sid = sub;
 								forcedSubsFound = true;
@@ -264,8 +264,8 @@ public abstract class Player {
 						}
 					} else {
 							logger.trace("Found subtitles track: " + sub);
-							if (sub.getFile() != null) {
-								logger.trace("Found external file: " + sub.getFile().getAbsolutePath());
+							if (sub.getExternalFile() != null) {
+								logger.trace("Found external file: " + sub.getExternalFile().getAbsolutePath());
 								params.sid = sub;
 								break;
 							}

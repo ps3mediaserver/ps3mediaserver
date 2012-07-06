@@ -469,7 +469,7 @@ public class DLNAMediaDatabase implements Runnable {
 					insert = conn.prepareStatement("INSERT INTO SUBTRACKS VALUES (?, ?, ?, ?, ?)");
 				}
 				for (DLNAMediaSubtitle sub : media.getSubtitlesCodes()) {
-					if (sub.getFile() == null) { // no save of external subtitles
+					if (sub.getExternalFile() == null) { // no save of external subtitles
 						insert.clearParameters();
 						insert.setInt(1, id);
 						insert.setInt(2, sub.getId());
