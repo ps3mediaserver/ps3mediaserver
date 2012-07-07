@@ -2122,7 +2122,33 @@ public class MEncoderVideo extends Player {
 		if (params.timeend > 0) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-endpos";
-			cmdArray[cmdArray.length - 3] = "" + params.timeend;
+
+			//ms777
+			/* The MEncoder man page says:
+			 * 
+		      -endpos <[[hh:]mm:]ss[.ms]|size[b|kb|mb]> (also see -ss and -sb)
+              Stop at given time or byte position.
+              NOTE:  Byte position may not be accurate, as it can only stop at
+              a frame boundary.  When used in  conjunction  with  -ss  option,
+              -endpos time will shift forward by seconds specified with -ss if
+              not a byte position.
+
+              EXAMPLE:
+                 -endpos 56
+                      Stop at 56 seconds.
+                 -endpos 01:10:00
+                      Stop at 1 hour 10 minutes.
+                 -ss 10 -endpos 56
+                      Stop at 1 minute 6 seconds.
+                 mplayer -endpos 100mb
+                      Stop playback after reading 100MB of the input file.
+                 mencoder -endpos 100mb
+                      Encode only 100 MB.
+             => endpos is relative to the position given with -ss, not absolute         
+			 */
+
+			//			cmdArray[cmdArray.length - 3] = "" + params.timeend;
+			cmdArray[cmdArray.length - 3] = "" + (Math.round((params.timeend - ((params.timeseek > 0)?params.timeseek:0))*1000.)/1000.);
 		}
 
 		String rate = "48000";

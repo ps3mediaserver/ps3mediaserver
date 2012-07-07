@@ -77,7 +77,7 @@
 	-->
 
 	<!-- Root logger defines the maximum log level for all loggers -->
-	<root level="DEBUG">
+	<root level="ALL">
 		<appender-ref ref="traces" />
 		<appender-ref ref="console" />
 

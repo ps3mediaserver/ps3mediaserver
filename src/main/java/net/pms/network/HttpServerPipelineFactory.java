@@ -52,6 +52,9 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory {
 		pipeline.addLast("decoder", new HttpRequestDecoder());
 		pipeline.addLast("aggregator", new HttpChunkAggregator(65536)); // eliminate the need to decode http chunks from the client
 		pipeline.addLast("encoder", new HttpResponseEncoder());
+//ms777 for testing
+		pipeline.addLast("ms777Handler", new RequestTestHandler(group));
+		
 		pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
 		pipeline.addLast("handler", new RequestHandlerV2(group));
 		return pipeline;

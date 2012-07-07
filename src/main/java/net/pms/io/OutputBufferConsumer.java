@@ -44,7 +44,8 @@ public class OutputBufferConsumer extends OutputConsumer {
 
 	public OutputBufferConsumer(InputStream inputStream, OutputParams params) {
 		super(inputStream);
-		outputBuffer = new BufferedOutputFileImpl(params);
+//ms777: new BufferedOutputFileImpl2 used here
+		outputBuffer = new BufferedOutputFileImpl2(params);
 	}
 
 	public void run() {
