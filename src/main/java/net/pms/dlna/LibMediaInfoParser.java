@@ -364,7 +364,7 @@ public class LibMediaInfoParser {
 		} else if (value.equals("pgs")) {
 			subt.setType(SubtitleType.UNSUPPORTED); // PGS not yet supported
 		} else if (value.equals("s_text/utf8")) {
-			subt.setType(SubtitleType.EMBEDDED);
+			subt.setType(SubtitleType.SUBRIP);
 		}
 	}
 
