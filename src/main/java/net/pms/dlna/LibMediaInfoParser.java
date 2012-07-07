@@ -80,6 +80,9 @@ public class LibMediaInfoParser {
 							String value = ovalue.toLowerCase();
 							if (key.equals("Format") || key.startsWith("Format_Version") || key.startsWith("Format_Profile")) {
 								getFormat(step, media, currentAudioTrack, value);
+							} else if (key.equals("Format") && (step == MediaInfo.StreamKind.Text)) {
+								// first attempt to detect subtitle track format
+								currentSubTrack.setType(SubtitleType.getSubtitleTypeByLibMediaInfoCodec(value));
 							} else if (key.equals("Duration/String1") && step == MediaInfo.StreamKind.General) {
 								media.setDuration(getDuration(value));
 							} else if (key.equals("Codec_Settings_QPel") && step == MediaInfo.StreamKind.Video) {
@@ -90,6 +93,7 @@ public class LibMediaInfoParser {
 								media.setMuxingMode(ovalue);
 							} else if (key.equals("CodecID")) {
 								if (step == MediaInfo.StreamKind.Text) {
+									// second attempt to detect subtitle track format (CodecID usually is more accurate)
 									currentSubTrack.setType(SubtitleType.getSubtitleTypeByLibMediaInfoCodec(value));
 								} else {
 									getFormat(step, media, currentAudioTrack, value);
