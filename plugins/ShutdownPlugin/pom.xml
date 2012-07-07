@@ -10,7 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>pms-shutdown-plugin</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<name>PMS Shutdown Plugin</name>
 	<description>This plugin adds menu options to shut down the computer where PMS runs.</description>
@@ -29,6 +29,7 @@
 			<version>1.54.1-mlx_0.9-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+
 
 	<build>
 		<plugins>

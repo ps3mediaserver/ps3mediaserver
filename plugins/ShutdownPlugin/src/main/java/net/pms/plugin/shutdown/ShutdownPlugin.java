@@ -97,7 +97,7 @@ public class ShutdownPlugin implements DlnaTreeFolderPlugin {
 	 * @return The virtual video action.
 	 */
 	private DLNAResource getPowerOffAction() {
-		DLNAResource action = new VirtualVideoAction(RESOURCE_BUNDLE.getString("menu.poweroff"), true) {
+		DLNAResource action = new VirtualVideoAction(RESOURCE_BUNDLE.getString("shutdownplugin.menu.poweroff"), true) {
 			/**
 			 * This method is called when the user selects the menu item.
 			 * @return Always returns true.
@@ -209,7 +209,7 @@ public class ShutdownPlugin implements DlnaTreeFolderPlugin {
 	 */
 	@Override
 	public String getLongDescription() {
-		return RESOURCE_BUNDLE.getString("shutdownplugin.shortdescription");
+		return RESOURCE_BUNDLE.getString("shutdownplugin.longdescription");
 	}
 
 	/**
@@ -249,7 +249,7 @@ public class ShutdownPlugin implements DlnaTreeFolderPlugin {
 	 */
 	@Override
 	public String getVersion() {
-		return properties.getProperty("project.version");
+		return RESOURCE_BUNDLE.getString("shutdownplugin.project.version");
 	}
 
 	/**
