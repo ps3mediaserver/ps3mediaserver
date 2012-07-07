@@ -20,7 +20,11 @@ package net.pms.dlna;
 
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class SubtitleTypeTest {
 	@Test
@@ -81,5 +85,11 @@ public class SubtitleTypeTest {
 		assertThat(SubtitleType.getSubtitleTypeByFileExtension("ssA")).isEqualTo(SubtitleType.ASS);
 		assertThat(SubtitleType.getSubtitleTypeByFileExtension("SSA")).isEqualTo(SubtitleType.ASS);
 		assertThat(SubtitleType.getSubtitleTypeByFileExtension("sSa")).isEqualTo(SubtitleType.ASS);
+	}
+
+	@Test
+	public void getSupportedFileExtensions() {
+		Set<String> expectedExtensionsSet = new HashSet<String>(Arrays.asList("srt", "txt", "sub", "smi", "ssa", "ass", "idx"));
+		assertThat(SubtitleType.getSupportedFileExtensions()).isEqualTo(expectedExtensionsSet);
 	}
 }

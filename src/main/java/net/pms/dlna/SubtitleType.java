@@ -55,6 +55,9 @@ public enum SubtitleType {
 		}
 		return subtitleType;
 	}
+	public static Set<String> getSupportedFileExtensions() {
+		return fileExtensionToSubtitleTypeMap.keySet();
+	}
 
 	private SubtitleType(String description, String... fileExtensions) {
 		this.description = description;
