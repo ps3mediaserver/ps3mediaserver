@@ -42,6 +42,7 @@ public class SubtitleTypeTest {
 	public void getSubtitleTypeByLibMediaInfoCodec_matchingCodecs() throws Exception {
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("s_utf8")).isEqualTo(SubtitleType.SUBRIP);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("S_TEXT/UTF8")).isEqualTo(SubtitleType.SUBRIP);
+		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("Subrip")).isEqualTo(SubtitleType.SUBRIP);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("s_ssa")).isEqualTo(SubtitleType.ASS);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("s_ass")).isEqualTo(SubtitleType.ASS);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("S_TEXT/SSA")).isEqualTo(SubtitleType.ASS);
