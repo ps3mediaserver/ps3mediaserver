@@ -31,7 +31,7 @@ import java.io.*;
  */
 public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaSubtitle.class);
-	private SubtitleType type;
+	private SubtitleType type = SubtitleType.UNKNOWN;
 	private String flavor; // subtrack title / language ?
 	private File externalFile;
 	private boolean isExternalFileUtf8;
