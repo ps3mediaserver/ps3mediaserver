@@ -97,7 +97,7 @@ public class ShutdownPlugin implements DlnaTreeFolderPlugin {
 	 * @return The virtual video action.
 	 */
 	private DLNAResource getPowerOffAction() {
-		DLNAResource action = new VirtualVideoAction(RESOURCE_BUNDLE.getString("menu.poweroff"), true) {
+		DLNAResource action = new VirtualVideoAction(RESOURCE_BUNDLE.getString("shutdownplugin.menu.poweroff"), true) {
 			/**
 			 * This method is called when the user selects the menu item.
 			 * @return Always returns true.
