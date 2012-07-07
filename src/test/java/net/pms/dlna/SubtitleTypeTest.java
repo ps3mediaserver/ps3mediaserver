@@ -46,21 +46,23 @@ public class SubtitleTypeTest {
 	}
 
 	@Test
-	public void testGetDescriptionForUnknownAndEmbedded() throws Exception {
+	public void testGetDescriptionForUnknownEmbeddedAndUnsupported() throws Exception {
 		assertThat(SubtitleType.UNKNOWN.getDescription()).isEqualTo("Unknown");
 		assertThat(SubtitleType.EMBEDDED.getDescription()).isEqualTo("Embedded");
+		assertThat(SubtitleType.UNSUPPORTED.getDescription()).isEqualTo("Unsupported");
 	}
 
 	@Test
 	public void testGetExtension() throws Exception {
 		assertThat(SubtitleType.UNKNOWN.getExtension()).isEqualTo("");
-		assertThat(SubtitleType.SUBRIP.getDescription()).isEqualTo("srt");
-		assertThat(SubtitleType.TEXT.getDescription()).isEqualTo("txt");
-		assertThat(SubtitleType.MICRODVD.getDescription()).isEqualTo("sub");
-		assertThat(SubtitleType.SAMI.getDescription()).isEqualTo("smi");
-		assertThat(SubtitleType.ASS.getDescription()).isEqualTo("ass");
-		assertThat(SubtitleType.VOBSUB.getDescription()).isEqualTo("idx");
-		assertThat(SubtitleType.EMBEDDED.getDescription()).isEqualTo("");
+		assertThat(SubtitleType.SUBRIP.getExtension()).isEqualTo("srt");
+		assertThat(SubtitleType.TEXT.getExtension()).isEqualTo("txt");
+		assertThat(SubtitleType.MICRODVD.getExtension()).isEqualTo("sub");
+		assertThat(SubtitleType.SAMI.getExtension()).isEqualTo("smi");
+		assertThat(SubtitleType.ASS.getExtension()).isEqualTo("ass");
+		assertThat(SubtitleType.VOBSUB.getExtension()).isEqualTo("idx");
+		assertThat(SubtitleType.EMBEDDED.getExtension()).isEqualTo("");
+		assertThat(SubtitleType.UNSUPPORTED.getExtension()).isEqualTo("");
 	}
 
 	@Test

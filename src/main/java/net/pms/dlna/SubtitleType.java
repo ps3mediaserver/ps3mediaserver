@@ -30,7 +30,8 @@ public enum SubtitleType {
 	SAMI ("SAMI", "smi"),
 	ASS ("SubStation Alpha / Advanced SubStation Alpha", "ass", "ssa"),
 	VOBSUB ("VobSub", "idx"),
-	EMBEDDED ("Embedded");
+	EMBEDDED ("Embedded"),
+	UNSUPPORTED ("Unsupported");
 
 	private String description;
 	private List<String> fileExtensions;
