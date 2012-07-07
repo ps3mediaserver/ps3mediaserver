@@ -1,6 +1,7 @@
 package net.pms.dlna;
 
 import net.pms.configuration.FormatConfiguration;
+import net.pms.formats.SubtitleType;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;

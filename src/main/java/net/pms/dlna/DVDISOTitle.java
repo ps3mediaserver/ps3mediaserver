@@ -21,6 +21,7 @@ package net.pms.dlna;
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.FormatFactory;
+import net.pms.formats.SubtitleType;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.util.FileUtil;
