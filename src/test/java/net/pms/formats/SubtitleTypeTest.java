@@ -55,6 +55,7 @@ public class SubtitleTypeTest {
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("tx3g")).isEqualTo(SubtitleType.TX3G);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("pgs")).isEqualTo(SubtitleType.PGS);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("S_HDMV/PGS")).isEqualTo(SubtitleType.PGS);
+		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("144")).isEqualTo(SubtitleType.PGS);
 	}
 
 	@Test
