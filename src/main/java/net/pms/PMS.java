@@ -890,67 +890,6 @@ public class PMS {
 		return FormatFactory.getExtensions();
 	}
 
-	/**
-	 * @deprecated Use {@link net.pms.encoders.PlayerFactory#registerPlayer(net.pms.encoders.Player)} instead.
-	 *
-	 * Adds a single {@link net.pms.encoders.Player} to the list of Players.
-	 *
-	 * @param player Player to be added to the list.
-	 * @see net.pms.encoders.Player
-	 */
-	@Deprecated
-	public void registerPlayer(Player player) {
-		PlayerFactory.registerPlayer(player);
-	}
-
-	/**
-	 * @deprecated Use {@link net.pms.encoders.PlayerFactory#getPlayers()} instead.
-	 *
-	 * Returns the list of players that have been verified as okay.
-	 * 
-	 * @return The list of players.
-	 */
-	@Deprecated
-	public ArrayList<Player> getPlayers() {
-		return PlayerFactory.getPlayers();
-	}
-
-	/**
-	 * @deprecated Use {@link net.pms.encoders.PlayerFactory#getAllPlayers()} instead.
-	 *
-	 * Returns the list of all players. This includes the ones not verified as
-	 * being okay.
-	 * 
-	 * @return The list of players.
-	 */
-	public ArrayList<Player> getAllPlayers() {
-		return PlayerFactory.getAllPlayers();
-	}
-
-	/**
-	 * @deprecated Use {@link net.pms.encoders.PlayerFactory#getPlayer(Class, net.pms.formats.Format)} instead.
-	 * 
-	 * @param profileClass
-	 * @param ext
-	 * @return The player if a match could be found
-	 */
-	@Deprecated
-	public Player getPlayer(Class<? extends Player> profileClass, Format ext) {
-		return PlayerFactory.getPlayer(profileClass, ext);
-	}
-
-	/**
-	 * @deprecated Use {@link net.pms.encoders.PlayerFactory#getPlayers(java.util.ArrayList, int)} instead.
-	 * 
-	 * @param profileClasses
-	 * @param type
-	 * @return The list of players that match
-	 */
-	@Deprecated
-	public ArrayList<Player> getPlayers(ArrayList<Class<? extends Player>> profileClasses, int type) {
-		return PlayerFactory.getPlayers(profileClasses, type);
-	}
-
 	public void save() {
 		try {
 			configuration.save();
