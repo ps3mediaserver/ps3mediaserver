@@ -21,6 +21,7 @@ package net.pms.dlna;
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.FormatFactory;
+import net.pms.formats.SubtitleType;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.util.FileUtil;
@@ -115,7 +116,7 @@ public class DVDISOTitle extends DLNAResource {
 					if (lang.getLang().equals("unknown")) {
 						lang.setLang(DLNAMediaLang.UND);
 					}
-					lang.setType(DLNAMediaSubtitle.EMBEDDED);
+					lang.setType(SubtitleType.UNKNOWN);
 					subs.add(lang);
 				}
 				if (line.startsWith("ID_VIDEO_WIDTH=")) {

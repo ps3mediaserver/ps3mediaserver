@@ -1,6 +1,7 @@
 package net.pms.dlna;
 
 import net.pms.configuration.FormatConfiguration;
+import net.pms.formats.SubtitleType;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -9,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.StringTokenizer;
 
-public class MediaInfoParser {
-	private static final Logger logger = LoggerFactory.getLogger(MediaInfoParser.class);
+public class LibMediaInfoParser {
+	private static final Logger logger = LoggerFactory.getLogger(LibMediaInfoParser.class);
 	private static MediaInfo MI;
 	private static Base64 base64;
 
@@ -146,7 +147,7 @@ public class MediaInfoParser {
 											currentAudioTrack.setId(currentAudioTrack.getId() + 1);
 										}
 									} else if (step == MediaInfo.StreamKind.Text) {
-										currentSubTrack.setId(media.getSubtitlesCodes().size());
+										currentSubTrack.setId(media.getSubtitleTracksList().size());
 									}
 								}
 							} else if (key.equals("Cover_Data") && step == MediaInfo.StreamKind.General) {
@@ -223,16 +224,13 @@ public class MediaInfoParser {
 	}
 
 	public static void addSub(DLNAMediaSubtitle currentSubTrack, DLNAMediaInfo media) {
-		if (currentSubTrack.getType() == -1) {
+		if (currentSubTrack.getType() == SubtitleType.UNSUPPORTED) {
 			return;
 		}
 		if (currentSubTrack.getLang() == null) {
 			currentSubTrack.setLang(DLNAMediaLang.UND);
 		}
-		if (currentSubTrack.getType() == 0) {
-			currentSubTrack.setType(DLNAMediaSubtitle.EMBEDDED);
-		}
-		media.getSubtitlesCodes().add(currentSubTrack);
+		media.getSubtitleTracksList().add(currentSubTrack);
 	}
 
 	public static void getFormat(MediaInfo.StreamKind current, DLNAMediaInfo media, DLNAMediaAudio audio, String value) {
@@ -359,14 +357,11 @@ public class MediaInfoParser {
 	}
 
 	public static void getSubCodec(DLNAMediaSubtitle subt, String value) {
-		if (value.equals("s_text/ass") || value.equals("s_text/ssa")) {
-			subt.setType(DLNAMediaSubtitle.ASS);
-		} else if (value.equals("pgs")) {
-			subt.setType(-1); // PGS not yet supported
-		} else if (value.equals("s_text/utf8")) {
-			subt.setType(DLNAMediaSubtitle.EMBEDDED);
-			subt.setFileUtf8(true);
+		SubtitleType subType = SubtitleType.getSubtitleTypeByLibMediaInfoCodec(value);
+		if (subType == SubtitleType.PGS) {
+			subType = SubtitleType.UNSUPPORTED; // PGS not yet supported
 		}
+		subt.setType(subType);
 	}
 
 	public static int getPixelValue(String value) {
@@ -489,6 +484,7 @@ public class MediaInfoParser {
 			}
 			int msl = token.indexOf("ms");
 			if (msl == -1) {
+				// Only check if ms was not found
 				int sl = token.indexOf("s");
 				if (sl > -1) {
 					s = Integer.parseInt(token.substring(0, sl).trim());

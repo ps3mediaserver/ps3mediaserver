@@ -31,6 +31,7 @@ import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.*;
 import net.pms.formats.Format;
+import net.pms.formats.SubtitleType;
 import net.pms.io.*;
 import net.pms.network.HTTPResource;
 import net.pms.newgui.FontFileFilter;
@@ -1201,8 +1202,8 @@ public class MEncoderVideo extends Player {
 		setAudioAndSubs(fileName, media, params, configuration);
 		String subString = null;
 
-		if (params.sid != null && params.sid.getPlayableFile() != null) {
-			subString = ProcessUtil.getShortFileNameIfWideChars(params.sid.getPlayableFile().getAbsolutePath());
+		if (params.sid != null && params.sid.getPlayableExternalFile() != null) {
+			subString = ProcessUtil.getShortFileNameIfWideChars(params.sid.getPlayableExternalFile().getAbsolutePath());
 		}
 
 		InputFile newInput = new InputFile();
@@ -1518,33 +1519,18 @@ public class MEncoderVideo extends Player {
 			int subtitleMargin = 0;
 			int userMargin     = 0;
 
-			// Use ASS flag (and therefore ASS font styles) for all subtitled files except vobsub, embedded, dvd and mp4 container with srt
-			// Note: The MP4 container with SRT rule is a workaround for MEncoder r30369. If there is ever a later version of MEncoder that supports external srt subs we should use that. As of r32848 that isn't the case
-			if (
-				(
-					(
-						params.sid.isFileUtf8() &&
-						params.sid.getType() == DLNAMediaSubtitle.EMBEDDED
-					) ||
-					params.sid.getType() != DLNAMediaSubtitle.EMBEDDED
-				) &&
-				params.sid.getType() != DLNAMediaSubtitle.VOBSUB &&
-				!(
-					params.sid.getType() == DLNAMediaSubtitle.SUBRIP &&
-					media.getContainer().equals("mp4")
-				) &&
-				configuration.isMencoderAss() &&   // GUI: enable subtitles formating
-				!foundNoassParam &&                // GUI: codec specific options
-				!dvd
-			) {
+			// Use ASS flag (and therefore ASS font styles) for all subtitled files except vobsub and dvd
+			boolean apply_ass_styling = params.sid.getType() != SubtitleType.VOBSUB &&
+					configuration.isMencoderAss() &&   // GUI: enable subtitles formating
+					!foundNoassParam &&                // GUI: codec specific options
+					!dvd;
+			if (apply_ass_styling) {
 				sb.append("-ass ");
 
 				// GUI: Override ASS subtitles style if requested (always for SRT subtitles)
-				if (
-					!configuration.isMencoderAssDefaultStyle() ||
-					params.sid.getType() == DLNAMediaSubtitle.SUBRIP ||
-					params.sid.getType() == DLNAMediaSubtitle.EMBEDDED
-				) {
+				boolean override_ass_style = !configuration.isMencoderAssDefaultStyle() ||
+						params.sid.getType() == SubtitleType.SUBRIP;
+				if (override_ass_style) {
 					String assSubColor = "ffffff00";
 					if (configuration.getSubsColor() != 0) {
 						assSubColor = Integer.toHexString(configuration.getSubsColor());
@@ -1598,8 +1584,8 @@ public class MEncoderVideo extends Player {
 					sb.append("-ass-force-style MarginV=").append(subtitleMargin).append(" ");
 				}
 
-				if (params.sid.getType() != DLNAMediaSubtitle.EMBEDDED) {
-					// Workaround for MPlayer #2041, remove when that bug is fixed
+				// Workaround for MPlayer #2041, remove when that bug is fixed
+				if (!params.sid.isEmbedded()) {
 					sb.append("-noflip-hebrew ");
 				}
 			// use PLAINTEXT formating
@@ -1639,14 +1625,14 @@ public class MEncoderVideo extends Player {
 			// Use fontconfig if enabled
 			sb.append("-").append(configuration.isMencoderFontConfig() ? "" : "no").append("fontconfig ");
 
-			// Apply DVD/VOBsub subtitle quality
-			if (params.sid.getType() == DLNAMediaSubtitle.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
+			// Apply DVD/VOBSUB subtitle quality
+			if (params.sid.getType() == SubtitleType.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
 				String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
 
 				sb.append("-spuaa ").append(subtitleQuality).append(" ");
 			}
 
-			if (!params.sid.isFileUtf8() && !configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
+			if (!configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
 				sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" ");
 				if (configuration.isMencoderSubFribidi()) {
 					sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" ");
@@ -1779,8 +1765,8 @@ public class MEncoderVideo extends Player {
 		 * TODO: Move the following block up with the rest of the
 		 * subtitle stuff
 		 */
-		if (subString != null && !configuration.isMencoderDisableSubs() && !avisynth()) {
-			if (params.sid.getType() == DLNAMediaSubtitle.VOBSUB) {
+		if (subString != null && !configuration.isMencoderDisableSubs() && !avisynth() && params.sid != null) {
+			if (params.sid.getType() == SubtitleType.VOBSUB) {
 				cmdArray[cmdArray.length - 4] = "-vobsub";
 				cmdArray[cmdArray.length - 3] = subString.substring(0, subString.length() - 4);
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
@@ -1789,7 +1775,7 @@ public class MEncoderVideo extends Player {
 			} else {
 				cmdArray[cmdArray.length - 4] = "-sub";
 				cmdArray[cmdArray.length - 3] = subString.replace(",", "\\,"); // Commas in MEncoder separate multiple subtitle files
-				if (params.sid.isFileUtf8() && params.sid.getPlayableFile() != null) {
+				if (params.sid.getPlayableExternalFile() != null && params.sid.isExternalFileUtf8()) {
 					cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 1);
 					cmdArray[cmdArray.length - 3] = "-utf8";
 				}

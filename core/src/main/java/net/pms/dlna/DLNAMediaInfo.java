@@ -23,6 +23,7 @@ import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.AudioAsVideo;
 import net.pms.formats.Format;
+import net.pms.formats.SubtitleType;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
@@ -813,7 +814,7 @@ public class DLNAMediaInfo implements Cloneable {
 								}
 							} else if (line.indexOf("Subtitle:") > -1 && !line.contains("tx3g")) {
 								DLNAMediaSubtitle lang = new DLNAMediaSubtitle();
-								lang.setType((line.contains("dvdsub") && Platform.isWindows() ? DLNAMediaSubtitle.VOBSUB : DLNAMediaSubtitle.EMBEDDED));
+								lang.setType((line.contains("dvdsub") && Platform.isWindows() ? SubtitleType.VOBSUB : SubtitleType.UNKNOWN));
 								int a = line.indexOf("(");
 								int b = line.indexOf("):", a);
 								if (a > -1 && b > a) {
@@ -841,7 +842,7 @@ public class DLNAMediaInfo implements Cloneable {
 										}
 									}
 								}
-								getSubtitlesCodes().add(lang);
+								getSubtitleTracksList().add(lang);
 							}
 						}
 					}
@@ -1090,8 +1091,8 @@ public class DLNAMediaInfo implements Cloneable {
 				s += " / " + audio.getArtist() + "|" + audio.getAlbum() + "|" + audio.getSongname() + "|" + audio.getYear() + "|" + audio.getTrack();
 			}
 		}
-		for (DLNAMediaSubtitle sub : getSubtitlesCodes()) {
-			s += "\n\tsub: id=" + sub.getId() + " / lang: " + sub.getLang() + " / flavor: " + sub.getFlavor() + " / type: " + sub.getType();
+		for (DLNAMediaSubtitle sub : getSubtitleTracksList()) {
+			s += "\n\tsub: id=" + sub.getId() + " / lang: " + sub.getLang() + " / flavor: " + sub.getFlavor() + " / type: " + (sub.getType() != null ? sub.getType().toString() : "null");
 		}
 		return s;
 	}
@@ -1295,8 +1296,8 @@ public class DLNAMediaInfo implements Cloneable {
 				mediaCloned.getAudioCodes().add((DLNAMediaAudio) audio.clone());
 			}
 			mediaCloned.setSubtitlesCodes(new ArrayList<DLNAMediaSubtitle>());
-			for (DLNAMediaSubtitle sub : getSubtitlesCodes()) {
-				mediaCloned.getSubtitlesCodes().add((DLNAMediaSubtitle) sub.clone());
+			for (DLNAMediaSubtitle sub : getSubtitleTracksList()) {
+				mediaCloned.getSubtitleTracksList().add((DLNAMediaSubtitle) sub.clone());
 			}
 		}
 
@@ -1499,7 +1500,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @return the subtitlesCodes
 	 * @since 1.50
 	 */
-	public List<DLNAMediaSubtitle> getSubtitlesCodes() {
+	public List<DLNAMediaSubtitle> getSubtitleTracksList() {
 		return subtitlesCodes;
 	}
 

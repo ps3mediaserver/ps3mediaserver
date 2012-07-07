@@ -35,6 +35,7 @@ import java.util.List;
 
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaSubtitle;
+import net.pms.formats.SubtitleType;
 import net.pms.medialibrary.commons.MediaLibraryConfiguration;
 import net.pms.medialibrary.commons.dataobjects.DOCertification;
 import net.pms.medialibrary.commons.dataobjects.DOFilter;
@@ -346,10 +347,10 @@ class DBVideoFileInfo extends DBFileInfo {
 					String subtitleFilePath = rs.getString(pos++);
 					File subTitleFile;
 					if (subtitleFilePath != null && !subtitleFilePath.equals("") && (subTitleFile = new File(subtitleFilePath)).exists()) {
-						subtitleTrack.setFile(subTitleFile);
+						subtitleTrack.setExternalFile(subTitleFile);
 					}
 					subtitleTrack.setLang(rs.getString(pos++));
-					subtitleTrack.setType(rs.getInt(pos++));
+					subtitleTrack.setType(SubtitleType.values()[rs.getInt(pos++)]);
 
 					boolean doInsertSubtitleTrack = true;
 					for (DLNAMediaSubtitle currTrack : videoFile.getSubtitlesCodes()) {
@@ -783,12 +784,12 @@ class DBVideoFileInfo extends DBFileInfo {
 				stmt.clearParameters();
 				stmt.setInt(1, videoFileInfo.getId());
 				String filePath = "";
-				if (subtitle.getFile() != null) {
-					filePath = subtitle.getFile().getAbsolutePath();
+				if (subtitle.getExternalFile() != null) {
+					filePath = subtitle.getExternalFile().getAbsolutePath();
 				}
 				stmt.setString(2, filePath);
 				stmt.setString(3, subtitle.getLang());
-				stmt.setInt(4, subtitle.getType());
+				stmt.setInt(4, subtitle.getType().ordinal());
 				stmt.executeUpdate();
 			} catch (Exception e) {
 				throw new StorageException("Failed to insert subtitles lang=" + subtitle.getLang() + " for file " + videoFileInfo.getFileName(false), e);

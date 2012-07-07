@@ -38,6 +38,8 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 public class Request extends HTTPResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Request.class);
 
@@ -216,12 +218,12 @@ public class Request extends HTTPResource {
 					// This is a request for a subtitle file
 					output(output, "Content-Type: text/plain");
 					output(output, "Expires: " + getFUTUREDATE() + " GMT");
-					List<DLNAMediaSubtitle> subs = dlna.getMedia().getSubtitlesCodes();
+					List<DLNAMediaSubtitle> subs = dlna.getMedia().getSubtitleTracksList();
 
 					if (subs != null && !subs.isEmpty()) {
 						// TODO: maybe loop subs to get the requested subtitle type instead of using the first one
 						DLNAMediaSubtitle sub = subs.get(0);
-						inputStream = new java.io.FileInputStream(sub.getFile());
+						inputStream = new java.io.FileInputStream(sub.getExternalFile());
 					}
 				} else {
 					// This is a request for a regular file.
@@ -239,20 +241,22 @@ public class Request extends HTTPResource {
 
 						if (subtitleHttpHeader != null && !"".equals(subtitleHttpHeader)) {
 							// Device allows a custom subtitle HTTP header; construct it
-							List<DLNAMediaSubtitle> subs = dlna.getMedia().getSubtitlesCodes();
+							List<DLNAMediaSubtitle> subs = dlna.getMedia().getSubtitleTracksList();
 
 							if (subs != null && !subs.isEmpty()) {
 								DLNAMediaSubtitle sub = subs.get(0);
-
-								int type = sub.getType();
-
-								if (type < DLNAMediaSubtitle.subExtensions.length) {
-									String strType = DLNAMediaSubtitle.subExtensions[type - 1];
-									String subtitleUrl = "http://" + PMS.get().getServer().getHost()
+								String subtitleUrl;
+								String subExtension = sub.getType().getExtension();
+								if (isNotBlank(subExtension)) {
+									subtitleUrl = "http://" + PMS.get().getServer().getHost()
 											+ ':' + PMS.get().getServer().getPort() + "/get/"
-											+ id + "/subtitle0000." + strType;
-									output(output, subtitleHttpHeader + ": " + subtitleUrl);
+											+ id + "/subtitle0000." + subExtension;
+								} else {
+									subtitleUrl = "http://" + PMS.get().getServer().getHost()
+											+ ':' + PMS.get().getServer().getPort() + "/get/"
+											+ id + "/subtitle0000";
 								}
+								output(output, subtitleHttpHeader + ": " + subtitleUrl);
 							}
 						}
 

@@ -226,7 +226,7 @@ public abstract class Player {
 						matchedSub = new DLNAMediaSubtitle();
 						matchedSub.setLang("off");
 					} else {
-						for (DLNAMediaSubtitle present_sub : media.getSubtitlesCodes()) {
+						for (DLNAMediaSubtitle present_sub : media.getSubtitleTracksList()) {
 							if (present_sub.matchCode(sub) || sub.equals("*")) {
 								matchedSub = present_sub;
 								logger.trace(" Found a match: " + matchedSub);
@@ -258,7 +258,7 @@ public abstract class Player {
 			if (configuration.getUseSubtitles()) {
 				boolean forcedSubsFound = false;
 				// Priority to external subtitles
-				for (DLNAMediaSubtitle sub : media.getSubtitlesCodes()) {
+				for (DLNAMediaSubtitle sub : media.getSubtitleTracksList()) {
 					if (matchedSub !=null && matchedSub.getLang() !=null && matchedSub.getLang().equals("off")) {
 						StringTokenizer st = new StringTokenizer(configuration.getMencoderForcedSubTags(), ",");
 
@@ -272,8 +272,8 @@ public abstract class Player {
 								logger.trace("Forcing preferred subtitles : " + sub.getLang() + "/" + sub.getFlavor());
 								logger.trace("Forced subtitles track : " + sub);
 
-								if (sub.getFile() != null) {
-									logger.trace("Found external forced file : " + sub.getFile().getAbsolutePath());
+								if (sub.getExternalFile() != null) {
+									logger.trace("Found external forced file : " + sub.getExternalFile().getAbsolutePath());
 								}
 								params.sid = sub;
 								forcedSubsFound = true;
@@ -285,8 +285,8 @@ public abstract class Player {
 						}
 					} else {
 							logger.trace("Found subtitles track: " + sub);
-							if (sub.getFile() != null) {
-								logger.trace("Found external file: " + sub.getFile().getAbsolutePath());
+							if (sub.getExternalFile() != null) {
+								logger.trace("Found external file: " + sub.getExternalFile().getAbsolutePath());
 								params.sid = sub;
 								break;
 							}
@@ -307,7 +307,7 @@ public abstract class Player {
 					String lang = st.nextToken();
 					lang = lang.trim();
 					logger.trace("Looking for a subtitle track with lang: " + lang);
-					for (DLNAMediaSubtitle sub : media.getSubtitlesCodes()) {
+					for (DLNAMediaSubtitle sub : media.getSubtitleTracksList()) {
 						if (sub.matchCode(lang)) {
 							params.sid = sub;
 							logger.trace("Matched sub track: " + params.sid);

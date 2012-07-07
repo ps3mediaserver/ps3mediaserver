@@ -22,6 +22,7 @@ import com.sun.jna.Platform;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
+import net.pms.formats.SubtitleType;
 import org.apache.commons.lang.StringUtils;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.h2.jdbcx.JdbcDataSource;
@@ -349,8 +350,8 @@ public class DLNAMediaDatabase implements Runnable {
 					sub.setId(subrs.getInt("ID"));
 					sub.setLang(subrs.getString("LANG"));
 					sub.setFlavor(subrs.getString("FLAVOR"));
-					sub.setType(subrs.getInt("TYPE"));
-					media.getSubtitlesCodes().add(sub);
+					sub.setType(SubtitleType.values()[subrs.getInt("TYPE")]);
+					media.getSubtitleTracksList().add(sub);
 				}
 				subrs.close();
 				subs.close();
@@ -465,17 +466,17 @@ public class DLNAMediaDatabase implements Runnable {
                     insert.executeUpdate();
 				}
 
-				if (media.getSubtitlesCodes().size() > 0) {
+				if (media.getSubtitleTracksList().size() > 0) {
 					insert = conn.prepareStatement("INSERT INTO SUBTRACKS VALUES (?, ?, ?, ?, ?)");
 				}
-				for (DLNAMediaSubtitle sub : media.getSubtitlesCodes()) {
-					if (sub.getFile() == null) { // no save of external subtitles
+				for (DLNAMediaSubtitle sub : media.getSubtitleTracksList()) {
+					if (sub.getExternalFile() == null) { // no save of external subtitles
 						insert.clearParameters();
 						insert.setInt(1, id);
 						insert.setInt(2, sub.getId());
 						insert.setString(3, truncate(sub.getLang(), SIZE_LANG));
 						insert.setString(4, truncate(sub.getFlavor(), SIZE_FLAVOR));
-						insert.setInt(5, sub.getType());
+						insert.setInt(5, sub.getType().ordinal());
 						insert.executeUpdate();
 					}
 				}
