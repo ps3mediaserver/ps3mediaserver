@@ -4,6 +4,7 @@ Changelog:
 1.55.0 - 2012-??-??
 
     Enabled FFmpeg video player for all platforms
+    Added support for PGS (Blu-ray) subtitles
     Optimized CBRVideoBitrate value for Panasonic TVs (thanks, ExSport!) 
     Added RendererUniqueID to renderers' configs
     Better handling of embedded SSA/SSA subtitles' styling on non-Linux systems

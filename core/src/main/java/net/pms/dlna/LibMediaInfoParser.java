@@ -90,7 +90,7 @@ public class LibMediaInfoParser {
 								media.setMuxingMode(ovalue);
 							} else if (key.equals("CodecID")) {
 								if (step == MediaInfo.StreamKind.Text) {
-									getSubCodec(currentSubTrack, value);
+									currentSubTrack.setType(SubtitleType.getSubtitleTypeByLibMediaInfoCodec(value));
 								} else {
 									getFormat(step, media, currentAudioTrack, value);
 								}
@@ -354,14 +354,6 @@ public class LibMediaInfoParser {
 				audio.setCodecA(format);
 			}
 		}
-	}
-
-	public static void getSubCodec(DLNAMediaSubtitle subt, String value) {
-		SubtitleType subType = SubtitleType.getSubtitleTypeByLibMediaInfoCodec(value);
-		if (subType == SubtitleType.PGS) {
-			subType = SubtitleType.UNSUPPORTED; // PGS not yet supported
-		}
-		subt.setType(subType);
 	}
 
 	public static int getPixelValue(String value) {
