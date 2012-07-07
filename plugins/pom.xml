@@ -131,9 +131,22 @@
 				</includes>
 			</resource>
 
+			<!-- Filter properties files to replace Maven properties -->
 			<resource>
 				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
 				<filtering>true</filtering>
+			</resource>
+
+			<!-- Don't filter other files -->
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+				<filtering>false</filtering>
 			</resource>
 		</resources>
 	</build>
