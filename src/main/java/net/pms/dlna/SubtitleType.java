@@ -24,16 +24,16 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 public enum SubtitleType {
 	UNKNOWN ("Unknown"),
-	SUBRIP ("SubRip", "srt"), 	// srt
-	TEXT ("Text file", "txt"),	// txt
-	MICRODVD ("MicroDVD", "sub"),			// sub
-	SAMI ("SAMI", "smi"),		// smi
-	ASS ("SubStation Alpha / Advanced SubStation Alpha", "ssa", "ass"),
+	SUBRIP ("SubRip", "srt"),
+	TEXT ("Text file", "txt"),
+	MICRODVD ("MicroDVD", "sub"),
+	SAMI ("SAMI", "smi"),
+	ASS ("SubStation Alpha / Advanced SubStation Alpha", "ass", "ssa"),
 	VOBSUB ("VobSub", "idx"),
 	EMBEDDED ("Embedded");
 
 	private String description;
-	private Set<String> fileExtensions;
+	private List<String> fileExtensions;
 
 	private static Map<String, SubtitleType> fileExtensionToSubtitleTypeMap;
 	static {
@@ -57,10 +57,18 @@ public enum SubtitleType {
 
 	private SubtitleType(String description, String... fileExtensions) {
 		this.description = description;
-		this.fileExtensions = new HashSet<String>(Arrays.asList(fileExtensions));
+		this.fileExtensions = new ArrayList<String>(Arrays.asList(fileExtensions));
 	}
 
 	public String getDescription() {
 		return description;
+	}
+
+	public String getExtension() {
+		if (fileExtensions.isEmpty()) {
+			return "";
+		} else {
+			return fileExtensions.get(0);
+		}
 	}
 }
