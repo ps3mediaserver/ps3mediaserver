@@ -209,7 +209,7 @@ public class ShutdownPlugin implements DlnaTreeFolderPlugin {
 	 */
 	@Override
 	public String getLongDescription() {
-		return RESOURCE_BUNDLE.getString("shutdownplugin.shortdescription");
+		return RESOURCE_BUNDLE.getString("shutdownplugin.longdescription");
 	}
 
 	/**
@@ -249,7 +249,7 @@ public class ShutdownPlugin implements DlnaTreeFolderPlugin {
 	 */
 	@Override
 	public String getVersion() {
-		return properties.getProperty("project.version");
+		return RESOURCE_BUNDLE.getString("shutdownplugin.project.version");
 	}
 
 	/**
