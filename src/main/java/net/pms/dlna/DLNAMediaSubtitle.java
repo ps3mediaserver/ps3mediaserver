@@ -29,17 +29,7 @@ import java.io.*;
  */
 public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaSubtitle.class);
-	public static final int SUBRIP = 1;
-	public static final int TEXT = 2;
-	public static final int MICRODVD = 3;
-	public static final int SAMI = 4;
-	public static final int EMBEDDED_ASS = 5;
-	public static final int VOBSUB = 6;
-	public static final int EMBEDDED = 7;
-	public static String subExtensions[] = new String[]{"srt", "txt", "sub", "smi", "ass", "idx"};
-
-
-	private int type;
+	private SubtitleType type;
 	private String flavor; // subtrack title / language ?
 	private File externalFile;
 	private boolean isExternalFileUtf8;
@@ -63,7 +53,7 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 				return "MicroDVD";
 			case SAMI:
 				return "Sami";
-			case EMBEDDED_ASS:
+			case ASS:
 				return "ASS/SSA";
 			case VOBSUB:
 				return "VobSub";
@@ -81,7 +71,7 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	 */
 	public boolean isEmbedded() {
 		switch (type) {
-			case EMBEDDED_ASS:
+			case ASS:
 				// No externalFile available means the subtitles are embedded
 				return (externalFile == null);
 			case EMBEDDED:
@@ -149,14 +139,14 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	/**
 	 * @return the type
 	 */
-	public int getType() {
+	public SubtitleType getType() {
 		return type;
 	}
 
 	/**
 	 * @param type the type to set
 	 */
-	public void setType(int type) {
+	public void setType(SubtitleType type) {
 		this.type = type;
 	}
 

@@ -37,6 +37,8 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 public class Request extends HTTPResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Request.class);
 
@@ -242,16 +244,18 @@ public class Request extends HTTPResource {
 
 							if (subs != null && !subs.isEmpty()) {
 								DLNAMediaSubtitle sub = subs.get(0);
-
-								int type = sub.getType();
-
-								if (type < DLNAMediaSubtitle.subExtensions.length) {
-									String strType = DLNAMediaSubtitle.subExtensions[type - 1];
-									String subtitleUrl = "http://" + PMS.get().getServer().getHost()
+								String subtitleUrl;
+								String subExtension = sub.getType().getExtension();
+								if (isNotBlank(subExtension)) {
+									subtitleUrl = "http://" + PMS.get().getServer().getHost()
 											+ ':' + PMS.get().getServer().getPort() + "/get/"
-											+ id + "/subtitle0000." + strType;
-									output(output, subtitleHttpHeader + ": " + subtitleUrl);
+											+ id + "/subtitle0000." + subExtension;
+								} else {
+									subtitleUrl = "http://" + PMS.get().getServer().getHost()
+											+ ':' + PMS.get().getServer().getPort() + "/get/"
+											+ id + "/subtitle0000";
 								}
+								output(output, subtitleHttpHeader + ": " + subtitleUrl);
 							}
 						}
 
