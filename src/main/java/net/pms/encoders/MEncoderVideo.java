@@ -27,6 +27,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.FormatConfiguration;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.*;
@@ -2224,7 +2225,14 @@ public class MEncoderVideo extends Player {
 
 				String aid = null;
 				if (media != null && media.getAudioTracksList().size() > 1 && params.aid != null) {
-					aid = params.aid.getId() + "";
+					if (media.getContainer() != null && (media.getContainer().equals(FormatConfiguration.AVI) || media.getContainer().equals(FormatConfiguration.FLV))) {
+						// TODO confirm (MP4s, OGMs and MOVs already tested: first aid is 0; AVIs: first aid is 1)
+						// for AVIs, FLVs ans MOVs mencoder starts audio tracks numbering from 1
+						aid = "" + (params.aid.getId() + 1);
+					} else {
+						// everything else from 0
+						aid = "" + params.aid.getId();
+					}
 				}
 
 				PipeIPCProcess ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true);
