@@ -29,7 +29,7 @@ import javax.swing.JComponent;
 
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaSubtitle;
-import net.pms.formats.SubtitleType;
+import net.pms.formats.v2.SubtitleType;
 import net.pms.util.ProcessUtil;
 
 import org.slf4j.Logger;

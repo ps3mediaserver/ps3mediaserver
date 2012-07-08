@@ -18,6 +18,7 @@
  */
 package net.pms.formats;
 
+import net.pms.formats.v2.SubtitleType;
 import org.junit.Test;
 
 import java.util.Arrays;

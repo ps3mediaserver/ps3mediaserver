@@ -18,7 +18,7 @@
  */
 package net.pms.dlna;
 
-import net.pms.formats.SubtitleType;
+import net.pms.formats.v2.SubtitleType;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
