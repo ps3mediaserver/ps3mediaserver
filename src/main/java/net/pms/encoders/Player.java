@@ -149,7 +149,7 @@ public abstract class Player {
 				String lang = st.nextToken();
 				lang = lang.trim();
 				logger.trace("Looking for an audio track with lang: " + lang);
-				for (DLNAMediaAudio audio : media.getAudioCodes()) {
+				for (DLNAMediaAudio audio : media.getAudioTracksList()) {
 					if (audio.matchCode(lang)) {
 						params.aid = audio;
 						logger.trace("Matched audio track: " + audio);
@@ -160,9 +160,9 @@ public abstract class Player {
 			}
 		}
 
-		if (params.aid == null && media.getAudioCodes().size() > 0) {
+		if (params.aid == null && media.getAudioTracksList().size() > 0) {
 			// take a default audio track, dts first if possible
-			for (DLNAMediaAudio audio : media.getAudioCodes()) {
+			for (DLNAMediaAudio audio : media.getAudioTracksList()) {
 				if (audio.isDTS()) {
 					params.aid = audio;
 					logger.trace("Found priority audio track with DTS: " + audio);
@@ -171,7 +171,7 @@ public abstract class Player {
 			}
 
 			if (params.aid == null) {
-				params.aid = media.getAudioCodes().get(0);
+				params.aid = media.getAudioTracksList().get(0);
 				logger.trace("Choosed a default audio track: " + params.aid);
 			}
 		}

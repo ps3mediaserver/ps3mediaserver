@@ -187,8 +187,8 @@ public class DVDISOTitle extends DLNAResource {
 			d = Double.parseDouble(duration);
 		}
 
-		getMedia().setAudioCodes(audio);
-		getMedia().setSubtitlesCodes(subs);
+		getMedia().setAudioTracksList(audio);
+		getMedia().setSubtitleTracksList(subs);
 
 		if (duration != null) {
 			getMedia().setDuration(d);

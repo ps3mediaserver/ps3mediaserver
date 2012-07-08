@@ -177,7 +177,7 @@ public class FormatRecognitionTest {
 		audio.setNrAudioChannels(2);
 		ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
 		audioCodes.add(audio);
-		info.setAudioCodes(audioCodes);
+		info.setAudioTracksList(audioCodes);
 		Format format = new MP3();
 		format.match("test.mp3");
 		assertEquals("PS3 is compatible with MP3", true,
@@ -208,7 +208,7 @@ public class FormatRecognitionTest {
 		audio.setNrAudioChannels(5);
 		ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
 		audioCodes.add(audio);
-		info.setAudioCodes(audioCodes);
+		info.setAudioTracksList(audioCodes);
 		info.setCodecV("mp4");
 		Format format = new MPG();
 		format.match("test.avi");
@@ -240,7 +240,7 @@ public class FormatRecognitionTest {
 		audio.setNrAudioChannels(5);
 		ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
 		audioCodes.add(audio);
-		info.setAudioCodes(audioCodes);
+		info.setAudioTracksList(audioCodes);
 		info.setCodecV("mp4");
 		Format format = new MPG();
 		format.match("test.mkv");
@@ -399,7 +399,7 @@ public class FormatRecognitionTest {
 		DLNAMediaInfo info = new DLNAMediaInfo();
 		info.setContainer("mpegps");
 		ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
-		info.setAudioCodes(audioCodes);
+		info.setAudioTracksList(audioCodes);
 		info.setMimeType("video/mpeg");
 		info.setCodecV("mpeg2");
 		info.setMediaparsed(true);
