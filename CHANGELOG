@@ -5,9 +5,10 @@ Changelog:
 
     Enabled FFmpeg video player for all platforms
     Added support for PGS (Blu-ray) subtitles
+    Added support for VobSub (DVD) subtitles in MP4 container
     Optimized CBRVideoBitrate value for Panasonic TVs (thanks, ExSport!) 
     Added RendererUniqueID to renderers' configs
-    Better handling of embedded SSA/SSA subtitles' styling on non-Linux systems
+    Better handling of embedded SSA/SSA subs styling
     Added new renderer: Sony SMP-N100 (thanks, mrw1986 and guillepalao)
     Language updates:
         - Catalan translation update (thanks, aseques)
