@@ -136,6 +136,6 @@ public class MEncoderAviSynth extends MEncoderVideo {
 
 	@Override
 	public String name() {
-		return "Avisynth/MEncoder";
+		return "AviSynth/MEncoder";
 	}
 }
