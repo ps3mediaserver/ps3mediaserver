@@ -5,6 +5,7 @@ Changelog:
 
     Enabled FFmpeg video player for all platforms
     Added support for PGS (Blu-ray) subtitles
+    Added support for TX3G (MPEG-4 Timed Text) subtitles
     Added support for VobSub (DVD) subtitles in MP4 container
     Better handling of embedded SSA/SSA subs styling
     Fixed audio track selection for MP4s and MOVs
