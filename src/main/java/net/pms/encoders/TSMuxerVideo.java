@@ -293,7 +293,7 @@ public class TSMuxerVideo extends Player {
 						// AC3 remux or encoding
 						int channels;
 						if (ac3Remux) {
-							channels = params.aid.getAudioProperties().getNumberOfChannels(); // remux
+							channels = params.aid.getAudioProperties().getNumberOfChannels(); // ac3 remux
 						} else {
 							channels = configuration.getAudioChannelCount(); // ac3 encoding
 						}
@@ -408,7 +408,7 @@ public class TSMuxerVideo extends Player {
 							// AC3 remux or encoding
 							int channels;
 							if (ac3Remux) {
-								channels = params.aid.getAudioProperties().getNumberOfChannels(); // remux
+								channels = params.aid.getAudioProperties().getNumberOfChannels(); // ac3 remux
 							} else {
 								channels = configuration.getAudioChannelCount(); // ac3 encoding
 							}
