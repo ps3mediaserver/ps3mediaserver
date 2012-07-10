@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class handles the Windows specific FFMpeg/AviSynth player combination. 
+ * This class handles the Windows specific AviSynth/FFmpeg player combination. 
  */
 public class FFMpegAviSynthVideo extends FFMpegVideo {
 	private static final Logger logger = LoggerFactory.getLogger(FFMpegAviSynthVideo.class);
@@ -49,7 +49,7 @@ public class FFMpegAviSynthVideo extends FFMpegVideo {
 
 	@Override
 	public String name() {
-		return "FFmpeg/AviSynth";
+		return "AviSynth/FFmpeg";
 	}
 
 	@Override
