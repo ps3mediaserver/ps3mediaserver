@@ -251,15 +251,20 @@ public class TSMuxerVideo extends Player {
 							)
 						) && params.mediaRenderer.isLPCMPlayable();
 					if ( !ac3Remux && (dtsRemux || pcm) ) {
+						// DTS remux or LPCM
 						StreamModifier sm = new StreamModifier();
 						sm.setPcm(pcm);
 						sm.setDtsembed(dtsRemux);
-						sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid));
+						if (dtsRemux) {
+							sm.setNbchannels(2);
+						} else if (pcm) {
+							sm.setNbchannels(params.aid.getAudioProperties().getNumberOfChannels());
+						}
 						sm.setSampleFrequency(params.aid.getSampleRate() < 48000 ? 48000 : params.aid.getSampleRate());
 						sm.setBitspersample(16);
 						String mixer = null;
 						if (pcm && !dtsRemux) {
-							mixer = getLPCMChannelMappingForMencoder(params.aid, configuration.getAudioChannelCount());
+							mixer = getLPCMChannelMappingForMencoder(params.aid);
 						}
 						ffmpegLPCMextract = new String[]{
 							mencoderPath,
@@ -285,6 +290,13 @@ public class TSMuxerVideo extends Player {
 							ffAudioPipe[0].setModifier(sm);
 						}
 					} else {
+						// AC3 remux or encoding
+						int channels;
+						if (ac3Remux) {
+							channels = params.aid.getAudioProperties().getNumberOfChannels(); // remux
+						} else {
+							channels = configuration.getAudioChannelCount(); // ac3 encoding
+						}
 						ffmpegLPCMextract = new String[]{
 							mencoderPath,
 							"-ss", "0",
@@ -293,7 +305,7 @@ public class TSMuxerVideo extends Player {
 							"-quiet",
 							"-really-quiet",
 							"-msglevel", "statusline=2",
-							"-channels", "" + CodecUtil.getAC3ChannelCount(configuration, params.aid),
+							"-channels", "" + channels,
 							"-ovc", "copy",
 							"-of", "rawaudio",
 							"-mc", "0",
@@ -355,10 +367,15 @@ public class TSMuxerVideo extends Player {
 								)
 							) && params.mediaRenderer.isLPCMPlayable();
 						if ( !ac3Remux && (dtsRemux || pcm) ) {
+							// DTS remux or LPCM
 							StreamModifier sm = new StreamModifier();
 							sm.setPcm(pcm);
 							sm.setDtsembed(dtsRemux);
-							sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, audio));
+							if (dtsRemux) {
+								sm.setNbchannels(2);
+							} else if (pcm) {
+								sm.setNbchannels(params.aid.getAudioProperties().getNumberOfChannels());
+							}
 							sm.setSampleFrequency(audio.getSampleRate() < 48000 ? 48000 : audio.getSampleRate());
 							sm.setBitspersample(16);
 							if (!params.mediaRenderer.isMuxDTSToMpeg()) {
@@ -366,7 +383,7 @@ public class TSMuxerVideo extends Player {
 							}
 							String mixer = null;
 							if (pcm && !dtsRemux) {
-								mixer = getLPCMChannelMappingForMencoder(audio, configuration.getAudioChannelCount());
+								mixer = getLPCMChannelMappingForMencoder(audio);
 							}
 							ffmpegLPCMextract = new String[]{
 								mencoderPath,
@@ -388,6 +405,13 @@ public class TSMuxerVideo extends Player {
 								"-o", ffAudioPipe[i].getInputPipe()
 							};
 						} else {
+							// AC3 remux or encoding
+							int channels;
+							if (ac3Remux) {
+								channels = params.aid.getAudioProperties().getNumberOfChannels(); // remux
+							} else {
+								channels = configuration.getAudioChannelCount(); // ac3 encoding
+							}
 							ffmpegLPCMextract = new String[]{
 								mencoderPath,
 								"-ss", "0",
@@ -396,7 +420,7 @@ public class TSMuxerVideo extends Player {
 								"-quiet",
 								"-really-quiet",
 								"-msglevel", "statusline=2",
-								"-channels", "" + CodecUtil.getAC3ChannelCount(configuration, audio),
+								"-channels", "" + channels,
 								"-ovc", "copy",
 								"-of", "rawaudio",
 								"-mc", "0",

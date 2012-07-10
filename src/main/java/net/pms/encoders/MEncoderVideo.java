@@ -1402,14 +1402,6 @@ public class MEncoderVideo extends Player {
 			add = " -lavdopts debug=0";
 		}
 
-		int channels = wmv ? 2 : configuration.getAudioChannelCount();
-
-		if (media != null && params.aid != null) {
-			channels = wmv ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid);
-		}
-
-		LOGGER.trace("channels=" + channels);
-
 		if (isNotBlank(rendererMencoderOptions)) {
 			/*
 			 * ignore the renderer's custom MEncoder options if a) we're streaming a DVD (i.e. via dvd://)
@@ -1425,7 +1417,7 @@ public class MEncoderVideo extends Player {
 		}
 
 		StringTokenizer st = new StringTokenizer(
-			"-channels " + channels
+			"-channels " + (wmv ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid))
 			+ (isNotBlank(mencoderCustomOptions) ? " " + mencoderCustomOptions : "")
 			+ (isNotBlank(rendererMencoderOptions) ? " " + rendererMencoderOptions : "")
 			+ add,
@@ -2160,7 +2152,7 @@ public class MEncoderVideo extends Player {
 				cmdArray[cmdArray.length - 1] = pipe.getInputPipe();
 
 				if (pcm && !channels_filter_present && params.aid != null) {
-					String mixer = getLPCMChannelMappingForMencoder(params.aid, configuration.getAudioChannelCount());
+					String mixer = getLPCMChannelMappingForMencoder(params.aid);
 					if (isNotBlank(mixer)) {
 						cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 						cmdArray[cmdArray.length - 2] = "-af";
@@ -2240,14 +2232,21 @@ public class MEncoderVideo extends Player {
 				StreamModifier sm = new StreamModifier();
 				sm.setPcm(pcm);
 				sm.setDtsembed(dts);
-				sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid));
 				sm.setSampleFrequency(48000);
 				sm.setBitspersample(16);
 
 				String mixer = null;
+				int channels;
 				if (pcm && !dts) {
-					mixer = getLPCMChannelMappingForMencoder(params.aid, configuration.getAudioChannelCount());
+					channels = params.aid.getAudioProperties().getNumberOfChannels();
+					mixer = getLPCMChannelMappingForMencoder(params.aid); // LPCM always outputs 5.1/7.1 for multichannel tracks. Downmix with player if needed!
+				} else if ((pcm && dts) || wmv) {
+					channels = 2;
+				} else {
+					channels = configuration.getAudioChannelCount(); // 5.1 max for ac3 encoding
 				}
+				LOGGER.trace("channels=" + channels);
+				sm.setNbchannels(channels);
 
 				// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
 				// -mc 0.1 make the DTS-HD extraction works better with latest mencoder builds, and makes no impact on the regular DTS one
@@ -2257,7 +2256,7 @@ public class MEncoderVideo extends Player {
 					fileName,
 					"-really-quiet",
 					"-msglevel", "statusline=2",
-					"-channels", "" + sm.getNbchannels(),
+					"-channels", "" + channels,
 					"-ovc", "copy",
 					"-of", "rawaudio",
 					"-mc", dts ? "0.1" : "0",
