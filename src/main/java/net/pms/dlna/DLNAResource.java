@@ -1174,8 +1174,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					}
 					addAttribute(sb, "bitrate", getMedia().getRealVideoBitrate());
 					if (firstAudioTrack != null) {
-						if (firstAudioTrack.getNrAudioChannels() > 0) {
-							addAttribute(sb, "nrAudioChannels", firstAudioTrack.getNrAudioChannels());
+						if (firstAudioTrack.getAudioProperties().getNumberOfChannels() > 0) {
+							addAttribute(sb, "nrAudioChannels", firstAudioTrack.getAudioProperties().getNumberOfChannels());
 						}
 						if (firstAudioTrack.getSampleFrequency() != null) {
 							addAttribute(sb, "sampleFrequency", firstAudioTrack.getSampleFrequency());
@@ -1200,7 +1200,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							addAttribute(sb, "sampleFrequency", firstAudioTrack.getSampleFrequency());
 						}
 						if (firstAudioTrack != null) {
-							addAttribute(sb, "nrAudioChannels", firstAudioTrack.getNrAudioChannels());
+							addAttribute(sb, "nrAudioChannels", firstAudioTrack.getAudioProperties().getNumberOfChannels());
 						}
 
 						if (getPlayer() == null) {
@@ -1217,7 +1217,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 										LOGGER.debug("Caught exception", e);
 									}
 								}
-								int na = firstAudioTrack.getNrAudioChannels();
+								int na = firstAudioTrack.getAudioProperties().getNumberOfChannels();
 								if (na > 2) // no 5.1 dump in mplayer
 								{
 									na = 2;
