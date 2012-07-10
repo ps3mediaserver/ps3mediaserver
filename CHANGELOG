@@ -13,6 +13,7 @@ Changelog:
     Added new renderer: Sony SMP-N100 (thanks, mrw1986 and guillepalao)
     Language updates:
         - Catalan translation update (thanks, aseques)
+    Localized audio and subtitle priority defaults
 
 1.54.0 - 2012-06-25
 
