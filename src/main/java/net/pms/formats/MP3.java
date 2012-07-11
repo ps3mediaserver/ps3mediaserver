@@ -23,6 +23,17 @@ import net.pms.encoders.Player;
 import java.util.ArrayList;
 
 public class MP3 extends Format {
+	/** The unique identifier string for this format */
+	private static final String IDENTIFIER_STRING = "MP3";
+
+	/**
+	 * {@inheritDoc} 
+	 */
+	@Override
+	public String getIdentifier() {
+		return IDENTIFIER_STRING;
+	}
+
 	public MP3() {
 		type = AUDIO;
 	}

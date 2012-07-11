@@ -249,4 +249,11 @@ public abstract class Format implements Cloneable {
 		return getClass().getSimpleName();
 		
 	}
+
+	/**
+	 * Returns the identifier string for the format.
+	 *
+	 * @return The identifier string.
+	 */
+	public abstract String getIdentifier();
 }
