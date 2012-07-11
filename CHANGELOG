@@ -11,9 +11,10 @@ Changelog:
     Fixed audio track selection for MP4s and MOVs
     Optimized CBRVideoBitrate value for Panasonic TVs (thanks, ExSport!)
     Added RendererUniqueID to renderers' configs
-    Added new renderer: Sony SMP-N100 (thanks, mrw1986 and guillepalao)
+    Added new renderer: Sony SMP-N100 (thanks, mrw1986 and guillepalao!)
     Language updates:
-        - Catalan translation update (thanks, aseques)
+        - Catalan translation update (thanks, aseques!)
+        - Simplified Chinese translation update (thanks, lovenemesis!)
     Localized audio and subtitle priority defaults
 
 1.54.0 - 2012-06-25
