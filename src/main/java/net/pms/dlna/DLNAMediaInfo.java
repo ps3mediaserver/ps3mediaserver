@@ -1456,34 +1456,66 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the audioTracks
-	 * @since 1.50
+	 * @since 1.60
 	 */
 	public ArrayList<DLNAMediaAudio> getAudioTracksList() {
 		return audioTracks;
 	}
 
 	/**
-	 * @param audioCodes the audioTracks to set
-	 * @since 1.50
+	 * @return the audioTracks
+	 * @deprecated use getAudioTracksList() instead
 	 */
-	public void setAudioTracksList(ArrayList<DLNAMediaAudio> audioCodes) {
-		this.audioTracks = audioCodes;
+	public ArrayList<DLNAMediaAudio> getAudioCodes() {
+		return getAudioTracksList();
+	}
+
+	/**
+	 * @param audioTracks the audioTracks to set
+	 * @since 1.60
+	 */
+	public void setAudioTracksList(ArrayList<DLNAMediaAudio> audioTracks) {
+		this.audioTracks = audioTracks;
+	}
+
+	/**
+	 * @param audioTracks the audioTracks to set
+	 * @deprecated use setAudioTracksList(ArrayList<DLNAMediaAudio> audioTracks) instead
+	 */
+	public void setAudioCodes(ArrayList<DLNAMediaAudio> audioTracks) {
+		setAudioTracksList(audioTracks);
 	}
 
 	/**
 	 * @return the subtitleTracks
-	 * @since 1.50
+	 * @since 1.60
 	 */
 	public ArrayList<DLNAMediaSubtitle> getSubtitleTracksList() {
 		return subtitleTracks;
 	}
 
 	/**
-	 * @param subtitlesCodes the subtitleTracks to set
-	 * @since 1.50
+	 * @return the subtitleTracks
+	 * @deprecated use getSubtitleTracksList() instead
 	 */
-	public void setSubtitleTracksList(ArrayList<DLNAMediaSubtitle> subtitlesCodes) {
-		this.subtitleTracks = subtitlesCodes;
+	public ArrayList<DLNAMediaSubtitle> getSubtitlesCodes() {
+		return getSubtitleTracksList();
+	}
+
+	/**
+	 * @param subtitleTracks the subtitleTracks to set
+	 * @since 1.60
+	 */
+	public void setSubtitleTracksList(ArrayList<DLNAMediaSubtitle> subtitleTracks) {
+		this.subtitleTracks = subtitleTracks;
+	}
+
+	/**
+	 * @param subtitleTracks the subtitleTracks to set
+	 * @deprecated use setSubtitleTracksList(ArrayList<DLNAMediaSubtitle> subtitleTracks) instead
+	 */
+	public void setSubtitlesCodes(ArrayList<DLNAMediaSubtitle> subtitleTracks) {
+		setSubtitleTracksList(subtitleTracks);
 	}
 
 	/**
