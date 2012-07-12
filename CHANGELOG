@@ -9,7 +9,7 @@ Changelog:
     Added support for VobSub (DVD) subtitles in MP4 container
     Better handling of embedded SSA/SSA subs styling
     Fixed audio track selection for MP4s and MOVs
-    Added support for WebM YouTube videos (with ffpmeg player)
+    Added support for WebM YouTube videos (with ffmpeg player)
     Optimized CBRVideoBitrate value for Panasonic TVs (thanks, ExSport!)
     Added RendererUniqueID to renderers' configs
     Added new renderer: Sony SMP-N100 (thanks, mrw1986 and guillepalao!)
