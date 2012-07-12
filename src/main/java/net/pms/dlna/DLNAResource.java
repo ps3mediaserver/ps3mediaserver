@@ -66,7 +66,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAResource.class);
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
-	protected static final String TRANSCODE_FOLDER = "#--TRANSCODE--#";
+	protected static final String TRANSCODE_FOLDER = "#- Language and player select -#";
 	private final Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
 	private static final int STOP_PLAYING_DELAY = 4000;
 	private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
