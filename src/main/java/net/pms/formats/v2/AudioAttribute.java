@@ -1,6 +1,6 @@
 /*
  * PS3 Media Server, for streaming any medias to your PS3.
- * Copyright (C) 2008  A.Brochard
+ * Copyright (C) 2012  I. Sokolov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,32 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package net.pms.formats;
+package net.pms.formats.v2;
 
-public class MKV extends MPG {
-
-	/**
-	 * @deprecated Use {@link #isCompatible(DLNAMediaInfo, RendererConfiguration)} instead.
-	 * <p>
-	 * Returns whether or not a format can be handled by the PS3 natively.
-	 * This means the format can be streamed to PS3 instead of having to be
-	 * transcoded.
-	 * 
-	 * @return True if the format can be handled by PS3, false otherwise.
-	 */
-	@Deprecated
-	public boolean ps3compatible() {
-		return false;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String[] getId() {
-		return new String[] {
-			"mkv", "dv", "ty", "mov", "ogm", "ogv", "hdmov",
-			"hdm", "rmv", "rmvb", "rm", "asf", "evo", "asx", "flv", "m2v",
-			"3gp", "3g2", "webm"
-		};
-	}
+public enum AudioAttribute {
+	CHANNELS_NUMBER;
 }

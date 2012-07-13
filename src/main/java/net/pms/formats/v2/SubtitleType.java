@@ -16,13 +16,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package net.pms.formats;
+package net.pms.formats.v2;
 
 import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.trim;
 
+/**
+ * Enum with possible types of subtitle tracks and methods for determining
+ * them by file extension or libmediainfo output
+ *
+ * @since 1.60.0
+ */
 public enum SubtitleType {
 	// MediaInfo database of codec signatures (not comprehensive)
 	// http://mediainfo.svn.sourceforge.net/viewvc/mediainfo/MediaInfoLib/trunk/Source/Resource/Text/DataBase/

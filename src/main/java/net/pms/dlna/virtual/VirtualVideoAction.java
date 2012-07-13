@@ -65,7 +65,7 @@ public abstract class VirtualVideoAction extends DLNAResource {
 		DLNAMediaInfo mediaInfo = new DLNAMediaInfo();
 		mediaInfo.setContainer("mpegps");
 		ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
-		mediaInfo.setAudioCodes(audioCodes);
+		mediaInfo.setAudioTracksList(audioCodes);
 		mediaInfo.setMimeType("video/mpeg");
 		mediaInfo.setCodecV("mpeg2");
 		mediaInfo.setMediaparsed(true);

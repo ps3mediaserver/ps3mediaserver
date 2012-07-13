@@ -27,11 +27,12 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.FormatConfiguration;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.*;
 import net.pms.formats.Format;
-import net.pms.formats.SubtitleType;
+import net.pms.formats.v2.SubtitleType;
 import net.pms.io.*;
 import net.pms.network.HTTPResource;
 import net.pms.newgui.FontFileFilter;
@@ -41,7 +42,6 @@ import net.pms.newgui.RestrictedFileSystemView;
 import net.pms.util.CodecUtil;
 import net.pms.util.FormLayoutUtil;
 import net.pms.util.ProcessUtil;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,9 @@ import java.io.PrintWriter;
 import java.util.*;
 import java.util.List;
 
-import static net.pms.configuration.RendererConfiguration.*;
+import static net.pms.configuration.RendererConfiguration.RENDERER_ID_PLAYSTATION3;
+import static net.pms.formats.v2.AudioUtils.getLPCMChannelMappingForMencoder;
+import static org.apache.commons.lang.StringUtils.*;
 
 public class MEncoderVideo extends Player {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MEncoderVideo.class);
@@ -121,9 +123,9 @@ public class MEncoderVideo extends Player {
 	@Deprecated
 	protected String overriddenMainArgs[];
 
-	protected boolean dts;
+	protected boolean dtsRemux;
 	protected boolean pcm;
-	protected boolean mux;
+	protected boolean ac3Remux;
 	protected boolean ovccopy;
 	protected boolean oaccopy;
 	protected boolean mpegts;
@@ -290,12 +292,12 @@ public class MEncoderVideo extends Player {
 					fakemedia.setCodecV("mpeg4");
 					fakemedia.setContainer("matroska");
 					fakemedia.setDuration(45d*60);
-					audio.setNrAudioChannels(2);
+					audio.getAudioProperties().setNumberOfChannels(2);
 					fakemedia.setWidth(1280);
 					fakemedia.setHeight(720);
 					audio.setSampleFrequency("48000");
 					fakemedia.setFrameRate("23.976");
-					fakemedia.getAudioCodes().add(audio);
+					fakemedia.getAudioTracksList().add(audio);
 					String result[] = getSpecificCodecOptions(newCodecparam, fakemedia, new OutputParams(configuration), "dummy.mpg", "dummy.srt", false, true);
 
 					if (result.length > 0 && result[0].startsWith("@@")) {
@@ -1034,11 +1036,11 @@ public class MEncoderVideo extends Player {
 		return new String[]{
 			"-quiet",
 			"-oac", oaccopy ? "copy" : (pcm ? "pcm" : "lavc"),
-			"-of", (wmv || mpegts) ? "lavf" : (pcm && avisynth()) ? "avi" : (((pcm || dts || mux) ? "rawvideo" : "mpeg")),
+			"-of", (wmv || mpegts) ? "lavf" : (pcm && avisynth()) ? "avi" : (((pcm || dtsRemux || ac3Remux) ? "rawvideo" : "mpeg")),
 			(wmv || mpegts) ? "-lavfopts" : "-quiet",
 			wmv ? "format=asf" : (mpegts ? "format=mpegts" : "-quiet"),
 			"-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64",
-			"-ovc", (mux || ovccopy) ? "copy" : "lavc"
+			"-ovc", (ac3Remux || ovccopy) ? "copy" : "lavc"
 		};
 	}
 
@@ -1116,7 +1118,7 @@ public class MEncoderVideo extends Player {
 			bitrate = bitrate.substring(0, bitrate.indexOf("(")).trim();
 		}
 
-		if (StringUtils.isBlank(bitrate)) {
+		if (isBlank(bitrate)) {
 			bitrate = "0";
 		}
 
@@ -1328,13 +1330,13 @@ public class MEncoderVideo extends Player {
 		oaccopy = false;
 
         // disable AC3 remux for stereo tracks with 384 kbits bitrate and PS3 renderer (PS3 FW bug?)
-        boolean ps3_and_stereo_and_384_kbits = params.aid != null && (params.mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3) && params.aid.getNrAudioChannels() == 2) && (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
+        boolean ps3_and_stereo_and_384_kbits = params.aid != null && (params.mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3) && params.aid.getAudioProperties().getNumberOfChannels() == 2) && (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
         if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
 			// AC3 remux takes priority
 			oaccopy = true;
 		} else {
 			// now check for DTS remux and LPCM streaming
-			dts = configuration.isDTSEmbedInPCM() &&
+			dtsRemux = configuration.isDTSEmbedInPCM() &&
 				(
 					!dvd ||
 					configuration.isMencoderRemuxMPEG2()
@@ -1351,7 +1353,7 @@ public class MEncoderVideo extends Player {
 				&& !(media.getContainer().equals("mp4") && !media.getCodecV().equals("h264"))
 				&& params.aid != null &&
 				(
-					(params.aid.isDTS() && params.aid.getNrAudioChannels() <= 6) || // disable 7.1 DTS-HD => LPCM because of channels mapping bug
+					(params.aid.isDTS() && params.aid.getAudioProperties().getNumberOfChannels() <= 6) || // disable 7.1 DTS-HD => LPCM because of channels mapping bug
 					params.aid.isLossless() ||
 					params.aid.isTrueHD() ||
 					(
@@ -1370,8 +1372,8 @@ public class MEncoderVideo extends Player {
 				) && params.mediaRenderer.isLPCMPlayable();
 		}
 
-		if (dts || pcm) {
-			if (dts) {
+		if (dtsRemux || pcm) {
+			if (dtsRemux) {
 				oaccopy = true;
 			}
 
@@ -1380,7 +1382,7 @@ public class MEncoderVideo extends Player {
 		}
 
 		// mpeg2 remux still buggy with mencoder :\
-		if (!pcm && !dts && !mux && ovccopy) {
+		if (!pcm && !dtsRemux && !ac3Remux && ovccopy) {
 			ovccopy = false;
 		}
 
@@ -1388,27 +1390,31 @@ public class MEncoderVideo extends Player {
 			params.avidemux = true;
 		}
 
+		int channels;
+		if (ac3Remux) {
+			channels = params.aid.getAudioProperties().getNumberOfChannels(); // ac3 remux
+		} else if (dtsRemux || wmv) {
+			channels = 2;
+		} else if (pcm) {
+			channels = params.aid.getAudioProperties().getNumberOfChannels();
+		} else {
+			channels = configuration.getAudioChannelCount(); // 5.1 max for ac3 encoding
+		}
+		LOGGER.trace("channels=" + channels);
+
 		String add = "";
 		String rendererMencoderOptions = params.mediaRenderer.getCustomMencoderOptions(); // default: empty string
 		String mencoderCustomOptions = configuration.getMencoderCustomOptions(); // default: empty string
 
-		String combinedCustomOptions = StringUtils.defaultString(mencoderCustomOptions)
+		String combinedCustomOptions = defaultString(mencoderCustomOptions)
 			+ " "
-			+ StringUtils.defaultString(rendererMencoderOptions);
+			+ defaultString(rendererMencoderOptions);
 
 		if (!combinedCustomOptions.contains("-lavdopts")) {
 			add = " -lavdopts debug=0";
 		}
 
-		int channels = wmv ? 2 : configuration.getAudioChannelCount();
-
-		if (media != null && params.aid != null) {
-			channels = wmv ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid);
-		}
-
-		LOGGER.trace("channels=" + channels);
-
-		if (StringUtils.isNotBlank(rendererMencoderOptions)) {
+		if (isNotBlank(rendererMencoderOptions)) {
 			/*
 			 * ignore the renderer's custom MEncoder options if a) we're streaming a DVD (i.e. via dvd://)
 			 * or b) the renderer's MEncoder options contain overscan settings (those are handled
@@ -1424,8 +1430,8 @@ public class MEncoderVideo extends Player {
 
 		StringTokenizer st = new StringTokenizer(
 			"-channels " + channels
-			+ (StringUtils.isNotBlank(mencoderCustomOptions) ? " " + mencoderCustomOptions : "")
-			+ (StringUtils.isNotBlank(rendererMencoderOptions) ? " " + rendererMencoderOptions : "")
+			+ (isNotBlank(mencoderCustomOptions) ? " " + mencoderCustomOptions : "")
+			+ (isNotBlank(rendererMencoderOptions) ? " " + rendererMencoderOptions : "")
 			+ add,
 			" "
 		);
@@ -1465,7 +1471,7 @@ public class MEncoderVideo extends Player {
 			String customSettings = params.mediaRenderer.getCustomMencoderQualitySettings();
 
 			// Custom settings in PMS may override the settings of the saved configuration
-			if (StringUtils.isNotBlank(customSettings)) {
+			if (isNotBlank(customSettings)) {
 				mainConfig = customSettings;
 			}
 
@@ -1484,7 +1490,7 @@ public class MEncoderVideo extends Player {
 
 			String audioType = "ac3";
 
-			if (dts) {
+			if (dtsRemux) {
 				audioType = "dts";
 			} else if (pcm) {
 				audioType = "pcm";
@@ -1528,9 +1534,10 @@ public class MEncoderVideo extends Player {
 			if (apply_ass_styling) {
 				sb.append("-ass ");
 
-				// GUI: Override ASS subtitles style if requested (always for SRT subtitles)
+				// GUI: Override ASS subtitles style if requested (always for SRT and TX3G subtitles)
 				boolean override_ass_style = !configuration.isMencoderAssDefaultStyle() ||
-						params.sid.getType() == SubtitleType.SUBRIP;
+						params.sid.getType() == SubtitleType.SUBRIP ||
+						params.sid.getType() == SubtitleType.TX3G;
 				if (override_ass_style) {
 					String assSubColor = "ffffff00";
 					if (configuration.getSubsColor() != 0) {
@@ -1550,7 +1557,7 @@ public class MEncoderVideo extends Player {
 						sb.append(" -ass-force-style FontName=").append(configuration.getMencoderFont()).append(",");
 					} else {
 						String font = CodecUtil.getDefaultFontPath();
-						if (StringUtils.isNotBlank(font)) {
+						if (isNotBlank(font)) {
 							// Variable "font" contains a font path instead of a font name.
 							// Does "-ass-force-style" support font paths? In tests on OSX
 							// the font path is ignored (Outline, Shadow and MarginV are
@@ -1596,7 +1603,7 @@ public class MEncoderVideo extends Player {
 					sb.append(" -font ").append(configuration.getMencoderFont()).append(" ");
 				} else {
 					String font = CodecUtil.getDefaultFontPath();
-					if (StringUtils.isNotBlank(font)) {
+					if (isNotBlank(font)) {
 						sb.append(" -font ").append(font).append(" ");
 					}
 				}
@@ -1711,7 +1718,7 @@ public class MEncoderVideo extends Player {
 		cmdArray[cmdArray.length - 10] = "-quiet";
 		cmdArray[cmdArray.length - 9] = "-quiet";
 
-		if (!dts && !pcm && !avisynth() && params.aid != null && media.getAudioCodes().size() > 1) {
+		if (!dtsRemux && !pcm && !avisynth() && params.aid != null && media.getAudioTracksList().size() > 1) {
 			cmdArray[cmdArray.length - 12] = "-aid";
 			boolean lavf = false; // Need to add support for LAVF demuxing
 			cmdArray[cmdArray.length - 11] = "" + (lavf ? params.aid.getId() + 1 : params.aid.getId());
@@ -2097,7 +2104,7 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
-		if ((pcm || dts || mux) || (configuration.isMencoderNoOutOfSync() && !noMC0NoSkip)) {
+		if ((pcm || dtsRemux || ac3Remux) || (configuration.isMencoderNoOutOfSync() && !noMC0NoSkip)) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 3);
 			cmdArray[cmdArray.length - 5] = "-mc";
 			cmdArray[cmdArray.length - 4] = "0";
@@ -2120,7 +2127,7 @@ public class MEncoderVideo extends Player {
 		}
 
 		// force srate -> cause ac3's mencoder doesn't like anything other than 48khz
-		if (media != null && !pcm && !dts && !mux) {
+		if (media != null && !pcm && !dtsRemux && !ac3Remux) {
 			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 4);
 			cmdArray[cmdArray.length - 6] = "-af";
 			cmdArray[cmdArray.length - 5] = "lavcresample=" + rate;
@@ -2142,24 +2149,24 @@ public class MEncoderVideo extends Player {
 
 		ProcessWrapperImpl pw = null;
 
-		if (pcm || dts || mux) {
+		if (pcm || dtsRemux || ac3Remux) {
 			boolean channels_filter_present = false;
 
 			for (String s : cmdArray) {
-				if (StringUtils.isNotBlank(s) && s.startsWith("channels")) {
+				if (isNotBlank(s) && s.startsWith("channels")) {
 					channels_filter_present = true;
 					break;
 				}
 			}
 
 			if (params.avidemux) {
-				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dts || mux) ? null : params);
+				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dtsRemux || ac3Remux) ? null : params);
 				params.input_pipes[0] = pipe;
 				cmdArray[cmdArray.length - 1] = pipe.getInputPipe();
 
-				if (pcm && !channels_filter_present) {
-					String mixer = CodecUtil.getMixerOutput(true, configuration.getAudioChannelCount(), configuration.getAudioChannelCount());
-					if (StringUtils.isNotBlank(mixer)) {
+				if (pcm && !channels_filter_present && params.aid != null) {
+					String mixer = getLPCMChannelMappingForMencoder(params.aid);
+					if (isNotBlank(mixer)) {
 						cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 						cmdArray[cmdArray.length - 2] = "-af";
 						cmdArray[cmdArray.length - 1] = mixer;
@@ -2223,18 +2230,30 @@ public class MEncoderVideo extends Player {
 				ffVideo.runInNewThread();
 
 				String aid = null;
-				if (media != null && media.getAudioCodes().size() > 1 && params.aid != null) {
-					aid = params.aid.getId() + "";
+				if (media != null && media.getAudioTracksList().size() > 1 && params.aid != null) {
+					if (media.getContainer() != null && (media.getContainer().equals(FormatConfiguration.AVI) || media.getContainer().equals(FormatConfiguration.FLV))) {
+						// TODO confirm (MP4s, OGMs and MOVs already tested: first aid is 0; AVIs: first aid is 1)
+						// for AVIs, FLVs ans MOVs mencoder starts audio tracks numbering from 1
+						aid = "" + (params.aid.getId() + 1);
+					} else {
+						// everything else from 0
+						aid = "" + params.aid.getId();
+					}
 				}
 
 				PipeIPCProcess ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true);
 				StreamModifier sm = new StreamModifier();
 				sm.setPcm(pcm);
-				sm.setDtsembed(dts);
-				sm.setNbchannels(sm.isDtsembed() ? 2 : CodecUtil.getRealChannelCount(configuration, params.aid));
+				sm.setDtsembed(dtsRemux);
 				sm.setSampleFrequency(48000);
 				sm.setBitspersample(16);
-				String mixer = CodecUtil.getMixerOutput(!sm.isDtsembed(), sm.getNbchannels(), configuration.getAudioChannelCount());
+
+				String mixer = null;
+				if (pcm && !dtsRemux) {
+					mixer = getLPCMChannelMappingForMencoder(params.aid); // LPCM always outputs 5.1/7.1 for multichannel tracks. Downmix with player if needed!
+				}
+
+				sm.setNbchannels(channels);
 
 				// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
 				// -mc 0.1 make the DTS-HD extraction works better with latest mencoder builds, and makes no impact on the regular DTS one
@@ -2244,14 +2263,14 @@ public class MEncoderVideo extends Player {
 					fileName,
 					"-really-quiet",
 					"-msglevel", "statusline=2",
-					"-channels", "" + sm.getNbchannels(),
+					"-channels", "" + channels,
 					"-ovc", "copy",
 					"-of", "rawaudio",
-					"-mc", dts ? "0.1" : "0",
+					"-mc", dtsRemux ? "0.1" : "0",
 					"-noskip",
 					(aid == null) ? "-quiet" : "-aid", (aid == null) ? "-quiet" : aid,
 					"-oac", sm.isDtsembed() ? "copy" : "pcm",
-					(StringUtils.isNotBlank(mixer) && !channels_filter_present) ? "-af" : "-quiet", (StringUtils.isNotBlank(mixer) && !channels_filter_present) ? mixer : "-quiet",
+					(isNotBlank(mixer) && !channels_filter_present) ? "-af" : "-quiet", (isNotBlank(mixer) && !channels_filter_present) ? mixer : "-quiet",
 					"-srate", "48000",
 					"-o", ffAudioPipe.getInputPipe()
 				};
@@ -2345,7 +2364,7 @@ public class MEncoderVideo extends Player {
 				cmdArray[cmdArray.length - 4] = "-";
 				params.input_pipes = new PipeProcess[2];
 			} else {
-				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dts || mux) ? null : params);
+				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dtsRemux || ac3Remux) ? null : params);
 				params.input_pipes[0] = pipe;
 				cmdArray[cmdArray.length - 1] = pipe.getInputPipe();
 			}
@@ -2464,7 +2483,7 @@ public class MEncoderVideo extends Player {
 			interpreter.set("duration", media.getDurationInSeconds());
 
 			if (params.aid != null) {
-				interpreter.set("channels", params.aid.getNrAudioChannels());
+				interpreter.set("channels", params.aid.getAudioProperties().getNumberOfChannels());
 			}
 
 			interpreter.set("height", media.getHeight());

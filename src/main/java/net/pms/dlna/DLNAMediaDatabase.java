@@ -22,7 +22,7 @@ import com.sun.jna.Platform;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
-import net.pms.formats.SubtitleType;
+import net.pms.formats.v2.SubtitleType;
 import org.apache.commons.lang.StringUtils;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.h2.jdbcx.JdbcDataSource;
@@ -324,7 +324,7 @@ public class DLNAMediaDatabase implements Runnable {
 					audio.setId(subrs.getInt("ID"));
 					audio.setLang(subrs.getString("LANG"));
 					audio.setFlavor(subrs.getString("FLAVOR"));
-					audio.setNrAudioChannels(subrs.getInt("NRAUDIOCHANNELS"));
+					audio.getAudioProperties().setNumberOfChannels(subrs.getInt("NRAUDIOCHANNELS"));
 					audio.setSampleFrequency(subrs.getString("SAMPLEFREQ"));
 					audio.setCodecA(subrs.getString("CODECA"));
 					audio.setBitsperSample(subrs.getInt("BITSPERSAMPLE"));
@@ -337,7 +337,7 @@ public class DLNAMediaDatabase implements Runnable {
 					audio.setDelay(subrs.getInt("DELAY"));
 					audio.setMuxingModeAudio(subrs.getString("MUXINGMODE"));
                     audio.setBitRate(subrs.getInt("BITRATE"));
-					media.getAudioCodes().add(audio);
+					media.getAudioTracksList().add(audio);
 				}
 				subrs.close();
 				audios.close();
@@ -441,16 +441,16 @@ public class DLNAMediaDatabase implements Runnable {
 			rs.close();
 			if (media != null && id > -1) {
 				PreparedStatement insert = null;
-				if (media.getAudioCodes().size() > 0) {
+				if (media.getAudioTracksList().size() > 0) {
 					insert = conn.prepareStatement("INSERT INTO AUDIOTRACKS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				}
-				for (DLNAMediaAudio audio : media.getAudioCodes()) {
+				for (DLNAMediaAudio audio : media.getAudioTracksList()) {
 					insert.clearParameters();
 					insert.setInt(1, id);
 					insert.setInt(2, audio.getId());
 					insert.setString(3, truncate(audio.getLang(), SIZE_LANG));
 					insert.setString(4, truncate(audio.getFlavor(), SIZE_FLAVOR));
-					insert.setInt(5, audio.getNrAudioChannels());
+					insert.setInt(5, audio.getAudioProperties().getNumberOfChannels());
 					insert.setString(6, truncate(audio.getSampleFrequency(), SIZE_SAMPLEFREQ));
 					insert.setString(7, truncate(audio.getCodecA(), SIZE_CODECA));
 					insert.setInt(8, audio.getBitsperSample());
