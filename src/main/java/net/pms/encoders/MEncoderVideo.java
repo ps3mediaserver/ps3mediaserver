@@ -1039,7 +1039,7 @@ public class MEncoderVideo extends Player {
 			(wmv || mpegts) ? "-lavfopts" : "-quiet",
 			wmv ? "format=asf" : (mpegts ? "format=mpegts" : "-quiet"),
 			"-mpegopts", "format=mpeg2:muxrate=500000:vbuf_size=1194:abuf_size=64",
-			"-ovc", (ac3Remux || ovccopy) ? "copy" : "lavc"
+			"-ovc", (ac3Remux && ovccopy) ? "copy" : "lavc"
 		};
 	}
 
@@ -1371,9 +1371,8 @@ public class MEncoderVideo extends Player {
 		}
 
 		// mpeg2 remux still buggy with mencoder :\
-		if (!pcm && !dtsRemux && !ac3Remux && ovccopy) {
-			ovccopy = false;
-		}
+		// TODO when we can still use it?
+		ovccopy = false;
 
 		if (pcm && avisynth()) {
 			params.avidemux = true;
