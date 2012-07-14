@@ -168,15 +168,8 @@ public class VLCVideo extends Player {
 		cmdList.add("--sub-language=eng");
 		
 		//Add our transcode options
-		/*String transcodeSpec = String.format(
-			"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
-			getEncodingArgs(),
-			getMux(),
-			(isWindows ? "\\\\" : ""),
-			tsPipe.getInputPipe());
-			*/
 		String transcodeSpec = String.format(
-			"#transcode{%s}:duplicate{dst=display,dst=std{access=file,mux=%s,dst=\"%s%s\"}}",
+			"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
 			getEncodingArgs(),
 			getMux(),
 			(isWindows ? "\\\\" : ""),
