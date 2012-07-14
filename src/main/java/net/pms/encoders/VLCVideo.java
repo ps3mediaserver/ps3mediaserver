@@ -99,19 +99,23 @@ public class VLCVideo extends Player {
 	}
 
 	protected String getEncodingArgs() {
-		//Note, changed
+		//See: http://www.videolan.org/doc/streaming-howto/en/ch03.html
+		//See: http://wiki.videolan.org/Codec
+		//Xbox: wmv2, wma, asf
+		//PS3: mp1v, mpga, mpeg1 (WORKING)
 		ArrayList<String> args = new ArrayList<String>();
 		
 		//Codecs to use (mp2 AKA dvd format)
-		args.add("vcodec=mp2v");
-		args.add("acodec=mp2a");
+		args.add("venc=ffmpeg");
+		args.add("vcodec=mp1v");
+		args.add("acodec=mpga");
 		
 		//Bitrate in kbit/s (TODO: Use global option?)
 		args.add("vb=4096");
 		args.add("ab=128");
 		
-		//Video scaling
-		args.add("scale=1");
+		//Video scaling (TODO: Why is this needed?
+		//args.add("scale=1");
 		
 		//Channels (TODO: is this nessesary?)
 		args.add("channels=2");
@@ -127,7 +131,7 @@ public class VLCVideo extends Player {
 	}
 
 	protected String getMux() {
-		return "ts";
+		return "mpeg1";
 		//return "mpeg1";
 	}
 
