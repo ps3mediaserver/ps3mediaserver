@@ -201,8 +201,8 @@ public class AudioProperties {
 		}
 
 		// examples of libmediainfo output (mediainfo --Full --Language=raw file):
-		// Sampling rate : 48000
-		// Sampling rate : 44100 / 22050
+		// SamplingRate : 48000
+		// SamplingRate : 44100 / 22050
 
 		int result = -1;
 		Matcher intMatcher = intPattern.matcher(mediaInfoValue);
