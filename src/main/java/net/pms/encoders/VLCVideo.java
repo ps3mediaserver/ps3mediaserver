@@ -18,14 +18,8 @@
  */
 package net.pms.encoders;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
-import java.awt.Font;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.GridLayout;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
@@ -39,7 +33,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import net.pms.Messages;
+import javax.swing.border.TitledBorder;
 import net.pms.network.HTTPResource;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -50,6 +44,9 @@ public class VLCVideo extends Player {
 	private final PmsConfiguration configuration;
 	public static final String ID = "vlctrans";
 	protected JCheckBox hardwareAccel;
+	protected JTextField languagePri;
+	protected JTextField subtitlePri;
+	protected JCheckBox subtitleEnabled;
 
 	public VLCVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -200,24 +197,40 @@ public class VLCVideo extends Player {
 
 	@Override
 	public JComponent config() {
-				FormLayout layout = new FormLayout(
-			"left:pref, 0:grow",
-			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow");
-		PanelBuilder builder = new PanelBuilder(layout);
-		builder.setBorder(Borders.EMPTY_BORDER);
-		builder.setOpaque(false);
-
-		CellConstraints cc = new CellConstraints();
-
-
-		JComponent cmp = builder.addSeparator("VLC Transcoder Settings", cc.xyw(2, 1, 1));
-		cmp = (JComponent) cmp.getComponent(0);
-		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-
+		//JGoodies Formlayout makes no sense. 
+		//Working impl in swing in 6 mins > semi-working impl in jgoodies in 6 hours
+		JPanel mainPanel = new JPanel();
+		TitledBorder titledBorder = BorderFactory.createTitledBorder("VLC Transcoder Settings");
+        titledBorder.setTitleJustification(TitledBorder.LEFT);
+		mainPanel.setBorder(titledBorder);
+		//Yes this is ugly, 
+		mainPanel.setLayout(new GridLayout(9, 3));
+		
 		hardwareAccel = new JCheckBox("Use hardware acceleration");
 		hardwareAccel.setContentAreaFilled(false);
-		builder.add(hardwareAccel, cc.xy(2, 3));
-
-		return builder.getPanel();
+		mainPanel.add(hardwareAccel);
+		
+		//Try adding a label with a text field
+		languagePri = genTextField("Audio Language Priority", "eng,jpn", mainPanel);
+		subtitleEnabled = new JCheckBox("Enable Subtitles");
+		subtitleEnabled.setSelected(true);
+		mainPanel.add(subtitleEnabled);
+		subtitlePri = genTextField("Subtitle Language Priority", "jpn,eng", mainPanel);
+		return mainPanel;
+	}
+	
+	protected JTextField genTextField(String labelText, String fieldText, JPanel target) {
+		JPanel container = new JPanel();
+		JLabel label = new JLabel(labelText);
+		JTextField field = new JTextField(fieldText);
+		field.setColumns(20);
+		label.setLabelFor(field);
+	
+		container.add(label);
+		container.add(field);
+		
+		target.add(container);
+		
+		return field;
 	}
 }
