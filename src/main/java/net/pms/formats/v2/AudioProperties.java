@@ -56,10 +56,18 @@ public class AudioProperties {
 		}
 	}
 
+	/**
+	 * Get number of channels for this audio track.
+	 * @return number of channels (default is 2)
+	 */
 	public int getNumberOfChannels() {
 		return numberOfChannels;
 	}
 
+	/**
+	 * Set number of channels for this audio track.
+	 * @param numberOfChannels number of channels to set
+	 */
 	public void setNumberOfChannels(int numberOfChannels) {
 		if (numberOfChannels < 1) {
 			throw new IllegalArgumentException("Channel number can't be less than 1.");
@@ -67,18 +75,34 @@ public class AudioProperties {
 		this.numberOfChannels = numberOfChannels;
 	}
 
+	/**
+	 * Set number of channels for this audio track with libmediainfo value
+	 * @param mediaInfoValue libmediainfo "Channel(s)" value to parse
+	 */
 	public void setNumberOfChannels(String mediaInfoValue) {
 		this.numberOfChannels = getChannelsNumberFromLibMediaInfo(mediaInfoValue);
 	}
 
+	/**
+	 * Get delay for this audio track.
+	 * @return audio delay in ms. May be negative.
+	 */
 	public int getAudioDelay() {
 		return audioDelay;
 	}
 
+	/**
+	 * Set delay for this audio track.
+	 * @param audioDelay audio delay in ms to set. May be negative.
+	 */
 	public void setAudioDelay(int audioDelay) {
 		this.audioDelay = audioDelay;
 	}
 
+	/**
+	 * Set delay for this audio track with libmediainfo value
+	 * @param mediaInfoValue libmediainfo "Video_Delay" value to parse
+	 */
 	public void setAudioDelay(String mediaInfoValue) {
 		this.audioDelay = getAudioDelayFromLibMediaInfo(mediaInfoValue);
 	}
