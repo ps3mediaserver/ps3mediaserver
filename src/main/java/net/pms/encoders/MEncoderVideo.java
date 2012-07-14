@@ -2328,8 +2328,8 @@ public class MEncoderVideo extends Player {
 				// audio delay is ignored when playing from file start (-ss 0)
 				// override with tsmuxer.meta setting
 				String timeshift = "";
-				if (params.aid.getDelay() != 0 && params.timeseek == 0) {
-					timeshift = "timeshift=" + params.aid.getDelay() + "ms, ";
+				if (params.aid.getAudioProperties().getAudioDelay() != 0 && params.timeseek == 0) {
+					timeshift = "timeshift=" + params.aid.getAudioProperties().getAudioDelay() + "ms, ";
 				}
 
 				pwMux.println(videoType + ", \"" + ffVideoPipe.getOutputPipe() + "\", " + fps + "level=4.1, insertSEI, contSPS, track=1");
