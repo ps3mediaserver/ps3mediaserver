@@ -39,7 +39,7 @@ Full instructions
 
 First all required software has to be installed:
 
- 1. Download and install Java JDK (JRE is not enough):
+1. Download and install Java JDK (JRE is not enough):
 
     * (Windows) http://www.oracle.com/technetwork/java/javase/downloads/index.html 
         - Be sure to remember the install location. 
@@ -47,7 +47,7 @@ First all required software has to be installed:
     * (Mac OSX) https://developer.apple.com/downloads/index.action?name=for%20Xcode%20-
 	- Look for java Developer Package
 
- 2. Download and install Git:
+2. Download and install Git:
 
     * (Windows) http://code.google.com/p/msysgit/downloads/list
         - For the "Adjusting your PATH environment" section, select
@@ -59,7 +59,7 @@ First all required software has to be installed:
 	- If you are using brew (http://mxcl.github.com/homebrew/) you just have
 	  to do 'brew install git'
 
- 3. Download and extract Maven:
+3. Download and extract Maven:
 
     * (Windows) http://maven.apache.org/download.html
     * (Linux)   `sudo apt-get install maven3`
@@ -67,7 +67,7 @@ First all required software has to be installed:
 
     Be sure to remember the extract location.
 
- 4. Set environment variables (create new variables or append the value if the
+4. Set environment variables (create new variables or append the value if the
     variable already exists):
 
     * (Windows)
@@ -78,12 +78,12 @@ First all required software has to be installed:
     * (Linux) (nothing to do)
     * (Mac OSX) (nothing to do)
 
- 5. Download the PMS source code by cloning the GitHub repository:
+5. Download the PMS source code by cloning the GitHub repository:
 
         git clone git://github.com/ps3mediaserver/ps3mediaserver.git
         cd ps3mediaserver
 
- 6. Resolve and install external libraries needed by the build process:
+6. Resolve and install external libraries needed by the build process:
 
         mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external
         mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
@@ -91,11 +91,11 @@ First all required software has to be installed:
 At this point all required software packages are present.
 PMS is now ready to be built.
 
- 7. Update to the latest source (optional):
+7. Update to the latest source (optional):
 
         git pull
 
- 8. Compile the latest version of PMS:
+8. Compile the latest version of PMS:
 
         mvn package
 
@@ -220,4 +220,3 @@ select "Team > Push to Upstream".
 If you would like to contribute to the PMS project, you can send a "Pull
 Request" to the development team. See the help on GitHub for more details
 (http://help.github.com/send-pull-requests/).
-
