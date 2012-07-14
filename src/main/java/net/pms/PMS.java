@@ -137,7 +137,7 @@ public class PMS {
 	 * @param mediarenderer {@link net.pms.configuration.RendererConfiguration}
 	 */
 	public void setRendererfound(RendererConfiguration mediarenderer) {
-		if (!foundRenderers.contains(mediarenderer) && !mediarenderer.isFDSSDP()) {
+		if (!foundRenderers.contains(mediarenderer) && !mediarenderer.getRendererUniqueID().equalsIgnoreCase(RendererConfiguration.RENDERER_ID_FDSSDP)) {
 			foundRenderers.add(mediarenderer);
 			frame.addRendererIcon(mediarenderer.getRank(), mediarenderer.getRendererName(), mediarenderer.getRendererIcon());
 			frame.setStatusCode(0, Messages.getString("PMS.18"), "apply-220.png");

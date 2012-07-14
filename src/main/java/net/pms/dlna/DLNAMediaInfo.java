@@ -227,10 +227,10 @@ public class DLNAMediaInfo implements Cloneable {
 		// temporary fix: MediaInfo support will take care of this in the future
 
 		// for now, http://ps3mediaserver.org/forum/viewtopic.php?f=11&t=6361&start=0
-		if (mediaRenderer.isBRAVIA() && getCodecV() != null && getCodecV().startsWith("mpeg2")) {
+		if (mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RendererConfiguration.RENDERER_ID_BRAVIA) && getCodecV() != null && getCodecV().startsWith("mpeg2")) {
 			muxable = true;
 		}
-		if (mediaRenderer.isBRAVIA() && getHeight() < 288) // not supported for these small heights
+		if (mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RendererConfiguration.RENDERER_ID_BRAVIA) && getHeight() < 288) // not supported for these small heights
 		{
 			muxable = false;
 		}
