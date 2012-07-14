@@ -2320,8 +2320,17 @@ public class MEncoderVideo extends Player {
 					audioType = "A_LPCM";
 				}
 
+
+				// mencoder bug (confirmed with mencoder r35003 + ffmpeg 0.11.1):
+				// audio delay is ignored when playing from file start (-ss 0)
+				// override with tsmuxer.meta setting
+				String timeshift = "";
+				if (params.aid.getDelay() != 0 && params.timeseek == 0) {
+					timeshift = "timeshift=" + params.aid.getDelay() + "ms, ";
+				}
+
 				pwMux.println(videoType + ", \"" + ffVideoPipe.getOutputPipe() + "\", " + fps + "level=4.1, insertSEI, contSPS, track=1");
-				pwMux.println(audioType + ", \"" + ffAudioPipe.getOutputPipe() + "\", track=2");
+				pwMux.println(audioType + ", \"" + ffAudioPipe.getOutputPipe() + "\", " + timeshift + "track=2");
 				pwMux.close();
 
 				ProcessWrapper pipe_process = pipe.getPipeProcess();
