@@ -249,7 +249,7 @@ public class RendererConfiguration {
 		return rank;
 	}
 
-	// Those 'is' methods should disappear. Use getRendererUniqueID() instead.
+	// These 'is' methods should disappear. Use getRendererID() instead.
 	@Deprecated
 	public boolean isXBOX() {
 		return getRendererName().toUpperCase().contains("XBOX");
@@ -266,7 +266,7 @@ public class RendererConfiguration {
 	}
 
 	private static final String RENDERER_NAME = "RendererName";
-	private static final String RENDERER_UNIQUE_ID = "RendererUniqueID";
+	private static final String RENDERER_ID = "RendererID";
 	private static final String RENDERER_ICON = "RendererIcon";
 	private static final String USER_AGENT = "UserAgentSearch";
 	private static final String USER_AGENT_ADDITIONAL_HEADER = "UserAgentAdditionalHeader";
@@ -602,14 +602,14 @@ public class RendererConfiguration {
 	}
 
 	/**
-	 * RendererUniqueID: Determines renderer's unique ID. PS3 Media Server may apply
-	 * workarounds specific to this client type based on RendererUniqueID. Defaults
+	 * RendererID: Returns the renderer's ID. PS3 Media Server may apply
+	 * workarounds specific to this client type based on this ID. Defaults
 	 * to RendererName if not set.
 	 *
-	 * @return The renderer unique ID.
+	 * @return The renderer ID.
 	 */
-	public String getRendererUniqueID() {
-		return getString(RENDERER_UNIQUE_ID, getRendererName());
+	public String getRendererID() {
+		return getString(RENDERER_ID, getRendererName());
 	}
 
 	/**
@@ -699,7 +699,7 @@ public class RendererConfiguration {
 		if (isMediaParserV2()) {
 			return getFormatConfiguration().isMpeg2Supported();
 		}
-		return getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3);
+		return getRendererID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3);
 	}
 
 	/**
