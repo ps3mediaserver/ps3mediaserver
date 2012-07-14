@@ -18,23 +18,22 @@
  */
 package net.pms.formats;
 
+import java.util.ArrayList;
+
 import net.pms.PMS;
+import net.pms.configuration.RendererConfiguration;
+import net.pms.dlna.DLNAMediaInfo;
 import net.pms.encoders.FFMpegAudio;
 import net.pms.encoders.MPlayerAudio;
 import net.pms.encoders.Player;
 
-import java.util.ArrayList;
-
 public class WAV extends Format {
-	/** The unique identifier string for this format */
-	private static final String IDENTIFIER_STRING = "WAV";
-
 	/**
 	 * {@inheritDoc} 
 	 */
 	@Override
-	public String getIdentifier() {
-		return IDENTIFIER_STRING;
+	public Identifier getIdentifier() {
+		return Identifier.WAV;
 	}
 
 	public WAV() {

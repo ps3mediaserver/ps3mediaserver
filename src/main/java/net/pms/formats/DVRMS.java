@@ -25,15 +25,12 @@ import net.pms.encoders.Player;
 import java.util.ArrayList;
 
 public class DVRMS extends Format {
-	/** The unique identifier string for this format */
-	private static final String IDENTIFIER_STRING = "DVRMS";
-
 	/**
 	 * {@inheritDoc} 
 	 */
 	@Override
-	public String getIdentifier() {
-		return IDENTIFIER_STRING;
+	public Identifier getIdentifier() {
+		return Identifier.DVRMS;
 	}
 
 	@Override

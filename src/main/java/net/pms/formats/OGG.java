@@ -26,15 +26,12 @@ import net.pms.encoders.Player;
 import java.util.ArrayList;
 
 public class OGG extends MP3 {
-	/** The unique identifier string for this format */
-	private static final String IDENTIFIER_STRING = "OGG";
-
 	/**
 	 * {@inheritDoc} 
 	 */
 	@Override
-	public String getIdentifier() {
-		return IDENTIFIER_STRING;
+	public Identifier getIdentifier() {
+		return Identifier.OGG;
 	}
 
 	@Override

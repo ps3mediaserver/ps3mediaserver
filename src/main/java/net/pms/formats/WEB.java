@@ -18,23 +18,25 @@
  */
 package net.pms.formats;
 
+import java.util.ArrayList;
+
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
-import net.pms.encoders.*;
-
-import java.util.ArrayList;
+import net.pms.encoders.MEncoderWebVideo;
+import net.pms.encoders.MPlayerWebAudio;
+import net.pms.encoders.MPlayerWebVideoDump;
+import net.pms.encoders.Player;
+import net.pms.encoders.VideoLanAudioStreaming;
+import net.pms.encoders.VideoLanVideoStreaming;
 
 public class WEB extends Format {
-	/** The unique identifier string for this format */
-	private static final String IDENTIFIER_STRING = "WEB";
-
 	/**
 	 * {@inheritDoc} 
 	 */
 	@Override
-	public String getIdentifier() {
-		return IDENTIFIER_STRING;
+	public Identifier getIdentifier() {
+		return Identifier.WEB;
 	}
 
 	/**

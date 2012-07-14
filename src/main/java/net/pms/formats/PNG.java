@@ -18,16 +18,14 @@
  */
 package net.pms.formats;
 
-public class PNG extends JPG {
-	/** The unique identifier string for this format */
-	private static final String IDENTIFIER_STRING = "PNG";
 
+public class PNG extends JPG {
 	/**
 	 * {@inheritDoc} 
 	 */
 	@Override
-	public String getIdentifier() {
-		return IDENTIFIER_STRING;
+	public Identifier getIdentifier() {
+		return Identifier.PNG;
 	}
 
 

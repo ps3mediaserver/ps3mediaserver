@@ -24,15 +24,12 @@ import net.pms.encoders.*;
 import java.util.ArrayList;
 
 public class MPG extends Format {
-	/** The unique identifier string for this format */
-	private static final String IDENTIFIER_STRING = "MPG";
-
 	/**
 	 * {@inheritDoc} 
 	 */
 	@Override
-	public String getIdentifier() {
-		return IDENTIFIER_STRING;
+	public Identifier getIdentifier() {
+		return Identifier.MPG;
 	}
 
 	@Override
