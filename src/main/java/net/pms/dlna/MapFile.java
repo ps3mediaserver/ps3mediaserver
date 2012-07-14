@@ -377,7 +377,7 @@ public class MapFile extends DLNAResource {
 	 */
 	@Override
 	public String toString() {
-		return "MapFile [name=" + getName() + ", id=" + getResourceId() + ", ext=" + getExt() + ", children=" + getChildren() + "]";
+		return "MapFile [name=" + getName() + ", id=" + getResourceId() + ", format=" + getFormat() + ", children=" + getChildren() + "]";
 	}
 
 	/**
