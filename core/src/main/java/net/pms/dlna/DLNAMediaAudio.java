@@ -588,37 +588,21 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 			return false;
 		}
 		
-		DLNAMediaAudio compObj = (DLNAMediaAudio)obj;
-		if(getBitsperSample() == compObj.getBitsperSample()
-				&& (getSampleFrequency() == compObj.getSampleFrequency() || getSampleFrequency().equals(compObj.getSampleFrequency()))
-				&& getNrAudioChannels() == compObj.getNrAudioChannels()
-				&& (getCodecA() == compObj.getCodecA() || getCodecA().equals(compObj.getCodecA()))
-				&& (getAlbum() == compObj.getAlbum() || getAlbum().equals(compObj.getAlbum()))
-				&& (getArtist() == compObj.getArtist() || getArtist().equals(compObj.getArtist()))
-				&& (getSongname() == compObj.getSongname() || getSongname().equals(compObj.getSongname()))
-				&& (getGenre() == compObj.getGenre() || getGenre().equals(compObj.getGenre()))
-				&& getYear() == compObj.getYear()
-				&& getTrack() == compObj.getTrack()
-				&& getDelay() == compObj.getDelay()){
-			return true;
-		}
-		
-		return false;
+		return hashCode() == obj.hashCode();
 	}
 	
 	@Override
 	public int hashCode(){
 		int hashCode = 24 + getBitsperSample();
 		hashCode *= 24 + (getSampleFrequency() == null ? 1 : getSampleFrequency().hashCode());
-		hashCode *= 24 + getNrAudioChannels();
-		hashCode *= 24 + (getCodecA() == null ? 1 : getCodecA().hashCode());
-		hashCode *= 24 + (getAlbum() == null ? 1 : getAlbum().hashCode());
-		hashCode *= 24 + (getArtist() == null ? 1 : getArtist().hashCode());
-		hashCode *= 24 + (getSongname() == null ? 1 : getSongname().hashCode());
-		hashCode *= 24 + (getGenre() == null ? 1 : getGenre().hashCode());
+		hashCode *= 24 + (getCodecA() == null ? 2 : getCodecA().hashCode());
+		hashCode *= 24 + (getAlbum() == null ? 3 : getAlbum().hashCode());
+		hashCode *= 24 + (getArtist() == null ? 4 : getArtist().hashCode());
+		hashCode *= 24 + (getSongname() == null ? 5 : getSongname().hashCode());
+		hashCode *= 24 + (getGenre() == null ? 6 : getGenre().hashCode());
 		hashCode *= 24 + getYear();
 		hashCode *= 24 + getTrack();
-		hashCode *= 24 + getDelay();
+		hashCode *= 24 + getAudioProperties().hashCode();
 		return hashCode;
 	}
 }

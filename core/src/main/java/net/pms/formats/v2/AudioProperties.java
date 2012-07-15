@@ -225,4 +225,21 @@ public class AudioProperties {
 			return result;
 		}
 	}
+	
+	@Override
+	public int hashCode() {
+		int res = audioDelay;
+		res *= 14 + numberOfChannels;
+		res *= 14 + sampleFrequency;
+		return res;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof AudioProperties)) {
+			return false;
+		}
+		
+		return hashCode() == obj.hashCode();
+	}
 }
