@@ -25,13 +25,13 @@ public final class WindowsCommandUtils extends CommandUtils {
 	 * {@inheritDoc}
 	 */
 	String[] getPowerOffCommand() {
-		return new String[] { "shutdown", "-s", "-f" };
+		return new String[] { "shutdown", "-s", "-f", "-t 0" };
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	String[] getRestartCommand() {
-		return new String[] { "shutdown", "-r", "-f" };
+		return new String[] { "shutdown", "-r", "-f", "-t 0" };
 	}
 }
