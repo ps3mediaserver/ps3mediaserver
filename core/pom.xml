@@ -1031,6 +1031,20 @@
 									</target>
 								</configuration>
 							</execution>
+                            <execution>
+                                <id>copy-mediainfo-windows</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <!-- MediaInfo library needs to be in the standard library path to be found -->
+                                        <copy file="${project.binaries}/MediaInfo.dll" todir="${project.basedir}" />
+                                        <copy file="${project.binaries}/MediaInfo64.dll" todir="${project.basedir}" />
+                                    </target>
+                                </configuration>
+                            </execution>
 						</executions>
 					</plugin>
 				</plugins>
