@@ -120,12 +120,18 @@ public class VLCVideo extends Player {
 		//Channels (TODO: is this nessesary?)
 		args.add("channels=2");
 		
+		//Static sample rate
+		args.add("samplerate=48000");
+		
 		//Stream subtitiles to client
 		//args.add("scodec=dvbs");
 		//args.add("senc=dvbsub");
 		
 		//Hardcode subtitiles into video
 		args.add("soverlay");
+		
+		//Keep audio in sync with video
+		args.add("audio-sync");
 		
 		return StringUtils.join(args, ",");
 	}
