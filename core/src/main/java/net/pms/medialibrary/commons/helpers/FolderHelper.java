@@ -372,6 +372,8 @@ public class FolderHelper {
 						items.add(getConditionTypeCBItem(ConditionType.FILEPLAYS_DATEPLAYEND));
 						items.add(getConditionTypeCBItem(ConditionType.FILE_CONTAINS_TAG));
 						break;
+				default:
+					break;
 				}
 				handledTypes.add(ft);
 			}
@@ -470,6 +472,8 @@ public class FolderHelper {
 						items.add(getConditionTypeCBItem(ConditionType.FILE_ISACTIF));
 						//items.add(getConditionTypeCBItem(ConditionType.FILE_CONTAINS_TAG));
 						break;
+				default:
+					break;
 				}
 				handledTypes.add(ft);
 			}
@@ -580,6 +584,8 @@ public class FolderHelper {
 						items.add(getConditionTypeCBItem(ConditionType.FILE_CONTAINS_TAG));
 						items.add(getConditionTypeCBItem(ConditionType.FILE_PLAYCOUNT));
 						break;
+				default:
+					break;
 				}
 				handledTypes.add(ft);
 			}

@@ -150,6 +150,9 @@ public class MediaLibraryFolder extends VirtualFolder {
 						add = true;
 					}
 					break;
+				default:
+					log.warn(String.format("Unhandled folder type received (%s). This should never happen!", f.getFolderType()));
+					break;
 				}
 				if (getChildren().get(pos) instanceof MediaLibraryRealFile) {
 					add = true;

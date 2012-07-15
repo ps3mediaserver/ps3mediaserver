@@ -58,10 +58,10 @@ public class DLNAHelper {
 		dbMedia.setDvdtrack(video.getDvdtrack());
 		dbMedia.setH264AnnexB(video.getH264_annexB());
 		dbMedia.setMimeType(video.getMimeType());
-//		dbMedia.muxable = video.isMuxable();
 		dbMedia.setParsing(false);
 		dbMedia.setSecondaryFormatValid(true);
 		dbMedia.setMuxingMode(video.getMuxingMode());
+		dbMedia.setFrameRateMode(video.getFrameRateMode());
 
 		return dbMedia;
 	}	

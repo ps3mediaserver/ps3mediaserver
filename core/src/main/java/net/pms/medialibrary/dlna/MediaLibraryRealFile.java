@@ -153,6 +153,9 @@ public class MediaLibraryRealFile extends RealFile {
 				case VIDEO:
 					setMedia(DLNAHelper.getMedia((DOVideoFileInfo) fileInfo));
 					break;
+			default:
+				log.warn(String.format("Unhandled file type received (%s). This should never happen!", fileType));
+				break;
 			}
 		}
 	}
@@ -187,6 +190,9 @@ public class MediaLibraryRealFile extends RealFile {
 						case SINGLE:
 							addChild(newChild);
 							break;
+					default:
+						log.warn(String.format("Unhandled file disply mode received (%s). This should never happen!", file.getFileDisplayMode()));
+						break;
 					}
 				} else if (entry instanceof DOFileEntryInfo) {
 					//add a DOFileEntryInfo
@@ -255,7 +261,7 @@ public class MediaLibraryRealFile extends RealFile {
 					InputFile inputFile = new InputFile();
 					inputFile.setFile(getFile());
 					getMedia().setThumbnailSeekPos(prio.getSeekPosition());
-					getMedia().generateThumbnail(inputFile, getExt(), getType());
+					getMedia().generateThumbnail(inputFile, getFormat(), getType());
 					try {
 						File picFolder = new File(picFolderPath);
 						if(!picFolder.isDirectory()){
@@ -288,6 +294,9 @@ public class MediaLibraryRealFile extends RealFile {
 				if(tmpf.exists()){
 					coverFile = tmpf;
 				}
+				break;
+			default:
+				log.warn(String.format("Unhandled thumbnail priority type received (%s). This should never happen!", prio.getThumbnailPriorityType()));
 				break;
 			}
 			

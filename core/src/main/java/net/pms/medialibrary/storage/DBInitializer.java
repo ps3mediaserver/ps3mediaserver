@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 class DBInitializer extends DBBase {
 	private static final Logger log = LoggerFactory.getLogger(DBInitializer.class);
 
-	private final String DB_VERSION = "0.8";
+	private final String DB_VERSION = "0.9";
 	
 	private String name;
 	private IMediaLibraryStorage storage;
@@ -264,6 +264,7 @@ class DBInitializer extends DBBase {
 			sb.append(", WIDTH             INT");
 			sb.append(", YEAR              INT");
 			sb.append(", MUXINGMODE        VARCHAR2(32)");
+			sb.append(", FRAMERATEMODE     VARCHAR2(16)");
 			sb.append(", CONSTRAINT PK_VIDEO PRIMARY KEY (ID))");
 			stmt.executeUpdate(sb.toString());
 			stmt.executeUpdate("CREATE INDEX IDX_VIDEO_RATINGPERCENT ON VIDEO (RATINGPERCENT asc);");
@@ -676,6 +677,10 @@ class DBInitializer extends DBBase {
 			updateDb07_08();
 			realStorageVersion = "0.8";
 		}
+		if(realStorageVersion.equals("0.8")){
+			updateDb08_09();
+			realStorageVersion = "0.9";
+		}
 	}
 
 	private void updateDb01_02() {
@@ -957,6 +962,26 @@ class DBInitializer extends DBBase {
 			if(log.isInfoEnabled()) log.info("Updated DB from version 0.7 to 0.8");
 		} catch (SQLException se) {
 			log.error("Failed to update DB from version 0.7 to 0.8", se);
+		} finally {
+			close(conn, stmt);
+    	}
+	}
+
+	private void updateDb08_09() {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		try {
+			conn = cp.getConnection();
+			//do updates
+			stmt = conn.prepareStatement("ALTER TABLE VIDEO ADD FRAMERATEMODE VARCHAR2(16)");
+			stmt.executeUpdate();
+			
+			//update db version
+			storage.setMetaDataValue(MetaDataKeys.VERSION.toString(), "0.9");
+			if(log.isInfoEnabled()) log.info("Updated DB from version 0.8 to 0.9");
+		} catch (SQLException se) {
+			log.error("Failed to update DB from version 0.8 to 0.9", se);
 		} finally {
 			close(conn, stmt);
     	}

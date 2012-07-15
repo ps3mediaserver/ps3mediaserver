@@ -220,8 +220,9 @@ public class FullDataCollector {
 				fi.setSize(mi.getSize());
 				fi.setWidth(mi.getWidth());
 				fi.setMuxingMode(mi.getMuxingMode());
+				fi.setFrameRateMode(mi.getFrameRateMode());
 				if(mi.getSubtitleTracksList() != null) fi.setSubtitlesCodes(mi.getSubtitleTracksList());
-				if(mi.getAudioCodes() != null) fi.setAudioCodes(mi.getAudioCodes());
+				if(mi.getAudioTracksList() != null) fi.setAudioCodes(mi.getAudioTracksList());
 			}catch(Exception ex){
 				log.error("Failed to parse file info", ex);
 			}

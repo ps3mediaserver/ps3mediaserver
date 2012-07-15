@@ -162,6 +162,9 @@ public class GeneralOptionsView extends JPanel {
 						currVal = Integer.parseInt(lPicturesCount.getText());
 						lPicturesCount.setText(String.valueOf(++currVal));
 						break;
+					default:
+						log.warn(String.format("Unhandled file type received (%s). This should never happen!", type));
+						break;
 				}
 			}
 		});
@@ -178,6 +181,9 @@ public class GeneralOptionsView extends JPanel {
 						break;
 					case PICTURES:
 						lPicturesCount.setText(String.valueOf(itemCount));
+						break;
+					default:
+						log.warn(String.format("Unhandled file type received (%s). This should never happen!", type));
 						break;
 				}
 			}

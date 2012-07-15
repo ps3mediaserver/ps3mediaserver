@@ -29,6 +29,9 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.pms.Messages;
 import net.pms.medialibrary.commons.enumarations.OptionType;
 import net.pms.medialibrary.commons.events.SelectionChangeEvent;
@@ -40,6 +43,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class OptionChooser extends JPanel {
+	private static final Logger log = LoggerFactory.getLogger(OptionChooser.class);
     private static final long serialVersionUID = -360087402031907819L;
     private List<OptionEntry> options = new ArrayList<OptionEntry>();
     private OptionEntry generalEntry;
@@ -89,6 +93,9 @@ public class OptionChooser extends JPanel {
     		case TREE:
     			setOptionSelected(treeEntry);
     			break;
+			default:
+				log.warn(String.format("Unhandled option type received (%s). This should never happen!", optionType));
+				break;
     	}
     }
     

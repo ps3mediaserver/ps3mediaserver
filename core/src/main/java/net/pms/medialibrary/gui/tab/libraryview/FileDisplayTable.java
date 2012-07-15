@@ -383,6 +383,8 @@ public class FileDisplayTable extends JPanel {
 					case FILE_ISACTIF:
 						fileInfo.setActive(newVal);
 						break;
+					default:
+						break;
 					}
 				}
 
@@ -425,6 +427,8 @@ public class FileDisplayTable extends JPanel {
 						case VIDEO_OVERVIEW:
 							video.setOverview(newVal);
 							break;
+						default:
+							break;
 						}
 					} else if (obj instanceof Integer) {
 						Integer newVal = (Integer) obj;
@@ -446,6 +450,8 @@ public class FileDisplayTable extends JPanel {
 							break;
 						case VIDEO_REVENUE:
 							video.setRevenue(newVal);
+							break;
+						default:
 							break;
 						}
 					}

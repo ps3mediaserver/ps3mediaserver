@@ -138,6 +138,9 @@ class DBFileFolder extends DBBase {
 		    				log.error(String.format("Failed to load plugin %s", pluginName), ex);
 		    			}
 						break;
+				default:
+					log.warn(String.format("Unhandled display type received (%s). This should never happen!", displayType));
+					break;
 				}
 			}
 		} finally {

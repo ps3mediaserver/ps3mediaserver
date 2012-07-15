@@ -24,11 +24,15 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOFilter;
 import net.pms.medialibrary.commons.enumarations.FileType;
 
 public class LibraryViewPanel extends JPanel {
+	private static final Logger log = LoggerFactory.getLogger(LibraryViewPanel.class);
 	private static final long serialVersionUID = -3918303753599795894L;
 	private FileDisplayer videoFileDisplayer;
 	private FileDisplayer audioFileDisplayer;
@@ -60,6 +64,9 @@ public class LibraryViewPanel extends JPanel {
 			break;
 		case FILE:
 			fileDisplayer.setFilter(filter);
+			break;
+		default:
+			log.warn(String.format("Unhandled file type received (%s). This should never happen!", fileType));
 			break;
 		}
 	}

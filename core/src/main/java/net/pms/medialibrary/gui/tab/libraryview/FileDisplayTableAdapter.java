@@ -133,6 +133,8 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 				case FILE_THUMBNAILPATH:
 					res = file.getThumbnailPath();
 					break;
+			default:
+				break;
 			}
 		}		
 		return res;		
@@ -290,6 +292,8 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 				case VIDEO_YEAR:
 					res = video.getYear();
 					break;
+			default:
+				break;
 			}
 		}
 		
@@ -325,6 +329,8 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 		case VIDEO_REVENUE:
 		case FILE_ISACTIF:
 			res = true;
+			break;
+		default:
 			break;
 		}
 		return res;
@@ -410,6 +416,8 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 		case AUDIO_YEAR:
 			res = audio.getYear();
 			break;
+		default:
+			break;
 		}
 		return res;
 	}
@@ -421,6 +429,8 @@ public class FileDisplayTableAdapter extends AbstractTableAdapter<DOFileInfo> {
 		case IMAGE_HEIGHT:
 			break;
 		case IMAGE_WIDTH:
+			break;
+		default:
 			break;
 		}
 		return res;

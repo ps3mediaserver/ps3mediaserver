@@ -41,6 +41,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -60,6 +63,7 @@ import net.pms.medialibrary.commons.helpers.FolderHelper;
 import net.pms.medialibrary.gui.shared.ThumbnailPrioChooser.ActionType;
 
 public class FileDisplayPanel extends JPanel {
+	private static final Logger log = LoggerFactory.getLogger(FileDisplayPanel.class);
 	private static final long         serialVersionUID = 6342698042364671785L;
 	private MediaLibraryConfiguration libConfig;
 	private JLabel                    lMask;
@@ -90,7 +94,8 @@ public class FileDisplayPanel extends JPanel {
 		setMaxLineLength(fileEntry.getMaxLineLength());
 		setThumbnailPriorities(fileEntry.getThumbnailPriorities());
 		if (fileEntry instanceof DOFileEntryFile) {
-			switch (((DOFileEntryFile) fileEntry).getFileDisplayMode()) {
+			FileDisplayMode fileDisplayMode = ((DOFileEntryFile) fileEntry).getFileDisplayMode();
+			switch (fileDisplayMode) {
 				case SINGLE:
 					rbSingleFile.setSelected(true);
 					break;
@@ -98,6 +103,9 @@ public class FileDisplayPanel extends JPanel {
 					rbMultipleFiles.setSelected(true);
 					tfDisplaynameMask.setEnabled(false);
 					cbMaskHelp.setEnabled(false);
+					break;
+				default:
+					log.warn(String.format("Unhandled file display mode received (%s). This should never happen!", fileDisplayMode));
 					break;
 			}
 		}
@@ -543,6 +551,8 @@ public class FileDisplayPanel extends JPanel {
 					case SD_4_3:
 						tfMaxLineLength.setText("20");
 						break;
+				default:
+					break;
 				}
 			}
 		});

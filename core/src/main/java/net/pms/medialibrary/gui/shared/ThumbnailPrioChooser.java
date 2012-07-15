@@ -34,12 +34,16 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.pms.Messages;
 import net.pms.medialibrary.commons.dataobjects.DOThumbnailPriority;
 import net.pms.medialibrary.commons.dataobjects.comboboxitems.TumbnailPrioCBItem;
 import net.pms.medialibrary.commons.enumarations.ThumbnailPrioType;
 
 public class ThumbnailPrioChooser {
+	private static final Logger log = LoggerFactory.getLogger(ThumbnailPrioChooser.class);
 	public JComboBox            cbPrioType;
 	public JTextField           tfPicturePath;
 	public JTextField           tfSeekPointSec;
@@ -142,6 +146,9 @@ public class ThumbnailPrioChooser {
 							tfSeekPointSec.setVisible(false);
 							lUnitSec.setVisible(false);
 							break;
+						default:
+							log.warn(String.format("Unhandled thumbnail priority type received (%s). This should never happen!", item.getThumbnailPrioType()));
+							break;
 					}
 				}
 			}
@@ -182,6 +189,9 @@ public class ThumbnailPrioChooser {
 			case PICTURE:
 				prio.setPicturePath(tfPicturePath.getText());
 				break;
+		default:
+			log.warn(String.format("Unhandled thumbnail priority type received (%s). This should never happen!", prioType));
+			break;
 		}
 		return prio;
 	}
@@ -199,6 +209,8 @@ public class ThumbnailPrioChooser {
     			case PICTURE:
     				tfPicturePath.setText(prio.getPicturePath());
     				break;
+			default:
+				break;
     		}
     		cbPrioType.setSelectedItem(new TumbnailPrioCBItem(prio.getThumbnailPriorityType(), Messages.getString("ML.ThumbnailPrioType."
     		        + prio.getThumbnailPriorityType().toString())));

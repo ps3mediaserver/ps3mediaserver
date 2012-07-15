@@ -30,6 +30,9 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -48,6 +51,7 @@ import net.pms.medialibrary.gui.dialogs.folderdialog.FolderDialog;
 import net.pms.medialibrary.gui.shared.FileDisplayPanel;
 
 public class ConfigureFileEntryDialog extends JDialog {
+	private static final Logger log = LoggerFactory.getLogger(ConfigureFileEntryDialog.class);
 	private static final long                 serialVersionUID          = 5418437600836118875L;
 	private final int MIN_BUTTON_WIDTH = 60;
 	private FileDisplayPanel                  pFilterFile;
@@ -76,6 +80,9 @@ public class ConfigureFileEntryDialog extends JDialog {
 			case UNKNOWN:
 				// do nothing
 				break;
+		default:
+			log.warn(String.format("Unhandled file entry type received (%s). This should never happen!", fileEntryType));
+			break;
 		}
 		setTitle(Messages.getString("ML.ConfigureFileEntryDialog.Title." + fileEntryType));
 
@@ -121,6 +128,9 @@ public class ConfigureFileEntryDialog extends JDialog {
 			case FOLDER:
 				fileEntry = new DOFileEntryFolder(new ArrayList<DOFileEntryBase>(), -1, parent, 0, pFilterFile.getDisplaynameMask(),
 				        pFilterFile.getThumbnailPriorities(), pFilterFile.getMaxLineLength());
+				break;
+			default:
+				log.warn(String.format("Unhandled file entry type received (%s). This should never happen!", fileEntryType));
 				break;
 		}
 

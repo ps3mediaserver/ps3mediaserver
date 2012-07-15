@@ -63,6 +63,7 @@ public class DOVideoFileInfo extends DOFileInfo {
 	private String muxingMode;
 	private List<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
 	private List<DLNAMediaSubtitle> subtitlesCodes = new ArrayList<DLNAMediaSubtitle>();
+	private String frameRateMode;
 	
 	public DOVideoFileInfo() {
 		setType(FileType.VIDEO);
@@ -538,6 +539,16 @@ public class DOVideoFileInfo extends DOFileInfo {
 		if(muxingMode == null) muxingMode = "";
 		return muxingMode;
 	}
+
+	public void setFrameRateMode(String frameRateMode) {
+		this.frameRateMode = frameRateMode;
+	}
+
+	public String getFrameRateMode() {
+		if(frameRateMode == null) frameRateMode = "";
+		return frameRateMode;
+	}
+	
 	public void mergePropertiesAndTags(DOFileInfo fileInfo) {
 		super.mergePropertiesAndTags(fileInfo);
 		
@@ -647,6 +658,7 @@ public class DOVideoFileInfo extends DOFileInfo {
 		hashCode *= 24 + getAudioCodes().hashCode();
 		hashCode *= 24 + getSubtitlesCodes().hashCode();
 		hashCode *= 24 + getMuxingMode().hashCode();
+		hashCode *= 24 + getFrameRateMode().hashCode();
 		return hashCode;
 	}
 	
@@ -687,7 +699,8 @@ public class DOVideoFileInfo extends DOFileInfo {
 				&& getModel().equals(compObj.getModel())
 				&& isMuxable() == compObj.isMuxable()
 				&& getWidth() == compObj.getWidth()
-				&& getMuxingMode().equals(compObj.getMuxingMode())){
+				&& getMuxingMode().equals(compObj.getMuxingMode())
+				&& getFrameRateMode().equals(compObj.getFrameRateMode())){
 			
 				if(getAudioCodes() != null && compObj.getAudioCodes() != null
 						&& !getAudioCodes().equals(compObj.getAudioCodes())){

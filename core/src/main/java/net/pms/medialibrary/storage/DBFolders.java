@@ -506,6 +506,9 @@ class DBFolders extends DBBase {
 					case SPECIAL:
 						folder = getSpecialFolder(folder, stmt, conn);
 						break;
+					default:
+						log.warn(String.format("Unhandled folder type received (%s). This should never happen!", folder.getFolderType()));
+						break;
 				}
 			}
 			

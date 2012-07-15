@@ -552,6 +552,8 @@ public class FileImportHelper {
 					}
 				}
 				fiDestination.setTags(allTags);
+				break;
+			default:
 				break;			
 			}
 		}
@@ -642,6 +644,8 @@ public class FileImportHelper {
 				break;
 			case VIDEO_YEAR:
 				fiDestination.setYear(fiSource.getYear());
+				break;
+			default:
 				break;
 			}
 		}

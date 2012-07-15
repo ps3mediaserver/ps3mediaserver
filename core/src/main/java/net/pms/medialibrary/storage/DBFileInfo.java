@@ -823,6 +823,9 @@ class DBFileInfo extends DBBase {
 		case TIMESPAN_YEARS:
 			res = tOriginal * 60 * 60 * 24 * 365;
 			break;
+		default:
+			log.warn(String.format("Unhandled time span unit received (%s). This should never happen!", condition.getUnit()));
+			break;
 		}
 		
 		return String.valueOf(res);
@@ -856,6 +859,9 @@ class DBFileInfo extends DBBase {
     			case TIMESPAN_YEARS:
     		    	c.add(Calendar.YEAR, -timespan);
     				break;
+				default:
+					log.warn(String.format("Unhandled time span unit received (%s). This should never happen!", condition.getUnit()));
+					break;
     		}
     	}catch(Exception ex){
     		log.error("Failed to convert time span to length in seconds. string was '" + condition.getCondition() + "'");
@@ -886,6 +892,9 @@ class DBFileInfo extends DBBase {
     			case FILESIZE_TERABYTE:
     				size = size * 1024 * 1024 * 1024 * 1024;
     				break;
+				default:
+					log.warn(String.format("Unhandled file size unit received (%s). This should never happen!", condition.getUnit()));
+					break;
     		}
     	}catch(Exception ex){
     		log.error("Failed to convert time span to length in seconds. string was '" + condition.getCondition() + "'");

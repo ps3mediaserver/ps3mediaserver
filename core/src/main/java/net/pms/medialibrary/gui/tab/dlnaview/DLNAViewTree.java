@@ -710,6 +710,9 @@ public class DLNAViewTree extends JTree {
 									insertFileFolder(currentTreeNode, video, mediaLibraryStorage.getFileFolder(folder.getDisplayProperties().getTemplate().getId()),
 									        insertPos);
 									break;
+								default:
+									log.warn(String.format("Unhandled filedisplay mode received (%s). This should never happen!", folder.getDisplayProperties().getFileDisplayType()));
+									break;
 							}
 
 							insertPos++;
@@ -724,6 +727,9 @@ public class DLNAViewTree extends JTree {
 					}
 					break;
 				case PICTURES:
+					break;
+				default:
+					log.warn(String.format("Unhandled file type received (%s). This should never happen!", folder.getFileType()));
 					break;
 			}
 		} else {
@@ -1235,6 +1241,8 @@ public class DLNAViewTree extends JTree {
 			case CANCEL:
 				fd.dispose();
 				break;
+			default:
+				break;
 		}
 
 		if (doInsert) {
@@ -1274,6 +1282,8 @@ public class DLNAViewTree extends JTree {
 				break;
 			case CANCEL:
 				d.dispose();
+				break;
+			default:
 				break;
 		}
 
@@ -1384,6 +1394,9 @@ public class DLNAViewTree extends JTree {
 				break;
 			case CANCEL:
 				fd.dispose();
+				break;
+				
+			default:
 				break;
 		}
 	}

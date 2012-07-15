@@ -75,6 +75,9 @@ public class DLNAViewTreeCellRenderer extends DefaultTreeCellRenderer {
     				case FILE:
     					im = ImageIO.read(getClass().getResource(iconsFolder + "nofilefilter_folder-16.png"));
     					break;
+					default:
+						log.warn(String.format("Unhandled file type received (%s). This should never happen!", folder.getFileType()));
+						break;
     			}
 			
     			int w = 5;

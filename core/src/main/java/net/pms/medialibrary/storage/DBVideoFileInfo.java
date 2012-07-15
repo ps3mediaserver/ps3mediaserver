@@ -303,6 +303,7 @@ class DBVideoFileInfo extends DBFileInfo {
 						videoFile.setWidth(rs.getInt(pos++));
 						videoFile.setYear(rs.getInt(pos++));
 						videoFile.setMuxingMode(rs.getString(pos++));
+						videoFile.setFrameRateMode(rs.getString(pos++));
 
 						videos.put(videoFile.getId(), videoFile);
 					}else{
@@ -324,11 +325,11 @@ class DBVideoFileInfo extends DBFileInfo {
 					// Audio track
 					DLNAMediaAudio audioTrack = new DLNAMediaAudio();
 					audioTrack.setLang(rs.getString(pos++));
-					audioTrack.setNrAudioChannels(rs.getInt(pos++));
+					audioTrack.getAudioProperties().setNumberOfChannels(rs.getInt(pos++));
 					audioTrack.setSampleFrequency(rs.getString(pos++));
 					audioTrack.setCodecA(rs.getString(pos++));
 					audioTrack.setBitsperSample(rs.getInt(pos++));
-					audioTrack.setDelay(rs.getInt(pos++));
+					audioTrack.getAudioProperties().setAudioDelay(rs.getInt(pos++));
 					audioTrack.setMuxingModeAudio(rs.getString(pos++));
 
 					boolean doInsertAudioTrack = true;
@@ -425,6 +426,9 @@ class DBVideoFileInfo extends DBFileInfo {
 						case VIDEO_SORTNAME:
 							s1 = o1.getSortName();
 							s2 = o2.getSortName();
+							break;
+						default:
+							log.warn(String.format("Unhandled sort field reveived (%s). This should never happen", sortField));
 							break;
 						}
 						
@@ -752,11 +756,11 @@ class DBVideoFileInfo extends DBFileInfo {
 				stmt.clearParameters();
 				stmt.setInt(1, videoFileInfo.getId());
 				stmt.setString(2, media.getLang());
-				stmt.setInt(3, media.getNrAudioChannels());
+				stmt.setInt(3, media.getAudioProperties().getNumberOfChannels());
 				stmt.setString(4, media.getSampleFrequency());
 				stmt.setString(5, media.getCodecA());
 				stmt.setInt(6, media.getBitsperSample());
-				stmt.setInt(7, media.getDelay());
+				stmt.setInt(7, media.getAudioProperties().getAudioDelay());
 				stmt.setString(8, media.getMuxingModeAudio());
 				stmt.executeUpdate();
 			} catch (Exception e) {

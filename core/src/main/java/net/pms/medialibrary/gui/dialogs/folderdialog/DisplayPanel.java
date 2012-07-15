@@ -555,6 +555,9 @@ class DisplayPanel extends JPanel {
 				break;
 			case FOLDER:
 				rbDisplayIemAsFolder.setSelected(true);
+			default:
+				log.warn(String.format("Unhandled file display type received (%s). This should never happen!", folder.getDisplayProperties().getFileDisplayType()));
+				break;
 		}
 
 		if (folder.getDisplayProperties().isSortAscending()) {
@@ -796,6 +799,8 @@ class DisplayPanel extends JPanel {
 								treeModel.insertNodeInto(newNode, nodeToDropOnto, getNewNodeInsertPosition(e.getEntry(), nodeToDropOnto));
 								tree.expandPath(tree.getSelectionPath());
 								break;
+							default:
+								break;
 						}
 						((ConfigureFileEntryDialog) e.getSource()).dispose();
 					}
@@ -868,6 +873,8 @@ class DisplayPanel extends JPanel {
 							switch (e.getActionType()) {
 								case OK:
 									dtn.setUserObject(e.getEntry());
+									break;
+								default:
 									break;
 							}
 							((ConfigureFileEntryDialog) e.getSource()).dispose();
