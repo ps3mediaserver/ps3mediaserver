@@ -20,6 +20,9 @@ package net.pms.encoders;
 
 import com.sun.jna.Platform;
 import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.Hashtable;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
@@ -34,6 +37,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import net.pms.network.HTTPResource;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -47,6 +52,8 @@ public class VLCVideo extends Player {
 	protected JTextField audioPri;
 	protected JTextField subtitlePri;
 	protected JCheckBox subtitleEnabled;
+	protected JTextField scale;
+	protected final double scaleDefault = 0.6;
 
 	public VLCVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -101,7 +108,7 @@ public class VLCVideo extends Player {
 	protected String getEncodingArgs() {
 		//See: http://www.videolan.org/doc/streaming-howto/en/ch03.html
 		//See: http://wiki.videolan.org/Codec
-		//Xbox: wmv2, wma, asf
+		//Xbox: wmv2, wma, asf (WORKING)
 		//PS3: mp1v, mpga, mpeg1 (WORKING)
 		ArrayList<String> args = new ArrayList<String>();
 		
@@ -115,7 +122,7 @@ public class VLCVideo extends Player {
 		args.add("ab=128");
 		
 		//Video scaling (TODO: Why is this needed?
-		//args.add("scale=1");
+		args.add("scale=" + scale.getText());
 		
 		//Channels (TODO: is this nessesary?)
 		args.add("channels=2");
@@ -138,7 +145,6 @@ public class VLCVideo extends Player {
 
 	protected String getMux() {
 		return "mpeg1";
-		//return "mpeg1";
 	}
 
 	@Override
@@ -223,11 +229,42 @@ public class VLCVideo extends Player {
 		mainPanel.add(hardwareAccel);
 		
 		//Try adding a label with a text field
-		audioPri = genTextField("Audio Language Priority", "eng,jpn", mainPanel);
+		audioPri = genTextField("Audio Language Priority", "jpn,eng", mainPanel);
 		subtitleEnabled = new JCheckBox("Enable Subtitles");
 		subtitleEnabled.setSelected(true);
 		mainPanel.add(subtitleEnabled);
-		subtitlePri = genTextField("Subtitle Language Priority", "jpn,eng", mainPanel);
+		subtitlePri = genTextField("Subtitle Language Priority", "eng,jpn", mainPanel);
+		
+		//Add slider for scale
+		JPanel sliderPanel = new JPanel();
+		sliderPanel.add(new JLabel("Video scale: "));
+		scale = new JTextField("" + scaleDefault);
+		sliderPanel.add(scale);
+		final JSlider scaleSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int)(scaleDefault*10));
+		Hashtable scaleLabels = new Hashtable();
+		scaleLabels.put(0, new JLabel("0.0") );
+		scaleLabels.put(5, new JLabel("0.5") );
+		scaleLabels.put(10, new JLabel("1.0") );
+		scaleSlider.setLabelTable(scaleLabels);
+		scaleSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent ce) {
+				scale.setText(String.valueOf((double)scaleSlider.getValue()/10));
+			}
+		});
+		scale.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String typed = scale.getText();
+                scaleSlider.setValue(0);
+                if(!typed.matches("\\d+") || typed.length() > 3)
+                    return;
+                scaleSlider.setValue(Integer.parseInt(typed)*10);
+			}
+		});
+		sliderPanel.add(scaleSlider);
+		mainPanel.add(sliderPanel);
+		
 		return mainPanel;
 	}
 	
