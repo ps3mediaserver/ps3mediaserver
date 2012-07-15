@@ -107,4 +107,20 @@ public class DLNAMediaLang {
 	public void setLang(String lang) {
 		this.lang = lang;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof DLNAMediaLang)){
+			return false;	
+		}
+		
+		return hashCode() == obj.hashCode();
+	}
+	
+	@Override
+	public int hashCode() {
+		int hashcode = 8 + getId();
+		hashcode *= 8 + (getLang() == null ? 1 : getLang().hashCode());
+		return hashcode;
+	}
 }

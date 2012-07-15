@@ -174,7 +174,8 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	
 	@Override
 	public int hashCode(){
-		int hashCode = 24 + getType().hashCode();
+		int hashCode = super.hashCode();
+		hashCode *= 24 + getType().hashCode();
 		hashCode *= 24 + (getFlavor() == null ? 1 : getFlavor().hashCode());
 		hashCode *= 24 + (getPlayableExternalFile() == null ? 2 : getPlayableExternalFile().hashCode());
 		hashCode *= 24 + (getExternalFile() == null ? 3 : getExternalFile().hashCode());
