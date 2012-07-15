@@ -1,6 +1,6 @@
 /*
  * PS3 Media Server, for streaming any medias to your PS3.
- * Copyright (C) 2008  A.Brochard
+ * Copyright (C) 2012  I. Sokolov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,32 +16,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package net.pms.formats;
+package net.pms.dlna;
 
-import net.pms.PMS;
-import net.pms.encoders.Player;
-import net.pms.encoders.TsMuxerAudio;
+import net.pms.formats.v2.SubtitleType;
+import org.junit.Test;
 
-import java.util.ArrayList;
+import static org.fest.assertions.Assertions.assertThat;
 
-public class AudioAsVideo extends MKV {
-	/**
-	 * {@inheritDoc} 
-	 */
-	@Override
-	public Identifier getIdentifier() {
-		return Identifier.AUDIO_AS_VIDEO;
+public class DLNAMediaSubtitleTest {
+
+	@Test
+	public void testDefaultSubtitleType() {
+		DLNAMediaSubtitle dlnaMediaSubtitle = new DLNAMediaSubtitle();
+		assertThat(dlnaMediaSubtitle.getType()).isEqualTo(SubtitleType.UNKNOWN);
 	}
 
-	@Override
-	public ArrayList<Class<? extends Player>> getProfiles() {
-		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
-		PMS r = PMS.get();
-		for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
-			if (engine.equals(TsMuxerAudio.ID)) {
-				a.add(TsMuxerAudio.class);
-			}
-		}
-		return a;
+	@Test(expected = IllegalArgumentException.class)
+	public void testSetType_withNullSubtitleType() {
+		DLNAMediaSubtitle dlnaMediaSubtitle = new DLNAMediaSubtitle();
+		dlnaMediaSubtitle.setType(null);
 	}
 }

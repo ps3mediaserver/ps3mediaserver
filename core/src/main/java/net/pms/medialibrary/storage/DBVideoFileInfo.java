@@ -35,7 +35,7 @@ import java.util.List;
 
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaSubtitle;
-import net.pms.formats.SubtitleType;
+import net.pms.formats.v2.SubtitleType;
 import net.pms.medialibrary.commons.MediaLibraryConfiguration;
 import net.pms.medialibrary.commons.dataobjects.DOCertification;
 import net.pms.medialibrary.commons.dataobjects.DOFilter;

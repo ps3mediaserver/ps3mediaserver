@@ -52,8 +52,8 @@ public class DLNAHelper {
 		dbMedia.setModel(video.getModel());
 		dbMedia.setMediaparsed(true);
 
-		dbMedia.setAudioCodes(video.getAudioCodes());
-		dbMedia.setSubtitlesCodes(video.getSubtitlesCodes());
+		dbMedia.setAudioTracksList(video.getAudioCodes());
+		dbMedia.setSubtitleTracksList(video.getSubtitlesCodes());
 
 		dbMedia.setDvdtrack(video.getDvdtrack());
 		dbMedia.setH264AnnexB(video.getH264_annexB());

@@ -170,7 +170,7 @@ public abstract class Player {
 				String lang = st.nextToken();
 				lang = lang.trim();
 				logger.trace("Looking for an audio track with lang: " + lang);
-				for (DLNAMediaAudio audio : media.getAudioCodes()) {
+				for (DLNAMediaAudio audio : media.getAudioTracksList()) {
 					if (audio.matchCode(lang)) {
 						params.aid = audio;
 						logger.trace("Matched audio track: " + audio);
@@ -181,9 +181,9 @@ public abstract class Player {
 			}
 		}
 
-		if (params.aid == null && media.getAudioCodes().size() > 0) {
+		if (params.aid == null && media.getAudioTracksList().size() > 0) {
 			// take a default audio track, dts first if possible
-			for (DLNAMediaAudio audio : media.getAudioCodes()) {
+			for (DLNAMediaAudio audio : media.getAudioTracksList()) {
 				if (audio.isDTS()) {
 					params.aid = audio;
 					logger.trace("Found priority audio track with DTS: " + audio);
@@ -192,7 +192,7 @@ public abstract class Player {
 			}
 
 			if (params.aid == null) {
-				params.aid = media.getAudioCodes().get(0);
+				params.aid = media.getAudioTracksList().get(0);
 				logger.trace("Choosed a default audio track: " + params.aid);
 			}
 		}
@@ -319,4 +319,38 @@ public abstract class Player {
 			}
 		}
 	}
+
+	/**
+	 * Returns whether or not the player can handle a file with the given media
+	 * info. If mediaInfo is <code>null</code> compatibility cannot be
+	 * determined and <code>false</code> will be returned.
+	 * 
+	 * @param mediaInfo
+	 *            The {@link DLNAMediaInfo} of the file.
+	 * @return True when the file can be handled, false otherwise.
+	 * @since 1.60.0
+	 */
+	public abstract boolean isCompatible(DLNAMediaInfo mediaInfo);
+
+	/**
+	 * Returns whether or not the player can handle a file with the given
+	 * format. This is a very rough estimate of player capabilities because
+	 * the format of a file does not take into account many variables that
+	 * are of importance (e.g. subtitles or contained audio streams). It is
+	 * better to use {@link #isCompatible(DLNAMediaInfo)} instead. This method
+	 * should only be used as fallback when there is no media info available.
+	 * <p> 
+	 * If format is <code>null</code> compatiblity cannot be determined
+	 * and <code>false</code> will be returned.
+	 * <p>
+	 * Note: this is the reverse approach of {@link Format#getProfiles()},
+	 * which can be deprecated once this method is actively being used.
+	 * 
+	 * @param format
+	 *            The {@link Format} of the file.
+	 * @return True when the file can be handled, false otherwise.
+	 * @since 1.60.0
+	 */
+	public abstract boolean isCompatible(Format format);
+
 }

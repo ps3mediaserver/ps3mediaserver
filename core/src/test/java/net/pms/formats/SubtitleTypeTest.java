@@ -18,6 +18,7 @@
  */
 package net.pms.formats;
 
+import net.pms.formats.v2.SubtitleType;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -42,12 +43,17 @@ public class SubtitleTypeTest {
 	public void getSubtitleTypeByLibMediaInfoCodec_matchingCodecs() throws Exception {
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("s_utf8")).isEqualTo(SubtitleType.SUBRIP);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("S_TEXT/UTF8")).isEqualTo(SubtitleType.SUBRIP);
+		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("Subrip")).isEqualTo(SubtitleType.SUBRIP);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("s_ssa")).isEqualTo(SubtitleType.ASS);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("s_ass")).isEqualTo(SubtitleType.ASS);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("S_TEXT/SSA")).isEqualTo(SubtitleType.ASS);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("S_TEXT/ASS")).isEqualTo(SubtitleType.ASS);
+		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("SSA")).isEqualTo(SubtitleType.ASS);
+		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("ASS")).isEqualTo(SubtitleType.ASS);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("subp")).isEqualTo(SubtitleType.VOBSUB);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("S_VOBSUB")).isEqualTo(SubtitleType.VOBSUB);
+		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("mp4s")).isEqualTo(SubtitleType.VOBSUB);
+		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("E0")).isEqualTo(SubtitleType.VOBSUB);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("s_usf")).isEqualTo(SubtitleType.USF);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("S_TEXT/USF")).isEqualTo(SubtitleType.USF);
 		assertThat(SubtitleType.getSubtitleTypeByLibMediaInfoCodec("S_IMAGE/BMP")).isEqualTo(SubtitleType.BMP);

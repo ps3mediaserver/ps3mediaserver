@@ -25,12 +25,12 @@ download the latest sources and build PMS:
 
     git clone git://github.com/ps3mediaserver/ps3mediaserver.git
     cd ps3mediaserver
-    mvn install
+    mvn package
 
-The result will be built in the "packaging/target" directory:
+The result will be built in the "target" directory:
 
     (Windows) PMS-setup.exe
-    (Linux)   pms-generic-linux-unix-x.xx.x.tar.gz
+    (Linux)   pms-linux-generic-x.xx.x.tar.gz
     (Mac OSX) pms-macosx-x.xx.x.dmg
 
 
@@ -39,7 +39,7 @@ Full instructions
 
 First all required software has to be installed:
 
- 1. Download and install Java JDK (JRE is not enough):
+1\. Download and install Java JDK (JRE is not enough):
 
     * (Windows) http://www.oracle.com/technetwork/java/javase/downloads/index.html 
         - Be sure to remember the install location. 
@@ -47,7 +47,7 @@ First all required software has to be installed:
     * (Mac OSX) https://developer.apple.com/downloads/index.action?name=for%20Xcode%20-
 	- Look for java Developer Package
 
- 2. Download and install Git:
+2\. Download and install Git:
 
     * (Windows) http://code.google.com/p/msysgit/downloads/list
         - For the "Adjusting your PATH environment" section, select
@@ -59,7 +59,7 @@ First all required software has to be installed:
 	- If you are using brew (http://mxcl.github.com/homebrew/) you just have
 	  to do 'brew install git'
 
- 3. Download and extract Maven:
+3\. Download and extract Maven:
 
     * (Windows) http://maven.apache.org/download.html
     * (Linux)   `sudo apt-get install maven3`
@@ -67,7 +67,7 @@ First all required software has to be installed:
 
     Be sure to remember the extract location.
 
- 4. Set environment variables (create new variables or append the value if the
+4\. Set environment variables (create new variables or append the value if the
     variable already exists):
 
     * (Windows)
@@ -78,12 +78,12 @@ First all required software has to be installed:
     * (Linux) (nothing to do)
     * (Mac OSX) (nothing to do)
 
- 5. Download the PMS source code by cloning the GitHub repository:
+5\. Download the PMS source code by cloning the GitHub repository:
 
         git clone git://github.com/ps3mediaserver/ps3mediaserver.git
         cd ps3mediaserver
 
- 6. Resolve and install external libraries needed by the build process:
+6\. Resolve and install external libraries needed by the build process:
 
         mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external
         mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
@@ -91,18 +91,18 @@ First all required software has to be installed:
 At this point all required software packages are present.
 PMS is now ready to be built.
 
- 7. Update to the latest source (optional):
+7\. Update to the latest source (optional):
 
         git pull
 
- 8. Compile the latest version of PMS:
+8\. Compile the latest version of PMS:
 
-        mvn install
+        mvn package
 
-The resulting binaries will be built in the "packaging/target" directory:
+The resulting binaries will be built in the "target" directory:
 
     (Windows) PMS-setup.exe
-    (Linux)   pms-generic-linux-unix-x.xx.x.tar.gz
+    (Linux)   pms-linux-generic-x.xx.x.tar.gz
     (Mac OSX) pms-macosx-x.xx.x.dmg
 
 
@@ -115,7 +115,7 @@ These last two commands can easily be automated using a script:
 
     rem build-pms.bat
     start /D ps3mediaserver /wait /b git pull
-    start /D ps3mediaserver /wait /b mvn install
+    start /D ps3mediaserver /wait /b mvn package
 
 
 (Linux, Mac OSX)
@@ -124,7 +124,7 @@ These last two commands can easily be automated using a script:
     # build-pms.sh
     cd ps3mediaserver
     git pull
-    mvn install
+    mvn package
 
 
 Instructions for developers
@@ -176,7 +176,7 @@ to set up Eclipse for development with Maven and Git.
    Projects" from the menu. Select the project "/pom.xml" and press "Finish".
 
    Note: if a project with the same name already exists, click "Advanced" and
-   set the "Name template" to `YOURNAME-[artifactId]` (replace YOURNAME with
+   set the "Name template" to `[artifactId]-YOURNAME` (replace YOURNAME with
    your GitHub name). Then press "Finish".
 
 You now see the sources in Eclipse, but the project is still missing the "Git"
@@ -197,7 +197,7 @@ You can build PMS from Eclipse:
 
  * Create a new run configuration under "Run > Run Configurations...", right
    mouse button on "Maven Build", select "New", Name: `Build PMS`, Goals:
-   `install`. Select the tab "JRE" and add the following VM arguments
+   `package`. Select the tab "JRE" and add the following VM arguments
    `-Xmx1500m -XX:MaxPermSize=256m`. Finally, press the "Apply" button.
 
 You will want to run PMS from Eclipse while developing. This is how you do it:
@@ -220,4 +220,3 @@ select "Team > Push to Upstream".
 If you would like to contribute to the PMS project, you can send a "Pull
 Request" to the development team. See the help on GitHub for more details
 (http://help.github.com/send-pull-requests/).
-

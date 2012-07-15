@@ -24,6 +24,14 @@ import net.pms.encoders.*;
 import java.util.ArrayList;
 
 public class MPG extends Format {
+	/**
+	 * {@inheritDoc} 
+	 */
+	@Override
+	public Identifier getIdentifier() {
+		return Identifier.MPG;
+	}
+
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		PMS r = PMS.get();

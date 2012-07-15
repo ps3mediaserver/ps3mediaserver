@@ -30,7 +30,7 @@
 
 	<groupId>github.com.taconaut</groupId>
 	<artifactId>pms</artifactId>
-	<version>1.54.1-mlx_0.9-SNAPSHOT</version>
+	<version>1.60.0-mlx_0.9-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 	<name>PMS</name>

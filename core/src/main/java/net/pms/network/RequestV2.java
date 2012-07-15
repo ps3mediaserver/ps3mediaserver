@@ -18,6 +18,22 @@
  */
 package net.pms.network;
 
+import static net.pms.configuration.RendererConfiguration.RENDERER_ID_PLAYSTATION3;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
@@ -36,16 +52,6 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.stream.ChunkedStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static net.pms.configuration.RendererConfiguration.RENDERER_ID_PLAYSTATION3;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
  * This class handles all forms of incoming HTTP requests by constructing a proper HTTP response. 
@@ -697,25 +703,32 @@ public class RequestV2 extends HTTPResource {
 			output.setHeader("SID", PMS.get().usn());
 			output.setHeader("TIMEOUT", "Second-1800");
 			String cb = soapaction.replace("<", "").replace(">", "");
-			String faddr = cb.replace("http://", "").replace("/", "");
-			String addr = faddr.split(":")[0];
-			int port = Integer.parseInt(faddr.split(":")[1]);
-			Socket sock = new Socket(addr,port);
-			OutputStream out = sock.getOutputStream();
-			out.write(("NOTIFY /" + argument + " HTTP/1.1").getBytes());
-			out.write(CRLF.getBytes());
-			out.write(("SID: " + PMS.get().usn()).getBytes());
-			out.write(CRLF.getBytes());
-			out.write(("SEQ: " + 0).getBytes());
-			out.write(CRLF.getBytes());
-			out.write(("NT: upnp:event").getBytes());
-			out.write(CRLF.getBytes());
-			out.write(("NTS: upnp:propchange").getBytes());
-			out.write(CRLF.getBytes());
-			out.write(("HOST: " + faddr).getBytes());
-			out.write(CRLF.getBytes());
-			out.flush();
-			out.close();
+
+			try {
+				URL soapActionUrl = new URL(cb);
+				String addr = soapActionUrl.getHost();
+				int port = soapActionUrl.getPort();
+				Socket sock = new Socket(addr,port);
+				OutputStream out = sock.getOutputStream();
+
+				out.write(("NOTIFY /" + argument + " HTTP/1.1").getBytes());
+				out.write(CRLF.getBytes());
+				out.write(("SID: " + PMS.get().usn()).getBytes());
+				out.write(CRLF.getBytes());
+				out.write(("SEQ: " + 0).getBytes());
+				out.write(CRLF.getBytes());
+				out.write(("NT: upnp:event").getBytes());
+				out.write(CRLF.getBytes());
+				out.write(("NTS: upnp:propchange").getBytes());
+				out.write(CRLF.getBytes());
+				out.write(("HOST: " + addr + ":" + port).getBytes());
+				out.write(CRLF.getBytes());
+				out.flush();
+				out.close();
+			} catch (MalformedURLException ex) {
+				LOGGER.debug("Cannot parse address and port from soap action \"" + soapaction + "\"", ex);
+			}
+
 			if (argument.contains("connection_manager")) {
 				response.append(HTTPXMLHelper.eventHeader("urn:schemas-upnp-org:service:ConnectionManager:1"));
 				response.append(HTTPXMLHelper.eventProp("SinkProtocolInfo"));
