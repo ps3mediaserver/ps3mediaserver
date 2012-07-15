@@ -44,7 +44,7 @@ public class VLCVideo extends Player {
 	private final PmsConfiguration configuration;
 	public static final String ID = "vlctrans";
 	protected JCheckBox hardwareAccel;
-	protected JTextField languagePri;
+	protected JTextField audioPri;
 	protected JTextField subtitlePri;
 	protected JCheckBox subtitleEnabled;
 
@@ -166,7 +166,9 @@ public class VLCVideo extends Player {
 		//File needs to be given before sout, otherwise vlc complains
 		cmdList.add(fileName);
 		
-		cmdList.add("--sub-language=eng");
+		if(subtitleEnabled.isSelected())
+			cmdList.add("--sub-language=" + subtitlePri.getText());
+		cmdList.add("--audio-language=" + audioPri.getText());
 		
 		//Add our transcode options
 		String transcodeSpec = String.format(
@@ -215,7 +217,7 @@ public class VLCVideo extends Player {
 		mainPanel.add(hardwareAccel);
 		
 		//Try adding a label with a text field
-		languagePri = genTextField("Audio Language Priority", "eng,jpn", mainPanel);
+		audioPri = genTextField("Audio Language Priority", "eng,jpn", mainPanel);
 		subtitleEnabled = new JCheckBox("Enable Subtitles");
 		subtitleEnabled.setSelected(true);
 		mainPanel.add(subtitleEnabled);
