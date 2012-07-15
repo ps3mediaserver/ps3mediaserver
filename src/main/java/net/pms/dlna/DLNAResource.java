@@ -1084,15 +1084,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				flags = "DLNA.ORG_OP=01";
 				if (getPlayer() != null) {
 					if (getPlayer().isTimeSeekable() && mediaRenderer.isSeekByTime()) {
-						if (mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3)) // ps3 doesn't like OP=11
-						{
+						if (mediaRenderer.getRendererID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3)) { // PS3 doesn't like OP=11
 							flags = "DLNA.ORG_OP=10";
 						} else {
 							flags = "DLNA.ORG_OP=11";
 						}
 					}
 				} else {
-					if (mediaRenderer.isSeekByTime() && !mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3)) {
+					if (mediaRenderer.isSeekByTime() && !mediaRenderer.getRendererID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3)) {
 						flags = "DLNA.ORG_OP=11";
 					}
 				}
@@ -1102,7 +1101,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				if (mime == null) {
 					mime = "video/mpeg";
 				}
-				if (mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3)) { // XXX TO REMOVE, OR AT LEAST MAKE THIS GENERIC // whole extensions/mime-types mess to rethink anyway
+				if (mediaRenderer.getRendererID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3)) { // XXX TO REMOVE, OR AT LEAST MAKE THIS GENERIC // whole extensions/mime-types mess to rethink anyway
 					if (mime.equals("video/x-divx")) {
 						dlnaspec = "DLNA.ORG_PN=AVI";
 					} else if (mime.equals("video/x-ms-wmv") && getMedia() != null && getMedia().getHeight() > 700) {

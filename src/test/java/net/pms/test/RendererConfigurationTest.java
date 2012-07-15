@@ -191,7 +191,7 @@ public class RendererConfigurationTest {
 	}
 
 	@Test
-	public void testRendererUniqueID() {
+	public void testRendererID() {
 		PmsConfiguration pmsConf = null;
 
 		try {
@@ -208,9 +208,9 @@ public class RendererConfigurationTest {
 		loadRendererConfigurations(pmsConf);
 
 		RendererConfiguration rc = getRendererConfigurationByUA("\"User-Agent: PLAYSTATION 3\", \"Playstation 3\"");
-		assertEquals("RendererUniqueID for PlayStation 3", RENDERER_ID_PLAYSTATION3, rc.getRendererUniqueID());
+		assertEquals("RendererID for PlayStation 3", RENDERER_ID_PLAYSTATION3, rc.getRendererID());
 		rc = getRendererConfigurationByUA("User-Agent: Windows2000/0.0 UPnP/1.0 PhilipsIntelSDK/1.4 DLNADOC/1.50");
-		assertEquals("RendererUniqueID for PhilipsPFL is not set and defaults to RendererName", "Philips TV", rc.getRendererUniqueID());
+		assertEquals("RendererID for Philips PFL is not set and defaults to RendererName", "Philips TV", rc.getRendererID());
 	}
 
 	/**
