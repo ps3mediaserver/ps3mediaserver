@@ -21,8 +21,10 @@ package net.pms.dlna;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.MEncoderVideo;
@@ -33,6 +35,9 @@ import net.pms.encoders.TSMuxerVideo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class populates the TRANSCODE folder with content. 
+ */
 public class FileTranscodeVirtualFolder extends VirtualFolder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileTranscodeVirtualFolder.class);
 	private boolean resolved;
@@ -42,14 +47,18 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 	 * are sorted by player, then by audio track, then by subtitle.
 	 */
 	private class ResourceSort implements Comparator<DLNAResource> {
+		private ArrayList<Player> players;
+
+		ResourceSort(ArrayList<Player> players) {
+			this.players = players;
+		}
 
 		@Override
 		public int compare(DLNAResource resource1, DLNAResource resource2) {
-			// FIXME: Can this be sorted in original sorting order of the array of players?
-			String playerId1 = resource1.getPlayer().id();
-			String playerId2 = resource2.getPlayer().id();
+			Integer playerIndex1 = players.indexOf(resource1.getPlayer());
+			Integer playerIndex2 = players.indexOf(resource2.getPlayer());
 			
-			if (playerId1.equals(playerId2)) {
+			if (playerIndex1.equals(playerIndex2)) {
 				String audioLang1 = resource1.getMediaAudio().getLang();
 				String audioLang2 = resource2.getMediaAudio().getLang();
 
@@ -74,7 +83,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					return audioLang1.compareToIgnoreCase(audioLang2);
 				}
 			} else {
-				return playerId1.compareToIgnoreCase(playerId2);
+				return playerIndex1.compareTo(playerIndex2);
 			}
 		}
 		
@@ -121,7 +130,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 			}
 
 			// Sort the list of combinations
-			Collections.sort(combos, new ResourceSort());
+			Collections.sort(combos, new ResourceSort(PlayerFactory.getAllPlayers()));
 
 			// Now add the sorted list of combinations to the folder
 			for (DLNAResource combo : combos) {
