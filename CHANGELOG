@@ -12,7 +12,6 @@ Changelog:
     Fixed DV videos detection
     Added support for WebM videos downloaded from YouTube
     Optimized CBRVideoBitrate value for Panasonic TVs (thanks, ExSport!)
-    Added RendererUniqueID to renderers' configs
     Added new renderer: Sony SMP-N100 (thanks, mrw1986 and guillepalao!)
     Language updates:
         - Catalan translation update (thanks, aseques!)
