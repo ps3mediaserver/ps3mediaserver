@@ -477,7 +477,7 @@ public class RequestV2 extends HTTPResource {
 					s = s.replace("PS3 Media Server", "PS3 Media Server [" + profileName + "]");
 				}
 
-				if (!mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3)) {
+				if (!mediaRenderer.isPS3()) {
 					// hacky stuff. replace the png icon by a jpeg one. Like mpeg2 remux,
 					// really need a proper format compatibility list by renderer
 					s = s.replace("<mimetype>image/png</mimetype>", "<mimetype>image/jpeg</mimetype>");
