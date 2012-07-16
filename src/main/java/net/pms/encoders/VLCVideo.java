@@ -63,6 +63,7 @@ public class VLCVideo extends Player {
 	protected JTextField codecContainer;
 	protected JCheckBox experimentalCodecs;
 	protected JCheckBox audioSyncEnabled;
+	protected JTextField sampleRate;
 
 	public VLCVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -137,7 +138,7 @@ public class VLCVideo extends Player {
 		args.add("channels=2");
 
 		//Static sample rate
-		args.add("samplerate=48000");
+		args.add("samplerate=" + sampleRate.getText());
 
 		//Stream subtitiles to client
 		//args.add("scodec=dvbs");
@@ -296,6 +297,9 @@ public class VLCVideo extends Player {
 		codecAudio = genTextField("Audio codec: ", "wma", codecPanel, 6);
 		codecContainer = genTextField("Container: ", "asf", codecPanel, 6);
 		mainPanel.add(codecPanel);
+		
+		//Audio sample rate
+		sampleRate = genTextField("<html>Audio sample rate<br>Potential Values: 44100 (unstable), 48000", "48000", mainPanel);
 
 		return mainPanel;
 	}
