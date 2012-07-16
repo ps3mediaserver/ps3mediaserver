@@ -326,6 +326,9 @@ public class RendererConfiguration {
 
 	// known renderers with special code workarounds
 	public final static String RENDERER_ID_PLAYSTATION3 = "ps3";
+	public final static String RENDERER_ID_XBOX = "xbox";
+	public final static String RENDERER_ID_BRAVIA = "bravia";
+	public final static String RENDERER_ID_FDSSDP = "fdssdp";
 
 	// Ditlew
 	public int getByteToTimeseekRewindSeconds() {

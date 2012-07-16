@@ -2113,7 +2113,7 @@ public class MEncoderVideo extends Player {
 		}
 
 		String rate = "48000";
-		if (params.mediaRenderer.isXBOX()) {
+		if (params.mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RendererConfiguration.RENDERER_ID_XBOX)) {
 			rate = "44100";
 		}
 

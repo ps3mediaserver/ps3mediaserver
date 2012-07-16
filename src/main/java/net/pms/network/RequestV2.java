@@ -250,7 +250,7 @@ public class RequestV2 extends HTTPResource {
 		long CLoverride = -2; // 0 and above are valid Content-Length values, -1 means omit
 		StringBuilder response = new StringBuilder();
 		DLNAResource dlna = null;
-		boolean xbox = mediaRenderer.isXBOX();
+		boolean xbox = mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RendererConfiguration.RENDERER_ID_XBOX);
 
 		// Samsung 2012 TVs have a problematic preceding slash that needs to be removed.
 		if (argument.startsWith("/")) {
