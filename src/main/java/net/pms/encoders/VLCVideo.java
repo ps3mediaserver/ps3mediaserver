@@ -59,6 +59,7 @@ public class VLCVideo extends Player {
 	protected JTextField codecAudio;
 	protected JTextField codecContainer;
 	protected JCheckBox experimentalCodecs;
+	protected JCheckBox audioSyncEnabled;
 
 	public VLCVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -142,8 +143,9 @@ public class VLCVideo extends Player {
 		//Hardcode subtitiles into video
 		args.add("soverlay");
 		
-		//Keep audio in sync with video
-		args.add("audio-sync");
+		//This has caused garbled audio, so only enable when told to
+		if(audioSyncEnabled.isSelected())
+			args.add("audio-sync");
 		
 		return StringUtils.join(args, ",");
 	}
@@ -240,6 +242,10 @@ public class VLCVideo extends Player {
 		experimentalCodecs = new JCheckBox("Enable experimental codecs");
 		experimentalCodecs.setContentAreaFilled(false);
 		mainPanel.add(experimentalCodecs);
+		
+		audioSyncEnabled = new JCheckBox("Enable audio sync");
+		audioSyncEnabled.setContentAreaFilled(false);
+		mainPanel.add(audioSyncEnabled);
 		
 		//Try adding a label with a text field
 		audioPri = genTextField("Audio Language Priority", "jpn,eng", mainPanel);
