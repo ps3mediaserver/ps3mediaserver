@@ -58,6 +58,7 @@ public class VLCVideo extends Player {
 	protected JTextField codecVideo;
 	protected JTextField codecAudio;
 	protected JTextField codecContainer;
+	protected JCheckBox experimentalCodecs;
 
 	public VLCVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -174,6 +175,10 @@ public class VLCVideo extends Player {
 		//Hardware accelleration seems to be more stable now, so its enabled
 		if(hardwareAccel.isSelected())
 			cmdList.add("--ffmpeg-hw");
+		
+		//Useful for the more esoteric codecs people use
+		if(experimentalCodecs.isSelected())
+			cmdList.add("--sout-ffmpeg-strict=-2");
 
 		//Stop the DOS box from appearing on windows
 		if (isWindows)
@@ -231,6 +236,10 @@ public class VLCVideo extends Player {
 		hardwareAccel = new JCheckBox("Use hardware acceleration");
 		hardwareAccel.setContentAreaFilled(false);
 		mainPanel.add(hardwareAccel);
+		
+		experimentalCodecs = new JCheckBox("Enable experimental codecs");
+		experimentalCodecs.setContentAreaFilled(false);
+		mainPanel.add(experimentalCodecs);
 		
 		//Try adding a label with a text field
 		audioPri = genTextField("Audio Language Priority", "jpn,eng", mainPanel);
