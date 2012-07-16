@@ -37,6 +37,7 @@ import javax.swing.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -46,6 +47,12 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Use VLC as a backend transcoder. Note that 0.x and 1.x versions are unsupported 
+ * (and probably will crash). Only the latest version will be supported
+ * 
+ * @author Leon Blakey <lord.quackstar@gmail.com>
+ */
 public class VLCVideo extends Player {
 	private static final Logger logger = LoggerFactory.getLogger(VLCVideo.class);
 	private final PmsConfiguration configuration;
@@ -112,14 +119,14 @@ public class VLCVideo extends Player {
 		return configuration.getVlcPath();
 	}
 
-	protected String getEncodingArgs() {
+	protected List<String> getEncodingArgs() {
 		//See: http://www.videolan.org/doc/streaming-howto/en/ch03.html
 		//See: http://wiki.videolan.org/Codec
 		//Xbox: wmv2, wma, asf (WORKING)
 		//PS3: mp1v, mpga, mpeg1 (WORKING)
-		ArrayList<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<String>();
 		
-		//Codecs to use (mp2 AKA dvd format)
+		//Codecs to use
 		args.add("venc=ffmpeg");
 		args.add("vcodec=" + codecVideo.getText());
 		args.add("acodec=" + codecAudio.getText());
@@ -128,7 +135,7 @@ public class VLCVideo extends Player {
 		args.add("vb=4096");
 		args.add("ab=128");
 		
-		//Video scaling (TODO: Why is this needed?
+		//Video scaling
 		args.add("scale=" + scale.getText());
 		
 		//Channels (TODO: is this necessary?)
@@ -148,7 +155,7 @@ public class VLCVideo extends Player {
 		if(audioSyncEnabled.isSelected())
 			args.add("audio-sync");
 		
-		return StringUtils.join(args, ",");
+		return args;
 	}
 
 	protected String getMux() {
@@ -197,7 +204,7 @@ public class VLCVideo extends Player {
 		//Add our transcode options
 		String transcodeSpec = String.format(
 			"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
-			getEncodingArgs(),
+			StringUtils.join(getEncodingArgs(), ","),
 			getMux(),
 			(isWindows ? "\\\\" : ""),
 			tsPipe.getInputPipe());
