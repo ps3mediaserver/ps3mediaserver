@@ -163,6 +163,11 @@ public class VLCVideo extends Player {
 		boolean isWindows = Platform.isWindows();
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux());
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
+		
+		logger.debug("filename: " + fileName);
+		logger.debug("dlna: " + dlna);
+		logger.debug("media: " + media);
+		logger.debug("outputparams: " + params);
 
 		// XXX it can take a long time for Windows to create a named pipe
 		// (and mkfifo can be slow if /tmp isn't memory-mapped), so start this as early as possible
@@ -193,9 +198,37 @@ public class VLCVideo extends Player {
 		//File needs to be given before sout, otherwise vlc complains
 		cmdList.add(fileName);
 
-		if (subtitleEnabled.isSelected())
-			cmdList.add("--sub-language=" + subtitlePri.getText());
-		cmdList.add("--audio-language=" + audioPri.getText());
+		//Handle audio language
+		String audioLang;
+		if(params.aid != null) {
+			//User specified language at the client, acknowledge it
+			if(params.aid.getLang() == null || params.aid.getLang().equals("und"))
+				//VLC doesn't understand und, but does understand none
+				audioLang = "none";
+			else
+				audioLang = params.aid.getLang();
+		} else
+			//Not specified, use language from GUI
+			audioLang = audioPri.getText();
+		cmdList.add("--audio-language=" + audioLang);
+		
+		//Handle subtitile language
+		String subtitleLang;
+		if(params.sid != null) {
+			//User specified language at the client, acknowledge it
+			if(params.sid.getLang() == null || params.sid.getLang().equals("und"))
+				//VLC doesn't understand und, but does understand none
+				subtitleLang = "none";
+			else
+				subtitleLang = params.sid.getLang();
+		} else {
+			//Not specified, use language from GUI if enabled
+			if (subtitleEnabled.isSelected())
+				subtitleLang = audioPri.getText();
+			else
+				subtitleLang = "none";
+		}
+		cmdList.add("--sub-language=" + subtitleLang);
 
 		//Add our transcode options
 		String transcodeSpec = String.format(
