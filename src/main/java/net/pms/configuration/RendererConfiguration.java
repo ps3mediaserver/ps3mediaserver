@@ -249,13 +249,21 @@ public class RendererConfiguration {
 		return rank;
 	}
 
-	// Those 'is' methods should disappear. Use getRendererUniqueID() instead.
+	// These 'is' methods should disappear. Use getRendererUniqueID() instead.
 	@Deprecated
 	public boolean isXBOX() {
 		return getRendererName().toUpperCase().contains("XBOX");
 	}
 
 	@Deprecated
+	public boolean isXBMC() {
+		return getRendererName().toUpperCase().contains("XBMC");
+	}
+
+	public boolean isPS3() {
+		return getRendererName().toUpperCase().contains("PLAYSTATION") || getRendererName().toUpperCase().contains("PS3");
+	}
+
 	public boolean isBRAVIA() {
 		return getRendererName().toUpperCase().contains("BRAVIA");
 	}
@@ -699,7 +707,8 @@ public class RendererConfiguration {
 		if (isMediaParserV2()) {
 			return getFormatConfiguration().isMpeg2Supported();
 		}
-		return getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3);
+
+		return isPS3();
 	}
 
 	/**
