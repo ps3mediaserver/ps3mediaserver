@@ -50,7 +50,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static net.pms.configuration.RendererConfiguration.*;
 import static net.pms.util.StringUtil.*;
 
 /**
