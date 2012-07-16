@@ -45,6 +45,12 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Use VLC as a backend transcoder. Note that 0.x and 1.x versions are unsupported 
+ * (and probably will crash). Only the latest version will be supported
+ * 
+ * @author Leon Blakey <lord.quackstar@gmail.com>
+ */
 public class VLCVideo extends Player {
 	private static final Logger logger = LoggerFactory.getLogger(VLCVideo.class);
 	private final PmsConfiguration configuration;
