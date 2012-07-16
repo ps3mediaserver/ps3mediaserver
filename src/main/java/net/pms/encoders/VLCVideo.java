@@ -54,7 +54,7 @@ public class VLCVideo extends Player {
 	protected JTextField subtitlePri;
 	protected JCheckBox subtitleEnabled;
 	protected JTextField scale;
-	protected final double scaleDefault = 0.6;
+	protected final double scaleDefault = 1.0;
 	protected JTextField codecVideo;
 	protected JTextField codecAudio;
 	protected JTextField codecContainer;
