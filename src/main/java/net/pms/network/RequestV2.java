@@ -18,7 +18,6 @@
  */
 package net.pms.network;
 
-import static net.pms.configuration.RendererConfiguration.RENDERER_ID_PLAYSTATION3;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.IOException;
@@ -52,6 +51,13 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.stream.ChunkedStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * This class handles all forms of incoming HTTP requests by constructing a proper HTTP response. 
