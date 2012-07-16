@@ -226,7 +226,7 @@ public class VLCVideo extends Player {
         titledBorder.setTitleJustification(TitledBorder.LEFT);
 		mainPanel.setBorder(titledBorder);
 		//Yes this is ugly, 
-		mainPanel.setLayout(new GridLayout(7, 3));
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		
 		hardwareAccel = new JCheckBox("Use hardware acceleration");
 		hardwareAccel.setContentAreaFilled(false);
