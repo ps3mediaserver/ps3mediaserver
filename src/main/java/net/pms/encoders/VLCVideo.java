@@ -19,6 +19,7 @@
 package net.pms.encoders;
 
 import com.sun.jna.Platform;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -54,6 +55,9 @@ public class VLCVideo extends Player {
 	protected JCheckBox subtitleEnabled;
 	protected JTextField scale;
 	protected final double scaleDefault = 0.6;
+	protected JTextField codecVideo;
+	protected JTextField codecAudio;
+	protected JTextField codecContainer;
 
 	public VLCVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -114,8 +118,8 @@ public class VLCVideo extends Player {
 		
 		//Codecs to use (mp2 AKA dvd format)
 		args.add("venc=ffmpeg");
-		args.add("vcodec=mp1v");
-		args.add("acodec=mpga");
+		args.add("vcodec=" + codecVideo.getText());
+		args.add("acodec=" + codecAudio.getText());
 		
 		//Bitrate in kbit/s (TODO: Use global option?)
 		args.add("vb=4096");
@@ -144,7 +148,7 @@ public class VLCVideo extends Player {
 	}
 
 	protected String getMux() {
-		return "mpeg1";
+		return codecContainer.getText();
 	}
 
 	@Override
@@ -222,7 +226,7 @@ public class VLCVideo extends Player {
         titledBorder.setTitleJustification(TitledBorder.LEFT);
 		mainPanel.setBorder(titledBorder);
 		//Yes this is ugly, 
-		mainPanel.setLayout(new GridLayout(9, 3));
+		mainPanel.setLayout(new GridLayout(7, 3));
 		
 		hardwareAccel = new JCheckBox("Use hardware acceleration");
 		hardwareAccel.setContentAreaFilled(false);
@@ -265,14 +269,28 @@ public class VLCVideo extends Player {
 		sliderPanel.add(scaleSlider);
 		mainPanel.add(sliderPanel);
 		
+		//Allow user to choose codec
+		JPanel codecPanel = new JPanel();
+		codecPanel.add(new JLabel("<html>Codecs that VLC will use. <br>Good places to start:" +
+				"<br> XBox: wmv2, wma, asf" +
+				"<br> PS3: mp1v, mpga, mpeg</html>"));
+		codecVideo = genTextField("Video codec: ", "wmv2", codecPanel, 6);
+		codecAudio = genTextField("Audio codec: ", "wma", codecPanel, 6);
+		codecContainer = genTextField("Container: ", "asf", codecPanel, 6);
+		mainPanel.add(codecPanel);
+		
 		return mainPanel;
 	}
 	
 	protected JTextField genTextField(String labelText, String fieldText, JPanel target) {
+		return genTextField(labelText, fieldText, target, 20);
+	}
+	
+	protected JTextField genTextField(String labelText, String fieldText, JPanel target, int columns) {
 		JPanel container = new JPanel();
 		JLabel label = new JLabel(labelText);
 		JTextField field = new JTextField(fieldText);
-		field.setColumns(20);
+		field.setColumns(columns);
 		label.setLabelFor(field);
 	
 		container.add(label);
