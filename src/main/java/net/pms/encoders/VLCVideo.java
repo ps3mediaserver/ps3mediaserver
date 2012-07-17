@@ -134,17 +134,17 @@ public class VLCVideo extends Player {
 		//Video scaling
 		args.add("scale=" + scale.getText());
 
-		//Channels (TODO: is this nessesary?)
+		//Channels (TODO: is this necessary?)
 		args.add("channels=2");
 
 		//Static sample rate
 		args.add("samplerate=" + sampleRate.getText());
 
-		//Stream subtitiles to client
+		//Stream subtitles to client
 		//args.add("scodec=dvbs");
 		//args.add("senc=dvbsub");
 
-		//Hardcode subtitiles into video
+		//Hardcode subtitles into video
 		args.add("soverlay");
 
 		//This has caused garbled audio, so only enable when told to
@@ -183,7 +183,7 @@ public class VLCVideo extends Player {
 		cmdList.add("-I");
 		cmdList.add("dummy");
 
-		//Hardware accelleration seems to be more stable now, so its enabled
+		//Hardware acceleration seems to be more stable now, so its enabled
 		if (hardwareAccel.isSelected())
 			cmdList.add("--ffmpeg-hw");
 
@@ -297,7 +297,7 @@ public class VLCVideo extends Player {
 		scale = new JTextField("" + scaleDefault);
 		sliderPanel.add(scale);
 		final JSlider scaleSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) (scaleDefault * 10));
-		Hashtable scaleLabels = new Hashtable();
+		Hashtable<Integer, JLabel> scaleLabels = new Hashtable<Integer, JLabel>();
 		scaleLabels.put(0, new JLabel("0.0"));
 		scaleLabels.put(5, new JLabel("0.5"));
 		scaleLabels.put(10, new JLabel("1.0"));

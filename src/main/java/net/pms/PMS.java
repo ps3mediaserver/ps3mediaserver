@@ -406,7 +406,7 @@ public class PMS {
 			
 			//Break down version number
 			String[] vlcVersion = registry.getVlcv().split("\\.", 3);
-			if(Integer.parseInt(vlcVersion[0]) <= 2 || Integer.parseInt(vlcVersion[2]) <= 2) {
+			if(Integer.parseInt(vlcVersion[0]) < 2 || Integer.parseInt(vlcVersion[2]) < 2) {
 				LOGGER.error("Only VLC versions 2.0.2 and above are supported");
 			}
 		}
