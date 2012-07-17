@@ -142,7 +142,6 @@ public class VLCVideo extends Player {
 		List<String> args = new ArrayList<String>();
 
 		//Codecs to use
-		args.add("venc=ffmpeg");
 		args.add("vcodec=" + codecVideo.getText());
 		args.add("acodec=" + codecAudio.getText());
 
