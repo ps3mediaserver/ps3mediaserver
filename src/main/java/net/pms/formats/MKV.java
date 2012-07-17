@@ -19,6 +19,14 @@
 package net.pms.formats;
 
 public class MKV extends MPG {
+	/**
+	 * {@inheritDoc} 
+	 */
+	@Override
+	public Identifier getIdentifier() {
+		return Identifier.MKV;
+	}
+
 
 	/**
 	 * @deprecated Use {@link #isCompatible(DLNAMediaInfo, RendererConfiguration)} instead.

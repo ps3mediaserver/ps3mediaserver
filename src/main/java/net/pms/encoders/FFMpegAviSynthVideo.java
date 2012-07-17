@@ -28,7 +28,9 @@ import java.util.StringTokenizer;
 import javax.swing.JComponent;
 
 import net.pms.PMS;
+import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
+import net.pms.formats.Format;
 import net.pms.formats.v2.SubtitleType;
 import net.pms.util.ProcessUtil;
 
@@ -127,5 +129,37 @@ public class FFMpegAviSynthVideo extends FFMpegVideo {
 		pw.close();
 		file.deleteOnExit();
 		return file;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isCompatible(DLNAMediaInfo mediaInfo) {
+		if (mediaInfo != null) {
+			// TODO: Determine compatibility based on mediaInfo
+			return false;
+		} else {
+			// No information available
+			return false;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isCompatible(Format format) {
+		if (format != null) {
+			Format.Identifier id = format.getIdentifier();
+
+			if (id.equals(Format.Identifier.MKV)
+					|| id.equals(Format.Identifier.MPG)
+					) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

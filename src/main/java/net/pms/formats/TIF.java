@@ -18,7 +18,16 @@
  */
 package net.pms.formats;
 
+
 public class TIF extends JPG {
+	/**
+	 * {@inheritDoc} 
+	 */
+	@Override
+	public Identifier getIdentifier() {
+		return Identifier.TIF;
+	}
+
 
 	/**
 	 * {@inheritDoc}
