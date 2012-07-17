@@ -18,6 +18,11 @@
  */
 package net.pms.encoders;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.debug.FormDebugPanel;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -276,40 +281,38 @@ public class VLCVideo extends Player {
 
 	@Override
 	public JComponent config() {
-		//JGoodies Formlayout makes no sense. 
-		//Working impl in swing in 6 mins > semi-working impl in jgoodies in 6 hours
-		JPanel mainPanel = new JPanel();
-		TitledBorder titledBorder = BorderFactory.createTitledBorder("VLC Transcoder Settings");
-		titledBorder.setTitleJustification(TitledBorder.LEFT);
-		mainPanel.setBorder(titledBorder);
-		//Yes this is ugly, 
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-
-		hardwareAccel = new JCheckBox("Use hardware acceleration");
+		//Here goes my 3rd try to learn JGoodies Form
+		FormLayout layout = new FormLayout(
+				"right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", //columns
+				""); //rows (none, dynamic)
+		layout.setColumnGroups(new int[][]{{1, 5}, {3, 7}});
+		DefaultFormBuilder mainPanel = new DefaultFormBuilder(layout);
+		
+		mainPanel.appendSeparator("VLC Transcoder Settings");
+		mainPanel.append(hardwareAccel = new JCheckBox("Use hardware acceleration"), 3);
 		hardwareAccel.setContentAreaFilled(false);
-		mainPanel.add(hardwareAccel);
-
-		experimentalCodecs = new JCheckBox("Enable experimental codecs");
+		mainPanel.append(experimentalCodecs = new JCheckBox("Enable experimental codecs"), 3);
 		experimentalCodecs.setContentAreaFilled(false);
-		mainPanel.add(experimentalCodecs);
-
-		audioSyncEnabled = new JCheckBox("Enable audio sync");
+		
+		mainPanel.append(audioSyncEnabled = new JCheckBox("Enable audio sync"), 3);
 		audioSyncEnabled.setContentAreaFilled(false);
-		mainPanel.add(audioSyncEnabled);
-
-		//Try adding a label with a text field
-		audioPri = genTextField("Audio Language Priority", "jpn,eng", mainPanel);
-		subtitleEnabled = new JCheckBox("Enable Subtitles");
+		mainPanel.append(subtitleEnabled = new JCheckBox("Enable Subtitles"), 3);
 		subtitleEnabled.setSelected(true);
-		mainPanel.add(subtitleEnabled);
-		subtitlePri = genTextField("Subtitle Language Priority", "eng,jpn", mainPanel);
-
-		//Add slider for scale
-		JPanel sliderPanel = new JPanel();
-		sliderPanel.add(new JLabel("Video scale: "));
-		scale = new JTextField("" + scaleDefault);
-		sliderPanel.add(scale);
+		audioSyncEnabled.setContentAreaFilled(false);
+		
+		mainPanel.append("Audio Language Priority", audioPri = new JTextField("jpn,eng"));
+		mainPanel.append("Subtitle Language Priority", subtitlePri = new JTextField("eng,jpn"));
+		
+		//Developer stuff. Thoretically is temporary 
+		mainPanel.appendSeparator("Advanced Settings");
+		
+		//Add scale as a subpanel because it has an awkward layout
+		mainPanel.append("Video scale: ");
+		FormLayout scaleLayout = new FormLayout("pref,3dlu,pref","");
+		DefaultFormBuilder scalePanel = new DefaultFormBuilder(scaleLayout);
+		scalePanel.append(scale = new JTextField("" + scaleDefault));
 		final JSlider scaleSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) (scaleDefault * 10));
+		scalePanel.append(scaleSlider);
 		Hashtable<Integer, JLabel> scaleLabels = new Hashtable<Integer, JLabel>();
 		scaleLabels.put(0, new JLabel("0.0"));
 		scaleLabels.put(5, new JLabel("0.5"));
@@ -331,41 +334,26 @@ public class VLCVideo extends Player {
 				scaleSlider.setValue(Integer.parseInt(typed) * 10);
 			}
 		});
-		sliderPanel.add(scaleSlider);
-		mainPanel.add(sliderPanel);
+		mainPanel.append(scalePanel.getPanel(),3);
 
 		//Allow user to choose codec
-		JPanel codecPanel = new JPanel();
-		codecPanel.add(new JLabel("<html>Codecs that VLC will use. <br>Good places to start:"
+		mainPanel.nextLine();
+		FormLayout codecLayout = new FormLayout(
+				"right:pref, 3dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", //columns
+				""); //rows (none, dynamic)
+		codecLayout.setColumnGroups(new int[][]{{5,9,13},{3,7,11}});
+		DefaultFormBuilder codecPanel = new DefaultFormBuilder(codecLayout);
+		codecPanel.append(new JLabel("<html>Codecs that VLC will use. <br>Good places to start:"
 				+ "<br> XBox: wmv2, wma, asf"
 				+ "<br> PS3: mp1v, mpga, mpeg</html>"));
-		codecVideo = genTextField("Video codec: ", "wmv2", codecPanel, 6);
-		codecAudio = genTextField("Audio codec: ", "wma", codecPanel, 6);
-		codecContainer = genTextField("Container: ", "asf", codecPanel, 6);
-		mainPanel.add(codecPanel);
+		codecPanel.append("Video codec: ", codecVideo = new JTextField("wmv2"));
+		codecPanel.append("Audio codec: ", codecAudio = new JTextField("wma"));
+		codecPanel.append("Container: ", codecContainer = new JTextField("asf"));
+		mainPanel.append(codecPanel.getPanel(),7);
 		
 		//Audio sample rate
-		sampleRate = genTextField("<html>Audio sample rate<br>Potential Values: 44100 (unstable), 48000", "48000", mainPanel);
+		mainPanel.append("<html>Audio sample rate<br>Potential Values: 44100 (unstable), 48000", new JTextField("48000"));
 
-		return mainPanel;
-	}
-
-	protected JTextField genTextField(String labelText, String fieldText, JPanel target) {
-		return genTextField(labelText, fieldText, target, 20);
-	}
-
-	protected JTextField genTextField(String labelText, String fieldText, JPanel target, int columns) {
-		JPanel container = new JPanel();
-		JLabel label = new JLabel(labelText);
-		JTextField field = new JTextField(fieldText);
-		field.setColumns(columns);
-		label.setLabelFor(field);
-
-		container.add(label);
-		container.add(field);
-
-		target.add(container);
-
-		return field;
+		return mainPanel.getPanel();
 	}
 }
