@@ -19,7 +19,6 @@
 package net.pms.encoders;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.debug.FormDebugPanel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -27,13 +26,11 @@ import com.sun.jna.Platform;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import net.pms.configuration.FormatConfiguration.Supports;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
@@ -63,6 +60,7 @@ public class VLCVideo extends Player {
 	protected JCheckBox subtitleEnabled;
 	protected JTextField scale;
 	protected final double scaleDefault = 1.0;
+	protected JCheckBox codecOverride;
 	protected JTextField codecVideo;
 	protected JTextField codecAudio;
 	protected JTextField codecContainer;
@@ -70,6 +68,36 @@ public class VLCVideo extends Player {
 	protected JCheckBox audioSyncEnabled;
 	protected JTextField sampleRate;
 	protected JTextField extraParams;
+	protected static final Map<String, String> codecVideoMap = new HashMap() {
+		{
+			put("mp4", "mp4v");
+			put("h264", "h264");
+			put("wmv", "wmv2");
+			put("mpeg1", "mp1v");
+			put("mpeg2", "mp2v");
+			put("rm", "rv10");
+		}
+	};
+	protected static final Map<String, String> codecAudioMap = new HashMap() {
+		{
+			put("ac3", "a52");
+			put("lcpm", "lcpm");
+			put("aac", "mp4a");
+			put("mp3", "mp3");
+			put("mpa", "mpga");
+			put("dts", "dts");
+			put("wma", "wma");
+		}
+	};
+	protected static final Map<String, String> codecContainerMap = new HashMap() {
+		{
+			put("avi", "avi");
+			put("mpegts", "ts");
+			put("mpegps", "ps");
+			put("wmv", "asf");
+			put("mp4", "mp4");
+		}
+	};
 
 	public VLCVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -134,7 +162,76 @@ public class VLCVideo extends Player {
 		return true;
 	}
 
-	protected List<String> getEncodingArgs() {
+	/**
+	 * Pick codecs for VLC based on formats the client supports;
+	 * @param formats
+	 * @return 
+	 */
+	protected CodecConfig genConfig(List<Supports> formats) {
+
+		for (Supports curFormat : formats) {
+			logger.debug("SUPPORTS: " + curFormat);
+			logger.trace("Hey look, trace works~");
+			CodecConfig config = new CodecConfig();
+			//Attempt to get a video codec
+			logger.debug("Video codec: " + curFormat.getVideocodec());
+			if (curFormat.getVideocodec() == null) {
+				logger.debug("Null video codec, moving on");
+				continue;
+			}
+			config.videoCodec = getFirstMatch(codecVideoMap, StringUtils.split(curFormat.getVideocodec(), "|"));
+			if (config.videoCodec == null) {
+				//No video codec found, move on to next format
+				logger.debug("No video codec found, moving on");
+				continue;
+			}
+
+			//Attempt to get audio codec
+			config.audioCodec = getFirstMatch(codecAudioMap, StringUtils.split(curFormat.getAudiocodec(), "|"));
+			if (config.audioCodec == null) {
+				//PMS format sometimes assumes container = audio codec. Try that
+				logger.debug("Could not find audio codec, trying containers");
+				config.audioCodec = getFirstMatch(codecContainerMap, StringUtils.split(curFormat.getAudiocodec(), "|"));
+				if (config.audioCodec == null) {
+					//No audio codec or container codec found, move on
+					logger.debug("Could not find audio codec or container, moving on");
+					continue;
+				}
+			}
+
+			//Attempt to get contianer
+			config.container = getFirstMatch(codecContainerMap, StringUtils.split(curFormat.getFormat(), "|"));
+			if (config.container == null) {
+				//No container found, move on to next format
+				logger.debug("Could not find container, moving on");
+				continue;
+			}
+
+			//Got all the info we needed
+			return config;
+		}
+		//Nothing found
+		throw new RuntimeException("No suitable codec found. Please override manually and report as a bug on fourms");
+	}
+
+	protected String getFirstMatch(Map<String, String> map, String[] needles) {
+		for (String curNeedle : needles)
+			if (map.containsKey(curNeedle))
+				return map.get(curNeedle);
+			else 
+				logger.debug("Couldn't find " + curNeedle + " in " + map);
+		return null;
+	}
+
+	public class CodecConfig {
+		String videoCodec;
+		String audioCodec;
+		String container;
+		String extraParams;
+		String extraTrans;
+	}
+
+	protected List<String> getEncodingArgs(CodecConfig config) {
 		//See: http://www.videolan.org/doc/streaming-howto/en/ch03.html
 		//See: http://wiki.videolan.org/Codec
 		//Xbox: wmv2, wma, asf (WORKING)
@@ -142,8 +239,18 @@ public class VLCVideo extends Player {
 		List<String> args = new ArrayList<String>();
 
 		//Codecs to use
-		args.add("vcodec=" + codecVideo.getText());
-		args.add("acodec=" + codecAudio.getText());
+		String videoCodec;
+		String audioCodec;
+		if (codecOverride.isSelected()) {
+			videoCodec = codecVideo.getText();
+			audioCodec = codecAudio.getText();
+		} else {
+			//Try to map codec
+			videoCodec = config.videoCodec;
+			audioCodec = config.audioCodec;
+		}
+		args.add("vcodec=" + videoCodec);
+		args.add("acodec=" + audioCodec);
 
 		//Bitrate in kbit/s (TODO: Use global option?)
 		args.add("vb=4096");
@@ -172,14 +279,21 @@ public class VLCVideo extends Player {
 		return args;
 	}
 
-	protected String getMux() {
-		return codecContainer.getText();
+	protected String getMux(CodecConfig config) {
+		if (codecOverride.isSelected())
+			return codecContainer.getText();
+		else
+			return config.container;
 	}
 
 	@Override
 	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media, OutputParams params) throws IOException {
 		boolean isWindows = Platform.isWindows();
-		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux());
+
+		//Make sure we can play this
+		CodecConfig config = genConfig(params.mediaRenderer.getFormatConfiguration().getFormats());
+
+		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux(config));
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 
 		logger.debug("filename: " + fileName);
@@ -239,22 +353,21 @@ public class VLCVideo extends Player {
 				subtitleLang = "none";
 			else
 				subtitleLang = params.sid.getLang();
+		else //Not specified, use language from GUI if enabled
+		if (subtitleEnabled.isSelected())
+			subtitleLang = audioPri.getText();
 		else
-			//Not specified, use language from GUI if enabled
-			if (subtitleEnabled.isSelected())
-				subtitleLang = audioPri.getText();
-			else
-				subtitleLang = "none";
+			subtitleLang = "none";
 		cmdList.add("--sub-language=" + subtitleLang);
-		
+
 		//Add any extra parameters
 		cmdList.add(" " + extraParams.getText() + " ");
 
 		//Add our transcode options
 		String transcodeSpec = String.format(
 				"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
-				StringUtils.join(getEncodingArgs(), ","),
-				getMux(),
+				StringUtils.join(getEncodingArgs(config), ","),
+				getMux(config),
 				(isWindows ? "\\\\" : ""),
 				tsPipe.getInputPipe());
 		cmdList.add("--sout");
@@ -342,24 +455,43 @@ public class VLCVideo extends Player {
 		mainPanel.nextLine();
 		FormLayout codecLayout = new FormLayout(
 				"right:pref, 3dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", //columns
-				""); //rows (none, dynamic)
+				"bottom:pref:grow, 3dlu, top:pref:grow"); //rows
 		codecLayout.setColumnGroups(new int[][]{{5, 9, 13}, {3, 7, 11}});
+		codecLayout.setRowGroups(new int[][]{{1, 3}});
 		DefaultFormBuilder codecPanel = new DefaultFormBuilder(codecLayout);
-		codecPanel.append(new JLabel("<html>Codecs that VLC will use. <br>Good places to start:"
+		CellConstraints cc = new CellConstraints();
+		codecPanel.add(new JLabel("<html>Codecs that VLC will use. <br>Good places to start:"
 				+ "<br> XBox: wmv2, wma, asf"
-				+ "<br> PS3: mp1v, mpga, mpeg</html>"));
-		codecPanel.append("Video codec: ", codecVideo = new JTextField("wmv2"));
-		codecPanel.append("Audio codec: ", codecAudio = new JTextField("wma"));
-		codecPanel.append("Container: ", codecContainer = new JTextField("asf"));
+				+ "<br> PS3: mp1v, mpga, mpeg</html>"), cc.xywh(1, 1, 1, 3));
+		codecPanel.add(codecOverride = new JCheckBox("Override codec autodetection"), cc.xyw(3, 1, 3));
+		codecPanel.addLabel("Video codec: ", cc.xy(3, 3));
+		codecPanel.add(codecVideo = new JTextField(""), cc.xy(5, 3));
+		codecPanel.addLabel("Audio codec: ", cc.xy(7, 3));
+		codecPanel.add(codecAudio = new JTextField(""), cc.xy(9, 3));
+		codecPanel.addLabel("Container: ", cc.xy(11, 3));
+		codecPanel.add(codecContainer = new JTextField(""), cc.xy(13, 3));
+		toggleCodecVisibility(false);
+		codecOverride.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				toggleCodecVisibility(((JCheckBox) e.getSource()).isSelected());
+			}
+		});
 		mainPanel.append(codecPanel.getPanel(), 7);
 
 		//Audio sample rate
 		mainPanel.append("<html>Audio sample rate<br>Potential Values: 44100 (unstable), 48000", sampleRate = new JTextField("48000"));
-		
+
 		//Extra options
 		mainPanel.nextLine();
-		mainPanel.append("Extra parameters: ", extraParams = new JTextField(),5);
+		mainPanel.append("Extra parameters: ", extraParams = new JTextField(), 5);
 
 		return mainPanel.getPanel();
+	}
+
+	protected void toggleCodecVisibility(boolean enabled) {
+		codecVideo.setEnabled(enabled);
+		codecAudio.setEnabled(enabled);
+		codecContainer.setEnabled(enabled);
 	}
 }
