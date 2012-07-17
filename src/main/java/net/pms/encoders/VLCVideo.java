@@ -119,14 +119,14 @@ public class VLCVideo extends Player {
 	public String executable() {
 		return configuration.getVlcPath();
 	}
-	
+
 	@Override
 	public boolean isCompatible(Format format) {
 		//VLC is a general transcoder that should support every format
 		//Until problem occurs, assume compatible
 		return true;
 	}
-	
+
 	@Override
 	public boolean isCompatible(DLNAMediaInfo mediaInfo) {
 		//See above for reason why this is always true
@@ -181,7 +181,7 @@ public class VLCVideo extends Player {
 		boolean isWindows = Platform.isWindows();
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux());
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
-		
+
 		logger.debug("filename: " + fileName);
 		logger.debug("dlna: " + dlna);
 		logger.debug("media: " + media);
@@ -218,34 +218,33 @@ public class VLCVideo extends Player {
 
 		//Handle audio language
 		String audioLang;
-		if(params.aid != null) {
+		if (params.aid != null)
 			//User specified language at the client, acknowledge it
-			if(params.aid.getLang() == null || params.aid.getLang().equals("und"))
+			if (params.aid.getLang() == null || params.aid.getLang().equals("und"))
 				//VLC doesn't understand und, but does understand none
 				audioLang = "none";
 			else
 				audioLang = params.aid.getLang();
-		} else
+		else
 			//Not specified, use language from GUI
 			audioLang = audioPri.getText();
 		cmdList.add("--audio-language=" + audioLang);
-		
+
 		//Handle subtitile language
 		String subtitleLang;
-		if(params.sid != null) {
+		if (params.sid != null)
 			//User specified language at the client, acknowledge it
-			if(params.sid.getLang() == null || params.sid.getLang().equals("und"))
+			if (params.sid.getLang() == null || params.sid.getLang().equals("und"))
 				//VLC doesn't understand und, but does understand none
 				subtitleLang = "none";
 			else
 				subtitleLang = params.sid.getLang();
-		} else {
+		else
 			//Not specified, use language from GUI if enabled
 			if (subtitleEnabled.isSelected())
 				subtitleLang = audioPri.getText();
 			else
 				subtitleLang = "none";
-		}
 		cmdList.add("--sub-language=" + subtitleLang);
 
 		//Add our transcode options
@@ -287,28 +286,28 @@ public class VLCVideo extends Player {
 				""); //rows (none, dynamic)
 		layout.setColumnGroups(new int[][]{{1, 5}, {3, 7}});
 		DefaultFormBuilder mainPanel = new DefaultFormBuilder(layout);
-		
+
 		mainPanel.appendSeparator("VLC Transcoder Settings");
 		mainPanel.append(hardwareAccel = new JCheckBox("Use hardware acceleration"), 3);
 		hardwareAccel.setContentAreaFilled(false);
 		mainPanel.append(experimentalCodecs = new JCheckBox("Enable experimental codecs"), 3);
 		experimentalCodecs.setContentAreaFilled(false);
-		
+
 		mainPanel.append(audioSyncEnabled = new JCheckBox("Enable audio sync"), 3);
 		audioSyncEnabled.setContentAreaFilled(false);
 		mainPanel.append(subtitleEnabled = new JCheckBox("Enable Subtitles"), 3);
 		subtitleEnabled.setSelected(true);
 		audioSyncEnabled.setContentAreaFilled(false);
-		
+
 		mainPanel.append("Audio Language Priority", audioPri = new JTextField("jpn,eng"));
 		mainPanel.append("Subtitle Language Priority", subtitlePri = new JTextField("eng,jpn"));
-		
+
 		//Developer stuff. Thoretically is temporary 
 		mainPanel.appendSeparator("Advanced Settings");
-		
+
 		//Add scale as a subpanel because it has an awkward layout
 		mainPanel.append("Video scale: ");
-		FormLayout scaleLayout = new FormLayout("pref,3dlu,pref","");
+		FormLayout scaleLayout = new FormLayout("pref,3dlu,pref", "");
 		DefaultFormBuilder scalePanel = new DefaultFormBuilder(scaleLayout);
 		scalePanel.append(scale = new JTextField("" + scaleDefault));
 		final JSlider scaleSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) (scaleDefault * 10));
@@ -334,14 +333,14 @@ public class VLCVideo extends Player {
 				scaleSlider.setValue(Integer.parseInt(typed) * 10);
 			}
 		});
-		mainPanel.append(scalePanel.getPanel(),3);
+		mainPanel.append(scalePanel.getPanel(), 3);
 
 		//Allow user to choose codec
 		mainPanel.nextLine();
 		FormLayout codecLayout = new FormLayout(
 				"right:pref, 3dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", //columns
 				""); //rows (none, dynamic)
-		codecLayout.setColumnGroups(new int[][]{{5,9,13},{3,7,11}});
+		codecLayout.setColumnGroups(new int[][]{{5, 9, 13}, {3, 7, 11}});
 		DefaultFormBuilder codecPanel = new DefaultFormBuilder(codecLayout);
 		codecPanel.append(new JLabel("<html>Codecs that VLC will use. <br>Good places to start:"
 				+ "<br> XBox: wmv2, wma, asf"
@@ -349,8 +348,8 @@ public class VLCVideo extends Player {
 		codecPanel.append("Video codec: ", codecVideo = new JTextField("wmv2"));
 		codecPanel.append("Audio codec: ", codecAudio = new JTextField("wma"));
 		codecPanel.append("Container: ", codecContainer = new JTextField("asf"));
-		mainPanel.append(codecPanel.getPanel(),7);
-		
+		mainPanel.append(codecPanel.getPanel(), 7);
+
 		//Audio sample rate
 		mainPanel.append("<html>Audio sample rate<br>Potential Values: 44100 (unstable), 48000", new JTextField("48000"));
 
