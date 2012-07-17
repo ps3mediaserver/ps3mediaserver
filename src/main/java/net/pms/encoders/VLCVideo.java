@@ -114,6 +114,19 @@ public class VLCVideo extends Player {
 	public String executable() {
 		return configuration.getVlcPath();
 	}
+	
+	@Override
+	public boolean isCompatible(Format format) {
+		//VLC is a general transcoder that should support every format
+		//Until problem occurs, assume compatible
+		return true;
+	}
+	
+	@Override
+	public boolean isCompatible(DLNAMediaInfo mediaInfo) {
+		//See above for reason why this is always true
+		return true;
+	}
 
 	protected List<String> getEncodingArgs() {
 		//See: http://www.videolan.org/doc/streaming-howto/en/ch03.html
