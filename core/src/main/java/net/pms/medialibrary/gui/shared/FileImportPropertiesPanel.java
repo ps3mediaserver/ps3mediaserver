@@ -86,10 +86,9 @@ public class FileImportPropertiesPanel extends JPanel {
 	 * @param repaintListener
 	 */
 	public void addActivePluginsChangedListener(ActionListener activePluginsChangedListener) {
-		if(activePluginsChangedListeners.contains(activePluginsChangedListener)){
-			activePluginsChangedListeners.remove(activePluginsChangedListener);
+		if(!activePluginsChangedListeners.contains(activePluginsChangedListener)){
+			activePluginsChangedListeners.add(activePluginsChangedListener);
 		}
-		activePluginsChangedListeners.add(activePluginsChangedListener);
 	}
 
 	/**
