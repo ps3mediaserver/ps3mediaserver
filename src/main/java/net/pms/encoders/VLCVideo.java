@@ -360,9 +360,6 @@ public class VLCVideo extends Player {
 			subtitleLang = "none";
 		cmdList.add("--sub-language=" + subtitleLang);
 
-		//Add any extra parameters
-		cmdList.add(" " + extraParams.getText() + " ");
-
 		//Add our transcode options
 		String transcodeSpec = String.format(
 				"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
@@ -375,6 +372,9 @@ public class VLCVideo extends Player {
 
 		//Force VLC to die when finished
 		cmdList.add("vlc://quit");
+		
+		//Add any extra parameters
+		cmdList.add(" " + extraParams.getText() + " ");
 
 		//Pass to process wrapper
 		String[] cmdArray = new String[cmdList.size()];
