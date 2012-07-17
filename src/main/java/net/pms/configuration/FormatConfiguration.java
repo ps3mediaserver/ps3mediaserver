@@ -88,7 +88,11 @@ public class FormatConfiguration {
 	public static final String MIMETYPE_AUTO = "MIMETYPE_AUTO";
 	ArrayList<Supports> list;
 
-	class Supports {
+	public List<Supports> getFormats() {
+		return Collections.unmodifiableList(list);
+	}
+	
+	public static class Supports {
 		String format;
 		String videocodec;
 		String audiocodec;
@@ -113,68 +117,68 @@ public class FormatConfiguration {
 		}
 
 		boolean isValid() {
-			boolean v = format != null && format.length() > 0;
+			boolean v = getFormat() != null && getFormat().length() > 0;
 			if (v) {
 				try {
-					pformat = Pattern.compile(format);
+					pformat = Pattern.compile(getFormat());
 				} catch (PatternSyntaxException pe) {
-					logger.info("Couldn't resolve this pattern: " + format + " / " + pe.getMessage());
+					logger.info("Couldn't resolve this pattern: " + getFormat() + " / " + pe.getMessage());
 					v = false;
 				}
-				if (videocodec != null) {
+				if (getVideocodec() != null) {
 					try {
-						pvideocodec = Pattern.compile(videocodec);
+						pvideocodec = Pattern.compile(getVideocodec());
 					} catch (PatternSyntaxException pe) {
-						logger.info("Couldn't resolve this pattern: " + videocodec + " / " + pe.getMessage());
+						logger.info("Couldn't resolve this pattern: " + getVideocodec() + " / " + pe.getMessage());
 						v = false;
 					}
 				}
-				if (audiocodec != null) {
+				if (getAudiocodec() != null) {
 					try {
-						paudiocodec = Pattern.compile(audiocodec);
+						paudiocodec = Pattern.compile(getAudiocodec());
 					} catch (PatternSyntaxException pe) {
-						logger.info("Couldn't resolve this pattern: " + audiocodec + " / " + pe.getMessage());
+						logger.info("Couldn't resolve this pattern: " + getAudiocodec() + " / " + pe.getMessage());
 						v = false;
 					}
 				}
 				try {
-					if (maxnbchannels != null) {
-						imaxnbchannels = Integer.parseInt(maxnbchannels);
+					if (getMaxnbchannels() != null) {
+						imaxnbchannels = Integer.parseInt(getMaxnbchannels());
 					}
 				} catch (Exception e) {
-					logger.info("Error in parsing number: " + maxnbchannels);
+					logger.info("Error in parsing number: " + getMaxnbchannels());
 					v = false;
 				}
 				try {
-					if (maxfrequency != null) {
-						imaxfrequency = Integer.parseInt(maxfrequency);
+					if (getMaxfrequency() != null) {
+						imaxfrequency = Integer.parseInt(getMaxfrequency());
 					}
 				} catch (Exception e) {
-					logger.info("Error in parsing number: " + maxfrequency);
+					logger.info("Error in parsing number: " + getMaxfrequency());
 					v = false;
 				}
 				try {
-					if (maxbitrate != null) {
-						imaxbitrate = Integer.parseInt(maxbitrate);
+					if (getMaxbitrate() != null) {
+						imaxbitrate = Integer.parseInt(getMaxbitrate());
 					}
 				} catch (Exception e) {
-					logger.info("Error in parsing number: " + maxbitrate);
+					logger.info("Error in parsing number: " + getMaxbitrate());
 					v = false;
 				}
 				try {
-					if (maxvideowidth != null) {
-						imaxvideowidth = Integer.parseInt(maxvideowidth);
+					if (getMaxvideowidth() != null) {
+						imaxvideowidth = Integer.parseInt(getMaxvideowidth());
 					}
 				} catch (Exception e) {
-					logger.info("Error in parsing number: " + maxvideowidth);
+					logger.info("Error in parsing number: " + getMaxvideowidth());
 					v = false;
 				}
 				try {
-					if (maxvideoheight != null) {
-						imaxvideoheight = Integer.parseInt(maxvideoheight);
+					if (getMaxvideoheight() != null) {
+						imaxvideoheight = Integer.parseInt(getMaxvideoheight());
 					}
 				} catch (Exception e) {
-					logger.info("Error in parsing number: " + maxvideoheight);
+					logger.info("Error in parsing number: " + getMaxvideoheight());
 					v = false;
 				}
 			}
@@ -193,48 +197,179 @@ public class FormatConfiguration {
 				return false;
 			}
 
-			if (matched && videocodec != null && pvideocodec != null && !(matched = pvideocodec.matcher(videocodec).matches())) {
+			if (matched && videocodec != null && getPvideocodec() != null && !(matched = pvideocodec.matcher(videocodec).matches())) {
 				return false;
 			}
 
-			if (matched && audiocodec != null && paudiocodec != null && !(matched = paudiocodec.matcher(audiocodec).matches())) {
+			if (matched && audiocodec != null && getPaudiocodec() != null && !(matched = paudiocodec.matcher(audiocodec).matches())) {
 				return false;
 			}
 
-			if (matched && nbAudioChannels > 0 && imaxnbchannels > 0 && nbAudioChannels > imaxnbchannels) {
+			if (matched && nbAudioChannels > 0 && getImaxnbchannels() > 0 && nbAudioChannels > getImaxnbchannels()) {
 				return false;
 			}
 
-			if (matched && frequency > 0 && imaxfrequency > 0 && frequency > imaxfrequency) {
+			if (matched && frequency > 0 && getImaxfrequency() > 0 && frequency > getImaxfrequency()) {
 				return false;
 			}
 
-			if (matched && bitrate > 0 && imaxbitrate > 0 && bitrate > imaxbitrate) {
+			if (matched && bitrate > 0 && getImaxbitrate() > 0 && bitrate > getImaxbitrate()) {
 				return false;
 			}
 
-			if (matched && videowidth > 0 && imaxvideowidth > 0 && videowidth > imaxvideowidth) {
+			if (matched && videowidth > 0 && getImaxvideowidth() > 0 && videowidth > getImaxvideowidth()) {
 				return false;
 			}
 
-			if (matched && videoheight > 0 && imaxvideoheight > 0 && videoheight > imaxvideoheight) {
+			if (matched && videoheight > 0 && getImaxvideoheight() > 0 && videoheight > getImaxvideoheight()) {
 				return false;
 			}
 
-			if (matched && extras != null && miExtras != null) {
+			if (matched && extras != null && getMiExtras() != null) {
 				Iterator<String> keyIt = extras.keySet().iterator();
 				while (keyIt.hasNext()) {
 					String key = keyIt.next();
 					String value = extras.get(key);
-					if (matched && key.equals(MI_QPEL) && miExtras.get(MI_QPEL) != null) {
-						matched = miExtras.get(MI_QPEL).matcher(value).matches();
-					} else if (matched && key.equals(MI_GMC) && miExtras.get(MI_GMC) != null) {
-						matched = miExtras.get(MI_GMC).matcher(value).matches();
+					if (matched && key.equals(MI_QPEL) && getMiExtras().get(MI_QPEL) != null) {
+						matched = getMiExtras().get(MI_QPEL).matcher(value).matches();
+					} else if (matched && key.equals(MI_GMC) && getMiExtras().get(MI_GMC) != null) {
+						matched = getMiExtras().get(MI_GMC).matcher(value).matches();
 					}
 				}
 			}
 
 			return matched;
+		}
+
+		/**
+		 * @return the format
+		 */
+		public String getFormat() {
+			return format;
+		}
+
+		/**
+		 * @return the videocodec
+		 */
+		public String getVideocodec() {
+			return videocodec;
+		}
+
+		/**
+		 * @return the audiocodec
+		 */
+		public String getAudiocodec() {
+			return audiocodec;
+		}
+
+		/**
+		 * @return the mimetype
+		 */
+		public String getMimetype() {
+			return mimetype;
+		}
+
+		/**
+		 * @return the maxnbchannels
+		 */
+		public String getMaxnbchannels() {
+			return maxnbchannels;
+		}
+
+		/**
+		 * @return the maxfrequency
+		 */
+		public String getMaxfrequency() {
+			return maxfrequency;
+		}
+
+		/**
+		 * @return the maxbitrate
+		 */
+		public String getMaxbitrate() {
+			return maxbitrate;
+		}
+
+		/**
+		 * @return the maxvideowidth
+		 */
+		public String getMaxvideowidth() {
+			return maxvideowidth;
+		}
+
+		/**
+		 * @return the maxvideoheight
+		 */
+		public String getMaxvideoheight() {
+			return maxvideoheight;
+		}
+
+		/**
+		 * @return the miExtras
+		 */
+		public Map<String, Pattern> getMiExtras() {
+			return miExtras;
+		}
+
+		/**
+		 * @return the pformat
+		 */
+		public Pattern getPformat() {
+			return pformat;
+		}
+
+		/**
+		 * @return the pvideocodec
+		 */
+		public Pattern getPvideocodec() {
+			return pvideocodec;
+		}
+
+		/**
+		 * @return the paudiocodec
+		 */
+		public Pattern getPaudiocodec() {
+			return paudiocodec;
+		}
+
+		/**
+		 * @return the imaxnbchannels
+		 */
+		public int getImaxnbchannels() {
+			return imaxnbchannels;
+		}
+
+		/**
+		 * @return the imaxfrequency
+		 */
+		public int getImaxfrequency() {
+			return imaxfrequency;
+		}
+
+		/**
+		 * @return the imaxbitrate
+		 */
+		public int getImaxbitrate() {
+			return imaxbitrate;
+		}
+
+		/**
+		 * @return the imaxvideowidth
+		 */
+		public int getImaxvideowidth() {
+			return imaxvideowidth;
+		}
+
+		/**
+		 * @return the imaxvideoheight
+		 */
+		public int getImaxvideoheight() {
+			return imaxvideoheight;
+		}
+
+		@Override
+		public String toString() {
+			return "Supports{" + "format=" + format + ", videocodec=" + videocodec + ", audiocodec=" + audiocodec + ", mimetype=" + mimetype + ", maxnbchannels=" + maxnbchannels + ", maxfrequency=" + maxfrequency + ", maxbitrate=" + maxbitrate + ", maxvideowidth=" + maxvideowidth + ", maxvideoheight=" + maxvideoheight + ", miExtras=" + miExtras + ", pformat=" + pformat + ", pvideocodec=" + pvideocodec + ", paudiocodec=" + paudiocodec + ", imaxnbchannels=" + imaxnbchannels + ", imaxfrequency=" + imaxfrequency + ", imaxbitrate=" + imaxbitrate + ", imaxvideowidth=" + imaxvideowidth + ", imaxvideoheight=" + imaxvideoheight + '}';
 		}
 	}
 
@@ -338,7 +473,7 @@ public class FormatConfiguration {
 
 		for (Supports conf : list) {
 			if (conf.match(container, videocodec, audiocodec, nbAudioChannels, frequency, bitrate, videowidth, videoheight, extras)) {
-				matchedMimeType = conf.mimetype;
+				matchedMimeType = conf.getMimetype();
 				break;
 			}
 		}
@@ -371,12 +506,12 @@ public class FormatConfiguration {
 				conf.maxbitrate = token.substring(2).trim();
 			} else if (token.contains(":")) {
 				// extra mediainfo stuff
-				if (conf.miExtras == null) {
+				if (conf.getMiExtras() == null) {
 					conf.miExtras = new HashMap<String, Pattern>();
 				}
 				String key = token.substring(0, token.indexOf(":"));
 				String value = token.substring(token.indexOf(":") + 1);
-				conf.miExtras.put(key, Pattern.compile(value));
+				conf.getMiExtras().put(key, Pattern.compile(value));
 			}
 		}
 		return conf;
