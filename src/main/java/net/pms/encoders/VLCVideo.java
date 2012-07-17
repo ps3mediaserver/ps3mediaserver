@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class VLCVideo extends Player {
 	private static final Logger logger = LoggerFactory.getLogger(VLCVideo.class);
-	private final PmsConfiguration configuration;
+	protected final PmsConfiguration configuration;
 	public static final String ID = "vlctrans";
 	protected JCheckBox hardwareAccel;
 	protected JTextField audioPri;
@@ -69,6 +69,7 @@ public class VLCVideo extends Player {
 	protected JCheckBox experimentalCodecs;
 	protected JCheckBox audioSyncEnabled;
 	protected JTextField sampleRate;
+	protected JTextField extraParams;
 
 	public VLCVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -246,6 +247,9 @@ public class VLCVideo extends Player {
 			else
 				subtitleLang = "none";
 		cmdList.add("--sub-language=" + subtitleLang);
+		
+		//Add any extra parameters
+		cmdList.add(" " + extraParams.getText() + " ");
 
 		//Add our transcode options
 		String transcodeSpec = String.format(
@@ -351,7 +355,11 @@ public class VLCVideo extends Player {
 		mainPanel.append(codecPanel.getPanel(), 7);
 
 		//Audio sample rate
-		mainPanel.append("<html>Audio sample rate<br>Potential Values: 44100 (unstable), 48000", new JTextField("48000"));
+		mainPanel.append("<html>Audio sample rate<br>Potential Values: 44100 (unstable), 48000", sampleRate = new JTextField("48000"));
+		
+		//Extra options
+		mainPanel.nextLine();
+		mainPanel.append("Extra parameters: ", extraParams = new JTextField(),5);
 
 		return mainPanel.getPanel();
 	}
