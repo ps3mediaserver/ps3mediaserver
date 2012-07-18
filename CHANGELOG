@@ -3,6 +3,9 @@ Changelog:
 
 1.70.0 - 2012-??-??
 
+    Add new default web video engine: FFMpeg Web Video
+    Add support for new web protocols: mmsh:// and mmst://
+
 1.60.0 - 2012-07-17
 
     Enabled FFmpeg video player for all platforms
