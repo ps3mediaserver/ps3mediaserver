@@ -19,17 +19,22 @@
 package net.pms.encoders;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.debug.FormDebugPanel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
+
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import net.pms.Messages;
 import net.pms.configuration.FormatConfiguration.Supports;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
@@ -51,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Leon Blakey <lord.quackstar@gmail.com>
  */
 public class VLCVideo extends Player {
-	private static final Logger logger = LoggerFactory.getLogger(VLCVideo.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(VLCVideo.class);
 	protected final PmsConfiguration configuration;
 	public static final String ID = "vlctrans";
 	protected JCheckBox hardwareAccel;
@@ -68,7 +73,8 @@ public class VLCVideo extends Player {
 	protected JCheckBox audioSyncEnabled;
 	protected JTextField sampleRate;
 	protected JTextField extraParams;
-	protected static final Map<String, String> codecVideoMap = new HashMap() {
+	protected static final Map<String, String> codecVideoMap = new HashMap<String, String>() {
+		private static final long serialVersionUID = 2735931431148795544L;
 		{
 			put("mp4", "mp4v");
 			put("h264", "h264");
@@ -78,7 +84,8 @@ public class VLCVideo extends Player {
 			put("rm", "rv10");
 		}
 	};
-	protected static final Map<String, String> codecAudioMap = new HashMap() {
+	protected static final Map<String, String> codecAudioMap = new HashMap<String, String>() {
+		private static final long serialVersionUID = -3538243787567566280L;
 		{
 			put("ac3", "a52");
 			put("lcpm", "lcpm");
@@ -89,7 +96,8 @@ public class VLCVideo extends Player {
 			put("wma", "wma");
 		}
 	};
-	protected static final Map<String, String> codecContainerMap = new HashMap() {
+	protected static final Map<String, String> codecContainerMap = new HashMap<String, String>() {
+		private static final long serialVersionUID = -5225024272144932890L;
 		{
 			put("avi", "avi");
 			put("mpegts", "ts");
@@ -170,19 +178,19 @@ public class VLCVideo extends Player {
 	protected CodecConfig genConfig(List<Supports> formats) {
 
 		for (Supports curFormat : formats) {
-			logger.debug("SUPPORTS: " + curFormat);
-			logger.trace("Hey look, trace works~");
+			LOGGER.debug("SUPPORTS: " + curFormat);
+			LOGGER.trace("Hey look, trace works~");
 			CodecConfig config = new CodecConfig();
 			//Attempt to get a video codec
-			logger.debug("Video codec: " + curFormat.getVideocodec());
+			LOGGER.debug("Video codec: " + curFormat.getVideocodec());
 			if (curFormat.getVideocodec() == null) {
-				logger.debug("Null video codec, moving on");
+				LOGGER.debug("Null video codec, moving on");
 				continue;
 			}
 			config.videoCodec = getFirstMatch(codecVideoMap, StringUtils.split(curFormat.getVideocodec(), "|"));
 			if (config.videoCodec == null) {
 				//No video codec found, move on to next format
-				logger.debug("No video codec found, moving on");
+				LOGGER.debug("No video codec found, moving on");
 				continue;
 			}
 
@@ -190,20 +198,20 @@ public class VLCVideo extends Player {
 			config.audioCodec = getFirstMatch(codecAudioMap, StringUtils.split(curFormat.getAudiocodec(), "|"));
 			if (config.audioCodec == null) {
 				//PMS format sometimes assumes container = audio codec. Try that
-				logger.debug("Could not find audio codec, trying containers");
+				LOGGER.debug("Could not find audio codec, trying containers");
 				config.audioCodec = getFirstMatch(codecContainerMap, StringUtils.split(curFormat.getAudiocodec(), "|"));
 				if (config.audioCodec == null) {
 					//No audio codec or container codec found, move on
-					logger.debug("Could not find audio codec or container, moving on");
+					LOGGER.debug("Could not find audio codec or container, moving on");
 					continue;
 				}
 			}
 
-			//Attempt to get contianer
+			//Attempt to get container
 			config.container = getFirstMatch(codecContainerMap, StringUtils.split(curFormat.getFormat(), "|"));
 			if (config.container == null) {
 				//No container found, move on to next format
-				logger.debug("Could not find container, moving on");
+				LOGGER.debug("Could not find container, moving on");
 				continue;
 			}
 
@@ -219,7 +227,7 @@ public class VLCVideo extends Player {
 			if (map.containsKey(curNeedle))
 				return map.get(curNeedle);
 			else 
-				logger.debug("Couldn't find " + curNeedle + " in " + map);
+				LOGGER.debug("Couldn't find " + curNeedle + " in " + map);
 		return null;
 	}
 
@@ -296,10 +304,10 @@ public class VLCVideo extends Player {
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux(config));
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 
-		logger.debug("filename: " + fileName);
-		logger.debug("dlna: " + dlna);
-		logger.debug("media: " + media);
-		logger.debug("outputparams: " + params);
+		LOGGER.debug("filename: " + fileName);
+		LOGGER.debug("dlna: " + dlna);
+		LOGGER.debug("media: " + media);
+		LOGGER.debug("outputparams: " + params);
 
 		// XXX it can take a long time for Windows to create a named pipe
 		// (and mkfifo can be slow if /tmp isn't memory-mapped), so start this as early as possible
@@ -344,7 +352,7 @@ public class VLCVideo extends Player {
 			audioLang = audioPri.getText();
 		cmdList.add("--audio-language=" + audioLang);
 
-		//Handle subtitile language
+		//Handle subtitle language
 		String subtitleLang;
 		if (params.sid != null)
 			//User specified language at the client, acknowledge it
@@ -380,7 +388,7 @@ public class VLCVideo extends Player {
 		String[] cmdArray = new String[cmdList.size()];
 		cmdList.toArray(cmdArray);
 		cmdArray = finalizeTranscoderArgs(this, fileName, dlna, media, params, cmdArray);
-		logger.debug("Finalized args: " + StringUtils.join(cmdArray, " "));
+		LOGGER.debug("Finalized args: " + StringUtils.join(cmdArray, " "));
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.attachProcess(pipe_process);
 
@@ -403,22 +411,80 @@ public class VLCVideo extends Player {
 		layout.setColumnGroups(new int[][]{{1, 5}, {3, 7}});
 		DefaultFormBuilder mainPanel = new DefaultFormBuilder(layout);
 
-		mainPanel.appendSeparator("VLC Transcoder Settings");
-		mainPanel.append(hardwareAccel = new JCheckBox("Use hardware acceleration"), 3);
+		mainPanel.appendSeparator(Messages.getString("VlcTrans.1"));
+		mainPanel.append(hardwareAccel = new JCheckBox(Messages.getString("VlcTrans.2")), 3);
 		hardwareAccel.setContentAreaFilled(false);
-		mainPanel.append(experimentalCodecs = new JCheckBox("Enable experimental codecs"), 3);
+        if (configuration.isVlcUseHardwareAccel()) {
+        	hardwareAccel.setSelected(true);
+        }
+        hardwareAccel.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                configuration.setVlcUseHardwareAccel(e.getStateChange() == ItemEvent.SELECTED);
+            }
+        });
+		mainPanel.append(experimentalCodecs = new JCheckBox(Messages.getString("VlcTrans.3")), 3);
 		experimentalCodecs.setContentAreaFilled(false);
-
-		mainPanel.append(audioSyncEnabled = new JCheckBox("Enable audio sync"), 3);
+        if (configuration.isExperimentalCodecs()) {
+        	experimentalCodecs.setSelected(true);
+        }
+        experimentalCodecs.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                configuration.setExperimentalCodecs(e.getStateChange() == ItemEvent.SELECTED);
+            }
+        });
+		mainPanel.append(audioSyncEnabled = new JCheckBox(Messages.getString("VlcTrans.4")), 3);
 		audioSyncEnabled.setContentAreaFilled(false);
-		mainPanel.append(subtitleEnabled = new JCheckBox("Enable Subtitles"), 3);
-		subtitleEnabled.setSelected(true);
-		audioSyncEnabled.setContentAreaFilled(false);
+        if (configuration.isAudioSyncEnabled()) {
+        	audioSyncEnabled.setSelected(true);
+        }
+        audioSyncEnabled.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                configuration.setAudioSyncEnabled(e.getStateChange() == ItemEvent.SELECTED);
+            }
+        });
+		mainPanel.append(subtitleEnabled = new JCheckBox(Messages.getString("VlcTrans.5")), 3);
+		subtitleEnabled.setContentAreaFilled(false);
+        if (configuration.isSubtitleEnabled()) {
+        	subtitleEnabled.setSelected(true);
+        }
+        subtitleEnabled.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                configuration.setSubtitleEnabled(e.getStateChange() == ItemEvent.SELECTED);
+            }
+        });
+		
+		mainPanel.append(Messages.getString("VlcTrans.6"), audioPri = new JTextField(configuration.getAudioPri()));
+		audioPri.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
 
-		mainPanel.append("Audio Language Priority", audioPri = new JTextField("jpn,eng"));
-		mainPanel.append("Subtitle Language Priority", subtitlePri = new JTextField("eng,jpn"));
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
 
-		//Developer stuff. Thoretically is temporary 
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setAudioPri(audioPri.getText());
+			}
+		});
+		mainPanel.append(Messages.getString("VlcTrans.8"), subtitlePri = new JTextField(configuration.getSubtitlePri()));
+		subtitlePri.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setSubtitlePri(subtitlePri.getText());
+			}
+		});
+		
+		//Developer stuff. Theoretically is temporary 
 		mainPanel.appendSeparator("Advanced Settings");
 
 		//Add scale as a subpanel because it has an awkward layout

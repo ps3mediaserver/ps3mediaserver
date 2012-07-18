@@ -170,6 +170,12 @@ public class PmsConfiguration {
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
 	private static final String KEY_BUFFER_MAX = "buffer_max";
+	private static final String KEY_VLC_USE_HW_ACCELERATION = "VLC_use_HW_acceleration";
+	private static final String KEY_VLC_USE_EXPERIMENTAL_CODECS = "VLC_use_experimental_codecs";
+	private static final String KEY_VLC_AUDIO_SYNC_ENABLED = "VLC_audio_sync_enabled";
+	private static final String KEY_VLC_SUBTITLE_ENABLED = "VLC_subtitle_enabled";
+	private static final String KEY_VLC_AUDIO_PRI = "VLC_audio_language_priority";
+	private static final String KEY_VLC_SUBTITLE_PRI = "VLC_subtitle_language_priority";
 
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
 	// see Build for more details
@@ -2242,4 +2248,54 @@ public class PmsConfiguration {
 	public boolean initBufferMax() {
 		return getBoolean(KEY_BUFFER_MAX, false);
 	}
+
+	public boolean isVlcUseHardwareAccel() {
+		return getBoolean(KEY_VLC_USE_HW_ACCELERATION, false);
+	}
+
+	public void setVlcUseHardwareAccel(boolean b) {
+		configuration.setProperty(KEY_VLC_USE_HW_ACCELERATION, b);
+	}
+
+	public boolean isExperimentalCodecs() {
+		return getBoolean(KEY_VLC_USE_EXPERIMENTAL_CODECS, false);
+	}
+	public void setExperimentalCodecs(boolean b) {
+		configuration.setProperty(KEY_VLC_USE_EXPERIMENTAL_CODECS, b);
+	}
+
+	public boolean isAudioSyncEnabled() {
+		return getBoolean(KEY_VLC_AUDIO_SYNC_ENABLED, false);
+	}
+
+	public void setAudioSyncEnabled(boolean b) {
+		configuration.setProperty(KEY_VLC_AUDIO_SYNC_ENABLED, b);
+	}
+
+	public boolean isSubtitleEnabled() {
+		return getBoolean(KEY_VLC_SUBTITLE_ENABLED, true);
+	}
+
+	public void setSubtitleEnabled(boolean b) {
+		configuration.setProperty(KEY_VLC_SUBTITLE_ENABLED, b);
+	}
+
+	public String getAudioPri() {
+		return getString(KEY_VLC_AUDIO_PRI, Messages.getString("VlcTrans.7"));
+	}
+	public void setAudioPri(String text) {
+		configuration.setProperty(KEY_VLC_AUDIO_PRI, text);
+	}
+
+	public String getSubtitlePri() {
+		return getString(KEY_VLC_SUBTITLE_PRI, Messages.getString("VlcTrans.9"));
+	}
+
+	public void setSubtitlePri(String text) {
+		configuration.setProperty(KEY_VLC_SUBTITLE_PRI, text);
+	}
+
+
+	
+	
 }
