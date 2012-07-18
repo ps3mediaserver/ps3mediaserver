@@ -33,6 +33,7 @@ import net.pms.formats.FormatFactory;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.SizeLimitInputStream;
+import net.pms.Messages;
 import net.pms.network.HTTPResource;
 import net.pms.util.FileUtil;
 import net.pms.util.ImagesUtil;
@@ -62,13 +63,14 @@ import static net.pms.util.StringUtil.*;
  * removed.
  */
 public abstract class DLNAResource extends HTTPResource implements Cloneable, Runnable {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAResource.class);
-	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
-	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
-	protected static final String TRANSCODE_FOLDER = "#--TRANSCODE--#";
 	private final Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
 	private static final int STOP_PLAYING_DELAY = 4000;
+	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAResource.class);
 	private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+
+	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
+	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
+	protected static final String TRANSCODE_FOLDER = Messages.getString("DLNAResource.0"); // localized #--TRANSCODE--#
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.

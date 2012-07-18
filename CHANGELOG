@@ -5,7 +5,8 @@ Changelog:
 
     Add new default web video engine: FFMpeg Web Video
     Add support for new web protocols: mmsh:// and mmst://
-	Files are sorted alphanumerically by default e.g. Episode 2 before Episode 10
+    Sort files alphanumerically by default e.g. Episode 2 before Episode 10
+    Localized #--TRANSCODE--# folder name
 
 1.60.0 - 2012-07-17
 
