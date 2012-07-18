@@ -2227,7 +2227,7 @@ public class PmsConfiguration {
 			}
 		}
 
-		return getString(KEY_PROFILE_NAME, HOSTNAME);
+		return getNonBlankString(KEY_PROFILE_NAME, HOSTNAME);
 	}
 
 	public boolean isAutoUpdate() {
