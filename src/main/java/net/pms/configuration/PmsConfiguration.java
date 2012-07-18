@@ -158,6 +158,7 @@ public class PmsConfiguration {
 	private static final String KEY_THUMBNAIL_GENERATION_ENABLED = "thumbnails"; // TODO (breaking change): should be renamed to e.g. generate_thumbnails
 	private static final String KEY_THUMBNAIL_SEEK_POS = "thumbnail_seek_pos";
 	private static final String KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS = "transcode_block_multiple_connections";
+	private static final String KEY_TRANSCODE_FOLDER_NAME = "transcode_folder_name";
 	private static final String KEY_TRANSCODE_KEEP_FIRST_CONNECTION = "transcode_keep_first_connection";
 	private static final String KEY_TSMUXER_FORCEFPS = "tsmuxer_forcefps";
 	private static final String KEY_TSMUXER_PREREMIX_AC3 = "tsmuxer_preremix_ac3";
@@ -568,11 +569,12 @@ public class PmsConfiguration {
 	 */
 	public String getLanguage() {
 		String def = Locale.getDefault().getLanguage();
+
 		if (def == null) {
 			def = "en";
 		}
-		String value = getString(KEY_LANGUAGE, def);
-		return StringUtils.isNotBlank(value) ? value.trim() : def;
+
+		return getNonBlankString(KEY_LANGUAGE, def);
 	}
 
 	/**
@@ -624,6 +626,27 @@ public class PmsConfiguration {
 			value = value.trim();
 		}
 		return value;
+	}
+
+	/**
+	 * Return the <code>String</code> value for a given configuration key if the
+	 * value is non-blank (i.e. not null, not an empty string, not all whitespace).
+	 * Otherwise return the supplied default value.
+	 * The value is returned with leading and trailing whitespace removed in both cases.
+	 * @param key The key to look up.
+	 * @param def The default value to return when no valid key value can be found.
+	 * @return The value configured for the key.
+	 */
+	private String getNonBlankString(String key, String def) {
+		String value = configuration.getString(key);
+
+		if (StringUtils.isNotBlank(value)) {
+			return value.trim();
+		} else if (def != null) {
+		   return def.trim();
+		} else {
+			return def;
+		}
 	}
 	
 	/**
@@ -2241,5 +2264,22 @@ public class PmsConfiguration {
 
 	public boolean initBufferMax() {
 		return getBoolean(KEY_BUFFER_MAX, false);
+	}
+
+	/**
+	 * Retrieve the name of the folder used to select subtitles, audio channels, chapters, engines &amp;c.
+	 * Defaults to the localized version of <pre>#--TRANSCODE--#</pre>.
+	 * @return The folder name.
+	 */
+	public String getTranscodeFolderName() {
+		return getNonBlankString(KEY_TRANSCODE_FOLDER_NAME, Messages.getString("TranscodeVirtualFolder.0"));
+	}
+
+	/**
+	 * Set a custom name for the <pre>#--TRANSCODE--#</pre> folder.
+	 * @param name The folder name.
+	 */
+	public void setTranscodeFolderName(String name) {
+		configuration.setProperty(KEY_TRANSCODE_FOLDER_NAME, name);
 	}
 }
