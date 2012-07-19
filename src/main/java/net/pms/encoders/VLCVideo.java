@@ -368,7 +368,9 @@ public class VLCVideo extends Player {
 		cmdList.add("vlc://quit");
 		
 		//Add any extra parameters
-		cmdList.add(" " + extraParams.getText() + " ");
+		if (!extraParams.getText().trim().isEmpty())
+			//Add each part as a new item
+			cmdList.addAll(Arrays.asList(StringUtils.split(extraParams.getText().trim(), " ")));
 
 		//Pass to process wrapper
 		String[] cmdArray = new String[cmdList.size()];
