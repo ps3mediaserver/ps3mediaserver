@@ -70,7 +70,7 @@ public class VLCVideo extends Player {
 	protected JTextField extraParams;
 	protected static final Map<String, String> codecVideoMap = new HashMap() {
 		{
-			put("mp4", "mp4v");
+			//put("mp4", "mp4v"); //Doesn't exist on Windows VLC 2.0.2
 			put("h264", "h264");
 			put("wmv", "wmv2");
 			put("mpeg1", "mp1v");
@@ -82,7 +82,7 @@ public class VLCVideo extends Player {
 		{
 			put("ac3", "a52");
 			put("lcpm", "lcpm");
-			put("aac", "mp4a");
+			//put("aac", "mp4a"); //Doesn't exist on Windows VLC 2.0.2
 			put("mp3", "mp3");
 			put("mpa", "mpga");
 			put("dts", "dts");
@@ -95,7 +95,7 @@ public class VLCVideo extends Player {
 			put("mpegts", "ts");
 			put("mpegps", "ps");
 			put("wmv", "asf");
-			put("mp4", "mp4");
+			//put("mp4", "mp4"); //Doesn't exist on Windows VLC 2.0.2
 		}
 	};
 
