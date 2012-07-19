@@ -1,7 +1,16 @@
 Changelog:
 ==========
 
-1.60.0 - 2012-??-??
+1.70.0 - 2012-??-??
+
+    Add new default web video engine: FFMpeg Web Video
+    Add support for new web protocols: mmsh:// and mmst://
+    Sort files alphanumerically by default e.g. Episode 2 before Episode 10
+    Localized #--TRANSCODE--# folder name
+    PMS.conf:
+        - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
+
+1.60.0 - 2012-07-17
 
     Enabled FFmpeg video player for all platforms
     Added support for PGS (Blu-ray) subtitles
