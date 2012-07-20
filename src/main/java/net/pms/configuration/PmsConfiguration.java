@@ -19,9 +19,11 @@
 package net.pms.configuration;
 
 import com.sun.jna.Platform;
-import net.pms.Messages;
+
 import net.pms.io.SystemUtils;
+import net.pms.Messages;
 import net.pms.util.PropertiesUtil;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
@@ -29,6 +31,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.event.ConfigurationListener;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -574,7 +577,7 @@ public class PmsConfiguration {
 			def = "en";
 		}
 
-		return getNonBlankString(KEY_LANGUAGE, def);
+		return getString(KEY_LANGUAGE, def);
 	}
 
 	/**
@@ -612,23 +615,6 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Return the <code>String</code> value for a given configuration key. First, the
-	 * key is looked up in the current configuration settings. If it exists and contains
-	 * a valid value, that value is returned. If the key contains an invalid value or
-	 * cannot be found, the specified default value is returned.
-	 * @param key The key to look up.
-	 * @param def The default value to return when no valid key value can be found.
-	 * @return The value configured for the key.
-	 */
-	private String getString(String key, String def) {
-		String value = configuration.getString(key, def);
-		if (value != null) {
-			value = value.trim();
-		}
-		return value;
-	}
-
-	/**
 	 * Return the <code>String</code> value for a given configuration key if the
 	 * value is non-blank (i.e. not null, not an empty string, not all whitespace).
 	 * Otherwise return the supplied default value.
@@ -637,16 +623,8 @@ public class PmsConfiguration {
 	 * @param def The default value to return when no valid key value can be found.
 	 * @return The value configured for the key.
 	 */
-	private String getNonBlankString(String key, String def) {
-		String value = configuration.getString(key);
-
-		if (StringUtils.isNotBlank(value)) {
-			return value.trim();
-		} else if (def != null) {
-		   return def.trim();
-		} else {
-			return def;
-		}
+	private String getString(String key, String def) {
+		return ConfigurationUtil.getNonBlankConfigurationString(configuration, key, def);
 	}
 	
 	/**
@@ -2227,7 +2205,7 @@ public class PmsConfiguration {
 			}
 		}
 
-		return getNonBlankString(KEY_PROFILE_NAME, HOSTNAME);
+		return getString(KEY_PROFILE_NAME, HOSTNAME);
 	}
 
 	public boolean isAutoUpdate() {
@@ -2272,7 +2250,7 @@ public class PmsConfiguration {
 	 * @return The folder name.
 	 */
 	public String getTranscodeFolderName() {
-		return getNonBlankString(KEY_TRANSCODE_FOLDER_NAME, Messages.getString("TranscodeVirtualFolder.0"));
+		return getString(KEY_TRANSCODE_FOLDER_NAME, Messages.getString("TranscodeVirtualFolder.0"));
 	}
 
 	/**

@@ -1137,7 +1137,7 @@ public class MEncoderVideo extends Player {
 			rendererMaxBitrates = getVideoBitrateConfig(mediaRenderer.getMaxVideoBitrate());
 		}
 
-		if ((defaultMaxBitrates[0] == 0 && rendererMaxBitrates[0] > 0) || rendererMaxBitrates[0] < defaultMaxBitrates[0] && rendererMaxBitrates[0] > 0) {
+		if ((rendererMaxBitrates[0] > 0) && ((defaultMaxBitrates[0] == 0) || (rendererMaxBitrates[0] < defaultMaxBitrates[0]))) {
 			defaultMaxBitrates = rendererMaxBitrates;
 		}
 
@@ -1397,9 +1397,9 @@ public class MEncoderVideo extends Player {
 
 		String add = "";
 		String rendererMencoderOptions = params.mediaRenderer.getCustomMencoderOptions(); // default: empty string
-		String mencoderCustomOptions = configuration.getMencoderCustomOptions(); // default: empty string
+		String globalMencoderOptions = configuration.getMencoderCustomOptions(); // default: empty string
 
-		String combinedCustomOptions = defaultString(mencoderCustomOptions)
+		String combinedCustomOptions = defaultString(globalMencoderOptions)
 			+ " "
 			+ defaultString(rendererMencoderOptions);
 
@@ -1423,7 +1423,7 @@ public class MEncoderVideo extends Player {
 
 		StringTokenizer st = new StringTokenizer(
 			"-channels " + channels
-			+ (isNotBlank(mencoderCustomOptions) ? " " + mencoderCustomOptions : "")
+			+ (isNotBlank(globalMencoderOptions) ? " " + globalMencoderOptions : "")
 			+ (isNotBlank(rendererMencoderOptions) ? " " + rendererMencoderOptions : "")
 			+ add,
 			" "
