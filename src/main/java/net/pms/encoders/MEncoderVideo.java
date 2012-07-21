@@ -1655,7 +1655,7 @@ public class MEncoderVideo extends Player {
 					sb.append("\"").append(params.sid.getLang()).append("\" ");
 				} else {
 					sb.append("-sub ");
-					sb.append("\" ").append(externalSubtitlesFileName.replace(",", "\\,")).append("\" "); // Commas in MEncoder separate multiple subtitle files
+					sb.append("\"").append(externalSubtitlesFileName.replace(",", "\\,")).append("\" "); // Commas in MEncoder separate multiple subtitle files
 				}
 			}
 		}
