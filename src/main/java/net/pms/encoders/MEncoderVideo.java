@@ -1643,19 +1643,6 @@ public class MEncoderVideo extends Player {
 							sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" ");
 						}
 					}
-				} else {
-					// append -utf8 option for UTF-8 external subtitles
-					sb.append("-utf8 ");
-				}
-
-				if (params.sid.getType() == SubtitleType.VOBSUB) {
-					sb.append("-vobsub ");
-					sb.append("\"").append(externalSubtitlesFileName.substring(0, externalSubtitlesFileName.length() - 4)).append("\" ");
-					sb.append("-slang ");
-					sb.append("\"").append(params.sid.getLang()).append("\" ");
-				} else {
-					sb.append("-sub ");
-					sb.append("\"").append(externalSubtitlesFileName.replace(",", "\\,")).append("\" "); // Commas in MEncoder separate multiple subtitle files
 				}
 			}
 		}
@@ -1682,8 +1669,8 @@ public class MEncoderVideo extends Player {
 			overriddenMainArgs[i++] = s;
 		}
 
-		// TODO where this number (22) comes from?
-		String cmdArray[] = new String[22 + args().length];
+		// TODO where this number (18) comes from?
+		String cmdArray[] = new String[18 + args().length];
 
 		cmdArray[0] = executable();
 
@@ -1782,7 +1769,35 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
+		/*
+		 * TODO: Move the following block up with the rest of the
+		 * subtitle stuff
+		 */
+		// external subtitles file
+		if (!configuration.isMencoderDisableSubs() && !avisynth() && params.sid != null && params.sid.getPlayableExternalFile() != null) {
+			if (params.sid.getType() == SubtitleType.VOBSUB) {
+				cmdArray[cmdArray.length - 4] = "-vobsub";
+				cmdArray[cmdArray.length - 3] = externalSubtitlesFileName.substring(0, externalSubtitlesFileName.length() - 4);
+				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
+				cmdArray[cmdArray.length - 4] = "-slang";
+				cmdArray[cmdArray.length - 3] = "" + params.sid.getLang();
+			} else {
+				cmdArray[cmdArray.length - 4] = "-sub";
+				cmdArray[cmdArray.length - 3] = externalSubtitlesFileName.replace(",", "\\,"); // Commas in MEncoder separate multiple subtitle files
+
+				if (params.sid.isExternalFileUtf8()) {
+					// append -utf8 option for UTF-8 external subtitles
+					cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 1);
+					cmdArray[cmdArray.length - 3] = "-utf8";
+				}
+			}
+		} else {
+			cmdArray[cmdArray.length - 4] = "-quiet";
+			cmdArray[cmdArray.length - 3] = "-quiet";
+		}
+
 		if (fileName.toLowerCase().endsWith(".evo")) {
+			cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 			cmdArray[cmdArray.length - 4] = "-psprobe";
 			cmdArray[cmdArray.length - 3] = "10000";
 		}
