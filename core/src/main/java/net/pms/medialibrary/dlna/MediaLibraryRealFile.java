@@ -57,6 +57,7 @@ public class MediaLibraryRealFile extends RealFile {
 	private FileDisplayProperties displayProperties;
 	private FileType              fileType;
 	private DOFileEntryBase     fileBase;
+	private RealFile originalFile;
 
 	/**
 	 * Instantiates a new media library real file.
@@ -71,10 +72,13 @@ public class MediaLibraryRealFile extends RealFile {
 		setFileType(fileType);
 		setFileInfo(fileInfo);
 		setDisplayProperties(displayProperties);
+		
+		originalFile = this;
 
-		//set the base file if we are a folder rather then a file
+		//set the base file if we are a folder
 		if (displayProperties.getFileDisplayType() == FileDisplayType.FOLDER) {
 			fileBase = MediaLibraryStorage.getInstance().getFileFolder(displayProperties.getTemplate().getId());
+			originalFile = new RealFile(new File(fileInfo.getFilePath()));
 			handleFileFolderDisplayNameMasks(fileBase);
 		}
 	}
@@ -87,7 +91,7 @@ public class MediaLibraryRealFile extends RealFile {
 	 * @param displayProperties the display properties
 	 * @param fileType the file type
 	 */
-	private MediaLibraryRealFile(DOFileEntryBase fileBase, DOFileInfo fileInfo, FileDisplayProperties displayProperties, FileType fileType) {
+	private MediaLibraryRealFile(DOFileEntryBase fileBase, DOFileInfo fileInfo, FileDisplayProperties displayProperties, FileType fileType, RealFile originalFile) {
 		super(new File(fileInfo.getFilePath()));
 
 		setFileType(fileType);
@@ -95,6 +99,7 @@ public class MediaLibraryRealFile extends RealFile {
 		setDisplayProperties(displayProperties);
 		
 		this.fileBase = fileBase;
+		this.originalFile = originalFile;
 	}
 	
 	/* (non-Javadoc)
@@ -178,14 +183,14 @@ public class MediaLibraryRealFile extends RealFile {
 			for (DOFileEntryBase entry : ((DOFileEntryFolder) fileBase).getChildren()) {
 				if (entry instanceof DOFileEntryFolder) {
 					//add a DOFileEntryFolder as child
-					addChild(new MediaLibraryRealFile(entry, getFileInfo(), getDisplayProperties(), getFileType()));
+					addChild(new MediaLibraryRealFile(entry, getFileInfo(), getDisplayProperties(), getFileType(), originalFile));
 				} else if (entry instanceof DOFileEntryFile) {
 					//add a file (either as single entry or as a transcode file selection)
 					DOFileEntryFile file = (DOFileEntryFile) entry;
-					MediaLibraryRealFile newChild = new MediaLibraryRealFile(entry, getFileInfo(), getDisplayProperties(), getFileType());
+					MediaLibraryRealFile newChild = new MediaLibraryRealFile(entry, getFileInfo(), getDisplayProperties(), getFileType(), originalFile);
 					switch (file.getFileDisplayMode()) {
 						case MULTIPLE:
-							DLNAHelper.addMultipleFiles(this, newChild);
+							DLNAHelper.addMultipleFiles(this, newChild, originalFile);
 							break;
 						case SINGLE:
 							addChild(newChild);

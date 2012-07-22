@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.FileTranscodeVirtualFolder;
+import net.pms.dlna.RealFile;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
-import net.pms.medialibrary.dlna.MediaLibraryRealFile;
 
 public class DLNAHelper {
 	private static final Logger log = LoggerFactory.getLogger(DLNAHelper.class);
@@ -136,16 +136,16 @@ public class DLNAHelper {
 		return ((hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
 	}
 
-	public static void addMultipleFiles(DLNAResource parent, MediaLibraryRealFile child) {
+	public static void addMultipleFiles(DLNAResource parent, RealFile child, RealFile originalFile) {
 		FileTranscodeVirtualFolder rootFolder = new FileTranscodeVirtualFolder("", null, false);
 		rootFolder.setParent(parent);
-		rootFolder.addChild(child.clone());
+		rootFolder.addChild(originalFile.clone());
 		rootFolder.resolve();
 		//get the transcode folder which is hidden a bit deeper. this could break at some point but is an easy solution..
-		rootFolder.getChildren().get(1).getChildren().get(0).resolve();
-		DLNAResource transcodeFolder = rootFolder.getChildren().get(1).getChildren().get(0);
+		DLNAResource originalTranscodeFolder = rootFolder.getChildren().get(1).getChildren().get(0);
+		originalTranscodeFolder.resolve();
 		
-		for(DLNAResource r : transcodeFolder.getChildren()) {
+		for(DLNAResource r : originalTranscodeFolder.getChildren()) {
 			parent.addChild(r);
 		}
 	}
