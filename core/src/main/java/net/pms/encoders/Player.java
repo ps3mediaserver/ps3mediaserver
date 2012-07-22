@@ -18,6 +18,15 @@
  */
 package net.pms.encoders;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import javax.swing.JComponent;
+
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
@@ -35,16 +44,9 @@ import net.pms.plugins.FinalizeTranscoderArgsListener;
 import net.pms.plugins.PluginsFactory;
 import net.pms.util.FileUtil;
 import net.pms.util.Iso639;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
 
 public abstract class Player {
 	private static final Logger logger = LoggerFactory.getLogger(Player.class);
@@ -61,7 +63,13 @@ public abstract class Player {
 	public abstract String id();
 	public abstract String name();
 	public abstract int type();
+
+	// FIXME this is an implementation detail (and not a very good one).
+	// it's entirely up to engines how they construct their command lines.
+	// need to get rid of this
+	@Deprecated
 	public abstract String[] args();
+
 	public abstract String mimeType();
 	public abstract String executable();
 	private static List<FinalizeTranscoderArgsListener> finalizeTranscodeArgsListeners;
@@ -145,23 +153,37 @@ public abstract class Player {
 			for (FinalizeTranscoderArgsListener listener : finalizeTranscodeArgsListeners) {
 				try {
 					cmdList = listener.finalizeTranscoderArgs(
-							player,
-							filename,
-							dlna,
-							media,
-							params,
-							cmdList);
+						player,
+						filename,
+						dlna,
+						media,
+						params,
+						cmdList
+					);
 				} catch (Throwable t) {
 					logger.error(String.format("Failed to call finalizeTranscoderArgs on listener of type=%s", listener.getClass()), t);
 				}
 			}
 
-			String[] cmdArray = new String[cmdList.size()];
+			String[] cmdArray = new String[ cmdList.size() ];
 			cmdList.toArray(cmdArray);
 			return cmdArray;
 		}
 	}
 
+	/**
+	 * This method populates the output parameters with the correct audio track
+	 * and subtitles, based on the given filename, media info and configuration.
+	 * 
+	 * @param fileName
+	 *            The file name used to determine the availability of subtitles.
+	 * @param media
+	 *            The MediaInfo details on the file.
+	 * @param params
+	 *            The parameters to populate.
+	 * @param configuration
+	 *            The PMS configuration settings.
+	 */
 	public void setAudioAndSubs(String fileName, DLNAMediaInfo media, OutputParams params, PmsConfiguration configuration) {
 		if (params.aid == null && media != null) {
 			// check for preferred audio
@@ -321,36 +343,14 @@ public abstract class Player {
 	}
 
 	/**
-	 * Returns whether or not the player can handle a file with the given media
-	 * info. If mediaInfo is <code>null</code> compatibility cannot be
+	 * Returns whether or not the player can handle a given resource.
+	 * If the resource is <code>null</code> compatibility cannot be
 	 * determined and <code>false</code> will be returned.
 	 * 
-	 * @param mediaInfo
-	 *            The {@link DLNAMediaInfo} of the file.
-	 * @return True when the file can be handled, false otherwise.
+	 * @param resource
+	 *            The {@link DLNAResource} to be matched.
+	 * @return True when the resource can be handled, false otherwise.
 	 * @since 1.60.0
 	 */
-	public abstract boolean isCompatible(DLNAMediaInfo mediaInfo);
-
-	/**
-	 * Returns whether or not the player can handle a file with the given
-	 * format. This is a very rough estimate of player capabilities because
-	 * the format of a file does not take into account many variables that
-	 * are of importance (e.g. subtitles or contained audio streams). It is
-	 * better to use {@link #isCompatible(DLNAMediaInfo)} instead. This method
-	 * should only be used as fallback when there is no media info available.
-	 * <p> 
-	 * If format is <code>null</code> compatiblity cannot be determined
-	 * and <code>false</code> will be returned.
-	 * <p>
-	 * Note: this is the reverse approach of {@link Format#getProfiles()},
-	 * which can be deprecated once this method is actively being used.
-	 * 
-	 * @param format
-	 *            The {@link Format} of the file.
-	 * @return True when the file can be handled, false otherwise.
-	 * @since 1.60.0
-	 */
-	public abstract boolean isCompatible(Format format);
-
+	public abstract boolean isCompatible(DLNAResource resource);
 }

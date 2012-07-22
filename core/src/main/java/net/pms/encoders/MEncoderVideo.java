@@ -54,7 +54,6 @@ import java.io.PrintWriter;
 import java.util.*;
 import java.util.List;
 
-import static net.pms.configuration.RendererConfiguration.RENDERER_ID_PLAYSTATION3;
 import static net.pms.formats.v2.AudioUtils.getLPCMChannelMappingForMencoder;
 import static org.apache.commons.lang.StringUtils.*;
 
@@ -1138,7 +1137,7 @@ public class MEncoderVideo extends Player {
 			rendererMaxBitrates = getVideoBitrateConfig(mediaRenderer.getMaxVideoBitrate());
 		}
 
-		if ((defaultMaxBitrates[0] == 0 && rendererMaxBitrates[0] > 0) || rendererMaxBitrates[0] < defaultMaxBitrates[0] && rendererMaxBitrates[0] > 0) {
+		if ((rendererMaxBitrates[0] > 0) && ((defaultMaxBitrates[0] == 0) || (rendererMaxBitrates[0] < defaultMaxBitrates[0]))) {
 			defaultMaxBitrates = rendererMaxBitrates;
 		}
 
@@ -1201,10 +1200,10 @@ public class MEncoderVideo extends Player {
 		boolean avisynth = avisynth();
 
 		setAudioAndSubs(fileName, media, params, configuration);
-		String subString = null;
+		String externalSubtitlesFileName = null;
 
 		if (params.sid != null && params.sid.getPlayableExternalFile() != null) {
-			subString = ProcessUtil.getShortFileNameIfWideChars(params.sid.getPlayableExternalFile().getAbsolutePath());
+			externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(params.sid.getPlayableExternalFile().getAbsolutePath());
 		}
 
 		InputFile newInput = new InputFile();
@@ -1265,7 +1264,7 @@ public class MEncoderVideo extends Player {
 				media,
 				params,
 				fileName,
-				subString,
+				externalSubtitlesFileName,
 				configuration.isMencoderIntelligentSync(),
 				false
 			);
@@ -1298,7 +1297,7 @@ public class MEncoderVideo extends Player {
 				media,
 				params,
 				fileName,
-				subString,
+				externalSubtitlesFileName,
 				configuration.isMencoderIntelligentSync(),
 				false
 			);
@@ -1326,7 +1325,10 @@ public class MEncoderVideo extends Player {
 		mpegts = params.mediaRenderer.isTranscodeToMPEGTSAC3();
 
         // disable AC3 remux for stereo tracks with 384 kbits bitrate and PS3 renderer (PS3 FW bug?)
-        boolean ps3_and_stereo_and_384_kbits = params.aid != null && (params.mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3) && params.aid.getAudioProperties().getNumberOfChannels() == 2) && (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
+		boolean ps3_and_stereo_and_384_kbits = params.aid != null
+			&& (params.mediaRenderer.isPS3() && params.aid.getAudioProperties().getNumberOfChannels() == 2)
+			&& (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
+
         if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
 			// AC3 remux takes priority
 			ac3Remux = true;
@@ -1395,9 +1397,9 @@ public class MEncoderVideo extends Player {
 
 		String add = "";
 		String rendererMencoderOptions = params.mediaRenderer.getCustomMencoderOptions(); // default: empty string
-		String mencoderCustomOptions = configuration.getMencoderCustomOptions(); // default: empty string
+		String globalMencoderOptions = configuration.getMencoderCustomOptions(); // default: empty string
 
-		String combinedCustomOptions = defaultString(mencoderCustomOptions)
+		String combinedCustomOptions = defaultString(globalMencoderOptions)
 			+ " "
 			+ defaultString(rendererMencoderOptions);
 
@@ -1421,7 +1423,7 @@ public class MEncoderVideo extends Player {
 
 		StringTokenizer st = new StringTokenizer(
 			"-channels " + channels
-			+ (isNotBlank(mencoderCustomOptions) ? " " + mencoderCustomOptions : "")
+			+ (isNotBlank(globalMencoderOptions) ? " " + globalMencoderOptions : "")
 			+ (isNotBlank(rendererMencoderOptions) ? " " + rendererMencoderOptions : "")
 			+ add,
 			" "
@@ -1501,7 +1503,7 @@ public class MEncoderVideo extends Player {
 		boolean foundNoassParam = false;
 
 		if (media != null) {
-			String sArgs [] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, subString, configuration.isMencoderIntelligentSync(), false);
+			String sArgs [] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, externalSubtitlesFileName, configuration.isMencoderIntelligentSync(), false);
 
 			for (String s : sArgs) {
 				if (s.equals("-noass")) {
@@ -1631,10 +1633,16 @@ public class MEncoderVideo extends Player {
 				sb.append("-spuaa ").append(subtitleQuality).append(" ");
 			}
 
-			if (!configuration.isMencoderDisableSubs() && configuration.getMencoderSubCp() != null && configuration.getMencoderSubCp().length() > 0) {
-				sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" ");
-				if (configuration.isMencoderSubFribidi()) {
-					sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" ");
+			// external subtitles file
+			if (params.sid.getPlayableExternalFile() != null) {
+				if (!params.sid.isExternalFileUtf8()) {
+					// append -subcp option for non UTF-8 external subtitles
+					if (isNotBlank(configuration.getMencoderSubCp())) {
+						sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" ");
+						if (configuration.isMencoderSubFribidi()) {
+							sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" ");
+						}
+					}
 				}
 			}
 		}
@@ -1661,6 +1669,7 @@ public class MEncoderVideo extends Player {
 			overriddenMainArgs[i++] = s;
 		}
 
+		// TODO where this number (18) comes from?
 		String cmdArray[] = new String[18 + args().length];
 
 		cmdArray[0] = executable();
@@ -1719,13 +1728,13 @@ public class MEncoderVideo extends Player {
 		 * TODO: Move the following block up with the rest of the
 		 * subtitle stuff
 		 */
-		if (subString == null && params.sid != null) {
+		if (externalSubtitlesFileName == null && params.sid != null) {
 			cmdArray[cmdArray.length - 10] = "-sid";
 			cmdArray[cmdArray.length - 9] = "" + params.sid.getId();
-		} else if (subString != null && !avisynth()) { // Trick necessary for MEncoder to skip the internal embedded track ?
+		} else if (externalSubtitlesFileName != null && !avisynth()) { // Trick necessary for MEncoder to skip the internal embedded track ?
 			cmdArray[cmdArray.length - 10] = "-sid";
 			cmdArray[cmdArray.length - 9] = "100";
-		} else if (subString == null) { // Trick necessary for MEncoder to not display the internal embedded track
+		} else if (externalSubtitlesFileName == null) { // Trick necessary for MEncoder to not display the internal embedded track
 			cmdArray[cmdArray.length - 10] = "-subdelay";
 			cmdArray[cmdArray.length - 9] = "20000";
 		}
@@ -1764,17 +1773,20 @@ public class MEncoderVideo extends Player {
 		 * TODO: Move the following block up with the rest of the
 		 * subtitle stuff
 		 */
-		if (subString != null && !configuration.isMencoderDisableSubs() && !avisynth() && params.sid != null) {
+		// external subtitles file
+		if (!configuration.isMencoderDisableSubs() && !avisynth() && params.sid != null && params.sid.getPlayableExternalFile() != null) {
 			if (params.sid.getType() == SubtitleType.VOBSUB) {
 				cmdArray[cmdArray.length - 4] = "-vobsub";
-				cmdArray[cmdArray.length - 3] = subString.substring(0, subString.length() - 4);
+				cmdArray[cmdArray.length - 3] = externalSubtitlesFileName.substring(0, externalSubtitlesFileName.length() - 4);
 				cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 2);
 				cmdArray[cmdArray.length - 4] = "-slang";
 				cmdArray[cmdArray.length - 3] = "" + params.sid.getLang();
 			} else {
 				cmdArray[cmdArray.length - 4] = "-sub";
-				cmdArray[cmdArray.length - 3] = subString.replace(",", "\\,"); // Commas in MEncoder separate multiple subtitle files
-				if (params.sid.getPlayableExternalFile() != null && params.sid.isExternalFileUtf8()) {
+				cmdArray[cmdArray.length - 3] = externalSubtitlesFileName.replace(",", "\\,"); // Commas in MEncoder separate multiple subtitle files
+
+				if (params.sid.isExternalFileUtf8()) {
+					// append -utf8 option for UTF-8 external subtitles
 					cmdArray = Arrays.copyOf(cmdArray, cmdArray.length + 1);
 					cmdArray[cmdArray.length - 3] = "-utf8";
 				}
@@ -1989,7 +2001,7 @@ public class MEncoderVideo extends Player {
 		boolean noMC0NoSkip = false;
 
 		if (media != null) {
-			String sArgs[] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, subString, configuration.isMencoderIntelligentSync(), false);
+			String sArgs[] = getSpecificCodecOptions(configuration.getCodecSpecificConfig(), media, params, fileName, externalSubtitlesFileName, configuration.isMencoderIntelligentSync(), false);
 			if (sArgs != null && sArgs.length > 0) {
 				boolean vfConsumed = false;
 				boolean afConsumed = false;
@@ -2424,7 +2436,7 @@ public class MEncoderVideo extends Player {
 		return Format.VIDEO;
 	}
 
-	private String[] getSpecificCodecOptions(String codecParam, DLNAMediaInfo media, OutputParams params, String filename, String srtFileName, boolean enable, boolean verifyOnly) {
+	private String[] getSpecificCodecOptions(String codecParam, DLNAMediaInfo media, OutputParams params, String filename, String externalSubtitlesFileName, boolean enable, boolean verifyOnly) {
 		StringBuilder sb = new StringBuilder();
 		String codecs = enable ? DEFAULT_CODEC_CONF_SCRIPT : "";
 		codecs += "\n" + codecParam;
@@ -2471,7 +2483,7 @@ public class MEncoderVideo extends Player {
 			interpreter.set("filename", filename);
 			interpreter.set("audio", params.aid != null);
 			interpreter.set("subtitles", params.sid != null);
-			interpreter.set("srtfile", srtFileName);
+			interpreter.set("srtfile", externalSubtitlesFileName);
 
 			if (params.aid != null) {
 				interpreter.set("samplerate", params.aid.getSampleRate());
@@ -2559,33 +2571,23 @@ public class MEncoderVideo extends Player {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isCompatible(DLNAMediaInfo mediaInfo) {
-		if (mediaInfo != null) {
-			// TODO: Determine compatibility based on mediaInfo
-			return false;
-		} else {
-			// No information available
+	public boolean isCompatible(DLNAResource resource) {
+		if (resource == null || resource.getFormat().getType() != Format.VIDEO) {
 			return false;
 		}
-	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isCompatible(Format format) {
+		Format format = resource.getFormat();
+
 		if (format != null) {
 			Format.Identifier id = format.getIdentifier();
 
 			if (id.equals(Format.Identifier.ISO)
 					|| id.equals(Format.Identifier.MKV)
-					|| id.equals(Format.Identifier.MPG)
-					) {
+					|| id.equals(Format.Identifier.MPG)) {
 				return true;
 			}
 		}
 
 		return false;
 	}
-
 }

@@ -38,6 +38,9 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	private File externalFileConvertedToUtf8;
 
 
+	/**
+	 * @return external subtitles File already converted to UTF-8 if needed
+	 */
 	public File getPlayableExternalFile() {
 		if (externalFileConvertedToUtf8 != null) {
 			return externalFileConvertedToUtf8;

@@ -1,7 +1,18 @@
 Changelog:
 ==========
 
-1.60.0 - 2012-??-??
+1.70.0 - 2012-??-??
+
+    Add new default web video engine: FFMpeg Web Video
+    Add support for new web protocols: mmsh:// and mmst://
+    Sort files alphanumerically by default e.g. Episode 2 before Episode 10
+    Improved handling of UTF-8 external subtitles
+    Localized #--TRANSCODE--# folder name
+    Make example PMS.conf behave more like built-in defaults
+    PMS.conf:
+        - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
+
+1.60.0 - 2012-07-17
 
     Enabled FFmpeg video player for all platforms
     Added support for PGS (Blu-ray) subtitles
@@ -12,7 +23,6 @@ Changelog:
     Fixed DV videos detection
     Added support for WebM videos downloaded from YouTube
     Optimized CBRVideoBitrate value for Panasonic TVs (thanks, ExSport!)
-    Added RendererUniqueID to renderers' configs
     Added new renderer: Sony SMP-N100 (thanks, mrw1986 and guillepalao!)
     Language updates:
         - Catalan translation update (thanks, aseques!)

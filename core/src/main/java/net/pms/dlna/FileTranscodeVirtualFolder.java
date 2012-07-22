@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.Player;
@@ -32,6 +33,9 @@ import net.pms.encoders.PlayerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class populates the TRANSCODE folder with content. 
+ */
 public class FileTranscodeVirtualFolder extends VirtualFolder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileTranscodeVirtualFolder.class);
 	private boolean resolved;
@@ -41,14 +45,18 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 	 * are sorted by player, then by audio track, then by subtitle.
 	 */
 	private class ResourceSort implements Comparator<DLNAResource> {
+		private ArrayList<Player> players;
+
+		ResourceSort(ArrayList<Player> players) {
+			this.players = players;
+		}
 
 		@Override
 		public int compare(DLNAResource resource1, DLNAResource resource2) {
-			// FIXME: Can this be sorted in original sorting order of the array of players?
-			String playerId1 = resource1.getPlayer().id();
-			String playerId2 = resource2.getPlayer().id();
+			Integer playerIndex1 = players.indexOf(resource1.getPlayer());
+			Integer playerIndex2 = players.indexOf(resource2.getPlayer());
 			
-			if (playerId1.equals(playerId2)) {
+			if (playerIndex1.equals(playerIndex2)) {
 				String audioLang1 = resource1.getMediaAudio().getLang();
 				String audioLang2 = resource2.getMediaAudio().getLang();
 
@@ -73,7 +81,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					return audioLang1.compareToIgnoreCase(audioLang2);
 				}
 			} else {
-				return playerId1.compareToIgnoreCase(playerId2);
+				return playerIndex1.compareTo(playerIndex2);
 			}
 		}
 		
@@ -94,46 +102,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 			DLNAResource child = getChildren().get(0);
 			child.resolve();
 
-			// List holding all combinations
-			ArrayList<DLNAResource> combos = new ArrayList<DLNAResource>();
-
-			List<DLNAMediaAudio> audioTracks = child.getMedia().getAudioTracksList();
-			List<DLNAMediaSubtitle> subtitles = child.getMedia().getSubtitleTracksList();
-
-			// Make sure a combo with no subtitles will be added
-			DLNAMediaSubtitle noSubtitle = new DLNAMediaSubtitle();
-			noSubtitle.setId(-1);
-			subtitles.add(noSubtitle);
-
-			// Create combinations of all audio tracks, subtitles and players.
-			for (DLNAMediaAudio audio : audioTracks) {
-				for (DLNAMediaSubtitle subtitle : subtitles) {
-					// Determine which players match this audio track and subtitle
-					ArrayList<Player> players = PlayerFactory.getPlayers(child.getMedia(), child.getFormat());
-
-					for (Player player : players) {
-						// Create a copy based on this combination
-						DLNAResource combo = createComboResource(child, audio, subtitle, player);
-						combos.add(combo);
-					}
-				}
-			}
-
-			// Sort the list of combinations
-			Collections.sort(combos, new ResourceSort());
-
-			// Now add the sorted list of combinations to the folder
-			for (DLNAResource combo : combos) {
-				LOGGER.trace("Adding " + combo.toString() + " - "
-						+ combo.getPlayer().name() + " - "
-						+ combo.getMediaAudio().toString() + " - "
-						+ combo.getMediaSubtitle().toString());
-
-				addChildInternal(combo);
-				addChapterFile(combo);
-			}
-
-			// Finally, add the option to simply stream the resource
+			// First, add the option to simply stream the resource
 			DLNAResource justStreamed = child.clone();
 
 			RendererConfiguration renderer = null;
@@ -142,6 +111,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 				renderer = this.getParent().getDefaultRenderer();
 			}
 
+			// Only add the option if the renderer is compatible with the format
 			if (justStreamed.getFormat() != null
 					&& (justStreamed.getFormat().isCompatible(child.getMedia(),
 							renderer) || justStreamed.isSkipTranscode())) {
@@ -156,6 +126,49 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 							+ " for direct streaming to renderer: "
 							+ renderer.getRendererName());
 				}
+			}
+
+			// List holding all combinations
+			ArrayList<DLNAResource> combos = new ArrayList<DLNAResource>();
+
+			List<DLNAMediaAudio> audioTracks = child.getMedia().getAudioTracksList();
+			List<DLNAMediaSubtitle> subtitles = child.getMedia().getSubtitleTracksList();
+
+			// Make sure a combo with no subtitles will be added
+			DLNAMediaSubtitle noSubtitle = new DLNAMediaSubtitle();
+			noSubtitle.setId(-1);
+			subtitles.add(noSubtitle);
+
+			// Create combinations of all audio tracks, subtitles and players.
+			for (DLNAMediaAudio audio : audioTracks) {
+				for (DLNAMediaSubtitle subtitle : subtitles) {
+					// Create a temporary copy of the child with the audio and
+					// subtitle modified in order to be able to match players to it.
+					DLNAResource tempModifiedCopy = createModifiedResource(child, audio, subtitle);
+			
+					// Determine which players match this audio track and subtitle
+					ArrayList<Player> players = PlayerFactory.getPlayers(tempModifiedCopy);
+
+					for (Player player : players) {
+						// Create a copy based on this combination
+						DLNAResource combo = createComboResource(child, audio, subtitle, player);
+						combos.add(combo);
+					}
+				}
+			}
+
+			// Sort the list of combinations
+			Collections.sort(combos, new ResourceSort(PlayerFactory.getAllPlayers()));
+
+			// Now add the sorted list of combinations to the folder
+			for (DLNAResource combo : combos) {
+				LOGGER.trace("Adding " + combo.toString() + " - "
+						+ combo.getPlayer().name() + " - "
+						+ combo.getMediaAudio().toString() + " - "
+						+ combo.getMediaSubtitle().toString());
+
+				addChildInternal(combo);
+				addChapterFile(combo);
 			}
 		}
 
@@ -186,6 +199,29 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 
 		return copy;
 	}
+
+	/**
+	 * Create a copy of the provided original resource and modifies it with
+	 * the given audio track and subtitles.
+	 *
+	 * @param original The original {@link DLNAResource} to create a copy of.
+	 * @param audio The audio track to use.
+	 * @param subtitle The subtitle track to use.
+	 * @return The copy.
+	 */
+	private DLNAResource createModifiedResource(DLNAResource original,
+			DLNAMediaAudio audio, DLNAMediaSubtitle subtitle) {
+
+		// FIXME: Use new DLNAResource() instead of clone(). Clone is bad, mmmkay?
+		DLNAResource copy = original.clone();
+
+		copy.setMedia(original.getMedia());
+		copy.setNoName(true);
+		copy.setMediaAudio(audio);
+		copy.setMediaSubtitle(subtitle);
+		return copy;
+	}
+
 
 	private void addChapterFile(DLNAResource source) {
 		if (PMS.getConfiguration().getChapterInterval() > 0 && PMS.getConfiguration().isChapterSupport()) {

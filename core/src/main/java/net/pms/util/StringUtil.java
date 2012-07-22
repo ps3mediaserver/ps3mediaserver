@@ -50,7 +50,6 @@ public class StringUtil {
 	 * @return Encoded String
 	 */
 	public static String encodeXML(String s) {
-
 		s = s.replace("&", "&amp;");
 		s = s.replace("<", "&lt;");
 		s = s.replace(">", "&gt;");
@@ -61,7 +60,7 @@ public class StringUtil {
 		return s;
 	}
 
-	/**Converts an URL string to it more canonical form
+	/**Converts a URL string to a more canonical form
 	 * @param url String to be converted
 	 * @return Converted String.
 	 */
@@ -76,5 +75,4 @@ public class StringUtil {
 		url = url.replace('>', '\u00b5');
 		return url;
 	}
-
 }

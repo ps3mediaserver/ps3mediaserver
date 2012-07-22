@@ -19,9 +19,11 @@
 package net.pms.configuration;
 
 import com.sun.jna.Platform;
-import net.pms.Messages;
+
 import net.pms.io.SystemUtils;
+import net.pms.Messages;
 import net.pms.util.PropertiesUtil;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
@@ -29,6 +31,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.event.ConfigurationListener;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,6 +161,7 @@ public class PmsConfiguration {
 	private static final String KEY_THUMBNAIL_GENERATION_ENABLED = "thumbnails"; // TODO (breaking change): should be renamed to e.g. generate_thumbnails
 	private static final String KEY_THUMBNAIL_SEEK_POS = "thumbnail_seek_pos";
 	private static final String KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS = "transcode_block_multiple_connections";
+	private static final String KEY_TRANSCODE_FOLDER_NAME = "transcode_folder_name";
 	private static final String KEY_TRANSCODE_KEEP_FIRST_CONNECTION = "transcode_keep_first_connection";
 	private static final String KEY_TSMUXER_FORCEFPS = "tsmuxer_forcefps";
 	private static final String KEY_TSMUXER_PREREMIX_AC3 = "tsmuxer_preremix_ac3";
@@ -260,7 +264,7 @@ public class PmsConfiguration {
 			PMS_PROFILE=. ./PMS.sh
 
 		3) if a relative or absolute *file path* is supplied (the file doesn't have to exist),
-		it is taken to be the profile, and its parent dir is taken to be the profile (i.e. config file) dir: 
+		it is taken to be the profile, and its parent dir is taken to be the profile (i.e. config file) dir:
 
 			PMS_PROFILE = PMS.conf            # profile dir = .
 			PMS_PROFILE = folder/dev.conf     # profile dir = folder
@@ -388,7 +392,7 @@ public class PmsConfiguration {
 		Locale.setDefault(new Locale(getLanguage()));
 
 		// Set DEFAULT_AVI_SYNTH_SCRIPT according to language
-		DEFAULT_AVI_SYNTH_SCRIPT = 
+		DEFAULT_AVI_SYNTH_SCRIPT =
 			Messages.getString("MEncoderAviSynth.4") +
 			Messages.getString("MEncoderAviSynth.5") +
 			Messages.getString("MEncoderAviSynth.6") +
@@ -568,11 +572,12 @@ public class PmsConfiguration {
 	 */
 	public String getLanguage() {
 		String def = Locale.getDefault().getLanguage();
+
 		if (def == null) {
 			def = "en";
 		}
-		String value = getString(KEY_LANGUAGE, def);
-		return StringUtils.isNotBlank(value) ? value.trim() : def;
+
+		return getString(KEY_LANGUAGE, def);
 	}
 
 	/**
@@ -610,20 +615,16 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Return the <code>String</code> value for a given configuration key. First, the
-	 * key is looked up in the current configuration settings. If it exists and contains
-	 * a valid value, that value is returned. If the key contains an invalid value or
-	 * cannot be found, the specified default value is returned.
+	 * Return the <code>String</code> value for a given configuration key if the
+	 * value is non-blank (i.e. not null, not an empty string, not all whitespace).
+	 * Otherwise return the supplied default value.
+	 * The value is returned with leading and trailing whitespace removed in both cases.
 	 * @param key The key to look up.
 	 * @param def The default value to return when no valid key value can be found.
 	 * @return The value configured for the key.
 	 */
 	private String getString(String key, String def) {
-		String value = configuration.getString(key, def);
-		if (value != null) {
-			value = value.trim();
-		}
-		return value;
+		return ConfigurationUtil.getNonBlankConfigurationString(configuration, key, def);
 	}
 	
 	/**
@@ -706,7 +707,7 @@ public class PmsConfiguration {
 	 * instead of the "ac3_fixed" codec. Returns true if "ac3_fixed" should be used.
 	 * Default is false.
 	 * See https://code.google.com/p/ps3mediaserver/issues/detail?id=1092#c1
-	 * @return True if "ac3_fixed" should be used. 
+	 * @return True if "ac3_fixed" should be used.
 	 */
 	public boolean isMencoderAc3Fixed() {
 		return configuration.getBoolean(KEY_MENCODER_AC3_FIXED, false);
@@ -935,33 +936,37 @@ public class PmsConfiguration {
 	/**
 	 * Returns the audio language priority for MEncoder as a comma separated
 	 * string. For example: <code>"eng,fre,jpn,ger,und"</code>, where "und"
-	 * stands for "undefined". Default value is "loc,eng,fre,jpn,ger,und".
-	 * 
+	 * stands for "undefined".
+	 * Can be a blank string.
+	 * Default value is "loc,eng,fre,jpn,ger,und".
+	 *
 	 * @return The audio language priority string.
 	 */
 	public String getMencoderAudioLanguages() {
-		return getString(KEY_MENCODER_AUDIO_LANGS, Messages.getString("MEncoderVideo.126"));
+		return ConfigurationUtil.getBlankConfigurationString(configuration, KEY_MENCODER_AUDIO_LANGS, Messages.getString("MEncoderVideo.126"));
 	}
 
 	/**
 	 * Returns the subtitle language priority for MEncoder as a comma separated
 	 * string. For example: <code>"loc,eng,fre,jpn,ger,und"</code>, where "loc"
 	 * stands for the preferred local language and "und" stands for "undefined".
+	 * Can be a blank string.
 	 * Default value is "loc,eng,fre,jpn,ger,und".
-	 * 
+	 *
 	 * @return The subtitle language priority string.
 	 */
 	public String getMencoderSubLanguages() {
-		return getString(KEY_MENCODER_SUB_LANGS, Messages.getString("MEncoderVideo.127"));
+		return ConfigurationUtil.getBlankConfigurationString(configuration, KEY_MENCODER_SUB_LANGS, Messages.getString("MEncoderVideo.127"));
 	}
 
 	/**
 	 * Returns the ISO 639 language code for the subtitle language that should
-	 * be forced upon MEncoder. 
+	 * be forced upon MEncoder.
+	 * Can be a blank string.
 	 * @return The subtitle language code.
 	 */
 	public String getMencoderForcedSubLanguage() {
-		return getString(KEY_MENCODER_FORCED_SUB_LANG, getLanguage());
+		return ConfigurationUtil.getBlankConfigurationString(configuration, KEY_MENCODER_FORCED_SUB_LANG, getLanguage());
 	}
 
 	/**
@@ -980,12 +985,13 @@ public class PmsConfiguration {
 	 * individual pairs should be semicolon separated. "*" can be used to
 	 * match any language, "loc" to match the local language. Subtitle
 	 * language can be defined as "off".
+	 * Can be a blank string.
 	 * Default value is <code>"loc,off;jpn,loc;*,loc;*,*"</code>.
 	 *
 	 * @return The audio and subtitle languages priority string.
 	 */
 	public String getMencoderAudioSubLanguages() {
-		return getString(KEY_MENCODER_AUDIO_SUB_LANGS, Messages.getString("MEncoderVideo.128"));
+		return ConfigurationUtil.getBlankConfigurationString(configuration, KEY_MENCODER_AUDIO_SUB_LANGS, Messages.getString("MEncoderVideo.128"));
 	}
 
 	/**
@@ -1000,11 +1006,11 @@ public class PmsConfiguration {
 
 	/**
 	 * Returns the character encoding (or code page) that MEncoder should use
-	 * for displaying subtitles. Default is "cp1252".
+	 * for displaying subtitles. Default is empty string (do not force encoding with -subcp key).
 	 * @return The character encoding.
 	 */
 	public String getMencoderSubCp() {
-		return getString(KEY_MENCODER_SUB_CP, "cp1252");
+		return getString(KEY_MENCODER_SUB_CP, StringUtils.EMPTY);
 	}
 
 	/**
@@ -1057,7 +1063,7 @@ public class PmsConfiguration {
 
 	/**
 	 * Sets the ISO 639 language code for the subtitle language that should
-	 * be forced upon MEncoder. 
+	 * be forced upon MEncoder.
 	 * @param value The subtitle language code.
 	 */
 	public void setMencoderForcedSubLanguage(String value) {
@@ -1239,7 +1245,7 @@ public class PmsConfiguration {
 	 * optimal resolution. Default value is false, meaning the renderer will
 	 * upscale the video itself.
 	 *
-	 * @return True if MEncoder should be used, false otherwise. 
+	 * @return True if MEncoder should be used, false otherwise.
 	 * @see {@link #getMencoderScaleX(int)}, {@link #getMencoderScaleY(int)}
 	 */
 	public boolean isMencoderScaler() {
@@ -1321,7 +1327,7 @@ public class PmsConfiguration {
 	 * Sets the AC3 audio bitrate, which determines the quality of digital
 	 * audio sound. An AV-receiver or amplifier has to be capable of playing
 	 * this quality.
-	 * 
+	 *
 	 * @param value The AC3 audio bitrate.
 	 */
 	public void setAudioBitrate(int value) {
@@ -1414,7 +1420,7 @@ public class PmsConfiguration {
 
 	/**
 	 * Returns the number of CPU cores that should be used for transcoding.
-	 * 
+	 *
 	 * @return The number of CPU cores.
 	 */
 	public int getNumberOfCpuCores() {
@@ -1744,7 +1750,7 @@ public class PmsConfiguration {
 	}
 
 	public List<String> getEnginesAsList(SystemUtils registry) {
-		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,ffmpegvideo,ffmpegaudio,mplayeraudio,tsmuxeraudio,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux,rawthumbs"));
+		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,ffmpegvideo,ffmpegaudio,mplayeraudio,tsmuxeraudio,ffmpegwebvideo,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux,rawthumbs"));
 		engines = hackAvs(registry, engines);
 		return engines;
 	}
@@ -1899,11 +1905,11 @@ public class PmsConfiguration {
 	 * <li>3: Case-insensitive ASCIIbetical sort</li>
 	 * <li>4: Locale-sensitive natural sort</li>
 	 * </ul>
-	 * Default value is 0.
+	 * Default value is 4: locale-sensitive natural sort.
 	 * @return The sort method
 	 */
 	public int getSortMethod() {
-		return getInt(KEY_SORT_METHOD, 0);
+		return getInt(KEY_SORT_METHOD, 4);
 	}
 
 	/**
@@ -2241,5 +2247,22 @@ public class PmsConfiguration {
 
 	public boolean initBufferMax() {
 		return getBoolean(KEY_BUFFER_MAX, false);
+	}
+
+	/**
+	 * Retrieve the name of the folder used to select subtitles, audio channels, chapters, engines &amp;c.
+	 * Defaults to the localized version of <pre>#--TRANSCODE--#</pre>.
+	 * @return The folder name.
+	 */
+	public String getTranscodeFolderName() {
+		return getString(KEY_TRANSCODE_FOLDER_NAME, Messages.getString("TranscodeVirtualFolder.0"));
+	}
+
+	/**
+	 * Set a custom name for the <pre>#--TRANSCODE--#</pre> folder.
+	 * @param name The folder name.
+	 */
+	public void setTranscodeFolderName(String name) {
+		configuration.setProperty(KEY_TRANSCODE_FOLDER_NAME, name);
 	}
 }

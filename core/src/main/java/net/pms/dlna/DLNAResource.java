@@ -29,6 +29,7 @@ import net.pms.formats.FormatFactory;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.SizeLimitInputStream;
+import net.pms.Messages;
 import net.pms.network.HTTPResource;
 import net.pms.notifications.NotificationCenter;
 import net.pms.notifications.types.StartStopEvent;
@@ -49,7 +50,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static net.pms.configuration.RendererConfiguration.*;
 import static net.pms.util.StringUtil.*;
 
 /**
@@ -62,34 +62,40 @@ import static net.pms.util.StringUtil.*;
  * removed.
  */
 public abstract class DLNAResource extends HTTPResource implements Cloneable, Runnable {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAResource.class);
-	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
-	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
-	protected static final String TRANSCODE_FOLDER = "#--TRANSCODE--#";
 	private final Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
 	private static final int STOP_PLAYING_DELAY = 4000;
+	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAResource.class);
 	private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
+	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
+	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
+
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated This field will be removed. Use {@link net.pms.configuration.PmsConfiguration#getTranscodeFolderName()} instead.
+	 */
+	@Deprecated
+	protected static final String TRANSCODE_FOLDER = Messages.getString("TranscodeVirtualFolder.0"); // localized #--TRANSCODE--#
+
+	/**
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected int specificType;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected String id;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected DLNAResource parent;
 
 	/**
-	 * @deprecated This variable will be removed. Use {@link #getFormat()} and
+	 * @deprecated This field will be removed. Use {@link #getFormat()} and
 	 * {@link #setFormat(Format)} instead.
 	 */
 	@Deprecated
@@ -101,27 +107,27 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private Format format;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected DLNAMediaInfo media;
 
 	/**
 	 * @deprecated Use {@link #getMediaAudio()} and {@link
-	 * #setMediaAudio(DLNAMediaAudio)} to access this variable.
+	 * #setMediaAudio(DLNAMediaAudio)} to access this field.
 	 */
 	@Deprecated
 	protected DLNAMediaAudio media_audio;
 
 	/**
 	 * @deprecated Use {@link #getMediaSubtitle()} and {@link
-	 * #setMediaSubtitle(DLNAMediaSubtitle)} to access this variable.
+	 * #setMediaSubtitle(DLNAMediaSubtitle)} to access this field.
 	 */
 	@Deprecated
 	protected DLNAMediaSubtitle media_subtitle;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected long lastmodified;
@@ -133,7 +139,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private Player player;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected boolean discovered = false;
@@ -141,25 +147,25 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private ProcessWrapper externalProcess;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected boolean srtFile;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected int updateId = 1;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	public static int systemUpdateId = 1;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected boolean noName;
@@ -169,7 +175,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private DLNAResource second;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 *
 	 * The time range for the file containing the start and end time in seconds.
 	 */
@@ -177,19 +183,19 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected Range.Time splitRange = new Range.Time();
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected int splitTrack;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected String fakeParentId;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	// Ditlew - needs this in one of the derived classes
 	@Deprecated
@@ -198,13 +204,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private String dlnaspec;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected boolean avisynth;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 */
 	@Deprecated
 	protected boolean skipTranscode = false;
@@ -213,7 +219,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private String flags;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 *
 	 * List of children objects associated with this DLNAResource. This is only valid when the DLNAResource is of the container type.
 	 */
@@ -221,7 +227,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected List<DLNAResource> children;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 *
 	 * the id which the last child got, so the next child can get unique id with incrementing this value.
 	 */
@@ -229,7 +235,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	protected int lastChildrenId;
 
 	/**
-	 * @deprecated Use standard getter and setter to access this variable.
+	 * @deprecated Use standard getter and setter to access this field.
 	 *
 	 * The last time when refresh is called.
 	 */
@@ -506,7 +512,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					// If no preferred player could be determined from the name, try to
 					// match a player based on media information and format.
 					if (player == null) {
-						player = PlayerFactory.getPlayer(child.getMedia(), child.getFormat());
+						player = PlayerFactory.getPlayer(child);
 					}
 
 					if (player != null && !allChildrenAreFolders) {
@@ -574,7 +580,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					child.second = newChild;
 
 					if (!newChild.getFormat().isCompatible(newChild.getMedia(), getDefaultRenderer())) {
-						Player player = PlayerFactory.getPlayer(newChild.getMedia(), newChild.getFormat());
+						Player player = PlayerFactory.getPlayer(newChild);
 						newChild.setPlayer(player);
 					}
 					if (child.getMedia() != null && child.getMedia().isSecondaryFormatValid()) {
@@ -1073,15 +1079,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				flags = "DLNA.ORG_OP=01";
 				if (getPlayer() != null) {
 					if (getPlayer().isTimeSeekable() && mediaRenderer.isSeekByTime()) {
-						if (mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3)) // ps3 doesn't like OP=11
-						{
+						if (mediaRenderer.isPS3()) { // ps3 doesn't like OP=11
 							flags = "DLNA.ORG_OP=10";
 						} else {
 							flags = "DLNA.ORG_OP=11";
 						}
 					}
 				} else {
-					if (mediaRenderer.isSeekByTime() && !mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3)) {
+					if (mediaRenderer.isSeekByTime() && !mediaRenderer.isPS3()) {
 						flags = "DLNA.ORG_OP=11";
 					}
 				}
@@ -1091,7 +1096,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				if (mime == null) {
 					mime = "video/mpeg";
 				}
-				if (mediaRenderer.getRendererUniqueID().equalsIgnoreCase(RENDERER_ID_PLAYSTATION3)) { // XXX TO REMOVE, OR AT LEAST MAKE THIS GENERIC // whole extensions/mime-types mess to rethink anyway
+				if (mediaRenderer.isPS3()) { // XXX TO REMOVE, OR AT LEAST MAKE THIS GENERIC // whole extensions/mime-types mess to rethink anyway
 					if (mime.equals("video/x-divx")) {
 						dlnaspec = "DLNA.ORG_PN=AVI";
 					} else if (mime.equals("video/x-ms-wmv") && getMedia() != null && getMedia().getHeight() > 700) {
@@ -1706,18 +1711,20 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 	/**
 	 * Returns the {@link DLNAMediaAudio} object for this resource that contains
-	 * the audio specifics.
+	 * the audio specifics. A resource can have many audio tracks, this method
+	 * returns the one that should be played.
 	 *
 	 * @return The audio object containing detailed information.
 	 * @since 1.50
 	 */
-	protected DLNAMediaAudio getMediaAudio() {
+	public DLNAMediaAudio getMediaAudio() {
 		return media_audio;
 	}
 
 	/**
 	 * Sets the {@link DLNAMediaAudio} object for this resource that contains
-	 * the audio specifics.
+	 * the audio specifics. A resource can have many audio tracks, this method
+	 * determines the one that should be played.
 	 *
 	 * @param mediaAudio The audio object containing detailed information.
 	 * @since 1.50
@@ -1728,18 +1735,20 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 	/**
 	 * Returns the {@link DLNAMediaSubtitle} object for this resource that
-	 * contains the specifics for the subtitles.
+	 * contains the specifics for the subtitles. A resource can have many
+	 * subtitles, this method returns the one that should be displayed.
 	 *
 	 * @return The subtitle object containing detailed information.
 	 * @since 1.50
 	 */
-	protected DLNAMediaSubtitle getMediaSubtitle() {
+	public DLNAMediaSubtitle getMediaSubtitle() {
 		return media_subtitle;
 	}
 
 	/**
 	 * Sets the {@link DLNAMediaSubtitle} object for this resource that
-	 * contains the specifics for the subtitles.
+	 * contains the specifics for the subtitles. A resource can have many
+	 * subtitles, this method determines the one that should be used.
 	 *
 	 * @param mediaSubtitle The subtitle object containing detailed information.
 	 * @since 1.50
