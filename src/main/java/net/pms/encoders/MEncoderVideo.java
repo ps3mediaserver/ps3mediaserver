@@ -546,6 +546,10 @@ public class MEncoderVideo extends Player {
 
 		Object data[] = new Object[]{
 			configuration.getMencoderSubCp(),
+			Messages.getString("MEncoderVideo.129"),
+			Messages.getString("MEncoderVideo.130"),
+			Messages.getString("MEncoderVideo.131"),
+			Messages.getString("MEncoderVideo.132"),
 			Messages.getString("MEncoderVideo.96"),
 			Messages.getString("MEncoderVideo.97"),
 			Messages.getString("MEncoderVideo.98"),
