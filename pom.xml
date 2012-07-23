@@ -176,7 +176,7 @@
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
-			<version>1.7</version>
+			<version>1.8</version>
 			<exclusions>
 				<!--  no need for commons-logging, as jcl-over-slf4j provides the impl -->
 				<exclusion>
