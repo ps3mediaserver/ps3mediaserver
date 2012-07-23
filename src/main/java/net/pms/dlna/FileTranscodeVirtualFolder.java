@@ -21,17 +21,11 @@ package net.pms.dlna;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-
 import net.pms.PMS;
-import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
-import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.Player;
 import net.pms.encoders.PlayerFactory;
-import net.pms.encoders.TSMuxerVideo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,7 +143,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					DLNAResource tempModifiedCopy = createModifiedResource(child, audio, subtitle);
 			
 					// Determine which players match this audio track and subtitle
-					ArrayList<Player> players = PlayerFactory.getPlayers(tempModifiedCopy);
+					ArrayList<Player> players = PlayerFactory.getEnabledPlayers(tempModifiedCopy);
 
 					for (Player player : players) {
 						// Create a copy based on this combination
