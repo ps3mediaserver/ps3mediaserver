@@ -362,7 +362,7 @@ public class RendererConfiguration {
 		}
 
 		mimes = new HashMap<String, String>();
-		String mimeTypes = configuration.getString(MIME_TYPES_CHANGES, null);
+		String mimeTypes = getString(MIME_TYPES_CHANGES, null);
 
 		if (StringUtils.isNotBlank(mimeTypes)) {
 			StringTokenizer st = new StringTokenizer(mimeTypes, "|");
@@ -380,7 +380,7 @@ public class RendererConfiguration {
 		}
 
 		DLNAPN = new HashMap<String, String>();
-		String DLNAPNchanges = configuration.getString(DLNA_PN_CHANGES, null);
+		String DLNAPNchanges = getString(DLNA_PN_CHANGES, null);
 
 		if (DLNAPNchanges != null) {
 			logger.trace("Config DLNAPNchanges: " + DLNAPNchanges);

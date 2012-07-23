@@ -481,7 +481,7 @@ public class PmsConfiguration {
 	 * @return True if tsMuxeR should parse fps from FFmpeg.
 	 */
 	public boolean isTsmuxerForceFps() {
-		return configuration.getBoolean(KEY_TSMUXER_FORCEFPS, true);
+		return getBoolean(KEY_TSMUXER_FORCEFPS, true);
 	}
 
 	/**
@@ -710,7 +710,7 @@ public class PmsConfiguration {
 	 * @return True if "ac3_fixed" should be used.
 	 */
 	public boolean isMencoderAc3Fixed() {
-		return configuration.getBoolean(KEY_MENCODER_AC3_FIXED, false);
+		return getBoolean(KEY_MENCODER_AC3_FIXED, false);
 	}
 
 	/**
@@ -1648,7 +1648,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean getTrancodeBlocksMultipleConnections() {
-		return configuration.getBoolean(KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS, false);
+		return getBoolean(KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS, false);
 	}
 
 	public void setTranscodeBlocksMultipleConnections(boolean value) {
@@ -1656,7 +1656,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean getTrancodeKeepFirstConnections() {
-		return configuration.getBoolean(KEY_TRANSCODE_KEEP_FIRST_CONNECTION, true);
+		return getBoolean(KEY_TRANSCODE_KEEP_FIRST_CONNECTION, true);
 	}
 
 	public void setTrancodeKeepFirstConnections(boolean value) {
@@ -2215,7 +2215,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean isAutoUpdate() {
-		return Build.isUpdatable() && configuration.getBoolean(KEY_AUTO_UPDATE, false);
+		return Build.isUpdatable() && getBoolean(KEY_AUTO_UPDATE, false);
 	}
 
 	public void setAutoUpdate(boolean value) {
