@@ -133,8 +133,8 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 			// List holding all combinations
 			ArrayList<DLNAResource> combos = new ArrayList<DLNAResource>();
 
-			ArrayList<DLNAMediaAudio> audioTracks = child.getMedia().getAudioTracksList();
-			ArrayList<DLNAMediaSubtitle> subtitles = child.getMedia().getSubtitleTracksList();
+			List<DLNAMediaAudio> audioTracks = child.getMedia().getAudioTracksList();
+			List<DLNAMediaSubtitle> subtitles = child.getMedia().getSubtitleTracksList();
 
 			// Make sure a combo with no subtitles will be added
 			DLNAMediaSubtitle noSubtitle = new DLNAMediaSubtitle();
