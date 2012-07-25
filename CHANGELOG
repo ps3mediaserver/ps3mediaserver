@@ -210,6 +210,7 @@ Changelog:
 1.30.0 - 2011-07-05
 
     Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3hbqv4l for more details
+	Fix StartStopListener callbacks (GC719)
     Updated OS X binaries (FFmpeg, MEncoder and MPlayer) to fix an AC3 bug and improve internal VOBsub display quality
     Optional GUI to allow profile to be selected when PMS starts
     Better UPnP spec compliance
