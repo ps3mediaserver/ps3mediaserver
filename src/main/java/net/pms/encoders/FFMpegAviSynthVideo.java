@@ -28,7 +28,6 @@ import java.util.StringTokenizer;
 import javax.swing.JComponent;
 
 import net.pms.PMS;
-import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
