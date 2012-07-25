@@ -30,7 +30,6 @@ import javax.swing.JTextField;
 
 import net.pms.Messages;
 import net.pms.PMS;
-import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
