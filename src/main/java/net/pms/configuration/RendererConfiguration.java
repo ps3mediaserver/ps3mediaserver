@@ -1,6 +1,7 @@
 package net.pms.configuration;
 
 import com.sun.jna.Platform;
+
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
@@ -10,10 +11,12 @@ import net.pms.formats.Format;
 import net.pms.network.HTTPResource;
 import net.pms.network.SpeedStats;
 import net.pms.util.PropertiesUtil;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +83,7 @@ public class RendererConfiguration {
 			// See if a different default configuration was configured
 			String rendererFallback = pmsConfiguration.getRendererDefault();
 
-			if (rendererFallback != null && !"".equals(rendererFallback)) {
+			if (StringUtils.isNotBlank(rendererFallback)) {
 				RendererConfiguration fallbackConf = getRendererConfigurationByName(rendererFallback);
 
 				if (fallbackConf != null) {
@@ -315,7 +318,7 @@ public class RendererConfiguration {
 	private static final String MEDIAPARSERV2 = "MediaInfo";
 	private static final String MEDIAPARSERV2_THUMB = "MediaParserV2_ThumbnailGeneration";
 	private static final String SUPPORTED = "Supported";
-	private static final String CUSTOM_MENCODER_QUALITYSETTINGS = "CustomMencoderQualitySettings";
+	private static final String CUSTOM_MENCODER_QUALITY_SETTINGS = "CustomMencoderQualitySettings";
 	private static final String CUSTOM_MENCODER_OPTIONS = "CustomMencoderOptions";
 	private static final String SHOW_AUDIO_METADATA = "ShowAudioMetadata";
 	private static final String SHOW_SUB_METADATA = "ShowSubMetadata";
@@ -359,7 +362,7 @@ public class RendererConfiguration {
 		}
 
 		mimes = new HashMap<String, String>();
-		String mimeTypes = configuration.getString(MIME_TYPES_CHANGES, null);
+		String mimeTypes = getString(MIME_TYPES_CHANGES, null);
 
 		if (StringUtils.isNotBlank(mimeTypes)) {
 			StringTokenizer st = new StringTokenizer(mimeTypes, "|");
@@ -377,7 +380,7 @@ public class RendererConfiguration {
 		}
 
 		DLNAPN = new HashMap<String, String>();
-		String DLNAPNchanges = configuration.getString(DLNA_PN_CHANGES, null);
+		String DLNAPNchanges = getString(DLNA_PN_CHANGES, null);
 
 		if (DLNAPNchanges != null) {
 			logger.trace("Config DLNAPNchanges: " + DLNAPNchanges);
@@ -554,7 +557,7 @@ public class RendererConfiguration {
 		String userAgent = getUserAgent();
 		Pattern userAgentPattern = null;
 
-		if (userAgent != null && !"".equals(userAgent)) {
+		if (StringUtils.isNotBlank(userAgent)) {
 			userAgentPattern = Pattern.compile(userAgent, Pattern.CASE_INSENSITIVE);
 
 			return userAgentPattern.matcher(header).find();
@@ -575,7 +578,7 @@ public class RendererConfiguration {
 		String userAgentAdditionalHeader = getUserAgentAdditionalHttpHeaderSearch();
 		Pattern userAgentAddtionalPattern = null;
 
-		if (userAgentAdditionalHeader != null && !"".equals(userAgentAdditionalHeader)) {
+		if (StringUtils.isNotBlank(userAgentAdditionalHeader)) {
 			userAgentAddtionalPattern = Pattern.compile(userAgentAdditionalHeader, Pattern.CASE_INSENSITIVE);
 
 			return userAgentAddtionalPattern.matcher(header).find();
@@ -619,7 +622,7 @@ public class RendererConfiguration {
 	 * Returns the the name of an additional HTTP header whose value should
 	 * be matched with the additional header search pattern. The header name
 	 * must be an exact match (read: the header has to start with the exact
-	 * same case sensitive string). Default value is <code>null</code>.
+	 * same case sensitive string). The default value is <code>null</code>.
 	 * 
 	 * @return The additional HTTP header name.
 	 */
@@ -728,7 +731,7 @@ public class RendererConfiguration {
 
 	/**
 	 * Returns the maximum bit rate supported by the media renderer as defined
-	 * in the renderer configuration. Default is empty.
+	 * in the renderer configuration. The default value is <code>null</code>.
 	 *
 	 * @return The bit rate.
 	 */
@@ -738,22 +741,22 @@ public class RendererConfiguration {
 
 	/**
 	 * Returns the override settings for MEncoder quality settings in PMS as
-	 * defined in the renderer configuration. Default is empty.
+	 * defined in the renderer configuration. The default value is "".
 	 *
 	 * @return The MEncoder quality settings.
 	 */
 	public String getCustomMencoderQualitySettings() {
-		return getString(CUSTOM_MENCODER_QUALITYSETTINGS, null);
-	} 
+		return getString(CUSTOM_MENCODER_QUALITY_SETTINGS, "");
+	}
 
 	/**
 	 * Returns the override settings for MEncoder custom options in PMS as
-	 * defined in the renderer configuration. Default is empty.
+	 * defined in the renderer configuration. The default value is "".
 	 *
 	 * @return The MEncoder custom options.
 	 */
 	public String getCustomMencoderOptions() {
-		return getString(CUSTOM_MENCODER_OPTIONS, null);
+		return getString(CUSTOM_MENCODER_OPTIONS, "");
 	}
 
 	/**
@@ -851,13 +854,18 @@ public class RendererConfiguration {
 		}
 	}
 
-	private String getString(String key, String def) {
-		String value = configuration.getString(key, def);
-		if (value != null) {
-			value = value.trim();
-		}
-		return value;
-	}
+	/**
+     * Return the <code>String</code> value for a given configuration key if the
+     * value is non-blank (i.e. not null, not an empty string, not all whitespace).
+     * Otherwise return the supplied default value.
+     * The value is returned with leading and trailing whitespace removed in both cases.
+     * @param key The key to look up.
+     * @param def The default value to return when no valid key value can be found.
+     * @return The value configured for the key.
+     */
+    private String getString(String key, String def) {
+		return ConfigurationUtil.getNonBlankConfigurationString(configuration, key, def);
+    }
 
 	public String toString() {
 		return getRendererName();
