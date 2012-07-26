@@ -414,41 +414,29 @@ public class VLCVideo extends Player {
 		DefaultFormBuilder mainPanel = new DefaultFormBuilder(layout);
 
 		mainPanel.appendSeparator(Messages.getString("VlcTrans.1"));
-		mainPanel.append(hardwareAccel = new JCheckBox(Messages.getString("VlcTrans.2")), 3);
+		mainPanel.append(hardwareAccel = new JCheckBox(Messages.getString("VlcTrans.2"),configuration.isVlcUseHardwareAccel()), 3);
 		hardwareAccel.setContentAreaFilled(false);
-        if (configuration.isVlcUseHardwareAccel()) {
-        	hardwareAccel.setSelected(true);
-        }
         hardwareAccel.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 configuration.setVlcUseHardwareAccel(e.getStateChange() == ItemEvent.SELECTED);
             }
         });
-		mainPanel.append(experimentalCodecs = new JCheckBox(Messages.getString("VlcTrans.3")), 3);
+		mainPanel.append(experimentalCodecs = new JCheckBox(Messages.getString("VlcTrans.3"),configuration.isExperimentalCodecs()), 3);
 		experimentalCodecs.setContentAreaFilled(false);
-        if (configuration.isExperimentalCodecs()) {
-        	experimentalCodecs.setSelected(true);
-        }
         experimentalCodecs.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 configuration.setExperimentalCodecs(e.getStateChange() == ItemEvent.SELECTED);
             }
         });
-		mainPanel.append(audioSyncEnabled = new JCheckBox(Messages.getString("VlcTrans.4")), 3);
+		mainPanel.append(audioSyncEnabled = new JCheckBox(Messages.getString("VlcTrans.4"),configuration.isAudioSyncEnabled()), 3);
 		audioSyncEnabled.setContentAreaFilled(false);
-        if (configuration.isAudioSyncEnabled()) {
-        	audioSyncEnabled.setSelected(true);
-        }
         audioSyncEnabled.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 configuration.setAudioSyncEnabled(e.getStateChange() == ItemEvent.SELECTED);
             }
         });
-		mainPanel.append(subtitleEnabled = new JCheckBox(Messages.getString("VlcTrans.5")), 3);
+		mainPanel.append(subtitleEnabled = new JCheckBox(Messages.getString("VlcTrans.5"),configuration.isSubtitleEnabled()), 3);
 		subtitleEnabled.setContentAreaFilled(false);
-        if (configuration.isSubtitleEnabled()) {
-        	subtitleEnabled.setSelected(true);
-        }
         subtitleEnabled.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 configuration.setSubtitleEnabled(e.getStateChange() == ItemEvent.SELECTED);
@@ -456,30 +444,14 @@ public class VLCVideo extends Player {
         });
 		
 		mainPanel.append(Messages.getString("VlcTrans.6"), audioPri = new JTextField(configuration.getAudioPri()));
-		audioPri.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		audioPri.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setAudioPri(audioPri.getText());
 			}
 		});
 		mainPanel.append(Messages.getString("VlcTrans.8"), subtitlePri = new JTextField(configuration.getSubtitlePri()));
-		subtitlePri.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		subtitlePri.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setSubtitlePri(subtitlePri.getText());
