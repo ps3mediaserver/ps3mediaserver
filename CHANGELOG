@@ -9,6 +9,7 @@ Changelog:
     Improved handling of UTF-8 external subtitles
     Localized #--TRANSCODE--# folder name
     Make example PMS.conf behave more like built-in defaults
+    Restore maximum buffer size to 600 MB (was 400 MB)
     PMS.conf:
         - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
 
