@@ -42,6 +42,7 @@ for documentation and contributions to the community.
 
 * boblinds and snoots for the network test cases :)
 * sarraken, bleuecinephile, bd.azerty, fabounnet for the support and feedback
+* smo for the Jenkins server
 
 See the `CHANGELOG` for more thanks.
 

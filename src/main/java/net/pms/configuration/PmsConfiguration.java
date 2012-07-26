@@ -173,6 +173,7 @@ public class PmsConfiguration {
 	private static final String KEY_UUID = "uuid";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
+	// FIXME what is this? if it should be kept, it needs to be a) documented and b) renamed (breaking change)
 	private static final String KEY_BUFFER_MAX = "buffer_max";
 	private static final String KEY_VLC_USE_HW_ACCELERATION = "VLC_use_HW_acceleration";
 	private static final String KEY_VLC_USE_EXPERIMENTAL_CODECS = "VLC_use_experimental_codecs";
@@ -190,7 +191,7 @@ public class PmsConfiguration {
 
 	private static String DEFAULT_AVI_SYNTH_SCRIPT;
 	private static final String BUFFER_TYPE_FILE = "file";
-	private static final int MAX_MAX_MEMORY_DEFAULT_SIZE = 400;
+	private static final int MAX_MAX_MEMORY_DEFAULT_SIZE = 600;
 	private static final int BUFFER_MEMORY_FACTOR = 368;
 	private static int MAX_MAX_MEMORY_BUFFER_SIZE = MAX_MAX_MEMORY_DEFAULT_SIZE;
 	private static final char LIST_SEPARATOR = ',';
@@ -2252,6 +2253,8 @@ public class PmsConfiguration {
 		configuration.removeConfigurationListener(l);
 	}
 
+	// FIXME this is undocumented and misnamed
+	@Deprecated
 	public boolean initBufferMax() {
 		return getBoolean(KEY_BUFFER_MAX, false);
 	}

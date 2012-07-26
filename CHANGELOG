@@ -9,6 +9,7 @@ Changelog:
     Improved handling of UTF-8 external subtitles
     Localized #--TRANSCODE--# folder name
     Make example PMS.conf behave more like built-in defaults
+    Restore maximum buffer size to 600 MB (was 400 MB)
     PMS.conf:
         - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
 
@@ -123,7 +124,7 @@ Changelog:
     Added Solaris specific ping command (#1277)
     Fixed problem parsing framerates with comma (#1278)
     Fixed bug in AVCHeader scanner
-    Fixed broken MEncoder playback on empty custom settings 
+    Fixed broken MEncoder playback on empty custom settings
     Updated Sony Bravia EX configuration
     Fixed timeshift audio sync problem with tsMuxeR (thanks ExSport!)
     Added option to disable/enable DTS passthrough in video settings folder
@@ -210,7 +211,7 @@ Changelog:
 1.30.0 - 2011-07-05
 
     Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3hbqv4l for more details
-	Fix StartStopListener callbacks (GC719)
+    Fix StartStopListener callbacks (GC719)
     Updated OS X binaries (FFmpeg, MEncoder and MPlayer) to fix an AC3 bug and improve internal VOBsub display quality
     Optional GUI to allow profile to be selected when PMS starts
     Better UPnP spec compliance
@@ -352,7 +353,7 @@ Changelog:
     Externalization of PS3/Xbox playback profiles, it's now possible to create profiles for any media renderer
     Includes preliminary support for Sony Bravia, Popcorn Hour, Samsung Wiselink, Freebox HD, WDTV Live
     Handling of UTF8 and UTF16 encoding, and case insensitive external subtitles
-    DVD ISO remuxed by default / DTS 768kBps support on ps3 
+    DVD ISO remuxed by default / DTS 768kBps support on PS3
     CUE playlist support
     Pseudo chapters support via the #Transcoded folder
     DVD ISO thumbnails support
@@ -434,7 +435,7 @@ Changelog:
 
     - Changes / Features
 
-    New option to enable video copy on ps3
+    New option to enable video copy on PS3
     RAW images thumbnail support: CR2/CRW/PEF/NEF/ORF/SRF/MRW/DNG/ARW/RAF
     New translations: Spanish (thanks to Jose from www.playstationhoy.com), Dutch (thanks to Vincent Meylof), German (thanks to Jeuki), Russian (thanks to Peter Klassen), Polish (thanks to Maciej Bocian), Greek (thanks to Alexander Polichroniadis), Portuguese (thanks to Hugo Sousa), Finnish (thanks to Ove Sentlig), Norwegian (thanks to Ball80 and Topguy), Swedish (thanks to Dusan Ilic) and Japanese (thanks to Yu)
     New extensions supported: SHN/M2V/M2P
@@ -451,7 +452,7 @@ Changelog:
     Fixed channels order with tsMuxeR engine's DTS->AC3 option
     Transcode buffer wasn't fully released after end of video
     Fixed bug with shared folders selection on Windows
-    Fixed periodic alive messages sent to ps3
+    Fixed periodic alive messages sent to PS3
     Better dvr-ms media info retrieval
     Updated ffmpeg/mplayer/mencoder/mt builds on Windows and OSX (slight H264 speedup for singlecore)
     Buffer issues with transcoded audio files lasting more than 10 minutes
@@ -495,7 +496,7 @@ Changelog:
 
     - Fixes
 
-    Major Bug in server start due to a faulty MAC address retrieval 
+    Major Bug in server start due to a faulty MAC address retrieval
     PMS do not start after activating the archive browsing option
     Media library small fixes
     Subtitles now work by default on OSX
@@ -518,7 +519,7 @@ Changelog:
 
     A/V out of sync issues with some ISOs and medias / codecs support improvement (flv, rmvb, hdmov, mp4, multichannels avi, etc.)
     External subtitles not always loaded
-    Upnp advertising issue in search reply to the ps3 (thanks to Daniel Pedersen)
+    Upnp advertising issue in search reply to the PS3 (thanks to Daniel Pedersen)
     SkipLoopFilter is now disabled by default
     Regression since 0.98, server would not start on some machines
     Newest builds of ffmpeg/mplayer/mencoder for win32
@@ -557,7 +558,7 @@ Changelog:
     Sync issues management for xvid/mp3
     .ass subtitles files support
     UUID random generation, it's now possible to launch multiple servers on one network.
-    Added wmv binary codecs in Windows package for smooth WMV-HD transcoding  
+    Added wmv binary codecs in Windows package for smooth WMV-HD transcoding
     Rare and random video glitch due to another seeking bug
 
 0.99 - 2008-12-12
@@ -589,7 +590,7 @@ Changelog:
     Customizable AviSynth script
     Audio podcasts, just tested the one from Engadget
     tsMuxeR now working on Linux for basic muxing (don't forget to give it execution rights)
-    Web video streamdump engine (Useful for streams natively supported by ps3, such as mpeg on rtsp)
+    Web video streamdump engine (Useful for streams natively supported by PS3, such as mpeg on rtsp)
     Maximum bitrate management
     Small things: Runnable in console mode under Linux ("PMS.sh console"), Folder prioritization of a specific streaming/transcoding engine, Custom cover art, additional infos on thumbnails
 
@@ -631,7 +632,7 @@ Changelog:
 
 0.94
 
-    Fixes: 2.50 Firmware problem, better pipes and sub processes management 
+    Fixes: 2.50 Firmware problem, better pipes and sub processes management
 
 0.93
 
