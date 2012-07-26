@@ -361,7 +361,13 @@ public class VLCVideo extends Player {
 		else
 			subtitleLang = "none";
 		cmdList.add("--sub-language=" + subtitleLang);
-
+		
+		//Skip forward if nessesary
+		if (params.timeseek != 0) {
+			cmdList.add("--start-time");
+			cmdList.add("" + params.timeseek);
+		}
+		
 		//Add our transcode options
 		String transcodeSpec = String.format(
 				"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
