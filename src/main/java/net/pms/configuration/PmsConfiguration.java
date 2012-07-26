@@ -173,6 +173,7 @@ public class PmsConfiguration {
 	private static final String KEY_UUID = "uuid";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
+	// FIXME what is this? if it should be kept, it needs to be a) documented and b) renamed (breaking change)
 	private static final String KEY_BUFFER_MAX = "buffer_max";
 
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
@@ -2246,6 +2247,8 @@ public class PmsConfiguration {
 		configuration.removeConfigurationListener(l);
 	}
 
+	// FIXME this is undocumented and misnamed
+	@Deprecated
 	public boolean initBufferMax() {
 		return getBoolean(KEY_BUFFER_MAX, false);
 	}
