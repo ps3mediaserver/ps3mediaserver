@@ -325,7 +325,7 @@ public class RendererConfiguration {
 	private static final String DLNA_TREE_HACK = "CreateDLNATreeFaster";
 	private static final String CHUNKED_TRANSFER = "ChunkedTransfer";
 	private static final String SUBTITLE_HTTP_HEADER = "SubtitleHttpHeader";
-	private static final String VLC_CONFIG = "VLC_CONFIG";
+	private static final String VLC_CONFIG = "vlc_config";
 
 	// Sony devices require JPG thumbnails
 	private static final String FORCE_JPG_THUMBNAILS = "ForceJPGThumbnails";
