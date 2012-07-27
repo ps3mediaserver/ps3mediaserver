@@ -203,12 +203,18 @@ public class VLCVideo extends Player {
 		//Video scaling
 		args.add("scale=" + scale.getText());
 
-		//Channels (TODO: is this necessary?)
+		//Audio Channels
 		args.add("channels=2");
 
 		//Static sample rate
 		args.add("samplerate=" + sampleRate.getText());
 
+		//Recommended on VLC DVD encoding page
+		args.add("keyint=16");
+		
+		//Recommended on VLC DVD encoding page
+		args.add("strict-rc");
+		
 		//Stream subtitles to client
 		//args.add("scodec=dvbs");
 		//args.add("senc=dvbsub");
