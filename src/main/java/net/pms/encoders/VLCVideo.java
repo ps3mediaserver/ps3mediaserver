@@ -37,6 +37,7 @@ import javax.swing.event.ChangeListener;
 import net.pms.Messages;
 import net.pms.configuration.FormatConfiguration.Supports;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
@@ -73,39 +74,6 @@ public class VLCVideo extends Player {
 	protected JCheckBox audioSyncEnabled;
 	protected JTextField sampleRate;
 	protected JTextField extraParams;
-	protected static final Map<String, String> codecVideoMap = new HashMap<String, String>() {
-		private static final long serialVersionUID = 2735931431148795544L;
-		{
-			//put("mp4", "mp4v"); //Doesn't exist on Windows VLC 2.0.2
-			put("h264", "h264");
-			put("wmv", "wmv2");
-			put("mpeg1", "mp1v");
-			put("mpeg2", "mp2v");
-			put("rm", "rv10");
-		}
-	};
-	protected static final Map<String, String> codecAudioMap = new HashMap<String, String>() {
-		private static final long serialVersionUID = -3538243787567566280L;
-		{
-			put("ac3", "a52");
-			put("lcpm", "lcpm");
-			//put("aac", "mp4a"); //Doesn't exist on Windows VLC 2.0.2
-			put("mp3", "mp3");
-			put("mpa", "mpga");
-			put("dts", "dts");
-			put("wma", "wma");
-		}
-	};
-	protected static final Map<String, String> codecContainerMap = new HashMap<String, String>() {
-		private static final long serialVersionUID = -5225024272144932890L;
-		{
-			put("avi", "avi");
-			put("mpegts", "ts");
-			put("mpegps", "ps");
-			put("wmv", "asf");
-			//put("mp4", "mp4"); //Doesn't exist on Windows VLC 2.0.2
-		}
-	};
 
 	public VLCVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -169,51 +137,29 @@ public class VLCVideo extends Player {
 	 * @param formats
 	 * @return 
 	 */
-	protected CodecConfig genConfig(List<Supports> formats) {
-
-		for (Supports curFormat : formats) {
-			LOGGER.debug("SUPPORTS: " + curFormat);
-			LOGGER.trace("Hey look, trace works~");
-			CodecConfig config = new CodecConfig();
-			//Attempt to get a video codec
-			LOGGER.debug("Video codec: " + curFormat.getVideocodec());
-			if (curFormat.getVideocodec() == null) {
-				LOGGER.debug("Null video codec, moving on");
-				continue;
+	protected CodecConfig genConfig(RendererConfiguration renderer) {
+		CodecConfig config = new CodecConfig();
+		String rendererInfoRaw = renderer.getVlcConfig();
+		if(rendererInfoRaw != null) {
+			//Parse it out
+			for(String curPart : StringUtils.split(rendererInfoRaw,"\t")) {
+				String[] pieces = StringUtils.split(curPart, ":");
+				if(pieces[0].equals("vc"))
+					config.videoCodec = pieces[1];
+				else if(pieces[0].equals("ac"))
+					config.audioCodec = pieces[1];
+				else if(pieces[0].equals("cc"))
+					config.container = pieces[1];
 			}
-			config.videoCodec = getFirstMatch(codecVideoMap, StringUtils.split(curFormat.getVideocodec(), "|"));
-			if (config.videoCodec == null) {
-				//No video codec found, move on to next format
-				LOGGER.debug("No video codec found, moving on");
-				continue;
-			}
-
-			//Attempt to get audio codec
-			config.audioCodec = getFirstMatch(codecAudioMap, StringUtils.split(curFormat.getAudiocodec(), "|"));
-			if (config.audioCodec == null) {
-				//PMS format sometimes assumes container = audio codec. Try that
-				LOGGER.debug("Could not find audio codec, trying containers");
-				config.audioCodec = getFirstMatch(codecContainerMap, StringUtils.split(curFormat.getAudiocodec(), "|"));
-				if (config.audioCodec == null) {
-					//No audio codec or container codec found, move on
-					LOGGER.debug("Could not find audio codec or container, moving on");
-					continue;
-				}
-			}
-
-			//Attempt to get container
-			config.container = getFirstMatch(codecContainerMap, StringUtils.split(curFormat.getFormat(), "|"));
-			if (config.container == null) {
-				//No container found, move on to next format
-				LOGGER.debug("Could not find container, moving on");
-				continue;
-			}
-
-			//Got all the info we needed
-			return config;
+			
+		} else {
+			//Default codecs for DLNA standard
+			LOGGER.debug("Using default codecs");
+			config.videoCodec = "mp2v";
+			config.audioCodec = "mp2a"; //NOTE: a52 sometimes causes audio to stop after ~5 mins
+			config.container = "ts";
 		}
-		//Nothing found
-		throw new RuntimeException("No suitable codec found. Please override manually and report as a bug on fourms");
+		return config;
 	}
 
 	protected String getFirstMatch(Map<String, String> map, String[] needles) {
@@ -293,7 +239,7 @@ public class VLCVideo extends Player {
 		boolean isWindows = Platform.isWindows();
 
 		//Make sure we can play this
-		CodecConfig config = genConfig(params.mediaRenderer.getFormatConfiguration().getFormats());
+		CodecConfig config = genConfig(params.mediaRenderer);
 
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux(config));
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
