@@ -136,19 +136,18 @@ public class VLCVideo extends Player {
 	protected CodecConfig genConfig(RendererConfiguration renderer) {
 		CodecConfig config = new CodecConfig();
 		String rendererInfoRaw = renderer.getVlcConfig();
-		if(rendererInfoRaw != null) {
+		if (rendererInfoRaw != null)
 			//Parse it out
-			for(String curPart : StringUtils.split(rendererInfoRaw,"\t")) {
+			for (String curPart : StringUtils.split(rendererInfoRaw, "\t")) {
 				String[] pieces = StringUtils.split(curPart, ":");
-				if(pieces[0].equals("vc"))
+				if (pieces[0].equals("vc"))
 					config.videoCodec = pieces[1];
-				else if(pieces[0].equals("ac"))
+				else if (pieces[0].equals("ac"))
 					config.audioCodec = pieces[1];
-				else if(pieces[0].equals("cc"))
+				else if (pieces[0].equals("cc"))
 					config.container = pieces[1];
 			}
-			
-		} else {
+		else {
 			//Default codecs for DLNA standard
 			LOGGER.debug("Using default codecs");
 			config.videoCodec = "mp2v";
@@ -162,7 +161,7 @@ public class VLCVideo extends Player {
 		for (String curNeedle : needles)
 			if (map.containsKey(curNeedle))
 				return map.get(curNeedle);
-			else 
+			else
 				LOGGER.debug("Couldn't find " + curNeedle + " in " + map);
 		return null;
 	}
@@ -211,10 +210,10 @@ public class VLCVideo extends Player {
 
 		//Recommended on VLC DVD encoding page
 		args.add("keyint=16");
-		
+
 		//Recommended on VLC DVD encoding page
 		args.add("strict-rc");
-		
+
 		//Stream subtitles to client
 		//args.add("scodec=dvbs");
 		//args.add("senc=dvbsub");
@@ -281,41 +280,39 @@ public class VLCVideo extends Player {
 		cmdList.add(fileName);
 
 		//Handle audio language
-		String audioLang;
 		if (params.aid != null)
 			//User specified language at the client, acknowledge it
 			if (params.aid.getLang() == null || params.aid.getLang().equals("und"))
 				//VLC doesn't understand und, but does understand none
-				audioLang = "none";
+				cmdList.add("--audio-language=none");
 			else
-				audioLang = params.aid.getLang();
+				//Load by ID (better)
+				cmdList.add("--audio-track=" + params.aid.getId());
 		else
 			//Not specified, use language from GUI
-			audioLang = audioPri.getText();
-		cmdList.add("--audio-language=" + audioLang);
+			cmdList.add("--audio-language=" + audioPri.getText());
 
 		//Handle subtitle language
-		String subtitleLang;
 		if (params.sid != null)
 			//User specified language at the client, acknowledge it
 			if (params.sid.getLang() == null || params.sid.getLang().equals("und"))
 				//VLC doesn't understand und, but does understand none
-				subtitleLang = "none";
+				cmdList.add("--sub-language=none");
 			else
-				subtitleLang = params.sid.getLang();
-		else //Not specified, use language from GUI if enabled
-		if (subtitleEnabled.isSelected())
-			subtitleLang = audioPri.getText();
+				//Load by ID (better)
+				cmdList.add("--sub-track=" + params.sid.getId());
+		else if (subtitleEnabled.isSelected())
+			//Not specified, use language from GUI if enabled
+			cmdList.add("--sub-language=" + subtitlePri.getText());
 		else
-			subtitleLang = "none";
-		cmdList.add("--sub-language=" + subtitleLang);
-		
+			cmdList.add("--sub-language=none");
+
 		//Skip forward if nessesary
 		if (params.timeseek != 0) {
 			cmdList.add("--start-time");
 			cmdList.add("" + params.timeseek);
 		}
-		
+
 		//Add our transcode options
 		String transcodeSpec = String.format(
 				"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
@@ -328,7 +325,7 @@ public class VLCVideo extends Player {
 
 		//Force VLC to die when finished
 		cmdList.add("vlc://quit");
-		
+
 		//Add any extra parameters
 		if (!extraParams.getText().trim().isEmpty())
 			//Add each part as a new item
@@ -362,39 +359,39 @@ public class VLCVideo extends Player {
 		DefaultFormBuilder mainPanel = new DefaultFormBuilder(layout);
 
 		mainPanel.appendSeparator(Messages.getString("VlcTrans.1"));
-		mainPanel.append(hardwareAccel = new JCheckBox(Messages.getString("VlcTrans.2"),pmsconfig.isVlcUseHardwareAccel()), 3);
+		mainPanel.append(hardwareAccel = new JCheckBox(Messages.getString("VlcTrans.2"), pmsconfig.isVlcUseHardwareAccel()), 3);
 		hardwareAccel.setContentAreaFilled(false);
-        hardwareAccel.addItemListener(new ItemListener() {
+		hardwareAccel.addItemListener(new ItemListener() {
 			@Override
-            public void itemStateChanged(ItemEvent e) {
-                pmsconfig.setVlcUseHardwareAccel(e.getStateChange() == ItemEvent.SELECTED);
-            }
-        });
-		mainPanel.append(experimentalCodecs = new JCheckBox(Messages.getString("VlcTrans.3"),pmsconfig.isExperimentalCodecs()), 3);
+			public void itemStateChanged(ItemEvent e) {
+				pmsconfig.setVlcUseHardwareAccel(e.getStateChange() == ItemEvent.SELECTED);
+			}
+		});
+		mainPanel.append(experimentalCodecs = new JCheckBox(Messages.getString("VlcTrans.3"), pmsconfig.isExperimentalCodecs()), 3);
 		experimentalCodecs.setContentAreaFilled(false);
-        experimentalCodecs.addItemListener(new ItemListener() {
+		experimentalCodecs.addItemListener(new ItemListener() {
 			@Override
-            public void itemStateChanged(ItemEvent e) {
-                pmsconfig.setExperimentalCodecs(e.getStateChange() == ItemEvent.SELECTED);
-            }
-        });
-		mainPanel.append(audioSyncEnabled = new JCheckBox(Messages.getString("VlcTrans.4"),pmsconfig.isAudioSyncEnabled()), 3);
+			public void itemStateChanged(ItemEvent e) {
+				pmsconfig.setExperimentalCodecs(e.getStateChange() == ItemEvent.SELECTED);
+			}
+		});
+		mainPanel.append(audioSyncEnabled = new JCheckBox(Messages.getString("VlcTrans.4"), pmsconfig.isAudioSyncEnabled()), 3);
 		audioSyncEnabled.setContentAreaFilled(false);
-        audioSyncEnabled.addItemListener(new ItemListener() {
+		audioSyncEnabled.addItemListener(new ItemListener() {
 			@Override
-            public void itemStateChanged(ItemEvent e) {
-                pmsconfig.setAudioSyncEnabled(e.getStateChange() == ItemEvent.SELECTED);
-            }
-        });
-		mainPanel.append(subtitleEnabled = new JCheckBox(Messages.getString("VlcTrans.5"),pmsconfig.isSubtitleEnabled()), 3);
+			public void itemStateChanged(ItemEvent e) {
+				pmsconfig.setAudioSyncEnabled(e.getStateChange() == ItemEvent.SELECTED);
+			}
+		});
+		mainPanel.append(subtitleEnabled = new JCheckBox(Messages.getString("VlcTrans.5"), pmsconfig.isSubtitleEnabled()), 3);
 		subtitleEnabled.setContentAreaFilled(false);
-        subtitleEnabled.addItemListener(new ItemListener() {
+		subtitleEnabled.addItemListener(new ItemListener() {
 			@Override
-            public void itemStateChanged(ItemEvent e) {
-                pmsconfig.setSubtitleEnabled(e.getStateChange() == ItemEvent.SELECTED);
-            }
-        });
-		
+			public void itemStateChanged(ItemEvent e) {
+				pmsconfig.setSubtitleEnabled(e.getStateChange() == ItemEvent.SELECTED);
+			}
+		});
+
 		mainPanel.append(Messages.getString("VlcTrans.6"), audioPri = new JTextField(pmsconfig.getAudioPri()));
 		audioPri.addKeyListener(new KeyAdapter() {
 			@Override
@@ -409,7 +406,7 @@ public class VLCVideo extends Player {
 				pmsconfig.setSubtitlePri(subtitlePri.getText());
 			}
 		});
-		
+
 		//Developer stuff. Theoretically is temporary 
 		mainPanel.appendSeparator("Advanced Settings");
 
