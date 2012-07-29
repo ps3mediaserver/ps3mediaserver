@@ -33,6 +33,7 @@ public enum SubtitleType {
 	// MediaInfo database of codec signatures (not comprehensive)
 	// http://mediainfo.svn.sourceforge.net/viewvc/mediainfo/MediaInfoLib/trunk/Source/Resource/Text/DataBase/
 
+	// SubtitleType(int index, String description, List<String> fileExtensions, List<String> libMediaInfoCodecs)
 	UNKNOWN (0, "Generic", list(), list()),
 	SUBRIP (1, "SubRip",
 			list("srt"),
@@ -77,7 +78,7 @@ public enum SubtitleType {
 		}
 	}
 
-	public static SubtitleType getSubtitleTypeByFileExtension(String fileExtension) {
+	public static SubtitleType valueOfFileExtension(String fileExtension) {
 		if (isBlank(fileExtension)) {
 			return UNKNOWN;
 		}
