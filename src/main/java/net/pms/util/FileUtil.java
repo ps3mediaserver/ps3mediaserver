@@ -140,7 +140,11 @@ public class FileUtil {
 										sub.setType(SubtitleType.VOBSUB);
 										exists = true;
 									} else if (equalsIgnoreCase(ext, "sub") && sub.getType() == SubtitleType.VOBSUB) { // VOBSUB
-										sub.setExternalFile(f);
+										try {
+											sub.setExternalFile(f);
+										} catch (FileNotFoundException ex) {
+											LOGGER.warn("Exception during external subtitles scan.", ex);
+										}
 										exists = true;
 									}
 								}
@@ -148,7 +152,6 @@ public class FileUtil {
 							if (!exists) {
 								DLNAMediaSubtitle sub = new DLNAMediaSubtitle();
 								sub.setId(100 + (media == null ? 0 : media.getSubtitleTracksList().size())); // fake id, not used
-								sub.setExternalFile(f);
 								if (code.length() == 0 || !Iso639.getCodeList().contains(code)) {
 									sub.setLang(DLNAMediaSubtitle.UND);
 									sub.setType(SubtitleType.valueOfFileExtension(ext));
@@ -166,6 +169,11 @@ public class FileUtil {
 								} else {
 									sub.setLang(code);
 									sub.setType(SubtitleType.valueOfFileExtension(ext));
+								}
+								try {
+									sub.setExternalFile(f);
+								} catch (FileNotFoundException ex) {
+									LOGGER.warn("Exception during external subtitles scan.", ex);
 								}
 								found = true;
 								if (media != null) {
@@ -191,11 +199,11 @@ public class FileUtil {
 	 */
 	public static String getFileCharset(File file) throws IOException {
 		byte[] buf = new byte[4096];
-		FileInputStream fileInputStream = new FileInputStream(file);
+		BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
 		final UniversalDetector universalDetector = new UniversalDetector(null);
 
 		int numberOfBytesRead;
-		while ((numberOfBytesRead = fileInputStream.read(buf)) > 0 && !universalDetector.isDone()) {
+		while ((numberOfBytesRead = bufferedInputStream.read(buf)) > 0 && !universalDetector.isDone()) {
 			universalDetector.handleData(buf, 0, numberOfBytesRead);
 		}
 		universalDetector.dataEnd();
