@@ -4,7 +4,6 @@ import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.formats.v2.SubtitleType;
-import org.apache.commons.lang.StringUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -226,7 +225,16 @@ public class FileUtil {
 	 * @throws IOException
 	 */
 	public static boolean isFileUTF8(File file) throws IOException {
-		return getFileCharset(file) == CHARSET_UTF_8;
+		return isCharsetUTF8(getFileCharset(file));
+	}
+
+	/**
+	 * Tests if charset is UTF-8 encoded with or without BOM.
+	 * @param charset Charset to test
+	 * @return true if charset is UTF-8 encoded with or without BOM, false otherwise.
+	 */
+	public static boolean isCharsetUTF8(String charset) {
+		return equalsIgnoreCase(charset, CHARSET_UTF_8);
 	}
 
 	/**
@@ -236,7 +244,16 @@ public class FileUtil {
 	 * @throws IOException
 	 */
 	public static boolean isFileUTF16(File file) throws IOException {
-		return (getFileCharset(file) == CHARSET_UTF_16LE || getFileCharset(file) == CHARSET_UTF_16BE);
+		return isCharsetUTF16(getFileCharset(file));
+	}
+
+	/**
+	 * Tests if charset is UTF-16 encoded LE or BE.
+	 * @param charset Charset to test
+	 * @return true if charset is UTF-16 encoded LE or BE, false otherwise.
+	 */
+	public static boolean isCharsetUTF16(String charset) {
+		return (equalsIgnoreCase(charset, CHARSET_UTF_16LE) || equalsIgnoreCase(charset, CHARSET_UTF_16BE));
 	}
 
 	/**
@@ -257,11 +274,11 @@ public class FileUtil {
 			throw new IllegalArgumentException("Can't confirm inputFile is UTF-16.");
 		}
 
-		if (StringUtils.equals(charset, CHARSET_UTF_16LE) || StringUtils.equals(charset, CHARSET_UTF_16BE)) {
+		if (isCharsetUTF16(charset)) {
 			if (!outputFile.exists()) {
 				BufferedReader reader = null;
 				try {
-					if (charset == CHARSET_UTF_16LE) {
+					if (equalsIgnoreCase(charset, CHARSET_UTF_16LE)) {
 						reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF-16"));
 					} else {
 						reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF-16BE"));
