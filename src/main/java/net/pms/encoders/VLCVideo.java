@@ -19,6 +19,7 @@
 package net.pms.encoders;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.debug.FormDebugPanel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
@@ -69,6 +70,8 @@ public class VLCVideo extends Player {
 	protected JCheckBox experimentalCodecs;
 	protected JCheckBox audioSyncEnabled;
 	protected JTextField sampleRate;
+	protected final int sampleRateDefault = 48000;
+	protected JCheckBox sampleRateOverride;
 	protected JTextField extraParams;
 
 	public VLCVideo(PmsConfiguration pmsconfig) {
@@ -135,18 +138,18 @@ public class VLCVideo extends Player {
 	 */
 	protected CodecConfig genConfig(RendererConfiguration renderer) {
 		CodecConfig config = new CodecConfig();
-		if(codecOverride.isSelected()) {
+		if (codecOverride.isSelected()) {
 			LOGGER.debug("Using GUI codec overrides");
 			config.videoCodec = codecVideo.getText();
 			config.audioCodec = codecAudio.getText();
 			config.container = codecContainer.getText();
-		} else if(renderer.isTranscodeToWMV()) {
+		} else if (renderer.isTranscodeToWMV()) {
 			//Assume WMV = XBox = all media renderers with this flag
 			LOGGER.debug("Using XBox WMV codecs");
 			config.videoCodec = "wmv2";
 			config.audioCodec = "wma";
 			config.container = "asf";
-		} else if(renderer.isTranscodeToMPEGPSAC3() || renderer.isTranscodeToMPEGTSAC3()) {
+		} else if (renderer.isTranscodeToMPEGPSAC3() || renderer.isTranscodeToMPEGTSAC3()) {
 			//Default codecs for DLNA standard
 			String type = renderer.isTranscodeToMPEGPSAC3() ? "ps" : "ts";
 			LOGGER.debug("Using DLNA standard codecs with " + type + " container");
@@ -154,6 +157,12 @@ public class VLCVideo extends Player {
 			config.audioCodec = "mp2a"; //NOTE: a52 sometimes causes audio to stop after ~5 mins
 			config.container = type;
 		}
+
+		//Audio sample rate handling
+		if (sampleRateOverride.isSelected())
+			config.sampleRate = Integer.valueOf(sampleRate.getText());
+		else
+			config.sampleRate = sampleRateDefault;
 		return config;
 	}
 
@@ -163,6 +172,7 @@ public class VLCVideo extends Player {
 		String container;
 		String extraParams;
 		String extraTrans;
+		int sampleRate;
 	}
 
 	protected List<String> getEncodingArgs(CodecConfig config) {
@@ -187,7 +197,7 @@ public class VLCVideo extends Player {
 		args.add("channels=2");
 
 		//Static sample rate
-		args.add("samplerate=" + sampleRate.getText());
+		args.add("samplerate=" + config.sampleRate);
 
 		//Recommended on VLC DVD encoding page
 		args.add("keyint=16");
@@ -443,7 +453,19 @@ public class VLCVideo extends Player {
 		mainPanel.append(codecPanel.getPanel(), 7);
 
 		//Audio sample rate
-		mainPanel.append("<html>Audio sample rate<br>Potential Values: 44100 (unstable), 48000", sampleRate = new JTextField("48000"));
+		FormLayout sampleRateLayout = new FormLayout("right:pref, 3dlu, right:pref, 3dlu, right:pref, 3dlu, left:pref", "");
+		DefaultFormBuilder sampleRatePanel = new DefaultFormBuilder(sampleRateLayout, new FormDebugPanel());
+		sampleRateOverride = new JCheckBox("Override auto-detection");
+		sampleRatePanel.append("Audio Sample Rate", sampleRateOverride);
+		sampleRate = new JTextField(String.valueOf(sampleRateDefault));
+		sampleRatePanel.append("<html>Sample rate (Hz). Try:<br>48000<br>44100 (unstable)", sampleRate);
+		sampleRateOverride.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				sampleRate.setEnabled(((JCheckBox) e.getSource()).isSelected());
+			}
+		});
+		mainPanel.append(sampleRatePanel.getPanel(), 7);
 
 		//Extra options
 		mainPanel.nextLine();
