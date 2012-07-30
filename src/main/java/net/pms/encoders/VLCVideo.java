@@ -152,15 +152,6 @@ public class VLCVideo extends Player {
 		return config;
 	}
 
-	protected String getFirstMatch(Map<String, String> map, String[] needles) {
-		for (String curNeedle : needles)
-			if (map.containsKey(curNeedle))
-				return map.get(curNeedle);
-			else
-				LOGGER.debug("Couldn't find " + curNeedle + " in " + map);
-		return null;
-	}
-
 	public class CodecConfig {
 		String videoCodec;
 		String audioCodec;
