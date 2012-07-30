@@ -304,7 +304,7 @@ public class VLCVideo extends Player {
 		//Skip forward if nessesary
 		if (params.timeseek != 0) {
 			cmdList.add("--start-time");
-			cmdList.add("" + params.timeseek);
+			cmdList.add(String.valueOf(params.timeseek));
 		}
 
 		//Add our transcode options
@@ -408,7 +408,7 @@ public class VLCVideo extends Player {
 		mainPanel.append("Video scale: ");
 		FormLayout scaleLayout = new FormLayout("pref,3dlu,pref", "");
 		DefaultFormBuilder scalePanel = new DefaultFormBuilder(scaleLayout);
-		scalePanel.append(scale = new JTextField("" + scaleDefault));
+		scalePanel.append(scale = new JTextField(String.valueOf(scaleDefault)));
 		final JSlider scaleSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) (scaleDefault * 10));
 		scalePanel.append(scaleSlider);
 		Hashtable<Integer, JLabel> scaleLabels = new Hashtable<Integer, JLabel>();
