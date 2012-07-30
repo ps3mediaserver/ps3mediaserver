@@ -163,6 +163,10 @@ public class VLCVideo extends Player {
 			config.sampleRate = Integer.valueOf(sampleRate.getText());
 		else
 			config.sampleRate = sampleRateDefault;
+		
+		//This has caused garbled audio, so only enable when told to
+		if (audioSyncEnabled.isSelected())
+			config.extraTrans.add("audio-sync");
 		return config;
 	}
 
@@ -171,7 +175,7 @@ public class VLCVideo extends Player {
 		String audioCodec;
 		String container;
 		String extraParams;
-		String extraTrans;
+		List<String> extraTrans = new ArrayList();
 		int sampleRate;
 	}
 
@@ -211,10 +215,9 @@ public class VLCVideo extends Player {
 
 		//Hardcode subtitles into video
 		args.add("soverlay");
-
-		//This has caused garbled audio, so only enable when told to
-		if (audioSyncEnabled.isSelected())
-			args.add("audio-sync");
+		
+		//Add extra args
+		args.addAll(config.extraTrans);
 
 		return args;
 	}
