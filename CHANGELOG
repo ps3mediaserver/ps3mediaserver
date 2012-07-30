@@ -6,6 +6,7 @@ Changelog:
     Add new default web video engine: FFMpeg Web Video
     Add support for new web protocols: mmsh:// and mmst://
     Sort files alphanumerically by default e.g. Episode 2 before Episode 10
+    Auto encoding detection of non UTF-8 external subtitles for Russian, Greek, Hebrew, Chinese, Korean and Japanese languages (leave "Subtitles codepage" option blank)
     Improved handling of UTF-8 external subtitles
     Localized #--TRANSCODE--# folder name
     Make example PMS.conf behave more like built-in defaults
