@@ -156,7 +156,8 @@ public class VLCVideo extends Player {
 			config.videoCodec = "mp2v";
 			config.audioCodec = "mp2a"; //NOTE: a52 sometimes causes audio to stop after ~5 mins
 			config.container = type;
-		} 
+		} else
+			throw new RuntimeException("Unknown encoding profile");
 
 		//Audio sample rate handling
 		if (sampleRateOverride.isSelected())
