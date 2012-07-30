@@ -42,21 +42,21 @@ for documentation and contributions to the community.
 
 * boblinds and snoots for the network test cases :)
 * sarraken, bleuecinephile, bd.azerty, fabounnet for the support and feedback
+* smo for the Jenkins server
 
-See the `CHANGELOG` in the core directory for more thanks.
+See the `CHANGELOG` for more thanks.
 
 Building
 ------------
 
 PMS can be built using the following commands:
 
-    git clone git://github.com/ps3mediaserver/ps3mediaserver.git ps3mediaserver
+    git clone git://github.com/ps3mediaserver/ps3mediaserver.git
     cd ps3mediaserver
     mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external
     mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
-    mvn install
+    mvn package
 
-You will find the resulting binary in "packaging/target".
 See [BUILD.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/BUILD.md) for more extensive documentation.
 
 Development

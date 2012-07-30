@@ -24,12 +24,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import net.pms.PMS;
-import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.Player;
 import net.pms.encoders.PlayerFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

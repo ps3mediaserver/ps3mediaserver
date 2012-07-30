@@ -4,14 +4,17 @@ import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.formats.v2.SubtitleType;
-import org.apache.commons.lang.StringUtils;
+import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.apache.commons.lang.StringUtils.*;
+import static org.mozilla.universalchardet.Constants.*;
+
 
 public class FileUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
@@ -76,7 +79,7 @@ public class FileUtil {
 	public static boolean doesSubtitlesExists(File file, DLNAMediaInfo media, boolean usecache) {
 		boolean found = browseFolderForSubtitles(file.getParentFile(), file, media, usecache);
 		String alternate = PMS.getConfiguration().getAlternateSubsFolder();
-		if (StringUtils.isNotBlank(alternate)) { // https://code.google.com/p/ps3mediaserver/issues/detail?id=737#c5
+		if (isNotBlank(alternate)) { // https://code.google.com/p/ps3mediaserver/issues/detail?id=737#c5
 			File subFolder = new File(alternate);
 			if (!subFolder.isAbsolute()) {
 				subFolder = new File(file.getParent() + "/" + alternate);
@@ -115,7 +118,7 @@ public class FileUtil {
 				if (f.isFile() && !f.isHidden()) {
 					String fName = f.getName().toLowerCase();
 					for (String ext : SubtitleType.getSupportedFileExtensions()) {
-						if (fName.length() > ext.length() && fName.startsWith(fileName) && fName.endsWith("." + ext)) {
+						if (fName.length() > ext.length() && fName.startsWith(fileName) && endsWithIgnoreCase(fName, "." + ext)) {
 							int a = fileName.length();
 							int b = fName.length() - ext.length() - 1;
 							String code = "";
@@ -132,11 +135,15 @@ public class FileUtil {
 								for (DLNAMediaSubtitle sub : media.getSubtitleTracksList()) {
 									if (f.equals(sub.getExternalFile())) {
 										exists = true;
-									} else if (ext.equals("idx") && sub.getType() == SubtitleType.MICRODVD) { // sub+idx => VOBSUB
+									} else if (equalsIgnoreCase(ext, "idx") && sub.getType() == SubtitleType.MICRODVD) { // sub+idx => VOBSUB
 										sub.setType(SubtitleType.VOBSUB);
 										exists = true;
-									} else if (ext.equals("sub") && sub.getType() == SubtitleType.VOBSUB) { // VOBSUB
-										sub.setExternalFile(f);
+									} else if (equalsIgnoreCase(ext, "sub") && sub.getType() == SubtitleType.VOBSUB) { // VOBSUB
+										try {
+											sub.setExternalFile(f);
+										} catch (FileNotFoundException ex) {
+											LOGGER.warn("Exception during external subtitles scan.", ex);
+										}
 										exists = true;
 									}
 								}
@@ -144,11 +151,9 @@ public class FileUtil {
 							if (!exists) {
 								DLNAMediaSubtitle sub = new DLNAMediaSubtitle();
 								sub.setId(100 + (media == null ? 0 : media.getSubtitleTracksList().size())); // fake id, not used
-								sub.setExternalFile(f);
-								sub.checkUnicode();
 								if (code.length() == 0 || !Iso639.getCodeList().contains(code)) {
 									sub.setLang(DLNAMediaSubtitle.UND);
-									sub.setType(SubtitleType.getSubtitleTypeByFileExtension(ext));
+									sub.setType(SubtitleType.valueOfFileExtension(ext));
 									if (code.length() > 0) {
 										sub.setFlavor(code);
 										if (sub.getFlavor().contains("-")) {
@@ -162,7 +167,12 @@ public class FileUtil {
 									}
 								} else {
 									sub.setLang(code);
-									sub.setType(SubtitleType.getSubtitleTypeByFileExtension(ext));
+									sub.setType(SubtitleType.valueOfFileExtension(ext));
+								}
+								try {
+									sub.setExternalFile(f);
+								} catch (FileNotFoundException ex) {
+									LOGGER.warn("Exception during external subtitles scan.", ex);
 								}
 								found = true;
 								if (media != null) {
@@ -175,5 +185,127 @@ public class FileUtil {
 			}
 		}
 		return found;
+	}
+
+
+	/**
+	 * Detects charset/encoding for given file. Not 100% accurate for
+	 * non-Unicode files.
+	 * @param file File to detect charset/encoding
+	 * @return file's charset {@link org.mozilla.universalchardet.Constants} or null
+	 * if not detected
+	 * @throws IOException
+	 */
+	public static String getFileCharset(File file) throws IOException {
+		byte[] buf = new byte[4096];
+		BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
+		final UniversalDetector universalDetector = new UniversalDetector(null);
+
+		int numberOfBytesRead;
+		while ((numberOfBytesRead = bufferedInputStream.read(buf)) > 0 && !universalDetector.isDone()) {
+			universalDetector.handleData(buf, 0, numberOfBytesRead);
+		}
+		universalDetector.dataEnd();
+		String encoding = universalDetector.getDetectedCharset();
+
+		if (encoding != null) {
+			LOGGER.debug("Detected encoding for {} is {}.", file.getAbsolutePath(), encoding);
+		} else {
+			LOGGER.debug("No encoding detected for {}.", file.getAbsolutePath());
+		}
+		universalDetector.reset();
+
+		return encoding;
+	}
+
+	/**
+	 * Tests if file is UTF-8 encoded with or without BOM.
+	 * @param file File to test
+	 * @return true if file is UTF-8 encoded with or without BOM, false otherwise.
+	 * @throws IOException
+	 */
+	public static boolean isFileUTF8(File file) throws IOException {
+		return isCharsetUTF8(getFileCharset(file));
+	}
+
+	/**
+	 * Tests if charset is UTF-8 encoded with or without BOM.
+	 * @param charset Charset to test
+	 * @return true if charset is UTF-8 encoded with or without BOM, false otherwise.
+	 */
+	public static boolean isCharsetUTF8(String charset) {
+		return equalsIgnoreCase(charset, CHARSET_UTF_8);
+	}
+
+	/**
+	 * Tests if file is UTF-16 encoded LE or BE.
+	 * @param file File to test
+	 * @return true if file is UTF-16 encoded LE or BE, false otherwise.
+	 * @throws IOException
+	 */
+	public static boolean isFileUTF16(File file) throws IOException {
+		return isCharsetUTF16(getFileCharset(file));
+	}
+
+	/**
+	 * Tests if charset is UTF-16 encoded LE or BE.
+	 * @param charset Charset to test
+	 * @return true if charset is UTF-16 encoded LE or BE, false otherwise.
+	 */
+	public static boolean isCharsetUTF16(String charset) {
+		return (equalsIgnoreCase(charset, CHARSET_UTF_16LE) || equalsIgnoreCase(charset, CHARSET_UTF_16BE));
+	}
+
+	/**
+	 * Tests if charset is UTF-32 encoded LE or BE.
+	 * @param charset Charset to test
+	 * @return true if charset is UTF-32 encoded LE or BE, false otherwise.
+	 */
+	public static boolean isCharsetUTF32(String charset) {
+		return (equalsIgnoreCase(charset, CHARSET_UTF_32LE) || equalsIgnoreCase(charset, CHARSET_UTF_32BE));
+	}
+
+	/**
+	 * Converts UTF-16 inputFile to UTF-8 outputFile. Does not overwrite existing outputFile file.
+	 * @param inputFile UTF-16 file
+	 * @param outputFile UTF-8 file after conversion
+	 * @throws IOException
+	 */
+	public static void convertFileFromUtf16ToUtf8(File inputFile, File outputFile) throws IOException {
+		String charset;
+		if (inputFile == null || !inputFile.canRead()) {
+			throw new FileNotFoundException("Can't read inputFile.");
+		}
+		try {
+			charset = getFileCharset(inputFile);
+		} catch (IOException ex) {
+			LOGGER.debug("Exception during charset detection.", ex);
+			throw new IllegalArgumentException("Can't confirm inputFile is UTF-16.");
+		}
+
+		if (isCharsetUTF16(charset)) {
+			if (!outputFile.exists()) {
+				BufferedReader reader = null;
+				try {
+					if (equalsIgnoreCase(charset, CHARSET_UTF_16LE)) {
+						reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF-16"));
+					} else {
+						reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF-16BE"));
+					}
+				} catch (UnsupportedEncodingException ex) {
+					LOGGER.warn("Unsupported exception.", ex);
+					throw ex;
+				}
+				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"));
+				int c;
+				while ((c = reader.read()) != -1) {
+					writer.write(c);
+				}
+				writer.close();
+				reader.close();
+			}
+		} else {
+			throw new IllegalArgumentException("File is not UTF-16");
+		}
 	}
 }

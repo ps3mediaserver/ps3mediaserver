@@ -173,6 +173,7 @@ public class PmsConfiguration {
 	private static final String KEY_UUID = "uuid";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
+	// FIXME what is this? if it should be kept, it needs to be a) documented and b) renamed (breaking change)
 	private static final String KEY_BUFFER_MAX = "buffer_max";
 
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
@@ -184,7 +185,7 @@ public class PmsConfiguration {
 
 	private static String DEFAULT_AVI_SYNTH_SCRIPT;
 	private static final String BUFFER_TYPE_FILE = "file";
-	private static final int MAX_MAX_MEMORY_DEFAULT_SIZE = 400;
+	private static final int MAX_MAX_MEMORY_DEFAULT_SIZE = 600;
 	private static final int BUFFER_MEMORY_FACTOR = 368;
 	private static int MAX_MAX_MEMORY_BUFFER_SIZE = MAX_MAX_MEMORY_DEFAULT_SIZE;
 	private static final char LIST_SEPARATOR = ',';
@@ -481,7 +482,7 @@ public class PmsConfiguration {
 	 * @return True if tsMuxeR should parse fps from FFmpeg.
 	 */
 	public boolean isTsmuxerForceFps() {
-		return configuration.getBoolean(KEY_TSMUXER_FORCEFPS, true);
+		return getBoolean(KEY_TSMUXER_FORCEFPS, true);
 	}
 
 	/**
@@ -710,7 +711,7 @@ public class PmsConfiguration {
 	 * @return True if "ac3_fixed" should be used.
 	 */
 	public boolean isMencoderAc3Fixed() {
-		return configuration.getBoolean(KEY_MENCODER_AC3_FIXED, false);
+		return getBoolean(KEY_MENCODER_AC3_FIXED, false);
 	}
 
 	/**
@@ -1006,7 +1007,8 @@ public class PmsConfiguration {
 
 	/**
 	 * Returns the character encoding (or code page) that MEncoder should use
-	 * for displaying subtitles. Default is empty string (do not force encoding with -subcp key).
+	 * for displaying non-Unicode external subtitles. Default is empty string
+	 * (do not force encoding with -subcp key).
 	 * @return The character encoding.
 	 */
 	public String getMencoderSubCp() {
@@ -1132,7 +1134,7 @@ public class PmsConfiguration {
 
 	/**
 	 * Sets the character encoding (or code page) that MEncoder should use
-	 * for displaying subtitles. Default is "cp1252".
+	 * for displaying non-Unicode external subtitles. Default is empty (autodetect).
 	 * @param value The character encoding.
 	 */
 	public void setMencoderSubCp(String value) {
@@ -1647,7 +1649,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean getTrancodeBlocksMultipleConnections() {
-		return configuration.getBoolean(KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS, false);
+		return getBoolean(KEY_TRANSCODE_BLOCKS_MULTIPLE_CONNECTIONS, false);
 	}
 
 	public void setTranscodeBlocksMultipleConnections(boolean value) {
@@ -1655,7 +1657,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean getTrancodeKeepFirstConnections() {
-		return configuration.getBoolean(KEY_TRANSCODE_KEEP_FIRST_CONNECTION, true);
+		return getBoolean(KEY_TRANSCODE_KEEP_FIRST_CONNECTION, true);
 	}
 
 	public void setTrancodeKeepFirstConnections(boolean value) {
@@ -2214,7 +2216,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean isAutoUpdate() {
-		return Build.isUpdatable() && configuration.getBoolean(KEY_AUTO_UPDATE, false);
+		return Build.isUpdatable() && getBoolean(KEY_AUTO_UPDATE, false);
 	}
 
 	public void setAutoUpdate(boolean value) {
@@ -2245,6 +2247,8 @@ public class PmsConfiguration {
 		configuration.removeConfigurationListener(l);
 	}
 
+	// FIXME this is undocumented and misnamed
+	@Deprecated
 	public boolean initBufferMax() {
 		return getBoolean(KEY_BUFFER_MAX, false);
 	}
