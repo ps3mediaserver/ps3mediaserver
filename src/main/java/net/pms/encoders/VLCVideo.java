@@ -135,7 +135,12 @@ public class VLCVideo extends Player {
 	 */
 	protected CodecConfig genConfig(RendererConfiguration renderer) {
 		CodecConfig config = new CodecConfig();
-		if(renderer.isTranscodeToWMV()) {
+		if(codecOverride.isSelected()) {
+			LOGGER.debug("Using GUI codec overrides");
+			config.videoCodec = codecVideo.getText();
+			config.audioCodec = codecAudio.getText();
+			config.container = codecContainer.getText();
+		} else if(renderer.isTranscodeToWMV()) {
 			//Assume WMV = XBox = all media renderers with this flag
 			LOGGER.debug("Using XBox WMV codecs");
 			config.videoCodec = "wmv2";
@@ -168,18 +173,8 @@ public class VLCVideo extends Player {
 		List<String> args = new ArrayList<String>();
 
 		//Codecs to use
-		String videoCodec;
-		String audioCodec;
-		if (codecOverride.isSelected()) {
-			videoCodec = codecVideo.getText();
-			audioCodec = codecAudio.getText();
-		} else {
-			//Try to map codec
-			videoCodec = config.videoCodec;
-			audioCodec = config.audioCodec;
-		}
-		args.add("vcodec=" + videoCodec);
-		args.add("acodec=" + audioCodec);
+		args.add("vcodec=" + config.videoCodec);
+		args.add("acodec=" + config.audioCodec);
 
 		//Bitrate in kbit/s (TODO: Use global option?)
 		args.add("vb=4096");
@@ -214,13 +209,6 @@ public class VLCVideo extends Player {
 		return args;
 	}
 
-	protected String getMux(CodecConfig config) {
-		if (codecOverride.isSelected())
-			return codecContainer.getText();
-		else
-			return config.container;
-	}
-
 	@Override
 	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media, OutputParams params) throws IOException {
 		boolean isWindows = Platform.isWindows();
@@ -228,7 +216,7 @@ public class VLCVideo extends Player {
 		//Make sure we can play this
 		CodecConfig config = genConfig(params.mediaRenderer);
 
-		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux(config));
+		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + config.container);
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 
 		LOGGER.debug("filename: " + fileName);
@@ -303,7 +291,7 @@ public class VLCVideo extends Player {
 		String transcodeSpec = String.format(
 				"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
 				StringUtils.join(getEncodingArgs(config), ","),
-				getMux(config),
+				config.container,
 				(isWindows ? "\\\\" : ""),
 				tsPipe.getInputPipe());
 		cmdList.add("--sout");
