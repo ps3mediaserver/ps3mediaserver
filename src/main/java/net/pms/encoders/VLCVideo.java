@@ -143,10 +143,11 @@ public class VLCVideo extends Player {
 			config.container = "asf";
 		} else if(renderer.isTranscodeToMPEGPSAC3() || renderer.isTranscodeToMPEGTSAC3()) {
 			//Default codecs for DLNA standard
-			LOGGER.debug("Using DLNA standard codecs with " + renderer.getVideoTranscode().substring(0,2) + " container");
+			String type = renderer.isTranscodeToMPEGPSAC3() ? "ps" : "ts";
+			LOGGER.debug("Using DLNA standard codecs with " + type + " container");
 			config.videoCodec = "mp2v";
 			config.audioCodec = "mp2a"; //NOTE: a52 sometimes causes audio to stop after ~5 mins
-			config.container = renderer.isTranscodeToMPEGPSAC3() ? "ps" : "ts";
+			config.container = type;
 		}
 		return config;
 	}
