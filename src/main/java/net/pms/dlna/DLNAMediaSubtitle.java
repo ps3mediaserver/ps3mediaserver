@@ -117,6 +117,14 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	}
 
 	/**
+	 * @deprecated use FileUtil.convertFileFromUtf16ToUtf8() for UTF-16 -> UTF-8 conversion.
+	 */
+	@Deprecated
+	public File getPlayableExternalFile() {
+		return getExternalFile();
+	}
+
+	/**
 	 * @return the externalFile
 	 */
 	public File getExternalFile() {
