@@ -351,43 +351,43 @@ public class VLCVideo extends Player {
 				pmsconfig.setVlcUseHardwareAccel(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
-		mainPanel.append(experimentalCodecs = new JCheckBox(Messages.getString("VlcTrans.3"), pmsconfig.isExperimentalCodecs()), 3);
+		mainPanel.append(experimentalCodecs = new JCheckBox(Messages.getString("VlcTrans.3"), pmsconfig.isVlcExperimentalCodecs()), 3);
 		experimentalCodecs.setContentAreaFilled(false);
 		experimentalCodecs.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				pmsconfig.setExperimentalCodecs(e.getStateChange() == ItemEvent.SELECTED);
+				pmsconfig.setVlcExperimentalCodecs(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
-		mainPanel.append(audioSyncEnabled = new JCheckBox(Messages.getString("VlcTrans.4"), pmsconfig.isAudioSyncEnabled()), 3);
+		mainPanel.append(audioSyncEnabled = new JCheckBox(Messages.getString("VlcTrans.4"), pmsconfig.isVlcAudioSyncEnabled()), 3);
 		audioSyncEnabled.setContentAreaFilled(false);
 		audioSyncEnabled.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				pmsconfig.setAudioSyncEnabled(e.getStateChange() == ItemEvent.SELECTED);
+				pmsconfig.setVlcAudioSyncEnabled(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
-		mainPanel.append(subtitleEnabled = new JCheckBox(Messages.getString("VlcTrans.5"), pmsconfig.isSubtitleEnabled()), 3);
+		mainPanel.append(subtitleEnabled = new JCheckBox(Messages.getString("VlcTrans.5"), pmsconfig.isVlcSubtitleEnabled()), 3);
 		subtitleEnabled.setContentAreaFilled(false);
 		subtitleEnabled.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				pmsconfig.setSubtitleEnabled(e.getStateChange() == ItemEvent.SELECTED);
+				pmsconfig.setVlcSubtitleEnabled(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
 
-		mainPanel.append(Messages.getString("VlcTrans.6"), audioPri = new JTextField(pmsconfig.getAudioPri()));
+		mainPanel.append(Messages.getString("VlcTrans.6"), audioPri = new JTextField(pmsconfig.getVlcAudioPri()));
 		audioPri.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				pmsconfig.setAudioPri(audioPri.getText());
+				pmsconfig.setVlcAudioPri(audioPri.getText());
 			}
 		});
-		mainPanel.append(Messages.getString("VlcTrans.8"), subtitlePri = new JTextField(pmsconfig.getSubtitlePri()));
+		mainPanel.append(Messages.getString("VlcTrans.8"), subtitlePri = new JTextField(pmsconfig.getVlcSubtitlePri()));
 		subtitlePri.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				pmsconfig.setSubtitlePri(subtitlePri.getText());
+				pmsconfig.setVlcSubtitlePri(subtitlePri.getText());
 			}
 		});
 

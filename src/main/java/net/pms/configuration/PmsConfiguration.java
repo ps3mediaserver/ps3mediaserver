@@ -2292,41 +2292,41 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_VLC_USE_HW_ACCELERATION, b);
 	}
 
-	public boolean isExperimentalCodecs() {
+	public boolean isVlcExperimentalCodecs() {
 		return getBoolean(KEY_VLC_USE_EXPERIMENTAL_CODECS, false);
 	}
-	public void setExperimentalCodecs(boolean b) {
+	public void setVlcExperimentalCodecs(boolean b) {
 		configuration.setProperty(KEY_VLC_USE_EXPERIMENTAL_CODECS, b);
 	}
 
-	public boolean isAudioSyncEnabled() {
+	public boolean isVlcAudioSyncEnabled() {
 		return getBoolean(KEY_VLC_AUDIO_SYNC_ENABLED, false);
 	}
 
-	public void setAudioSyncEnabled(boolean b) {
+	public void setVlcAudioSyncEnabled(boolean b) {
 		configuration.setProperty(KEY_VLC_AUDIO_SYNC_ENABLED, b);
 	}
 
-	public boolean isSubtitleEnabled() {
+	public boolean isVlcSubtitleEnabled() {
 		return getBoolean(KEY_VLC_SUBTITLE_ENABLED, true);
 	}
 
-	public void setSubtitleEnabled(boolean b) {
+	public void setVlcSubtitleEnabled(boolean b) {
 		configuration.setProperty(KEY_VLC_SUBTITLE_ENABLED, b);
 	}
 
-	public String getAudioPri() {
+	public String getVlcAudioPri() {
 		return getString(KEY_VLC_AUDIO_PRI, Messages.getString("VlcTrans.7"));
 	}
-	public void setAudioPri(String text) {
+	public void setVlcAudioPri(String text) {
 		configuration.setProperty(KEY_VLC_AUDIO_PRI, text);
 	}
 
-	public String getSubtitlePri() {
+	public String getVlcSubtitlePri() {
 		return getString(KEY_VLC_SUBTITLE_PRI, Messages.getString("VlcTrans.9"));
 	}
 
-	public void setSubtitlePri(String text) {
+	public void setVlcSubtitlePri(String text) {
 		configuration.setProperty(KEY_VLC_SUBTITLE_PRI, text);
 	}
 	
