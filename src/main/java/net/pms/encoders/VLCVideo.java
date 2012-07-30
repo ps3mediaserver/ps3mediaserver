@@ -135,24 +135,18 @@ public class VLCVideo extends Player {
 	 */
 	protected CodecConfig genConfig(RendererConfiguration renderer) {
 		CodecConfig config = new CodecConfig();
-		String rendererInfoRaw = renderer.getVlcConfig();
-		if (rendererInfoRaw != null)
-			//Parse it out
-			for (String curPart : StringUtils.split(rendererInfoRaw, "\t")) {
-				String[] pieces = StringUtils.split(curPart, ":");
-				if (pieces[0].equals("vc"))
-					config.videoCodec = pieces[1];
-				else if (pieces[0].equals("ac"))
-					config.audioCodec = pieces[1];
-				else if (pieces[0].equals("cc"))
-					config.container = pieces[1];
-			}
-		else {
+		if(renderer.isTranscodeToWMV()) {
+			//Assume WMV = XBox = all media renderers with this flag
+			LOGGER.debug("Using XBox WMV codecs");
+			config.videoCodec = "wmv2";
+			config.audioCodec = "wma";
+			config.container = "asf";
+		} else if(renderer.isTranscodeToMPEGPSAC3() || renderer.isTranscodeToMPEGTSAC3()) {
 			//Default codecs for DLNA standard
-			LOGGER.debug("Using default codecs");
+			LOGGER.debug("Using DLNA standard codecs with " + renderer.getVideoTranscode().substring(0,2) + " container");
 			config.videoCodec = "mp2v";
 			config.audioCodec = "mp2a"; //NOTE: a52 sometimes causes audio to stop after ~5 mins
-			config.container = "ts";
+			config.container = renderer.isTranscodeToMPEGPSAC3() ? "ps" : "ts";
 		}
 		return config;
 	}
