@@ -409,11 +409,6 @@ public class VLCVideo extends Player {
 		scalePanel.append(scale = new JTextField(String.valueOf(startingScale)));
 		final JSlider scaleSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) (startingScale * 10));
 		scalePanel.append(scaleSlider);
-		Hashtable<Integer, JLabel> scaleLabels = new Hashtable<Integer, JLabel>();
-		scaleLabels.put(0, new JLabel("0.0"));
-		scaleLabels.put(5, new JLabel("0.5"));
-		scaleLabels.put(10, new JLabel("1.0"));
-		scaleSlider.setLabelTable(scaleLabels);
 		scaleSlider.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent ce) {
