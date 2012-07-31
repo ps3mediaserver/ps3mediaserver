@@ -19,7 +19,6 @@
 package net.pms.encoders;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.debug.FormDebugPanel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
@@ -62,7 +61,6 @@ public class VLCVideo extends Player {
 	protected JTextField subtitlePri;
 	protected JCheckBox subtitleEnabled;
 	protected JTextField scale;
-	protected final double scaleDefault = 1.0;
 	protected JCheckBox codecOverride;
 	protected JTextField codecVideo;
 	protected JTextField codecAudio;
@@ -176,7 +174,7 @@ public class VLCVideo extends Player {
 		String audioCodec;
 		String container;
 		String extraParams;
-		List<String> extraTrans = new ArrayList();
+		List<String> extraTrans = new ArrayList<String>();
 		int sampleRate;
 	}
 
@@ -402,7 +400,7 @@ public class VLCVideo extends Player {
 		mainPanel.append(Messages.getString("VlcTrans.11"));
 		FormLayout scaleLayout = new FormLayout("pref,3dlu,pref", "");
 		DefaultFormBuilder scalePanel = new DefaultFormBuilder(scaleLayout);
-		double startingScale = (pmsconfig.getVlcScale() == null) ? scaleDefault : Double.valueOf(pmsconfig.getVlcScale());
+		double startingScale = Double.valueOf(pmsconfig.getVlcScale());
 		scalePanel.append(scale = new JTextField(String.valueOf(startingScale)));
 		final JSlider scaleSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) (startingScale * 10));
 		scalePanel.append(scaleSlider);
