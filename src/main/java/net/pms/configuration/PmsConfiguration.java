@@ -2379,7 +2379,7 @@ public class PmsConfiguration {
 	}
 	
 	public String getVlcSampleRate() {
-		return getString(KEY_VLC_SAMPLE_RATE, null);
+		return getString(KEY_VLC_SAMPLE_RATE, "48000");
 	}
 	
 	public void setVlcSampleRate(String value) {

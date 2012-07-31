@@ -68,7 +68,6 @@ public class VLCVideo extends Player {
 	protected JCheckBox experimentalCodecs;
 	protected JCheckBox audioSyncEnabled;
 	protected JTextField sampleRate;
-	protected final int sampleRateDefault = 48000;
 	protected JCheckBox sampleRateOverride;
 	protected JTextField extraParams;
 
@@ -160,8 +159,6 @@ public class VLCVideo extends Player {
 		//Audio sample rate handling
 		if (sampleRateOverride.isSelected())
 			config.sampleRate = Integer.valueOf(sampleRate.getText());
-		else
-			config.sampleRate = sampleRateDefault;
 
 		//This has caused garbled audio, so only enable when told to
 		if (audioSyncEnabled.isSelected())
@@ -421,7 +418,6 @@ public class VLCVideo extends Player {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				String typed = scale.getText();
-				scaleSlider.setValue(0);
 				if (!typed.matches("\\d\\.\\d"))
 					return;
 				double value = Double.parseDouble(typed);
