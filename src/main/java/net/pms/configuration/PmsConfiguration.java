@@ -2363,7 +2363,7 @@ public class PmsConfiguration {
 	}
 	
 	public String getVlcScale() {
-		return getString(KEY_VLC_SCALE, null);
+		return getString(KEY_VLC_SCALE, "1.0");
 	}
 	
 	public void setVlcScale(String value) {

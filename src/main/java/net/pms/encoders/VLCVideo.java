@@ -395,14 +395,14 @@ public class VLCVideo extends Player {
 		});
 
 		//Developer stuff. Theoretically is temporary 
-		mainPanel.appendSeparator("Advanced Settings");
+		mainPanel.appendSeparator(Messages.getString("VlcTrans.10"));
 
 		//Add scale as a subpanel because it has an awkward layout
-		mainPanel.append("Video scale: ");
+		mainPanel.append(Messages.getString("VlcTrans.11"));
 		FormLayout scaleLayout = new FormLayout("pref,3dlu,pref", "");
 		DefaultFormBuilder scalePanel = new DefaultFormBuilder(scaleLayout);
 		scalePanel.append(scale = new JTextField(pmsconfig.getVlcScale()));
-		final JSlider scaleSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) (Integer.valueOf(pmsconfig.getVlcScale()) * 10));
+		final JSlider scaleSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) (Double.valueOf(pmsconfig.getVlcScale()) * 10));
 		scalePanel.append(scaleSlider);
 		Hashtable<Integer, JLabel> scaleLabels = new Hashtable<Integer, JLabel>();
 		scaleLabels.put(0, new JLabel("0.0"));
@@ -422,10 +422,10 @@ public class VLCVideo extends Player {
 			public void keyReleased(KeyEvent e) {
 				String typed = scale.getText();
 				scaleSlider.setValue(0);
-				if (!typed.matches("\\d+") || typed.length() > 3)
+				if (!typed.matches("\\d\\.\\d"))
 					return;
-				int value = Integer.parseInt(typed) * 10;
-				scaleSlider.setValue(value);
+				double value = Double.parseDouble(typed);
+				scaleSlider.setValue( (int) (value * 10));
 				pmsconfig.setVlcScale(String.valueOf(value));
 			}
 		});
@@ -440,8 +440,8 @@ public class VLCVideo extends Player {
 		codecLayout.setRowGroups(new int[][]{{1, 3}});
 		DefaultFormBuilder codecPanel = new DefaultFormBuilder(codecLayout);
 		CellConstraints cc = new CellConstraints();
-		codecPanel.add(new JLabel("VLC Codecs"), cc.xywh(1, 1, 1, 3));
-		codecOverride = new JCheckBox("Override codec autodetection", pmsconfig.getVlcCodecOverride());
+		codecPanel.add(new JLabel(Messages.getString("VlcTrans.12")), cc.xywh(1, 1, 1, 3));
+		codecOverride = new JCheckBox(Messages.getString("VlcTrans.13"), pmsconfig.getVlcCodecOverride());
 		codecPanel.add(codecOverride, cc.xyw(3, 1, 3));
 		codecOverride.addItemListener(new ItemListener() {
 			@Override
@@ -449,7 +449,7 @@ public class VLCVideo extends Player {
 				pmsconfig.setVlcCodecOverride(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
-		codecPanel.addLabel("Video codec: ", cc.xy(3, 3));
+		codecPanel.addLabel(Messages.getString("VlcTrans.14"), cc.xy(3, 3));
 		codecPanel.add(codecVideo = new JTextField(pmsconfig.getVlcCodecVideo()), cc.xy(5, 3));
 		codecVideo.addKeyListener(new KeyAdapter() {
 			@Override
@@ -457,7 +457,7 @@ public class VLCVideo extends Player {
 				pmsconfig.setVlcCodecVideo(codecVideo.getText());
 			}
 		});
-		codecPanel.addLabel("Audio codec: ", cc.xy(7, 3));
+		codecPanel.addLabel(Messages.getString("VlcTrans.15"), cc.xy(7, 3));
 		codecPanel.add(codecAudio = new JTextField(pmsconfig.getVlcCodecAudio()), cc.xy(9, 3));
 		codecAudio.addKeyListener(new KeyAdapter() {
 			@Override
@@ -465,7 +465,7 @@ public class VLCVideo extends Player {
 				pmsconfig.setVlcCodecAudio(codecAudio.getText());
 			}
 		});
-		codecPanel.addLabel("Container: ", cc.xy(11, 3));
+		codecPanel.addLabel(Messages.getString("VlcTrans.16"), cc.xy(11, 3));
 		codecPanel.add(codecContainer = new JTextField(pmsconfig.getVlcCodecContainer()), cc.xy(13, 3));
 		codecContainer.addKeyListener(new KeyAdapter() {
 			@Override
@@ -474,10 +474,10 @@ public class VLCVideo extends Player {
 			}
 		});
 		toggleCodecVisibility(pmsconfig.getVlcCodecOverride());
-		codecOverride.addChangeListener(new ChangeListener() {
+		codecOverride.addItemListener(new ItemListener() {
 			@Override
-			public void stateChanged(ChangeEvent e) {
-				toggleCodecVisibility(((JCheckBox) e.getSource()).isSelected());
+			public void itemStateChanged(ItemEvent e) {
+				toggleCodecVisibility(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
 		mainPanel.append(codecPanel.getPanel(), 7);
@@ -485,20 +485,21 @@ public class VLCVideo extends Player {
 		//Audio sample rate
 		FormLayout sampleRateLayout = new FormLayout("right:pref, 3dlu, right:pref, 3dlu, right:pref, 3dlu, left:pref", "");
 		DefaultFormBuilder sampleRatePanel = new DefaultFormBuilder(sampleRateLayout);
-		sampleRateOverride = new JCheckBox("Override auto-detection", pmsconfig.getVlcSampleRateOverride());
-		sampleRatePanel.append("Audio Sample Rate", sampleRateOverride);
+		sampleRateOverride = new JCheckBox(Messages.getString("VlcTrans.17"), pmsconfig.getVlcSampleRateOverride());
+		sampleRatePanel.append(Messages.getString("VlcTrans.18"), sampleRateOverride);
 		sampleRate = new JTextField(pmsconfig.getVlcSampleRate(), 8);
+		sampleRate.setEnabled(pmsconfig.getVlcSampleRateOverride());
 		sampleRate.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				pmsconfig.setVlcSampleRate(sampleRate.getText());
 			}
 		});
-		sampleRatePanel.append("<html>Sample rate (Hz). Try:<br>48000<br>44100 (unstable)", sampleRate);
-		sampleRateOverride.addChangeListener(new ChangeListener() {
+		sampleRatePanel.append(Messages.getString("VlcTrans.19"), sampleRate);
+		sampleRateOverride.addItemListener(new ItemListener() {
 			@Override
-			public void stateChanged(ChangeEvent e) {
-				boolean checked = ((JCheckBox) e.getSource()).isSelected();
+			public void itemStateChanged(ItemEvent e) {
+				boolean checked = e.getStateChange() == ItemEvent.SELECTED;
 				pmsconfig.setVlcSampleRateOverride(checked);
 				sampleRate.setEnabled(checked);
 			}
@@ -507,7 +508,7 @@ public class VLCVideo extends Player {
 
 		//Extra options
 		mainPanel.nextLine();
-		mainPanel.append("Extra parameters: ", extraParams = new JTextField(), 5);
+		mainPanel.append(Messages.getString("VlcTrans.20"), extraParams = new JTextField(), 5);
 
 		return mainPanel.getPanel();
 	}
