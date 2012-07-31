@@ -267,12 +267,15 @@ public class VLCVideo extends Player {
 		//File needs to be given before sout, otherwise vlc complains
 		cmdList.add(fileName);
 
+		//Huge fake track id that shouldn't conflict with any real subtitle or audio id. Hopefully.
+		String disableSuffix = "track=214748361";
+		
 		//Handle audio language
 		if (params.aid != null)
 			//User specified language at the client, acknowledge it
 			if (params.aid.getLang() == null || params.aid.getLang().equals("und"))
-				//VLC doesn't understand und, but does understand none
-				cmdList.add("--audio-language=none");
+				//VLC doesn't understand und, but does understand a non existant track
+				cmdList.add("--audio-" + disableSuffix);
 			else
 				//Load by ID (better)
 				cmdList.add("--audio-track=" + params.aid.getId());
@@ -284,8 +287,8 @@ public class VLCVideo extends Player {
 		if (params.sid != null)
 			//User specified language at the client, acknowledge it
 			if (params.sid.getLang() == null || params.sid.getLang().equals("und"))
-				//VLC doesn't understand und, but does understand none
-				cmdList.add("--sub-language=none");
+				//VLC doesn't understand und, but does understand a non existant track
+				cmdList.add("--sub-" + disableSuffix);
 			else
 				//Load by ID (better)
 				cmdList.add("--sub-track=" + params.sid.getId());
@@ -293,7 +296,7 @@ public class VLCVideo extends Player {
 			//Not specified, use language from GUI if enabled
 			cmdList.add("--sub-language=" + subtitlePri.getText());
 		else
-			cmdList.add("--sub-language=none");
+			cmdList.add("--sub-" + disableSuffix);
 
 		//Skip forward if nessesary
 		if (params.timeseek != 0) {
