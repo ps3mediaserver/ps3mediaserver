@@ -156,14 +156,15 @@ public class VLCVideo extends Player {
 			config.videoCodec = "mp2v";
 			config.audioCodec = "mp2a"; //NOTE: a52 sometimes causes audio to stop after ~5 mins
 			config.container = type;
-		}
+		} else
+			throw new RuntimeException("Unknown encoding profile");
 
 		//Audio sample rate handling
 		if (sampleRateOverride.isSelected())
 			config.sampleRate = Integer.valueOf(sampleRate.getText());
 		else
 			config.sampleRate = sampleRateDefault;
-		
+
 		//This has caused garbled audio, so only enable when told to
 		if (audioSyncEnabled.isSelected())
 			config.extraTrans.add("audio-sync");
@@ -215,7 +216,7 @@ public class VLCVideo extends Player {
 
 		//Hardcode subtitles into video
 		args.add("soverlay");
-		
+
 		//Add extra args
 		args.addAll(config.extraTrans);
 
@@ -401,8 +402,9 @@ public class VLCVideo extends Player {
 		mainPanel.append(Messages.getString("VlcTrans.11"));
 		FormLayout scaleLayout = new FormLayout("pref,3dlu,pref", "");
 		DefaultFormBuilder scalePanel = new DefaultFormBuilder(scaleLayout);
-		scalePanel.append(scale = new JTextField(pmsconfig.getVlcScale()));
-		final JSlider scaleSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) (Double.valueOf(pmsconfig.getVlcScale()) * 10));
+		double startingScale = (pmsconfig.getVlcScale() == null) ? scaleDefault : Double.valueOf(pmsconfig.getVlcScale());
+		scalePanel.append(scale = new JTextField(String.valueOf(startingScale)));
+		final JSlider scaleSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) (startingScale * 10));
 		scalePanel.append(scaleSlider);
 		Hashtable<Integer, JLabel> scaleLabels = new Hashtable<Integer, JLabel>();
 		scaleLabels.put(0, new JLabel("0.0"));
