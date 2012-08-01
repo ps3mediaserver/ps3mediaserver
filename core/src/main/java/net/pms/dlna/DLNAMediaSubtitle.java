@@ -61,8 +61,16 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 		return !isEmbedded();
 	}
 
+	@Override
 	public String toString() {
-		return "Sub: " + (type != null ? type.getDescription() : "null") + " / lang: " + getLang() + " / flavor: " + flavor + " / ID: " + getId() + " / FILE: " + (externalFile != null ? externalFile.getAbsolutePath() : "-");
+		return "DLNAMediaSubtitle{" +
+				"id=" + getId() +
+				", type=" + type +
+				", flavor='" + flavor + '\'' +
+				", lang='" + getLang() + '\'' +
+				", externalFile=" + externalFile +
+				", externalFileCharacterSet='" + externalFileCharacterSet + '\'' +
+				'}';
 	}
 
 	/**
@@ -106,6 +114,14 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	 */
 	public void setFlavor(String flavor) {
 		this.flavor = flavor;
+	}
+
+	/**
+	 * @deprecated use FileUtil.convertFileFromUtf16ToUtf8() for UTF-16 -> UTF-8 conversion.
+	 */
+	@Deprecated
+	public File getPlayableExternalFile() {
+		return getExternalFile();
 	}
 
 	/**

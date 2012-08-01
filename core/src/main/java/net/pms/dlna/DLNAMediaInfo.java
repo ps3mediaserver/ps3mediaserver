@@ -50,6 +50,7 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+
 /**
  * This class keeps track of scanned MediaInfo library information.
  * 
@@ -223,8 +224,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 */
 	@Deprecated
 	public boolean encrypted;
-	private int thumbnailSeekPos = -1;
-	
+	private int thumbnailSeekPos = -1; 	
 
 	/**
 	 * Configure this media info based on the renderer possibilities. It should have been named as 'configureMuxable'.
@@ -1264,7 +1264,7 @@ public class DLNAMediaInfo implements Cloneable {
 			logger.debug("Caught exception", e);
 		}
 		return returnData;
-	}
+	}         
 	
 	int getThumbnailSeekPos() {
 	    return thumbnailSeekPos >= 0 ? thumbnailSeekPos : PMS.getConfiguration().getThumbnailSeekPos();	    
@@ -1481,8 +1481,12 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @deprecated use getAudioTracksList() instead
 	 */
 	@Deprecated
-	public List<DLNAMediaAudio> getAudioCodes() {
-		return getAudioTracksList();
+	public ArrayList<DLNAMediaAudio> getAudioCodes() {
+		if(audioTracks instanceof ArrayList) {
+			return (ArrayList<DLNAMediaAudio>) audioTracks;
+		} else {
+			return new ArrayList<DLNAMediaAudio>();
+		}
 	}
 
 	/**
@@ -1515,16 +1519,20 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @deprecated use getSubtitleTracksList() instead
 	 */
 	@Deprecated
-	public List<DLNAMediaSubtitle> getSubtitlesCodes() {
-		return getSubtitleTracksList();
+	public ArrayList<DLNAMediaSubtitle> getSubtitlesCodes() {
+		if(subtitleTracks instanceof ArrayList) {
+			return (ArrayList<DLNAMediaSubtitle>) subtitleTracks;
+		} else {
+			return new ArrayList<DLNAMediaSubtitle>();
+		}
 	}
 
 	/**
-	 * @param list the subtitleTracks to set
+	 * @param subtitleTracks the subtitleTracks to set
 	 * @since 1.60
 	 */
-	public void setSubtitleTracksList(List<DLNAMediaSubtitle> list) {
-		this.subtitleTracks = list;
+	public void setSubtitleTracksList(List<DLNAMediaSubtitle> subtitleTracks) {
+		this.subtitleTracks = subtitleTracks;
 	}
 
 	/**
