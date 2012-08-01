@@ -2205,7 +2205,7 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
-		if ((pcm || dtsRemux) || (configuration.isMencoderNoOutOfSync() && !disableMc0AndNoskip)) {
+		if ((pcm || dtsRemux || ac3Remux) || (configuration.isMencoderNoOutOfSync() && !disableMc0AndNoskip)) {
 			if (configuration.isFix25FPSAvMismatch()) {
 				cmdList.add("-mc");
 				cmdList.add("0.005");
