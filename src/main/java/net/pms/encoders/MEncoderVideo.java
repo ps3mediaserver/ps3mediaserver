@@ -1062,7 +1062,7 @@ public class MEncoderVideo extends Player {
 		defaultArgsList.add((ac3Remux || dtsRemux) ? "copy" : (pcm ? "pcm" : "lavc"));
 
 		defaultArgsList.add("-of");
-		defaultArgsList.add((wmv || mpegts) ? "lavf" : ((pcm && avisynth()) ? "avi" : ((pcm || dtsRemux || ac3Remux) ? "rawvideo" : "mpeg")));
+		defaultArgsList.add((wmv || mpegts) ? "lavf" : ((pcm && avisynth()) ? "avi" : ((pcm || dtsRemux) ? "rawvideo" : "mpeg")));
 
 		if (wmv) {
 			defaultArgsList.add("-lavfopts");
@@ -1077,7 +1077,7 @@ public class MEncoderVideo extends Player {
 
 
 		defaultArgsList.add("-ovc");
-		defaultArgsList.add((ac3Remux && ovccopy) ? "copy" : "lavc");
+		defaultArgsList.add(ovccopy ? "copy" : "lavc");
 
 		String[] defaultArgsArray = new String[defaultArgsList.size()];
 		defaultArgsList.toArray(defaultArgsArray);
@@ -1778,7 +1778,7 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
-		if (!dtsRemux && !pcm && !ac3Remux && !avisynth() && params.aid != null && media.getAudioTracksList().size() > 1) {
+		if (!dtsRemux && !pcm && !avisynth() && params.aid != null && media.getAudioTracksList().size() > 1) {
 			cmdList.add("-aid");
 			boolean lavf = false; // TODO Need to add support for LAVF demuxing
 			cmdList.add("" + (lavf ? params.aid.getId() + 1 : params.aid.getId()));
@@ -2205,7 +2205,7 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
-		if ((pcm || dtsRemux || ac3Remux) || (configuration.isMencoderNoOutOfSync() && !disableMc0AndNoskip)) {
+		if ((pcm || dtsRemux) || (configuration.isMencoderNoOutOfSync() && !disableMc0AndNoskip)) {
 			if (configuration.isFix25FPSAvMismatch()) {
 				cmdList.add("-mc");
 				cmdList.add("0.005");
@@ -2245,7 +2245,8 @@ public class MEncoderVideo extends Player {
 
 		ProcessWrapperImpl pw = null;
 
-		if (pcm || dtsRemux || ac3Remux) {
+		if (pcm || dtsRemux) {
+			// transcode video, demux audio, remux with tsmuxer
 			boolean channels_filter_present = false;
 
 			for (String s : cmdList) {
@@ -2489,7 +2490,7 @@ public class MEncoderVideo extends Player {
 				cmdList.add("statusline=2");
 				params.input_pipes = new PipeProcess[2];
 			} else {
-				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dtsRemux || ac3Remux) ? null : params);
+				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dtsRemux) ? null : params);
 				params.input_pipes[0] = pipe;
 				cmdList.add("-o");
 				cmdList.add(pipe.getInputPipe());
