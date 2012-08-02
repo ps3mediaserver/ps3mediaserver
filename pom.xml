@@ -213,19 +213,6 @@
 						</artifactItem>
 
 						<artifactItem>
-							<groupId>de.innosystec</groupId>
-							<artifactId>java-unrar</artifactId>
-							<version>${junrar-version}</version>
-							<packaging>jar</packaging>
-							<install>true</install>
-							<force>false</force>
-							<downloadUrl>http://cloud.github.com/downloads/edmund-wagner/junrar/java-unrar-${junrar-version}.zip</downloadUrl>
-							<checksum>1e621c27dba2feeac400a96042f55775dc47f990</checksum>
-							<extractFile>java-unrar-${junrar-version}/java-unrar-${junrar-version}.jar</extractFile>
-							<extractFileChecksum>111074096b6bdce79fa09842143c336a5cf64fcb</extractFileChecksum>
-						</artifactItem>
-
-						<artifactItem>
 							<groupId>mediautil</groupId>
 							<artifactId>mediautil</artifactId>
 							<version>${mediautil-version}</version>

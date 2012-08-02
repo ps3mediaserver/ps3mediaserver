@@ -11,6 +11,9 @@ Changelog:
     Localized #--TRANSCODE--# folder name
     Make example PMS.conf behave more like built-in defaults
     Restore maximum buffer size to 600 MB (was 400 MB)
+    Prevent image distortion on some DLNA clients with "Keep AC3 track" option enabled
+    Don't show entries for disabled engines in transcode folder
+    Allow GUI Traces to Autoscroll when at bottom (thanks LordQuackstar!)
     PMS.conf:
         - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
 

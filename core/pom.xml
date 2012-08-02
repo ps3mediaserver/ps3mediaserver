@@ -66,6 +66,7 @@
 		<jna-version>3.4.0</jna-version>
 
 		<slf4j-version>1.6.4</slf4j-version>
+		<junrar-version>0.6.1</junrar-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.external-resources>${project.basedir}/src/main/external-resources</project.external-resources>
 		<project.binaries>${project.basedir}/target/bin</project.binaries>
@@ -134,6 +135,12 @@
 			</snapshots>
 		</repository>
 
+        <!-- JUnRar by Edmund Wagner -->
+        <repository>
+            <id>JUnRar mirror repository</id>
+            <name>JUnRar mirror repository</name>
+            <url>https://junrar-repository.googlecode.com/svn/deploy/</url>
+        </repository>
 	</repositories>
 
 	<dependencies>
@@ -321,12 +328,11 @@
 			<version>${jgoodies-looks-version}</version>
 		</dependency>
 
-		<!-- XXX: not Mavenized: http://github.com/edmund-wagner/junrar -->
-		<dependency>
-			<groupId>de.innosystec</groupId>
-			<artifactId>java-unrar</artifactId>
-			<version>${junrar-version}</version>
-		</dependency>
+        <dependency>
+            <groupId>com.github.junrar</groupId>
+            <artifactId>junrar</artifactId>
+            <version>${junrar-version}</version>
+        </dependency>
 
 		<!-- XXX: not Mavenized: https://code.google.com/p/cuelib/ -->
 		<dependency>

@@ -18,8 +18,8 @@
  */
 package net.pms.dlna;
 
-import de.innosystec.unrar.Archive;
-import de.innosystec.unrar.rarfile.FileHeader;
+import com.github.junrar.Archive;
+import com.github.junrar.rarfile.FileHeader;
 import net.pms.formats.Format;
 import net.pms.util.FileUtil;
 import org.slf4j.Logger;
