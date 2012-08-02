@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
+import javax.swing.text.DefaultCaret;
 
 public class TracesTab {
 	private static final Logger logger = LoggerFactory.getLogger(TracesTab.class);
@@ -71,6 +72,7 @@ public class TracesTab {
 		}
 	}
 	private JTextArea jList;
+	protected JScrollPane jListPane;
 
 	TracesTab(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -78,6 +80,19 @@ public class TracesTab {
 
 	public JTextArea getList() {
 		return jList;
+	}
+	
+	public void append(String msg) {
+		getList().append(msg);
+		final JScrollBar vbar = jListPane.getVerticalScrollBar();
+		// if scroll bar already was at the bottom we schedule
+		// a new scroll event to again scroll to the bottom
+		if (vbar.getMaximum() == vbar.getValue() + vbar.getVisibleAmount())
+			EventQueue.invokeLater (new Runnable() {
+				public void run () {
+					vbar.setValue (vbar.getMaximum ());
+				}
+			});
 	}
 
 	public JComponent build() {
@@ -115,8 +130,8 @@ public class TracesTab {
 			popup,
 			jList));
 
-		JScrollPane pane = new JScrollPane(jList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		builder.add(pane, cc.xyw(1, 1, 2));
+		jListPane = new JScrollPane(jList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		builder.add(jListPane, cc.xyw(1, 1, 2));
 
 		// Add buttons opening log files
 		JPanel pLogFileButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
