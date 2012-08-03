@@ -30,13 +30,13 @@ import static org.fest.assertions.Assertions.assertThat;
 public class SubtitleTypeTest {
 	@Test
 	public void testValueOfFileExtension_matchingExtensions() throws Exception {
-		assertThat(getSubtitleTypeByFileExtension("srt")).isEqualTo(SUBRIP);
-		assertThat(getSubtitleTypeByFileExtension("txt")).isEqualTo(TEXT);
-		assertThat(getSubtitleTypeByFileExtension("sub")).isEqualTo(MICRODVD);
-		assertThat(getSubtitleTypeByFileExtension("smi")).isEqualTo(SAMI);
-		assertThat(getSubtitleTypeByFileExtension("ssa")).isEqualTo(ASS);
-		assertThat(getSubtitleTypeByFileExtension("ass")).isEqualTo(ASS);
-		assertThat(getSubtitleTypeByFileExtension("idx")).isEqualTo(VOBSUB);
+		assertThat(valueOfFileExtension("srt")).isEqualTo(SUBRIP);
+		assertThat(valueOfFileExtension("txt")).isEqualTo(TEXT);
+		assertThat(valueOfFileExtension("sub")).isEqualTo(MICRODVD);
+		assertThat(valueOfFileExtension("smi")).isEqualTo(SAMI);
+		assertThat(valueOfFileExtension("ssa")).isEqualTo(ASS);
+		assertThat(valueOfFileExtension("ass")).isEqualTo(ASS);
+		assertThat(valueOfFileExtension("idx")).isEqualTo(VOBSUB);
 	}
 
 	@Test
@@ -95,8 +95,8 @@ public class SubtitleTypeTest {
 
 	@Test
 	public void testValueOfFileExtension_nullOrBlankExtension() throws Exception {
-		assertThat(getSubtitleTypeByFileExtension(null)).isEqualTo(UNKNOWN);
-		assertThat(getSubtitleTypeByFileExtension("")).isEqualTo(UNKNOWN);
+		assertThat(valueOfFileExtension(null)).isEqualTo(UNKNOWN);
+		assertThat(valueOfFileExtension("")).isEqualTo(UNKNOWN);
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class SubtitleTypeTest {
 
 	@Test
 	public void testValueOfFileExtension_unknownExtension() throws Exception {
-		assertThat(getSubtitleTypeByFileExtension("xyz")).isEqualTo(UNKNOWN);
+		assertThat(valueOfFileExtension("xyz")).isEqualTo(UNKNOWN);
 	}
 
 	@Test
@@ -117,9 +117,9 @@ public class SubtitleTypeTest {
 
 	@Test
 	public void testValueOfFileExtension_extensionCaseInsensitivity() throws Exception {
-		assertThat(getSubtitleTypeByFileExtension("ssA")).isEqualTo(ASS);
-		assertThat(getSubtitleTypeByFileExtension("SSA")).isEqualTo(ASS);
-		assertThat(getSubtitleTypeByFileExtension("sSa")).isEqualTo(ASS);
+		assertThat(valueOfFileExtension("ssA")).isEqualTo(ASS);
+		assertThat(valueOfFileExtension("SSA")).isEqualTo(ASS);
+		assertThat(valueOfFileExtension("sSa")).isEqualTo(ASS);
 	}
 
 	@Test
