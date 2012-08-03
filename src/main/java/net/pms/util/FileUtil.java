@@ -153,7 +153,7 @@ public class FileUtil {
 								sub.setId(100 + (media == null ? 0 : media.getSubtitleTracksList().size())); // fake id, not used
 								if (code.length() == 0 || !Iso639.getCodeList().contains(code)) {
 									sub.setLang(DLNAMediaSubtitle.UND);
-									sub.setType(SubtitleType.valueOfFileExtension(ext));
+									sub.setType(SubtitleType.getSubtitleTypeByFileExtension(ext));
 									if (code.length() > 0) {
 										sub.setFlavor(code);
 										if (sub.getFlavor().contains("-")) {
@@ -167,7 +167,7 @@ public class FileUtil {
 									}
 								} else {
 									sub.setLang(code);
-									sub.setType(SubtitleType.valueOfFileExtension(ext));
+									sub.setType(SubtitleType.getSubtitleTypeByFileExtension(ext));
 								}
 								try {
 									sub.setExternalFile(f);

@@ -89,7 +89,7 @@ public enum SubtitleType {
 		return subtitleType;
 	}
 
-	public static SubtitleType valueOfFileExtension(String fileExtension) {
+	public static SubtitleType getSubtitleTypeByFileExtension(String fileExtension) {
 		if (isBlank(fileExtension)) {
 			return UNKNOWN;
 		}
