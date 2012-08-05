@@ -51,7 +51,8 @@ public abstract class Format implements Cloneable {
 		RAW,
 		TIF,
 		WAV,
-		WEB
+		WEB,
+		CUSTOM
 	}
 
 	public int getType() {
