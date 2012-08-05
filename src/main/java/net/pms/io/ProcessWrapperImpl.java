@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	private static final Logger logger = LoggerFactory.getLogger(ProcessWrapperImpl.class);
@@ -128,6 +129,11 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			}
 			if (params.workDir != null && params.workDir.isDirectory()) {
 				pb.directory(params.workDir);
+			}
+			if (params.env != null && !params.env.isEmpty()) {
+				Map<String,String> environment = pb.environment();
+				params.env.put("PATH", params.env.get("PATH") + File.pathSeparator + environment.get("PATH"));
+				environment.putAll(params.env);
 			}
 			process = pb.start();
 			PMS.get().currentProcesses.add(process);
