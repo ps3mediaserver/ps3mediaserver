@@ -26,10 +26,12 @@ import net.pms.dlna.IPushOutput;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Map;
 
 public class OutputParams {
 	public File outputFile;
 	public File workDir;
+	public Map<String,String> env;
 	public double minFileSize;
 	public double minBufferSize;
 	public double maxBufferSize;
@@ -76,6 +78,7 @@ public class OutputParams {
 		}
 		timeseek = 0;
 		outputFile = null;
+		env = null;
 	}
 
 	/**
@@ -99,6 +102,6 @@ public class OutputParams {
 			+ ", outputFile=" + outputFile + ", output_pipes=" + Arrays.toString(output_pipes)
 			+ ", secondread_minsize=" + secondread_minsize + ", shift_scr=" + shift_scr + ", sid=" + sid
 			+ ", stdin=" + stdin + ", timeend=" + timeend + ", timeseek=" + timeseek + ", toFrame=" + toFrame
-			+ ", waitbeforestart=" + waitbeforestart + ", workDir=" + workDir + "]";
+			+ ", waitbeforestart=" + waitbeforestart + ", workDir=" + workDir + ", env=" + env + "]";
 	}
 }

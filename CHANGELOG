@@ -14,6 +14,7 @@ Changelog:
     Prevent image distortion on some DLNA clients with "Keep AC-3 track" option enabled
     Don't show entries for disabled engines in #--TRANSCODE--# folder
     Allow Traces tab panel to auto-scroll (thanks, LordQuackstar!)
+    Revert changes to SMP-N100.conf that conflict with Sony Blu-ray players and break MKV support (thanks, mrw1986)
     PMS.conf:
         - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
 
