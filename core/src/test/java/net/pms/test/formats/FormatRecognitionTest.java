@@ -24,7 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
@@ -175,7 +177,7 @@ public class FormatRecognitionTest {
 		info.setMimeType(HTTPResource.AUDIO_MP3_TYPEMIME);
 		DLNAMediaAudio audio = new DLNAMediaAudio();
 		audio.getAudioProperties().setNumberOfChannels(2);
-		ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
+		List<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
 		audioCodes.add(audio);
 		info.setAudioTracksList(audioCodes);
 		Format format = new MP3();
@@ -206,7 +208,7 @@ public class FormatRecognitionTest {
 		DLNAMediaAudio audio = new DLNAMediaAudio();
 		audio.setCodecA("ac3");
 		audio.getAudioProperties().setNumberOfChannels(5);
-		ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
+		List<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
 		audioCodes.add(audio);
 		info.setAudioTracksList(audioCodes);
 		info.setCodecV("mp4");
@@ -238,7 +240,7 @@ public class FormatRecognitionTest {
 		DLNAMediaAudio audio = new DLNAMediaAudio();
 		audio.setCodecA("ac3");
 		audio.getAudioProperties().setNumberOfChannels(5);
-		ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
+		List<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
 		audioCodes.add(audio);
 		info.setAudioTracksList(audioCodes);
 		info.setCodecV("mp4");
@@ -398,7 +400,7 @@ public class FormatRecognitionTest {
 		// Construct media info exactly as VirtualVideoAction does
 		DLNAMediaInfo info = new DLNAMediaInfo();
 		info.setContainer("mpegps");
-		ArrayList<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
+		List<DLNAMediaAudio> audioCodes = new ArrayList<DLNAMediaAudio>();
 		info.setAudioTracksList(audioCodes);
 		info.setMimeType("video/mpeg");
 		info.setCodecV("mpeg2");

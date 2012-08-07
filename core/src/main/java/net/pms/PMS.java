@@ -435,6 +435,9 @@ public class PMS {
 		// Initialize the plugins before starting the server
 		PluginsFactory.initializePlugins();
 		
+
+
+
 		boolean binding = false;
 		try {
 			binding = server.start();
