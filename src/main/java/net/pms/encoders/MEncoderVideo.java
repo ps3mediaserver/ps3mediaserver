@@ -33,6 +33,7 @@ import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.*;
 import net.pms.formats.Format;
 import net.pms.formats.v2.SubtitleType;
+import net.pms.formats.v2.SubtitleUtils;
 import net.pms.io.*;
 import net.pms.network.HTTPResource;
 import net.pms.newgui.FontFileFilter;
@@ -40,6 +41,7 @@ import net.pms.newgui.LooksFrame;
 import net.pms.newgui.MyComboBoxModel;
 import net.pms.newgui.RestrictedFileSystemView;
 import net.pms.util.CodecUtil;
+import net.pms.util.FileUtil;
 import net.pms.util.FormLayoutUtil;
 import net.pms.util.ProcessUtil;
 import org.slf4j.Logger;
@@ -55,7 +57,7 @@ import java.util.*;
 import java.util.List;
 
 import static net.pms.formats.v2.AudioUtils.getLPCMChannelMappingForMencoder;
-import static org.apache.commons.lang.BooleanUtils.*;
+import static org.apache.commons.lang.BooleanUtils.isTrue;
 import static org.apache.commons.lang.StringUtils.*;
 
 public class MEncoderVideo extends Player {
@@ -1060,7 +1062,7 @@ public class MEncoderVideo extends Player {
 		defaultArgsList.add((ac3Remux || dtsRemux) ? "copy" : (pcm ? "pcm" : "lavc"));
 
 		defaultArgsList.add("-of");
-		defaultArgsList.add((wmv || mpegts) ? "lavf" : ((pcm && avisynth()) ? "avi" : ((pcm || dtsRemux || ac3Remux) ? "rawvideo" : "mpeg")));
+		defaultArgsList.add((wmv || mpegts) ? "lavf" : ((pcm && avisynth()) ? "avi" : ((pcm || dtsRemux) ? "rawvideo" : "mpeg")));
 
 		if (wmv) {
 			defaultArgsList.add("-lavfopts");
@@ -1075,7 +1077,7 @@ public class MEncoderVideo extends Player {
 
 
 		defaultArgsList.add("-ovc");
-		defaultArgsList.add((ac3Remux && ovccopy) ? "copy" : "lavc");
+		defaultArgsList.add(ovccopy ? "copy" : "lavc");
 
 		String[] defaultArgsArray = new String[defaultArgsList.size()];
 		defaultArgsList.toArray(defaultArgsArray);
@@ -1243,8 +1245,15 @@ public class MEncoderVideo extends Player {
 		setAudioAndSubs(fileName, media, params, configuration);
 		String externalSubtitlesFileName = null;
 
-		if (params.sid != null && params.sid.getPlayableExternalFile() != null) {
-			externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(params.sid.getPlayableExternalFile().getAbsolutePath());
+		if (params.sid != null && params.sid.isExternal()) {
+			if (params.sid.isExternalFileUtf16()) {
+				// convert UTF-16 -> UTF-8
+				File convertedSubtitles = new File(PMS.getConfiguration().getTempFolder(), "utf8_" + params.sid.getExternalFile().getName());
+				FileUtil.convertFileFromUtf16ToUtf8(params.sid.getExternalFile(), convertedSubtitles);
+				externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(convertedSubtitles.getAbsolutePath());
+			} else {
+				externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(params.sid.getExternalFile().getAbsolutePath());
+			}
 		}
 
 		InputFile newInput = new InputFile();
@@ -1370,12 +1379,14 @@ public class MEncoderVideo extends Player {
 			&& (params.mediaRenderer.isPS3() && params.aid.getAudioProperties().getNumberOfChannels() == 2)
 			&& (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
 
-        if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
+		final boolean isTSMuxerVideoEngineEnabled = PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry()).contains(TSMuxerVideo.ID);
+		final boolean mencoderAC3RemuxAudioDelayBug = (params.aid.getAudioProperties().getAudioDelay() != 0 && params.timeseek == 0);
+        if (!mencoderAC3RemuxAudioDelayBug && configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
 			// AC3 remux takes priority
 			ac3Remux = true;
 		} else {
 			// now check for DTS remux and LPCM streaming
-			dtsRemux = configuration.isDTSEmbedInPCM() &&
+			dtsRemux = isTSMuxerVideoEngineEnabled && configuration.isDTSEmbedInPCM() &&
 				(
 					!dvd ||
 					configuration.isMencoderRemuxMPEG2()
@@ -1383,7 +1394,7 @@ public class MEncoderVideo extends Player {
 				params.aid.isDTS() &&
 				!avisynth() &&
 				params.mediaRenderer.isDTSPlayable();
-			pcm = configuration.isMencoderUsePcm() &&
+			pcm = isTSMuxerVideoEngineEnabled && configuration.isMencoderUsePcm() &&
 				(
 					!dvd ||
 					configuration.isMencoderRemuxMPEG2()
@@ -1687,13 +1698,21 @@ public class MEncoderVideo extends Player {
 			}
 
 			// external subtitles file
-			if (params.sid.getPlayableExternalFile() != null) {
-				if (!params.sid.isExternalFileUtf8()) {
-					// append -subcp option for non UTF-8 external subtitles
+			if (params.sid.isExternal()) {
+				if (!params.sid.isExternalFileUtf()) {
+					String subcp = null;
+					// append -subcp option for non UTF external subtitles
 					if (isNotBlank(configuration.getMencoderSubCp())) {
-						sb.append("-subcp ").append(configuration.getMencoderSubCp()).append(" ");
+						// manual setting
+						subcp = configuration.getMencoderSubCp();
+					} else if (isNotBlank(SubtitleUtils.getSubCpOptionForMencoder(params.sid))) {
+						// autodetect charset (blank mencoder_subcp config option)
+						subcp = SubtitleUtils.getSubCpOptionForMencoder(params.sid);
+					}
+					if (isNotBlank(subcp)) {
+						sb.append("-subcp ").append(subcp).append(" ");
 						if (configuration.isMencoderSubFribidi()) {
-							sb.append("-fribidi-charset ").append(configuration.getMencoderSubCp()).append(" ");
+							sb.append("-fribidi-charset ").append(subcp).append(" ");
 						}
 					}
 				}
@@ -1761,7 +1780,7 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
-		if (!dtsRemux && !pcm && !ac3Remux && !avisynth() && params.aid != null && media.getAudioTracksList().size() > 1) {
+		if (!dtsRemux && !pcm && !avisynth() && params.aid != null && media.getAudioTracksList().size() > 1) {
 			cmdList.add("-aid");
 			boolean lavf = false; // TODO Need to add support for LAVF demuxing
 			cmdList.add("" + (lavf ? params.aid.getId() + 1 : params.aid.getId()));
@@ -1771,13 +1790,13 @@ public class MEncoderVideo extends Player {
 		 * TODO: Move the following block up with the rest of the
 		 * subtitle stuff
 		 */
-		if (externalSubtitlesFileName == null && params.sid != null) {
+		if (isBlank(externalSubtitlesFileName) && params.sid != null) {
 			cmdList.add("-sid");
 			cmdList.add("" + params.sid.getId());
-		} else if (externalSubtitlesFileName != null && !avisynth()) { // Trick necessary for MEncoder to skip the internal embedded track ?
+		} else if (isNotBlank(externalSubtitlesFileName) && !avisynth()) { // Trick necessary for MEncoder to skip the internal embedded track ?
 			cmdList.add("-sid");
 			cmdList.add("100");
-		} else if (externalSubtitlesFileName == null) { // Trick necessary for MEncoder to not display the internal embedded track
+		} else if (isBlank(externalSubtitlesFileName)) { // Trick necessary for MEncoder to not display the internal embedded track
 			cmdList.add("-subdelay");
 			cmdList.add("20000");
 		}
@@ -1807,7 +1826,7 @@ public class MEncoderVideo extends Player {
 		 * subtitle stuff
 		 */
 		// external subtitles file
-		if (!configuration.isMencoderDisableSubs() && !avisynth() && params.sid != null && params.sid.getPlayableExternalFile() != null) {
+		if (!configuration.isMencoderDisableSubs() && !avisynth() && params.sid != null && params.sid.isExternal()) {
 			if (params.sid.getType() == SubtitleType.VOBSUB) {
 				cmdList.add("-vobsub");
 				cmdList.add(externalSubtitlesFileName.substring(0, externalSubtitlesFileName.length() - 4));
@@ -1817,7 +1836,7 @@ public class MEncoderVideo extends Player {
 				cmdList.add("-sub");
 				cmdList.add(externalSubtitlesFileName.replace(",", "\\,")); // Commas in MEncoder separate multiple subtitle files
 
-				if (params.sid.isExternalFileUtf8()) {
+				if (params.sid.isExternalFileUtf()) {
 					// append -utf8 option for UTF-8 external subtitles
 					cmdList.add("-utf8");
 				}
@@ -2077,13 +2096,13 @@ public class MEncoderVideo extends Player {
 					} else if (expertOptions[i].equals("-nomux")) {
 						expertOptions[i] = REMOVE_OPTION;
 					} else if (expertOptions[i].equals("-mt")) {
-						// not an MEncoder option so remove it from cmdList.
+						// not an MEncoder option so remove it from exportOptions.
 						// multi-threaded MEncoder is used by default, so this is obsolete (TODO: Remove it from the description)
 						expertOptions[i] = REMOVE_OPTION;
 					} else if (expertOptions[i].equals("-ofps")) {
 						// replace the cmdList version with the expertOptions version i.e. remove the former
 						removeCmdListOption.put("-ofps", true);
-						// skip (i.e. leave unchanged) the value
+						// skip (i.e. leave unchanged) the exportOptions value
 						++i;
 					} else if (expertOptions[i].equals("-fps")) {
 						removeCmdListOption.put("-fps", true);
@@ -2149,12 +2168,13 @@ public class MEncoderVideo extends Player {
 
 				// pass 2: process cmdList
 				List<String> transformedCmdList = new ArrayList<String>();
+
 				for (int i = 0; i < cmdList.size(); ++i) {
 					String option = cmdList.get(i);
 
 					// we remove an option by *not* adding it to transformedCmdList
 					if (removeCmdListOption.containsKey(option)) {
-						if (isTrue(removeCmdListOption.get(option))) { // true: remove corresponding value
+						if (isTrue(removeCmdListOption.get(option))) { // true: remove (i.e. don't add) the corresponding value
 							++i;
 						}
 					} else {
@@ -2228,7 +2248,8 @@ public class MEncoderVideo extends Player {
 
 		ProcessWrapperImpl pw = null;
 
-		if (pcm || dtsRemux || ac3Remux) {
+		if (pcm || dtsRemux) {
+			// transcode video, demux audio, remux with tsmuxer
 			boolean channels_filter_present = false;
 
 			for (String s : cmdList) {
@@ -2357,7 +2378,7 @@ public class MEncoderVideo extends Player {
 					"-channels", "" + channels,
 					"-ovc", "copy",
 					"-of", "rawaudio",
-					"-mc", (dtsRemux || pcm) ? "0.1" : "0",
+					"-mc", dtsRemux ? "0.1" : "0",
 					"-noskip",
 					(aid == null) ? "-quiet" : "-aid", (aid == null) ? "-quiet" : aid,
 					"-oac", (ac3Remux || dtsRemux) ? "copy" : "pcm",
@@ -2428,7 +2449,7 @@ public class MEncoderVideo extends Player {
 				// audio delay is ignored when playing from file start (-ss 0)
 				// override with tsmuxer.meta setting
 				String timeshift = "";
-				if (params.aid.getAudioProperties().getAudioDelay() != 0 && params.timeseek == 0) {
+				if (mencoderAC3RemuxAudioDelayBug) {
 					timeshift = "timeshift=" + params.aid.getAudioProperties().getAudioDelay() + "ms, ";
 				}
 
@@ -2472,7 +2493,7 @@ public class MEncoderVideo extends Player {
 				cmdList.add("statusline=2");
 				params.input_pipes = new PipeProcess[2];
 			} else {
-				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dtsRemux || ac3Remux) ? null : params);
+				pipe = new PipeProcess("mencoder" + System.currentTimeMillis(), (pcm || dtsRemux) ? null : params);
 				params.input_pipes[0] = pipe;
 				cmdList.add("-o");
 				cmdList.add(pipe.getInputPipe());

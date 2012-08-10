@@ -21,6 +21,8 @@ package net.pms.dlna;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
@@ -127,8 +129,8 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 			// List holding all combinations
 			ArrayList<DLNAResource> combos = new ArrayList<DLNAResource>();
 
-			ArrayList<DLNAMediaAudio> audioTracks = child.getMedia().getAudioTracksList();
-			ArrayList<DLNAMediaSubtitle> subtitles = child.getMedia().getSubtitleTracksList();
+			List<DLNAMediaAudio> audioTracks = child.getMedia().getAudioTracksList();
+			List<DLNAMediaSubtitle> subtitles = child.getMedia().getSubtitleTracksList();
 
 			// Make sure a combo with no subtitles will be added
 			DLNAMediaSubtitle noSubtitle = new DLNAMediaSubtitle();
@@ -143,7 +145,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					DLNAResource tempModifiedCopy = createModifiedResource(child, audio, subtitle);
 			
 					// Determine which players match this audio track and subtitle
-					ArrayList<Player> players = PlayerFactory.getPlayers(tempModifiedCopy);
+					ArrayList<Player> players = PlayerFactory.getEnabledPlayers(tempModifiedCopy);
 
 					for (Player player : players) {
 						// Create a copy based on this combination

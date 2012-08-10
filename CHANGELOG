@@ -6,12 +6,18 @@ Changelog:
     Add new default web video engine: FFMpeg Web Video
     Add support for new web protocols: mmsh:// and mmst://
     Sort files alphanumerically by default e.g. Episode 2 before Episode 10
+    Auto encoding detection of non UTF-8 external subtitles for Russian, Greek, Hebrew, Chinese, Korean and Japanese languages (leave "Subtitles codepage" option blank)
     Improved handling of UTF-8 external subtitles
     Localized #--TRANSCODE--# folder name
     Make example PMS.conf behave more like built-in defaults
     Restore maximum buffer size to 600 MB (was 400 MB)
+    Prevent image distortion on some DLNA clients with "Keep AC-3 track" option enabled
+    Don't show entries for disabled engines in #--TRANSCODE--# folder
+    Allow Traces tab panel to auto-scroll (thanks, LordQuackstar!)
+    Revert changes to SMP-N100.conf that conflict with Sony Blu-ray players and break MKV support (thanks, mrw1986)
     PMS.conf:
         - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
+    Replaced ImageMagick with Thumbnailator for thumbnail generation
 
 1.60.0 - 2012-07-17
 
@@ -33,9 +39,9 @@ Changelog:
 1.54.0 - 2012-06-25
 
     Added LPCM transcoding option for all audio tracks
-    Added DTS HD-MA support up to 7.1 channels: DTS core remux, LPCM and AC3 transcoding
-    Added Dolby TrueHD support up to 7.1 channels: LPCM (recommended) and AC3 (buggy for 7.1) transcoding
-    Added workaround for 2.0 384 kbits AC3 PS3 audio bug
+    Added DTS HD-MA support up to 7.1 channels: DTS core remux, LPCM and AC-3 transcoding
+    Added Dolby TrueHD support up to 7.1 channels: LPCM (recommended) and AC-3 (buggy for 7.1) transcoding
+    Added workaround for 2.0 384 kbits AC-3 PS3 audio bug
     Added support for DirecTV HR series (thanks, DeFlanko!)
     Added support for LG's Smart TV Upgrader (LG 600ST)
     Added support for Yamaha RX-V671 (thanks, adresd!)
@@ -74,7 +80,7 @@ Changelog:
 
 1.52.1 - 2012-04-06
 
-    Updated MPlayer to SB29 which fixes AC3 audio sync
+    Updated MPlayer to SB29 which fixes AC-3 audio sync
     Allow JRE 6 instead of just JRE 7
     Language updates:
         - added Turkish (thanks, BrYaNT!)
@@ -212,7 +218,7 @@ Changelog:
 
     Backwards-incompatible API changes (for plugin developers/packagers) - see http://tinyurl.com/3hbqv4l for more details
     Fix StartStopListener callbacks (GC719)
-    Updated OS X binaries (FFmpeg, MEncoder and MPlayer) to fix an AC3 bug and improve internal VOBsub display quality
+    Updated OS X binaries (FFmpeg, MEncoder and MPlayer) to fix an AC-3 bug and improve internal VOBsub display quality
     Optional GUI to allow profile to be selected when PMS starts
     Better UPnP spec compliance
     Logging improvements
@@ -399,7 +405,7 @@ Changelog:
 
     - Changes / Features : Windows/Linux
 
-    DTS / DTS-HD core audio tracks are now streamable without reencoding (DVD ISOs not supported yet)
+    DTS / DTS-HD core audio tracks are now streamable without re-encoding (DVD ISOs not supported yet)
     New Option: unification of Mencoder/tsMuxeR engines, including:
     . Automatic choice between H264 muxing or transcoding, based on AVC Level 4.1 compatibility and subtitles configuration
     . Remux on the fly any H264 content from MOV, MP4, and AVI containers (ex: Apple HD Trailers)
@@ -439,17 +445,17 @@ Changelog:
     RAW images thumbnail support: CR2/CRW/PEF/NEF/ORF/SRF/MRW/DNG/ARW/RAF
     New translations: Spanish (thanks to Jose from www.playstationhoy.com), Dutch (thanks to Vincent Meylof), German (thanks to Jeuki), Russian (thanks to Peter Klassen), Polish (thanks to Maciej Bocian), Greek (thanks to Alexander Polichroniadis), Portuguese (thanks to Hugo Sousa), Finnish (thanks to Ove Sentlig), Norwegian (thanks to Ball80 and Topguy), Swedish (thanks to Dusan Ilic) and Japanese (thanks to Yu)
     New extensions supported: SHN/M2V/M2P
-    tsMuxeR engine can now mux or reencode in AC3/PCM all audio tracks in real time
+    tsMuxeR engine can now mux or re-encode in AC-3/PCM all audio tracks in real time
     Add the experimental mencoder build for multicore on OSX
     DVR-MS windows remuxer now included by default
 
     - Fixes
 
-    tsMuxeR's AC3/LPCM encode/muxing + Mencoder's LPCM remuxing now working on Linux
+    tsMuxeR's AC-3/LPCM encode/muxing + Mencoder's LPCM remuxing now working on Linux
     Fixed LPCM seeking issue
     Fixed regression with PicasaWeb images feed
     Changes in subtitles loading / Fonts support (Default/ASS/Embedded Fonts)
-    Fixed channels order with tsMuxeR engine's DTS->AC3 option
+    Fixed channels order with tsMuxeR engine's DTS->AC-3 option
     Transcode buffer wasn't fully released after end of video
     Fixed bug with shared folders selection on Windows
     Fixed periodic alive messages sent to PS3
@@ -472,7 +478,7 @@ Changelog:
     WINDOWS ONLY: Use (only with 720p/1080p H264 content) an experimental mencoder build for multicores : http://code.google.com/soc/2008/ffmpeg/appinfo.html?csaid=9FD2BF705A5D5DBB
     New OSX icon (thanks to Jakob Karlsson)
     Added a "Skip/Force transcode extensions" option added if default settings don't suit you
-    Possibility to only remux AC3 audio tracks and not reencoded them
+    Possibility to only remux AC-3 audio tracks and not re-encoded them
 
     - Fixes
 
@@ -538,7 +544,7 @@ Changelog:
     - Fixes:
 
     m4a and aac are now transcoded by default (iTunes Apple Lossless compatibility)
-    seeking issues with dvr-ms and tsMuxeR with AC3/PCM mode
+    seeking issues with dvr-ms and tsMuxeR with AC-3/PCM mode
     Displayed aspect ratio preserved
 
 1.00 - 2008-12-14
@@ -548,7 +554,7 @@ Changelog:
     GPL licensing :)
     IDX/SUB support for AviSynth ONLY
     Revamped some UI, especially transcoding settings
-    First attempt to make an LPCM or AC3 automatic conversion with tsMuxeR (seeking isn't working well and demuxed audio delays are not managed)
+    First attempt to make an LPCM or AC-3 automatic conversion with tsMuxeR (seeking isn't working well and demuxed audio delays are not managed)
     AviSynth script is now really fully customizable
 
     - Fixes

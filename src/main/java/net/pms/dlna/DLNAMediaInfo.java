@@ -18,7 +18,29 @@
  */
 package net.pms.dlna;
 
-import com.sun.jna.Platform;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+
+import javax.imageio.ImageIO;
+
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.Thumbnails.Builder;
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.AudioAsVideo;
@@ -27,7 +49,12 @@ import net.pms.formats.v2.SubtitleType;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
-import net.pms.util.*;
+import net.pms.util.AVCHeader;
+import net.pms.util.CoverUtil;
+import net.pms.util.FileUtil;
+import net.pms.util.MpegUtil;
+import net.pms.util.ProcessUtil;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
@@ -43,11 +70,8 @@ import org.jaudiotagger.tag.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.*;
+import com.sun.jna.Platform;
+
 
 /**
  * This class keeps track of scanned MediaInfo library information.
@@ -128,8 +152,8 @@ public class DLNAMediaInfo implements Cloneable {
 	@Deprecated
 	public int bitsPerPixel;
 
-	private ArrayList<DLNAMediaAudio> audioTracks = new ArrayList<DLNAMediaAudio>();
-	private ArrayList<DLNAMediaSubtitle> subtitleTracks = new ArrayList<DLNAMediaSubtitle>();
+	private List<DLNAMediaAudio> audioTracks = new ArrayList<DLNAMediaAudio>();
+	private List<DLNAMediaSubtitle> subtitleTracks = new ArrayList<DLNAMediaSubtitle>();
 
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
@@ -396,53 +420,6 @@ public class DLNAMediaInfo implements Cloneable {
 		return pw;
 	}
 
-	private ProcessWrapperImpl getImageMagickThumbnail(InputFile media) throws IOException {
-	// convert -size 320x180  hatching_orig.jpg  -auto-orient -thumbnail 160x90   -unsharp 0x.5  thumbnail.gif
-		String args [] = new String[10];
-		args[0] = PMS.getConfiguration().getIMConvertPath();
-		args[1] = "-size";
-		args[2] = "320x180";
-		if (media.getFile() != null)
-			args[3] = ProcessUtil.getShortFileNameIfWideChars(media.getFile().getAbsolutePath());
-		else
-			args[3] = "-";
-		args[4] = "-auto-orient";
-		args[5] = "-thumbnail";
-		args[6] = "160x90";
-		args[7] = "-unsharp";
-		args[8] = "-0x.5";
-		args[9] = PMS.getConfiguration().getTempFolder() + "/imagemagick_thumbs/" + media.getFile().getName() + ".jpg";
-		OutputParams params = new OutputParams(PMS.getConfiguration());
-		params.workDir = new File(PMS.getConfiguration().getTempFolder().getAbsolutePath() + "/imagemagick_thumbs/");
-
-		if (!params.workDir.exists() && !params.workDir.mkdirs()) {
-			logger.debug("Could not create directory \"" + params.workDir.getAbsolutePath() + "\"");
-		}
-
-		params.maxBufferSize = 1;
-		params.stdin = media.getPush();
-		params.log = true;
-		params.noexitcheck = true; // not serious if anything happens during the thumbnailer
-		final ProcessWrapperImpl pw = new ProcessWrapperImpl(args, params);
-			// FAILSAFE
-		setParsing(true);
-		Runnable r = new Runnable() {
-			public void run() {
-				try {
-					Thread.sleep(7000);
-					ffmpeg_failure = true;
-				} catch (InterruptedException e) {}
-				pw.stopProcess();
-				setParsing(false);
-			}
-		};
-		Thread failsafe = new Thread(r, "ImageMagick Thumbnail Failsafe");
-		failsafe.start();
-		pw.runInSameThread();
-		setParsing(false);
-		return pw;
-	}
-
 	private String getFfmpegPath() {
 		String value = PMS.getConfiguration().getFfmpegPath();
 		if (value == null) {
@@ -593,28 +570,49 @@ public class DLNAMediaInfo implements Cloneable {
 					// ffmpeg_parsing = true;
 					logger.info("Error parsing image with Sanselan... switching to FFmpeg: " + e.getMessage());
 				}
+
 				try {
-					if(PMS.getConfiguration().getImageThumbnailsEnabled()) {
-						getImageMagickThumbnail(f);
-						String frameName = PMS.getConfiguration().getTempFolder() + "/imagemagick_thumbs/" + f.getFile().getName() + ".jpg";
-						File jpg = new File(frameName);
-						if (jpg.exists()) {
-							InputStream is = new FileInputStream(jpg);
-							int sz = is.available();
-							if (sz > 0) {
-								setThumb(new byte [sz]);
-								is.read(getThumb());
+					if (PMS.getConfiguration().getImageThumbnailsEnabled()) {
+						File thumbDir = new File(PMS.getConfiguration().getTempFolder() + "/thumbs/");
+
+						if (!thumbDir.exists() && !thumbDir.mkdirs()) {
+							logger.debug("Could not create directory \"" + thumbDir.getAbsolutePath() + "\"");
+						} else {
+							String thumbFilename = thumbDir + f.getFile().getName() + ".jpg";
+
+							logger.trace("Creating thumbnail \"" + thumbFilename + "\"");
+
+							// Create the thumbnail image using the Thumbnailator library
+							final Builder<File> thumbnail = Thumbnails.of(f.getFile());
+							thumbnail.size(320, 180);
+							thumbnail.outputFormat("jpg");
+							thumbnail.outputQuality(1.0f);
+							thumbnail.toFile(thumbFilename);
+
+							File jpg = new File(thumbFilename);
+
+							if (jpg.exists()) {
+								InputStream is = new FileInputStream(jpg);
+								int sz = is.available();
+
+								if (sz > 0) {
+									setThumb(new byte[sz]);
+									is.read(getThumb());
+								}
+
+								is.close();
+
+								if (!jpg.delete()) {
+									jpg.deleteOnExit();
+								}
 							}
-							is.close();
-							if (!jpg.delete())
-								jpg.deleteOnExit();
 						}
 					}
-				} catch (Throwable e) {
-					logger.info("Error generating thumbnail of image with ImageMagick: " + e.getMessage());
-				
+				} catch (Exception e) {
+					logger.info("Error generating thumbnail of image", e);
 				}
 			}
+
 			if (ffmpeg_parsing) {
 				if (!thumbOnly || !PMS.getConfiguration().isUseMplayerForVideoThumbs()) {
 					pw = getFFMpegThumbnail(f);
@@ -1455,7 +1453,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @return the audioTracks
 	 * @since 1.60
 	 */
-	public ArrayList<DLNAMediaAudio> getAudioTracksList() {
+	public List<DLNAMediaAudio> getAudioTracksList() {
 		return audioTracks;
 	}
 
@@ -1465,14 +1463,18 @@ public class DLNAMediaInfo implements Cloneable {
 	 */
 	@Deprecated
 	public ArrayList<DLNAMediaAudio> getAudioCodes() {
-		return getAudioTracksList();
+		if(audioTracks instanceof ArrayList) {
+			return (ArrayList<DLNAMediaAudio>) audioTracks;
+		} else {
+			return new ArrayList<DLNAMediaAudio>();
+		}
 	}
 
 	/**
 	 * @param audioTracks the audioTracks to set
 	 * @since 1.60
 	 */
-	public void setAudioTracksList(ArrayList<DLNAMediaAudio> audioTracks) {
+	public void setAudioTracksList(List<DLNAMediaAudio> audioTracks) {
 		this.audioTracks = audioTracks;
 	}
 
@@ -1481,7 +1483,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @deprecated use setAudioTracksList(ArrayList<DLNAMediaAudio> audioTracks) instead
 	 */
 	@Deprecated
-	public void setAudioCodes(ArrayList<DLNAMediaAudio> audioTracks) {
+	public void setAudioCodes(List<DLNAMediaAudio> audioTracks) {
 		setAudioTracksList(audioTracks);
 	}
 
@@ -1489,7 +1491,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @return the subtitleTracks
 	 * @since 1.60
 	 */
-	public ArrayList<DLNAMediaSubtitle> getSubtitleTracksList() {
+	public List<DLNAMediaSubtitle> getSubtitleTracksList() {
 		return subtitleTracks;
 	}
 
@@ -1499,14 +1501,18 @@ public class DLNAMediaInfo implements Cloneable {
 	 */
 	@Deprecated
 	public ArrayList<DLNAMediaSubtitle> getSubtitlesCodes() {
-		return getSubtitleTracksList();
+		if(subtitleTracks instanceof ArrayList) {
+			return (ArrayList<DLNAMediaSubtitle>) subtitleTracks;
+		} else {
+			return new ArrayList<DLNAMediaSubtitle>();
+		}
 	}
 
 	/**
 	 * @param subtitleTracks the subtitleTracks to set
 	 * @since 1.60
 	 */
-	public void setSubtitleTracksList(ArrayList<DLNAMediaSubtitle> subtitleTracks) {
+	public void setSubtitleTracksList(List<DLNAMediaSubtitle> subtitleTracks) {
 		this.subtitleTracks = subtitleTracks;
 	}
 
@@ -1515,7 +1521,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @deprecated use setSubtitleTracksList(ArrayList<DLNAMediaSubtitle> subtitleTracks) instead
 	 */
 	@Deprecated
-	public void setSubtitlesCodes(ArrayList<DLNAMediaSubtitle> subtitleTracks) {
+	public void setSubtitlesCodes(List<DLNAMediaSubtitle> subtitleTracks) {
 		setSubtitleTracksList(subtitleTracks);
 	}
 

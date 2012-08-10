@@ -108,15 +108,9 @@ public class AboutTab {
 		lMplayerSubJunkBuildsLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lMplayerSubJunkBuildsLink.addMouseListener(mplayerSubJunkBuildsLink);
 
-		final LinkMouseListener imageMagickLink = new LinkMouseListener("ImageMagick",
-			"http://www.imagemagick.org");
-		JLabel lImageMagickLink = builder.addLabel(imageMagickLink.getLabel(), cc.xy(2, 15, "center, fill"));
-		lImageMagickLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		lImageMagickLink.addMouseListener(imageMagickLink);
-
 		final LinkMouseListener mediaInfoLink = new LinkMouseListener("MediaInfo",
 			"http://mediainfo.sourceforge.net/en");
-		JLabel lMediaInfoLink = builder.addLabel(mediaInfoLink.getLabel(), cc.xy(2, 17, "center, fill"));
+		JLabel lMediaInfoLink = builder.addLabel(mediaInfoLink.getLabel(), cc.xy(2, 15, "center, fill"));
 		lMediaInfoLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lMediaInfoLink.addMouseListener(mediaInfoLink);
 
