@@ -20,6 +20,7 @@ Changelog:
     Replaced ImageMagick with Thumbnailator for thumbnail generation
     Fix FFmpeg engine's handling of unsupported custom options (thanks, ajamess)
     Fixed FFmpeg command line arguments used by tsMuxeR video
+    Added new renderer: Yamaha RX-A1010 (thanks, merelin)
 
 1.60.0 - 2012-07-17
 
