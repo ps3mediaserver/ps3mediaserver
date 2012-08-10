@@ -158,6 +158,7 @@ public class VLCVideo extends Player {
 			config.container = type;
 		} else
 			throw new RuntimeException("Unknown encoding profile");
+		LOGGER.debug("Using " + config.videoCodec + ", " + config.audioCodec + ", " + config.container);
 
 		//Audio sample rate handling
 		if (sampleRateOverride.isSelected())
