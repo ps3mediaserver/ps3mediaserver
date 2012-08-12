@@ -18,10 +18,26 @@
  */
 package net.pms.encoders;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import static net.pms.formats.v2.AudioUtils.getLPCMChannelMappingForMencoder;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
+import java.awt.ComponentOrientation;
+import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.Locale;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
@@ -32,23 +48,22 @@ import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.InputFile;
 import net.pms.formats.Format;
-import net.pms.io.*;
+import net.pms.io.OutputParams;
+import net.pms.io.PipeIPCProcess;
+import net.pms.io.PipeProcess;
+import net.pms.io.ProcessWrapper;
+import net.pms.io.ProcessWrapperImpl;
+import net.pms.io.StreamModifier;
 import net.pms.util.CodecUtil;
 import net.pms.util.FormLayoutUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Locale;
-
-import static net.pms.formats.v2.AudioUtils.getLPCMChannelMappingForMencoder;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class TSMuxerVideo extends Player {
 	private static final Logger logger = LoggerFactory.getLogger(TSMuxerVideo.class);
@@ -114,12 +129,13 @@ public class TSMuxerVideo extends Player {
 		}
 
 		if (this instanceof TsMuxerAudio && media.getFirstAudioTrack() != null) {
+			String fakeFileName = writeResourceToFile("/resources/images/fake.jpg"); 
 			ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "fakevideo", System.currentTimeMillis() + "videoout", false, true);
 			String[] ffmpegLPCMextract = new String[] {
 				configuration.getFfmpegPath(),
 				"-t", "" + params.timeend,
-				"-loop_input",
-				"-i", "resources/images/fake.jpg",
+				"-loop", "1",
+				"-i", fakeFileName,
 				"-qcomp", "0.6",
 				"-qmin", "10",
 				"-qmax", "51",
@@ -697,6 +713,66 @@ public class TSMuxerVideo extends Player {
 
 		p.runInNewThread();
 		return p;
+	}
+
+	/**
+	 * Write the resource "/resources/images/fake.jpg" to a physical file on disk.
+	 *
+	 * @return The filename of the file on disk.
+	 */
+	private String writeResourceToFile(String resourceName) {
+		String outputFileName = resourceName.substring(resourceName.lastIndexOf("/") + 1);
+
+		try {
+			outputFileName = PMS.getConfiguration().getTempFolder() + "/" + outputFileName;
+		} catch (IOException e) {
+			logger.warn("Failure to determine temporary folder.", e);
+		}
+
+		File outputFile = new File(outputFileName);
+
+		// Copy the resource file only once
+		if (!outputFile.exists()) {
+			final URL resourceUrl = getClass().getClassLoader().getResource(resourceName);
+			byte[] buffer = new byte[1024];
+			int byteCount = 0;
+	
+			InputStream inputStream = null;
+			OutputStream outputStream = null;
+	
+			try {
+				inputStream = resourceUrl.openStream();
+				outputStream = new FileOutputStream(outputFileName);
+	
+				while ((byteCount = inputStream.read(buffer)) >= 0) {
+					outputStream.write(buffer, 0, byteCount);
+				}
+			} catch (final IOException e) {
+				logger.error("Failure on saving the embedded resource " + resourceName
+						+ " to the file " + outputFile.getAbsolutePath(), e);
+			} finally {
+				if (inputStream != null) {
+					try {
+						inputStream.close();
+					} catch (final IOException e) {
+						logger.warn("Problem closing an input stream while reading data from the embedded resource "
+								+ resourceName, e);
+					}
+				}
+	
+				if (outputStream != null) {
+					try {
+						outputStream.flush();
+						outputStream.close();
+					} catch (final IOException e) {
+						logger.warn("Problem closing the output stream while writing the file "
+								+ outputFile.getAbsolutePath(), e);
+					}
+				}
+			}
+		}
+
+		return outputFileName;
 	}
 
 	@Override

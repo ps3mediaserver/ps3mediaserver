@@ -3,22 +3,23 @@ Changelog:
 
 1.70.0 - 2012-??-??
 
-    Add new default web video engine: FFMpeg Web Video
-    Add support for new web protocols: mmsh:// and mmst://
-    Sort files alphanumerically by default e.g. Episode 2 before Episode 10
+    Added new default web video engine: FFMpeg Web Video
+    Added support for new web protocols: mmsh:// and mmst://
+    Sorted files alphanumerically by default e.g. Episode 2 before Episode 10
     Auto encoding detection of non UTF-8 external subtitles for Russian, Greek, Hebrew, Chinese, Korean and Japanese languages (leave "Subtitles codepage" option blank)
     Improved handling of UTF-8 external subtitles
     Localized #--TRANSCODE--# folder name
-    Make example PMS.conf behave more like built-in defaults
-    Restore maximum buffer size to 600 MB (was 400 MB)
-    Prevent image distortion on some DLNA clients with "Keep AC-3 track" option enabled
-    Don't show entries for disabled engines in #--TRANSCODE--# folder
-    Allow Traces tab panel to auto-scroll (thanks, LordQuackstar!)
-    Revert changes to SMP-N100.conf that conflict with Sony Blu-ray players and break MKV support (thanks, mrw1986)
+    Made example PMS.conf behave more like built-in defaults
+    Restored maximum buffer size to 600 MB (was 400 MB)
+    Prevented image distortion on some DLNA clients with "Keep AC-3 track" option enabled
+    No longer showing entries for disabled engines in #--TRANSCODE--# folder
+    Allowed Traces tab panel to auto-scroll (thanks, LordQuackstar!)
+    Reverted changes to SMP-N100.conf that conflict with Sony Blu-ray players and break MKV support (thanks, mrw1986)
     Replaced ImageMagick with Thumbnailator for thumbnail generation
-    Fix FFmpeg engine's handling of unsupported custom options (thanks, ajamess)
+    Fixed FFmpeg engine's handling of unsupported custom options (thanks, ajamess)
     PMS.conf:
         - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
+    Fixed FFmpeg command line arguments used by tsMuxeR video
 
 1.60.0 - 2012-07-17
 
