@@ -21,6 +21,8 @@ Changelog:
     Fix FFmpeg engine's handling of unsupported custom options (thanks, ajamess)
     Fixed FFmpeg command line arguments used by tsMuxeR video
     Added new renderer: Yamaha RX-A1010 (thanks, merelin)
+    Language updates:
+        - Updated Dutch translation (thanks, leroy)
 
 1.60.0 - 2012-07-17
 
