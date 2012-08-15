@@ -102,7 +102,7 @@ public class DLNAMediaDatabase implements Runnable {
 		try {
 			Class.forName("org.h2.Driver");
 		} catch (ClassNotFoundException e) {
-			LOGGER.debug("Caught exception: " + e.getMessage());
+			LOGGER.error(null, e);
 		}
 
 		JdbcDataSource ds = new JdbcDataSource();
@@ -152,8 +152,8 @@ public class DLNAMediaDatabase implements Runnable {
 				version = rs.getString(1);
 			}
 		} catch (SQLException se) {
-			if (se.getErrorCode()!=42102) // Don't log exception "Table "FILES" not found" which will be corrected in following step
-				LOGGER.debug("Caught exception: " + se.getMessage());
+			if (se.getErrorCode() != 42102) // Don't log exception "Table "FILES" not found" which will be corrected in following step
+				LOGGER.error(null, se);
 		} finally {
 			close(rs);
 			close(stmt);
@@ -170,8 +170,8 @@ public class DLNAMediaDatabase implements Runnable {
 				executeUpdate(conn, "DROP TABLE AUDIOTRACKS");
 				executeUpdate(conn, "DROP TABLE SUBTRACKS");
 			} catch (SQLException se) {
-				if (se.getErrorCode()!=42102) // Don't log exception "Table "FILES" not found" which will be corrected in following step
-					LOGGER.debug("Caught exception: " + se.getMessage());
+				if (se.getErrorCode() != 42102) // Don't log exception "Table "FILES" not found" which will be corrected in following step
+					LOGGER.error(null, se);
 			}
 			try {
 				StringBuilder sb = new StringBuilder();
@@ -249,7 +249,7 @@ public class DLNAMediaDatabase implements Runnable {
 							+ (i + 2) + " );");
 				}
 
-				LOGGER.info("Database initialized");
+				LOGGER.debug("Database initialized");
 			} catch (SQLException se) {
 				LOGGER.info("Error in table creation: " + se.getMessage());
 			} finally {
@@ -284,7 +284,7 @@ public class DLNAMediaDatabase implements Runnable {
 				found = true;
 			}
 		} catch (SQLException se) {
-			LOGGER.debug("Caught exception: " + se.getMessage());
+			LOGGER.error(null, se);
 			return false;
 		} finally {
 			close(rs);
@@ -372,7 +372,7 @@ public class DLNAMediaDatabase implements Runnable {
 				list.add(media);
 			}
 		} catch (SQLException se) {
-			LOGGER.debug("Caught exception: " + se.getMessage());
+			LOGGER.error(null, se);
 			return null;
 		} finally {
 			close(rs);
@@ -496,10 +496,11 @@ public class DLNAMediaDatabase implements Runnable {
 				close(insert);
 			}
 		} catch (SQLException se) {
-			if (se.getErrorCode()== 23001) {
+			if (se.getErrorCode() == 23001) {
 				LOGGER.debug("Duplicate key while inserting this entry: " + name + " into the database: " + se.getMessage());
-			} else 	
-				LOGGER.debug("Caught exception: " + se.getMessage());
+			} else {
+				LOGGER.error(null, se);
+			}
 		} finally {
 			close(ps);
 			close(conn);
@@ -521,10 +522,10 @@ public class DLNAMediaDatabase implements Runnable {
 			}
 			ps.executeUpdate();
 		} catch (SQLException se) {
-			if (se.getErrorCode()== 23001) {
+			if (se.getErrorCode() == 23001) {
 				LOGGER.debug("Duplicate key while inserting this entry: " + name + " into the database: " + se.getMessage());
 			} else 
-				LOGGER.debug("Caught exception: " + se.getMessage());
+				LOGGER.error(null, se);;
 		} finally {
 			close(ps);
 			close(conn);
@@ -551,7 +552,7 @@ public class DLNAMediaDatabase implements Runnable {
 				}
 			}
 		} catch (SQLException se) {
-			LOGGER.debug("Caught exception: " + se.getMessage());
+			LOGGER.error(null, se);
 			return null;
 		} finally {
 			close(rs);
@@ -601,7 +602,7 @@ public class DLNAMediaDatabase implements Runnable {
 				}
 			}
 		} catch (SQLException se) {
-			LOGGER.debug("Caught exception: " + se.getMessage());
+			LOGGER.error(null, se);
 		} finally {
 			close(rs);
 			close(ps);
@@ -627,7 +628,7 @@ public class DLNAMediaDatabase implements Runnable {
 				}
 			}
 		} catch (SQLException se) {
-			LOGGER.debug("Caught exception: " + se.getMessage());
+			LOGGER.error(null, se);
 			return null;
 		} finally {
 			close(rs);
@@ -643,7 +644,7 @@ public class DLNAMediaDatabase implements Runnable {
 				rs.close();
 			}
 		} catch (SQLException e) {
-			LOGGER.debug("error during closing:" + e.getMessage(), e);
+			LOGGER.error("error during closing:" + e.getMessage(), e);
 		}
 	}
 
@@ -653,7 +654,7 @@ public class DLNAMediaDatabase implements Runnable {
 				ps.close();
 			}
 		} catch (SQLException e) {
-			LOGGER.debug("error during closing:" + e.getMessage(), e);
+			LOGGER.error("error during closing:" + e.getMessage(), e);
 		}
 	}
 
@@ -663,7 +664,7 @@ public class DLNAMediaDatabase implements Runnable {
 				conn.close();
 			}
 		} catch (SQLException e) {
-			LOGGER.debug("error during closing:" + e.getMessage(), e);
+			LOGGER.error("error during closing:" + e.getMessage(), e);
 		}
 	}
 
@@ -701,8 +702,8 @@ public class DLNAMediaDatabase implements Runnable {
 			Script.execute(url, "sa", "", file);
 			DeleteDbFiles.execute(dbDir, dbName, true);
 			RunScript.execute(url, "sa", "", file, null, false);
-		} catch (SQLException se) {
-			LOGGER.debug("Error in compacting database: ", se);
+		} catch (Exception s) {
+			LOGGER.error("Error in compacting database: ", s);
 		} finally {
 			File testsql = new File(file);
 			if (testsql.exists() && !testsql.delete()) {
