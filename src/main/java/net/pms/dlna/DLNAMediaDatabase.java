@@ -702,8 +702,8 @@ public class DLNAMediaDatabase implements Runnable {
 			Script.execute(url, "sa", "", file);
 			DeleteDbFiles.execute(dbDir, dbName, true);
 			RunScript.execute(url, "sa", "", file, null, false);
-		} catch (Exception s) {
-			LOGGER.error("Error in compacting database: ", s);
+		} catch (SQLException se) {
+			LOGGER.error("Error in compacting database: ", se);
 		} finally {
 			File testsql = new File(file);
 			if (testsql.exists() && !testsql.delete()) {
