@@ -37,7 +37,7 @@ class WindowsDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getVlcPath() {
-		return "videolan/vlc.exe";
+		return getBinariesPath() +  "videolan/vlc.exe";
 	}
 
 	@Override
