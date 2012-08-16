@@ -4,6 +4,8 @@ import net.pms.util.PropertiesUtil;
 
 import java.io.File;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 class LinuxDefaultPaths implements ProgramPaths {
     private final String BINARIES_SEARCH_PATH = getBinariesSearchPath();
 
@@ -62,7 +64,7 @@ class LinuxDefaultPaths implements ProgramPaths {
 	private String getBinariesSearchPath() {
 		String path = PropertiesUtil.getProjectProperties().get("project.binaries.dir");
 
-		if (path != null && !"".equals(path)) {
+		if (isNotBlank(path)) {
 			if (path.endsWith("/")) {
 				return path;
 			} else {
