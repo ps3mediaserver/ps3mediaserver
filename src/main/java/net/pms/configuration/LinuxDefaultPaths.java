@@ -9,7 +9,7 @@ class LinuxDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getEac3toPath() {
-		return getBinaryPath("eac3to");
+		return null;
 	}
 
 	@Override
