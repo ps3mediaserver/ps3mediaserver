@@ -126,17 +126,21 @@ public class DLNAMediaDatabase implements Runnable {
 		ResultSet rs = null;
 		Statement stmt = null;
 
-		// Check whether the database is not severely damaged, corrupt or wrong version
+		// Check whether the database is not severely damaged, corrupted or wrong version
+		boolean force_delete = false;
 		try {
            	conn = getConnection();
 		} catch (SQLException se) { // Connection can't be established, so delete the database
-			FileUtils.deleteRecursive(dbDir, false);
-			if (!FileUtils.exists(dbDir)){
-				LOGGER.debug("Damaged, corrupted or wrong version database deleted");
-			} else 
-				LOGGER.info("Damaged database can't be deleted. Stop the program and delete it manually");
+			force_delete = true;
 		} finally {
 			close(conn);
+			if (FileUtils.exists(dbDir + File.separator + dbName + ".data.db") || force_delete){
+				FileUtils.deleteRecursive(dbDir, false);
+				if (!FileUtils.exists(dbDir)){
+					LOGGER.debug("Damaged, corrupted or wrong version database deleted");
+				} else 
+					LOGGER.info("Damaged database can't be deleted. Stop the program and delete it manually");
+			}
 		}
 		
 		try {
