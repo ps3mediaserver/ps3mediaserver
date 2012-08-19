@@ -1173,7 +1173,7 @@
 					</plugin>
 
 					<!--
-						Plugin to copy the pms-x.x.x-jar-with-dependencies.jar to pms.jar
+						Plugin to download tsMuxeR binary to ${project.binaries}/tsMuxeR
 					-->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -1193,20 +1193,6 @@
 
 										<!-- Download binaries -->
 										<get src="${project.binaries-base}/linux/tsMuxeR" dest="${project.binaries}/tsMuxeR" usetimestamp="true" />
-									</target>
-								</configuration>
-							</execution>
-									
-							<execution>
-								<id>copy-jar-with-dependencies-linux</id>
-								<phase>package</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<configuration>
-									<target>
-										<copy file="${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar"
-											tofile="${project.basedir}/target/pms.jar" overwrite="true" />
 									</target>
 								</configuration>
 							</execution>
