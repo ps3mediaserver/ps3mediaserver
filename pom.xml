@@ -920,7 +920,7 @@
 						<version>2.2.1</version>
 						<executions>
 							<execution>
-								<id>make-jar-with-dependencies</id>
+								<id>make-jar-with-dependencies-win</id>
 								<phase>package</phase>
 								<goals>
 									<goal>single</goal>
@@ -1127,13 +1127,13 @@
 			
 			<build>
 				<plugins>
-					<!-- Plugin to assemble a jar with dependencies -->
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
 						<version>2.2.1</version>
 						<executions>
+							<!-- Assemble a jar with dependencies -->
 							<execution>
-								<id>make-jar-with-dependencies</id>
+								<id>make-jar-with-dependencies-linux</id>
 								<phase>package</phase>
 								<goals>
 									<goal>single</goal>
@@ -1149,6 +1149,26 @@
 									</archive>
 								</configuration>
 							</execution>
+
+							<!-- Assemble the PMS distribution file. -->
+							<execution>
+								<id>build-pms-linux</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<configuration>
+									<descriptors>
+										<descriptor>${project.basedir}/src/main/assembly/assembly-linux.xml</descriptor>
+									</descriptors>
+									<archive>
+										<manifest>
+											<mainClass>net.pms.PMS</mainClass>
+										</manifest>
+									</archive>
+								</configuration>
+							</execution>
+
 						</executions>
 					</plugin>
 
@@ -1193,31 +1213,6 @@
 						</executions>
 					</plugin>
 
-					<!--
-						Plugin to assemble the PMS distribution file.
-					-->
-					<plugin>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>build-pms-linux</id>
-								<phase>package</phase>
-								<goals>
-									<goal>single</goal>
-								</goals>
-								<configuration>
-									<descriptors>
-										<descriptor>${project.basedir}/src/main/assembly/assembly-linux.xml</descriptor>
-									</descriptors>
-									<archive>
-										<manifest>
-											<mainClass>net.pms.PMS</mainClass>
-										</manifest>
-									</archive>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
 				</plugins>
 			</build>			
 		</profile>
@@ -1309,13 +1304,13 @@
 						</executions>
 					</plugin>
 
-					<!-- Plugin to assemble a jar with dependencies -->
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
 						<version>2.2.1</version>
 						<executions>
+							<!-- Assemble a jar with dependencies -->
 							<execution>
-								<id>make-jar-with-dependencies</id>
+								<id>make-jar-with-dependencies-osx</id>
 								<phase>package</phase>
 								<goals>
 									<goal>single</goal>
@@ -1331,16 +1326,11 @@
 									</archive>
 								</configuration>
 							</execution>
-						</executions>
-					</plugin>
 
-					<!--
-						Plugin to assemble the PMS files in the right place before creating 
-						the App Bundle and DMG disk image.
-					-->
-					<plugin>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<executions>
+							<!--
+								Assemble the PMS files in the right place before creating 
+								the App Bundle and DMG disk image.
+							-->
 							<execution>
 								<id>make-assembly-osx</id>
 								<phase>package</phase>
@@ -1358,9 +1348,10 @@
 									</archive>
 								</configuration>
 							</execution>
+							
 						</executions>
 					</plugin>
-					
+
 					<!--
 						Plugin to create the OSX Application Bundle and DMG disk image. This will
 						automatically copy all dependencies to a local repository, so the
