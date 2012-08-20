@@ -24,6 +24,7 @@ Changelog:
     Language updates:
         - Updated Dutch translation (thanks, leroy)
         - Updated Bulgarian translation (thanks, JORDITO)
+    Fix DNLA 2114 errors when scanning non-readable subfolders with "hide empty folders" enabled
 
 1.60.0 - 2012-07-17
 
