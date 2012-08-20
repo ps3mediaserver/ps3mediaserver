@@ -42,7 +42,7 @@ import java.util.*;
  * removed.
  */
 public class MapFile extends DLNAResource {
-	private static final Logger logger = LoggerFactory.getLogger(MapFile.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MapFile.class);
 	private List<File> discoverable;
 
 	/**
@@ -83,25 +83,35 @@ public class MapFile extends DLNAResource {
 	}
 
 	private boolean isFolderRelevant(File f) {
-		boolean excludeNonRelevantFolder = true;
+		boolean isRelevant = false;
+
 		if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders()) {
-			File children[] = f.listFiles();
-			for (File child : children) {
-				if (child.isFile()) {
-					if (FormatFactory.getAssociatedExtension(child.getName()) != null || isFileRelevant(child)) {
-						excludeNonRelevantFolder = false;
-						break;
-					}
-				} else {
-					if (isFolderRelevant(child)) {
-						excludeNonRelevantFolder = false;
-						break;
+			File[] children = f.listFiles();
+
+			// listFiles() returns null if "this abstract pathname does not denote a directory, or if an I/O error occurs".
+			// in this case (since we've already confirmed that it's a directory), this seems to mean the directory is non-readable
+			// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=15135
+			// http://stackoverflow.com/questions/3228147/retrieving-the-underlying-error-when-file-listfiles-return-null
+			if (children == null) {
+				LOGGER.warn("Can't list files in non-readable directory: {}", f.getAbsolutePath());
+			} else {
+				for (File child : children) {
+					if (child.isFile()) {
+						if (FormatFactory.getAssociatedExtension(child.getName()) != null || isFileRelevant(child)) {
+							isRelevant = true;
+							break;
+						}
+					} else {
+						if (isFolderRelevant(child)) {
+							isRelevant = true;
+							break;
+						}
 					}
 				}
 			}
 		}
 
-		return !excludeNonRelevantFolder;
+		return isRelevant;
 	}
 
 	private void manageFile(File f) {
@@ -122,7 +132,7 @@ public class MapFile extends DLNAResource {
 				} else {
 					/* Optionally ignore empty directories */
 					if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders() && !isFolderRelevant(f)) {
-						logger.debug("Ignoring empty/non-relevant directory: " + f.getName());
+						LOGGER.debug("Ignoring empty/non-relevant directory: " + f.getName());
 					} else { // Otherwise add the file
 						addChild(new RealFile(f));
 					}
@@ -269,11 +279,11 @@ public class MapFile extends DLNAResource {
 		}
 
 		for (DLNAResource f : removedFiles) {
-			logger.debug("File automatically removed: " + f.getName());
+			LOGGER.debug("File automatically removed: " + f.getName());
 		}
 
 		for (File f : addedFiles) {
-			logger.debug("File automatically added: " + f.getName());
+			LOGGER.debug("File automatically added: " + f.getName());
 		}
 
 		TranscodeVirtualFolder vf = getTranscodeFolder(false);
