@@ -189,7 +189,7 @@ public class RendererConfiguration {
 	}
 
 	public static void resetAllRenderers() {
-		for(RendererConfiguration rc : rendererConfs) {
+		for (RendererConfiguration rc : rendererConfs) {
 			rc.rootFolder = null;
 		}
 	}
@@ -287,6 +287,7 @@ public class RendererConfiguration {
 				}
 			}
 		}
+
 		return null;
 	}
 
@@ -438,6 +439,7 @@ public class RendererConfiguration {
 			default:
 				break;
 		}
+
 		return false;
 	}
 
@@ -535,11 +537,32 @@ public class RendererConfiguration {
 		if (mimetype != null && mimetype.equals(HTTPResource.VIDEO_TRANSCODE)) {
 			mimetype = HTTPResource.MPEG_TYPEMIME;
 			if (isTranscodeToWMV()) {
-				mimetype = HTTPResource.WMV_TYPEMIME;
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.WMV, FormatConfiguration.WMV, FormatConfiguration.WMA)
+					: HTTPResource.WMV_TYPEMIME;
+			} else if (isTranscodeToMPEGTSAC3()) {
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.MPEGTS, FormatConfiguration.MPEG2, FormatConfiguration.AC3)
+					: HTTPResource.MPEG_TYPEMIME;
+			} else { // default: MPEGPSAC3
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.MPEGPS, FormatConfiguration.MPEG2, FormatConfiguration.AC3)
+					: HTTPResource.MPEG_TYPEMIME;
 			}
-		} else if (mimetype != null && mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
-			mimetype = HTTPResource.AUDIO_LPCM_TYPEMIME;
-			if (mimetype != null) {
+		} else if (mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
+			if (isTranscodeToWAV()) {
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.WAV, null, null)
+					: HTTPResource.AUDIO_WAV_TYPEMIME;
+			} else if (isTranscodeToMP3()) {
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.MP3, null, null)
+					: HTTPResource.AUDIO_MP3_TYPEMIME;
+			} else { // default: LPCM
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.LPCM, null, null)
+					: HTTPResource.AUDIO_LPCM_TYPEMIME;
+
 				if (isTranscodeAudioTo441()) {
 					mimetype += ";rate=44100;channels=2";
 				} else {
@@ -813,6 +836,8 @@ public class RendererConfiguration {
 	 * @return The maximum video width.
 	 */
 	public int getMaxVideoWidth() {
+		// FIXME why is this 1920 if the default value is 0 (unlimited)?
+		// XXX we should also require width and height to both be 0 or both be > 0
 		return getInt(MAX_VIDEO_WIDTH, 1920);
 	}
 
@@ -823,9 +848,17 @@ public class RendererConfiguration {
 	 * @return The maximum video height.
 	 */
 	public int getMaxVideoHeight() {
+		// FIXME why is this 1080 if the default value is 0 (unlimited)?
+		// XXX we should also require width and height to both be 0 or both be > 0
 		return getInt(MAX_VIDEO_HEIGHT, 1080);
 	}
 
+	/**
+	 * Returns <code>true</code> if the renderer has a maximum supported width
+	 * or height, <code>false</code> otherwise.
+	 *
+	 * @return boolean indicating whether the renderer may need videos to be resized.
+	 */
 	public boolean isVideoRescale() {
 		return getMaxVideoWidth() > 0 && getMaxVideoHeight() > 0;
 	}

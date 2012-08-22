@@ -96,36 +96,40 @@ public class MEncoderWebVideo extends Player {
 		String cmdArray[] = new String[args().length + 4];
 		cmdArray[0] = executable();
 		cmdArray[1] = fileName;
+
 		for (int i = 0; i < args().length; i++) {
 			cmdArray[i + 2] = args()[i];
 		}
+
 		cmdArray[cmdArray.length - 2] = "-o";
 		cmdArray[cmdArray.length - 1] = pipe.getInputPipe();
 
 		ProcessWrapper mkfifo_process = pipe.getPipeProcess();
 
 		cmdArray = finalizeTranscoderArgs(
-			this,
 			fileName,
 			dlna,
 			media,
 			params,
-			cmdArray);
+			cmdArray
+		);
 
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.attachProcess(mkfifo_process);
 		mkfifo_process.runInNewThread();
+
 		try {
 			Thread.sleep(50);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) { }
+
 		pipe.deleteLater();
 
 		pw.runInNewThread();
+
 		try {
 			Thread.sleep(50);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) { }
+
 		return pw;
 	}
 

@@ -41,9 +41,16 @@ import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.Arrays;
 
+// this does nothing that isn't done by the ffmpeg audio engine
+// and, indeed, it delegates to ffmpeg for MP3 transcodes
+@Deprecated
 public class MPlayerAudio extends Player {
 	public static final String ID = "mplayeraudio";
 	private final PmsConfiguration configuration;
+
+	// XXX should be private
+	@Deprecated
+	JCheckBox noresample;
 
 	public MPlayerAudio(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -74,7 +81,8 @@ public class MPlayerAudio extends Player {
 		String fileName,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
-		OutputParams params) throws IOException {
+		OutputParams params
+	) throws IOException {
 		if (!(this instanceof MPlayerWebAudio) && !(this instanceof MPlayerWebVideoDump)) {
 			params.waitbeforestart = 2000;
 		}
@@ -82,32 +90,53 @@ public class MPlayerAudio extends Player {
 		params.manageFastStart();
 
 		if (params.mediaRenderer.isTranscodeToMP3()) {
-			FFMpegAudio audio = new FFMpegAudio(configuration);
-			return audio.launchTranscode(fileName, dlna, media, params);
+			FFMpegAudio ffmpegAudio = new FFMpegAudio(configuration);
+			return ffmpegAudio.launchTranscode(fileName, dlna, media, params);
 		}
 
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
 		PipeProcess audioP = new PipeProcess("mplayer_aud" + System.currentTimeMillis());
 
-		String mPlayerdefaultAudioArgs[] = new String[]{PMS.getConfiguration().getMplayerPath(), fileName, "-prefer-ipv4", "-nocache", "-af", "channels=2", "-srate", "48000", "-vo", "null", "-ao", "pcm:nowaveheader:fast:file=" + audioP.getInputPipe(), "-quiet", "-format", "s16be"};
+		String mPlayerdefaultAudioArgs[] = new String[] {
+			PMS.getConfiguration().getMplayerPath(),
+			fileName,
+			"-prefer-ipv4",
+			"-nocache",
+			"-af",
+			"channels=2",
+			"-srate",
+			"48000",
+			"-vo",
+			"null",
+			"-ao",
+			"pcm:nowaveheader:fast:file=" + audioP.getInputPipe(),
+			"-quiet",
+			"-format",
+			"s16be"
+		};
+
 		if (params.mediaRenderer.isTranscodeToWAV()) {
 			mPlayerdefaultAudioArgs[11] = "pcm:waveheader:fast:file=" + audioP.getInputPipe();
 			mPlayerdefaultAudioArgs[13] = "-quiet";
 			mPlayerdefaultAudioArgs[14] = "-quiet";
 		}
+
 		if (params.mediaRenderer.isTranscodeAudioTo441()) {
 			mPlayerdefaultAudioArgs[7] = "44100";
 		}
+
 		if (!configuration.isAudioResample()) {
 			mPlayerdefaultAudioArgs[6] = "-quiet";
 			mPlayerdefaultAudioArgs[7] = "-quiet";
 		}
+
 		params.input_pipes[0] = audioP;
 
 		if (params.timeseek > 0 || params.timeend > 0) {
 			mPlayerdefaultAudioArgs = Arrays.copyOf(mPlayerdefaultAudioArgs, mPlayerdefaultAudioArgs.length + 4);
 			mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length - 4] = "-ss";
 			mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length - 3] = "" + params.timeseek;
+
 			if (params.timeend > 0) {
 				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length - 2] = "-endpos";
 				mPlayerdefaultAudioArgs[mPlayerdefaultAudioArgs.length - 1] = "" + params.timeend;
@@ -120,26 +149,28 @@ public class MPlayerAudio extends Player {
 		ProcessWrapper mkfifo_process = audioP.getPipeProcess();
 
 		mPlayerdefaultAudioArgs = finalizeTranscoderArgs(
-			this,
 			fileName,
 			dlna,
 			media,
 			params,
-			mPlayerdefaultAudioArgs);
+			mPlayerdefaultAudioArgs
+		);
+
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(mPlayerdefaultAudioArgs, params);
 		pw.attachProcess(mkfifo_process);
 		mkfifo_process.runInNewThread();
+
 		try {
 			Thread.sleep(100);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) { }
 
 		audioP.deleteLater();
 		pw.runInNewThread();
+
 		try {
 			Thread.sleep(100);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) { }
+
 		return pw;
 	}
 
@@ -157,13 +188,13 @@ public class MPlayerAudio extends Player {
 	public int type() {
 		return Format.AUDIO;
 	}
-	JCheckBox noresample;
 
 	@Override
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
 			"left:pref, 0:grow",
-			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow");
+			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow"
+		);
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.EMPTY_BORDER);
 		builder.setOpaque(false);
@@ -182,6 +213,7 @@ public class MPlayerAudio extends Player {
 				configuration.setAudioResample(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
+
 		builder.add(noresample, cc.xy(2, 3));
 
 		return builder.getPanel();

@@ -1177,7 +1177,7 @@ public class MEncoderVideo extends Player {
 			// Convert value from Mb to Kb
 			defaultMaxBitrates[0] = 1000 * defaultMaxBitrates[0];
 
-			// Halve it since it seems to send up to 1 second of video in advance
+			// Half it since it seems to send up to 1 second of video in advance
 			defaultMaxBitrates[0] = defaultMaxBitrates[0] / 2;
 
 			int bufSize = 1835;
@@ -1386,6 +1386,7 @@ public class MEncoderVideo extends Player {
 		} else {
 			channels = configuration.getAudioChannelCount(); // 5.1 max for ac3 encoding
 		}
+
 		LOGGER.trace("channels=" + channels);
 
 		String add = "";
@@ -2454,10 +2455,10 @@ public class MEncoderVideo extends Player {
 				cmdList.add(pipe.getInputPipe());
 			}
 
-			String[] cmdArray = new String[cmdList.size()];
+			String[] cmdArray = new String[ cmdList.size() ];
 			cmdList.toArray(cmdArray);
+
 			cmdArray = finalizeTranscoderArgs(
-				this,
 				fileName,
 				dlna,
 				media,
@@ -2471,10 +2472,11 @@ public class MEncoderVideo extends Player {
 				ProcessWrapper mkfifo_process = pipe.getPipeProcess();
 				pw.attachProcess(mkfifo_process);
 				mkfifo_process.runInNewThread();
+
 				try {
 					Thread.sleep(50);
-				} catch (InterruptedException e) {
-				}
+				} catch (InterruptedException e) { }
+
 				pipe.deleteLater();
 			}
 		}
@@ -2483,8 +2485,7 @@ public class MEncoderVideo extends Player {
 
 		try {
 			Thread.sleep(100);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) { }
 
 		return pw;
 	}

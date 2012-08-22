@@ -3,6 +3,16 @@ Changelog:
 
 1.80.0 - 2012-??-??
 
+    Renderers:
+        - Document TranscodeVideo and TranscodeAudio profiles
+    Engines:
+        FFmpeg Video and FFmpeg Web Video:
+            - support all three TranscodeVideo profiles: WMV, MPEGTSAC3 and MPEGPSAC3
+            - preserve source video quality
+        FFmpeg Video:
+            - custom FFmpeg options are now read before each transcode rather than only at startup (parity with custom MEncoder options)
+            - rescale videos larger than the renderer's max height/width
+        FFmpeg Audio: support all TranscodeAudio profiles
 
 1.72.0 - 2012-11-18
 
@@ -52,6 +62,7 @@ Changelog:
     Localized #--TRANSCODE--# folder name
     PMS.conf:
         - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
+        - ffmpeg has been renamed ffmpeg_video_custom_options and now defaults to null
     Make example PMS.conf behave more like built-in defaults
     Restore maximum buffer size to 600 MB (was 400 MB)
     Prevented image distortion on some DLNA clients with "Keep AC-3 track" option enabled

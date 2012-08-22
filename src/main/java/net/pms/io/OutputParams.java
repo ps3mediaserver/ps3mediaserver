@@ -29,7 +29,9 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class OutputParams {
-	public File outputFile;
+	@Deprecated
+	public File outputFile; // XXX no longer used
+
 	public File workDir;
 	public Map<String,String> env;
 	public double minFileSize;
@@ -40,8 +42,8 @@ public class OutputParams {
 	public int fromFrame;
 	public int toFrame;
 	public int waitbeforestart;
-	public PipeProcess input_pipes[] = new PipeProcess[2];
-	public PipeProcess output_pipes[] = new PipeProcess[2];
+	public PipeProcess[] input_pipes = new PipeProcess[2];
+	public PipeProcess[] output_pipes = new PipeProcess[2];
 	public DLNAMediaAudio aid;
 	public DLNAMediaSubtitle sid;
 	public int secondread_minsize;
@@ -65,17 +67,21 @@ public class OutputParams {
 		} else {
 			waitbeforestart = 6000;
 		}
+
 		fromFrame = -1;
 		toFrame = -1;
 		secondread_minsize = 1000000;
+
 		if (configuration != null) {
 			minFileSize = configuration.getMinStreamBuffer();
 			minBufferSize = configuration.getMinMemoryBufferSize();
 			maxBufferSize = configuration.getMaxMemoryBufferSize();
 		}
+
 		if (maxBufferSize < 100) {
 			maxBufferSize = 100;
 		}
+
 		timeseek = 0;
 		outputFile = null;
 		env = null;

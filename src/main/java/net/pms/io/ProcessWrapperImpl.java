@@ -33,18 +33,6 @@ import java.util.Map;
 
 public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	private static final Logger logger = LoggerFactory.getLogger(ProcessWrapperImpl.class);
-
-	@Override
-	public String toString() {
-		return super.getName();
-	}
-
-	private boolean success;
-
-	public boolean isSuccess() {
-		return success;
-	}
-
 	private String cmdLine;
 	private Process process;
 	private OutputConsumer outConsumer;
@@ -58,6 +46,16 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	private boolean keepStdout;
 	private boolean keepStderr;
 	private static int processCounter = 0;
+	private boolean success;
+
+	@Override
+	public String toString() {
+		return super.getName();
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
 
 	public ProcessWrapperImpl(String cmdArray[], OutputParams params) {
 		this(cmdArray, params, false, false);
@@ -122,14 +120,18 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 
 	public void run() {
 		ProcessBuilder pb = new ProcessBuilder(cmdArray);
+
 		try {
 			logger.debug("Starting " + cmdLine);
+
 			if (params.outputFile != null && params.outputFile.getParentFile().isDirectory()) {
 				pb.directory(params.outputFile.getParentFile());
 			}
+
 			if (params.workDir != null && params.workDir.isDirectory()) {
 				pb.directory(params.workDir);
 			}
+
 			if (params.env != null && !params.env.isEmpty()) {
 				Map<String,String> environment = pb.environment();
 				// actual name of system path var is case-sensitive
@@ -138,14 +140,18 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				String PATH = params.env.containsKey("PATH") ? params.env.get("PATH") :
 					params.env.containsKey("path") ? params.env.get("path") :
 					params.env.containsKey("Path") ? params.env.get("Path") : null;
+
 				if (PATH != null) {
 					PATH += (File.pathSeparator + environment.get(sysPathKey));
 				}
+
 				environment.putAll(params.env);
+
 				if (PATH != null) {
 					environment.put(sysPathKey, PATH);
 				}
 			}
+
 			process = pb.start();
 			PMS.get().currentProcesses.add(process);
 			stderrConsumer = keepStderr
@@ -153,19 +159,22 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				: new OutputTextLogger(process.getErrorStream());
 			stderrConsumer.start();
 			outConsumer = null;
+
 			if (params.outputFile != null) {
-				logger.debug("Writing in " + params.outputFile.getAbsolutePath());
+				logger.debug("Writing to " + params.outputFile.getAbsolutePath());
 				outConsumer = keepStdout
 					? new OutputTextConsumer(process.getInputStream(), false)
 					: new OutputTextLogger(process.getInputStream());
 			} else if (params.input_pipes[0] != null) {
 				logger.debug("Reading pipe: " + params.input_pipes[0].getInputPipe());
 				bo = params.input_pipes[0].getDirectBuffer();
+
 				if (bo == null || params.losslessaudio || params.lossyaudio || params.no_videoencode) {
 					InputStream is = params.input_pipes[0].getInputStream();
 					outConsumer = new OutputBufferConsumer((params.avidemux) ? new AviDemuxerInputStream(is, params, attachedProcesses) : is, params);
 					bo = outConsumer.getBuffer();
 				}
+
 				bo.attachThread(this);
 				new OutputTextLogger(process.getInputStream()).start();
 			} else if (params.log) {
@@ -177,9 +186,11 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				bo = outConsumer.getBuffer();
 				bo.attachThread(this);
 			}
+
 			if (params.stdin != null) {
 				params.stdin.push(process.getOutputStream());
 			}
+
 			if (outConsumer != null) {
 				outConsumer.start();
 			}
@@ -196,8 +207,8 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				if (outConsumer != null) {
 					outConsumer.join(1000);
 				}
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) { }
+
 			if (bo != null) {
 				bo.close();
 			}
@@ -216,6 +227,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 					logger.error("An error occurred", itse);
 				}
 			}
+
 			if (attachedProcesses != null) {
 				for (ProcessWrapper pw : attachedProcesses) {
 					if (pw != null) {
@@ -223,6 +235,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 					}
 				}
 			}
+
 			PMS.get().currentProcesses.remove(process);
 		}
 	}
@@ -255,6 +268,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			fIn.skip(seek);
 			return fIn;
 		}
+
 		return null;
 	}
 
@@ -262,18 +276,19 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 		if (outConsumer == null) {
 			return null;
 		}
+
 		try {
 			outConsumer.join(1000);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) { }
+
 		return outConsumer.getResults();
 	}
 
 	public List<String> getResults() {
 		try {
 			stderrConsumer.join(1000);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) { }
+
 		return stderrConsumer.getResults();
 	}
 
@@ -282,11 +297,13 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			destroyed = true;
 			if (process != null) {
 				Integer pid = ProcessUtil.getProcessID(process);
+
 				if (pid != null) {
 					logger.debug("Stopping Unix process " + pid + ": " + this);
 				} else {
 					logger.debug("Stopping process: " + this);
 				}
+
 				ProcessUtil.destroy(process);
 			}
 
@@ -297,6 +314,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 					}
 				}
 			}
+
 			if (outConsumer != null && outConsumer.getBuffer() != null) {
 				outConsumer.getBuffer().reset();
 			}
@@ -315,6 +333,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 		if (nullable != this.nullable) {
 			logger.trace("Ready to Stop: " + nullable);
 		}
+
 		this.nullable = nullable;
 	}
 }
