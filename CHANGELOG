@@ -25,6 +25,9 @@ Changelog:
         - Updated Dutch translation (thanks, leroy)
         - Updated Bulgarian translation (thanks, JORDITO)
     Fix DNLA 2114 errors when scanning non-readable subfolders with "hide empty folders" enabled
+    Renderers:
+        - Deprecate misnamed TranscodeVideo profile MPEGAC3: use MPEGPSAC3 instead
+        - Document and clean up TranscodeVideo and TranscodeAudio profiles
 
 1.60.0 - 2012-07-17
 

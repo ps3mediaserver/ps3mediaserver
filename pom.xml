@@ -1175,7 +1175,7 @@
 					<!--
 						Use the antrun plugin to:
 
-						    download the tsMuxeR binary to ${project.binaries}/tsMuxeR
+							download the tsMuxeR binary to ${project.binaries}/tsMuxeR
 							copy the pms-x.x.x-jar-with-dependencies.jar to pms.jar
 					-->
 					<plugin>
