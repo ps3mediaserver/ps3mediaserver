@@ -20,7 +20,11 @@ package net.pms.formats.v2;
 
 import net.pms.dlna.DLNAMediaSubtitle;
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.LoggerContext;
 
 import java.io.File;
 
@@ -31,6 +35,15 @@ import static org.fest.assertions.Assertions.assertThat;
 public class SubtitleUtilsTest {
 	private final Class<?> CLASS = SubtitleUtilsTest.class;
 
+	/**
+	 * Set up testing conditions before running the tests.
+	 */
+	@Before
+	public final void setUp() {
+		// Silence all log messages from the PMS code that is being tested
+		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+		context.reset();
+	}
 
 	@Test(expected = NullPointerException.class)
 	public void testGetSubCpOptionForMencoder_withNullDLNAMediaSubtitle() throws Exception {

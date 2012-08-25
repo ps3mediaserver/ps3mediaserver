@@ -19,7 +19,11 @@
 package net.pms.dlna;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.LoggerContext;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,6 +34,16 @@ import static org.mozilla.universalchardet.Constants.*;
 
 public class DLNAMediaSubtitleTest {
 	private final Class<?> CLASS = DLNAMediaSubtitleTest.class;
+
+	/**
+	 * Set up testing conditions before running the tests.
+	 */
+	@Before
+	public final void setUp() {
+		// Silence all log messages from the PMS code that is being tested
+		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+		context.reset();
+	}
 
 	@Test
 	public void testDefaultSubtitleType() {

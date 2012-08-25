@@ -19,8 +19,12 @@
 package net.pms.util;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.mozilla.universalchardet.Constants;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.LoggerContext;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,6 +33,16 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class FileUtilTest {
 	private final Class<?> CLASS = FileUtilTest.class;
+
+	/**
+	 * Set up testing conditions before running the tests.
+	 */
+	@Before
+	public final void setUp() {
+		// Silence all log messages from the PMS code that is being tested
+		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+		context.reset();
+	}
 
 	@Test
 	public void testGetFileCharset_WINDOWS_1251() throws Exception {
