@@ -20,6 +20,9 @@ package net.pms.formats.v2;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.LoggerContext;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -28,6 +31,10 @@ public class AudioPropertiesTest {
 
 	@Before
 	public void setUp() {
+		// Silence all log messages from the PMS code that is being tested
+		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+		context.reset();
+
 		properties = new AudioProperties();
 	}
 

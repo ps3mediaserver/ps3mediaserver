@@ -52,7 +52,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * Pure FFmpeg video player. 
  */
 public class FFMpegVideo extends Player {
-	private static final Logger logger = LoggerFactory.getLogger(FFMpegVideo.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FFMpegVideo.class);
 	public static final String ID      = "ffmpegvideo";
 
 	@Override
@@ -78,7 +78,10 @@ public class FFMpegVideo extends Player {
 
 	public FFMpegVideo() {
 		if (PMS.getConfiguration().getFfmpegSettings() != null) {
-			StringTokenizer st = new StringTokenizer(PMS.getConfiguration().getFfmpegSettings() + " -ab " + PMS.getConfiguration().getAudioBitrate() + "k -threads " + PMS.getConfiguration().getNumberOfCpuCores(), " ");
+			StringTokenizer st = new StringTokenizer(
+				PMS.getConfiguration().getFfmpegSettings() + " -ab " + PMS.getConfiguration().getAudioBitrate() + "k -threads " + PMS.getConfiguration().getNumberOfCpuCores(),
+				" "
+			);
 			overriddenArgs = new String[st.countTokens()];
 			int i = 0;
 			while (st.hasMoreTokens()) {
@@ -98,33 +101,45 @@ public class FFMpegVideo extends Player {
 	}
 
 	protected String[] getDefaultArgs() {
-		return new String[]{"-vcodec", "mpeg2video", "-f", "vob", "-acodec", "ac3"};
+		return new String[] { "-vcodec", "mpeg2video", "-f", "vob", "-acodec", "ac3" };
 	}
 
 	@Override
 	public String[] args() {
 		String args[] = null;
 		String defaultArgs[] = getDefaultArgs();
+
 		if (overriddenArgs != null) {
 			args = new String[defaultArgs.length + overriddenArgs.length];
+
 			for (int i = 0; i < defaultArgs.length; i++) {
 				args[i] = defaultArgs[i];
 			}
+
+			boolean loggedDisallowedFfmpegOptions = false;
+
 			for (int i = 0; i < overriddenArgs.length; i++) {
 				if (overriddenArgs[i].equals("-f") || overriddenArgs[i].equals("-acodec") || overriddenArgs[i].equals("-vcodec")) {
-					logger.info("FFmpeg encoder settings: You cannot change Muxer, Video Codec or Audio Codec");
-					overriddenArgs[i] = "-title";
+					// no need to log this for each disallowed option
+					if (!loggedDisallowedFfmpegOptions) {
+						LOGGER.warn("The following ffmpeg options cannot be changed and will be ignored: -f, -acodec, -vcodec");
+						loggedDisallowedFfmpegOptions = true;
+					}
+
+					overriddenArgs[i] = "-y";
+
 					if (i + 1 < overriddenArgs.length) {
-						overriddenArgs[i + 1] = "NewTitle";
+						overriddenArgs[i + 1] = "-y";
 					}
 				}
+
 				args[i + defaultArgs.length] = overriddenArgs[i];
 			}
 		} else {
 			args = defaultArgs;
 		}
-		return args;
 
+		return args;
 	}
 
 	public boolean mplayer() {
@@ -155,11 +170,13 @@ public class FFMpegVideo extends Player {
 		DLNAResource dlna,
 		DLNAMediaInfo media,
 		OutputParams params,
-		String args[]) throws IOException {
+		String args[]
+	) throws IOException {
 		setAudioAndSubs(fileName, media, params, PMS.getConfiguration());
 
 		PipeIPCProcess videoP = null;
 		PipeIPCProcess audioP = null;
+
 		if (mplayer()) {
 			videoP = new PipeIPCProcess("mplayer_vid1" + System.currentTimeMillis(), "mplayer_vid2" + System.currentTimeMillis(), false, false);
 			audioP = new PipeIPCProcess("mplayer_aud1" + System.currentTimeMillis(), "mplayer_aud2" + System.currentTimeMillis(), false, false);
@@ -169,44 +186,51 @@ public class FFMpegVideo extends Player {
 		cmdArray[0] = executable();
 		cmdArray[1] = "-sn";
 		cmdArray[2] = "-sn";
+
 		if (params.timeseek > 0 && !mplayer()) {
 			cmdArray[1] = "-ss";
 			cmdArray[2] = "" + params.timeseek;
 		}
+
 		cmdArray[3] = "-sn";
 		cmdArray[4] = "-sn";
 		cmdArray[5] = "-sn";
 		cmdArray[6] = "-sn";
+
 		if (type() == Format.VIDEO) {
 			cmdArray[5] = "-i";
 			cmdArray[6] = fileName;
 			if (mplayer()) {
 				cmdArray[3] = "-f";
 				cmdArray[4] = "yuv4mpegpipe";
-				//cmdArray[6] = pipeprefix + videoPipe + (PMS.get().isWindows()?".2":"");
+				// cmdArray[6] = pipeprefix + videoPipe + (PMS.get().isWindows()?".2":"");
 				cmdArray[6] = videoP.getOutputPipe();
 			}
 		}
+
 		cmdArray[7] = "-sn";
 		cmdArray[8] = "-sn";
 		cmdArray[9] = "-sn";
 		cmdArray[10] = "-sn";
+
 		if (type() == Format.VIDEO || type() == Format.AUDIO) {
 			if (type() == Format.VIDEO && (mplayer())) {
 				cmdArray[7] = "-f";
 				cmdArray[8] = "wav";
 				cmdArray[9] = "-i";
-				//cmdArray[10] = pipeprefix + audioPipe + (PMS.get().isWindows()?".2":"");
+				// cmdArray[10] = pipeprefix + audioPipe + (PMS.get().isWindows()?".2":"");
 				cmdArray[10] = audioP.getOutputPipe();
 			} else if (type() == Format.AUDIO) {
 				cmdArray[7] = "-i";
 				cmdArray[8] = fileName;
 			}
 		}
+
 		if (params.timeend > 0) {
 			cmdArray[9] = "-t";
 			cmdArray[10] = "" + params.timeend;
 		}
+
 		for (int i = 0; i < args.length; i++) {
 			cmdArray[11 + i] = args[i];
 		}
@@ -217,15 +241,17 @@ public class FFMpegVideo extends Player {
 		if (PMS.getConfiguration().isFileBuffer()) {
 			File m = new File(PMS.getConfiguration().getTempFolder(), "pms-transcode.tmp");
 			if (m.exists() && !m.delete()) {
-				logger.info("Temp file currently used.. Waiting 3 seconds");
+				LOGGER.info("Temp file currently used.. Waiting 3 seconds");
+
 				try {
 					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-				}
+				} catch (InterruptedException e) { }
+
 				if (m.exists() && !m.delete()) {
-					logger.info("Temp file cannot be deleted... Serious ERROR");
+					LOGGER.info("Temp file cannot be deleted... Serious ERROR");
 				}
 			}
+
 			params.outputFile = m;
 			params.minFileSize = params.minBufferSize;
 			m.deleteOnExit();
@@ -251,6 +277,7 @@ public class FFMpegVideo extends Player {
 
 			String seek_param = "-quiet";
 			String seek_value = "-quiet";
+
 			if (params.timeseek > 0) {
 				seek_param = "-ss";
 				seek_value = "" + params.timeseek;
@@ -260,8 +287,20 @@ public class FFMpegVideo extends Player {
 
 			overiddenMPlayerArgs = new String[0];
 
+			String[] mPlayerdefaultVideoArgs = new String[] {
+				fileName,
+				seek_param,
+				seek_value,
+				"-vo",
+				"yuv4mpeg:file=" + videoP.getInputPipe(),
+				"-ao",
+				"pcm:waveheader:file=" + audioP.getInputPipe(),
+				"-benchmark",
+				"-noframedrop",
+				"-speed",
+				"100"/*, "-quiet"*/
+			};
 
-			String mPlayerdefaultVideoArgs[] = new String[]{fileName, seek_param, seek_value, "-vo", "yuv4mpeg:file=" + videoP.getInputPipe(), "-ao", "pcm:waveheader:file=" + audioP.getInputPipe(), "-benchmark", "-noframedrop", "-speed", "100"/*, "-quiet"*/};
 			OutputParams mplayer_vid_params = new OutputParams(PMS.getConfiguration());
 			mplayer_vid_params.maxBufferSize = 1;
 
@@ -274,9 +313,11 @@ public class FFMpegVideo extends Player {
 			if (type() == Format.VIDEO) {
 				pw.attachProcess(mkfifo_vid_process);
 			}
+
 			if (type() == Format.VIDEO || type() == Format.AUDIO) {
 				pw.attachProcess(mkfifo_aud_process);
 			}
+
 			if (type() == Format.VIDEO) {
 				pw.attachProcess(mplayer_vid_process);
 			}
@@ -284,13 +325,15 @@ public class FFMpegVideo extends Player {
 			if (type() == Format.VIDEO) {
 				mkfifo_vid_process.runInNewThread();
 			}
+
 			if (type() == Format.VIDEO || type() == Format.AUDIO) {
 				mkfifo_aud_process.runInNewThread();
 			}
+
 			try {
 				Thread.sleep(250);
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) { }
+
 			if (type() == Format.VIDEO) {
 				videoP.deleteLater();
 				mplayer_vid_process.runInNewThread();
@@ -298,8 +341,7 @@ public class FFMpegVideo extends Player {
 
 			try {
 				Thread.sleep(250);
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) { }
 		}
 
 		pw.runInNewThread();
@@ -316,7 +358,8 @@ public class FFMpegVideo extends Player {
 	protected JComponent config(String languageLabel) {
 		FormLayout layout = new FormLayout(
 			"left:pref, 0:grow",
-			"p, 3dlu, p, 3dlu");
+			"p, 3dlu, p, 3dlu"
+		);
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.EMPTY_BORDER);
 		builder.setOpaque(false);
@@ -342,6 +385,7 @@ public class FFMpegVideo extends Player {
 				PMS.getConfiguration().setFfmpegSettings(ffmpeg.getText());
 			}
 		});
+
 		builder.add(ffmpeg, cc.xy(2, 3));
 
 		return builder.getPanel();
@@ -374,10 +418,10 @@ public class FFMpegVideo extends Player {
 				return false;
 			}
 		} catch (NullPointerException e) {
-			logger.trace("FFmpeg cannot determine compatibility based on audio track for "
+			LOGGER.trace("FFmpeg cannot determine compatibility based on audio track for "
 					+ resource.getSystemName());
 		} catch (IndexOutOfBoundsException e) {
-			logger.trace("FFmpeg cannot determine compatibility based on default audio track for "
+			LOGGER.trace("FFmpeg cannot determine compatibility based on default audio track for "
 					+ resource.getSystemName());
 		}
 

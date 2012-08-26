@@ -9,15 +9,25 @@ Changelog:
     Auto encoding detection of non UTF-8 external subtitles for Russian, Greek, Hebrew, Chinese, Korean and Japanese languages (leave "Subtitles codepage" option blank)
     Improved handling of UTF-8 external subtitles
     Localized #--TRANSCODE--# folder name
+    PMS.conf:
+        - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
     Make example PMS.conf behave more like built-in defaults
     Restore maximum buffer size to 600 MB (was 400 MB)
-    Prevent image distortion on some DLNA clients with "Keep AC-3 track" option enabled
+    Prevented image distortion on some DLNA clients with "Keep AC-3 track" option enabled
     Don't show entries for disabled engines in #--TRANSCODE--# folder
     Allow Traces tab panel to auto-scroll (thanks, LordQuackstar!)
     Revert changes to SMP-N100.conf that conflict with Sony Blu-ray players and break MKV support (thanks, mrw1986)
-    PMS.conf:
-        - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
     Replaced ImageMagick with Thumbnailator for thumbnail generation
+    Fix FFmpeg engine's handling of unsupported custom options (thanks, ajamess)
+    Fixed FFmpeg command line arguments used by tsMuxeR video
+    Added new renderer: Yamaha RX-A1010 (thanks, merelin)
+    Language updates:
+        - Updated Dutch translation (thanks, leroy)
+        - Updated Bulgarian translation (thanks, JORDITO)
+    Fix DNLA 2114 errors when scanning non-readable subfolders with "hide empty folders" enabled
+    Renderers:
+        - Deprecate misnamed TranscodeVideo profile MPEGAC3: use MPEGPSAC3 instead
+        - Document and clean up TranscodeVideo and TranscodeAudio profiles
 
 1.60.0 - 2012-07-17
 

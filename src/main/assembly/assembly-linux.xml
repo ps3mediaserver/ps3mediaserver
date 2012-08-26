@@ -13,38 +13,34 @@
 	</formats>
 	<includeBaseDirectory>true</includeBaseDirectory>
 
+    <files>
+        <!-- Include pms-X.YY.Z-SNAPSHOT-jar-with-dependencies as pms.jar-->
+        <file>
+            <source>${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar</source>
+            <outputDirectory>.</outputDirectory>
+            <destName>pms.jar</destName>
+            <fileMode>0644</fileMode>
+            <lineEnding>keep</lineEnding>
+        </file>
+
+        <!-- Include the tsMuxeR binary -->
+        <file>
+            <source>${project.binaries}/tsMuxeR</source>
+            <outputDirectory>.</outputDirectory>
+            <fileMode>0755</fileMode>
+            <lineEnding>keep</lineEnding>
+        </file>
+
+        <!-- Include executable script PMS.sh -->
+        <file>
+            <source>${project.external-resources}/PMS.sh</source>
+            <outputDirectory>.</outputDirectory>
+            <fileMode>0755</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+    </files>
+
 	<fileSets>
-		<!-- Include PMS -->
-		<fileSet>
-			<directory>${project.basedir}/target</directory>
-			<outputDirectory>.</outputDirectory>
-			<fileMode>0644</fileMode>
-			<includes>
-				<include>pms.jar</include>
-			</includes>
-		</fileSet>
-
-		<!-- Include the tsMuxeR binary -->
-		<fileSet>
-			<directory>${project.binaries}</directory>
-			<outputDirectory>linux</outputDirectory>
-			<fileMode>0755</fileMode>
-			<includes>
-				<include>tsMuxeR</include>
-			</includes>
-		</fileSet>
-
-		<!-- Include executable script -->
-		<fileSet>
-			<directory>${project.external-resources}</directory>
-			<outputDirectory>.</outputDirectory>
-			<fileMode>0755</fileMode>
-			<lineEnding>unix</lineEnding>
-			<includes>
-				<include>PMS.sh</include>
-			</includes>
-		</fileSet>
-
 		<!-- Include documentation -->
 		<fileSet>
 			<directory>${project.basedir}</directory>
