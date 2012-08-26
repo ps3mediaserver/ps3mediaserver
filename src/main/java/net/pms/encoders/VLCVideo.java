@@ -47,9 +47,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Use VLC as a backend transcoder. Note that 0.x and 1.x versions are unsupported 
- * (and probably will crash). Only the latest version will be supported
- * 
+ * Use VLC as a backend transcoder. Note that 0.x and 1.x versions are
+ * unsupported (and probably will crash). Only the latest version will be
+ * supported
+ *
  * @author Leon Blakey <lord.quackstar@gmail.com>
  */
 public class VLCVideo extends Player {
@@ -130,8 +131,9 @@ public class VLCVideo extends Player {
 
 	/**
 	 * Pick codecs for VLC based on formats the client supports;
+	 *
 	 * @param formats
-	 * @return 
+	 * @return
 	 */
 	protected CodecConfig genConfig(RendererConfiguration renderer) {
 		CodecConfig config = new CodecConfig();
@@ -153,17 +155,20 @@ public class VLCVideo extends Player {
 			config.videoCodec = "mp2v";
 			config.audioCodec = "mp2a"; //NOTE: a52 sometimes causes audio to stop after ~5 mins
 			config.container = type;
-		} else
+		} else {
 			throw new RuntimeException("Unknown encoding profile");
+		}
 		LOGGER.debug("Using " + config.videoCodec + ", " + config.audioCodec + ", " + config.container);
 
 		//Audio sample rate handling
-		if (sampleRateOverride.isSelected())
+		if (sampleRateOverride.isSelected()) {
 			config.sampleRate = Integer.valueOf(sampleRate.getText());
+		}
 
 		//This has caused garbled audio, so only enable when told to
-		if (audioSyncEnabled.isSelected())
+		if (audioSyncEnabled.isSelected()) {
 			config.extraTrans.add("audio-sync");
+		}
 		return config;
 	}
 
@@ -249,50 +254,49 @@ public class VLCVideo extends Player {
 		cmdList.add("dummy");
 
 		//Hardware acceleration seems to be more stable now, so its enabled
-		if (hardwareAccel.isSelected())
+		if (hardwareAccel.isSelected()) {
 			cmdList.add("--ffmpeg-hw");
+		}
 
 		//Useful for the more esoteric codecs people use
-		if (experimentalCodecs.isSelected())
+		if (experimentalCodecs.isSelected()) {
 			cmdList.add("--sout-ffmpeg-strict=-2");
+		}
 
 		//Stop the DOS box from appearing on windows
-		if (isWindows)
+		if (isWindows) {
 			cmdList.add("--dummy-quiet");
+		}
 
 		//File needs to be given before sout, otherwise vlc complains
 		cmdList.add(fileName);
 
 		//Huge fake track id that shouldn't conflict with any real subtitle or audio id. Hopefully.
 		String disableSuffix = "track=214748361";
-		
+
 		//Handle audio language
-		if (params.aid != null)
-			//User specified language at the client, acknowledge it
-			if (params.aid.getLang() == null || params.aid.getLang().equals("und"))
-				//VLC doesn't understand und, but does understand a non existant track
+		if (params.aid != null) { //User specified language at the client, acknowledge it
+			if (params.aid.getLang() == null || params.aid.getLang().equals("und")) { //VLC doesn't understand und, but does understand a non existant track
 				cmdList.add("--audio-" + disableSuffix);
-			else
-				//Load by ID (better)
+			} else { //Load by ID (better)
 				cmdList.add("--audio-track=" + params.aid.getId());
-		else
-			//Not specified, use language from GUI
+			}
+		} else { //Not specified, use language from GUI
 			cmdList.add("--audio-language=" + audioPri.getText());
+		}
 
 		//Handle subtitle language
-		if (params.sid != null)
-			//User specified language at the client, acknowledge it
-			if (params.sid.getLang() == null || params.sid.getLang().equals("und"))
-				//VLC doesn't understand und, but does understand a non existant track
+		if (params.sid != null) { //User specified language at the client, acknowledge it
+			if (params.sid.getLang() == null || params.sid.getLang().equals("und")) { //VLC doesn't understand und, but does understand a non existant track
 				cmdList.add("--sub-" + disableSuffix);
-			else
-				//Load by ID (better)
+			} else { //Load by ID (better)
 				cmdList.add("--sub-track=" + params.sid.getId());
-		else if (subtitleEnabled.isSelected())
-			//Not specified, use language from GUI if enabled
+			}
+		} else if (subtitleEnabled.isSelected()) { //Not specified, use language from GUI if enabled
 			cmdList.add("--sub-language=" + subtitlePri.getText());
-		else
+		} else {
 			cmdList.add("--sub-" + disableSuffix);
+		}
 
 		//Skip forward if nessesary
 		if (params.timeseek != 0) {
@@ -314,9 +318,9 @@ public class VLCVideo extends Player {
 		cmdList.add("vlc://quit");
 
 		//Add any extra parameters
-		if (!extraParams.getText().trim().isEmpty())
-			//Add each part as a new item
+		if (!extraParams.getText().trim().isEmpty()) { //Add each part as a new item
 			cmdList.addAll(Arrays.asList(StringUtils.split(extraParams.getText().trim(), " ")));
+		}
 
 		//Pass to process wrapper
 		String[] cmdArray = new String[cmdList.size()];
@@ -417,10 +421,11 @@ public class VLCVideo extends Player {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				String typed = scale.getText();
-				if (!typed.matches("\\d\\.\\d"))
+				if (!typed.matches("\\d\\.\\d")) {
 					return;
+				}
 				double value = Double.parseDouble(typed);
-				scaleSlider.setValue( (int) (value * 10));
+				scaleSlider.setValue((int) (value * 10));
 				pmsconfig.setVlcScale(String.valueOf(value));
 			}
 		});
