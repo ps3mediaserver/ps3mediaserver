@@ -167,7 +167,7 @@ public class VLCVideo extends Player {
 
 		// This has caused garbled audio, so only enable when told to
 		if (audioSyncEnabled.isSelected()) {
-			config.extraTrans.add("audio-sync");
+			config.extraTrans.put("audio-sync", "");
 		}
 		return config;
 	}
@@ -177,49 +177,47 @@ public class VLCVideo extends Player {
 		String audioCodec;
 		String container;
 		String extraParams;
-		List<String> extraTrans = new ArrayList<String>();
+		HashMap<String, Object> extraTrans = new HashMap();
 		int sampleRate;
 	}
 
-	protected List<String> getEncodingArgs(CodecConfig config) {
-		// See: http:// www.videolan.org/doc/streaming-howto/en/ch03.html
-		// See: http:// wiki.videolan.org/Codec
-		// Xbox: wmv2, wma, asf (WORKING)
-		// PS3: mp1v, mpga, mpeg1 (WORKING)
-		List<String> args = new ArrayList<String>();
+	protected Map<String, Object> getEncodingArgs(CodecConfig config) {
+		// See: http://www.videolan.org/doc/streaming-howto/en/ch03.html
+		// See: http://wiki.videolan.org/Codec
+		Map<String, Object> args = new HashMap();
 
 		// Codecs to use
-		args.add("vcodec=" + config.videoCodec);
-		args.add("acodec=" + config.audioCodec);
+		args.put("vcodec", config.videoCodec);
+		args.put("acodec", config.audioCodec);
 
 		// Bitrate in kbit/s (TODO: Use global option?)
-		args.add("vb=4096");
-		args.add("ab=128");
+		args.put("vb", "4096");
+		args.put("ab", "128");
 
 		// Video scaling
-		args.add("scale=" + scale.getText());
+		args.put("scale", scale.getText());
 
 		// Audio Channels
-		args.add("channels=2");
+		args.put("channels", 2);
 
 		// Static sample rate
-		args.add("samplerate=" + config.sampleRate);
+		args.put("samplerate", config.sampleRate);
 
 		// Recommended on VLC DVD encoding page
-		args.add("keyint=16");
+		args.put("keyint", 16);
 
 		// Recommended on VLC DVD encoding page
-		args.add("strict-rc");
+		args.put("strict-rc", "");
 
 		// Stream subtitles to client
 		// args.add("scodec=dvbs");
 		// args.add("senc=dvbsub");
 
 		// Hardcode subtitles into video
-		args.add("soverlay");
+		args.put("soverlay", "");
 
 		// Add extra args
-		args.addAll(config.extraTrans);
+		args.putAll(config.extraTrans);
 
 		return args;
 	}
@@ -304,10 +302,16 @@ public class VLCVideo extends Player {
 			cmdList.add(String.valueOf(params.timeseek));
 		}
 
+		// Generate encoding args
+		StringBuilder encodingArgsBuilder = new StringBuilder();
+		for (Map.Entry<String, Object> curEntry : getEncodingArgs(config).entrySet()) {
+			encodingArgsBuilder.append(curEntry.getKey()).append("=").append(curEntry.getValue()).append(",");
+		}
+
 		// Add our transcode options
 		String transcodeSpec = String.format(
 				"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
-				StringUtils.join(getEncodingArgs(config), ","),
+				encodingArgsBuilder.toString(),
 				config.container,
 				(isWindows ? "\\\\" : ""),
 				tsPipe.getInputPipe());
