@@ -113,7 +113,7 @@ public class VLCVideo extends Player {
 
 	@Override
 	public String mimeType() {
-		//I think?
+		// I think?
 		return HTTPResource.VIDEO_TRANSCODE;
 	}
 
@@ -124,8 +124,8 @@ public class VLCVideo extends Player {
 
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		//VLC is a general transcoder that should support every format
-		//Until problem occurs, assume compatible
+		// VLC is a general transcoder that should support every format
+		// Until problem occurs, assume compatible
 		return true;
 	}
 
@@ -143,29 +143,29 @@ public class VLCVideo extends Player {
 			config.audioCodec = codecAudio.getText();
 			config.container = codecContainer.getText();
 		} else if (renderer.isTranscodeToWMV()) {
-			//Assume WMV = XBox = all media renderers with this flag
+			// Assume WMV = XBox = all media renderers with this flag
 			LOGGER.debug("Using XBox WMV codecs");
 			config.videoCodec = "wmv2";
 			config.audioCodec = "wma";
 			config.container = "asf";
 		} else if (renderer.isTranscodeToMPEGPSAC3() || renderer.isTranscodeToMPEGTSAC3()) {
-			//Default codecs for DLNA standard
+			// Default codecs for DLNA standard
 			String type = renderer.isTranscodeToMPEGPSAC3() ? "ps" : "ts";
 			LOGGER.debug("Using DLNA standard codecs with " + type + " container");
 			config.videoCodec = "mp2v";
-			config.audioCodec = "mp2a"; //NOTE: a52 sometimes causes audio to stop after ~5 mins
+			config.audioCodec = "mp2a"; // NOTE: a52 sometimes causes audio to stop after ~5 mins
 			config.container = type;
 		} else {
 			throw new RuntimeException("Unknown encoding profile");
 		}
 		LOGGER.debug("Using " + config.videoCodec + ", " + config.audioCodec + ", " + config.container);
 
-		//Audio sample rate handling
+		// Audio sample rate handling
 		if (sampleRateOverride.isSelected()) {
 			config.sampleRate = Integer.valueOf(sampleRate.getText());
 		}
 
-		//This has caused garbled audio, so only enable when told to
+		// This has caused garbled audio, so only enable when told to
 		if (audioSyncEnabled.isSelected()) {
 			config.extraTrans.add("audio-sync");
 		}
@@ -182,43 +182,43 @@ public class VLCVideo extends Player {
 	}
 
 	protected List<String> getEncodingArgs(CodecConfig config) {
-		//See: http://www.videolan.org/doc/streaming-howto/en/ch03.html
-		//See: http://wiki.videolan.org/Codec
-		//Xbox: wmv2, wma, asf (WORKING)
-		//PS3: mp1v, mpga, mpeg1 (WORKING)
+		// See: http:// www.videolan.org/doc/streaming-howto/en/ch03.html
+		// See: http:// wiki.videolan.org/Codec
+		// Xbox: wmv2, wma, asf (WORKING)
+		// PS3: mp1v, mpga, mpeg1 (WORKING)
 		List<String> args = new ArrayList<String>();
 
-		//Codecs to use
+		// Codecs to use
 		args.add("vcodec=" + config.videoCodec);
 		args.add("acodec=" + config.audioCodec);
 
-		//Bitrate in kbit/s (TODO: Use global option?)
+		// Bitrate in kbit/s (TODO: Use global option?)
 		args.add("vb=4096");
 		args.add("ab=128");
 
-		//Video scaling
+		// Video scaling
 		args.add("scale=" + scale.getText());
 
-		//Audio Channels
+		// Audio Channels
 		args.add("channels=2");
 
-		//Static sample rate
+		// Static sample rate
 		args.add("samplerate=" + config.sampleRate);
 
-		//Recommended on VLC DVD encoding page
+		// Recommended on VLC DVD encoding page
 		args.add("keyint=16");
 
-		//Recommended on VLC DVD encoding page
+		// Recommended on VLC DVD encoding page
 		args.add("strict-rc");
 
-		//Stream subtitles to client
-		//args.add("scodec=dvbs");
-		//args.add("senc=dvbsub");
+		// Stream subtitles to client
+		// args.add("scodec=dvbs");
+		// args.add("senc=dvbsub");
 
-		//Hardcode subtitles into video
+		// Hardcode subtitles into video
 		args.add("soverlay");
 
-		//Add extra args
+		// Add extra args
 		args.addAll(config.extraTrans);
 
 		return args;
@@ -228,7 +228,7 @@ public class VLCVideo extends Player {
 	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media, OutputParams params) throws IOException {
 		boolean isWindows = Platform.isWindows();
 
-		//Make sure we can play this
+		// Make sure we can play this
 		CodecConfig config = genConfig(params.mediaRenderer);
 
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + config.container);
@@ -253,58 +253,58 @@ public class VLCVideo extends Player {
 		cmdList.add("-I");
 		cmdList.add("dummy");
 
-		//Hardware acceleration seems to be more stable now, so its enabled
+		// Hardware acceleration seems to be more stable now, so its enabled
 		if (hardwareAccel.isSelected()) {
 			cmdList.add("--ffmpeg-hw");
 		}
 
-		//Useful for the more esoteric codecs people use
+		// Useful for the more esoteric codecs people use
 		if (experimentalCodecs.isSelected()) {
 			cmdList.add("--sout-ffmpeg-strict=-2");
 		}
 
-		//Stop the DOS box from appearing on windows
+		// Stop the DOS box from appearing on windows
 		if (isWindows) {
 			cmdList.add("--dummy-quiet");
 		}
 
-		//File needs to be given before sout, otherwise vlc complains
+		// File needs to be given before sout, otherwise vlc complains
 		cmdList.add(fileName);
 
-		//Huge fake track id that shouldn't conflict with any real subtitle or audio id. Hopefully.
+		// Huge fake track id that shouldn't conflict with any real subtitle or audio id. Hopefully.
 		String disableSuffix = "track=214748361";
 
-		//Handle audio language
-		if (params.aid != null) { //User specified language at the client, acknowledge it
-			if (params.aid.getLang() == null || params.aid.getLang().equals("und")) { //VLC doesn't understand und, but does understand a non existant track
+		// Handle audio language
+		if (params.aid != null) { // User specified language at the client, acknowledge it
+			if (params.aid.getLang() == null || params.aid.getLang().equals("und")) { // VLC doesn't understand und, but does understand a non existant track
 				cmdList.add("--audio-" + disableSuffix);
-			} else { //Load by ID (better)
+			} else { // Load by ID (better)
 				cmdList.add("--audio-track=" + params.aid.getId());
 			}
-		} else { //Not specified, use language from GUI
+		} else { // Not specified, use language from GUI
 			cmdList.add("--audio-language=" + audioPri.getText());
 		}
 
-		//Handle subtitle language
-		if (params.sid != null) { //User specified language at the client, acknowledge it
-			if (params.sid.getLang() == null || params.sid.getLang().equals("und")) { //VLC doesn't understand und, but does understand a non existant track
+		// Handle subtitle language
+		if (params.sid != null) { // User specified language at the client, acknowledge it
+			if (params.sid.getLang() == null || params.sid.getLang().equals("und")) { // VLC doesn't understand und, but does understand a non existant track
 				cmdList.add("--sub-" + disableSuffix);
-			} else { //Load by ID (better)
+			} else { // Load by ID (better)
 				cmdList.add("--sub-track=" + params.sid.getId());
 			}
-		} else if (subtitleEnabled.isSelected()) { //Not specified, use language from GUI if enabled
+		} else if (subtitleEnabled.isSelected()) { // Not specified, use language from GUI if enabled
 			cmdList.add("--sub-language=" + subtitlePri.getText());
 		} else {
 			cmdList.add("--sub-" + disableSuffix);
 		}
 
-		//Skip forward if nessesary
+		// Skip forward if nessesary
 		if (params.timeseek != 0) {
 			cmdList.add("--start-time");
 			cmdList.add(String.valueOf(params.timeseek));
 		}
 
-		//Add our transcode options
+		// Add our transcode options
 		String transcodeSpec = String.format(
 				"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
 				StringUtils.join(getEncodingArgs(config), ","),
@@ -314,15 +314,15 @@ public class VLCVideo extends Player {
 		cmdList.add("--sout");
 		cmdList.add(transcodeSpec);
 
-		//Force VLC to die when finished
-		cmdList.add("vlc://quit");
+		// Force VLC to die when finished
+		cmdList.add("vlc:// quit");
 
-		//Add any extra parameters
-		if (!extraParams.getText().trim().isEmpty()) { //Add each part as a new item
+		// Add any extra parameters
+		if (!extraParams.getText().trim().isEmpty()) { // Add each part as a new item
 			cmdList.addAll(Arrays.asList(StringUtils.split(extraParams.getText().trim(), " ")));
 		}
 
-		//Pass to process wrapper
+		// Pass to process wrapper
 		String[] cmdArray = new String[cmdList.size()];
 		cmdList.toArray(cmdArray);
 		cmdArray = finalizeTranscoderArgs(this, fileName, dlna, media, params, cmdArray);
@@ -330,7 +330,7 @@ public class VLCVideo extends Player {
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.attachProcess(pipe_process);
 
-		//TODO: Why is this here?
+		// TODO: Why is this here?
 		try {
 			Thread.sleep(150);
 		} catch (InterruptedException e) {
@@ -342,10 +342,10 @@ public class VLCVideo extends Player {
 
 	@Override
 	public JComponent config() {
-		//Here goes my 3rd try to learn JGoodies Form
+		// Here goes my 3rd try to learn JGoodies Form
 		FormLayout layout = new FormLayout(
-				"right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", //columns
-				""); //rows (none, dynamic)
+				"right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", // columns
+				""); // rows (none, dynamic)
 		layout.setColumnGroups(new int[][]{{1, 5}, {3, 7}});
 		DefaultFormBuilder mainPanel = new DefaultFormBuilder(layout);
 
@@ -398,10 +398,10 @@ public class VLCVideo extends Player {
 			}
 		});
 
-		//Developer stuff. Theoretically is temporary 
+		// Developer stuff. Theoretically is temporary 
 		mainPanel.appendSeparator(Messages.getString("VlcTrans.10"));
 
-		//Add scale as a subpanel because it has an awkward layout
+		// Add scale as a subpanel because it has an awkward layout
 		mainPanel.append(Messages.getString("VlcTrans.11"));
 		FormLayout scaleLayout = new FormLayout("pref,3dlu,pref", "");
 		DefaultFormBuilder scalePanel = new DefaultFormBuilder(scaleLayout);
@@ -431,11 +431,11 @@ public class VLCVideo extends Player {
 		});
 		mainPanel.append(scalePanel.getPanel(), 3);
 
-		//Allow user to choose codec
+		// Allow user to choose codec
 		mainPanel.nextLine();
 		FormLayout codecLayout = new FormLayout(
-				"right:pref, 3dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", //columns
-				"bottom:pref:grow, 3dlu, top:pref:grow"); //rows
+				"right:pref, 3dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", // columns
+				"bottom:pref:grow, 3dlu, top:pref:grow"); // rows
 		codecLayout.setColumnGroups(new int[][]{{5, 9, 13}, {3, 7, 11}});
 		codecLayout.setRowGroups(new int[][]{{1, 3}});
 		DefaultFormBuilder codecPanel = new DefaultFormBuilder(codecLayout);
@@ -482,7 +482,7 @@ public class VLCVideo extends Player {
 		});
 		mainPanel.append(codecPanel.getPanel(), 7);
 
-		//Audio sample rate
+		// Audio sample rate
 		FormLayout sampleRateLayout = new FormLayout("right:pref, 3dlu, right:pref, 3dlu, right:pref, 3dlu, left:pref", "");
 		DefaultFormBuilder sampleRatePanel = new DefaultFormBuilder(sampleRateLayout);
 		sampleRateOverride = new JCheckBox(Messages.getString("VlcTrans.17"), pmsconfig.getVlcSampleRateOverride());
@@ -506,7 +506,7 @@ public class VLCVideo extends Player {
 		});
 		mainPanel.append(sampleRatePanel.getPanel(), 7);
 
-		//Extra options
+		// Extra options
 		mainPanel.nextLine();
 		mainPanel.append(Messages.getString("VlcTrans.20"), extraParams = new JTextField(), 5);
 
