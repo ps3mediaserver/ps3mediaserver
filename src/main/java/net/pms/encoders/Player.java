@@ -166,7 +166,7 @@ public abstract class Player {
 	public void setAudioAndSubs(String fileName, DLNAMediaInfo media, OutputParams params, PmsConfiguration configuration) {
 		if (params.aid == null && media != null) {
 			// check for preferred audio
-			StringTokenizer st = new StringTokenizer(configuration.getMencoderAudioLanguages(), ",");
+			StringTokenizer st = new StringTokenizer(configuration.getAudioLanguages(), ",");
 			while (st != null && st.hasMoreTokens()) {
 				String lang = st.nextToken();
 				lang = lang.trim();
@@ -303,7 +303,7 @@ public abstract class Player {
 			}
 
 			if (params.sid == null) {
-				StringTokenizer st = new StringTokenizer(configuration.getMencoderSubLanguages(), ",");
+				StringTokenizer st = new StringTokenizer(configuration.getSubLanguages(), ",");
 				while (st != null && st.hasMoreTokens()) {
 					String lang = st.nextToken();
 					lang = lang.trim();

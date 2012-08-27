@@ -41,6 +41,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
+import javax.swing.Icon;
+
 /**
  * Container for all configurable PMS settings. Settings are typically defined by three things:
  * a unique key for use in the configuration file "PMS.conf", a getter (and setter) method and
@@ -102,7 +104,6 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_ASS_OUTLINE = "mencoder_ass_outline";
 	private static final String KEY_MENCODER_ASS_SCALE = "mencoder_ass_scale";
 	private static final String KEY_MENCODER_ASS_SHADOW = "mencoder_ass_shadow";
-	private static final String KEY_MENCODER_AUDIO_LANGS = "mencoder_audiolangs";
 	private static final String KEY_MENCODER_AUDIO_SUB_LANGS = "mencoder_audiosublangs";
 	private static final String KEY_MENCODER_CUSTOM_OPTIONS = "mencoder_decode"; // TODO (breaking change): should be renamed to e.g. mencoder_custom_options
 	private static final String KEY_MENCODER_DISABLE_SUBS = "mencoder_disablesubs";
@@ -130,7 +131,6 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_SCALEY = "mencoder_scaley";
 	private static final String KEY_MENCODER_SUB_CP = "mencoder_subcp";
 	private static final String KEY_MENCODER_SUB_FRIBIDI = "mencoder_subfribidi";
-	private static final String KEY_MENCODER_SUB_LANGS = "mencoder_sublangs";
 	private static final String KEY_MENCODER_USE_PCM = "mencoder_usepcm";
 	private static final String KEY_MENCODER_USE_PCM_FOR_HQ_AUDIO_ONLY = "mencoder_usepcm_for_hq_audio_only";
 	private static final String KEY_MENCODER_VOBSUB_SUBTITLE_QUALITY = "mencoder_vobsub_subtitle_quality";
@@ -175,7 +175,10 @@ public class PmsConfiguration {
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
 	// FIXME what is this? if it should be kept, it needs to be a) documented and b) renamed (breaking change)
 	private static final String KEY_BUFFER_MAX = "buffer_max";
-
+	private static final String KEY_AUDIO_LANGUAGES = "audio_languages";
+	private static final String KEY_DISABLE_SUBTITLES = "disable_subtitles";
+	private static final String KEY_SUBTITLE_LANGUAGES = "subtitle_languages";
+	
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
 	// see Build for more details
 	private static final String PROFILE_DIRECTORY_NAME = Build.getProfileDirectoryName();
@@ -935,7 +938,7 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Returns the audio language priority for MEncoder as a comma separated
+	 * Returns the audio language priority as a comma separated
 	 * string. For example: <code>"eng,fre,jpn,ger,und"</code>, where "und"
 	 * stands for "undefined".
 	 * Can be a blank string.
@@ -943,12 +946,12 @@ public class PmsConfiguration {
 	 *
 	 * @return The audio language priority string.
 	 */
-	public String getMencoderAudioLanguages() {
-		return ConfigurationUtil.getBlankConfigurationString(configuration, KEY_MENCODER_AUDIO_LANGS, Messages.getString("MEncoderVideo.126"));
+	public String getAudioLanguages() {
+		return ConfigurationUtil.getBlankConfigurationString(configuration, KEY_AUDIO_LANGUAGES, Messages.getString("MEncoderVideo.126"));
 	}
 
 	/**
-	 * Returns the subtitle language priority for MEncoder as a comma separated
+	 * Returns the subtitle language priority as a comma separated
 	 * string. For example: <code>"loc,eng,fre,jpn,ger,und"</code>, where "loc"
 	 * stands for the preferred local language and "und" stands for "undefined".
 	 * Can be a blank string.
@@ -956,8 +959,8 @@ public class PmsConfiguration {
 	 *
 	 * @return The subtitle language priority string.
 	 */
-	public String getMencoderSubLanguages() {
-		return ConfigurationUtil.getBlankConfigurationString(configuration, KEY_MENCODER_SUB_LANGS, Messages.getString("MEncoderVideo.127"));
+	public String getSubLanguages() {
+		return ConfigurationUtil.getBlankConfigurationString(configuration, KEY_SUBTITLE_LANGUAGES, Messages.getString("MEncoderVideo.127"));
 	}
 
 	/**
@@ -1044,23 +1047,23 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Sets the audio language priority for MEncoder as a comma separated
+	 * Sets the audio language priority as a comma separated
 	 * string. For example: <code>"eng,fre,jpn,ger,und"</code>, where "und"
 	 * stands for "undefined".
 	 * @param value The audio language priority string.
 	 */
-	public void setMencoderAudioLanguages(String value) {
-		configuration.setProperty(KEY_MENCODER_AUDIO_LANGS, value);
+	public void setAudioLanguages(String value) {
+		configuration.setProperty(KEY_AUDIO_LANGUAGES, value);
 	}
 
 	/**
-	 * Sets the subtitle language priority for MEncoder as a comma
+	 * Sets the subtitle language priority as a comma
 	 * separated string. For example: <code>"eng,fre,jpn,ger,und"</code>,
 	 * where "und" stands for "undefined".
 	 * @param value The subtitle language priority string.
 	 */
-	public void setMencoderSubLanguages(String value) {
-		configuration.setProperty(KEY_MENCODER_SUB_LANGS, value);
+	public void setSubLanguages(String value) {
+		configuration.setProperty(KEY_SUBTITLE_LANGUAGES, value);
 	}
 
 	/**
@@ -2268,5 +2271,13 @@ public class PmsConfiguration {
 	 */
 	public void setTranscodeFolderName(String name) {
 		configuration.setProperty(KEY_TRANSCODE_FOLDER_NAME, name);
+	}
+
+	public boolean getDisableSubs() {
+		return getBoolean(KEY_DISABLE_SUBTITLES, false);
+	}
+
+	public void setDisableSubs(boolean value) {
+		configuration.setProperty(KEY_DISABLE_SUBTITLES, value);		
 	}
 }

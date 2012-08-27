@@ -69,6 +69,18 @@ public class TranscodingTab {
 	public JCheckBox getDisableSubs() {
 		return disableSubs;
 	}
+	private static JTextField langs;
+	
+	public static JTextField getLangs() {
+		return langs;
+	}
+	
+	private static JTextField defaultsubs;
+	
+	public static JTextField getDefaultsubs() {
+		return defaultsubs;
+	}
+	
 	private JTextField forcetranscode;
 	private JTextField notranscode;
 	private JTextField maxbuffer;
@@ -590,29 +602,62 @@ public class TranscodingTab {
 		vq.setEditable(true);
 		builder.add(vq, FormLayoutUtil.flip(cc.xyw(1, 31, 3), colSpec, orientation));
 
-		String help1 = Messages.getString("TrTab2.39");
-		help1 += Messages.getString("TrTab2.40");
-		help1 += Messages.getString("TrTab2.41");
-		help1 += Messages.getString("TrTab2.42");
-		help1 += Messages.getString("TrTab2.43");
-		help1 += Messages.getString("TrTab2.44");
-
-		JTextArea decodeTips = new JTextArea(help1);
-		decodeTips.setEditable(false);
-		decodeTips.setBorder(BorderFactory.createEtchedBorder());
-		decodeTips.setBackground(new Color(255, 255, 192));
-		builder.add(decodeTips, FormLayoutUtil.flip(cc.xyw(1, 41, 3), colSpec, orientation));
-
-		disableSubs = new JCheckBox(Messages.getString("TrTab2.51"));
-		disableSubs.setContentAreaFilled(false);
-
 		cmp = builder.addSeparator(Messages.getString("TrTab2.7"), FormLayoutUtil.flip(cc.xyw(1, 33, 3), colSpec, orientation));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		builder.add(disableSubs, FormLayoutUtil.flip(cc.xy(1, 35), colSpec, orientation));
+		builder.addLabel(Messages.getString("MEncoderVideo.7"), FormLayoutUtil.flip(cc.xy(1, 35), colSpec, orientation));
+		
+		langs = new JTextField(configuration.getAudioLanguages());
+		langs.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
 
-		builder.addLabel(Messages.getString("TrTab2.8"), FormLayoutUtil.flip(cc.xy(1, 37), colSpec, orientation));
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setAudioLanguages(langs.getText());
+			}
+		});
+		builder.add(langs, FormLayoutUtil.flip(cc.xy(3, 35), colSpec, orientation));
+		
+
+		disableSubs = new JCheckBox(Messages.getString("TrTab2.51"), configuration.getDisableSubs());
+		disableSubs.setContentAreaFilled(false);
+		builder.add(disableSubs, FormLayoutUtil.flip(cc.xy(1, 37), colSpec, orientation));
+		disableSubs.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setDisableSubs(e.getStateChange() == ItemEvent.SELECTED);
+				defaultsubs.setEnabled(!configuration.getDisableSubs());
+			}
+		});
+		
+		builder.addLabel(Messages.getString("MEncoderVideo.9"), FormLayoutUtil.flip(cc.xy(1, 39), colSpec, orientation));
+		
+		defaultsubs = new JTextField(configuration.getSubLanguages());
+		defaultsubs.setEnabled(!configuration.getDisableSubs());
+		defaultsubs.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setSubLanguages(defaultsubs.getText());
+			}
+		});
+		builder.add(defaultsubs, FormLayoutUtil.flip(cc.xy(3, 39), colSpec, orientation));
+		
+		builder.addLabel(Messages.getString("TrTab2.8"), FormLayoutUtil.flip(cc.xy(1, 41), colSpec, orientation));
 
 		notranscode = new JTextField(configuration.getNoTranscode());
 		notranscode.addKeyListener(new KeyListener() {
@@ -629,9 +674,9 @@ public class TranscodingTab {
 				configuration.setNoTranscode(notranscode.getText());
 			}
 		});
-		builder.add(notranscode, FormLayoutUtil.flip(cc.xy(3, 37), colSpec, orientation));
+		builder.add(notranscode, FormLayoutUtil.flip(cc.xy(3, 41), colSpec, orientation));
 
-		builder.addLabel(Messages.getString("TrTab2.9"), FormLayoutUtil.flip(cc.xy(1, 39), colSpec, orientation));
+		builder.addLabel(Messages.getString("TrTab2.9"), FormLayoutUtil.flip(cc.xy(1, 43), colSpec, orientation));
 
 		forcetranscode = new JTextField(configuration.getForceTranscode());
 		forcetranscode.addKeyListener(new KeyListener() {
@@ -648,8 +693,20 @@ public class TranscodingTab {
 				configuration.setForceTranscode(forcetranscode.getText());
 			}
 		});
-		builder.add(forcetranscode, FormLayoutUtil.flip(cc.xy(3, 39), colSpec, orientation));
+		builder.add(forcetranscode, FormLayoutUtil.flip(cc.xy(3, 43), colSpec, orientation));
 
+		String help1 = Messages.getString("TrTab2.39");
+		help1 += Messages.getString("TrTab2.40");
+		help1 += Messages.getString("TrTab2.41");
+		help1 += Messages.getString("TrTab2.42");
+		help1 += Messages.getString("TrTab2.43");
+		help1 += Messages.getString("TrTab2.44");
+
+		JTextArea decodeTips = new JTextArea(help1);
+		decodeTips.setEditable(false);
+		decodeTips.setBorder(BorderFactory.createEtchedBorder());
+		decodeTips.setBackground(new Color(255, 255, 192));
+		builder.add(decodeTips, FormLayoutUtil.flip(cc.xyw(1, 45, 3), colSpec, orientation));
 		JPanel panel = builder.getPanel();
 
 		// Apply the orientation to the panel and all components in it
