@@ -60,7 +60,6 @@ public class VLCVideo extends Player {
 	protected JCheckBox hardwareAccel;
 	protected JTextField audioPri;
 	protected JTextField subtitlePri;
-	protected JCheckBox subtitleEnabled;
 	protected JTextField scale;
 	protected JCheckBox codecOverride;
 	protected JTextField codecVideo;
@@ -290,7 +289,7 @@ public class VLCVideo extends Player {
 			} else { // Load by ID (better)
 				cmdList.add("--sub-track=" + params.sid.getId());
 			}
-		} else if (subtitleEnabled.isSelected()) { // Not specified, use language from GUI if enabled
+		} else if (!pmsconfig.isMencoderDisableSubs()){ // Not specified, use language from GUI if enabled
 			cmdList.add("--sub-language=" + subtitlePri.getText());
 		} else {
 			cmdList.add("--sub-" + disableSuffix);
@@ -378,14 +377,7 @@ public class VLCVideo extends Player {
 				pmsconfig.setVlcAudioSyncEnabled(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
-		mainPanel.append(subtitleEnabled = new JCheckBox(Messages.getString("VlcTrans.5"), pmsconfig.isVlcSubtitleEnabled()), 3);
-		subtitleEnabled.setContentAreaFilled(false);
-		subtitleEnabled.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				pmsconfig.setVlcSubtitleEnabled(e.getStateChange() == ItemEvent.SELECTED);
-			}
-		});
+		mainPanel.nextLine();
 
 		mainPanel.append(Messages.getString("VlcTrans.6"), audioPri = new JTextField(pmsconfig.getVlcAudioPri()));
 		audioPri.addKeyListener(new KeyAdapter() {
