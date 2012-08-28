@@ -22,12 +22,15 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
+
+import java.awt.ComponentOrientation;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.*;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -42,6 +45,8 @@ import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
+import net.pms.util.FormLayoutUtil;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +61,7 @@ import org.slf4j.LoggerFactory;
 public class VLCVideo extends Player {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VLCVideo.class);
 	protected final PmsConfiguration pmsconfig;
-	public static final String ID = "vlctrans";
+	public static final String ID = "vlctranscoder";
 	protected JCheckBox hardwareAccel;
 	protected JTextField audioPri;
 	protected JTextField subtitlePri;
@@ -342,10 +347,12 @@ public class VLCVideo extends Player {
 
 	@Override
 	public JComponent config() {
+		// Apply the orientation for the locale
+		Locale locale = new Locale(pmsconfig.getLanguage());
+		ComponentOrientation orientation = ComponentOrientation.getOrientation(locale);
+		String colSpec = FormLayoutUtil.getColSpec("right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", orientation);
+		FormLayout layout = new FormLayout(colSpec, "");
 		// Here goes my 3rd try to learn JGoodies Form
-		FormLayout layout = new FormLayout(
-				"right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", // columns
-				""); // rows (none, dynamic)
 		layout.setColumnGroups(new int[][]{{1, 5}, {3, 7}});
 		DefaultFormBuilder mainPanel = new DefaultFormBuilder(layout);
 
@@ -433,40 +440,39 @@ public class VLCVideo extends Player {
 
 		// Allow user to choose codec
 		mainPanel.nextLine();
-		FormLayout codecLayout = new FormLayout(
-				"right:pref, 3dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", // columns
-				"bottom:pref:grow, 3dlu, top:pref:grow"); // rows
+		String codecColSpec = FormLayoutUtil.getColSpec("right:pref, 3dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", orientation);
+		FormLayout codecLayout = new FormLayout(codecColSpec, "bottom:pref:grow, 3dlu, top:pref:grow");
 		codecLayout.setColumnGroups(new int[][]{{5, 9, 13}, {3, 7, 11}});
 		codecLayout.setRowGroups(new int[][]{{1, 3}});
 		DefaultFormBuilder codecPanel = new DefaultFormBuilder(codecLayout);
 		CellConstraints cc = new CellConstraints();
-		codecPanel.add(new JLabel(Messages.getString("VlcTrans.12")), cc.xywh(1, 1, 1, 3));
+		codecPanel.add(new JLabel(Messages.getString("VlcTrans.12")), FormLayoutUtil.flip(cc.xywh(1, 1, 1, 3), codecColSpec , orientation));
 		codecOverride = new JCheckBox(Messages.getString("VlcTrans.13"), pmsconfig.getVlcCodecOverride());
-		codecPanel.add(codecOverride, cc.xyw(3, 1, 3));
+		codecPanel.add(codecOverride, FormLayoutUtil.flip(cc.xyw(3, 1, 3), codecColSpec , orientation));
 		codecOverride.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				pmsconfig.setVlcCodecOverride(e.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
-		codecPanel.addLabel(Messages.getString("VlcTrans.14"), cc.xy(3, 3));
-		codecPanel.add(codecVideo = new JTextField(pmsconfig.getVlcCodecVideo()), cc.xy(5, 3));
+		codecPanel.addLabel(Messages.getString("VlcTrans.14"), FormLayoutUtil.flip(cc.xy(3, 3), codecColSpec , orientation));
+		codecPanel.add(codecVideo = new JTextField(pmsconfig.getVlcCodecVideo()), FormLayoutUtil.flip(cc.xy(5, 3), codecColSpec , orientation));
 		codecVideo.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				pmsconfig.setVlcCodecVideo(codecVideo.getText());
 			}
 		});
-		codecPanel.addLabel(Messages.getString("VlcTrans.15"), cc.xy(7, 3));
-		codecPanel.add(codecAudio = new JTextField(pmsconfig.getVlcCodecAudio()), cc.xy(9, 3));
+		codecPanel.addLabel(Messages.getString("VlcTrans.15"), FormLayoutUtil.flip(cc.xy(7, 3), codecColSpec , orientation));
+		codecPanel.add(codecAudio = new JTextField(pmsconfig.getVlcCodecAudio()), FormLayoutUtil.flip(cc.xy(9, 3), codecColSpec , orientation));
 		codecAudio.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				pmsconfig.setVlcCodecAudio(codecAudio.getText());
 			}
 		});
-		codecPanel.addLabel(Messages.getString("VlcTrans.16"), cc.xy(11, 3));
-		codecPanel.add(codecContainer = new JTextField(pmsconfig.getVlcCodecContainer()), cc.xy(13, 3));
+		codecPanel.addLabel(Messages.getString("VlcTrans.16"), FormLayoutUtil.flip(cc.xy(11, 3), codecColSpec , orientation));
+		codecPanel.add(codecContainer = new JTextField(pmsconfig.getVlcCodecContainer()), FormLayoutUtil.flip(cc.xy(13, 3), codecColSpec , orientation));
 		codecContainer.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
