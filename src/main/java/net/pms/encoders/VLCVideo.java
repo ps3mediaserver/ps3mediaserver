@@ -138,15 +138,18 @@ public class VLCVideo extends Player {
 			config.videoCodec = "wmv2";
 			config.audioCodec = "wma";
 			config.container = "asf";
-		} else if (renderer.isTranscodeToMPEGPSAC3() || renderer.isTranscodeToMPEGTSAC3()) {
+		} else if (renderer.isTranscodeToMPEGTSAC3()) {
 			// Default codecs for DLNA standard
-			String type = renderer.isTranscodeToMPEGPSAC3() ? "ps" : "ts";
-			LOGGER.debug("Using DLNA standard codecs with " + type + " container");
+			LOGGER.debug("Using DLNA standard codecs with ts container");
 			config.videoCodec = "mp2v";
 			config.audioCodec = "mp2a"; // NOTE: a52 sometimes causes audio to stop after ~5 mins
-			config.container = type;
+			config.container = "ts";
 		} else {
-			throw new RuntimeException("Unknown encoding profile");
+			// Default codecs for DLNA standard
+			LOGGER.debug("Using DLNA standard codecs with ps (default) container");
+			config.videoCodec = "mp2v";
+			config.audioCodec = "mp2a"; // NOTE: a52 sometimes causes audio to stop after ~5 mins
+			config.container = "ps";
 		}
 		LOGGER.debug("Using " + config.videoCodec + ", " + config.audioCodec + ", " + config.container);
 
