@@ -42,6 +42,7 @@ import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
+import net.pms.util.ProcessUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -420,6 +421,7 @@ public class VLCVideo extends Player {
 			}
 		});
 		mainPanel.append(scalePanel.getPanel(), 3);
+		mainPanel.nextLine();
 
 		// Audio sample rate
 		FormLayout sampleRateLayout = new FormLayout("right:pref, 3dlu, right:pref, 3dlu, right:pref, 3dlu, left:pref", "");
