@@ -61,10 +61,6 @@ public class VLCVideo extends Player {
 	protected JTextField audioPri;
 	protected JTextField subtitlePri;
 	protected JTextField scale;
-	protected JCheckBox codecOverride;
-	protected JTextField codecVideo;
-	protected JTextField codecAudio;
-	protected JTextField codecContainer;
 	protected JCheckBox experimentalCodecs;
 	protected JCheckBox audioSyncEnabled;
 	protected JTextField sampleRate;
@@ -136,12 +132,7 @@ public class VLCVideo extends Player {
 	 */
 	protected CodecConfig genConfig(RendererConfiguration renderer) {
 		CodecConfig config = new CodecConfig();
-		if (codecOverride.isSelected()) {
-			LOGGER.debug("Using GUI codec overrides");
-			config.videoCodec = codecVideo.getText();
-			config.audioCodec = codecAudio.getText();
-			config.container = codecContainer.getText();
-		} else if (renderer.isTranscodeToWMV()) {
+		if (renderer.isTranscodeToWMV()) {
 			// Assume WMV = XBox = all media renderers with this flag
 			LOGGER.debug("Using XBox WMV codecs");
 			config.videoCodec = "wmv2";
@@ -427,57 +418,6 @@ public class VLCVideo extends Player {
 		});
 		mainPanel.append(scalePanel.getPanel(), 3);
 
-		// Allow user to choose codec
-		mainPanel.nextLine();
-		FormLayout codecLayout = new FormLayout(
-				"right:pref, 3dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", // columns
-				"bottom:pref:grow, 3dlu, top:pref:grow"); // rows
-		codecLayout.setColumnGroups(new int[][]{{5, 9, 13}, {3, 7, 11}});
-		codecLayout.setRowGroups(new int[][]{{1, 3}});
-		DefaultFormBuilder codecPanel = new DefaultFormBuilder(codecLayout);
-		CellConstraints cc = new CellConstraints();
-		codecPanel.add(new JLabel(Messages.getString("VlcTrans.12")), cc.xywh(1, 1, 1, 3));
-		codecOverride = new JCheckBox(Messages.getString("VlcTrans.13"), pmsconfig.getVlcCodecOverride());
-		codecPanel.add(codecOverride, cc.xyw(3, 1, 3));
-		codecOverride.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				pmsconfig.setVlcCodecOverride(e.getStateChange() == ItemEvent.SELECTED);
-			}
-		});
-		codecPanel.addLabel(Messages.getString("VlcTrans.14"), cc.xy(3, 3));
-		codecPanel.add(codecVideo = new JTextField(pmsconfig.getVlcCodecVideo()), cc.xy(5, 3));
-		codecVideo.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				pmsconfig.setVlcCodecVideo(codecVideo.getText());
-			}
-		});
-		codecPanel.addLabel(Messages.getString("VlcTrans.15"), cc.xy(7, 3));
-		codecPanel.add(codecAudio = new JTextField(pmsconfig.getVlcCodecAudio()), cc.xy(9, 3));
-		codecAudio.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				pmsconfig.setVlcCodecAudio(codecAudio.getText());
-			}
-		});
-		codecPanel.addLabel(Messages.getString("VlcTrans.16"), cc.xy(11, 3));
-		codecPanel.add(codecContainer = new JTextField(pmsconfig.getVlcCodecContainer()), cc.xy(13, 3));
-		codecContainer.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				pmsconfig.setVlcCodecContainer(codecContainer.getText());
-			}
-		});
-		toggleCodecVisibility(pmsconfig.getVlcCodecOverride());
-		codecOverride.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				toggleCodecVisibility(e.getStateChange() == ItemEvent.SELECTED);
-			}
-		});
-		mainPanel.append(codecPanel.getPanel(), 7);
-
 		// Audio sample rate
 		FormLayout sampleRateLayout = new FormLayout("right:pref, 3dlu, right:pref, 3dlu, right:pref, 3dlu, left:pref", "");
 		DefaultFormBuilder sampleRatePanel = new DefaultFormBuilder(sampleRateLayout);
@@ -507,11 +447,5 @@ public class VLCVideo extends Player {
 		mainPanel.append(Messages.getString("VlcTrans.20"), extraParams = new JTextField(), 5);
 
 		return mainPanel.getPanel();
-	}
-
-	protected void toggleCodecVisibility(boolean enabled) {
-		codecVideo.setEnabled(enabled);
-		codecAudio.setEnabled(enabled);
-		codecContainer.setEnabled(enabled);
 	}
 }

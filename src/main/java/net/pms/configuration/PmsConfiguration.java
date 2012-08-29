@@ -182,10 +182,6 @@ public class PmsConfiguration {
 	private static final String KEY_VLC_SUBTITLE_ENABLED = "VLC_subtitle_enabled";
 	private static final String KEY_VLC_AUDIO_PRI = "VLC_audio_language_priority";
 	private static final String KEY_VLC_SUBTITLE_PRI = "VLC_subtitle_language_priority";
-	private static final String KEY_VLC_CODEC_VIDEO = "VLC_codec_video";
-	private static final String KEY_VLC_CODEC_AUDIO = "VLC_codec_audio";
-	private static final String KEY_VLC_CODEC_CONTAINER = "VLC_codec_container";
-	private static final String KEY_VLC_CODEC_OVERRIDE = "VLC_codec_override";
 	private static final String KEY_VLC_SCALE = "VLC_scale";
 	private static final String KEY_VLC_SAMPLE_RATE_OVERRIDE = "VLC_sample_rate_override";
 	private static final String KEY_VLC_SAMPLE_RATE = "VLC_sample_rate";
@@ -2328,38 +2324,6 @@ public class PmsConfiguration {
 
 	public void setVlcSubtitlePri(String text) {
 		configuration.setProperty(KEY_VLC_SUBTITLE_PRI, text);
-	}
-	
-	public String getVlcCodecVideo() {
-		return getString(KEY_VLC_CODEC_VIDEO, null);
-	}
-	
-	public void setVlcCodecVideo(String value) {
-		configuration.setProperty(KEY_VLC_CODEC_VIDEO, value);
-	}
-	
-	public String getVlcCodecAudio() {
-		return getString(KEY_VLC_CODEC_AUDIO, null);
-	}
-	
-	public void setVlcCodecAudio(String value) {
-		configuration.setProperty(KEY_VLC_CODEC_AUDIO, value);
-	}
-	
-	public String getVlcCodecContainer() {
-		return getString(KEY_VLC_CODEC_CONTAINER, null);
-	}
-	
-	public void setVlcCodecContainer(String value) {
-		configuration.setProperty(KEY_VLC_CODEC_CONTAINER, value);
-	}
-	
-	public boolean getVlcCodecOverride() {
-		return getBoolean(KEY_VLC_CODEC_OVERRIDE, false);
-	}
-	
-	public void setVlcCodecOverride(boolean value) {
-		configuration.setProperty(KEY_VLC_CODEC_OVERRIDE, value);
 	}
 	
 	public String getVlcScale() {
