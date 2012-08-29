@@ -151,7 +151,7 @@ public class VLCVideo extends Player {
 			config.audioCodec = "mp2a"; // NOTE: a52 sometimes causes audio to stop after ~5 mins
 			config.container = "ps";
 		}
-		LOGGER.debug("Using " + config.videoCodec + ", " + config.audioCodec + ", " + config.container);
+		LOGGER.trace("Using " + config.videoCodec + ", " + config.audioCodec + ", " + config.container);
 
 		// Audio sample rate handling
 		if (sampleRateOverride.isSelected()) {
@@ -225,10 +225,10 @@ public class VLCVideo extends Player {
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + config.container);
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 
-		LOGGER.debug("filename: " + fileName);
-		LOGGER.debug("dlna: " + dlna);
-		LOGGER.debug("media: " + media);
-		LOGGER.debug("outputparams: " + params);
+		LOGGER.trace("filename: " + fileName);
+		LOGGER.trace("dlna: " + dlna);
+		LOGGER.trace("media: " + media);
+		LOGGER.trace("outputparams: " + params);
 
 		// XXX it can take a long time for Windows to create a named pipe
 		// (and mkfifo can be slow if /tmp isn't memory-mapped), so start this as early as possible
@@ -323,7 +323,7 @@ public class VLCVideo extends Player {
 		String[] cmdArray = new String[cmdList.size()];
 		cmdList.toArray(cmdArray);
 		cmdArray = finalizeTranscoderArgs(this, fileName, dlna, media, params, cmdArray);
-		LOGGER.debug("Finalized args: " + StringUtils.join(cmdArray, " "));
+		LOGGER.trace("Finalized args: " + StringUtils.join(cmdArray, " "));
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.attachProcess(pipe_process);
 
