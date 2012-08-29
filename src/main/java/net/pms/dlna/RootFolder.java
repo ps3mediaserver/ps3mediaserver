@@ -716,12 +716,12 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
-			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.10"), configuration.isMencoderDisableSubs()) {
+			vfSub.addChild(new VirtualVideoAction(Messages.getString("TrTab2.51"), configuration.getDisableSubtitles()) {
 				@Override
 				public boolean enable() {
-					boolean oldValue = configuration.isMencoderDisableSubs();
+					boolean oldValue = configuration.getDisableSubtitles();
 					boolean newValue = !oldValue;
-					configuration.setMencoderDisableSubs(newValue);
+					configuration.setDisableSubtitles(newValue);
 					return newValue;
 				}
 			});

@@ -83,7 +83,7 @@ public class FFMpegAviSynthVideo extends FFMpegVideo {
 		}
 		String movieLine = "clip=DirectShowSource(\"" + fileName + "\"" + convertfps + ")";
 		String subLine = null;
-		if (subTrack != null && PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
+		if (subTrack != null && PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().getDisableSubtitles()) {
 			logger.trace("Avisynth script: Using sub track: " + subTrack);
 			if (subTrack.getExternalFile() != null) {
 				String function = "TextSub";
