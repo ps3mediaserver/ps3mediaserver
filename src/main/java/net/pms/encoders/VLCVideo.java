@@ -165,7 +165,7 @@ public class VLCVideo extends Player {
 		return config;
 	}
 
-	public class CodecConfig {
+	protected static class CodecConfig {
 		String videoCodec;
 		String audioCodec;
 		String container;
