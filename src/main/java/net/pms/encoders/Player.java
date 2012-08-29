@@ -251,7 +251,7 @@ public abstract class Player {
 			}
 		}
 
-		if (!configuration.isMencoderDisableSubs() && params.sid == null && media != null) {
+		if (!configuration.getDisableSubtitles() && params.sid == null && media != null) {
 			// Check for subtitles again
 			File video = new File(fileName);
 			FileUtil.doesSubtitlesExists(video, media, false);
@@ -303,7 +303,7 @@ public abstract class Player {
 			}
 
 			if (params.sid == null) {
-				StringTokenizer st = new StringTokenizer(configuration.getSubLanguages(), ",");
+				StringTokenizer st = new StringTokenizer(configuration.getSubtitleLanguages(), ",");
 				while (st != null && st.hasMoreTokens()) {
 					String lang = st.nextToken();
 					lang = lang.trim();

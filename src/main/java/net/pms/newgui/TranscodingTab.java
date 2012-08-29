@@ -47,7 +47,7 @@ import java.util.Locale;
 public class TranscodingTab {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TranscodingTab.class);
 	private static final String COMMON_COL_SPEC = "left:pref, 2dlu, pref:grow";
-	private static final String COMMON_ROW_SPEC = "p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p";
+	private static final String COMMON_ROW_SPEC = "p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p";
 	private static final String EMPTY_COL_SPEC = "left:pref, 2dlu, pref:grow";
 	private static final String EMPTY_ROW_SPEC = "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p , 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 20dlu, p, 3dlu, p, 3dlu, p";
 	private static final String LEFT_COL_SPEC = "left:pref, pref, pref, pref, 0:grow";
@@ -553,9 +553,28 @@ public class TranscodingTab {
 			}
 		});
 
-		builder.add(mpeg2remux, FormLayoutUtil.flip(cc.xyw(1, 23, 3), colSpec, orientation));
+		builder.add(mpeg2remux, FormLayoutUtil.flip(cc.xy(1, 23), colSpec, orientation));
+		
+		builder.addLabel(Messages.getString("MEncoderVideo.7"), FormLayoutUtil.flip(cc.xy(1, 25), colSpec, orientation));
+		
+		langs = new JTextField(configuration.getAudioLanguages());
+		langs.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
 
-		cmp = builder.addSeparator(Messages.getString("TrTab2.4"), FormLayoutUtil.flip(cc.xyw(1, 25, 3), colSpec, orientation));
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setAudioLanguages(langs.getText());
+			}
+		});
+		builder.add(langs, FormLayoutUtil.flip(cc.xy(3, 25), colSpec, orientation));
+
+		cmp = builder.addSeparator(Messages.getString("TrTab2.4"), FormLayoutUtil.flip(cc.xyw(1, 27, 3), colSpec, orientation));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
@@ -606,41 +625,24 @@ public class TranscodingTab {
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		builder.addLabel(Messages.getString("MEncoderVideo.7"), FormLayoutUtil.flip(cc.xy(1, 35), colSpec, orientation));
 		
-		langs = new JTextField(configuration.getAudioLanguages());
-		langs.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				configuration.setAudioLanguages(langs.getText());
-			}
-		});
-		builder.add(langs, FormLayoutUtil.flip(cc.xy(3, 35), colSpec, orientation));
 		
 
-		disableSubs = new JCheckBox(Messages.getString("TrTab2.51"), configuration.getDisableSubs());
+		disableSubs = new JCheckBox(Messages.getString("TrTab2.51"), configuration.getDisableSubtitles());
 		disableSubs.setContentAreaFilled(false);
 		builder.add(disableSubs, FormLayoutUtil.flip(cc.xy(1, 37), colSpec, orientation));
 		disableSubs.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				configuration.setDisableSubs(e.getStateChange() == ItemEvent.SELECTED);
-				defaultsubs.setEnabled(!configuration.getDisableSubs());
+				configuration.setDisableSubtitles(e.getStateChange() == ItemEvent.SELECTED);
+				defaultsubs.setEnabled(!configuration.getDisableSubtitles());
 			}
 		});
 		
 		builder.addLabel(Messages.getString("MEncoderVideo.9"), FormLayoutUtil.flip(cc.xy(1, 39), colSpec, orientation));
 		
-		defaultsubs = new JTextField(configuration.getSubLanguages());
-		defaultsubs.setEnabled(!configuration.getDisableSubs());
+		defaultsubs = new JTextField(configuration.getSubtitleLanguages());
+		defaultsubs.setEnabled(!configuration.getDisableSubtitles());
 		defaultsubs.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -652,7 +654,7 @@ public class TranscodingTab {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				configuration.setSubLanguages(defaultsubs.getText());
+				configuration.setSubtitleLanguages(defaultsubs.getText());
 			}
 		});
 		builder.add(defaultsubs, FormLayoutUtil.flip(cc.xy(3, 39), colSpec, orientation));

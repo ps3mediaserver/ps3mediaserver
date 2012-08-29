@@ -41,8 +41,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
-import javax.swing.Icon;
-
 /**
  * Container for all configurable PMS settings. Settings are typically defined by three things:
  * a unique key for use in the configuration file "PMS.conf", a getter (and setter) method and
@@ -106,7 +104,6 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_ASS_SHADOW = "mencoder_ass_shadow";
 	private static final String KEY_MENCODER_AUDIO_SUB_LANGS = "mencoder_audiosublangs";
 	private static final String KEY_MENCODER_CUSTOM_OPTIONS = "mencoder_decode"; // TODO (breaking change): should be renamed to e.g. mencoder_custom_options
-	private static final String KEY_MENCODER_DISABLE_SUBS = "mencoder_disablesubs";
 	private static final String KEY_MENCODER_FONT_CONFIG = "mencoder_fontconfig";
 	private static final String KEY_MENCODER_FONT = "mencoder_font";
 	private static final String KEY_MENCODER_FORCED_SUB_LANG = "forced_sub_lang";
@@ -901,16 +898,6 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Returns whether or not subtitles should be disabled when using MEncoder
-	 * as transcoding engine. Default is false, meaning subtitles should not
-	 * be disabled.
-	 * @return True if subtitles should be disabled, false otherwise.
-	 */
-	public boolean isMencoderDisableSubs() {
-		return getBoolean(KEY_MENCODER_DISABLE_SUBS, false);
-	}
-
-	/**
 	 * Returns whether or not the Pulse Code Modulation audio format should be
 	 * forced when using MEncoder as transcoding engine. The default is false.
 	 * @return True if PCM should be forced, false otherwise.
@@ -959,7 +946,7 @@ public class PmsConfiguration {
 	 *
 	 * @return The subtitle language priority string.
 	 */
-	public String getSubLanguages() {
+	public String getSubtitleLanguages() {
 		return ConfigurationUtil.getBlankConfigurationString(configuration, KEY_SUBTITLE_LANGUAGES, Messages.getString("MEncoderVideo.127"));
 	}
 
@@ -1062,7 +1049,7 @@ public class PmsConfiguration {
 	 * where "und" stands for "undefined".
 	 * @param value The subtitle language priority string.
 	 */
-	public void setSubLanguages(String value) {
+	public void setSubtitleLanguages(String value) {
 		configuration.setProperty(KEY_SUBTITLE_LANGUAGES, value);
 	}
 
@@ -1180,15 +1167,6 @@ public class PmsConfiguration {
 	 */
 	public void setMencoderFontConfig(boolean value) {
 		configuration.setProperty(KEY_MENCODER_FONT_CONFIG, value);
-	}
-
-	/**
-	 * Set whether or not subtitles should be disabled when using MEncoder
-	 * as transcoding engine.
-	 * @param value Set to true if subtitles should be disabled.
-	 */
-	public void setMencoderDisableSubs(boolean value) {
-		configuration.setProperty(KEY_MENCODER_DISABLE_SUBS, value);
 	}
 
 	/**
@@ -2273,11 +2251,11 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_TRANSCODE_FOLDER_NAME, name);
 	}
 
-	public boolean getDisableSubs() {
+	public boolean getDisableSubtitles() {
 		return getBoolean(KEY_DISABLE_SUBTITLES, false);
 	}
 
-	public void setDisableSubs(boolean value) {
+	public void setDisableSubtitles(boolean value) {
 		configuration.setProperty(KEY_DISABLE_SUBTITLES, value);		
 	}
 }
