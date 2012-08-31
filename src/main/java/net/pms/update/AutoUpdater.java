@@ -3,6 +3,8 @@ package net.pms.update;
 import net.pms.PMS;
 import net.pms.util.UriRetriever;
 import net.pms.util.UriRetrieverCallback;
+import net.pms.util.Version;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,8 +176,11 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 	}
 
 	public boolean isUpdateAvailable() {
-		// TODO(tcox):  Make updates work on Linux and Mac
-		return operatingSystem.isWindows() && serverProperties.getLatestVersion().isGreaterThan(currentVersion);
+		// TODO (tcox):  Make updates work on Linux and Mac
+		Version latestVersion = serverProperties.getLatestVersion();
+		return operatingSystem.isWindows()
+			&& latestVersion.isGreaterThan(currentVersion)
+			&& currentVersion.isPmsCompatible(latestVersion);
 	}
 
 	private void downloadUpdate() throws UpdateException {
