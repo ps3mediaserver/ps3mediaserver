@@ -921,7 +921,7 @@
 						<executions>
 							<execution>
 								<id>make-jar-with-dependencies-win</id>
-								<phase>package</phase>
+								<phase>prepare-package</phase>
 								<goals>
 									<goal>single</goal>
 								</goals>
@@ -1047,6 +1047,7 @@
 									</target>
 								</configuration>
 							</execution>
+
 							<execution>
 								<id>prepare-package-windows</id>
 								<phase>prepare-package</phase>
