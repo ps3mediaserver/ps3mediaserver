@@ -142,14 +142,14 @@ public class DLNAMediaDatabase implements Runnable {
 			if (FileUtils.exists(dbDir + File.separator + dbName + ".data.db") || force_delete){
 				FileUtils.deleteRecursive(dbDir, false);
 				if (!FileUtils.exists(dbDir)){
-					LOGGER.debug("The database has been deleted because it was corrupt or had the wrong version");
+					LOGGER.debug("The cache has been deleted because it was corrupt or had the wrong version");
 				} else {
 					JOptionPane.showMessageDialog(
 		                    (JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-		                    "Damaged database can't be deleted.\nStop the program and delete the folder \"" + dbDir + "\" manually",
+		                    "Damaged cache can't be deleted.\nStop the program and delete the folder \"" + dbDir + "\" manually",
 		                    "Warning",
 		                    JOptionPane.ERROR_MESSAGE);
-					LOGGER.debug("Damaged database can't be deleted");
+					LOGGER.debug("Damaged cache can't be deleted");
 				}
 			}
 		}
