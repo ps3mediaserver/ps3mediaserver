@@ -34,16 +34,12 @@ import org.h2.tools.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import static org.apache.commons.lang.StringUtils.*;
 
 /**
