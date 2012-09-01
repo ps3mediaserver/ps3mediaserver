@@ -60,17 +60,16 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 
 	private void doPollServer() throws UpdateException {
 		assertNotInErrorState();
-		String propertiesUrl = serverUrl;
 
 		try {
 			setState(State.POLLING_SERVER);
-			byte[] propertiesAsData = uriRetriever.get(propertiesUrl);
+			byte[] propertiesAsData = uriRetriever.get(serverUrl);
 			synchronized (stateLock) {
 				serverProperties.loadFrom(propertiesAsData);
 				setState(isUpdateAvailable() ? State.UPDATE_AVAILABLE : State.NO_UPDATE_AVAILABLE);
 			}
 		} catch (IOException e) {
-			wrapException(propertiesUrl, "Cannot download properties", e);
+			wrapException(serverUrl, "Cannot download properties", e);
 		}
 	}
 

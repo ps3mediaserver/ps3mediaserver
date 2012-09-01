@@ -29,8 +29,6 @@ import static org.junit.Assert.assertFalse;
 
 import net.pms.util.Version;
 
-import org.junit.Before;
-
 public class VersionTest {
 	private final Version v(String version) {
 		return new Version(version);
