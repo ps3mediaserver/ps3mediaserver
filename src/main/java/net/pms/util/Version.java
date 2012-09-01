@@ -53,14 +53,14 @@ public class Version {
 	}
 
 	/**
-     * Compares this Version object, representing the current version of PMS, to
+	 * Compares this Version object, representing the current version of PMS, to
 	 * the supplied Version object, representing the latest version of PMS according
 	 * to the update file. Returns true if the current version can be upgraded
 	 * to the latest version. See src/main/external-resources/update/README
 	 * for the criteria.
-     * @param other The latest version
-     * @return <code>true</code> if this version can safely be upgraded, <code>false</code> otherwise.
-     */
+	 * @param other The latest version
+	 * @return <code>true</code> if this version can safely be upgraded, <code>false</code> otherwise.
+	 */
 	// this should really be a private method in AutoUpdater but it's vital that it's tested, and it's easy to test here
 	public boolean isPmsCompatible(Version other) {
 		if ((this.getMajor() == other.getMajor()) && (getMostSignificantDigit(this.getMinor()) == getMostSignificantDigit(other.getMinor()))) {

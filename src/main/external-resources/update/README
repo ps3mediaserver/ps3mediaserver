@@ -1,21 +1,19 @@
-This directory contains versioned update files. An update should only be made available if it doesn't break too many things. Given a MAJOR.MINOR.PATCH version (e.g. 1.30.1):
+This directory contains update files. An update is only made available if it is compatible with the current release. A release is compatible if it doesn't break too many things. Given a MAJOR.MINOR.PATCH version (e.g. 1.30.1):
 
-Current versioning (flagging breaking changes by incrementing MINOR):
+	Current versioning (flagging breaking changes by incrementing MINOR):
 
-    changes in MAJOR always require a new update file
-    changes in MINOR require a new update file if its most-significant digit is incremented e.g. 1.60.0 -> 1.70.0
-    changes in PATCH never require a new update file
+		changes in MAJOR are always incompatible
+		changes in MINOR are compatible (e.g. 1.60.0 -> 1.61.0) unless the most-significant digit is incremented (e.g. 1.60.0 -> 1.70.0)
+		changes in PATCH are always compatible
 
-Future versioning (semantic versioning):
+	Future versioning (semantic versioning):
 
-    changes in MAJOR always require a new update file
-    changes in MINOR or PATCH never require a new update file
+		changes in MAJOR are always incompatible
+		changes in MINOR or PATCH are always compatible
 
-Prior to version 1.71.0, each new "epoch" of compatible PMS releases - e.g. 1.50.0, 1.50.1, 1.51.0 &c. - required a dedicated update file. This required a great deal of (easily overlooked) manual maintenance and resulted in a proliferation of update files, many of which were never used/updated as their associated release never received a PATCH update.
-
-As of 1.71.0, a new update file - latest_version.properties - has been created. It is a "dumb" file which simply lists the version of the latest PMS release and its download URL (currently automatic updates are only supported on Windows). The decision to update or not is now handled entirely in the code. As a result, latest_version.properties should be the last version of this file i.e. all future updates should be reflected in this file and there should be no need to add a latest_version_2.properties &c. as was previously required.
-
-The code that determines whether the current version of PMS is compatible with the latest version is implemented in Version.isPmsCompatible. If this logic changes (e.g. if MAJOR rather than MINOR is the "breaking" number), this code will need to be updated.
+Prior to 1.71.0, many different files were used to manage versioning as the logic was effectively implemented in these files rather than in the code. The code is now smart enough to figure out for itself if an update is compatible, so the current file - latest_version.properties - should be the last one that needs to be created.
+ 
+The code that determines whether the current version of PMS is compatible with the latest version is implemented in Version.isPmsCompatible. If this logic changes (e.g. if MAJOR rather than MINOR is the "breaking" number), this code (and its tests) will need to be updated.
 
 Notes:
 
