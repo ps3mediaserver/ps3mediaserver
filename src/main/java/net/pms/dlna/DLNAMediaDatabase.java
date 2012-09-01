@@ -34,9 +34,14 @@ import org.h2.tools.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.Component;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import static org.apache.commons.lang.StringUtils.*;
 
@@ -137,9 +142,15 @@ public class DLNAMediaDatabase implements Runnable {
 			if (FileUtils.exists(dbDir + File.separator + dbName + ".data.db") || force_delete){
 				FileUtils.deleteRecursive(dbDir, false);
 				if (!FileUtils.exists(dbDir)){
-					LOGGER.debug("Damaged, corrupted or wrong version database deleted");
-				} else 
-					LOGGER.info("Damaged database can't be deleted. Stop the program and delete it manually");
+					LOGGER.debug("The database has been deleted because it was corrupt or had the wrong version");
+				} else {
+					JOptionPane.showMessageDialog(
+		                    (JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+		                    "Damaged database can't be deleted.\nStop the program and delete the folder \"" + dbDir + "\" manually",
+		                    "Warning",
+		                    JOptionPane.ERROR_MESSAGE);
+					LOGGER.debug("Damaged database can't be deleted");
+				}
 			}
 		}
 		
@@ -160,8 +171,9 @@ public class DLNAMediaDatabase implements Runnable {
 				version = rs.getString(1);
 			}
 		} catch (SQLException se) {
-			if (se.getErrorCode() != 42102) // Don't log exception "Table "FILES" not found" which will be corrected in following step
+			if (se.getErrorCode() != 42102) { // Don't log exception "Table "FILES" not found" which will be corrected in following step
 				LOGGER.error(null, se);
+			}
 		} finally {
 			close(rs);
 			close(stmt);
@@ -178,8 +190,9 @@ public class DLNAMediaDatabase implements Runnable {
 				executeUpdate(conn, "DROP TABLE AUDIOTRACKS");
 				executeUpdate(conn, "DROP TABLE SUBTRACKS");
 			} catch (SQLException se) {
-				if (se.getErrorCode() != 42102) // Don't log exception "Table "FILES" not found" which will be corrected in following step
+				if (se.getErrorCode() != 42102) { // Don't log exception "Table "FILES" not found" which will be corrected in following step
 					LOGGER.error(null, se);
+				}
 			}
 			try {
 				StringBuilder sb = new StringBuilder();
