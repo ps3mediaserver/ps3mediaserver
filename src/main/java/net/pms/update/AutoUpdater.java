@@ -26,10 +26,10 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 	public static enum State {
 		NOTHING_KNOWN, POLLING_SERVER, NO_UPDATE_AVAILABLE, UPDATE_AVAILABLE, DOWNLOAD_IN_PROGRESS, DOWNLOAD_FINISHED, EXECUTING_SETUP, ERROR
 	}
+
 	private final String serverUrl;
 	private final UriRetriever uriRetriever = new UriRetriever();
 	private final AutoUpdaterServerProperties serverProperties = new AutoUpdaterServerProperties();
-	private final OperatingSystem operatingSystem = new OperatingSystem();
 	private final Version currentVersion;
 	private Executor executor = Executors.newSingleThreadExecutor();
 	private State state = State.NOTHING_KNOWN;
@@ -60,7 +60,8 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 
 	private void doPollServer() throws UpdateException {
 		assertNotInErrorState();
-		String propertiesUrl = getPropertiesUrl();
+		String propertiesUrl = serverUrl;
+
 		try {
 			setState(State.POLLING_SERVER);
 			byte[] propertiesAsData = uriRetriever.get(propertiesUrl);
@@ -160,12 +161,14 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 	private synchronized void setState(State value) {
 		synchronized (stateLock) {
 			state = value;
+
 			if (state == State.DOWNLOAD_FINISHED) {
 				bytesDownloaded = totalBytes;
 			} else if (state != State.DOWNLOAD_IN_PROGRESS) {
 				bytesDownloaded = -1;
 				totalBytes = -1;
 			}
+
 			if (state != State.ERROR) {
 				errorStateCause = null;
 			}
@@ -176,15 +179,15 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 	}
 
 	public boolean isUpdateAvailable() {
-		// TODO (tcox):  Make updates work on Linux and Mac
+		// TODO (tcox): Make updates work on Linux and Mac
 		Version latestVersion = serverProperties.getLatestVersion();
-		return operatingSystem.isWindows()
-			&& latestVersion.isGreaterThan(currentVersion)
+		return latestVersion.isGreaterThan(currentVersion)
 			&& currentVersion.isPmsCompatible(latestVersion);
 	}
 
 	private void downloadUpdate() throws UpdateException {
 		String downloadUrl = serverProperties.getDownloadUrl();
+
 		try {
 			byte[] download = uriRetriever.getWithCallback(downloadUrl, this);
 			writeToDisk(download);
@@ -197,6 +200,7 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 		File target = new File(TARGET_FILENAME);
 		InputStream downloadedFromNetwork = new ByteArrayInputStream(download);
 		FileOutputStream fileOnDisk = null;
+
 		try {
 			try {
 				fileOnDisk = new FileOutputStream(target);
@@ -218,10 +222,6 @@ public class AutoUpdater extends Observable implements UriRetrieverCallback {
 
 	private void wrapException(String downloadUrl, String message, Throwable cause) throws UpdateException {
 		throw new UpdateException("Error: " + message, cause);
-	}
-
-	private String getPropertiesUrl() {
-		return serverUrl + "?currentVersion=" + currentVersion + "&operatingSystem=" + operatingSystem + "&cacheBuster=" + Math.random();
 	}
 
 	@Override
