@@ -143,7 +143,7 @@ public class DLNAMediaDatabase implements Runnable {
 				} else {
 					JOptionPane.showMessageDialog(
 							new Frame(System.getProperty("os.name")),
-		                    "Damaged cache has be deleted but the program couldn't do it.\nStop the program and delete the folder \"" + dbDir + "\" manually",
+		                    "Damaged cache has to be deleted but the program couldn't do it.\nStop the program and delete the folder \"" + dbDir + "\" manually",
 		                    "PMS Media Servee tor error",
 		                    JOptionPane.ERROR_MESSAGE);
 					LOGGER.debug("Damaged cache can't be deleted. Stop the program and delete the folder \"" + dbDir + "\" manually");
