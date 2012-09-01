@@ -35,6 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
@@ -42,7 +44,6 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
 import static org.apache.commons.lang.StringUtils.*;
 
 /**
@@ -145,11 +146,11 @@ public class DLNAMediaDatabase implements Runnable {
 					LOGGER.debug("The cache has been deleted because it was corrupt or had the wrong version");
 				} else {
 					JOptionPane.showMessageDialog(
-		                    (JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+							new Frame(System.getProperty("os.name")),
 		                    "Damaged cache can't be deleted.\nStop the program and delete the folder \"" + dbDir + "\" manually",
 		                    "Warning",
 		                    JOptionPane.ERROR_MESSAGE);
-					LOGGER.debug("Damaged cache can't be deleted");
+					LOGGER.debug("Damaged cache can't be deleted. Stop the program and delete the folder \"" + dbDir + "\" manually");
 				}
 			}
 		}
