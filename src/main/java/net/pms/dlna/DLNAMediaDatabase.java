@@ -136,18 +136,13 @@ public class DLNAMediaDatabase implements Runnable {
 			force_delete = true;
 		} finally {
 			close(conn);
-			JOptionPane.showMessageDialog(
-					new Frame(),
-                    "Damaged cache has to be deleted but the program couldn't do it.\nStop the program and delete the folder \"" + dbDir + "\" manually",
-                    "PS3 Media Server error",
-                    JOptionPane.ERROR_MESSAGE);
 			if (FileUtils.exists(dbDir + File.separator + dbName + ".data.db") || force_delete){
 				FileUtils.deleteRecursive(dbDir, false);
 				if (!FileUtils.exists(dbDir)){
 					LOGGER.debug("The cache has been deleted because it was corrupt or had the wrong version");
 				} else {
 					JOptionPane.showMessageDialog(
-							new Frame(),
+							new Frame(System.getProperty("os.name")),
 		                    "Damaged cache has to be deleted but the program couldn't do it.\nStop the program and delete the folder \"" + dbDir + "\" manually",
 		                    "PS3 Media Server error",
 		                    JOptionPane.ERROR_MESSAGE);
