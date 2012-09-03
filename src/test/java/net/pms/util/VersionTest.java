@@ -23,7 +23,6 @@ import net.pms.util.Version;
 import static org.hamcrest.CoreMatchers.*;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -33,36 +32,67 @@ public class VersionTest {
 		return new Version(version);
 	}
 
-	private void assertVersionIsGreaterThan(Version v1, Version v2) {
-		assertTrue(v1.isGreaterThan(v2));
-		assertTrue(v1.isGreaterThanOrEqualTo(v2));
-		assertTrue(v2.isLessThan(v1));
-		assertTrue(v2.isLessThanOrEqualTo(v1));
-
-		assertFalse(v1.isLessThan(v2));
-		assertFalse(v1.isLessThanOrEqualTo(v2));
-		assertFalse(v2.isGreaterThan(v1));
-		assertFalse(v2.isGreaterThanOrEqualTo(v1));
-
-		assertFalse(v1.equals(v2));
-		assertFalse(v2.equals(v1));
-	}
-
 	private void assertVersionEquals(Version v1, Version v2) {
+		// symmetry (and equality)
 		assertTrue(v1.equals(v2));
 		assertTrue(v2.equals(v1));
 
-		assertTrue(v1.isGreaterThanOrEqualTo(v2));
-		assertTrue(v2.isGreaterThanOrEqualTo(v1));
+		// reflexivity
+		assertTrue(v1.equals(v1));
+		assertTrue(v2.equals(v2));
 
-		assertTrue(v1.isLessThanOrEqualTo(v2));
-		assertTrue(v2.isLessThanOrEqualTo(v1));
+		// consistency
+		assertTrue(v1.equals(v2));
+		assertTrue(v2.equals(v1));
 
+		// non-nullity
+		assertFalse(v1.equals(null));
+		assertFalse(v2.equals(null));
+
+		assertThat(v1.hashCode(), is(v1.hashCode()));
+		assertThat(v2.hashCode(), is(v2.hashCode()));
+		assertThat(v1.hashCode(), is(v2.hashCode()));
+		assertThat(v2.hashCode(), is(v1.hashCode()));
+
+		assertFalse(v1.isGreaterThan(v1));
+		assertFalse(v2.isGreaterThan(v2));
 		assertFalse(v1.isGreaterThan(v2));
 		assertFalse(v2.isGreaterThan(v1));
 
+		assertFalse(v1.isLessThan(v1));
+		assertFalse(v2.isLessThan(v2));
 		assertFalse(v1.isLessThan(v2));
 		assertFalse(v2.isLessThan(v1));
+
+		assertTrue(v1.isGreaterThanOrEqualTo(v1));
+		assertTrue(v2.isGreaterThanOrEqualTo(v2));
+		assertTrue(v1.isGreaterThanOrEqualTo(v2));
+		assertTrue(v2.isGreaterThanOrEqualTo(v1));
+
+		assertTrue(v1.isLessThanOrEqualTo(v1));
+		assertTrue(v2.isLessThanOrEqualTo(v2));
+		assertTrue(v1.isLessThanOrEqualTo(v2));
+		assertTrue(v2.isLessThanOrEqualTo(v1));
+	}
+
+	private void assertVersionIsGreaterThan(Version v1, Version v2) {
+		assertTrue(v1.isGreaterThan(v2));
+		assertFalse(v2.isGreaterThan(v1));
+
+		assertTrue(v2.isLessThan(v1));
+		assertFalse(v1.isLessThan(v2));
+
+		assertTrue(v1.isGreaterThanOrEqualTo(v2));
+		assertFalse(v2.isGreaterThanOrEqualTo(v1));
+
+		assertTrue(v2.isLessThanOrEqualTo(v1));
+		assertFalse(v1.isLessThanOrEqualTo(v2));
+
+		assertFalse(v1.equals(v2));
+		assertFalse(v2.equals(v1));
+
+		assertThat(v1.hashCode(), not(v2.hashCode()));
+		assertThat(v2.hashCode(), not(v1.hashCode()));
 	}
 
 	private void assertIsPmsUpdatable(Version v1, Version v2) {
@@ -77,7 +107,26 @@ public class VersionTest {
 	}
 
 	private void assertVersionToStringEquals(Version v, String s) {
-		assertEquals(v.toString(), s);
+		assertThat(v.toString(), is(s));
+	}
+
+	@Test
+	public void testTransitivity() {
+		Version v1 = v("1.1.1");
+		Version v2 = v("2.2.2");
+		Version v3 = v("3.3.3");
+
+		assertVersionIsGreaterThan(v2, v1);
+		assertVersionIsGreaterThan(v3, v2);
+		assertVersionIsGreaterThan(v3, v1);
+
+		Version va = v("2.2.2");
+		Version vb = v("2.2.2");
+		Version vc = v("2.2.2");
+
+		assertVersionEquals(vb, vc);
+		assertVersionEquals(va, vb);
+		assertVersionEquals(va, vc);
 	}
 
 	@Test
@@ -94,6 +143,7 @@ public class VersionTest {
 		assertVersionToStringEquals(v("1.foo"), "1.0");
 		assertVersionToStringEquals(v("1.2-foo"), "1.0");
 		assertVersionToStringEquals(v("1.foo-2"), "1.0");
+		assertVersionToStringEquals(v("1.2-foo-2"), "1.0");
 		assertVersionToStringEquals(v("foo.42.bar"), "0.42.0");
 		assertVersionToStringEquals(v("foo-1.42.1-bar"), "0.42.0");
 	}
@@ -218,16 +268,29 @@ public class VersionTest {
 	}
 
 	@Test
-	public void testPatch() {
-		assertThat(v("0").getPatch(), is(0));
-		assertThat(v("0.1").getPatch(), is(0));
-		assertThat(v("0.1.2").getPatch(), is(2));
-		assertThat(v("0.1.2.3").getPatch(), is(2));
+	public void testRevision() {
+		assertThat(v("0").getRevision(), is(0));
+		assertThat(v("0.1").getRevision(), is(0));
+		assertThat(v("0.1.2").getRevision(), is(2));
+		assertThat(v("0.1.2.3").getRevision(), is(2));
 
-		assertThat(v("1").getPatch(), is(0));
-		assertThat(v("1.2").getPatch(), is(0));
-		assertThat(v("1.2.3").getPatch(), is(3));
-		assertThat(v("1.2.3.4").getPatch(), is(3));
+		assertThat(v("1").getRevision(), is(0));
+		assertThat(v("1.2").getRevision(), is(0));
+		assertThat(v("1.2.3").getRevision(), is(3));
+		assertThat(v("1.2.3.4").getRevision(), is(3));
+	}
+
+	@Test
+	public void testBuild() {
+		assertThat(v("0").getBuild(), is(0));
+		assertThat(v("0.1").getBuild(), is(0));
+		assertThat(v("0.1.2").getBuild(), is(0));
+		assertThat(v("0.1.2.3").getBuild(), is(3));
+
+		assertThat(v("1").getBuild(), is(0));
+		assertThat(v("1.2").getBuild(), is(0));
+		assertThat(v("1.2.3").getBuild(), is(0));
+		assertThat(v("1.2.3.4").getBuild(), is(4));
 	}
 
 	@Test
