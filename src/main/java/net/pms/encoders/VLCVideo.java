@@ -22,12 +22,15 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
+
+import java.awt.ComponentOrientation;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.*;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -42,6 +45,8 @@ import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
+import net.pms.util.FormLayoutUtil;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +61,7 @@ import org.slf4j.LoggerFactory;
 public class VLCVideo extends Player {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VLCVideo.class);
 	protected final PmsConfiguration pmsconfig;
-	public static final String ID = "vlctrans";
+	public static final String ID = "vlctranscoder";
 	protected JCheckBox hardwareAccel;
 	protected JTextField audioPri;
 	protected JTextField subtitlePri;
@@ -339,10 +344,12 @@ public class VLCVideo extends Player {
 
 	@Override
 	public JComponent config() {
+		// Apply the orientation for the locale
+		Locale locale = new Locale(pmsconfig.getLanguage());
+		ComponentOrientation orientation = ComponentOrientation.getOrientation(locale);
+		String colSpec = FormLayoutUtil.getColSpec("right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", orientation);
+		FormLayout layout = new FormLayout(colSpec, "");
 		// Here goes my 3rd try to learn JGoodies Form
-		FormLayout layout = new FormLayout(
-				"right:pref, 3dlu, pref:grow, 7dlu, right:pref, 3dlu, pref:grow", // columns
-				""); // rows (none, dynamic)
 		layout.setColumnGroups(new int[][]{{1, 5}, {3, 7}});
 		DefaultFormBuilder mainPanel = new DefaultFormBuilder(layout);
 

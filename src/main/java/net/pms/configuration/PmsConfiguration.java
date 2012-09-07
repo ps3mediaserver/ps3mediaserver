@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import net.pms.encoders.VLCVideo;
 
 /**
  * Container for all configurable PMS settings. Settings are typically defined by three things:
@@ -1762,7 +1761,7 @@ public class PmsConfiguration {
 	}
 
 	public List<String> getEnginesAsList(SystemUtils registry) {
-		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,ffmpegvideo,ffmpegaudio,mplayeraudio,tsmuxeraudio,ffmpegwebvideo,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux,rawthumbs"));
+		List<String> engines = stringToList(getString(KEY_ENGINES, "mencoder,avsmencoder,tsmuxer,ffmpegvideo,vlctranscoder,ffmpegaudio,mplayeraudio,tsmuxeraudio,ffmpegwebvideo,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux,rawthumbs"));
 		engines = hackAvs(registry, engines);
 		return engines;
 	}
