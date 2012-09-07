@@ -34,12 +34,16 @@ import org.h2.tools.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import static org.apache.commons.lang.StringUtils.*;
 
 /**
@@ -137,15 +141,17 @@ public class DLNAMediaDatabase implements Runnable {
 		} finally {
 			close(conn);
 			if (FileUtils.exists(dbDir + File.separator + dbName + ".data.db") || force_delete){
-				FileUtils.deleteRecursive(dbDir, false);
+				FileUtils.deleteRecursive(dbDir, true);
 				if (!FileUtils.exists(dbDir)){
 					LOGGER.debug("The cache has been deleted because it was corrupt or had the wrong version");
 				} else {
-					JOptionPane.showMessageDialog(
-							new Frame(System.getProperty("os.name")),
-		                    "Damaged cache has to be deleted but the program couldn't do it.\nStop the program and delete the folder \"" + dbDir + "\" manually",
+					if(!java.awt.GraphicsEnvironment.isHeadless()) {
+						JOptionPane.showMessageDialog(
+							(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+							String.format(Messages.getString("DLNAMediaDatabase.5"), dbDir),
 		                    "PS3 Media Server error",
 		                    JOptionPane.ERROR_MESSAGE);
+					}	
 					LOGGER.debug("Damaged cache can't be deleted. Stop the program and delete the folder \"" + dbDir + "\" manually");
 				}
 			}
