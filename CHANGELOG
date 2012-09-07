@@ -1,7 +1,15 @@
 Changelog:
 ==========
 
-1.70.0 - 2012-??-??
+1.71.0 - 2012-??-??
+
+	Simplify update-file management
+
+1.70.1 - 2012-08-31
+
+	Packaging fix (Windows only)
+
+1.70.0 - 2012-08-31
 
     Add new default web video engine: FFMpeg Web Video
     Add support for new web protocols: mmsh:// and mmst://
@@ -28,6 +36,10 @@ Changelog:
     Renderers:
         - Deprecate misnamed TranscodeVideo profile MPEGAC3: use MPEGPSAC3 instead
         - Document and clean up TranscodeVideo and TranscodeAudio profiles
+    Linux tarball: fix "cannot find tsMuxeR" error
+    MEncoder:
+        - disable AC-3 remux if audio track has delay
+        - disable DTS and LPCM remuxing if tsMuxeR engine is unavailable
 
 1.60.0 - 2012-07-17
 
