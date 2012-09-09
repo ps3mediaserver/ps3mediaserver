@@ -4,7 +4,7 @@ Changelog:
 1.71.0 - 2012-??-??
 
     Updated MediaInfo to 0.7.60
-    Don't attempt to display dialog on headless servers if initialization error occurs
+    Improve handling of initialization errors
 
 1.70.1 - 2012-08-31
 

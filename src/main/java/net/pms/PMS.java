@@ -842,6 +842,7 @@ public class PMS {
 
 		try {
 			Toolkit.getDefaultToolkit();
+
 			if (GraphicsEnvironment.isHeadless()) {
 				if (System.getProperty(NOCONSOLE) == null) {
 					System.setProperty(CONSOLE, Boolean.toString(true));
@@ -850,7 +851,8 @@ public class PMS {
 				headless = false;
 			}
 		} catch (Throwable t) {
-			System.err.println("Toolkit error: " + t.getClass() + ": " + t.getMessage());
+			System.err.println("Toolkit error: " + t.getClass().getName() + ": " + t.getMessage());
+
 			if (System.getProperty(NOCONSOLE) == null) {
 				System.setProperty(CONSOLE, Boolean.toString(true));
 			}
@@ -872,12 +874,18 @@ public class PMS {
 			// create the PMS instance returned by get()
 			createInstance(); 
 		} catch (Throwable t) {
-			System.err.println("Configuration error: " + t.getClass() + ": " + t.getMessage());
+			String errorMessage = String.format(
+				"Configuration error: %s: %s",
+				t.getClass().getName(),
+				t.getMessage()
+			);
 
-			if (!headless) {
+			System.err.println(errorMessage);
+
+			if (!headless && instance != null) {
 				JOptionPane.showMessageDialog(
-					null,
-					"Configuration error:" + t.getClass() + ": " + t.getMessage(),
+					((JFrame) (SwingUtilities.getWindowAncestor((Component) instance.getFrame()))),
+					errorMessage,
 					"Error initalizing PMS!",
 					JOptionPane.ERROR_MESSAGE
 				);
