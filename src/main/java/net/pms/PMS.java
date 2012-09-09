@@ -850,7 +850,7 @@ public class PMS {
 				headless = false;
 			}
 		} catch (Throwable t) {
-			System.err.println("Toolkit error: " + t.getMessage());
+			System.err.println("Toolkit error: " + t.getClass() + ": " + t.getMessage());
 			if (System.getProperty(NOCONSOLE) == null) {
 				System.setProperty(CONSOLE, Boolean.toString(true));
 			}
@@ -872,8 +872,16 @@ public class PMS {
 			// create the PMS instance returned by get()
 			createInstance(); 
 		} catch (Throwable t) {
-			System.err.println("Configuration error: " + t.getMessage());
-			JOptionPane.showMessageDialog(null, "Configuration error:"+t.getMessage(), "Error initalizing PMS!", JOptionPane.ERROR_MESSAGE);
+			System.err.println("Configuration error: " + t.getClass() + ": " + t.getMessage());
+
+			if (!headless) {
+				JOptionPane.showMessageDialog(
+					null,
+					"Configuration error:" + t.getClass() + ": " + t.getMessage(),
+					"Error initalizing PMS!",
+					JOptionPane.ERROR_MESSAGE
+				);
+			}
 		}
 	}
 

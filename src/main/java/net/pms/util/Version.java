@@ -38,7 +38,7 @@ public final class Version implements Comparable<Version> {
 	 * equal, or greater than zero if this version is higher
 	 */
 	public int compareTo(Version other) {
-		final int[] longerElements, shorterElements;;
+		final int[] longerElements, shorterElements;
 		final int sign;
 
 		if (elements.length >= other.elements.length) {
