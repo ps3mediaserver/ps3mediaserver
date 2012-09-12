@@ -46,8 +46,8 @@ import java.util.Locale;
 
 public class TranscodingTab {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TranscodingTab.class);
-	private static final String COMMON_COL_SPEC = "left:pref, 2dlu, pref:grow";
-	private static final String COMMON_ROW_SPEC = "p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 9dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p";
+	private static final String COMMON_COL_SPEC = "$lcgap, left:pref, 2dlu, pref:grow, $lcgap";
+	private static final String COMMON_ROW_SPEC = "5*(pref, 2dlu), pref, 18dlu, pref, 9dlu:grow, 2*(pref, 2dlu), default, 5*(pref, 2dlu), pref, 9dlu, 2*(pref, 2dlu), pref, 9dlu, 3*(pref, 2dlu), pref, $lgap, default";
 	private static final String EMPTY_COL_SPEC = "left:pref, 2dlu, pref:grow";
 	private static final String EMPTY_ROW_SPEC = "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p , 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 20dlu, p, 3dlu, p, 3dlu, p";
 	private static final String LEFT_COL_SPEC = "left:pref, pref, pref, pref, 0:grow";
@@ -74,7 +74,7 @@ public class TranscodingTab {
 	private JTextField maxbuffer;
 	private JComboBox nbcores;
 	private DefaultMutableTreeNode parent[];
-	private JPanel tabbedPane;
+	private JPanel tabbedPanel;
 	private CardLayout cl;
 	private JTextField abitrate;
 	private JTree tree;
@@ -86,6 +86,35 @@ public class TranscodingTab {
 	private JCheckBox mpeg2remux;
 	private JCheckBox chapter_support;
 	private JTextField chapter_interval;
+	private JCheckBox videoHWacceleration;
+	private JTextArea decodeTips;
+	private JTextField langs;
+	private JTextField defaultsubs;
+	private JTextField forcedsub;
+	private JTextField forcedtags;
+	private JTextField defaultaudiosubs;
+	private JComboBox subcp;
+	private JCheckBox fribidi;
+	private JTextField defaultfont;
+	private JButton fontSelectButton;
+	private JTextField alternateSubFolder;
+	private JButton folderSelectButton;
+	private JTextField mencoder_ass_scale;
+	private JTextField mencoder_ass_outline;
+	private JTextField mencoder_ass_shadow;
+	private JTextField mencoder_ass_margin;
+	private JTextField mencoder_noass_scale;
+	private JTextField mencoder_noass_outline;
+	private JTextField mencoder_noass_blur;
+	private JTextField mencoder_noass_subpos;
+	private JCheckBox ass;
+	private JCheckBox fc;
+	private JCheckBox assdefaultstyle;
+	private JButton subColor;
+	private JCheckBox subs;
+	private JTextField subq;
+	private JTextField ocw;
+	private JTextField och;
 	private static final int MAX_CORES = 32;
 
 	private void updateEngineModel() {
@@ -109,10 +138,10 @@ public class TranscodingTab {
 	}
 
 	private void handleCardComponentChange(Component component) {
-		tabbedPane.setPreferredSize(component.getPreferredSize());
-		tabbedPane.getParent().invalidate();
-		tabbedPane.getParent().validate();
-		tabbedPane.getParent().repaint();
+		tabbedPanel.setPreferredSize(component.getPreferredSize());
+		tabbedPanel.getParent().invalidate();
+		tabbedPanel.getParent().validate();
+		tabbedPanel.getParent().repaint();
 	}
 
 	public JComponent build() {
@@ -124,7 +153,7 @@ public class TranscodingTab {
 		builder.setOpaque(true);
 
 		CellConstraints cc = new CellConstraints();
-		builder.add(buildRightTabbedPane(), FormLayoutUtil.flip(cc.xyw(4, 1, 3), colSpec, orientation));
+		builder.add(buildRighttabbedPanel(), FormLayoutUtil.flip(cc.xyw(4, 1, 3), colSpec, orientation));
 		builder.add(buildLeft(), FormLayoutUtil.flip(cc.xy(2, 1), colSpec, orientation));
 
 		JPanel panel = builder.getPanel();
@@ -135,11 +164,11 @@ public class TranscodingTab {
 		return panel;
 	}
 
-	public JComponent buildRightTabbedPane() {
+	public JComponent buildRighttabbedPanel() {
 		cl = new CardLayout();
-		tabbedPane = new JPanel(cl);
-		tabbedPane.setBorder(BorderFactory.createEmptyBorder());
-		JScrollPane scrollPane = new JScrollPane(tabbedPane);
+		tabbedPanel = new JPanel(cl);
+		tabbedPanel.setBorder(BorderFactory.createEmptyBorder());
+		JScrollPane scrollPane = new JScrollPane(tabbedPanel);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		return scrollPane;
 	}
@@ -229,7 +258,7 @@ public class TranscodingTab {
 				handleCardComponentChange(e.getComponent());
 			}
 		});
-		tabbedPane.add(commonEnc.id(), commonEnc.getConfigPanel());
+		tabbedPanel.add(commonEnc.id(), commonEnc.getConfigPanel());
 		root.add(commonEnc);
 
 		parent = new DefaultMutableTreeNode[5];
@@ -254,7 +283,7 @@ public class TranscodingTab {
 			public void valueChanged(TreeSelectionEvent e) {
 				if (e.getNewLeadSelectionPath() != null && e.getNewLeadSelectionPath().getLastPathComponent() instanceof TreeNodeSettings) {
 					TreeNodeSettings tns = (TreeNodeSettings) e.getNewLeadSelectionPath().getLastPathComponent();
-					cl.show(tabbedPane, tns.id());
+					cl.show(tabbedPanel, tns.id());
 				}
 			}
 		});
@@ -312,7 +341,7 @@ public class TranscodingTab {
 					handleCardComponentChange(e.getComponent());
 				}
 			});
-			tabbedPane.add(en.id(), jc);
+			tabbedPanel.add(en.id(), jc);
 			parent[p.purpose()].add(en);
 		}
 
@@ -352,16 +381,13 @@ public class TranscodingTab {
 
 		CellConstraints cc = new CellConstraints();
 
+		JComponent cmp = builder.addSeparator(Messages.getString("NetworkTab.5"), FormLayoutUtil.flip(cc.xyw(2, 1, 3), colSpec, orientation));
+		cmp = (JComponent) cmp.getComponent(0);
+		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+		
+		builder.addLabel(Messages.getString("NetworkTab.6").replaceAll("MAX_BUFFER_SIZE", configuration.getMaxMemoryBufferSizeStr()), FormLayoutUtil.flip(cc.xy(2, 3), colSpec, orientation));
 		maxbuffer = new JTextField("" + configuration.getMaxMemoryBufferSize());
-		maxbuffer.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		maxbuffer.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
@@ -372,15 +398,9 @@ public class TranscodingTab {
 				}
 			}
 		});
-
-		JComponent cmp = builder.addSeparator(Messages.getString("NetworkTab.5"), FormLayoutUtil.flip(cc.xyw(1, 1, 3), colSpec, orientation));
-		cmp = (JComponent) cmp.getComponent(0);
-		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-
-		builder.addLabel(Messages.getString("NetworkTab.6").replaceAll("MAX_BUFFER_SIZE", configuration.getMaxMemoryBufferSizeStr()), FormLayoutUtil.flip(cc.xy(1, 3), colSpec, orientation));
-		builder.add(maxbuffer, FormLayoutUtil.flip(cc.xy(3, 3), colSpec, orientation));
-
-		builder.addLabel(Messages.getString("NetworkTab.7") + Runtime.getRuntime().availableProcessors() + ")", FormLayoutUtil.flip(cc.xy(1, 5), colSpec, orientation));
+		builder.add(maxbuffer, FormLayoutUtil.flip(cc.xy(4, 3), colSpec, orientation));
+		
+		builder.addLabel(Messages.getString("NetworkTab.7") + Runtime.getRuntime().availableProcessors() + ")", FormLayoutUtil.flip(cc.xy(2, 5), colSpec, orientation));
 
 		String[] guiCores = new String[MAX_CORES];
 		for (int i = 0; i < MAX_CORES; i++) {
@@ -400,29 +420,7 @@ public class TranscodingTab {
 			        configuration.setNumberOfCpuCores(Integer.parseInt(e.getItem().toString()));
 			}
 		});
-		builder.add(nbcores, FormLayoutUtil.flip(cc.xy(3, 5), colSpec, orientation));
-
-		chapter_interval = new JTextField("" + configuration.getChapterInterval());
-		chapter_interval.setEnabled(configuration.isChapterSupport());
-		chapter_interval.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				try {
-					int ab = Integer.parseInt(chapter_interval.getText());
-					configuration.setChapterInterval(ab);
-				} catch (NumberFormatException nfe) {
-					LOGGER.debug("Could not parse chapter interval from \"" + chapter_interval.getText() + "\"");
-				}
-			}
-		});
+		builder.add(nbcores, FormLayoutUtil.flip(cc.xy(4, 5), colSpec, orientation));
 
 		chapter_support = new JCheckBox(Messages.getString("TrTab2.52"));
 		chapter_support.setContentAreaFilled(false);
@@ -434,14 +432,162 @@ public class TranscodingTab {
 				chapter_interval.setEnabled(configuration.isChapterSupport());
 			}
 		});
+		builder.add(chapter_support, FormLayoutUtil.flip(cc.xy(2, 7), colSpec, orientation));
+		
+		chapter_interval = new JTextField("" + configuration.getChapterInterval());
+		chapter_interval.setEnabled(configuration.isChapterSupport());
+		chapter_interval.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+					int ab = Integer.parseInt(chapter_interval.getText());
+					configuration.setChapterInterval(ab);
+				} catch (NumberFormatException nfe) {
+					LOGGER.debug("Could not parse chapter interval from \"" + chapter_interval.getText() + "\"");
+				}
+			}
+		});
+		builder.add(chapter_interval, FormLayoutUtil.flip(cc.xy(4, 7), colSpec, orientation));
 
-		builder.add(chapter_support, FormLayoutUtil.flip(cc.xy(1, 7), colSpec, orientation));
+		mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
+		mpeg2remux.setContentAreaFilled(false);
+		if (configuration.isMencoderRemuxMPEG2()) {
+			mpeg2remux.setSelected(true);
+		}
+		mpeg2remux.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setMencoderRemuxMPEG2((e.getStateChange() == ItemEvent.SELECTED));
+			}
+		});
 
-		builder.add(chapter_interval, FormLayoutUtil.flip(cc.xy(3, 7), colSpec, orientation));
+		builder.add(mpeg2remux, FormLayoutUtil.flip(cc.xy(2, 9), colSpec, orientation));
 
-		cmp = builder.addSeparator(Messages.getString("TrTab2.3"), FormLayoutUtil.flip(cc.xyw(1, 11, 3), colSpec, orientation));
+		disableSubs = new JCheckBox(Messages.getString("TrTab2.51"),configuration.isDisableSubtitles());
+		disableSubs.setContentAreaFilled(false);
+ 		disableSubs.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setDisableSubtitles((e.getStateChange() == ItemEvent.SELECTED));
+			}
+		});
+		builder.add(disableSubs, FormLayoutUtil.flip(cc.xy(2, 11), colSpec, orientation));
+
+		JTabbedPane setupTabbedPanel = new JTabbedPane();
+		setupTabbedPanel.addTab(Messages.getString("TrTab2.66"), buildVideoSetupPanel());
+		setupTabbedPanel.addTab(Messages.getString("TrTab2.67"), buildAudioSetupPanel());
+		setupTabbedPanel.addTab(Messages.getString("MEncoderVideo.8"), buildSubtitlesSetupPanel());
+		
+		builder.add(setupTabbedPanel, FormLayoutUtil.flip(cc.xywh(1, 14, 5, 31), colSpec, orientation));
+
+		JPanel panel = builder.getPanel();
+		panel.applyComponentOrientation(orientation);
+
+		return panel;
+	}
+	
+	public JComponent buildVideoSetupPanel() {
+		String colSpec = FormLayoutUtil.getColSpec("$lcgap, left:pref, 2dlu, pref:grow, $lcgap", orientation);
+		FormLayout layout = new FormLayout(colSpec, "$lgap, pref, 2dlu, pref, 6dlu, 2*(10dlu), 2*(pref, 2dlu), pref, 20dlu, 3*(pref, 2dlu), pref");
+		PanelBuilder builder = new PanelBuilder(layout);
+		CellConstraints cc = new CellConstraints();
+
+		builder.add(new JLabel(Messages.getString("TrTab2.32")), FormLayoutUtil.flip(cc.xy(2, 2), colSpec, orientation));
+
+		Object data[] = new Object[] {
+			configuration.getMencoderMainSettings(),                                                /* default */
+			String.format("keyint=5:vqscale=1:vqmin=2  /* %s */", Messages.getString("TrTab2.60")), /* great */
+			String.format("keyint=5:vqscale=1:vqmin=1  /* %s */", Messages.getString("TrTab2.61")), /* lossless */
+			String.format("keyint=5:vqscale=2:vqmin=3  /* %s */", Messages.getString("TrTab2.62")), /* good (wired) */
+			String.format("keyint=25:vqmax=5:vqmin=2  /* %s */",  Messages.getString("TrTab2.63")), /* good (wireless) */
+			String.format("keyint=25:vqmax=7:vqmin=2  /* %s */",  Messages.getString("TrTab2.64")), /* medium (wireless) */
+			String.format("keyint=25:vqmax=8:vqmin=3  /* %s */",  Messages.getString("TrTab2.65"))  /* low */
+		};
+
+		MyComboBoxModel cbm = new MyComboBoxModel(data);
+		vq = new JComboBox(cbm);
+		vq.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					String s = (String) e.getItem();
+					if (s.indexOf("/*") > -1) {
+						s = s.substring(0, s.indexOf("/*")).trim();
+					}
+					configuration.setMencoderMainSettings(s);
+				}
+			}
+		});
+		vq.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				vq.getItemListeners()[0].itemStateChanged(new ItemEvent(vq, 0, vq.getEditor().getItem(), ItemEvent.SELECTED));
+			}
+		});
+		vq.setEditable(true);
+		builder.add(vq, FormLayoutUtil.flip(cc.xywh(2, 4, 3, 1), colSpec, orientation));
+
+		videoHWacceleration = new JCheckBox("Hardware acceleration");
+		videoHWacceleration.setSelected(configuration.isVideoHardwareAcceleration());
+		videoHWacceleration.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setVideoHardwareAcceleration((e.getStateChange() == ItemEvent.SELECTED));
+			}
+		});
+		builder.add(videoHWacceleration, FormLayoutUtil.flip(cc.xy(2, 6), colSpec, orientation));
+
+		JComponent cmp = builder.addSeparator(Messages.getString("TrTab2.7"), FormLayoutUtil.flip(cc.xyw(2, 8, 3), colSpec, orientation));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+
+		builder.add(new JLabel(Messages.getString("TrTab2.8")), FormLayoutUtil.flip(cc.xy(2, 10), colSpec, orientation));
+		notranscode = new JTextField(configuration.getNoTranscode());
+		notranscode.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setNoTranscode(notranscode.getText());
+			}
+		});
+		builder.add(notranscode, FormLayoutUtil.flip(cc.xy(4, 10), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("TrTab2.9"), FormLayoutUtil.flip(cc.xy(2, 12), colSpec, orientation));
+		forcetranscode = new JTextField(configuration.getForceTranscode());
+		forcetranscode.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setForceTranscode(forcetranscode.getText());
+			}
+		});
+		builder.add(forcetranscode, FormLayoutUtil.flip(cc.xy(4, 12), colSpec, orientation));
+
+		String help1 = Messages.getString("TrTab2.39");
+		help1 += Messages.getString("TrTab2.40");
+		help1 += Messages.getString("TrTab2.41");
+		help1 += Messages.getString("TrTab2.42");
+		help1 += Messages.getString("TrTab2.43");
+		help1 += Messages.getString("TrTab2.44");
+		decodeTips = new JTextArea();
+		decodeTips.setEditable(false);
+		decodeTips.setBorder(BorderFactory.createEtchedBorder());
+		decodeTips.setBackground(new Color(255, 255, 192));
+		decodeTips.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(171, 173, 179)), BorderFactory.createEmptyBorder(3, 5, 3, 5)));
+		decodeTips.setText(help1);
+		builder.add(decodeTips, FormLayoutUtil.flip(cc.xywh(2, 14, 3, 1), colSpec, orientation));
+				
+		JPanel panel = builder.getPanel();
+		panel.applyComponentOrientation(orientation);
+
+		return panel;
+	}
+	
+	public JComponent buildAudioSetupPanel() {
+		String colSpec = FormLayoutUtil.getColSpec("$lcgap, left:pref, 2dlu, pref:grow, $lcgap", orientation);
+		FormLayout layout = new FormLayout(colSpec, "$lgap, pref, 9dlu, 4*(pref, 2dlu), pref, 12dlu, 3*(pref, 2dlu), pref:grow");
+		PanelBuilder builder = new PanelBuilder(layout);
+		CellConstraints cc = new CellConstraints();
+	
+		JComponent cmp = builder.addSeparator(Messages.getString("TrTab2.3"), FormLayoutUtil.flip(cc.xyw(2, 2, 3), colSpec, orientation));
+		cmp = (JComponent) cmp.getComponent(0);
+		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+		
+		builder.addLabel(Messages.getString("TrTab2.50"), FormLayoutUtil.flip(cc.xy(2, 4), colSpec, orientation));
 
 		channels = new JComboBox(new Object[]{Messages.getString("TrTab2.55"),  Messages.getString("TrTab2.56") /*, "8 channels 7.1" */}); // 7.1 not supported by Mplayer :\
 		channels.setEditable(false);
@@ -455,67 +601,55 @@ public class TranscodingTab {
 				configuration.setAudioChannelCount(Integer.parseInt(e.getItem().toString().substring(0, 1)));
 			}
 		});
+		builder.add(channels, FormLayoutUtil.flip(cc.xy(4, 4), colSpec, orientation));
 
-		builder.addLabel(Messages.getString("TrTab2.50"), FormLayoutUtil.flip(cc.xy(1, 13), colSpec, orientation));
-		builder.add(channels, FormLayoutUtil.flip(cc.xy(3, 13), colSpec, orientation));
-
-        forcePCM = new JCheckBox(Messages.getString("TrTab2.27"));
-        forcePCM.setContentAreaFilled(false);
-        if (configuration.isMencoderUsePcm()) {
-            forcePCM.setSelected(true);
-        }
-        forcePCM.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                configuration.setMencoderUsePcm(e.getStateChange() == ItemEvent.SELECTED);
-            }
-        });
-
-        builder.add(forcePCM, FormLayoutUtil.flip(cc.xyw(1, 15, 3), colSpec, orientation));
-
-        ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
-        ac3remux.setContentAreaFilled(false);
-        if (configuration.isRemuxAC3()) {
-            ac3remux.setSelected(true);
-        }
-        ac3remux.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                configuration.setRemuxAC3((e.getStateChange() == ItemEvent.SELECTED));
-            }
-        });
-
-        builder.add(ac3remux, FormLayoutUtil.flip(cc.xyw(1, 17, 3), colSpec, orientation));
-
-        forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
-        forceDTSinPCM.setContentAreaFilled(false);
-        if (configuration.isDTSEmbedInPCM()) {
-            forceDTSinPCM.setSelected(true);
-        }
-        forceDTSinPCM.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                configuration.setDTSEmbedInPCM(forceDTSinPCM.isSelected());
-                if (configuration.isDTSEmbedInPCM()) {
-                    JOptionPane.showMessageDialog(
-                            (JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
-                            Messages.getString("TrTab2.10"),
-                            "Information",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        });
-
-        builder.add(forceDTSinPCM, FormLayoutUtil.flip(cc.xyw(1, 19, 3), colSpec, orientation));
-
-        abitrate = new JTextField("" + configuration.getAudioBitrate());
-		abitrate.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
+		forcePCM = new JCheckBox(Messages.getString("TrTab2.27"));
+		forcePCM.setContentAreaFilled(false);
+		if (configuration.isMencoderUsePcm()) {
+			forcePCM.setSelected(true);
+		}
+		forcePCM.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setMencoderUsePcm(e.getStateChange() == ItemEvent.SELECTED);
 			}
+		});
+		builder.add(forcePCM, FormLayoutUtil.flip(cc.xy(2, 6), colSpec, orientation));
 
-			@Override
-			public void keyTyped(KeyEvent e) {
+		ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
+		ac3remux.setContentAreaFilled(false);
+		if (configuration.isRemuxAC3()) {
+			ac3remux.setSelected(true);
+		}
+		ac3remux.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setRemuxAC3((e.getStateChange() == ItemEvent.SELECTED));
 			}
+		});
+		builder.add(ac3remux, FormLayoutUtil.flip(cc.xyw(2, 8, 3), colSpec, orientation));
 
+		forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
+		forceDTSinPCM.setContentAreaFilled(false);
+		if (configuration.isDTSEmbedInPCM()) {
+			forceDTSinPCM.setSelected(true);
+		}
+		forceDTSinPCM.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				configuration.setDTSEmbedInPCM(forceDTSinPCM.isSelected());
+				if (configuration.isDTSEmbedInPCM()) {
+					JOptionPane.showMessageDialog(
+							(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
+							Messages.getString("TrTab2.10"),
+							"Information",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+		});
+		builder.add(forceDTSinPCM, FormLayoutUtil.flip(cc.xyw(2, 10, 3), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("TrTab2.29"), FormLayoutUtil.flip(cc.xy(2, 12), colSpec, orientation));
+		abitrate = new JTextField("" + configuration.getAudioBitrate());
+		abitrate.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
@@ -526,133 +660,396 @@ public class TranscodingTab {
 				}
 			}
 		});
+		builder.add(abitrate, FormLayoutUtil.flip(cc.xy(4, 12), colSpec, orientation));
 
-		builder.addLabel(Messages.getString("TrTab2.29"), FormLayoutUtil.flip(cc.xy(1, 21), colSpec, orientation));
-		builder.add(abitrate, FormLayoutUtil.flip(cc.xy(3, 21), colSpec, orientation));
-
-		mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
-		mpeg2remux.setContentAreaFilled(false);
-		if (configuration.isMencoderRemuxMPEG2()) {
-			mpeg2remux.setSelected(true);
-		}
-		mpeg2remux.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				configuration.setMencoderRemuxMPEG2((e.getStateChange() == ItemEvent.SELECTED));
+		builder.addLabel(Messages.getString("MEncoderVideo.7"), FormLayoutUtil.flip(cc.xy(2, 14), colSpec, orientation));
+		langs = new JTextField(configuration.getMencoderAudioLanguages());
+		langs.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderAudioLanguages(langs.getText());
 			}
 		});
+		builder.add(langs, FormLayoutUtil.flip(cc.xy(4, 14), colSpec, orientation));
 
-		builder.add(mpeg2remux, FormLayoutUtil.flip(cc.xyw(1, 23, 3), colSpec, orientation));
+		JPanel panel = builder.getPanel();
+		panel.applyComponentOrientation(orientation);
 
-		cmp = builder.addSeparator(Messages.getString("TrTab2.4"), FormLayoutUtil.flip(cc.xyw(1, 25, 3), colSpec, orientation));
-		cmp = (JComponent) cmp.getComponent(0);
-		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
+	return panel;
+}
+	
+	public JComponent buildSubtitlesSetupPanel() {
+		String colSpec = FormLayoutUtil.getColSpec("$lcgap, left:pref, 3dlu, pref:grow, 3dlu, right:pref:grow, 3dlu, pref:grow, 3dlu, right:pref:grow, 3dlu, pref:grow, 3dlu, right:pref:grow, 3dlu, pref:grow, $lcgap", orientation);
+		FormLayout layout = new FormLayout(colSpec, "$lgap, 17*(pref, 2dlu), pref");
+		final PanelBuilder builder = new PanelBuilder(layout);
+		CellConstraints cc = new CellConstraints();
 
-		builder.addLabel(Messages.getString("TrTab2.32"), FormLayoutUtil.flip(cc.xyw(1, 29, 3), colSpec, orientation));
+		builder.addLabel(Messages.getString("MEncoderVideo.9"), FormLayoutUtil.flip(cc.xy(2, 2), colSpec, orientation));
+		defaultsubs = new JTextField(configuration.getMencoderSubLanguages());
+		defaultsubs.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderSubLanguages(defaultsubs.getText());
+			}
+		});
+		builder.add(defaultsubs, FormLayoutUtil.flip(cc.xywh(4, 2, 2, 1), colSpec, orientation));
 
-		Object data[] = new Object[] {
-			configuration.getMencoderMainSettings(),                                                /* default */
-			String.format("keyint=5:vqscale=1:vqmin=2  /* %s */", Messages.getString("TrTab2.60")), /* great */
-			String.format("keyint=5:vqscale=1:vqmin=1  /* %s */", Messages.getString("TrTab2.61")), /* lossless */
-			String.format("keyint=5:vqscale=2:vqmin=3  /* %s */", Messages.getString("TrTab2.62")), /* good (wired) */
-			String.format("keyint=25:vqmax=5:vqmin=2  /* %s */",  Messages.getString("TrTab2.63")), /* good (wireless) */
-			String.format("keyint=25:vqmax=7:vqmin=2  /* %s */",  Messages.getString("TrTab2.64")), /* medium (wireless) */
-			String.format("keyint=25:vqmax=8:vqmin=3  /* %s */",  Messages.getString("TrTab2.65"))  /* low */
+		builder.addLabel(Messages.getString("MEncoderVideo.94"), FormLayoutUtil.flip(cc.xy(6, 2), colSpec, orientation));
+		forcedsub = new JTextField(configuration.getMencoderForcedSubLanguage());
+		forcedsub.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderForcedSubLanguage(forcedsub.getText());
+			}
+		});
+		builder.add(forcedsub, FormLayoutUtil.flip(cc.xy(8, 2), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.95"), FormLayoutUtil.flip(cc.xy(10, 2), colSpec, orientation));
+		forcedtags = new JTextField(configuration.getMencoderForcedSubTags());
+		forcedtags.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderForcedSubTags(forcedtags.getText());
+			}
+		});
+		builder.add(forcedtags, FormLayoutUtil.flip(cc.xywh(12, 2, 5, 1), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.10"), FormLayoutUtil.flip(cc.xy(2, 4), colSpec, orientation));
+		defaultaudiosubs = new JTextField(configuration.getMencoderAudioSubLanguages());
+		defaultaudiosubs.addKeyListener(new KeyAdapter() {
+			@Override
+		public void keyReleased(KeyEvent e) {
+				configuration.setMencoderAudioSubLanguages(defaultaudiosubs.getText());
+			}
+		});
+		builder.add(defaultaudiosubs, FormLayoutUtil.flip(cc.xywh(4, 4, 8, 1), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.11"), FormLayoutUtil.flip(cc.xy(2, 6), colSpec, orientation));
+		Object data[] = new Object[]{
+			configuration.getMencoderSubCp(),
+			Messages.getString("MEncoderVideo.129"),
+			Messages.getString("MEncoderVideo.130"),
+			Messages.getString("MEncoderVideo.131"),
+			Messages.getString("MEncoderVideo.132"),
+			Messages.getString("MEncoderVideo.96"),
+			Messages.getString("MEncoderVideo.97"),
+			Messages.getString("MEncoderVideo.98"),
+			Messages.getString("MEncoderVideo.99"),
+			Messages.getString("MEncoderVideo.100"),
+			Messages.getString("MEncoderVideo.101"),
+			Messages.getString("MEncoderVideo.102"),
+			Messages.getString("MEncoderVideo.103"),
+			Messages.getString("MEncoderVideo.104"),
+			Messages.getString("MEncoderVideo.105"),
+			Messages.getString("MEncoderVideo.106"),
+			Messages.getString("MEncoderVideo.107"),
+			Messages.getString("MEncoderVideo.108"),
+			Messages.getString("MEncoderVideo.109"),
+			Messages.getString("MEncoderVideo.110"),
+			Messages.getString("MEncoderVideo.111"),
+			Messages.getString("MEncoderVideo.112"),
+			Messages.getString("MEncoderVideo.113"),
+			Messages.getString("MEncoderVideo.114"),
+			Messages.getString("MEncoderVideo.115"),
+			Messages.getString("MEncoderVideo.116"),
+			Messages.getString("MEncoderVideo.117"),
+			Messages.getString("MEncoderVideo.118"),			
+			Messages.getString("MEncoderVideo.119"),
+			Messages.getString("MEncoderVideo.120"),
+			Messages.getString("MEncoderVideo.121"),
+			Messages.getString("MEncoderVideo.122"),
+			Messages.getString("MEncoderVideo.123"),
+			Messages.getString("MEncoderVideo.124")
 		};
 
 		MyComboBoxModel cbm = new MyComboBoxModel(data);
-
-		vq = new JComboBox(cbm);
-		vq.addItemListener(new ItemListener() {
+		subcp = new JComboBox(cbm);
+		subcp.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					String s = (String) e.getItem();
-					if (s.indexOf("/*") > -1) {
-						s = s.substring(0, s.indexOf("/*")).trim();
+					int offset = s.indexOf("/*");
+					
+					if (offset > -1) {
+						s = s.substring(0, offset).trim();
 					}
-					configuration.setMencoderMainSettings(s);
+					
+					configuration.setMencoderSubCp(s);
 				}
 			}
 		});
-		vq.getEditor().getEditorComponent().addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		subcp.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				vq.getItemListeners()[0].itemStateChanged(new ItemEvent(vq, 0, vq.getEditor().getItem(), ItemEvent.SELECTED));
+				subcp.getItemListeners()[0].itemStateChanged(new ItemEvent(subcp, 0, subcp.getEditor().getItem(), ItemEvent.SELECTED));
 			}
 		});
-		vq.setEditable(true);
-		builder.add(vq, FormLayoutUtil.flip(cc.xyw(1, 31, 3), colSpec, orientation));
 
-		String help1 = Messages.getString("TrTab2.39");
-		help1 += Messages.getString("TrTab2.40");
-		help1 += Messages.getString("TrTab2.41");
-		help1 += Messages.getString("TrTab2.42");
-		help1 += Messages.getString("TrTab2.43");
-		help1 += Messages.getString("TrTab2.44");
+		subcp.setEditable(true);
+		builder.add(subcp, FormLayoutUtil.flip(cc.xywh(4, 6, 7, 1), colSpec, orientation));
 
-		JTextArea decodeTips = new JTextArea(help1);
-		decodeTips.setEditable(false);
-		decodeTips.setBorder(BorderFactory.createEtchedBorder());
-		decodeTips.setBackground(new Color(255, 255, 192));
-		builder.add(decodeTips, FormLayoutUtil.flip(cc.xyw(1, 41, 3), colSpec, orientation));
+		fribidi = new JCheckBox(Messages.getString("MEncoderVideo.23"));
+		fribidi.setContentAreaFilled(false);
 
-		disableSubs = new JCheckBox(Messages.getString("TrTab2.51"));
-		disableSubs.setContentAreaFilled(false);
+		if (configuration.isMencoderSubFribidi()) {
+			fribidi.setSelected(true);
+		}
 
-		cmp = builder.addSeparator(Messages.getString("TrTab2.7"), FormLayoutUtil.flip(cc.xyw(1, 33, 3), colSpec, orientation));
-		cmp = (JComponent) cmp.getComponent(0);
-		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
-
-		builder.add(disableSubs, FormLayoutUtil.flip(cc.xy(1, 35), colSpec, orientation));
-
-		builder.addLabel(Messages.getString("TrTab2.8"), FormLayoutUtil.flip(cc.xy(1, 37), colSpec, orientation));
-
-		notranscode = new JTextField(configuration.getNoTranscode());
-		notranscode.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
+		fribidi.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setMencoderSubFribidi(e.getStateChange() == ItemEvent.SELECTED);
 			}
+		});
+		builder.add(fribidi, FormLayoutUtil.flip(cc.xywh(12, 6, 4, 1), colSpec, orientation));
 
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		builder.addLabel(Messages.getString("MEncoderVideo.24"), FormLayoutUtil.flip(cc.xy(2, 8), colSpec, orientation));
+		defaultfont = new JTextField(configuration.getMencoderFont());
+		defaultfont.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				configuration.setNoTranscode(notranscode.getText());
+				configuration.setMencoderFont(defaultfont.getText());
 			}
 		});
-		builder.add(notranscode, FormLayoutUtil.flip(cc.xy(3, 37), colSpec, orientation));
+		builder.add(defaultfont, FormLayoutUtil.flip(cc.xywh(4, 8, 8, 1), colSpec, orientation));
 
-		builder.addLabel(Messages.getString("TrTab2.9"), FormLayoutUtil.flip(cc.xy(1, 39), colSpec, orientation));
-
-		forcetranscode = new JTextField(configuration.getForceTranscode());
-		forcetranscode.addKeyListener(new KeyListener() {
+		fontSelectButton = new JButton("...");
+		fontSelectButton.addActionListener(new ActionListener() {
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileFilter(new FontFileFilter());
+				int returnVal = chooser.showDialog((Component) e.getSource(), Messages.getString("MEncoderVideo.25"));
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					defaultfont.setText(chooser.getSelectedFile().getAbsolutePath());
+					configuration.setMencoderFont(chooser.getSelectedFile().getAbsolutePath());
+				}
 			}
+		});
+		builder.add(fontSelectButton, FormLayoutUtil.flip(cc.xy(12, 8), colSpec, orientation));
 
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		builder.addLabel(Messages.getString("MEncoderVideo.37"), FormLayoutUtil.flip(cc.xy(2, 10), colSpec, orientation));
+		alternateSubFolder = new JTextField(configuration.getAlternateSubsFolder());
+		alternateSubFolder.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				configuration.setForceTranscode(forcetranscode.getText());
+				configuration.setAlternateSubsFolder(alternateSubFolder.getText());
 			}
 		});
-		builder.add(forcetranscode, FormLayoutUtil.flip(cc.xy(3, 39), colSpec, orientation));
+		builder.add(alternateSubFolder, FormLayoutUtil.flip(cc.xywh(4, 10, 8, 1), colSpec, orientation));
 
-		JPanel panel = builder.getPanel();
+		folderSelectButton = new JButton("...");
+		folderSelectButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = null;
+				try {
+					chooser = new JFileChooser();
+				} catch (Exception ee) {
+					chooser = new JFileChooser(new RestrictedFileSystemView());
+				}
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int returnVal = chooser.showDialog((Component) e.getSource(), Messages.getString("FoldTab.28"));
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					alternateSubFolder.setText(chooser.getSelectedFile().getAbsolutePath());
+					configuration.setAlternateSubsFolder(chooser.getSelectedFile().getAbsolutePath());
+				}
+			}
+		});
+		builder.add(folderSelectButton, FormLayoutUtil.flip(cc.xy(12, 10), colSpec, orientation));
 
-		// Apply the orientation to the panel and all components in it
+		builder.addLabel(Messages.getString("MEncoderVideo.12"), FormLayoutUtil.flip(cc.xy(2, 12, CellConstraints.RIGHT, CellConstraints.CENTER), colSpec, orientation));
+		mencoder_ass_scale = new JTextField(configuration.getMencoderAssScale());
+		mencoder_ass_scale.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderAssScale(mencoder_ass_scale.getText());
+			}
+		});
+		builder.add(mencoder_ass_scale, FormLayoutUtil.flip(cc.xy(4, 12), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.13"), FormLayoutUtil.flip(cc.xy(6, 12), colSpec, orientation));
+		mencoder_ass_outline = new JTextField(configuration.getMencoderAssOutline());
+		mencoder_ass_outline.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderAssOutline(mencoder_ass_outline.getText());
+			}
+		});
+		builder.add(mencoder_ass_outline, FormLayoutUtil.flip(cc.xy(8, 12), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.14"), FormLayoutUtil.flip(cc.xy(10, 12), colSpec, orientation));
+		mencoder_ass_shadow = new JTextField(configuration.getMencoderAssShadow());
+		mencoder_ass_shadow.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderAssShadow(mencoder_ass_shadow.getText());
+			}
+		});
+		builder.add(mencoder_ass_shadow, FormLayoutUtil.flip(cc.xy(12, 12), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.15"), FormLayoutUtil.flip(cc.xy(14, 12), colSpec, orientation));
+		mencoder_ass_margin = new JTextField(configuration.getMencoderAssMargin());
+		mencoder_ass_margin.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderAssMargin(mencoder_ass_margin.getText());
+			}
+		});
+		builder.add(mencoder_ass_margin, FormLayoutUtil.flip(cc.xy(16, 12), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.16"), FormLayoutUtil.flip(cc.xy(2, 14, CellConstraints.RIGHT, CellConstraints.CENTER), colSpec, orientation));
+		mencoder_noass_scale = new JTextField(configuration.getMencoderNoAssScale());
+		mencoder_noass_scale.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderNoAssScale(mencoder_noass_scale.getText());
+			}
+		});
+		builder.add(mencoder_noass_scale, FormLayoutUtil.flip(cc.xy(4, 14), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.17"), FormLayoutUtil.flip(cc.xy(6, 14), colSpec, orientation));
+		mencoder_noass_outline = new JTextField(configuration.getMencoderNoAssOutline());
+		mencoder_noass_outline.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderNoAssOutline(mencoder_noass_outline.getText());
+			}
+		});
+		builder.add(mencoder_noass_outline, FormLayoutUtil.flip(cc.xy(8, 14), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.18"), FormLayoutUtil.flip(cc.xy(10, 14), colSpec, orientation));
+		mencoder_noass_blur = new JTextField(configuration.getMencoderNoAssBlur());
+		mencoder_noass_blur.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderNoAssBlur(mencoder_noass_blur.getText());
+			}
+		});
+		builder.add(mencoder_noass_blur,  FormLayoutUtil.flip(cc.xy(12, 14), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.19"), FormLayoutUtil.flip(cc.xy(14, 14), colSpec, orientation));
+		mencoder_noass_subpos = new JTextField(configuration.getMencoderNoAssSubPos());
+		mencoder_noass_subpos.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderNoAssSubPos(mencoder_noass_subpos.getText());
+			}
+		});
+		builder.add(mencoder_noass_subpos, FormLayoutUtil.flip(cc.xy(16, 14), colSpec, orientation));
+
+		ass = new JCheckBox(Messages.getString("MEncoderVideo.20"));
+		ass.setContentAreaFilled(false);
+		ass.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (e != null) {
+					configuration.setMencoderAss(e.getStateChange() == ItemEvent.SELECTED);
+				}
+			}
+		});
+		builder.add(ass, FormLayoutUtil.flip(cc.xy(2, 16), colSpec, orientation));
+		ass.setSelected(configuration.isMencoderAss());
+		ass.getItemListeners()[0].itemStateChanged(null);
+
+		fc = new JCheckBox(Messages.getString("MEncoderVideo.21"));
+		fc.setContentAreaFilled(false);
+		fc.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setMencoderFontConfig(e.getStateChange() == ItemEvent.SELECTED);
+			}
+		});
+		builder.add(fc, FormLayoutUtil.flip(cc.xyw(4, 16, 5), colSpec, orientation));
+
+		assdefaultstyle = new JCheckBox(Messages.getString("MEncoderVideo.36"));
+		assdefaultstyle.setContentAreaFilled(false);
+		assdefaultstyle.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setMencoderAssDefaultStyle(e.getStateChange() == ItemEvent.SELECTED);
+			}
+		});
+		builder.add(assdefaultstyle, FormLayoutUtil.flip(cc.xyw(9, 16, 4), colSpec, orientation));
+		assdefaultstyle.setSelected(configuration.isMencoderAssDefaultStyle());
+
+		subColor = new JButton();
+		subColor.setText(Messages.getString("MEncoderVideo.31"));
+		subColor.setBackground(new Color(configuration.getSubsColor()));
+		subColor.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color newColor = JColorChooser.showDialog(
+						SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame()),
+					Messages.getString("MEncoderVideo.125"),
+					subColor.getBackground()
+				);
+
+				if (newColor != null) {
+					subColor.setBackground(newColor);
+					configuration.setSubsColor(newColor.getRGB());
+				}
+			}
+		});
+		builder.add(subColor, FormLayoutUtil.flip(cc.xyw(13, 16, 4), colSpec, orientation));
+
+		subs = new JCheckBox(Messages.getString("MEncoderVideo.22"));
+		subs.setContentAreaFilled(false);
+
+		if (configuration.getUseSubtitles()) {
+			subs.setSelected(true);
+		}
+
+		subs.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setUseSubtitles((e.getStateChange() == ItemEvent.SELECTED));
+			}
+		});
+		builder.add(subs, FormLayoutUtil.flip(cc.xyw(2, 22, 15), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.92"), FormLayoutUtil.flip(cc.xy(2, 24), colSpec, orientation));
+		subq = new JTextField(configuration.getMencoderVobsubSubtitleQuality());
+		subq.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderVobsubSubtitleQuality(subq.getText());
+			}
+		});
+		builder.add(subq, FormLayoutUtil.flip(cc.xy(4, 24), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.93"), cc.xyw(2, 26, 6));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.28") + "% ", FormLayoutUtil.flip(cc.xy(2, 28, CellConstraints.RIGHT, CellConstraints.CENTER), colSpec, orientation));
+		ocw = new JTextField(configuration.getMencoderOverscanCompensationWidth());
+		ocw.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderOverscanCompensationWidth(ocw.getText());
+			}
+		});
+		builder.add(ocw, FormLayoutUtil.flip(cc.xy(4, 28), colSpec, orientation));
+
+		builder.addLabel(Messages.getString("MEncoderVideo.30") + "% ", FormLayoutUtil.flip(cc.xy(6, 28), colSpec, orientation));
+		och = new JTextField(configuration.getMencoderOverscanCompensationHeight());
+		och.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				configuration.setMencoderOverscanCompensationHeight(och.getText());
+			}
+		});
+		builder.add(och, FormLayoutUtil.flip(cc.xy(8, 28), colSpec, orientation));
+		
+		final JPanel panel = builder.getPanel();
+		
+	    for (Component component : panel.getComponents()) {
+	        component.setEnabled(!configuration.isDisableSubtitles());
+	    }
+	    
+		JCheckBox disableSubs = getDisableSubs();
+		disableSubs.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+			    for (Component component : panel.getComponents()) {
+			        component.setEnabled(configuration.isDisableSubtitles());
+			    }
+			}
+		});
+		
 		panel.applyComponentOrientation(orientation);
 
 		return panel;
