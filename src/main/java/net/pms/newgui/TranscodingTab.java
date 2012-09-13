@@ -449,19 +449,6 @@ public class TranscodingTab {
 		});
 		builder.add(chapter_interval, FormLayoutUtil.flip(cc.xy(4, 7), colSpec, orientation));
 
-		mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
-		mpeg2remux.setContentAreaFilled(false);
-		if (configuration.isMencoderRemuxMPEG2()) {
-			mpeg2remux.setSelected(true);
-		}
-		mpeg2remux.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				configuration.setMencoderRemuxMPEG2((e.getStateChange() == ItemEvent.SELECTED));
-			}
-		});
-
-		builder.add(mpeg2remux, FormLayoutUtil.flip(cc.xy(2, 9), colSpec, orientation));
-
 		disableSubs = new JCheckBox(Messages.getString("TrTab2.51"),configuration.isDisableSubtitles());
 		disableSubs.setContentAreaFilled(false);
  		disableSubs.addItemListener(new ItemListener() {
@@ -489,8 +476,17 @@ public class TranscodingTab {
 		FormLayout layout = new FormLayout(colSpec, "$lgap, pref, 2dlu, pref, 6dlu, 2*(10dlu), 2*(pref, 2dlu), pref, 20dlu, 3*(pref, 2dlu), pref");
 		PanelBuilder builder = new PanelBuilder(layout);
 		CellConstraints cc = new CellConstraints();
+		
+		videoHWacceleration = new JCheckBox(Messages.getString("TrTab2.69"));
+		videoHWacceleration.setSelected(configuration.isVideoHardwareAcceleration());
+		videoHWacceleration.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				configuration.setVideoHardwareAcceleration((e.getStateChange() == ItemEvent.SELECTED));
+			}
+		});
+		builder.add(videoHWacceleration, FormLayoutUtil.flip(cc.xy(2, 2), colSpec, orientation));
 
-		builder.add(new JLabel(Messages.getString("TrTab2.32")), FormLayoutUtil.flip(cc.xy(2, 2), colSpec, orientation));
+		builder.add(new JLabel(Messages.getString("TrTab2.32")), FormLayoutUtil.flip(cc.xy(2, 4), colSpec, orientation));
 
 		Object data[] = new Object[] {
 			configuration.getMencoderMainSettings(),                                                /* default */
@@ -522,17 +518,20 @@ public class TranscodingTab {
 			}
 		});
 		vq.setEditable(true);
-		builder.add(vq, FormLayoutUtil.flip(cc.xywh(2, 4, 3, 1), colSpec, orientation));
+		builder.add(vq, FormLayoutUtil.flip(cc.xy(4, 4), colSpec, orientation));
 
-		videoHWacceleration = new JCheckBox("Hardware acceleration");
-		videoHWacceleration.setSelected(configuration.isVideoHardwareAcceleration());
-		videoHWacceleration.addItemListener(new ItemListener() {
+		mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
+		mpeg2remux.setContentAreaFilled(false);
+		if (configuration.isMencoderRemuxMPEG2()) {
+			mpeg2remux.setSelected(true);
+		}
+		mpeg2remux.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				configuration.setVideoHardwareAcceleration((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setMencoderRemuxMPEG2((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		builder.add(videoHWacceleration, FormLayoutUtil.flip(cc.xy(2, 6), colSpec, orientation));
-
+		builder.add(mpeg2remux, FormLayoutUtil.flip(cc.xyw(2, 6, 3), colSpec, orientation));
+		
 		JComponent cmp = builder.addSeparator(Messages.getString("TrTab2.7"), FormLayoutUtil.flip(cc.xyw(2, 8, 3), colSpec, orientation));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
