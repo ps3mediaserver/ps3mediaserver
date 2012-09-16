@@ -1492,7 +1492,7 @@ public class PmsConfiguration {
 	 */
 	@Deprecated
 	public boolean getUseSubtitles() {
-		return getBoolean(KEY_AUTOLOAD_SUBTITLES, true);
+		return isAutoloadSubtitles();
 	}	
 
 	/**
@@ -1512,7 +1512,7 @@ public class PmsConfiguration {
 	 */
 	@Deprecated
 	public void setUseSubtitles(boolean value) {
-		configuration.setProperty(KEY_AUTOLOAD_SUBTITLES, value);
+		setAutoloadSubtitles(value);
 	}	
 		
 	/**
