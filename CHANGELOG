@@ -5,6 +5,7 @@ Changelog:
 
     Updated MediaInfo to 0.7.60
     Improve handling of initialization errors
+    Added support for Samsung SMT-G7400 (UPC Horizon)
 
 1.70.1 - 2012-08-31
 
