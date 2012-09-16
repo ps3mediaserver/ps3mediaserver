@@ -169,7 +169,7 @@ public class PmsConfiguration {
 	private static final String KEY_UPNP_PORT = "upnp_port";
 	private static final String KEY_USE_CACHE = "usecache";
 	private static final String KEY_USE_MPLAYER_FOR_THUMBS = "use_mplayer_for_video_thumbs";
-	private static final String KEY_USE_SUBTITLES = "autoloadsrt";
+	private static final String KEY_AUTOLOAD_SUBTITLES = "autoloadsrt";
 	private static final String KEY_UUID = "uuid";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
@@ -1486,6 +1486,14 @@ public class PmsConfiguration {
 	public void setMinimized(boolean value) {
 		configuration.setProperty(KEY_MINIMIZED, value);
 	}
+	
+	/**
+	 * @deprecated use isAutoloadSubtitles() instead.
+	 */
+	@Deprecated
+	public boolean getUseSubtitles() {
+		return isAutoloadSubtitles();
+	}	
 
 	/**
 	 * Returns true when PMS should check for external subtitle files with the
@@ -1495,18 +1503,26 @@ public class PmsConfiguration {
 	 * @return True if PMS should check for external subtitle files, false if
 	 * 		they should be ignored.
 	 */
-	public boolean getUseSubtitles() {
-		return getBoolean(KEY_USE_SUBTITLES, true);
+	public boolean isAutoloadSubtitles() {
+		return getBoolean(KEY_AUTOLOAD_SUBTITLES, true);
 	}
 
+	/**
+	 * @deprecated use setAutoloadSubtitles() instead.
+	 */
+	@Deprecated
+	public void setUseSubtitles(boolean value) {
+		setAutoloadSubtitles(value);
+	}	
+		
 	/**
 	 * Set to true if PMS should check for external subtitle files with the
 	 * same name as the media (*.srt, *.sub, *.ass etc.).
 	 *
 	 * @param value True if PMS should check for external subtitle files.
 	 */
-	public void setUseSubtitles(boolean value) {
-		configuration.setProperty(KEY_USE_SUBTITLES, value);
+	public void setAutoloadSubtitles(boolean value) {
+		configuration.setProperty(KEY_AUTOLOAD_SUBTITLES, value);
 	}
 
 	/**
