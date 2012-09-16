@@ -898,10 +898,19 @@ public class PmsConfiguration {
 	public boolean isMencoderAss() {
 		return getBoolean(KEY_MENCODER_ASS, Platform.isWindows() || Platform.isMac());
 	}
+	
+	/**
+	 * @deprecated Use {@link #isDisableSubtitles()} instead.
+	 */
+	@Deprecated
+	 public boolean isMencoderDisableSubs() {
+		 return isDisableSubtitles();
+	 }
 
 	/**
 	 * Returns whether or not the Pulse Code Modulation audio format should be
-	 * forced when using MEncoder as transcoding engine. The default is false.
+	 * forced when using MEncoder as transcoding engine. The defadepre
+	 * ult is false.
 	 * @return True if PCM should be forced, false otherwise.
 	 */
 	public boolean isMencoderUsePcm() {
@@ -2260,11 +2269,18 @@ public class PmsConfiguration {
 	public void setVideoHardwareAcceleration(boolean b) {
 		configuration.setProperty(KEY_VIDEO_HW_ACCELERATION, b);
 	}
-
+	
+	/**
+	 * @deprecated Use {@link #setDisableSubtitles()} instead.
+	 */
+  	public void setMencoderDisableSubs(boolean value) {
+  		setDisableSubtitles(value);
+  	}
+   
 	public void setDisableSubtitles(boolean b) {
 		configuration.setProperty(KEY_DISABLE_SUBTITLES, b);
 	}
-
+	
 	public boolean isDisableSubtitles() {
 		return getBoolean(KEY_DISABLE_SUBTITLES, false);
 	}
