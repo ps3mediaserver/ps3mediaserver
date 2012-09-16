@@ -1486,6 +1486,14 @@ public class PmsConfiguration {
 	public void setMinimized(boolean value) {
 		configuration.setProperty(KEY_MINIMIZED, value);
 	}
+	
+	/**
+	 * @deprecated use isAutoloadSubtitles() instead.
+	 */
+	@Deprecated
+	public boolean getUseSubtitles() {
+		return getBoolean(KEY_AUTOLOAD_SUBTITLES, true);
+	}	
 
 	/**
 	 * Returns true when PMS should check for external subtitle files with the
@@ -1499,6 +1507,14 @@ public class PmsConfiguration {
 		return getBoolean(KEY_AUTOLOAD_SUBTITLES, true);
 	}
 
+	/**
+	 * @deprecated use setAutoloadSubtitles() instead.
+	 */
+	@Deprecated
+	public void setUseSubtitles(boolean value) {
+		configuration.setProperty(KEY_AUTOLOAD_SUBTITLES, value);
+	}	
+		
 	/**
 	 * Set to true if PMS should check for external subtitle files with the
 	 * same name as the media (*.srt, *.sub, *.ass etc.).
