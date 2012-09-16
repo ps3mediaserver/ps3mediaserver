@@ -251,7 +251,7 @@ public abstract class Player {
 			}
 		}
 
-		if (!configuration.isMencoderDisableSubs() && params.sid == null && media != null) {
+		if (!configuration.isDisableSubtitles() && params.sid == null && media != null) {
 			// Check for subtitles again
 			File video = new File(fileName);
 			FileUtil.doesSubtitlesExists(video, media, false);

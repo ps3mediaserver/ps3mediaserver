@@ -173,6 +173,8 @@ public class PmsConfiguration {
 	private static final String KEY_UUID = "uuid";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
+	private static final String KEY_VIDEO_HW_ACCELERATION = "video_HW_acceleration";
+	private static final String KEY_DISABLE_SUBTITLES = "disable_subtitles";
 	// FIXME what is this? if it should be kept, it needs to be a) documented and b) renamed (breaking change)
 	private static final String KEY_BUFFER_MAX = "buffer_max";
 
@@ -896,20 +898,19 @@ public class PmsConfiguration {
 	public boolean isMencoderAss() {
 		return getBoolean(KEY_MENCODER_ASS, Platform.isWindows() || Platform.isMac());
 	}
-
+	
 	/**
-	 * Returns whether or not subtitles should be disabled when using MEncoder
-	 * as transcoding engine. Default is false, meaning subtitles should not
-	 * be disabled.
-	 * @return True if subtitles should be disabled, false otherwise.
+	 * @deprecated Use {@link #isDisableSubtitles()} instead.
 	 */
-	public boolean isMencoderDisableSubs() {
-		return getBoolean(KEY_MENCODER_DISABLE_SUBS, false);
-	}
+	@Deprecated
+	 public boolean isMencoderDisableSubs() {
+		 return isDisableSubtitles();
+	 }
 
 	/**
 	 * Returns whether or not the Pulse Code Modulation audio format should be
-	 * forced when using MEncoder as transcoding engine. The default is false.
+	 * forced when using MEncoder as transcoding engine. The defadepre
+	 * ult is false.
 	 * @return True if PCM should be forced, false otherwise.
 	 */
 	public boolean isMencoderUsePcm() {
@@ -1177,15 +1178,6 @@ public class PmsConfiguration {
 	 */
 	public void setMencoderFontConfig(boolean value) {
 		configuration.setProperty(KEY_MENCODER_FONT_CONFIG, value);
-	}
-
-	/**
-	 * Set whether or not subtitles should be disabled when using MEncoder
-	 * as transcoding engine.
-	 * @param value Set to true if subtitles should be disabled.
-	 */
-	public void setMencoderDisableSubs(boolean value) {
-		configuration.setProperty(KEY_MENCODER_DISABLE_SUBS, value);
 	}
 
 	/**
@@ -2268,5 +2260,28 @@ public class PmsConfiguration {
 	 */
 	public void setTranscodeFolderName(String name) {
 		configuration.setProperty(KEY_TRANSCODE_FOLDER_NAME, name);
+	}
+
+	public boolean isVideoHardwareAcceleration() {
+		return getBoolean(KEY_VIDEO_HW_ACCELERATION, false);
+	}
+
+	public void setVideoHardwareAcceleration(boolean b) {
+		configuration.setProperty(KEY_VIDEO_HW_ACCELERATION, b);
+	}
+	
+	/**
+	 * @deprecated Use {@link #setDisableSubtitles()} instead.
+	 */
+  	public void setMencoderDisableSubs(boolean value) {
+  		setDisableSubtitles(value);
+  	}
+   
+	public void setDisableSubtitles(boolean b) {
+		configuration.setProperty(KEY_DISABLE_SUBTITLES, b);
+	}
+	
+	public boolean isDisableSubtitles() {
+		return getBoolean(KEY_DISABLE_SUBTITLES, false);
 	}
 }

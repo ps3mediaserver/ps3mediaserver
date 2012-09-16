@@ -995,32 +995,30 @@ public class MEncoderVideo extends Player {
 		JCheckBox disableSubs = ((LooksFrame) PMS.get().getFrame()).getTr().getDisableSubs();
 		disableSubs.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				configuration.setMencoderDisableSubs(e.getStateChange() == ItemEvent.SELECTED);
+				subs.setEnabled(configuration.isDisableSubtitles());
+				subq.setEnabled(configuration.isDisableSubtitles());
+				defaultsubs.setEnabled(configuration.isDisableSubtitles());
+				subcp.setEnabled(configuration.isDisableSubtitles());
+				ass.setEnabled(configuration.isDisableSubtitles());
+				assdefaultstyle.setEnabled(configuration.isDisableSubtitles());
+				fribidi.setEnabled(configuration.isDisableSubtitles());
+				fc.setEnabled(configuration.isDisableSubtitles());
+				mencoder_ass_scale.setEnabled(configuration.isDisableSubtitles());
+				mencoder_ass_outline.setEnabled(configuration.isDisableSubtitles());
+				mencoder_ass_shadow.setEnabled(configuration.isDisableSubtitles());
+				mencoder_ass_margin.setEnabled(configuration.isDisableSubtitles());
+				mencoder_noass_scale.setEnabled(configuration.isDisableSubtitles());
+				mencoder_noass_outline.setEnabled(configuration.isDisableSubtitles());
+				mencoder_noass_blur.setEnabled(configuration.isDisableSubtitles());
+				mencoder_noass_subpos.setEnabled(configuration.isDisableSubtitles());
 
-				subs.setEnabled(!configuration.isMencoderDisableSubs());
-				subq.setEnabled(!configuration.isMencoderDisableSubs());
-				defaultsubs.setEnabled(!configuration.isMencoderDisableSubs());
-				subcp.setEnabled(!configuration.isMencoderDisableSubs());
-				ass.setEnabled(!configuration.isMencoderDisableSubs());
-				assdefaultstyle.setEnabled(!configuration.isMencoderDisableSubs());
-				fribidi.setEnabled(!configuration.isMencoderDisableSubs());
-				fc.setEnabled(!configuration.isMencoderDisableSubs());
-				mencoder_ass_scale.setEnabled(!configuration.isMencoderDisableSubs());
-				mencoder_ass_outline.setEnabled(!configuration.isMencoderDisableSubs());
-				mencoder_ass_shadow.setEnabled(!configuration.isMencoderDisableSubs());
-				mencoder_ass_margin.setEnabled(!configuration.isMencoderDisableSubs());
-				mencoder_noass_scale.setEnabled(!configuration.isMencoderDisableSubs());
-				mencoder_noass_outline.setEnabled(!configuration.isMencoderDisableSubs());
-				mencoder_noass_blur.setEnabled(!configuration.isMencoderDisableSubs());
-				mencoder_noass_subpos.setEnabled(!configuration.isMencoderDisableSubs());
-
-				if (!configuration.isMencoderDisableSubs()) {
+				if (!configuration.isDisableSubtitles()) {
 					ass.getItemListeners()[0].itemStateChanged(null);
 				}
 			}
 		});
 
-		if (configuration.isMencoderDisableSubs()) {
+		if (configuration.isDisableSubtitles()) {
 			disableSubs.setSelected(true);
 		}
 
@@ -1578,7 +1576,7 @@ public class MEncoderVideo extends Player {
 
 		StringBuilder sb = new StringBuilder();
 		// Set subtitles options
-		if (!configuration.isMencoderDisableSubs() && !avisynth() && params.sid != null) {
+		if (!configuration.isDisableSubtitles() && !avisynth() && params.sid != null) {
 			int subtitleMargin = 0;
 			int userMargin     = 0;
 
@@ -1826,7 +1824,7 @@ public class MEncoderVideo extends Player {
 		 * subtitle stuff
 		 */
 		// external subtitles file
-		if (!configuration.isMencoderDisableSubs() && !avisynth() && params.sid != null && params.sid.isExternal()) {
+		if (!configuration.isDisableSubtitles() && !avisynth() && params.sid != null && params.sid.isExternal()) {
 			if (params.sid.getType() == SubtitleType.VOBSUB) {
 				cmdList.add("-vobsub");
 				cmdList.add(externalSubtitlesFileName.substring(0, externalSubtitlesFileName.length() - 4));
