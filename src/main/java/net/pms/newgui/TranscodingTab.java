@@ -87,34 +87,13 @@ public class TranscodingTab {
 	private JCheckBox chapter_support;
 	private JTextField chapter_interval;
 	private JCheckBox videoHWacceleration;
-	private JTextArea decodeTips;
 	private JTextField langs;
 	private JTextField defaultsubs;
 	private JTextField forcedsub;
 	private JTextField forcedtags;
-	private JTextField defaultaudiosubs;
-	private JComboBox subcp;
-	private JCheckBox fribidi;
-	private JTextField defaultfont;
-	private JButton fontSelectButton;
 	private JTextField alternateSubFolder;
 	private JButton folderSelectButton;
-	private JTextField mencoder_ass_scale;
-	private JTextField mencoder_ass_outline;
-	private JTextField mencoder_ass_shadow;
-	private JTextField mencoder_ass_margin;
-	private JTextField mencoder_noass_scale;
-	private JTextField mencoder_noass_outline;
-	private JTextField mencoder_noass_blur;
-	private JTextField mencoder_noass_subpos;
-	private JCheckBox ass;
-	private JCheckBox fc;
-	private JCheckBox assdefaultstyle;
-	private JButton subColor;
 	private JCheckBox subs;
-	private JTextField subq;
-	private JTextField ocw;
-	private JTextField och;
 	private static final int MAX_CORES = 32;
 
 	private void updateEngineModel() {
