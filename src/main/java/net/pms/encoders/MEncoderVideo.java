@@ -44,6 +44,9 @@ import net.pms.util.CodecUtil;
 import net.pms.util.FileUtil;
 import net.pms.util.FormLayoutUtil;
 import net.pms.util.ProcessUtil;
+
+import org.apache.commons.configuration.event.ConfigurationEvent;
+import org.apache.commons.configuration.event.ConfigurationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -992,35 +995,35 @@ public class MEncoderVideo extends Player {
 
 		builder.add(subColor, FormLayoutUtil.flip(cc.xyw(12, 37, 4), colSpec, orientation));
 
-		JCheckBox disableSubs = ((LooksFrame) PMS.get().getFrame()).getTr().getDisableSubs();
-		disableSubs.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				subs.setEnabled(configuration.isDisableSubtitles());
-				subq.setEnabled(configuration.isDisableSubtitles());
-				defaultsubs.setEnabled(configuration.isDisableSubtitles());
-				subcp.setEnabled(configuration.isDisableSubtitles());
-				ass.setEnabled(configuration.isDisableSubtitles());
-				assdefaultstyle.setEnabled(configuration.isDisableSubtitles());
-				fribidi.setEnabled(configuration.isDisableSubtitles());
-				fc.setEnabled(configuration.isDisableSubtitles());
-				mencoder_ass_scale.setEnabled(configuration.isDisableSubtitles());
-				mencoder_ass_outline.setEnabled(configuration.isDisableSubtitles());
-				mencoder_ass_shadow.setEnabled(configuration.isDisableSubtitles());
-				mencoder_ass_margin.setEnabled(configuration.isDisableSubtitles());
-				mencoder_noass_scale.setEnabled(configuration.isDisableSubtitles());
-				mencoder_noass_outline.setEnabled(configuration.isDisableSubtitles());
-				mencoder_noass_blur.setEnabled(configuration.isDisableSubtitles());
-				mencoder_noass_subpos.setEnabled(configuration.isDisableSubtitles());
+		configuration.addConfigurationListener(new ConfigurationListener() {
+			@Override
+			public void configurationChanged(ConfigurationEvent event) {
+				if ((!event.isBeforeUpdate()) && event.getPropertyName().equals(PmsConfiguration.KEY_DISABLE_SUBTITLES)) {
+					
+					boolean enabled = !configuration.isDisableSubtitles();
+					subs.setEnabled(enabled);
+					subq.setEnabled(enabled);
+					defaultsubs.setEnabled(enabled);
+					subcp.setEnabled(enabled);
+					ass.setEnabled(enabled);
+					assdefaultstyle.setEnabled(enabled);
+					fribidi.setEnabled(enabled);
+					fc.setEnabled(enabled);
+					mencoder_ass_scale.setEnabled(enabled);
+					mencoder_ass_outline.setEnabled(enabled);
+					mencoder_ass_shadow.setEnabled(enabled);
+					mencoder_ass_margin.setEnabled(enabled);
+					mencoder_noass_scale.setEnabled(enabled);
+					mencoder_noass_outline.setEnabled(enabled);
+					mencoder_noass_blur.setEnabled(enabled);
+					mencoder_noass_subpos.setEnabled(enabled);
 
-				if (!configuration.isDisableSubtitles()) {
-					ass.getItemListeners()[0].itemStateChanged(null);
+					if (enabled) {
+						ass.getItemListeners()[0].itemStateChanged(null);
+					}
 				}
 			}
 		});
-
-		if (configuration.isDisableSubtitles()) {
-			disableSubs.setSelected(true);
-		}
 
 		JPanel panel = builder.getPanel();
 
