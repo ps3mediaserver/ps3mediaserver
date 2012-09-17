@@ -64,9 +64,11 @@ public class PmsConfiguration {
 	private static final String KEY_AUDIO_CHANNEL_COUNT = "audiochannels";
 	private static final String KEY_AUDIO_RESAMPLE = "audio_resample";
 	private static final String KEY_AUDIO_THUMBNAILS_METHOD = "audio_thumbnails_method";
+	private static final String KEY_AUTOLOAD_SUBTITLES = "autoloadsrt"; // TODO (breaking change): rename to e.g. autoload_subtitles or autoload_external_subtitles
 	private static final String KEY_AUTO_UPDATE = "auto_update";
 	private static final String KEY_AVISYNTH_CONVERT_FPS = "avisynth_convertfps";
 	private static final String KEY_AVISYNTH_SCRIPT = "avisynth_script";
+	private static final String KEY_BUFFER_MAX = "buffer_max"; // FIXME what is this? if it should be kept, it needs to be a) documented and b) renamed (breaking change)
 	private static final String KEY_BUFFER_TYPE = "buffertype";
 	private static final String KEY_CHAPTER_INTERVAL = "chapter_interval";
 	private static final String KEY_CHAPTER_SUPPORT = "chapter_support";
@@ -88,17 +90,17 @@ public class PmsConfiguration {
 	private static final String KEY_HIDE_VIDEO_SETTINGS = "hidevideosettings";
 	private static final String KEY_HTTP_ENGINE_V2 = "http_engine_v2";
 	private static final String KEY_IMAGE_THUMBNAILS_ENABLED = "image_thumbnails";
-	private static final String KEY_IP_FILTER = "ip_filter";
 	private static final String KEY_IPHOTO_ENABLED = "iphoto";
+	private static final String KEY_IP_FILTER = "ip_filter";
 	private static final String KEY_ITUNES_ENABLED = "itunes";
 	private static final String KEY_LANGUAGE = "language";
 	private static final String KEY_MAX_AUDIO_BUFFER = "maxaudiobuffer";
 	private static final String KEY_MAX_BITRATE = "maximumbitrate";
 	private static final String KEY_MAX_MEMORY_BUFFER_SIZE = "maxvideobuffer";
 	private static final String KEY_MENCODER_AC3_FIXED = "mencoder_ac3_fixed";
+	private static final String KEY_MENCODER_ASS = "mencoder_ass";
 	private static final String KEY_MENCODER_ASS_DEFAULTSTYLE = "mencoder_ass_defaultstyle";
 	private static final String KEY_MENCODER_ASS_MARGIN = "mencoder_ass_margin";
-	private static final String KEY_MENCODER_ASS = "mencoder_ass";
 	private static final String KEY_MENCODER_ASS_OUTLINE = "mencoder_ass_outline";
 	private static final String KEY_MENCODER_ASS_SCALE = "mencoder_ass_scale";
 	private static final String KEY_MENCODER_ASS_SHADOW = "mencoder_ass_shadow";
@@ -106,8 +108,8 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_AUDIO_SUB_LANGS = "mencoder_audiosublangs";
 	private static final String KEY_MENCODER_CUSTOM_OPTIONS = "mencoder_decode"; // TODO (breaking change): should be renamed to e.g. mencoder_custom_options
 	public static final String KEY_DISABLE_SUBTITLES = "mencoder_disablesubs"; // TODO (breaking change): should be renamed to e.g. disable_subtitles
-	private static final String KEY_MENCODER_FONT_CONFIG = "mencoder_fontconfig";
 	private static final String KEY_MENCODER_FONT = "mencoder_font";
+	private static final String KEY_MENCODER_FONT_CONFIG = "mencoder_fontconfig";
 	private static final String KEY_MENCODER_FORCED_SUB_LANG = "forced_sub_lang";
 	private static final String KEY_MENCODER_FORCED_SUB_TAGS = "forced_sub_tags";
 	private static final String KEY_MENCODER_FORCE_FPS = "mencoder_forcefps";
@@ -169,14 +171,10 @@ public class PmsConfiguration {
 	private static final String KEY_UPNP_PORT = "upnp_port";
 	private static final String KEY_USE_CACHE = "usecache";
 	private static final String KEY_USE_MPLAYER_FOR_THUMBS = "use_mplayer_for_video_thumbs";
-	private static final String KEY_AUTOLOAD_SUBTITLES = "autoloadsrt"; // TODO (breaking change): rename to e.g. autoload_subtitles or autoload_external_subtitles
 	private static final String KEY_UUID = "uuid";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
 	private static final String KEY_VIDEO_HW_ACCELERATION = "video_hardware_acceleration";
-	// FIXME what is this? if it should be kept, it needs to be a) documented and b) renamed (breaking change)
-	private static final String KEY_BUFFER_MAX = "buffer_max";
-
 	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
 	// see Build for more details
 	private static final String PROFILE_DIRECTORY_NAME = Build.getProfileDirectoryName();
