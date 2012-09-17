@@ -153,7 +153,7 @@ public class TranscodingTab {
 		builder.setOpaque(true);
 
 		CellConstraints cc = new CellConstraints();
-		builder.add(buildRighttabbedPanel(), FormLayoutUtil.flip(cc.xyw(4, 1, 3), colSpec, orientation));
+		builder.add(buildRightTabbedPanel(), FormLayoutUtil.flip(cc.xyw(4, 1, 3), colSpec, orientation));
 		builder.add(buildLeft(), FormLayoutUtil.flip(cc.xy(2, 1), colSpec, orientation));
 
 		JPanel panel = builder.getPanel();
@@ -164,7 +164,7 @@ public class TranscodingTab {
 		return panel;
 	}
 
-	public JComponent buildRighttabbedPanel() {
+	private JComponent buildRightTabbedPanel() {
 		cl = new CardLayout();
 		tabbedPanel = new JPanel(cl);
 		tabbedPanel.setBorder(BorderFactory.createEmptyBorder());
@@ -471,7 +471,7 @@ public class TranscodingTab {
 		return panel;
 	}
 	
-	public JComponent buildVideoSetupPanel() {
+	private JComponent buildVideoSetupPanel() {
 		String colSpec = FormLayoutUtil.getColSpec("$lcgap, left:pref, 2dlu, pref:grow, $lcgap", orientation);
 		FormLayout layout = new FormLayout(colSpec, "$lgap, pref, 2dlu, pref, 6dlu, 2*(10dlu), 2*(pref, 2dlu), pref, 20dlu, 3*(pref, 2dlu), pref");
 		PanelBuilder builder = new PanelBuilder(layout);
@@ -485,6 +485,7 @@ public class TranscodingTab {
 			}
 		});
 		builder.add(videoHWacceleration, FormLayoutUtil.flip(cc.xy(2, 2), colSpec, orientation));
+		videoHWacceleration.setEnabled(false); // TODO When any transcoder will implement it change to true or delete the line.
 
 		builder.add(new JLabel(Messages.getString("TrTab2.32")), FormLayoutUtil.flip(cc.xy(2, 4), colSpec, orientation));
 
@@ -576,7 +577,7 @@ public class TranscodingTab {
 		return panel;
 	}
 	
-	public JComponent buildAudioSetupPanel() {
+	private JComponent buildAudioSetupPanel() {
 		String colSpec = FormLayoutUtil.getColSpec("$lcgap, left:pref, 2dlu, pref:grow, $lcgap", orientation);
 		FormLayout layout = new FormLayout(colSpec, "$lgap, pref, 9dlu, 4*(pref, 2dlu), pref, 12dlu, 3*(pref, 2dlu), pref:grow");
 		PanelBuilder builder = new PanelBuilder(layout);
@@ -677,7 +678,7 @@ public class TranscodingTab {
 	return panel;
 }
 	
-	public JComponent buildSubtitlesSetupPanel() {
+	private JComponent buildSubtitlesSetupPanel() {
 		String colSpec = FormLayoutUtil.getColSpec("$lcgap, left:pref, 3dlu, pref:grow, 3dlu, right:pref:grow, 3dlu, pref:grow, 3dlu, right:pref:grow, 3dlu, pref:grow, 3dlu, right:pref:grow, 3dlu, pref:grow, $lcgap", orientation);
 		FormLayout layout = new FormLayout(colSpec, "$lgap, 17*(pref, 2dlu), pref");
 		final PanelBuilder builder = new PanelBuilder(layout);
@@ -1040,8 +1041,8 @@ public class TranscodingTab {
 	        component.setEnabled(!configuration.isDisableSubtitles());
 	    }
 	    
-		JCheckBox disableSubs = getDisableSubs();
-		disableSubs.addItemListener(new ItemListener() {
+		JCheckBox checkStateOfDisableSubsCheckBox = getDisableSubs();
+		checkStateOfDisableSubsCheckBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 			    for (Component component : panel.getComponents()) {
 			        component.setEnabled(configuration.isDisableSubtitles());

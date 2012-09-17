@@ -105,7 +105,7 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_AUDIO_LANGS = "mencoder_audiolangs";
 	private static final String KEY_MENCODER_AUDIO_SUB_LANGS = "mencoder_audiosublangs";
 	private static final String KEY_MENCODER_CUSTOM_OPTIONS = "mencoder_decode"; // TODO (breaking change): should be renamed to e.g. mencoder_custom_options
-	private static final String KEY_MENCODER_DISABLE_SUBS = "mencoder_disablesubs";
+	private static final String KEY_DISABLE_SUBTITLES = "mencoder_disablesubs"; // TODO (breaking change): should be renamed to e.g. disable_subtitles
 	private static final String KEY_MENCODER_FONT_CONFIG = "mencoder_fontconfig";
 	private static final String KEY_MENCODER_FONT = "mencoder_font";
 	private static final String KEY_MENCODER_FORCED_SUB_LANG = "forced_sub_lang";
@@ -173,8 +173,7 @@ public class PmsConfiguration {
 	private static final String KEY_UUID = "uuid";
 	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
-	private static final String KEY_VIDEO_HW_ACCELERATION = "video_HW_acceleration";
-	private static final String KEY_DISABLE_SUBTITLES = "disable_subtitles";
+	private static final String KEY_VIDEO_HW_ACCELERATION = "video_hardware_acceleration";
 	// FIXME what is this? if it should be kept, it needs to be a) documented and b) renamed (breaking change)
 	private static final String KEY_BUFFER_MAX = "buffer_max";
 
@@ -902,15 +901,40 @@ public class PmsConfiguration {
 	/**
 	 * @deprecated Use {@link #isDisableSubtitles()} instead.
 	 */
-	@Deprecated
 	 public boolean isMencoderDisableSubs() {
 		 return isDisableSubtitles();
+	 }
+	 
+		
+	 /**
+	  * Returns whether or not subtitles should be disabled for all
+	  * transcoding engines. Default is false, meaning subtitles should not
+	  * be disabled.
+	  * @return True if subtitles should be disabled, false otherwise.
+	  */
+	 public boolean isDisableSubtitles() {
+		 return getBoolean(KEY_DISABLE_SUBTITLES, false);
+	 }
+	 
+	 /**
+	  * @deprecated Use {@link #setDisableSubtitles()} instead.
+	  */
+	 public void setMencoderDisableSubs(boolean value) {
+		 setDisableSubtitles(value);
+	 }
+
+	 /**
+	  * Set whether or not subtitles should be disabled for
+	  * all transcoding engines.
+	  * @param value Set to true if subtitles should be disabled.
+	  */
+	 public void setDisableSubtitles(boolean value) {
+		 configuration.setProperty(KEY_DISABLE_SUBTITLES, value);
 	 }
 
 	/**
 	 * Returns whether or not the Pulse Code Modulation audio format should be
-	 * forced when using MEncoder as transcoding engine. The defadepre
-	 * ult is false.
+	 * forced when using MEncoder as transcoding engine. The default is false.
 	 * @return True if PCM should be forced, false otherwise.
 	 */
 	public boolean isMencoderUsePcm() {
@@ -2268,20 +2292,5 @@ public class PmsConfiguration {
 
 	public void setVideoHardwareAcceleration(boolean b) {
 		configuration.setProperty(KEY_VIDEO_HW_ACCELERATION, b);
-	}
-	
-	/**
-	 * @deprecated Use {@link #setDisableSubtitles()} instead.
-	 */
-  	public void setMencoderDisableSubs(boolean value) {
-  		setDisableSubtitles(value);
-  	}
-   
-	public void setDisableSubtitles(boolean b) {
-		configuration.setProperty(KEY_DISABLE_SUBTITLES, b);
-	}
-	
-	public boolean isDisableSubtitles() {
-		return getBoolean(KEY_DISABLE_SUBTITLES, false);
 	}
 }
