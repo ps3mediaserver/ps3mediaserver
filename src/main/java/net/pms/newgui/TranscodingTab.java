@@ -1041,9 +1041,8 @@ public class TranscodingTab {
 	    for (Component component : panel.getComponents()) {
 	    	component.setEnabled(enable);
 	    }
-	    
-		JCheckBox checkStateOfDisableSubsCheckBox = getDisableSubs();
-		checkStateOfDisableSubsCheckBox.addItemListener(new ItemListener() {
+
+		disableSubs.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				boolean disable = e.getStateChange() != ItemEvent.SELECTED;
 			    for (Component component : panel.getComponents()) {
