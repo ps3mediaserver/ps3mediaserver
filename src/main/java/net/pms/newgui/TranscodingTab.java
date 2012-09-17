@@ -1037,15 +1037,17 @@ public class TranscodingTab {
 		
 		final JPanel panel = builder.getPanel();
 		
+		boolean enable = !configuration.isDisableSubtitles();
 	    for (Component component : panel.getComponents()) {
-	        component.setEnabled(!configuration.isDisableSubtitles());
+	    	component.setEnabled(enable);
 	    }
 	    
 		JCheckBox checkStateOfDisableSubsCheckBox = getDisableSubs();
 		checkStateOfDisableSubsCheckBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
+				boolean disable = e.getStateChange() != ItemEvent.SELECTED;
 			    for (Component component : panel.getComponents()) {
-			        component.setEnabled(configuration.isDisableSubtitles());
+			    	component.setEnabled(disable);
 			    }
 			}
 		});
