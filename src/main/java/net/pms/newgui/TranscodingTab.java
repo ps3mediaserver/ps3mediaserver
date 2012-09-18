@@ -617,11 +617,11 @@ public class TranscodingTab {
 		builder.add(abitrate, FormLayoutUtil.flip(cc.xy(3, 12), colSpec, orientation));
 
 		builder.addLabel(Messages.getString("MEncoderVideo.7"), FormLayoutUtil.flip(cc.xy(1, 14), colSpec, orientation));
-		langs = new JTextField(configuration.getMencoderAudioLanguages());
+		langs = new JTextField(configuration.getAudioLanguages());
 		langs.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				configuration.setMencoderAudioLanguages(langs.getText());
+				configuration.setAudioLanguages(langs.getText());
 			}
 		});
 		builder.add(langs, FormLayoutUtil.flip(cc.xy(3, 14), colSpec, orientation));
@@ -640,31 +640,31 @@ public class TranscodingTab {
 		CellConstraints cc = new CellConstraints();
 
 		builder.addLabel(Messages.getString("MEncoderVideo.9"), FormLayoutUtil.flip(cc.xy(1, 2), colSpec, orientation));
-		defaultsubs = new JTextField(configuration.getMencoderSubLanguages());
+		defaultsubs = new JTextField(configuration.getSubtitlesLanguages());
 		defaultsubs.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				configuration.setMencoderSubLanguages(defaultsubs.getText());
+				configuration.setSubtitlesLanguages(defaultsubs.getText());
 			}
 		});
 		builder.add(defaultsubs, FormLayoutUtil.flip(cc.xyw(3, 2, 2), colSpec, orientation));
 
 		builder.addLabel(Messages.getString("MEncoderVideo.94"), FormLayoutUtil.flip(cc.xy(5, 2), colSpec, orientation));
-		forcedsub = new JTextField(configuration.getMencoderForcedSubLanguage());
+		forcedsub = new JTextField(configuration.getForcedSubtitleLanguage());
 		forcedsub.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				configuration.setMencoderForcedSubLanguage(forcedsub.getText());
+				configuration.setForcedSubtitleLanguage(forcedsub.getText());
 			}
 		});
 		builder.add(forcedsub, FormLayoutUtil.flip(cc.xy(7, 2), colSpec, orientation));
 
 		builder.addLabel(Messages.getString("MEncoderVideo.95"), FormLayoutUtil.flip(cc.xy(9, 2), colSpec, orientation));
-		forcedtags = new JTextField(configuration.getMencoderForcedSubTags());
+		forcedtags = new JTextField(configuration.getForcedSubtitleTags());
 		forcedtags.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				configuration.setMencoderForcedSubTags(forcedtags.getText());
+				configuration.setForcedSubtitleTags(forcedtags.getText());
 			}
 		});
 		builder.add(forcedtags, FormLayoutUtil.flip(cc.xyw(11, 2, 5), colSpec, orientation));

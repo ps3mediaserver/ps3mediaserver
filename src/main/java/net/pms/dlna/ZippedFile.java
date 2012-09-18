@@ -36,7 +36,7 @@ public class ZippedFile extends DLNAResource {
 
 	public ZippedFile(File z) {
 		this.z = z;
-		setLastmodified(z.lastModified());
+		setLastModified(z.lastModified());
 		try {
 			zip = new ZipFile(z);
 			Enumeration<? extends ZipEntry> enm = zip.entries();

@@ -66,12 +66,12 @@ public class MapFile extends DLNAResource {
 
 	public MapFile() {
 		setConf(new MapFileConfiguration());
-		setLastmodified(0);
+		setLastModified(0);
 	}
 
 	public MapFile(MapFileConfiguration conf) {
 		setConf(conf);
-		setLastmodified(0);
+		setLastModified(0);
 	}
 
 	private boolean isFileRelevant(File f) {
@@ -319,7 +319,7 @@ public class MapFile extends DLNAResource {
 	}
 
 	private boolean isSameLastModified(File f, DLNAResource d) {
-		return d.getLastmodified() == f.lastModified();
+		return d.getLastModified() == f.lastModified();
 	}
 
 	private boolean isRealFolder(DLNAResource d) {
