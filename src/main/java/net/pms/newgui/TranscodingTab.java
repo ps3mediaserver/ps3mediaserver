@@ -401,10 +401,8 @@ public class TranscodingTab {
 		});
 		builder.add(nbcores, FormLayoutUtil.flip(cc.xy(4, 5), colSpec, orientation));
 
-		chapter_support = new JCheckBox(Messages.getString("TrTab2.52"));
+		chapter_support = new JCheckBox(Messages.getString("TrTab2.52"), configuration.isChapterSupport());
 		chapter_support.setContentAreaFilled(false);
-		chapter_support.setSelected(configuration.isChapterSupport());
-
 		chapter_support.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setChapterSupport((e.getStateChange() == ItemEvent.SELECTED));
@@ -457,8 +455,7 @@ public class TranscodingTab {
 		builder.setBorder(Borders.DLU4_BORDER);
 		CellConstraints cc = new CellConstraints();
 
-		videoHWacceleration = new JCheckBox(Messages.getString("TrTab2.69"));
-		videoHWacceleration.setSelected(configuration.isVideoHardwareAcceleration());
+		videoHWacceleration = new JCheckBox(Messages.getString("TrTab2.69"), configuration.isVideoHardwareAcceleration());
 		videoHWacceleration.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setVideoHardwareAcceleration((e.getStateChange() == ItemEvent.SELECTED));
@@ -467,11 +464,9 @@ public class TranscodingTab {
 		builder.add(videoHWacceleration, FormLayoutUtil.flip(cc.xy(1, 2), colSpec, orientation));
 		videoHWacceleration.setEnabled(false); // TODO When any transcoder will implement it change to true or delete the line.
 
-		mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
+		mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows() 
+									? Messages.getString("TrTab2.21") : ""), configuration.isMencoderRemuxMPEG2());
 		mpeg2remux.setContentAreaFilled(false);
-		if (configuration.isMencoderRemuxMPEG2()) {
-			mpeg2remux.setSelected(true);
-		}
 		mpeg2remux.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setMencoderRemuxMPEG2((e.getStateChange() == ItemEvent.SELECTED));
@@ -569,11 +564,8 @@ public class TranscodingTab {
 		});
 		builder.add(channels, FormLayoutUtil.flip(cc.xy(3, 4), colSpec, orientation));
 
-		forcePCM = new JCheckBox(Messages.getString("TrTab2.27"));
+		forcePCM = new JCheckBox(Messages.getString("TrTab2.27"), configuration.isMencoderUsePcm());
 		forcePCM.setContentAreaFilled(false);
-		if (configuration.isMencoderUsePcm()) {
-			forcePCM.setSelected(true);
-		}
 		forcePCM.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setMencoderUsePcm(e.getStateChange() == ItemEvent.SELECTED);
@@ -581,11 +573,9 @@ public class TranscodingTab {
 		});
 		builder.add(forcePCM, FormLayoutUtil.flip(cc.xy(1, 6), colSpec, orientation));
 
-		ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
+		ac3remux = new JCheckBox(Messages.getString("MEncoderVideo.32") + (Platform.isWindows() 
+								? Messages.getString("TrTab2.21") : ""), configuration.isRemuxAC3());
 		ac3remux.setContentAreaFilled(false);
-		if (configuration.isRemuxAC3()) {
-			ac3remux.setSelected(true);
-		}
 		ac3remux.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setRemuxAC3((e.getStateChange() == ItemEvent.SELECTED));
@@ -593,11 +583,9 @@ public class TranscodingTab {
 		});
 		builder.add(ac3remux, FormLayoutUtil.flip(cc.xyw(1, 8, 3), colSpec, orientation));
 
-		forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28") + (Platform.isWindows() ? Messages.getString("TrTab2.21") : ""));
+		forceDTSinPCM = new JCheckBox(Messages.getString("TrTab2.28") + (Platform.isWindows() 
+									? Messages.getString("TrTab2.21") : ""), configuration.isDTSEmbedInPCM());
 		forceDTSinPCM.setContentAreaFilled(false);
-		if (configuration.isDTSEmbedInPCM()) {
-			forceDTSinPCM.setSelected(true);
-		}
 		forceDTSinPCM.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -711,16 +699,11 @@ public class TranscodingTab {
 		});
 		builder.add(folderSelectButton, FormLayoutUtil.flip(cc.xy(11, 6), colSpec, orientation));
 
-		subs = new JCheckBox(Messages.getString("MEncoderVideo.22"));
+		subs = new JCheckBox(Messages.getString("MEncoderVideo.22"), configuration.isAutoloadSubtitles());
 		subs.setContentAreaFilled(false);
-
-		if (configuration.getUseSubtitles()) {
-			subs.setSelected(true);
-		}
-
 		subs.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				configuration.setUseSubtitles((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setAutoloadSubtitles((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 		builder.add(subs, FormLayoutUtil.flip(cc.xyw(1, 8, 15), colSpec, orientation));
