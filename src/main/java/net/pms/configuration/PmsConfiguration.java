@@ -2356,11 +2356,19 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_TRANSCODE_FOLDER_NAME, name);
 	}
 
+	/**
+	 * State if the video hardware acceleration is allowed
+	 * @return true if hardware acceleration is allowed, false otherwise
+	 */
 	public boolean isVideoHardwareAcceleration() {
 		return getBoolean(KEY_VIDEO_HW_ACCELERATION, false);
 	}
 
-	public void setVideoHardwareAcceleration(boolean b) {
-		configuration.setProperty(KEY_VIDEO_HW_ACCELERATION, b);
+	/**
+	 * Set the video hardware acceleration enable/disable
+	 * @param value true if hardware acceleration is allowed, false otherwise
+	 */
+	public void setVideoHardwareAcceleration(boolean value) {
+		configuration.setProperty(KEY_VIDEO_HW_ACCELERATION, value);
 	}
 }

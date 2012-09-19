@@ -65,6 +65,11 @@ public class TranscodingTab {
 		orientation = ComponentOrientation.getOrientation(locale);
 	}
 	
+	private static boolean HWvideoAccel = false;
+	public static boolean isHWaccelEnabled() {
+		return HWvideoAccel;
+	}
+	
 	private JCheckBox disableSubs;
 	private JTextField forcetranscode;
 	private JTextField notranscode;
@@ -290,7 +295,10 @@ public class TranscodingTab {
 			for (Player p : PlayerFactory.getAllPlayers()) {
 				if (p.id().equals(id)) {
 					ordPlayers.add(p);
-					videoHWacceleration.setEnabled(p.isVideoHardwareAccelerationReady());
+					if (p.isVideoHardwareAccelerationReady()) {
+						videoHWacceleration.setEnabled(true);
+						videoHWacceleration.setSelected(configuration.isVideoHardwareAcceleration());
+					}
 					//matched = true;
 				}
 			}
