@@ -64,11 +64,8 @@ public class TranscodingTab {
 		Locale locale = new Locale(configuration.getLanguage());
 		orientation = ComponentOrientation.getOrientation(locale);
 	}
+	
 	private JCheckBox disableSubs;
-
-	public JCheckBox getDisableSubs() {
-		return disableSubs;
-	}
 	private JTextField forcetranscode;
 	private JTextField notranscode;
 	private JTextField maxbuffer;
@@ -293,6 +290,7 @@ public class TranscodingTab {
 			for (Player p : PlayerFactory.getAllPlayers()) {
 				if (p.id().equals(id)) {
 					ordPlayers.add(p);
+					videoHWacceleration.setEnabled(p.isVideoHardwareAccelerationReady());
 					//matched = true;
 				}
 			}
@@ -462,7 +460,7 @@ public class TranscodingTab {
 			}
 		});
 		builder.add(videoHWacceleration, FormLayoutUtil.flip(cc.xy(1, 2), colSpec, orientation));
-		videoHWacceleration.setEnabled(false); // TODO When any transcoder will implement it change to true or delete the line.
+		videoHWacceleration.setEnabled(false);
 
 		mpeg2remux = new JCheckBox(Messages.getString("MEncoderVideo.39") + (Platform.isWindows() 
 									? Messages.getString("TrTab2.21") : ""), configuration.isMencoderRemuxMPEG2());

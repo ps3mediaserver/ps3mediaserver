@@ -103,6 +103,17 @@ public abstract class Player {
 	public boolean isTimeSeekable() {
 		return false;
 	}
+	
+	/**
+	 * Each engine capable of video hardware acceleration must 
+	 * override this method and set
+	 * <p>
+	 * <code>return true</code>.
+	 * @return false
+	 */
+	public boolean isVideoHardwareAccelerationReady() {
+		return false;
+	}
 
 	public abstract ProcessWrapper launchTranscode(
 		String filename,
