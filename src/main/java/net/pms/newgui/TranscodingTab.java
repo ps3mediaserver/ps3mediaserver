@@ -65,11 +65,6 @@ public class TranscodingTab {
 		orientation = ComponentOrientation.getOrientation(locale);
 	}
 	
-	private static boolean HWvideoAccel = false;
-	public static boolean isHWaccelEnabled() {
-		return HWvideoAccel;
-	}
-	
 	private JCheckBox disableSubs;
 	private JTextField forcetranscode;
 	private JTextField notranscode;
