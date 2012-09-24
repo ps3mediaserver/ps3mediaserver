@@ -1278,7 +1278,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the bitrate
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getBitrate() {
 		return bitrate;
@@ -1286,7 +1286,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param bitrate the bitrate to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setBitrate(int bitrate) {
 		this.bitrate = bitrate;
@@ -1294,7 +1294,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the width
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getWidth() {
 		return width;
@@ -1302,7 +1302,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param width the width to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setWidth(int width) {
 		this.width = width;
@@ -1310,7 +1310,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the height
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getHeight() {
 		return height;
@@ -1318,7 +1318,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param height the height to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setHeight(int height) {
 		this.height = height;
@@ -1326,7 +1326,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the size
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public long getSize() {
 		return size;
@@ -1334,7 +1334,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param size the size to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setSize(long size) {
 		this.size = size;
@@ -1342,7 +1342,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the codecV
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getCodecV() {
 		return codecV;
@@ -1350,7 +1350,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param codecV the codecV to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setCodecV(String codecV) {
 		this.codecV = codecV;
@@ -1358,7 +1358,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the frameRate
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getFrameRate() {
 		return frameRate;
@@ -1366,7 +1366,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param frameRate the frameRate to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setFrameRate(String frameRate) {
 		this.frameRate = frameRate;
@@ -1374,7 +1374,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the frameRateMode
-	 * @since 1.55
+	 * @since 1.55.0
 	 */
 	public String getFrameRateMode() {
 		return frameRateMode;
@@ -1382,7 +1382,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param frameRateMode the frameRateMode to set
-	 * @since 1.55
+	 * @since 1.55.0
 	 */
 	public void setFrameRateMode(String frameRateMode) {
 		this.frameRateMode = frameRateMode;
@@ -1390,7 +1390,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the aspect
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getAspect() {
 		return aspect;
@@ -1398,7 +1398,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param aspect the aspect to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setAspect(String aspect) {
 		this.aspect = aspect;
@@ -1406,7 +1406,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the thumb
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public byte[] getThumb() {
 		return thumb;
@@ -1414,7 +1414,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param thumb the thumb to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setThumb(byte[] thumb) {
 		this.thumb = thumb;
@@ -1422,7 +1422,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the mimeType
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getMimeType() {
 		return mimeType;
@@ -1430,7 +1430,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param mimeType the mimeType to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
@@ -1438,7 +1438,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the bitsPerPixel
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getBitsPerPixel() {
 		return bitsPerPixel;
@@ -1446,7 +1446,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param bitsPerPixel the bitsPerPixel to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setBitsPerPixel(int bitsPerPixel) {
 		this.bitsPerPixel = bitsPerPixel;
@@ -1454,7 +1454,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the audioTracks
-	 * @since 1.60
+	 * @since 1.60.0
 	 */
 	public List<DLNAMediaAudio> getAudioTracksList() {
 		return audioTracks;
@@ -1475,7 +1475,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param audioTracks the audioTracks to set
-	 * @since 1.60
+	 * @since 1.60.0
 	 */
 	public void setAudioTracksList(List<DLNAMediaAudio> audioTracks) {
 		this.audioTracks = audioTracks;
@@ -1492,7 +1492,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the subtitleTracks
-	 * @since 1.60
+	 * @since 1.60.0
 	 */
 	public List<DLNAMediaSubtitle> getSubtitleTracksList() {
 		return subtitleTracks;
@@ -1513,7 +1513,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param subtitleTracks the subtitleTracks to set
-	 * @since 1.60
+	 * @since 1.60.0
 	 */
 	public void setSubtitleTracksList(List<DLNAMediaSubtitle> subtitleTracks) {
 		this.subtitleTracks = subtitleTracks;
@@ -1530,7 +1530,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the model
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getModel() {
 		return model;
@@ -1538,7 +1538,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param model the model to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setModel(String model) {
 		this.model = model;
@@ -1546,7 +1546,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the exposure
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getExposure() {
 		return exposure;
@@ -1554,7 +1554,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param exposure the exposure to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setExposure(int exposure) {
 		this.exposure = exposure;
@@ -1562,7 +1562,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the orientation
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getOrientation() {
 		return orientation;
@@ -1570,7 +1570,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param orientation the orientation to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setOrientation(int orientation) {
 		this.orientation = orientation;
@@ -1578,7 +1578,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the iso
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getIso() {
 		return iso;
@@ -1586,7 +1586,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param iso the iso to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setIso(int iso) {
 		this.iso = iso;
@@ -1594,7 +1594,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the muxingMode
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getMuxingMode() {
 		return muxingMode;
@@ -1602,7 +1602,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param muxingMode the muxingMode to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setMuxingMode(String muxingMode) {
 		this.muxingMode = muxingMode;
@@ -1610,7 +1610,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the muxingModeAudio
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getMuxingModeAudio() {
 		return muxingModeAudio;
@@ -1618,7 +1618,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param muxingModeAudio the muxingModeAudio to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setMuxingModeAudio(String muxingModeAudio) {
 		this.muxingModeAudio = muxingModeAudio;
@@ -1626,7 +1626,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the container
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getContainer() {
 		return container;
@@ -1634,7 +1634,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param container the container to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setContainer(String container) {
 		this.container = container;
@@ -1642,7 +1642,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the h264_annexB
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public byte[] getH264AnnexB() {
 		return h264_annexB;
@@ -1650,7 +1650,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param h264AnnexB the h264_annexB to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setH264AnnexB(byte[] h264AnnexB) {
 		this.h264_annexB = h264AnnexB;
@@ -1658,7 +1658,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the mediaparsed
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public boolean isMediaparsed() {
 		return mediaparsed;
@@ -1666,7 +1666,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param mediaparsed the mediaparsed to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setMediaparsed(boolean mediaparsed) {
 		this.mediaparsed = mediaparsed;
@@ -1674,7 +1674,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the thumbready
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public boolean isThumbready() {
 		return thumbready;
@@ -1682,7 +1682,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param thumbready the thumbready to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setThumbready(boolean thumbready) {
 		this.thumbready = thumbready;
@@ -1690,7 +1690,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the dvdtrack
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getDvdtrack() {
 		return dvdtrack;
@@ -1698,7 +1698,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param dvdtrack the dvdtrack to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setDvdtrack(int dvdtrack) {
 		this.dvdtrack = dvdtrack;
@@ -1706,7 +1706,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the secondaryFormatValid
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public boolean isSecondaryFormatValid() {
 		return secondaryFormatValid;
@@ -1714,7 +1714,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param secondaryFormatValid the secondaryFormatValid to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setSecondaryFormatValid(boolean secondaryFormatValid) {
 		this.secondaryFormatValid = secondaryFormatValid;
@@ -1722,7 +1722,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the parsing
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public boolean isParsing() {
 		return parsing;
@@ -1730,7 +1730,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param parsing the parsing to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setParsing(boolean parsing) {
 		this.parsing = parsing;
@@ -1738,7 +1738,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @return the encrypted
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public boolean isEncrypted() {
 		return encrypted;
@@ -1746,7 +1746,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 	/**
 	 * @param encrypted the encrypted to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setEncrypted(boolean encrypted) {
 		this.encrypted = encrypted;
