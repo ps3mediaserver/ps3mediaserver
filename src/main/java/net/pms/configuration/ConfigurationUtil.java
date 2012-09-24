@@ -51,7 +51,8 @@ class ConfigurationUtil { // package-private
 	}
 
 	/**
-	 * Return the <code>String</code> value for a given configuration key.
+	 * Return the <code>String</code> value for a given, possibly-blank
+	 * (i.e. empty or all whitespace) configuration key.
 	 * If the value is not defined, the supplied default value is returned.
 	 * The value is returned with leading and trailing whitespace removed in both cases.
 	 * @param configuration The configuration to look up the key in.
@@ -61,7 +62,7 @@ class ConfigurationUtil { // package-private
 	 */
 
 	// package-private
-	static String getBlankConfigurationString(Configuration configuration, String key, String def) {
+	static String getPossiblyBlankConfigurationString(Configuration configuration, String key, String def) {
 		String value = configuration.getString(key, def);
 
 		if (value != null) {
