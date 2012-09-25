@@ -85,6 +85,13 @@
 		<jgoodies-looks-version>2.4.2</jgoodies-looks-version>
 		<junrar-version>0.6.1</junrar-version>
 		<mediautil-version>1.0</mediautil-version>
+		<xmlwise-version>1.2</xmlwise-version>
+		<!--
+			the xmlwise jar's filename uses underscores for the version rather than dots e.g. xmlwise-1_2.jar.
+			dynamic properties are a DRYer/saner solution, but I couldn't get properties-maven-plugin
+			to work with Maven 2.2.1...
+		 -->
+		<xmlwise-filename-version>1_2</xmlwise-filename-version>
 		<slf4j-version>1.6.4</slf4j-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.external-resources>${project.basedir}/src/main/external-resources</project.external-resources>
@@ -346,6 +353,13 @@
 			<version>${mediautil-version}</version>
 		</dependency>
 
+		<!-- XXX: not Mavenized: https://code.google.com/p/xmlwise/ -->
+		<dependency>
+			<groupId>com.googlecode</groupId>
+			<artifactId>xmlwise</artifactId>
+			<version>${xmlwise-version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.googlecode.juniversalchardet</groupId>
 			<artifactId>juniversalchardet</artifactId>
@@ -467,6 +481,7 @@
 					</configuration>
 					<version>2.11</version>
 				</plugin>
+
 				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
@@ -580,7 +595,7 @@
 					<useFullNames>false</useFullNames>
 				</configuration>
 			</plugin>
-			
+
 			<!--
 				This plugin will take care of installing the external dependencies that do not
 				exist in a public Maven repository. That is why we store some jar files in the
@@ -670,6 +685,17 @@
 							<extractFileChecksum>e843cd55def75dce57123c79b7f36caca4841466</extractFileChecksum>
 						</artifactItem>
 
+						<artifactItem>
+							<groupId>com.googlecode</groupId>
+							<artifactId>xmlwise</artifactId>
+							<version>${xmlwise-version}</version>
+							<packaging>jar</packaging>
+							<install>true</install>
+							<force>false</force>
+							<downloadUrl>https://xmlwise.googlecode.com/files/xmlwise-${xmlwise-filename-version}.jar</downloadUrl>
+							<checksum>82ed648273281ccd08da6f91df30573edf15185d</checksum>
+						</artifactItem>
+
 					</artifactItems>
 
 				</configuration>
@@ -697,7 +723,6 @@
 						</goals>
 					</execution>
 				</executions>
-
 			</plugin>
 
 			<plugin>
@@ -856,16 +881,19 @@
 					</reportPlugins>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 				<version>2.1.2</version>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.8.1</version>
 			</plugin>
+
 		</plugins>
 	</build>
 
