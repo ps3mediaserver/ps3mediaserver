@@ -46,7 +46,7 @@ import java.net.URLDecoder;
 import java.util.*;
 
 public class RootFolder extends DLNAResource {
-	private static final Logger logger = LoggerFactory.getLogger(RootFolder.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RootFolder.class);
 	private final PmsConfiguration configuration = PMS.getConfiguration();
 	private boolean running;
 
@@ -86,53 +86,62 @@ public class RootFolder extends DLNAResource {
 
 	@Override
 	public void discoverChildren() {
-		if(isDiscovered()) {
+		if (isDiscovered()) {
 			return;
 		}
 
 		for (DLNAResource r : getConfiguredFolders()) {
 			addChild(r);
 		}
+
 		for (DLNAResource r : getVirtualFolders()) {
 			addChild(r);
 		}
+
 		File webConf = new File(configuration.getProfileDirectory(), "WEB.conf");
 		if (webConf.exists()) {
 			addWebFolder(webConf);
 		}
+
 		if (Platform.isMac() && configuration.getIphotoEnabled()) {
 			DLNAResource iPhotoRes = getiPhotoFolder();
 			if (iPhotoRes != null) {
 				addChild(iPhotoRes);
 			}
 		}
+
 		if (Platform.isMac() && configuration.getApertureEnabled()) {
 			DLNAResource apertureRes = getApertureFolder();
 			if (apertureRes != null) {
 				addChild(apertureRes);
 			}
 		}
+
 		if ((Platform.isMac() || Platform.isWindows()) && configuration.getItunesEnabled()) {
 			DLNAResource iTunesRes = getiTunesFolder();
 			if (iTunesRes != null) {
 				addChild(iTunesRes);
 			}
 		}
+
 		if (!configuration.isHideMediaLibraryFolder()) {
 			DLNAResource libraryRes = PMS.get().getLibrary();
 			if (libraryRes != null) {
 				addChild(libraryRes);
 			}
 		}
+
 		for (DLNAResource r : getAdditionalFoldersAtRoot()) {
 			addChild(r);
 		}
+
 		if (!configuration.getHideVideoSettings()) {
 			DLNAResource videoSettingsRes = getVideoSettingssFolder();
 			if (videoSettingsRes != null) {
 				addChild(videoSettingsRes);
 			}
 		}
+
 		setDiscovered(true);
 	}
 
@@ -140,7 +149,7 @@ public class RootFolder extends DLNAResource {
 	 * Returns whether or not a scan is running.
 	 *
 	 * @return <code>true</code> if a scan is running, <code>false</code>
-	 * otherwise. 
+	 * otherwise.
 	 */
 	private synchronized boolean isRunning() {
 		return running;
@@ -159,9 +168,10 @@ public class RootFolder extends DLNAResource {
 	public void scan() {
 		setRunning(true);
 
-		if(!isDiscovered()) {
+		if (!isDiscovered()) {
 			discoverChildren();
 		}
+
 		setDefaultRenderer(RendererConfiguration.getDefaultConf());
 		scan(this);
 		IFrame frame = PMS.get().getFrame();
@@ -170,7 +180,14 @@ public class RootFolder extends DLNAResource {
 		frame.setStatusLine(null);
 	}
 
+	/*
+	 * @deprecated Use {@link #stopScan()} instead.
+	 */
 	public void stopscan() {
+		stopScan();
+	}
+
+	public void stopScan() {
 		setRunning(false);
 	}
 
@@ -180,28 +197,33 @@ public class RootFolder extends DLNAResource {
 				if (isRunning() && child.allowScan()) {
 					child.setDefaultRenderer(resource.getDefaultRenderer());
 					String trace = null;
+
 					if (child instanceof RealFile) {
 						trace = Messages.getString("DLNAMediaDatabase.4") + " " + child.getName();
 					}
+
 					if (trace != null) {
-						logger.debug(trace);
+						LOGGER.debug(trace);
 						PMS.get().getFrame().setStatusLine(trace);
 					}
+
 					if (child.isDiscovered()) {
 						child.refreshChildren();
 					} else {
-						if (child instanceof DVDISOFile || child instanceof DVDISOTitle) // ugly hack
-						{
+						if (child instanceof DVDISOFile || child instanceof DVDISOTitle) { // ugly hack
 							child.resolve();
 						}
 						child.discoverChildren();
 						child.analyzeChildren(-1);
 						child.setDiscovered(true);
 					}
+
 					int count = child.getChildren().size();
+
 					if (count == 0) {
 						continue;
 					}
+
 					scan(child);
 					child.getChildren().clear();
 				}
@@ -212,22 +234,28 @@ public class RootFolder extends DLNAResource {
 	private List<RealFile> getConfiguredFolders() {
 		List<RealFile> res = new ArrayList<RealFile>();
 		File[] files = PMS.get().getFoldersConf();
+
 		if (files == null || files.length == 0) {
 			files = File.listRoots();
 		}
+
 		for (File f : files) {
 			res.add(new RealFile(f));
 		}
+
 		return res;
 	}
 
 	private List<DLNAResource> getVirtualFolders() {
 		List<DLNAResource> res = new ArrayList<DLNAResource>();
 		List<MapFileConfiguration> mapFileConfs = MapFileConfiguration.parse(configuration.getVirtualFolders());
-		if (mapFileConfs != null)
+
+		if (mapFileConfs != null) {
 			for (MapFileConfiguration f : mapFileConfs) {
 				res.add(new MapFile(f));
 			}
+		}
+
 		return res;
 	}
 
@@ -238,10 +266,12 @@ public class RootFolder extends DLNAResource {
 				String line = null;
 				while ((line = br.readLine()) != null) {
 					line = line.trim();
+
 					if (line.length() > 0 && !line.startsWith("#") && line.indexOf("=") > -1) {
 						String key = line.substring(0, line.indexOf("="));
 						String value = line.substring(line.indexOf("=") + 1);
 						String keys[] = parseFeedKey(key);
+
 						try {
 							if (keys[0].equals("imagefeed")
 									|| keys[0].equals("audiofeed")
@@ -250,22 +280,28 @@ public class RootFolder extends DLNAResource {
 									|| keys[0].equals("videostream")) {
 								String values[] = parseFeedValue(value);
 								DLNAResource parent = null;
+
 								if (keys[1] != null) {
 									StringTokenizer st = new StringTokenizer(keys[1], ",");
 									DLNAResource currentRoot = this;
+
 									while (st.hasMoreTokens()) {
 										String folder = st.nextToken();
 										parent = currentRoot.searchByName(folder);
+
 										if (parent == null) {
 											parent = new VirtualFolder(folder, "");
 											currentRoot.addChild(parent);
 										}
+
 										currentRoot = parent;
 									}
 								}
+
 								if (parent == null) {
 									parent = this;
 								}
+
 								if (keys[0].equals("imagefeed")) {
 									parent.addChild(new ImagesFeed(values[0]));
 								} else if (keys[0].equals("videofeed")) {
@@ -280,15 +316,16 @@ public class RootFolder extends DLNAResource {
 							}
 						} catch (ArrayIndexOutOfBoundsException e) {
 							// catch exception here and go with parsing
-							logger.info("Error at line " + br.getLineNumber() + " of WEB.conf: " + e.getMessage());
-							logger.debug(null, e);
+							LOGGER.info("Error at line " + br.getLineNumber() + " of WEB.conf: " + e.getMessage());
+							LOGGER.debug(null, e);
 						}
 					}
 				}
+
 				br.close();
 			} catch (IOException e) {
-				logger.info("Unexpected error in WEB.conf" + e.getMessage());
-				logger.debug(null, e);
+				LOGGER.info("Unexpected error in WEB.conf" + e.getMessage());
+				LOGGER.debug(null, e);
 			}
 		}
 	}
@@ -296,7 +333,7 @@ public class RootFolder extends DLNAResource {
 	/**
 	 * Splits the first part of a WEB.conf spec into a pair of Strings
 	 * representing the resource type and its DLNA folder.
-	 * 
+	 *
 	 * @param spec
 	 *            (String) to be split
 	 * @return Array of (String) that represents the tokenized entry.
@@ -318,7 +355,7 @@ public class RootFolder extends DLNAResource {
 	/**
 	 * Splits the second part of a WEB.conf spec into a triple of Strings
 	 * representing the DLNA path, resource URI and optional thumbnail URI.
-	 * 
+	 *
 	 * @param spec
 	 *            (String) to be split
 	 * @return Array of (String) that represents the tokenized entry.
@@ -327,9 +364,11 @@ public class RootFolder extends DLNAResource {
 		StringTokenizer st = new StringTokenizer(spec, ",");
 		String triple[] = new String[3];
 		int i = 0;
+
 		while (st.hasMoreTokens()) {
 			triple[i++] = st.nextToken();
 		}
+
 		return triple;
 	}
 
@@ -342,7 +381,6 @@ public class RootFolder extends DLNAResource {
 		VirtualFolder res = null;
 
 		if (Platform.isMac()) {
-
 			Map<String, Object> iPhotoLib;
 			ArrayList<HashMap<?, ?>> listOfRolls;
 			HashMap<?, ?> photoList;
@@ -351,8 +389,8 @@ public class RootFolder extends DLNAResource {
 
 			try {
 				// This command will show the XML files for recently opened iPhoto databases
-				Process prc = Runtime.getRuntime().exec("defaults read com.apple.iApps iPhotoRecentDatabases");
-				BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
+				Process process = Runtime.getRuntime().exec("defaults read com.apple.iApps iPhotoRecentDatabases");
+				BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
 				String line = null;
 				line = in.readLine();
@@ -362,7 +400,7 @@ public class RootFolder extends DLNAResource {
 					// Remove extra spaces
 					line = line.trim();
 
-					// Remove quotes and spaces
+					// Remove quotes
 					line = line.substring(1, line.length() - 1);
 				}
 
@@ -407,20 +445,20 @@ public class RootFolder extends DLNAResource {
 						}
 					}
 				} else {
-					logger.info("iPhoto folder not found");
+					LOGGER.info("iPhoto folder not found");
 				}
 			} catch (XmlParseException e) {
-				logger.error("Something went wrong with the iPhoto Library scan: ", e);
+				LOGGER.error("Something went wrong with the iPhoto Library scan: ", e);
 			} catch (URISyntaxException e) {
-				logger.error("Something went wrong with the iPhoto Library scan: ", e);
+				LOGGER.error("Something went wrong with the iPhoto Library scan: ", e);
 			} catch (IOException e) {
-				logger.error("Something went wrong with the iPhoto Library scan: ", e);
+				LOGGER.error("Something went wrong with the iPhoto Library scan: ", e);
 			}
 		}
 
 		return res;
 	}
-	
+
 	/**
 	 * Returns Aperture folder. Used by manageRoot, so it is usually used as a
 	 * folder at the root folder. Only works when PMS is run on Mac OSX. TODO:
@@ -428,62 +466,67 @@ public class RootFolder extends DLNAResource {
 	 */
 	private DLNAResource getApertureFolder() {
 		VirtualFolder res = null;
-		
-		if (Platform.isMac()) {
 
-			Process prc = null;
+		if (Platform.isMac()) {
+			Process process = null;
+
 			try {
-				prc = Runtime.getRuntime().exec("defaults read com.apple.iApps ApertureLibraries");
-				BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
-				// Every line entry is one aperture library, we want all of them as a dlna folder. 
+				process = Runtime.getRuntime().exec("defaults read com.apple.iApps ApertureLibraries");
+				BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+				// Every line entry is one aperture library. We want all of them as a dlna folder.
 				String line = null;
-				res = new VirtualFolder("Aperture libraries", null); 
-				
+				res = new VirtualFolder("Aperture libraries", null);
+
 				while ((line = in.readLine()) != null) {
 					if (line.startsWith("(") || line.startsWith(")")) {
 						continue;
 					}
+
 					line = line.trim(); // remove extra spaces
 					line = line.substring(1, line.lastIndexOf("\"")); // remove quotes and spaces
 					VirtualFolder apertureLibrary = createApertureDlnaLibrary(line);
-					
+
 					if (apertureLibrary != null) {
 						res.addChild(apertureLibrary);
 					}
 				}
+
 				in.close();
-				
 			} catch (Exception e) {
-				logger.error("Something went wrong with the aperture library scan: ", e);
+				LOGGER.error("Something went wrong with the aperture library scan: ", e);
 			} finally {
 				// Avoid zombie processes, or open stream failures...
-				if (prc!=null) {
+				if (process != null) {
 					try {
 						// the process seems to always finish, so we can wait for it.
 						// if the result code is not read by parent. The process might turn into a zombie (they are real!)
-						prc.waitFor();
+						process.waitFor();
 					} catch (InterruptedException e) {
 						// Can this thread be interrupted? don't think so or, and even when.. what will happen?
-						logger.warn("Interrupted while waiting for stream for process" + e.getMessage());
+						LOGGER.warn("Interrupted while waiting for stream for process" + e.getMessage());
 					}
+
 					try {
-						prc.getErrorStream().close();
+						process.getErrorStream().close();
 					} catch (Exception e) {
-						logger.warn("Could not close stream for output process", e);
+						LOGGER.warn("Could not close stream for output process", e);
 					}
+
 					try {
-						prc.getInputStream().close();
+						process.getInputStream().close();
 					} catch (Exception e) {
-						logger.warn("Could not close stream for output process", e);
+						LOGGER.warn("Could not close stream for output process", e);
 					}
+
 					try {
-						prc.getOutputStream().close();
+						process.getOutputStream().close();
 					} catch (Exception e) {
-						logger.warn("Could not close stream for output process", e);
+						LOGGER.warn("Could not close stream for output process", e);
 					}
 				}
 			}
 		}
+
 		return res;
 	}
 
@@ -515,7 +558,7 @@ public class RootFolder extends DLNAResource {
 				mediaName = "unknown library";
 			}
 
-			logger.info("Going to parse aperture library: " + mediaName);
+			LOGGER.info("Going to parse aperture library: " + mediaName);
 			res  = new VirtualFolder(mediaName, null);
 			listOfAlbums = (ArrayList<?>) iPhotoLib.get("List of Albums"); // the list of events (rolls)
 
@@ -528,7 +571,7 @@ public class RootFolder extends DLNAResource {
 				}
 			}
 		} else {
-			logger.info("No Aperture library found.");
+			LOGGER.info("No Aperture library found.");
 		}
 		return res;
 	}
@@ -574,12 +617,14 @@ public class RootFolder extends DLNAResource {
 				if (x!=null) {
 					vAlbum.setThumbnail(x.toString());
 				}
+
 				firstPhoto = false;
 			}
 
 			RealFile file = new RealFile(new File(photo.get("ImagePath").toString()));
 			vAlbum.addChild(file);
 		}
+
 		return vAlbum;
 	}
 
@@ -587,16 +632,19 @@ public class RootFolder extends DLNAResource {
 	 * Returns the iTunes XML file. This file has all the information of the
 	 * iTunes database. The methods used in this function depends on whether PMS
 	 * runs on MacOsX or Windows.
-	 * 
+	 *
 	 * @return (String) Absolute path to the iTunes XML file.
 	 * @throws Exception
 	 */
 	private String getiTunesFile() throws Exception {
 		String line = null;
 		String iTunesFile = null;
+
 		if (Platform.isMac()) {
-			Process prc = Runtime.getRuntime().exec("defaults read com.apple.iApps iTunesRecentDatabases");
-			BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
+			// the second line should contain a quoted file URL e.g.:
+			// "file://localhost/Users/MyUser/Music/iTunes/iTunes%20Music%20Library.xml"
+			Process process = Runtime.getRuntime().exec("defaults read com.apple.iApps iTunesRecentDatabases");
+			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
 			// we want the 2nd line
 			if ((line = in.readLine()) != null && (line = in.readLine()) != null) {
@@ -605,28 +653,32 @@ public class RootFolder extends DLNAResource {
 				URI tURI = new URI(line);
 				iTunesFile = URLDecoder.decode(tURI.toURL().getFile(), "UTF8");
 			}
+
 			if (in != null) {
 				in.close();
 			}
 		} else if (Platform.isWindows()) {
-			Process prc = Runtime.getRuntime().exec("reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\" /v \"My Music\"");
-			BufferedReader in = new BufferedReader(new InputStreamReader(prc.getInputStream()));
+			Process process = Runtime.getRuntime().exec("reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\" /v \"My Music\"");
+			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String location = null;
+
 			while ((line = in.readLine()) != null) {
 				final String LOOK_FOR = "REG_SZ";
 				if (line.contains(LOOK_FOR)) {
 					location = line.substring(line.indexOf(LOOK_FOR) + LOOK_FOR.length()).trim();
 				}
 			}
+
 			if (in != null) {
 				in.close();
 			}
+
 			if (location != null) {
-				// add the itunes folder to the end
+				// add the iTunes folder to the end
 				location = location + "\\iTunes\\iTunes Music Library.xml";
 				iTunesFile = location;
 			} else {
-				logger.info("Could not find the My Music folder");
+				LOGGER.info("Could not find the My Music folder");
 			}
 		}
 
@@ -644,11 +696,12 @@ public class RootFolder extends DLNAResource {
 	 * <P>
 	 * This method does not support genius playlists and does not provide a
 	 * media library.
-	 * 
+	 *
 	 * @see RootFolder#getiTunesFile(boolean)
 	 */
 	private DLNAResource getiTunesFolder() {
 		DLNAResource res = null;
+
 		if (Platform.isMac() || Platform.isWindows()) {
 			Map<String, Object> iTunesLib;
 			ArrayList<?> Playlists;
@@ -675,7 +728,7 @@ public class RootFolder extends DLNAResource {
 							for (Object t : PlaylistTracks) {
 								HashMap<?, ?> td = (HashMap<?, ?>) t;
 								track = (HashMap<?, ?>) Tracks.get(td.get("Track ID").toString());
-								
+
 								if (
 									track != null &&
 									track.get("Location") != null &&
@@ -687,15 +740,17 @@ public class RootFolder extends DLNAResource {
 								}
 							}
 						}
+
 						res.addChild(pf);
 					}
 				} else {
-					logger.info("Could not find the iTunes file");
+					LOGGER.info("Could not find the iTunes file");
 				}
 			} catch (Exception e) {
-				logger.error("Something went wrong with the iTunes Library scan: ", e);
+				LOGGER.error("Something went wrong with the iTunes Library scan: ", e);
 			}
 		}
+
 		return res;
 	}
 
@@ -706,6 +761,7 @@ public class RootFolder extends DLNAResource {
 	 */
 	private DLNAResource getVideoSettingssFolder() {
 		DLNAResource res = null;
+
 		if (!configuration.getHideVideoSettings()) {
 			res = new VirtualFolder(Messages.getString("PMS.37"), null);
 			VirtualFolder vfSub = new VirtualFolder(Messages.getString("PMS.8"), null);
@@ -799,7 +855,7 @@ public class RootFolder extends DLNAResource {
 					try {
 						configuration.save();
 					} catch (ConfigurationException e) {
-						logger.debug("Caught exception", e);
+						LOGGER.debug("Caught exception", e);
 					}
 					return true;
 				}
@@ -813,6 +869,7 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 		}
+
 		return res;
 	}
 
@@ -822,26 +879,31 @@ public class RootFolder extends DLNAResource {
 	 */
 	private List<DLNAResource> getAdditionalFoldersAtRoot() {
 		List<DLNAResource> res = new ArrayList<DLNAResource>();
+
 		for (ExternalListener listener : ExternalFactory.getExternalListeners()) {
 			if (listener instanceof AdditionalFolderAtRoot) {
 				AdditionalFolderAtRoot afar = (AdditionalFolderAtRoot) listener;
+
 				try {
 					res.add(afar.getChild());
 				} catch (Throwable t) {
-					logger.error(String.format("Failed to append AdditionalFolderAtRoot with name=%s, class=%s", afar.name(), afar.getClass()), t);
+					LOGGER.error(String.format("Failed to append AdditionalFolderAtRoot with name=%s, class=%s", afar.name(), afar.getClass()), t);
 				}
 			} else if (listener instanceof AdditionalFoldersAtRoot) {
 				java.util.Iterator<DLNAResource> folders = ((AdditionalFoldersAtRoot) listener).getChildren();
+
 				while (folders.hasNext()) {
 					DLNAResource resource = folders.next();
+
 					try {
 						res.add(resource);
 					} catch (Throwable t) {
-						logger.error(String.format("Failed to append AdditionalFolderAtRoots with class=%s for DLNAResource=%s", listener.getClass(), resource.getClass()), t);
+						LOGGER.error(String.format("Failed to append AdditionalFolderAtRoots with class=%s for DLNAResource=%s", listener.getClass(), resource.getClass()), t);
 					}
 				}
 			}
 		}
+
 		return res;
 	}
 
@@ -849,4 +911,4 @@ public class RootFolder extends DLNAResource {
 	public String toString() {
 		return "RootFolder[" + getChildren() + "]";
 	}
-} 
+}
