@@ -2356,16 +2356,16 @@ public class MEncoderVideo extends Player {
 				PipeIPCProcess ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true);
 				StreamModifier sm = new StreamModifier();
 				sm.setPcm(pcm);
-				sm.setDtsembed(dtsRemux);
+				sm.setDtsEmbed(dtsRemux);
 				sm.setSampleFrequency(48000);
-				sm.setBitspersample(16);
+				sm.setBitsPerSample(16);
 
 				String mixer = null;
 				if (pcm && !dtsRemux) {
 					mixer = getLPCMChannelMappingForMencoder(params.aid); // LPCM always outputs 5.1/7.1 for multichannel tracks. Downmix with player if needed!
 				}
 
-				sm.setNbchannels(channels);
+				sm.setNbChannels(channels);
 
 				// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
 				// -mc 0.1 make the DTS-HD extraction works better with latest mencoder builds, and makes no impact on the regular DTS one
