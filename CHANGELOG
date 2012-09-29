@@ -11,6 +11,7 @@ Changelog:
         - Updated Chinese Traditional translation (thanks, mcc!)
     Changed audio/subtitle defaults to accept anything
     Fixed possible error while loading iPhoto library (#1523)
+    Fixed bug where disabled engines would be picked
 
 1.70.1 - 2012-08-31
 
