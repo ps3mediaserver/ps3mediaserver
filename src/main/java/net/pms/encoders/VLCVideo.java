@@ -450,6 +450,8 @@ public class VLCVideo extends Player {
 				sampleRate.setEnabled(checked);
 			}
 		});
+
+		mainPanel.nextLine();
 		mainPanel.append(sampleRatePanel.getPanel(), 7);
 
 		// Extra options
