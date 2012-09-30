@@ -1595,6 +1595,7 @@ public class MEncoderVideo extends Player {
 				boolean override_ass_style = !configuration.isMencoderAssDefaultStyle() ||
 						params.sid.getType() == SubtitleType.SUBRIP ||
 						params.sid.getType() == SubtitleType.TX3G;
+
 				if (override_ass_style) {
 					String assSubColor = "ffffff00";
 					if (configuration.getSubsColor() != 0) {
@@ -1649,6 +1650,16 @@ public class MEncoderVideo extends Player {
 					sb.append("-ass-force-style MarginV=").append(subtitleMargin).append(" ");
 				}
 
+				// MEncoder is not compiled with fontconfig on Mac OSX, therefore
+				// use of the "-ass" option also requires the "-font" option.
+				if (Platform.isMac() && sb.toString().indexOf(" -font ") < 0) {
+					String font = CodecUtil.getDefaultFontPath();
+
+					if (isNotBlank(font)) {
+						sb.append("-font ").append(font).append(" ");
+					}
+				}
+
 				// Workaround for MPlayer #2041, remove when that bug is fixed
 				if (!params.sid.isEmbedded()) {
 					sb.append("-noflip-hebrew ");
@@ -1687,9 +1698,13 @@ public class MEncoderVideo extends Player {
 			}
 
 			// Common subtitle options
-			// Use fontconfig if enabled
-			sb.append("-").append(configuration.isMencoderFontConfig() ? "" : "no").append("fontconfig ");
 
+			// MEncoder on Mac OSX is compiled without fontconfig support.
+			// Appending the flag will break execution, so skip it on Mac OSX.
+			if (!Platform.isMac()) {
+				// Use fontconfig if enabled
+				sb.append("-").append(configuration.isMencoderFontConfig() ? "" : "no").append("fontconfig ");
+			}
 			// Apply DVD/VOBSUB subtitle quality
 			if (params.sid.getType() == SubtitleType.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
 				String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
