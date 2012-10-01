@@ -18,10 +18,7 @@ import static org.mozilla.universalchardet.Constants.*;
 
 public class FileUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
-
-	// FIXME why isn't this private?
-	@Deprecated
-	static Map<File, File[]> cache;
+	private static Map<File, File[]> cache;
 
 	public static File isFileExists(String f, String ext) {
 		return isFileExists(new File(f), ext);
