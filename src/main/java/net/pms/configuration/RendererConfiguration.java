@@ -29,9 +29,6 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 public class RendererConfiguration {
-	/*
-	 * Static section
-	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RendererConfiguration.class);
 	private static ArrayList<RendererConfiguration> rendererConfs;
 	private static PmsConfiguration pmsConfiguration;
@@ -202,6 +199,7 @@ public class RendererConfiguration {
 			rootFolder = new RootFolder();
 			rootFolder.discoverChildren();
 		}
+
 		return rootFolder;
 	}
 
@@ -244,6 +242,7 @@ public class RendererConfiguration {
 				}
 			}
 		}
+
 		return null;
 	}
 
@@ -257,6 +256,7 @@ public class RendererConfiguration {
 			// to be the only way to get here.
 			LOGGER.info("Another renderer like " + r.getRendererName() + " was found!");
 		}
+
 		return r;
 	}
 
@@ -513,6 +513,7 @@ public class RendererConfiguration {
 				}
 			} else if (mimetype != null && mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
 				mimetype = getFormatConfiguration().match(FormatConfiguration.LPCM, null, null);
+
 				if (mimetype != null) {
 					if (isTranscodeAudioTo441()) {
 						mimetype += ";rate=44100;channels=2";
@@ -520,14 +521,17 @@ public class RendererConfiguration {
 						mimetype += ";rate=48000;channels=2";
 					}
 				}
+
 				if (isTranscodeToWAV()) {
 					mimetype = getFormatConfiguration().match(FormatConfiguration.WAV, null, null);
 				} else if (isTranscodeToMP3()) {
 					mimetype = getFormatConfiguration().match(FormatConfiguration.MP3, null, null);
 				}
 			}
+
 			return mimetype;
 		}
+
 		if (mimetype != null && mimetype.equals(HTTPResource.VIDEO_TRANSCODE)) {
 			mimetype = HTTPResource.MPEG_TYPEMIME;
 			if (isTranscodeToWMV()) {
@@ -542,16 +546,20 @@ public class RendererConfiguration {
 					mimetype += ";rate=48000;channels=2";
 				}
 			}
+
 			if (isTranscodeToMP3()) {
 				mimetype = HTTPResource.AUDIO_MP3_TYPEMIME;
 			}
+
 			if (isTranscodeToWAV()) {
 				mimetype = HTTPResource.AUDIO_WAV_TYPEMIME;
 			}
 		}
+
 		if (mimes.containsKey(mimetype)) {
 			return mimes.get(mimetype);
 		}
+
 		return mimetype;
 	}
 
@@ -676,11 +684,13 @@ public class RendererConfiguration {
 
 	public String getUseSameExtension(String file) {
 		String s = getString(USE_SAME_EXTENSION, null);
+
 		if (s != null) {
 			s = file + "." + s;
 		} else {
 			s = file;
 		}
+
 		return s;
 	}
 
@@ -693,9 +703,11 @@ public class RendererConfiguration {
 		if (isMediaParserV2()) {
 			muxCompatible = getFormatConfiguration().match(FormatConfiguration.MPEGTS, FormatConfiguration.H264, null) != null;
 		}
+
 		if (Platform.isMac() && System.getProperty("os.version") != null && System.getProperty("os.version").contains("10.4.")) {
 			muxCompatible = false; // no tsMuxeR for 10.4 (yet?)
 		}
+
 		return muxCompatible;
 	}
 
@@ -722,6 +734,7 @@ public class RendererConfiguration {
 		if (isMediaParserV2()) {
 			return getFormatConfiguration().isLPCMSupported();
 		}
+
 		return getBoolean(MUX_LPCM_TO_MPEG, true);
 	}
 

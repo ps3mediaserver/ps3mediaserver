@@ -205,9 +205,11 @@ public class LibMediaInfoParser {
 				if (media.getContainer() == null) {
 					media.setContainer(DLNAMediaLang.UND);
 				}
+
 				if (media.getCodecV() == null) {
 					media.setCodecV(DLNAMediaLang.UND);
 				}
+
 				media.setMediaparsed(true);
 			}
 		}
