@@ -27,7 +27,7 @@ public class CueFolder extends DLNAResource {
 
 	public CueFolder(File f) {
 		playlistfile = f;
-		setLastmodified(playlistfile.lastModified());
+		setLastModified(playlistfile.lastModified());
 	}
 
 	@Override

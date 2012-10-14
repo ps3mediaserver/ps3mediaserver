@@ -86,6 +86,7 @@ public class DLNAMediaInfo implements Cloneable {
 	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaInfo.class);
 	public static final long ENDFILE_POS = 99999475712L;
 	public static final long TRANS_SIZE = 100000000000L;
+	private boolean h264_parsed;
 
 	// Stored in database
 	private Double durationSec;
@@ -963,6 +964,7 @@ public class DLNAMediaInfo implements Cloneable {
 		if (getFirstAudioTrack() != null) {
 			codecA = getFirstAudioTrack().getCodecA();
 		}
+
 		if (getContainer() != null && getContainer().equals("avi")) {
 			setMimeType(HTTPResource.AVI_TYPEMIME);
 		} else if (getContainer() != null && (getContainer().equals("asf") || getContainer().equals("wmv"))) {
@@ -1000,11 +1002,10 @@ public class DLNAMediaInfo implements Cloneable {
 		}
 
 		// Check for external subs here
-		if (f.getFile() != null && type == Format.VIDEO && PMS.getConfiguration().getUseSubtitles()) {
+		if (f.getFile() != null && type == Format.VIDEO && PMS.getConfiguration().isAutoloadSubtitles()) {
 			FileUtil.doesSubtitlesExists(f.getFile(), this);
 		}
 	}
-	private boolean h264_parsed;
 
 	public boolean isVideoPS3Compatible(InputFile f) {
 		if (!h264_parsed) {
