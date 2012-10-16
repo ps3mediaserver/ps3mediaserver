@@ -57,6 +57,9 @@ public class PmsConfiguration {
 	// https://code.google.com/p/ps3mediaserver/issues/detail?id=517
 	private static final int MENCODER_MAX_THREADS = 8;
 
+	// TODO: Get this out of here
+	private static boolean avsHackLogged = false;
+
 	private static final String KEY_ALTERNATE_SUBS_FOLDER = "alternate_subs_folder";
 	private static final String KEY_ALTERNATE_THUMB_FOLDER = "alternate_thumb_folder";
 	private static final String KEY_APERTURE_ENABLED = "aperture";
@@ -540,12 +543,7 @@ public class PmsConfiguration {
 	 * @return The hostname if it is defined, otherwise <code>null</code>.
 	 */
 	public String getServerHostname() {
-		String value = getString(KEY_SERVER_HOSTNAME, "");
-		if (StringUtils.isNotBlank(value)) {
-			return value;
-		} else {
-			return null;
-		}
+		return getString(KEY_SERVER_HOSTNAME, null);
 	}
 
 	/**
@@ -1026,7 +1024,7 @@ public class PmsConfiguration {
 	 * @return The character encoding.
 	 */
 	public String getMencoderSubCp() {
-		return getString(KEY_MENCODER_SUB_CP, StringUtils.EMPTY);
+		return getString(KEY_MENCODER_SUB_CP, "");
 	}
 
 	/**
@@ -1796,8 +1794,6 @@ public class PmsConfiguration {
 		Collections.addAll(output, StringUtils.split(input, LIST_SEPARATOR));
 		return output;
 	}
-	// TODO: Get this out of here
-	private static boolean avsHackLogged = false;
 
 	// TODO: Get this out of here
 	private static List<String> hackAvs(SystemUtils registry, List<String> input) {
@@ -1808,9 +1804,11 @@ public class PmsConfiguration {
 					LOGGER.info("AviSynth is not installed. You cannot use " + engineId + " as a transcoding engine.");
 					avsHackLogged = true;
 				}
+
 				toBeRemoved.add(engineId);
 			}
 		}
+
 		List<String> output = new ArrayList<String>();
 		output.addAll(input);
 		output.removeAll(toBeRemoved);
