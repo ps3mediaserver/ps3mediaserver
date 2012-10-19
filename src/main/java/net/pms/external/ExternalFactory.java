@@ -112,7 +112,7 @@ public class ExternalFactory {
 			return;
 		}
 
-		// Filter all .jar files from the plugin directory
+		// Find all .jar files in the plugin directory
 		File[] jarFiles = pluginDirectory.listFiles(
 			new FileFilter() {
 				public boolean accept(File file) {

@@ -184,12 +184,11 @@ public class StatusTab {
 
 				File f = new File(icon);
 
-				if (!f.isAbsolute() && f.getParent() == null) // filename
-				{
+				if (!f.isAbsolute() && f.getParent() == null) { // filename
 					f = new File("renderers", icon);
 				}
 
-				if (f.exists() && f.isFile()) {
+				if (f.isFile()) {
 					is = new FileInputStream(f);
 				}
 

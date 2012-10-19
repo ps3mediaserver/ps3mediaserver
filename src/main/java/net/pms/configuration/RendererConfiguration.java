@@ -32,249 +32,12 @@ public class RendererConfiguration {
 	/*
 	 * Static section
 	 */
-	private static final Logger logger = LoggerFactory.getLogger(RendererConfiguration.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RendererConfiguration.class);
 	private static ArrayList<RendererConfiguration> rendererConfs;
 	private static PmsConfiguration pmsConfiguration;
 	private static RendererConfiguration defaultConf;
 	private static Map<InetAddress, RendererConfiguration> addressAssociation = new HashMap<InetAddress, RendererConfiguration>();
-
-	public static RendererConfiguration getDefaultConf() {
-		return defaultConf;
-	}
-
-	/**
-	 * Load all renderer configuration files and set up the default renderer.
-	 *
-	 * @param pmsConf
-	 */
-	public static void loadRendererConfigurations(PmsConfiguration pmsConf) {
-		pmsConfiguration = pmsConf;
-		rendererConfs = new ArrayList<RendererConfiguration>();
-
-		try {
-			defaultConf = new RendererConfiguration();
-		} catch (ConfigurationException e) {
-			logger.debug("Caught exception", e);
-		}
-
-		File renderersDir = getRenderersDir();
-
-		if (renderersDir != null) {
-			logger.info("Loading renderer configurations from " + renderersDir.getAbsolutePath());
-
-			File[] confs = renderersDir.listFiles();
-			int rank = 1;
-			for (File f : confs) {
-				if (f.getName().endsWith(".conf")) {
-					try {
-						logger.info("Loading configuration file: " + f.getName());
-						RendererConfiguration r = new RendererConfiguration(f);
-						r.rank = rank++;
-						rendererConfs.add(r);
-					} catch (ConfigurationException ce) {
-						logger.info("Error in loading configuration of: " + f.getAbsolutePath());
-					}
-
-				}
-			}
-		}
-
-		if (rendererConfs.size() > 0) {
-			// See if a different default configuration was configured
-			String rendererFallback = pmsConfiguration.getRendererDefault();
-
-			if (StringUtils.isNotBlank(rendererFallback)) {
-				RendererConfiguration fallbackConf = getRendererConfigurationByName(rendererFallback);
-
-				if (fallbackConf != null) {
-					// A valid fallback configuration was set, use it as default.
-					defaultConf = fallbackConf;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Returns the list of all renderer configurations.
-	 *
-	 * @return The list of all configurations.
-	 */
-	public static ArrayList<RendererConfiguration> getAllRendererConfigurations() {
-		return rendererConfs;
-	}
-
-	protected static File getRenderersDir() {
-		final String[] pathList = PropertiesUtil.getProjectProperties().get("project.renderers.dir").split(",");
-		for (String path : pathList) {
-			if (path.trim().length()>0) {
-				File f = new File(path.trim());
-				if (f.exists() && f.isDirectory() && f.canRead()) {
-					return f;
-				}
-			}
-		}
-		return null;
-	}
-
 	private RootFolder rootFolder;
-
-	public static void resetAllRenderers() {
-		for(RendererConfiguration rc : rendererConfs) {
-			rc.rootFolder = null;
-		}
-	}
-
-	public RootFolder getRootFolder() {
-		if (rootFolder == null) {
-			rootFolder = new RootFolder();
-			rootFolder.discoverChildren();
-		}
-		return rootFolder;
-	}
-
-	/**
-	 * Associate an IP address with this renderer. The association will
-	 * persist between requests, allowing the renderer to be recognized
-	 * by its address in later requests.
-	 * @param sa The IP address to associate.
-	 * @see #getRendererConfigurationBySocketAddress(InetAddress)
-	 */
-	public void associateIP(InetAddress sa) {
-		addressAssociation.put(sa, this);
-		SpeedStats.getInstance().getSpeedInMBits(sa, getRendererName());
-	}
-
-	public static RendererConfiguration getRendererConfigurationBySocketAddress(InetAddress sa) {
-		return addressAssociation.get(sa);
-	}
-
-	/**
-	 * Tries to find a matching renderer configuration based on a request
-	 * header line with a User-Agent header. These matches are made using
-	 * the "UserAgentSearch" configuration option in a renderer.conf.
-	 * Returns the matched configuration or <code>null</code> if no match
-	 * could be found.
-	 *
-	 * @param userAgentString The request header line.
-	 * @return The matching renderer configuration or <code>null</code>.
-	 */
-	public static RendererConfiguration getRendererConfigurationByUA(String userAgentString) {
-		if (pmsConfiguration.isRendererForceDefault()) {
-			// Force default renderer
-			logger.trace("Forcing renderer match to \"" + defaultConf.getRendererName() + "\"");
-			return manageRendererMatch(defaultConf);
-		} else {
-			// Try to find a match
-			for (RendererConfiguration r : rendererConfs) {
-				if (r.matchUserAgent(userAgentString)) {
-					return manageRendererMatch(r);
-				}
-			}
-		}
-		return null;
-	}
-
-	private static RendererConfiguration manageRendererMatch(RendererConfiguration r) {
-		if (addressAssociation.values().contains(r)) {
-			// FIXME: This cannot ever ever happen because of how renderer matching
-			// is implemented in RequestHandler and RequestHandlerV2. The first header
-			// match will associate the IP address with the renderer and from then on
-			// all other requests from the same IP address will be recognized based on
-			// that association. Headers will be ignored and unfortunately they happen
-			// to be the only way to get here.
-			logger.info("Another renderer like " + r.getRendererName() + " was found!");
-		}
-		return r;
-	}
-
-	/**
-	 * Tries to find a matching renderer configuration based on a request
-	 * header line with an additional, non-User-Agent header. These matches
-	 * are made based on the "UserAgentAdditionalHeader" and
-	 * "UserAgentAdditionalHeaderSearch" configuration options in a
-	 * renderer.conf. Returns the matched configuration or <code>null</code>
-	 * if no match could be found.
-	 *
-	 * @param header The request header line.
-	 * @return The matching renderer configuration or <code>null</code>.
-	 */
-	public static RendererConfiguration getRendererConfigurationByUAAHH(String header) {
-		if (pmsConfiguration.isRendererForceDefault()) {
-			// Force default renderer
-			logger.trace("Forcing renderer match to \"" + defaultConf.getRendererName() + "\"");
-			return manageRendererMatch(defaultConf);
-		} else {
-			// Try to find a match
-			for (RendererConfiguration r : rendererConfs) {
-				if (StringUtils.isNotBlank(r.getUserAgentAdditionalHttpHeader()) && header.startsWith(r.getUserAgentAdditionalHttpHeader())) {
-					String value = header.substring(header.indexOf(":", r.getUserAgentAdditionalHttpHeader().length()) + 1);
-					if (r.matchAdditionalUserAgent(value)) {
-						return manageRendererMatch(r);
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Tries to find a matching renderer configuration based on the name of
-	 * the renderer. Returns true if the provided name is equal to or a
-	 * substring of the renderer name defined in a configuration, where case
-	 * does not matter.
-	 *
-	 * @param name The renderer name to match.
-	 * @return The matching renderer configuration or <code>null</code>
-	 *
-	 * @since 1.50.1
-	 */
-	public static RendererConfiguration getRendererConfigurationByName(String name) {
-		for (RendererConfiguration conf : rendererConfs) {
-			if (conf.getRendererName().toLowerCase().contains(name.toLowerCase())) {
-				return conf;
-			}
-		}
-
-		return null;
-	}
-
-	private final PropertiesConfiguration configuration;
-	private FormatConfiguration formatConfiguration;
-
-	public FormatConfiguration getFormatConfiguration() {
-		return formatConfiguration;
-	}
-	private int rank;
-	private final Map<String, String> mimes;
-	private final Map<String, String> DLNAPN;
-
-	public int getRank() {
-		return rank;
-	}
-
-	// FIXME These 'is' methods should disappear. Use feature detection instead.
-	@Deprecated
-	public boolean isXBOX() {
-		return getRendererName().toUpperCase().contains("XBOX");
-	}
-
-	@Deprecated
-	public boolean isXBMC() {
-		return getRendererName().toUpperCase().contains("XBMC");
-	}
-
-	public boolean isPS3() {
-		return getRendererName().toUpperCase().contains("PLAYSTATION") || getRendererName().toUpperCase().contains("PS3");
-	}
-
-	public boolean isBRAVIA() {
-		return getRendererName().toUpperCase().contains("BRAVIA");
-	}
-
-	@Deprecated
-	public boolean isFDSSDP() {
-		return getRendererName().toUpperCase().contains("FDSSDP");
-	}
 
 	private static final String RENDERER_NAME = "RendererName";
 	private static final String RENDERER_ICON = "RendererIcon";
@@ -335,6 +98,249 @@ public class RendererConfiguration {
 	private static final String CBR_VIDEO_BITRATE = "CBRVideoBitrate";
 	private static final String BYTE_TO_TIMESEEK_REWIND_SECONDS = "ByteToTimeseekRewindSeconds";
 
+	private final PropertiesConfiguration configuration;
+	private FormatConfiguration formatConfiguration;
+	private int rank;
+	private final Map<String, String> mimes;
+	private final Map<String, String> DLNAPN;
+
+	public static RendererConfiguration getDefaultConf() {
+		return defaultConf;
+	}
+
+	/**
+	 * Load all renderer configuration files and set up the default renderer.
+	 *
+	 * @param pmsConf
+	 */
+	public static void loadRendererConfigurations(PmsConfiguration pmsConf) {
+		pmsConfiguration = pmsConf;
+		rendererConfs = new ArrayList<RendererConfiguration>();
+
+		try {
+			defaultConf = new RendererConfiguration();
+		} catch (ConfigurationException e) {
+			LOGGER.debug("Caught exception", e);
+		}
+
+		File renderersDir = getRenderersDir();
+
+		if (renderersDir != null) {
+			LOGGER.info("Loading renderer configurations from " + renderersDir.getAbsolutePath());
+
+			File[] confs = renderersDir.listFiles();
+			int rank = 1;
+			for (File f : confs) {
+				if (f.getName().endsWith(".conf")) {
+					try {
+						LOGGER.info("Loading configuration file: " + f.getName());
+						RendererConfiguration r = new RendererConfiguration(f);
+						r.rank = rank++;
+						rendererConfs.add(r);
+					} catch (ConfigurationException ce) {
+						LOGGER.info("Error in loading configuration of: " + f.getAbsolutePath());
+					}
+
+				}
+			}
+		}
+
+		if (rendererConfs.size() > 0) {
+			// See if a different default configuration was configured
+			String rendererFallback = pmsConfiguration.getRendererDefault();
+
+			if (StringUtils.isNotBlank(rendererFallback)) {
+				RendererConfiguration fallbackConf = getRendererConfigurationByName(rendererFallback);
+
+				if (fallbackConf != null) {
+					// A valid fallback configuration was set, use it as default.
+					defaultConf = fallbackConf;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns the list of all renderer configurations.
+	 *
+	 * @return The list of all configurations.
+	 */
+	public static ArrayList<RendererConfiguration> getAllRendererConfigurations() {
+		return rendererConfs;
+	}
+
+	protected static File getRenderersDir() {
+		final String[] pathList = PropertiesUtil.getProjectProperties().get("project.renderers.dir").split(",");
+
+		for (String path : pathList) {
+			if (path.trim().length() > 0) {
+				File file = new File(path.trim());
+
+				if (file.isDirectory()) {
+					if (file.canRead()) {
+						return file;
+					} else {
+						LOGGER.warn("Can't read directory: {}", file.getAbsolutePath());
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public static void resetAllRenderers() {
+		for(RendererConfiguration rc : rendererConfs) {
+			rc.rootFolder = null;
+		}
+	}
+
+	public RootFolder getRootFolder() {
+		if (rootFolder == null) {
+			rootFolder = new RootFolder();
+			rootFolder.discoverChildren();
+		}
+		return rootFolder;
+	}
+
+	/**
+	 * Associate an IP address with this renderer. The association will
+	 * persist between requests, allowing the renderer to be recognized
+	 * by its address in later requests.
+	 * @param sa The IP address to associate.
+	 * @see #getRendererConfigurationBySocketAddress(InetAddress)
+	 */
+	public void associateIP(InetAddress sa) {
+		addressAssociation.put(sa, this);
+		SpeedStats.getInstance().getSpeedInMBits(sa, getRendererName());
+	}
+
+	public static RendererConfiguration getRendererConfigurationBySocketAddress(InetAddress sa) {
+		return addressAssociation.get(sa);
+	}
+
+	/**
+	 * Tries to find a matching renderer configuration based on a request
+	 * header line with a User-Agent header. These matches are made using
+	 * the "UserAgentSearch" configuration option in a renderer.conf.
+	 * Returns the matched configuration or <code>null</code> if no match
+	 * could be found.
+	 *
+	 * @param userAgentString The request header line.
+	 * @return The matching renderer configuration or <code>null</code>.
+	 */
+	public static RendererConfiguration getRendererConfigurationByUA(String userAgentString) {
+		if (pmsConfiguration.isRendererForceDefault()) {
+			// Force default renderer
+			LOGGER.trace("Forcing renderer match to \"" + defaultConf.getRendererName() + "\"");
+			return manageRendererMatch(defaultConf);
+		} else {
+			// Try to find a match
+			for (RendererConfiguration r : rendererConfs) {
+				if (r.matchUserAgent(userAgentString)) {
+					return manageRendererMatch(r);
+				}
+			}
+		}
+		return null;
+	}
+
+	private static RendererConfiguration manageRendererMatch(RendererConfiguration r) {
+		if (addressAssociation.values().contains(r)) {
+			// FIXME: This cannot ever ever happen because of how renderer matching
+			// is implemented in RequestHandler and RequestHandlerV2. The first header
+			// match will associate the IP address with the renderer and from then on
+			// all other requests from the same IP address will be recognized based on
+			// that association. Headers will be ignored and unfortunately they happen
+			// to be the only way to get here.
+			LOGGER.info("Another renderer like " + r.getRendererName() + " was found!");
+		}
+		return r;
+	}
+
+	/**
+	 * Tries to find a matching renderer configuration based on a request
+	 * header line with an additional, non-User-Agent header. These matches
+	 * are made based on the "UserAgentAdditionalHeader" and
+	 * "UserAgentAdditionalHeaderSearch" configuration options in a
+	 * renderer.conf. Returns the matched configuration or <code>null</code>
+	 * if no match could be found.
+	 *
+	 * @param header The request header line.
+	 * @return The matching renderer configuration or <code>null</code>.
+	 */
+	public static RendererConfiguration getRendererConfigurationByUAAHH(String header) {
+		if (pmsConfiguration.isRendererForceDefault()) {
+			// Force default renderer
+			LOGGER.trace("Forcing renderer match to \"" + defaultConf.getRendererName() + "\"");
+			return manageRendererMatch(defaultConf);
+		} else {
+			// Try to find a match
+			for (RendererConfiguration r : rendererConfs) {
+				if (StringUtils.isNotBlank(r.getUserAgentAdditionalHttpHeader()) && header.startsWith(r.getUserAgentAdditionalHttpHeader())) {
+					String value = header.substring(header.indexOf(":", r.getUserAgentAdditionalHttpHeader().length()) + 1);
+					if (r.matchAdditionalUserAgent(value)) {
+						return manageRendererMatch(r);
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Tries to find a matching renderer configuration based on the name of
+	 * the renderer. Returns true if the provided name is equal to or a
+	 * substring of the renderer name defined in a configuration, where case
+	 * does not matter.
+	 *
+	 * @param name The renderer name to match.
+	 * @return The matching renderer configuration or <code>null</code>
+	 *
+	 * @since 1.50.1
+	 */
+	public static RendererConfiguration getRendererConfigurationByName(String name) {
+		for (RendererConfiguration conf : rendererConfs) {
+			if (conf.getRendererName().toLowerCase().contains(name.toLowerCase())) {
+				return conf;
+			}
+		}
+
+		return null;
+	}
+
+	public FormatConfiguration getFormatConfiguration() {
+		return formatConfiguration;
+	}
+
+	public int getRank() {
+		return rank;
+	}
+
+	// FIXME These 'is' methods should disappear. Use feature detection instead.
+	@Deprecated
+	public boolean isXBOX() {
+		return getRendererName().toUpperCase().contains("XBOX");
+	}
+
+	@Deprecated
+	public boolean isXBMC() {
+		return getRendererName().toUpperCase().contains("XBMC");
+	}
+
+	public boolean isPS3() {
+		return getRendererName().toUpperCase().contains("PLAYSTATION") || getRendererName().toUpperCase().contains("PS3");
+	}
+
+	public boolean isBRAVIA() {
+		return getRendererName().toUpperCase().contains("BRAVIA");
+	}
+
+	@Deprecated
+	public boolean isFDSSDP() {
+		return getRendererName().toUpperCase().contains("FDSSDP");
+	}
+
 	// Ditlew
 	public int getByteToTimeseekRewindSeconds() {
 		return getInt(BYTE_TO_TIMESEEK_REWIND_SECONDS, 0);
@@ -384,7 +390,7 @@ public class RendererConfiguration {
 		String DLNAPNchanges = getString(DLNA_PN_CHANGES, null);
 
 		if (DLNAPNchanges != null) {
-			logger.trace("Config DLNAPNchanges: " + DLNAPNchanges);
+			LOGGER.trace("Config DLNAPNchanges: " + DLNAPNchanges);
 		}
 
 		if (StringUtils.isNotBlank(DLNAPNchanges)) {
