@@ -11,11 +11,11 @@
 		<deviceType>urn:schemas-upnp-org:device:MediaServer:1</deviceType>
 		<friendlyName>PS3 Media Server</friendlyName>
         <manufacturer>PMS</manufacturer>
-		<manufacturerURL>http://ps3mediaserver.blogspot.com</manufacturerURL>
+		<manufacturerURL>http://www.ps3mediaserver.org</manufacturerURL>
 		<modelDescription>UPnP/AV 1.0 Compliant Media Server</modelDescription>
 		<modelName>PMS</modelName>
 		<modelNumber>01</modelNumber>
-		<modelURL>http://ps3mediaserver.blogspot.com</modelURL>
+		<modelURL>http://www.ps3mediaserver.org</modelURL>
 		<serialNumber/>
         <UPC/>
         <UDN>[uuid]</UDN>

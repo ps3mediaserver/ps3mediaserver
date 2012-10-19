@@ -328,7 +328,6 @@ public class PMS {
         LOGGER.info("by shagrath / 2008-2012");
         LOGGER.info("http://ps3mediaserver.org");
         LOGGER.info("https://github.com/ps3mediaserver/ps3mediaserver");
-        LOGGER.info("http://ps3mediaserver.blogspot.com");
         LOGGER.info("");
 
 		String commitId = PropertiesUtil.getProjectProperties().get("git.commit.id");
