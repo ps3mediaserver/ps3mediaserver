@@ -1,0 +1,18 @@
+This package was debianized by:
+    I. Sokolov <happy.neko@gmail.com>  Wed, 21 Dec 2011 22:44:45 +0400 
+    based on work by Papa Issa DIAKHATE <paissad@gmail.com>
+
+It was downloaded from:
+  http://code.google.com/p/ps3mediaserver/source/checkout
+
+Upstream Author:
+   shagrath <ps3mediaserver@gmail.com> 
+
+License:
+  GPLv2, see /usr/share/common-licenses/GPL-2
+
+The Debian packaging is:
+    Copyright (C) 2010 Papa Issa DIAKHATE <paissad@gmail.com>
+    Copyright (C) 2011 I. Sokolov <happy.neko@gmail.com>
+and is licensed under the GPL version 3.
+See /usr/share/common-licenses/GPL-3

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=PS3 Media Server (Select Profile)
+GenericName=PS3 Media Server (Select Profile)
+Categories=Java;Network;AudioVideo;
+Comment=DLNA compliant UPnP Media Server (run with custom profile chooser)
+Exec=ps3mediaserver profiles
+Icon=ps3mediaserver
+Type=Application
+StartupNotify=true
+Terminal=false
+Name[ru]=PS3 Media Server (Выбор профиля)
+Comment[ru]=DLNA compliant UPnP Media Server (запустить с диалогом выбора профиля)

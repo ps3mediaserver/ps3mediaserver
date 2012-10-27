@@ -1,0 +1,10 @@
+ps3mediaserver for Ubuntu
+-------------------------
+
+ This package is bundled with all required pre-patched binary tools (ffmpeg, 
+ mencoder, tsmuxer, flac, libmediainfo, etc). They will be installed to 
+ /usr/lib/ps3mediaserver and are exclusively used by ps3mediaserver.
+
+ Therefore you do not have to install them manually.
+
+ -- I. Sokolov <happy.neko@gmail.com>  Wed, 21 Dec 2011 22:44:45 +0400

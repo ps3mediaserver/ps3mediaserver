@@ -1,0 +1,21 @@
+--- a/src/main/java/net/pms/dlna/MediaInfo.java
++++ b/src/main/java/net/pms/dlna/MediaInfo.java
+@@ -44,17 +44,7 @@
+ 			libraryName = "mediainfo64";
+ 		} else {
+ 			libraryName = "mediainfo";
+-		}
+-
+-		// libmediainfo for Linux depends on libzen
+-		if (!Platform.isWindows() && !Platform.isMac()) {
+-			try {
+-				// We need to load dependencies first, because we know where our native libs are (e.g. Java Web Start Cache).
+-				// If we do not, the system will look for dependencies, but only in the library path.
+-				NativeLibrary.getInstance("zen");
+-			} catch (LinkageError e) {
+-				logger.warn("Error loading libzen: " + e.getMessage());
+-			}
++			NativeLibrary.addSearchPath(libraryName, "/usr/lib/ps3mediaserver/");
+ 		}
+ 	}
+ 

@@ -1,0 +1,26 @@
+Description: debian policy filepathes, debian package version
+--- a/src/main/resources/project.properties
++++ b/src/main/resources/project.properties
+@@ -1,13 +1,13 @@
+ # PMS specific project properties
+-project.name=${project.name}
+-project.version=${project.version}
+-project.renderers.dir=renderers, src/main/external-resources/renderers
+-project.binaries.dir=
+-project.documentation.dir=documentation
+-project.logback=logback.xml
+-project.logback.headless=logback.headless.xml
++project.name=PS3 Media Server
++project.version=1.70.0+git+mencoder35003-1 (ppa:happy-neko)
++project.renderers.dir=/etc/ps3mediaserver/renderers
++project.binaries.dir=/usr/lib/ps3mediaserver/linux
++project.documentation.dir=/usr/share/doc/ps3mediaserver/documentation
++project.logback=/etc/ps3mediaserver/logback.xml
++project.logback.headless=/etc/ps3mediaserver/logback.headless.xml
+ project.skelprofile.dir=/etc/skel/.config
+ 
+ # Git commit information from the git-commit-id-plugin
+-git.commit.id=${git.commit.id}
+-git.commit.time=${git.commit.time}
++git.commit.id=74a76f6ad136f7877328c5880877961ca67459c2
++git.commit.time=Fri Aug 31 21:49:45 2012 +0100

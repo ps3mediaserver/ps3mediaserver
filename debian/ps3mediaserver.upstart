@@ -1,0 +1,52 @@
+# Start and stop the PS3 Media Server daemon.
+
+description "PS3 Media Server"
+author "Happy-Neko <happy.neko@gmail.com>"
+
+
+
+start on (local-filesystems and net-device-up)
+stop on runlevel [!12345]
+respawn
+
+# PS3 Media Server variables and their descriptions are in /etc/default/ps3mediaserver file.
+# As daemon is disabled by default, set "PMS_START" to "yes" in "defaults" file to enable it.
+env DEFAULTFILE=/etc/default/ps3mediaserver
+env APPLICATION=/usr/bin/ps3mediaserver
+
+
+pre-start script
+	if [ -f "$DEFAULTFILE" ]; then
+	    . "$DEFAULTFILE"
+	fi
+
+	# Exit if the daemon is not enabled
+	if [ "x$PMS_START" != "xyes" ]; then
+		stop
+		exit 0
+	fi
+end script
+
+script
+	if [ -f "$DEFAULTFILE" ]; then
+	    . "$DEFAULTFILE"
+	fi
+
+	if [ "x$PMS_START" = "xyes" ]; then
+
+		[ -z $PMS_USER ] && PMS_USER="root"
+		[ -z $PMS_PROFILE ] && PMS_PROFILE="/root/.config/ps3mediaserver"
+
+		# Make sure daemon is started with system locale
+		if [ -r /etc/default/locale ]; then
+			. /etc/default/locale
+			export LANG
+		fi
+
+		# Export needed environment variables
+		export PMS_PROFILE PS3MS_MEM JAVA_OPTS
+
+		exec su -s /bin/sh -c 'exec "$0" "$@"' $PMS_USER -- $APPLICATION $DAEMON_OPTS
+	fi
+end script
+

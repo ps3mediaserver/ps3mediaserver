@@ -1,0 +1,223 @@
+ps3mediaserver (1.70.0+git+mencoder35003-1) quantal; urgency=low
+
+  * New upstream release 1.70.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Sun, 28 Oct 2012 01:03:49 +0400
+
+ps3mediaserver (1.60.0+git+mencoder35003-1) quantal; urgency=low
+
+  * New upstream release 1.60.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG)
+  * mnecoder updated to r35003 vanilla
+  * ffmpeg updated to 0.11.1 stable
+
+ -- I. Sokolov <happy.neko@gmail.com>  Tue, 17 Jul 2012 18:46:43 +0400
+
+ps3mediaserver (1.54.00+git+mencoder34587-1) quantal; urgency=low
+
+  * New upstream release 1.54.00 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Wed, 27 Jun 2012 12:21:47 +0400
+
+ps3mediaserver (1.53.99+git+mencoder34587-4) quantal; urgency=low
+
+  * Do not monitor forked process in upstart script
+  * APPLICATION_OPTS renamed back to DAEMON_OPTS
+
+ -- I. Sokolov <happy.neko@gmail.com>  Fri, 22 Jun 2012 10:43:54 +0400
+
+ps3mediaserver (1.53.99+git+mencoder34587-3) quantal; urgency=high
+
+  * Removed old init.d calls from postinst script
+
+ -- I. Sokolov <happy.neko@gmail.com>  Tue, 19 Jun 2012 09:25:10 +0400
+
+ps3mediaserver (1.53.99+git+mencoder34587-2) quantal; urgency=low
+
+  * New upstart script
+
+ -- I. Sokolov <happy.neko@gmail.com>  Fri, 15 Jun 2012 20:17:53 +0400
+
+ps3mediaserver (1.53.99+git+mencoder34587-1) quantal; urgency=low
+
+  * New upstream release 1.53.99
+
+ -- I. Sokolov <happy.neko@gmail.com>  Wed, 13 Jun 2012 18:20:21 +0400
+
+ps3mediaserver (1.51.0+git+mencoder34587-3precise6) quantal; urgency=low
+
+  * New init.d script (thanks, carlettod! http://www.ps3mediaserver.org/forum/viewtopic.php?f=3&t=14187)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Sun, 13 May 2012 21:38:58 +0400
+
+ps3mediaserver (1.51.0+git+mencoder34587-3precise5) quantal; urgency=low
+
+  * Override GSettings schemas only if glib-compile-schemas exists
+
+ -- I. Sokolov <happy.neko@gmail.com>  Tue, 08 May 2012 22:48:40 +0400
+
+ps3mediaserver (1.51.0+git+mencoder34587-3precise4) quantal; urgency=low
+
+  * Load system-wide defaults from /etc/skel if user's profile not found (https://github.com/ps3mediaserver/ps3mediaserver/pull/47)
+  * Do not copy/remove config files with postinst and postrm scripts to user's home directory
+  * Enable Unity systray icons for all applications including PS3 Media Server after installation
+
+ -- I. Sokolov <happy.neko@gmail.com>  Tue, 08 May 2012 21:29:53 +0400
+
+ps3mediaserver (1.51.0+git+mencoder34587-3precise3) quantal; urgency=low
+
+  * Create ps3mediaserver-multiarch metapackage for i386 libs required by tsMuxeR binary
+
+ -- I. Sokolov <happy.neko@gmail.com>  Fri, 27 Apr 2012 22:47:55 +0400
+
+ps3mediaserver (1.51.0+git+mencoder34587-3precise2) quantal; urgency=low
+
+  * Use multiarch libs for tsMuxer on AMD64 instead of ia32-libs
+
+ -- I. Sokolov <happy.neko@gmail.com>  Fri, 27 Apr 2012 01:45:28 +0400
+
+ps3mediaserver (1.51.0+git+mencoder34587-3precise1) quantal; urgency=low
+
+  * Precise release
+
+ -- I. Sokolov <happy.neko@gmail.com>  Sat, 07 Apr 2012 22:30:31 +0400
+
+ps3mediaserver (1.51.0+git+mencoder34587-3) quantal; urgency=low
+
+  * Double quotes in postinst
+
+ -- I. Sokolov <happy.neko@gmail.com>  Sat, 07 Apr 2012 22:26:43 +0400
+
+ps3mediaserver (1.51.0+git+mencoder34587-2) quantal; urgency=low
+
+  * Fix config directories in postrm script
+  * Allow home directories with spaces in postinst script
+
+ -- I. Sokolov <happy.neko@gmail.com>  Sat, 07 Apr 2012 20:04:41 +0400
+
+ps3mediaserver (1.51.0+git+mencoder34587-1) quantal; urgency=low
+
+  * Rollback mencoder to r34587 SB-22 (http://www.spirton.com/mplayer-mencoder-subjunk-build/)
+  * Rollback ffmpeg to stable version 0.9.1
+  * Better LPCM transcoding (https://github.com/ps3mediaserver/ps3mediaserver/pull/10)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Tue, 27 Mar 2012 13:35:44 +0400
+
+ps3mediaserver (1.51.0+git-2) quantal; urgency=low
+
+  * Set utf-8 source encoding for javac task
+
+ -- I. Sokolov <happy.neko@gmail.com>  Thu, 22 Mar 2012 03:40:21 +0400
+
+ps3mediaserver (1.51.0+git-1) quantal; urgency=low
+
+  * Switch to git upstream releases
+  * New upstream release 1.51.0
+  * Add imagemagick to dependencies (ps3mediaserver uses convert)
+  * Disable PCM transcoding by default
+  * Update mplayer/mencoder to r34814 SB-28 (http://www.spirton.com/mplayer-mencoder-subjunk-build/)
+  * Update libmediainfo to 0.7.54
+
+ -- I. Sokolov <happy.neko@gmail.com>  Mon, 19 Mar 2012 21:58:04 +0400
+
+ps3mediaserver (1.50.2+svn1092+mplayer34587-4) quantal; urgency=low
+
+  * Newline fix in ps3mediaserver.menu
+  * Add Ubuntu font dependence
+
+ -- I. Sokolov <happy.neko@gmail.com>  Thu, 01 Mar 2012 08:03:44 +0400
+
+ps3mediaserver (1.50.2+svn1092+mplayer34587-3) quantal; urgency=low
+
+  * Fix project.binaries.dir typo (https://github.com/ps3mediaserver/ps3mediaserver/pull/18)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Mon, 06 Feb 2012 03:46:50 +0400
+
+ps3mediaserver (1.50.2+svn1092+mplayer34587-2) quantal; urgency=low
+
+  * Don't mux all audio tracks with tsmuxer by default
+
+ -- I. Sokolov <happy.neko@gmail.com>  Sun, 05 Feb 2012 11:02:34 +0400
+
+ps3mediaserver (1.50.2+svn1092+mplayer34587-1) quantal; urgency=low
+
+  * New upstream release 1.50.2+svn1092 (https://code.google.com/p/ps3mediaserver/source/list)
+  * Make sure daemon is started with system locale (thanks, carlettod)
+  * Option to use LPCM for audio when streaming with mencoder and tsmuxer (https://github.com/ps3mediaserver/ps3mediaserver/pull/10)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Sun, 05 Feb 2012 09:02:09 +0400
+
+ps3mediaserver (1.50.2+svn1081+mplayer34587-3) quantal; urgency=low
+
+  * Make ffmpegaudio default audio engine (it's better)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Mon, 30 Jan 2012 05:07:10 +0400
+
+ps3mediaserver (1.50.2+svn1081+mplayer34587-2) quantal; urgency=low
+
+  * Fix Russian menu entries
+
+ -- I. Sokolov <happy.neko@gmail.com>  Mon, 30 Jan 2012 03:59:02 +0400
+
+ps3mediaserver (1.50.2+svn1081+mplayer34587-1) quantal; urgency=low
+
+  * New upstream release 1.50.2+svn1081 (https://code.google.com/p/ps3mediaserver/source/list)
+  * Use FLAC from system repository instead of our own
+  * Add menu entry PS3 Media Server (Select Profile) to run with profile chooser
+  * Update mplayer/mencoder to r34587 SB-22 (http://www.spirton.com/mplayer-mencoder-subjunk-build/)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Mon, 30 Jan 2012 00:37:37 +0400
+
+ps3mediaserver (1.50.1+svn1021-2) quantal; urgency=low
+
+  * Add pkg-config to build-depends
+
+ -- I. Sokolov <happy.neko@gmail.com>  Fri, 27 Jan 2012 09:39:12 +0400
+
+ps3mediaserver (1.50.1+svn1021-1) quantal; urgency=low
+
+  * New upstream release 1.50.1+svn1021 (https://code.google.com/p/ps3mediaserver/source/list)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Thu, 26 Jan 2012 15:17:59 +0400
+
+ps3mediaserver (1.50.1+svn1020-4) quantal; urgency=low
+
+  * Attempt to fix PPA build errors
+  * Remove libs' javadocs in zip archives from upstream source tarball
+  * Include source for binary tools into upstream tarball
+  * Use sources from upstream tarball to build binary tools
+
+ -- I. Sokolov <happy.neko@gmail.com>  Thu, 26 Jan 2012 11:00:03 +0400
+
+ps3mediaserver (1.50.1+svn1020-3) quantal; urgency=low
+
+  * First PPA release
+
+ -- I. Sokolov <happy.neko@gmail.com>  Wed, 25 Jan 2012 15:44:43 +0400
+
+ps3mediaserver (1.50.1+svn1020-2) quantal; urgency=low
+
+  * Update mplayer/mencoder to r34582 with SB-21 patches (http://www.spirton.com/mplayer-mencoder-subjunk-build/)
+  * Update ffmpeg to 0.9.1
+  * Build mplayer/mencoder with ENCA support
+  * Enable SSA formating for plaintext subtitles (SRT) because support for ASS/SSA styling of non-ASS/SSA subtitles was recently restored to mencoder (https://code.google.com/p/ps3mediaserver/issues/detail?id=1235)
+  * Enable ASS/SSA subtitles styling for MP4 and MOV files
+  * Allow font change for custom SSA style
+  * Minor translation fixes
+
+ -- I. Sokolov <happy.neko@gmail.com>  Fri, 20 Jan 2012 03:21:31 +0400
+
+ps3mediaserver (1.50.1+svn1020-1) quantal; urgency=low
+
+  * New upstream release 1.50.1+svn1020 (https://code.google.com/p/ps3mediaserver/source/list)
+  * Update mplayer/mencoder to r34393 SB-19 (http://www.spirton.com/mplayer-mencoder-subjunk-build/)
+  * Fix mplayer/mencoder version string
+  * Attempt to fix audio sync issue with tsMuxer when mencoder -ss=0 (http://www.ps3mediaserver.org/forum/viewtopic.php?f=11&t=11284&start=30#p62765)
+  * Disable AC3 remux by default to avoid audio sync issues (PMS.conf)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Mon, 16 Jan 2012 19:49:17 +0400
+
+ps3mediaserver (1.50.1+svn1010-1) quantal; urgency=low
+
+  * Initial release
+
+ -- I. Sokolov <happy.neko@gmail.com>  Wed, 21 Dec 2011 22:44:45 +0400

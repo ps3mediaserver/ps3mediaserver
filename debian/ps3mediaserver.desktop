@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=PS3 Media Server
+GenericName=PS3 Media Server
+Categories=Java;Network;AudioVideo;
+Comment=DLNA compliant UPnP Media Server
+Exec=ps3mediaserver
+Icon=ps3mediaserver
+Type=Application
+StartupNotify=true
+Terminal=false

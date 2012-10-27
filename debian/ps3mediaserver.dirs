@@ -1,0 +1,7 @@
+usr/bin
+usr/lib/ps3mediaserver
+usr/lib/ps3mediaserver/linux
+usr/lib/ps3mediaserver/plugins
+etc/ps3mediaserver
+var/log/ps3mediaserver
+var/lib/ps3mediaserver

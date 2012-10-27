@@ -1,0 +1,128 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+PACKAGE=ps3mediaserver
+REV=$(shell dpkg-parsechangelog | sed -rne 's,^Version: .*[+~]git([0-9a-z]+).*,\1,p')
+VER=$(shell dpkg-parsechangelog | sed -rne 's,^Version: ([^-]+).*,\1,p')
+RELEASE=$(shell dpkg-parsechangelog | sed -rne 's,^Version: ([0-9\.]+).*,\1,p')
+
+removeFromSource=src/main/external-resources/nsis/ src/main/external-resources/third-party/nsis/ src/main/external-resources/osx/ ./.gitignore
+BUILD_DIR=target
+BUILD_BINARY_TOOLS_DIR=$(BUILD_DIR)/bin-tools/target
+EXTERNAL_RESOURCES_DIR=src/main/external-resources
+
+ICON=debian/$(PACKAGE).xpm
+DESKTOP=debian/$(PACKAGE).desktop
+DESKTOP_SELECT_PROFILE=debian/$(PACKAGE)-select-profile.desktop
+ENABLE_UNITY_SYSTRAY=debian/50_$(PACKAGE)-enable-unity-systray.gschema.override
+
+
+.PHONY: clean get-orig-source build-arch build-indep prepare build install binary-arch binary-indep binary
+all: clean prepare build binary
+
+clean:
+	dh_testdir
+	# delete dir with binary tools
+	rm -rf $(BUILD_BINARY_TOOLS_DIR)
+	# delete runscript
+	rm -f $(EXTERNAL_RESOURCES_DIR)/$(PACKAGE)
+	dh_auto_clean
+	dh_clean
+
+get-orig-source:
+	dh_testdir
+	rm -rf $(PACKAGE)-$(VER).orig $(PACKAGE)-$(VER).tar.gz $(PACKAGE)_$(VER).orig.tar.gz
+	wget -O $(PACKAGE)-$(VER).tar.gz https://github.com/Happy-Neko/ps3mediaserver/tarball/debian-$(RELEASE)
+	mkdir $(PACKAGE)-$(VER).orig
+	tar --directory $(PACKAGE)-$(VER).orig --strip-components=1 -zxf $(PACKAGE)-$(VER).tar.gz
+	rm -rf $(PACKAGE)-$(VER).tar.gz
+	# download binary tools source
+	( cd $(PACKAGE)-$(VER).orig  ; patch -p1 < ./../debian/patches/add-ant-build.patch )
+	( cd $(PACKAGE)-$(VER).orig/contrib ; ./download-pms-binaries-source.sh )
+	# download java libs
+	( cd $(PACKAGE)-$(VER).orig ; ant get-deps-all )
+	# Let's clean the source from nsis, osx binaries, etc
+	( cd $(PACKAGE)-$(VER).orig  ; rm -rf $(removeFromSource) ) 
+	( cd $(PACKAGE)-$(VER).orig  ; find . -type f \( -name "*-sources.jar" -o -name "*-javadoc.jar" -o -name "*-sources.zip" -o -name "*-javadoc.zip" -o -name "*-docs.zip" \) -exec rm -vf '{}' \; )
+	# revert patches to restore vanilla sources
+	( cd $(PACKAGE)-$(VER).orig  ; patch -Rp1 < ./../debian/patches/add-ant-build.patch )
+	dh_testdir
+	GZIP=--best tar -cz --owner root --group root --mode a+rX -f $(PACKAGE)_$(VER).orig.tar.gz $(PACKAGE)-$(VER).orig
+	rm -rf $(PACKAGE)-$(VER).orig
+	@echo "========================================================="
+	@echo "$(PACKAGE)_$(VER).orig.tar.gz created"
+	@echo "Move it to the right destination to build the PACKAGE"
+	@echo "========================================================="
+
+prepare:
+	dh_testdir
+	cp $(EXTERNAL_RESOURCES_DIR)/PMS.sh $(EXTERNAL_RESOURCES_DIR)/$(PACKAGE)
+
+build-arch:
+	dh_testdir
+	( cd contrib ; ./build-pms-binaries.sh )
+	if [ -f $(BUILD_BINARY_TOOLS_DIR)/bin/ffmpeg-standalone ] ; then \
+		mv -v $(BUILD_BINARY_TOOLS_DIR)/bin/ffmpeg-standalone $(BUILD_BINARY_TOOLS_DIR)/bin/ffmpeg; \
+	fi
+	if [ -f $(BUILD_BINARY_TOOLS_DIR)/lib/libmediainfo.so.0.0.0 ] ; then \
+		mv -v $(BUILD_BINARY_TOOLS_DIR)/lib/libmediainfo.so.0.0.0 $(BUILD_BINARY_TOOLS_DIR)/lib/libmediainfo.so; \
+		strip --strip-unneeded $(BUILD_BINARY_TOOLS_DIR)/lib/libmediainfo.so; \
+	fi
+
+build-indep:
+	dh_testdir
+	ant jar -Dmaven.settings.offline=true
+
+build: prepare build-arch build-indep
+
+install:
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+	dh_install $(ICON) usr/share/pixmaps/
+	dh_install $(DESKTOP) usr/share/applications/
+	dh_install $(DESKTOP_SELECT_PROFILE) usr/share/applications/
+	dh_install $(EXTERNAL_RESOURCES_DIR)/renderers etc/$(PACKAGE)/
+	dh_install $(EXTERNAL_RESOURCES_DIR)/logback.xml etc/$(PACKAGE)/
+	dh_install $(EXTERNAL_RESOURCES_DIR)/logback.headless.xml etc/$(PACKAGE)/
+	# copy default ps3mediaserver configs to /etc/skel
+	dh_install $(EXTERNAL_RESOURCES_DIR)/PMS.conf etc/skel/.config/$(PACKAGE)/
+	dh_install $(EXTERNAL_RESOURCES_DIR)/WEB.conf etc/skel/.config/$(PACKAGE)/
+	dh_install $(EXTERNAL_RESOURCES_DIR)/$(PACKAGE) usr/bin/
+	dh_install $(BUILD_DIR)/pms.jar usr/lib/$(PACKAGE)/
+	# enable Unity systray for all applications
+	dh_install $(ENABLE_UNITY_SYSTRAY) usr/share/glib-2.0/schemas/
+	# binary tools
+	dh_install $(BUILD_BINARY_TOOLS_DIR)/bin/dcraw usr/lib/$(PACKAGE)/linux/
+	dh_install $(BUILD_BINARY_TOOLS_DIR)/bin/ffmpeg usr/lib/$(PACKAGE)/linux/
+	dh_install $(BUILD_BINARY_TOOLS_DIR)/bin/mplayer usr/lib/$(PACKAGE)/linux/
+	dh_install $(BUILD_BINARY_TOOLS_DIR)/bin/mencoder usr/lib/$(PACKAGE)/linux/
+	dh_install $(BUILD_BINARY_TOOLS_DIR)/bin/tsMuxeR usr/lib/$(PACKAGE)/linux/
+	dh_install $(BUILD_BINARY_TOOLS_DIR)/lib/libmediainfo.so usr/lib/$(PACKAGE)/
+	dh_installdocs
+	dh_installexamples
+	dh_installmenu
+	dh_installlogrotate
+	dh_installinit
+	dh_installman
+	dh_installchangelogs CHANGELOG
+	dh_compress
+
+binary-indep:
+
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_installdebconf	
+	dh_builddeb
+
+binary: binary-arch

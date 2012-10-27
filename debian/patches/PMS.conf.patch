@@ -1,0 +1,160 @@
+--- a/src/main/external-resources/PMS.conf
++++ b/src/main/external-resources/PMS.conf
+@@ -170,7 +170,7 @@
+ # If your host server has a power-saving mode, use this option to prevent
+ # the server hibernating or sleeping while it is streaming data.
+ # Default: false.
+-prevents_sleep_mode =
++prevents_sleep_mode = true
+ 
+ # GUI Option: Default renderer when automatic detection fails (selector)
+ # PMS can recognize many renderers automatically. Sometimes a renderer will
+@@ -220,7 +220,7 @@
+ # Whether or not to use MPlayer to generate the thumbnails for video;
+ # can produce better results than built-in method.
+ # Default: false, which will use the built-in method.
+-use_mplayer_for_video_thumbs =
++use_mplayer_for_video_thumbs = true
+ 
+ # DVD thumbnails
+ # --------------
+@@ -344,7 +344,7 @@
+ # real-time. With a cache, additional information becomes available and
+ # the cache can be browsed directly.
+ # Default: false.
+-usecache =
++usecache = true
+ 
+ # Hide cache folder
+ # -----------------
+@@ -388,7 +388,7 @@
+ # GUI Option: Ordered list of engines (selector)
+ # System generates list of available engines, list depends on host.
+ # Default: "mencoder,avsmencoder,tsmuxer,ffmpegvideo,ffmpegaudio,mplayeraudio,tsmuxeraudio,ffmpegwebvideo,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux,rawthumbs"
+-engines =
++engines = tsmuxer,mencoder,ffmpegvideo,ffmpegaudio,mplayeraudio,tsmuxeraudio,ffmpegwebvideo,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,rawthumbs
+ 
+ # ----------------------------------------------------------------------------
+ # Transcoding Settings: Common settings
+@@ -457,7 +457,7 @@
+ # ------------------
+ # GUI Option: Keep DTS track (no re-encode, compatible with AV receiver through optical or HDMI output) (toggle)
+ # Default: false.
+-embed_dts_in_pcm =
++embed_dts_in_pcm = true
+ 
+ # Use LPCM for audio
+ # ---------------------------
+@@ -491,7 +491,7 @@
+ # Sets the quality for MPEG-2 conversion; MPEG-2 is the fallback format if the client
+ # does not support a video format natively.
+ # Default: "keyint=5:vqscale=1:vqmin=2"
+-mencoder_encode =
++mencoder_encode = keyint=2:vqscale=1:vqmin=2
+ 
+ # ---< Misc options >---------------------------------------------------------
+ 
+@@ -569,7 +569,7 @@
+ # ------------
+ # GUI Option: Remux videos
+ # Default: true.
+-mencoder_mux_compatible =
++mencoder_mux_compatible = false
+ 
+ # Codec specific parameters
+ # -------------------------
+@@ -666,7 +666,7 @@
+ # GUI Option: Subtitle font (string)
+ # GUI offers a navigator to a folder generating an absolute path.
+ # Default: empty.
+-mencoder_font =
++mencoder_font = Ubuntu
+ 
+ # Subtitles folder blank
+ # ----------------------
+@@ -701,7 +701,7 @@
+ # from that will generate a number. Default is empty, causing PMS to pick
+ # white.
+ # Default: empty.
+-subs_color =
++subs_color = -1
+ 
+ # Style font scale
+ # ----------------
+@@ -713,17 +713,17 @@
+ # GUI Option: Styled font outline
+ # The outline parameter used for ASS subtitling.
+ # Default: 1.
+-mencoder_ass_outline =
++mencoder_ass_outline = 2
+ 
+ # GUI Option: Styled font shadow
+ # The shadow parameter used for ASS subtitling.
+ # Default: 1.
+-mencoder_ass_shadow =
++mencoder_ass_shadow = 0
+ 
+ # GUI Option: Styled margin
+ # The margin used for ASS subtitling.
+ # Default: 10.
+-mencoder_ass_margin =
++mencoder_ass_margin = 40
+ 
+ # Plain font scale
+ # ----------------
+@@ -735,7 +735,7 @@
+ # GUI Option: Plain font outline
+ # The subfont outline parameter used for subtitling without ASS.
+ # Default: 1.
+-mencoder_noass_outline =
++mencoder_noass_outline = 4
+ 
+ # GUI Option: Plain font blur
+ # The subfont blur parameter used for subtitling without ASS.
+@@ -745,7 +745,7 @@
+ # GUI Option: Plain margin
+ # The subpos parameter used for subtitling without ASS.
+ # Default: 2.
+-mencoder_noass_subpos =
++mencoder_noass_subpos = 13
+ 
+ # Load subtitles
+ # --------------
+@@ -759,7 +759,7 @@
+ # ------------------------
+ # GUI Option: DVD/VOB subtitle quality
+ # Default: 3.
+-mencoder_vobsub_subtitle_quality =
++mencoder_vobsub_subtitle_quality = 4
+ 
+ # Add borders
+ # -----------
+@@ -833,23 +833,23 @@
+ # ---< Binary tools paths >------------------------------------------
+ # Path to mencoder (absolute or relative from project.binaries.dir)
+ # Default: Win: win32/mencoder.exe Mac: osx/mencoder Linux: mencoder + system PATH
+-mencoder_path =
++mencoder_path = /usr/lib/ps3mediaserver/linux/mencoder
+ 
+ # Path to ffmpeg (absolute or relative from project.binaries.dir)
+ # Default: Win: win32/ffmpeg.exe Mac: osx/ffmpeg Linux: ffmpeg + system PATH
+-ffmpeg_path =
++ffmpeg_path = /usr/lib/ps3mediaserver/linux/ffmpeg
+ 
+ # Path to mplayer (absolute or relative from project.binaries.dir)
+ # Default: Win: win32/mplayer.exe Mac: osx/mplayer Linux: mplayer + system PATH
+-mplayer_path =
++mplayer_path = /usr/lib/ps3mediaserver/linux/mplayer
+ 
+ # Path to tsMuxeR (absolute or relative from project.binaries.dir)
+ # Default: Win: win32/tsMuxeR.exe Mac: osx/tsMuxeR Linux: tsMuxeR + system PATH
+-tsmuxer_path =
++tsmuxer_path = /usr/lib/ps3mediaserver/linux/tsMuxeR
+ 
+ # Path to dcraw (absolute or relative from project.binaries.dir)
+ # Default: Win: win32/dcrawMS.exe Mac: osx/dcraw Linux: dcraw + system PATH
+-dcraw_path =
++dcraw_path = /usr/lib/ps3mediaserver/linux/dcraw
+ 
+ # Path to FLAC (absolute or relative from project.binaries.dir)
+ # Default: Win: win32/flac.exe Mac: osx/flac Linux: flac + system PATH

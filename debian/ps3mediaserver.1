@@ -1,0 +1,56 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH "ps3mediaserver" "1"  "June  25, 2011" "" ""
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+ps3mediaserver \- PS3 Media Server for Linux
+.SH SYNOPSIS
+.B ps3mediaserver
+.RI [ options ]
+.br
+.SH DESCRIPTION
+This manual page documents briefly the PS3 Media Server for Linux.
+\fBps3mediaserver\fR is a DLNA compliant Upnp Media Server for the PS3, written in Java, with the purpose of streaming or transcoding any kind of media files, with minimum configuration. It's backed up with the powerful Mplayer/FFmpeg packages.
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics,
+.\" respectively.
+.SH NOTES
+You can start ps3mediaserver manually into a terminal or from the menu icon.
+.br
+You can also start PS3 Media Server as upstart job with sudo start ps3mediaserver if enabled in /etc/default/ps3mediaserver.
+.br
+The configuration file used is $HOME/.config/ps3mediaserver/PMS.conf (populated with defaults from /etc/skel/.config/PMS.conf).
+.br
+.SH OPTIONS
+Not all options are documented yet.
+.sp 2
+.IP "\fBconsole\fR"
+Disables the GUI environment.
+.sp 2
+.SH SEE ALSO
+.BR mplayer (1),
+.BR mencoder (1),
+.BR ffmpeg (1),
+.BR vlc (1),
+.BR dcraw (1)
+.br
+.SH AUTHOR
+ps3mediaserver was written by shagrath <ps3mediaserver@gmail.com>.
+.PP
+This manual page was written by Papa Issa DIAKHATE aka paissad <paissad@gmail.com> (and may be used by others).
+.br
+Special thanks to Roger R. Moore <roger.r.moore@bigfoot.com> who made some modifications for this manpage.

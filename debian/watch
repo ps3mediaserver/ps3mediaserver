@@ -1,0 +1,3 @@
+version=3
+opts=downloadurlmangle=s#.*(pms-generic-linux-unix-([\d.]+)\.tgz).*#http://ps3mediaserver.googlecode.com/files/$1#,filenamemangle=s#.*(pms-generic-linux-unix-([\d.]+)\.tgz).*#$1# \
+    http://code.google.com/p/ps3mediaserver/downloads/list ^.*detail\?name=pms-generic-linux-unix-([\d.]+)\.tgz.*

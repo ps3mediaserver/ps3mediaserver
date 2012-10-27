@@ -1,0 +1,38 @@
+Description: log files should be in /var/log according to FHS
+ Use /var/log/ps3mediaserver/$(USER)/ as the directory for log files if possible.
+Author: Papa Issa DIAKHATE <paissad@gmail.com>
+--- a/src/main/java/net/pms/logging/DebugLogPathDefiner.java
++++ b/src/main/java/net/pms/logging/DebugLogPathDefiner.java
+@@ -52,22 +52,22 @@
+ 		// Check if current directory is writable.
+ 		// XXX dir.canWrite() has issues on Windows, so verify it directly:
+ 		// http://hyperic.allrightname.com/javadoc/hq-util/org/hyperic/util/file/FileUtil.html#canWrite%28java.io.File%29
+-		File file = new File("write_test_file");
++		String username = System.getProperty("user.name");
++		String logDirname = "/var/log/ps3mediaserver/" + username + "/";
++		File logDir = new File(logDirname);
++		File file = new File(logDirname + "write_test_file");
+ 
+ 		try {
+-			if (!file.createNewFile()) {
+-				LOGGER.debug("Cannot create new file in current directory.");
+-			}
+-
+-			if (file.canWrite()) {
+-				if (!file.delete()) {
+-					LOGGER.debug("Cannot delete file from current directory.");
++			if (logDir.exists() && logDir.isDirectory() && file.createNewFile() && file.canWrite() && file.delete()) {
++				return logDirname;
++			} else if (!logDir.exists()) {
++				if (logDir.mkdirs() && file.createNewFile() && file.canWrite() && file.delete()) {
++					return logDirname;
+ 				}
+-				return new File("").getAbsolutePath();
+ 			}
+ 		} catch (IOException e) {
+ 			// Could not create / write the file
+-			LOGGER.debug("Current directory is not writable.");
++			LOGGER.debug("Log directory is not writable.");
+ 		}
+ 
+ 		// Return path to temp folder, which should be writable

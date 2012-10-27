@@ -1,0 +1,14 @@
+?package(ps3mediaserver):\
+needs="X11" \
+section="Applications/Video" \
+title="ps3mediaserver" \
+longtitle="PS3 Media Server" \
+icon="/usr/share/pixmaps/ps3mediaserver.xpm" \
+command="/usr/bin/ps3mediaserver"
+?package(ps3mediaserver):\
+needs="X11" \
+section="Applications/Video" \
+title="ps3mediaserver-select-profile" \
+longtitle="PS3 Media Server (Select Profile)" \
+icon="/usr/share/pixmaps/ps3mediaserver.xpm" \
+command="/usr/bin/ps3mediaserver profiles"

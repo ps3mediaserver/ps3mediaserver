@@ -1,0 +1,13 @@
+Description: Change the default temporary system dirname used from ps3mediaserver to ps3mediaserver-$(USER)
+Author: Papa Issa DIAKHATE <paissad@gmail.com>
+--- a/src/main/java/net/pms/configuration/TempFolder.java
++++ b/src/main/java/net/pms/configuration/TempFolder.java
+@@ -14,7 +14,7 @@
+  */
+ class TempFolder {
+ 	private static final Logger logger = LoggerFactory.getLogger(TempFolder.class);
+-	private static final String DEFAULT_TEMP_FOLDER_NAME = "ps3mediaserver";
++	private static final String DEFAULT_TEMP_FOLDER_NAME = "ps3mediaserver-" + System.getProperty("user.name");
+ 	private final String userSpecifiedFolder;
+ 	private File tempFolder;
+ 

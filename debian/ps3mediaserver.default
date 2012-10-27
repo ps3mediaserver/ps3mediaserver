@@ -1,0 +1,48 @@
+# Defaults for ps3mediaserver initscript
+# sourced by /etc/init/ps3mediaserver.conf
+
+# Authors: Carlo D'Ippolito, Happy-Neko <happy.neko@gmail.com>
+
+#
+# This is a POSIX shell fragment
+#
+
+# Set whether to start or not PS3 Media Server at boot time.
+# Change to "yes" (case sensitive!) to enable daemon.
+PMS_START="no"
+
+# Change PMS_USER and PMS_PROFILE variables to run PS3 Media Server with a different user.
+#
+# To do this, please follow these three steps:
+# 1. if user doesn't exist, create a system user (e.g. ps3mediauser) with command:
+#    adduser --system --group ps3mediauser
+# 2. change PMS_USER
+# 3. change PMS_PROFILE below to "/home/$PMS_USER/.config/ps3mediaserver"
+#
+# NOTE: Default config files will be copied to PMS_PROFILE 
+# from /etc/skel/.config/ps3mediaserver during first progran run. 
+# You may want to edit them aftewards.
+#
+# NOTE 2: After changing the user, PS3 Media Server will rebuild media library
+# if previously enabled.
+PMS_USER="root"
+
+# Default location of PS3 Media Server profile files (PMS.conf and WEB.conf)
+# when it runs as daemon.
+PMS_PROFILE="/root/.config/ps3mediaserver"
+#PMS_PROFILE="/home/$PMS_USER/.config/ps3mediaserver"
+
+# Memory limit for JVM (-Xmx option).
+# This is the Java heap memory allocated when daemon starts. It is the sum
+# of the transcode buffer memory plus all of the overhead memory (the actual
+# PS3 Media Server application, media library, iTunes support, Radio plugin,
+# etc). If you need the larger transcode buffer (better playback) or the extra
+# features, then you should increase the available heap size.
+PS3MS_MEM="768M"
+
+# Extra java options for daemon, see PS3 Media Server documentation.
+# The default one is for headless mode.
+JAVA_OPTS="-Djava.awt.headless=true"
+
+# Extra command options for daemon, see PS3 Media Server documentation
+DAEMON_OPTS=""

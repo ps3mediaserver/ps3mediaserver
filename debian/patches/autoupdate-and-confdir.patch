@@ -1,0 +1,21 @@
+Description: Disable autoupdating and change profile dir to ps3mediaserver
+--- a/src/main/java/net/pms/configuration/Build.java
++++ b/src/main/java/net/pms/configuration/Build.java
+@@ -20,7 +20,7 @@
+ 	/**
+ 	 * If false, manual and automatic update checks are unconditionally disabled.
+ 	 */
+-	private static final boolean IS_UPDATABLE = true;
++	private static final boolean IS_UPDATABLE = false;
+ 
+ 	/**
+ 	 * the name of the subdirectory under which PMS config files are stored for this build.
+@@ -50,7 +50,7 @@
+ 	 * @return The profile directory name
+ 	 */
+ 
+-	private static final String PROFILE_DIRECTORY_NAME = "PMS";
++	private static final String PROFILE_DIRECTORY_NAME = "ps3mediaserver";
+ 
+ 	/**
+ 	 * Determines whether or not this PMS build can be updated to a more
