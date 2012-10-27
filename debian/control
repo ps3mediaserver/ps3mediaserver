@@ -2,7 +2,7 @@ Source: ps3mediaserver
 Section: net
 Priority: optional
 Maintainer: I. Sokolov <happy.neko@gmail.com>
-Build-Depends: debhelper (>= 8.0.0), ant, ant-contrib, openjdk-6-jdk, libtool, sed, tar, yasm (>= 1.0.0), unzip, automake, autoconf, binutils, pkg-config
+Build-Depends: debhelper (>= 8.0.0), ant, ant-contrib, openjdk-6-jdk, libtool, yasm (>= 1.0.0), unzip, automake, autoconf, binutils, pkg-config
 Standards-Version: 3.9.2
 Homepage: https://code.google.com/p/ps3mediaserver/
 
