@@ -20,8 +20,8 @@ DESKTOP_SELECT_PROFILE=debian/$(PACKAGE)-select-profile.desktop
 ENABLE_UNITY_SYSTRAY=debian/50_$(PACKAGE)-enable-unity-systray.gschema.override
 
 
-.PHONY: clean get-orig-source build-arch build-indep prepare build install binary-arch binary-indep binary
-all: clean prepare build binary
+.PHONY: clean get-orig-source build-arch build-indep build install binary-arch binary-indep binary
+all: clean build binary
 
 clean:
 	dh_testdir
@@ -57,10 +57,6 @@ get-orig-source:
 	@echo "Move it to the right destination to build the PACKAGE"
 	@echo "========================================================="
 
-prepare:
-	dh_testdir
-	cp $(EXTERNAL_RESOURCES_DIR)/PMS.sh $(EXTERNAL_RESOURCES_DIR)/$(PACKAGE)
-
 build-arch:
 	dh_testdir
 	( cd contrib ; ./build-pms-binaries.sh )
@@ -76,7 +72,7 @@ build-indep:
 	dh_testdir
 	ant jar -Dmaven.settings.offline=true
 
-build: prepare build-arch build-indep
+build: build-arch build-indep
 
 install:
 	dh_testdir
@@ -92,6 +88,8 @@ install:
 	# copy default ps3mediaserver configs to /etc/skel
 	dh_install $(EXTERNAL_RESOURCES_DIR)/PMS.conf etc/skel/.config/$(PACKAGE)/
 	dh_install $(EXTERNAL_RESOURCES_DIR)/WEB.conf etc/skel/.config/$(PACKAGE)/
+	# install runscript and JAR
+	cp $(EXTERNAL_RESOURCES_DIR)/PMS.sh $(EXTERNAL_RESOURCES_DIR)/$(PACKAGE)
 	dh_install $(EXTERNAL_RESOURCES_DIR)/$(PACKAGE) usr/bin/
 	dh_install $(BUILD_DIR)/pms.jar usr/lib/$(PACKAGE)/
 	# enable Unity systray for all applications
