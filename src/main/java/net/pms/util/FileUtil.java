@@ -436,7 +436,7 @@ public class FileUtil {
 	 *
 	 * @since 1.71.0
 	 * @param dir the File whose permissions are to be determined
-	 * @return <code>true</code> if the directory is not null, exists, is a directory and can be read, <code>false</code> otherwise
+	 * @return <code>true</code> if the File is not null, exists, is a directory and can be read, <code>false</code> otherwise
 	 */
 	// XXX dir.canRead() has issues on Windows, so verify it directly:
 	// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6203387
@@ -469,7 +469,7 @@ public class FileUtil {
 	 *
 	 * @since 1.71.0
 	 * @param dir the File whose permissions are to be determined
-	 * @return <code>true</code> if the directory is not null, exists, is a directory and can be written to, <code>false</code> otherwise
+	 * @return <code>true</code> if the File is not null, exists, is a directory and can be written to, <code>false</code> otherwise
 	 */
 	// XXX dir.canWrite() has issues on Windows, so verify it directly:
 	// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6203387
