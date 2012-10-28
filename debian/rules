@@ -20,7 +20,7 @@ DESKTOP_SELECT_PROFILE=debian/$(PACKAGE)-select-profile.desktop
 ENABLE_UNITY_SYSTRAY=debian/50_$(PACKAGE)-enable-unity-systray.gschema.override
 
 
-.PHONY: clean get-orig-source build-arch build-indep build install binary-arch binary-indep binary
+.PHONY: clean get-orig-source build-arch build-indep build build-stamp install binary-arch binary-indep binary
 all: clean build binary
 
 clean:
@@ -57,8 +57,15 @@ get-orig-source:
 	@echo "Move it to the right destination to build the PACKAGE"
 	@echo "========================================================="
 
-build-arch:
+build-arch: build-stamp
+
+build-indep:
+
+build: build-arch build-indep
+
+build-stamp:
 	dh_testdir
+	# build binary tools
 	( cd contrib ; ./build-pms-binaries.sh )
 	if [ -f $(BUILD_BINARY_TOOLS_DIR)/bin/ffmpeg-standalone ] ; then \
 		mv -v $(BUILD_BINARY_TOOLS_DIR)/bin/ffmpeg-standalone $(BUILD_BINARY_TOOLS_DIR)/bin/ffmpeg; \
@@ -67,12 +74,10 @@ build-arch:
 		mv -v $(BUILD_BINARY_TOOLS_DIR)/lib/libmediainfo.so.0.0.0 $(BUILD_BINARY_TOOLS_DIR)/lib/libmediainfo.so; \
 		strip --strip-unneeded $(BUILD_BINARY_TOOLS_DIR)/lib/libmediainfo.so; \
 	fi
-
-build-indep:
-	dh_testdir
+	# build JAR
 	ant jar -Dmaven.settings.offline=true
-
-build: build-arch build-indep
+	# rename runscript
+	cp $(EXTERNAL_RESOURCES_DIR)/PMS.sh $(EXTERNAL_RESOURCES_DIR)/$(PACKAGE)
 
 install:
 	dh_testdir
@@ -89,7 +94,6 @@ install:
 	dh_install $(EXTERNAL_RESOURCES_DIR)/PMS.conf etc/skel/.config/$(PACKAGE)/
 	dh_install $(EXTERNAL_RESOURCES_DIR)/WEB.conf etc/skel/.config/$(PACKAGE)/
 	# install runscript and JAR
-	cp $(EXTERNAL_RESOURCES_DIR)/PMS.sh $(EXTERNAL_RESOURCES_DIR)/$(PACKAGE)
 	dh_install $(EXTERNAL_RESOURCES_DIR)/$(PACKAGE) usr/bin/
 	dh_install $(BUILD_DIR)/pms.jar usr/lib/$(PACKAGE)/
 	# enable Unity systray for all applications
