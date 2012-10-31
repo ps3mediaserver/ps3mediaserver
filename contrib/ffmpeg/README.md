@@ -15,6 +15,7 @@ This helper requires:
 - a recent version of [CMake](http://www.cmake.org/) (2.8.1+).
 - the [autoconf](http://www.gnu.org/software/autoconf/) and [libtool](http://www.gnu.org/software/libtool/) utilities.
 - the [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config) utility.
+- [perl](http://www.perl.org/) >= 5.000 is required by the OpenSSL Configure script.
 
 ## Usage <a name="Usage"></a>
 
