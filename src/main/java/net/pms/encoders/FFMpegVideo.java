@@ -18,9 +18,8 @@
  */
 package net.pms.encoders;
 
-import java.awt.Font;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -371,15 +370,7 @@ public class FFMpegVideo extends Player {
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		ffmpeg = new JTextField(PMS.getConfiguration().getFfmpegSettings());
-		ffmpeg.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		ffmpeg.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				PMS.getConfiguration().setFfmpegSettings(ffmpeg.getText());
