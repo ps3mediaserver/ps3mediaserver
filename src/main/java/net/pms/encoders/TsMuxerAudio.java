@@ -67,6 +67,11 @@ public class TsMuxerAudio extends TSMuxerVideo {
 	}
 
 	@Override
+	public String getShortName() {
+		return "AHF";
+	}
+
+	@Override
 	public int purpose() {
 		return AUDIO_SIMPLEFILE_PLAYER;
 	}

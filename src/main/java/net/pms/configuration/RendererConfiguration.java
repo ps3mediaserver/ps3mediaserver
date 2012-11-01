@@ -48,7 +48,7 @@ public class RendererConfiguration {
 	private static final String AUDIO = "Audio";
 	private static final String IMAGE = "Image";
 	private static final String SEEK_BY_TIME = "SeekByTime";
-
+	
 	private static final String DEPRECATED_MPEGPSAC3 = "MPEGAC3"; // XXX deprecated: old name with missing container
 	private static final String MPEGPSAC3 = "MPEGPSAC3";
 	private static final String MPEGTSAC3 = "MPEGTSAC3";
@@ -89,6 +89,8 @@ public class RendererConfiguration {
 	private static final String DLNA_TREE_HACK = "CreateDLNATreeFaster";
 	private static final String CHUNKED_TRANSFER = "ChunkedTransfer";
 	private static final String SUBTITLE_HTTP_HEADER = "SubtitleHttpHeader";
+	private static final String LONG_FILE_NAME_FORMAT = "LongFileNameFormat";
+	private static final String SHORT_FILE_NAME_FORMAT = "ShortFileNameFormat";
 
 	// Sony devices require JPG thumbnails
 	private static final String FORCE_JPG_THUMBNAILS = "ForceJPGThumbnails";
@@ -624,6 +626,30 @@ public class RendererConfiguration {
 	 */
 	public String getRendererIcon() {
 		return getString(RENDERER_ICON, "unknown.png");
+	}
+
+	/**
+	 * LongFileNameFormat: Determines how media file names are formatted in the
+	 * regular folders. All supported formatting options are described in
+	 * {@link net.pms.dlna.DLNAResource#getDisplayName(RendererConfiguration)
+	 * getDisplayName(RendererConfiguration)}.
+	 *
+	 * @return The format for file names in the regular folders.
+	 */
+	public String getLongFileNameFormat() {
+		return getString(LONG_FILE_NAME_FORMAT, Messages.getString("DLNAResource.4"));
+	}
+
+	/**
+	 * ShortFileNameFormat: Determines how media file names are formatted in the
+	 * transcoding virtual folder. All supported formatting options are described in
+	 * {@link net.pms.dlna.DLNAResource#getDisplayName(RendererConfiguration)
+	 * getDisplayName(RendererConfiguration)}.
+	 *
+	 * @return The format for file names in the transcoding virtual folder.
+	 */
+	public String getShortFileNameFormat() {
+		return getString(SHORT_FILE_NAME_FORMAT, Messages.getString("DLNAResource.3"));
 	}
 
 	/**

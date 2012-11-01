@@ -23,6 +23,7 @@ Changelog:
         - Fixed possible error while loading iPhoto library (GC1523)
         - Fixed bug where disabled engines could be selected in the #--TRANSCODE--# folder
         - Fixed bug that prevented showing Galaxy Nexus pictures
+        - Added options for renderer specific file name formats
 
 1.70.1 - 2012-08-31
 

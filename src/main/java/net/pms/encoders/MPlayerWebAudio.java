@@ -65,6 +65,11 @@ public class MPlayerWebAudio extends MPlayerAudio {
 	}
 
 	@Override
+	public String getShortName() {
+		return "MP-WA";
+	}
+
+	@Override
 	public boolean isTimeSeekable() {
 		return false;
 	}

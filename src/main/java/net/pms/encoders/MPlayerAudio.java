@@ -154,6 +154,11 @@ public class MPlayerAudio extends Player {
 	}
 
 	@Override
+	public String getShortName() {
+		return "MP-A";
+	}
+
+	@Override
 	public int type() {
 		return Format.AUDIO;
 	}

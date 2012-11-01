@@ -96,6 +96,11 @@ public class FFMpegVideo extends Player {
 	}
 
 	@Override
+	public String getShortName() {
+		return "FF";
+	}
+
+	@Override
 	public int type() {
 		return Format.VIDEO;
 	}

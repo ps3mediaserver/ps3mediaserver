@@ -59,6 +59,14 @@ public abstract class Player {
 	public abstract JComponent config();
 	public abstract String id();
 	public abstract String name();
+
+	/**
+	 * Returns a shortened version of the full name.
+	 * 
+	 * @return The shortened name.
+	 */
+	public abstract String getShortName();
+
 	public abstract int type();
 
 	// FIXME this is an implementation detail (and not a very good one).

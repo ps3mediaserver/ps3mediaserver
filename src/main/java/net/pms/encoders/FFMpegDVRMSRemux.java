@@ -74,6 +74,12 @@ public class FFMpegDVRMSRemux extends Player {
 		return "FFmpeg DVR-MS Remux";
 	}
 
+
+	@Override
+	public String getShortName() {
+		return "FFDVRMS";
+	}
+
 	@Override
 	public int type() {
 		return Format.VIDEO;

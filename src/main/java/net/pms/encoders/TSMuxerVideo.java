@@ -786,6 +786,11 @@ public class TSMuxerVideo extends Player {
 	}
 
 	@Override
+	public String getShortName() {
+		return "tsMxR";
+	}
+
+	@Override
 	public int type() {
 		return Format.VIDEO;
 	}

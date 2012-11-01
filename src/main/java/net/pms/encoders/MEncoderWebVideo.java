@@ -140,6 +140,11 @@ public class MEncoderWebVideo extends Player {
 	}
 
 	@Override
+	public String getShortName() {
+		return "MEnc-WV";
+	}
+
+	@Override
 	public String[] args() {
 		return getDefaultArgs();
 	}

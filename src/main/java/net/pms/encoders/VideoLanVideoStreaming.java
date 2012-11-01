@@ -62,6 +62,11 @@ public class VideoLanVideoStreaming extends Player {
 	}
 
 	@Override
+	public String getShortName() {
+		return "VLC-V";
+	}
+
+	@Override
 	public int type() {
 		return Format.VIDEO;
 	}

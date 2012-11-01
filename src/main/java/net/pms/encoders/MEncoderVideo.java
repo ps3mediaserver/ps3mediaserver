@@ -2560,6 +2560,11 @@ public class MEncoderVideo extends Player {
 	}
 
 	@Override
+	public String getShortName() {
+		return "MEnc";
+	}
+
+	@Override
 	public int type() {
 		return Format.VIDEO;
 	}
