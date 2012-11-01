@@ -22,6 +22,7 @@ Changelog:
         - Improve handling of initialization errors
         - Fixed possible error while loading iPhoto library (GC1523)
         - Fixed bug where disabled engines could be selected in the #--TRANSCODE--# folder
+        - Fixed bug that prevented showing Galaxy Nexus pictures
 
 1.70.1 - 2012-08-31
 
