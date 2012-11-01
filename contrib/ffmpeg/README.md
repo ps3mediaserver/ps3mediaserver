@@ -6,7 +6,7 @@ It currently works on Linux, OpenBSD, FreeBSD, and Mac OS X. It has been tested 
 The helper will automatically grab the latest versions of the relevant FFmpeg dependencies. All build files are stored in a
 subdirectory of this directory and no system files are read or written to.
 
-## Requirements <a name="Requirements"></a>
+## Prerequisites <a name="Prerequisites"></a>
 
 This helper requires:
 
