@@ -147,11 +147,6 @@ public class FFMpegWebVideo extends Player {
 	}
 
 	@Override
-	public String getShortName() {
-		return "FFWV";
-	}
-
-	@Override
 	// TODO remove this when it's removed from Player
 	public String[] args() {
 		return null;

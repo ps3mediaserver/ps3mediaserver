@@ -104,11 +104,6 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 	}
 
 	@Override
-	public String getShortName() {
-		return "MP-WV";
-	}
-
-	@Override
 	public int type() {
 		return Format.VIDEO;
 	}

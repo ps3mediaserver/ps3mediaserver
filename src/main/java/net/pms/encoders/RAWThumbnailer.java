@@ -83,11 +83,6 @@ public class RAWThumbnailer extends Player {
 	}
 
 	@Override
-	public String getShortName() {
-		return "DCraw";
-	}
-
-	@Override
 	public int purpose() {
 		return MISC_PLAYER;
 	}

@@ -101,11 +101,6 @@ public class FFMpegAudio extends FFMpegVideo {
 	}
 
 	@Override
-	public String getShortName() {
-		return "FFA";
-	}
-
-	@Override
 	public int type() {
 		return Format.AUDIO;
 	}

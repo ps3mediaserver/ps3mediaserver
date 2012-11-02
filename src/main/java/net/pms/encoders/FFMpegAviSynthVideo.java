@@ -55,11 +55,6 @@ public class FFMpegAviSynthVideo extends FFMpegVideo {
 	}
 
 	@Override
-	public String getShortName() {
-		return "AVS/FF";
-	}
-
-	@Override
 	public boolean avisynth() {
 		return true;
 	}

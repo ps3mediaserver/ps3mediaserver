@@ -45,11 +45,6 @@ public class VideoLanAudioStreaming extends VideoLanVideoStreaming {
 	}
 
 	@Override
-	public String getShortName() {
-		return "VLC-A";
-	}
-
-	@Override
 	public int type() {
 		return Format.AUDIO;
 	}

@@ -141,11 +141,6 @@ public class MEncoderAviSynth extends MEncoderVideo {
 		return "AviSynth/MEncoder";
 	}
 
-	@Override
-	public String getShortName() {
-		return "AVS/MEnc";
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */

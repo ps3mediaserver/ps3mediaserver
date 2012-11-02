@@ -969,7 +969,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		} else {
 			if (getPlayer() != null) {
 				engineFullName = getPlayer().name();
-				engineShortName = getPlayer().getShortName();
+				engineShortName = abbreviate(engineFullName);
 			} else {
 				if (isNoName()) {
 					engineFullName = Messages.getString("DLNAResource.1");
