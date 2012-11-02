@@ -44,7 +44,7 @@ public class StringUtilTest {
 		assertThat(StringUtil.abbreviate(null)).isNull();
 		assertThat(StringUtil.abbreviate("ABC").equals("ABC")).isTrue();
 		assertThat(StringUtil.abbreviate("A B C").equals("ABC")).isTrue();
-		assertThat(StringUtil.abbreviate("iPhone").equals("IP")).isTrue();
+		assertThat(StringUtil.abbreviate("tsMuxeR").equals("TMR")).isTrue();
 		assertThat(StringUtil.abbreviate("foo bar baz").equals("FBB")).isTrue();
 		assertThat(StringUtil.abbreviate("Foo Bar Baz").equals("FBB")).isTrue();
 		assertThat(StringUtil.abbreviate(" foo  Bar  Baz ").equals("FBB")).isTrue();
