@@ -40,7 +40,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testAbbreviateName() {
+	public void testAbbreviate() {
 		assertThat(StringUtil.abbreviate(null)).isNull();
 		assertThat(StringUtil.abbreviate("ABC").equals("ABC")).isTrue();
 		assertThat(StringUtil.abbreviate("A B C").equals("ABC")).isTrue();
