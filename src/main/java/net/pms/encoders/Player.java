@@ -65,7 +65,9 @@ public abstract class Player {
 	 * 
 	 * @return The shortened name.
 	 */
-	public abstract String getShortName();
+	public String getShortName() {
+		return name();
+	}
 
 	public abstract int type();
 
