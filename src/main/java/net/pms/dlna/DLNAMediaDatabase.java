@@ -148,7 +148,7 @@ public class DLNAMediaDatabase implements Runnable {
 						JOptionPane.showMessageDialog(
 							(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
 							String.format(Messages.getString("DLNAMediaDatabase.5"), dbDir),
-							Messages.getString("DLNAMediaDatabase.6"),
+							Messages.getString("Error"),
 		                    JOptionPane.ERROR_MESSAGE);
 					}	
 					LOGGER.debug("Damaged cache can't be deleted. Stop the program and delete the folder \"" + dbDir + "\" manually");
