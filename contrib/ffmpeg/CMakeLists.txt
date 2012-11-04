@@ -4,8 +4,8 @@
 #
 # updates:
 #
-#     if this build's options or dependencies are changed, the following version numbers should be
-#     incremented prior to each PMS release:
+#     if this build's options or dependencies are changed, the version number should be
+#     incremented in the following places prior to each PMS release:
 #
 #         * PMS_FFMPEG_VERSION in contrib/ffmpeg/vendor/ffmpeg-banner.patch
 #         * the corresponding version at the bottom of contrib/ffmpeg/README.md
@@ -96,7 +96,7 @@ EXTERNALPROJECT_ADD(
     PATCH_COMMAND patch -p1 < ${CMAKE_SOURCE_DIR}/vendor/gsm-permissions.patch
 
     CONFIGURE_COMMAND ""
-    INSTALL_COMMAND make install INSTALL_ROOT=${CMAKE_BINARY_DIR} GSM_INSTALL_INC=${CMAKE_BINARY_DIR}/include chmod=echo
+    INSTALL_COMMAND make install INSTALL_ROOT=${CMAKE_BINARY_DIR} GSM_INSTALL_INC=${CMAKE_BINARY_DIR}/include
     BUILD_IN_SOURCE 1
 )
 
