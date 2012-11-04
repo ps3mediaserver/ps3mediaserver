@@ -147,14 +147,14 @@ public class GeneralTab {
 						(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
 						Messages.getString("NetworkTab.11") +
 						Messages.getString("NetworkTab.12"),
-						"Information",
+						Messages.getString("Information"),
 						JOptionPane.INFORMATION_MESSAGE);
 
 				} else {
 					JOptionPane.showMessageDialog(
 						(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
 						Messages.getString("NetworkTab.14"),
-						"Error",
+						Messages.getString("Error"),
 						JOptionPane.ERROR_MESSAGE);
 				}
 			}
