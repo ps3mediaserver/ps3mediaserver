@@ -53,6 +53,20 @@ All binaries and support files will be installed by the package in the `/usr/loc
     Unpacking ffmpeg-pms (from ffmpeg-pms_1.0.0_amd64.deb) ...
     Setting up ffmpeg-pms (1.0.0) ...
 
+## Tips <a name="Tips"></a>
+
+To find cross-platform variables for build tools &c. look in contrib/ffmpeg/build/CMakeCache.txt.
+
+To see build output suppressed by autoconf/automake:
+
+    make V=1
+
+or:
+
+    ./configure --disable-silent-rules
+
+See [here](https://lists.gnu.org/archive/html/bug-autoconf/2012-01/msg00009.html) for more details.
+
 ## Credits <a name="Credits"></a>
 
 The helper and this documentation are based on [sffmpeg](https://github.com/pyke369/sffmpeg) by [pyke369](https://github.com/pyke369).
