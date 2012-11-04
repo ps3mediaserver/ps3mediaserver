@@ -1,6 +1,17 @@
 # author: chocolateboy
 # original: https://github.com/pyke369/sffmpeg
 # license: GPL
+#
+# updates:
+#
+#     if this build's options or dependencies are changed, the following version numbers should be
+#     incremented prior to each PMS release:
+#
+#         * PMS_FFMPEG_VERSION in contrib/ffmpeg/vendor/ffmpeg-banner.patch
+#         * the corresponding version at the bottom of contrib/ffmpeg/README.md
+#
+#     Note: the version should be incremented no more than *once* per PMS release.
+#
 # links:
 #
 #     build scripts:
@@ -13,6 +24,7 @@
 #         http://betterlogic.com/roger/2011/09/ffmpeg-compileconfigure-windows/
 #         http://betterlogic.com/roger/2012/09/libflite-cross-compile-woe/
 #         http://ffmpeg.org/trac/ffmpeg/wiki/MacOSXCompilationGuide
+#
 
 PROJECT(ffmpeg)
 

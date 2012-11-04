@@ -53,6 +53,10 @@ All binaries and support files will be installed by the package in the `/usr/loc
     Unpacking ffmpeg-pms (from ffmpeg-pms_1.0.0_amd64.deb) ...
     Setting up ffmpeg-pms (1.0.0) ...
 
+## Version <a name="Version"></a>
+
+PMS1
+
 ## Credits <a name="Credits"></a>
 
 The helper and this documentation are based on [sffmpeg](https://github.com/pyke369/sffmpeg) by [pyke369](https://github.com/pyke369).
