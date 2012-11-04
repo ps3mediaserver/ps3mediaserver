@@ -57,7 +57,7 @@ All binaries and support files will be installed by the package in the `/usr/loc
 
 To find cross-platform variables for build tools &c. look in contrib/ffmpeg/build/CMakeCache.txt.
 
-To see build output suppressed by autoconf/automake:
+To see build output suppressed by automake:
 
     make V=1
 
