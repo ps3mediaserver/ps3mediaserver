@@ -13,6 +13,7 @@ Changelog:
     Renderers:
         - Improved Android.conf video support
         - Added support for Samsung SMT-G7400 (UPC Horizon)
+        - Fixed bug that prevented Galaxy Nexus pictures displaying
     Language updates:
         - Updated Chinese Traditional translation (thanks, mcc!)
         - Added Turkish icon
@@ -22,7 +23,6 @@ Changelog:
         - Improve handling of initialization errors
         - Fixed possible error while loading iPhoto library (GC1523)
         - Fixed bug where disabled engines could be selected in the #--TRANSCODE--# folder
-        - Fixed bug that prevented Galaxy Nexus pictures displaying
         - Added options for renderer-specific file name formats
 
 1.70.1 - 2012-08-31
