@@ -899,7 +899,7 @@ public class PMS {
 				JOptionPane.showMessageDialog(
 					((JFrame) (SwingUtilities.getWindowAncestor((Component) instance.getFrame()))),
 					errorMessage,
-					"Error initalizing PMS!",
+					Messages.getString("PMS.42"),
 					JOptionPane.ERROR_MESSAGE
 				);
 			}
