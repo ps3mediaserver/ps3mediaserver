@@ -453,8 +453,12 @@ public class GeneralTab {
 			bPlugin.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), 
-							listener.config(), "Options", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+					JOptionPane.showOptionDialog(
+							(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), 
+							listener.config(),
+							Messages.getString("Dialog.Options"),
+							JOptionPane.CLOSED_OPTION,
+							JOptionPane.PLAIN_MESSAGE, null, null, null);
 				}
 			});
 			builder.add(bPlugin, cc.xy(1, i++));
