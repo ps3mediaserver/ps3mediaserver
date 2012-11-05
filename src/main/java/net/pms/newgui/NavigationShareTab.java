@@ -374,7 +374,7 @@ public class NavigationShareTab {
 				int option = JOptionPane.showConfirmDialog(
 					(Component) PMS.get().getFrame(),
 					Messages.getString("NetworkTab.13") + Messages.getString("NetworkTab.19"),
-					"Question",
+					Messages.getString("Dialog.Question"),
 					JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION) {
 					PMS.get().getDatabase().init(true);
@@ -607,7 +607,7 @@ public class NavigationShareTab {
 							int option = JOptionPane.showConfirmDialog(
 								(Component) PMS.get().getFrame(),
 								Messages.getString("FoldTab.3") + Messages.getString("FoldTab.4"),
-								"Question",
+								Messages.getString("Dialog.Question"),
 								JOptionPane.YES_NO_OPTION);
 							if (option == JOptionPane.YES_OPTION) {
 								database.scanLibrary();
@@ -617,7 +617,7 @@ public class NavigationShareTab {
 							int option = JOptionPane.showConfirmDialog(
 								(Component) PMS.get().getFrame(),
 								Messages.getString("FoldTab.10"),
-								"Question",
+								Messages.getString("Dialog.Question"),
 								JOptionPane.YES_NO_OPTION);
 							if (option == JOptionPane.YES_OPTION) {
 								database.stopScanLibrary();
