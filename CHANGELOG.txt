@@ -1,7 +1,7 @@
 Changelog:
 ==========
 
-1.71.0 - 2012-??-??
+1.71.0 - 2012-11-06
 
     Windows:
         - Updated MEncoder and MPlayer to SB41
@@ -24,6 +24,7 @@ Changelog:
         - Fixed possible error while loading iPhoto library (GC1523)
         - Fixed bug where disabled engines could be selected in the #--TRANSCODE--# folder
         - Added options for renderer-specific file name formats
+        - Added ffmpeg build script
 
 1.70.1 - 2012-08-31
 
