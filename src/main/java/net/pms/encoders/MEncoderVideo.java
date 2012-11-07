@@ -1657,6 +1657,7 @@ public class MEncoderVideo extends Player {
 			if (params.sid.isExternal()) {
 				if (!params.sid.isExternalFileUtf()) {
 					String subcp = null;
+
 					// append -subcp option for non UTF external subtitles
 					if (isNotBlank(configuration.getMencoderSubCp())) {
 						// manual setting
@@ -1665,6 +1666,7 @@ public class MEncoderVideo extends Player {
 						// autodetect charset (blank mencoder_subcp config option)
 						subcp = SubtitleUtils.getSubCpOptionForMencoder(params.sid);
 					}
+
 					if (isNotBlank(subcp)) {
 						sb.append("-subcp ").append(subcp).append(" ");
 						if (configuration.isMencoderSubFribidi()) {
@@ -1746,15 +1748,12 @@ public class MEncoderVideo extends Player {
 		 * TODO: Move the following block up with the rest of the
 		 * subtitle stuff
 		 */
-		if (isBlank(externalSubtitlesFileName) && params.sid != null) {
+
+		// handle internal subtitles
+		// note: embedded and internal are mutually exclusive
+		if (!configuration.isMencoderDisableSubs() && (params.sid != null) && params.sid.isEmbedded()) {
 			cmdList.add("-sid");
 			cmdList.add("" + params.sid.getId());
-		} else if (isNotBlank(externalSubtitlesFileName) && !avisynth()) { // Trick necessary for MEncoder to skip the internal embedded track ?
-			cmdList.add("-sid");
-			cmdList.add("100");
-		} else if (isBlank(externalSubtitlesFileName)) { // Trick necessary for MEncoder to not display the internal embedded track
-			cmdList.add("-subdelay");
-			cmdList.add("20000");
 		}
 
 		// -ofps
