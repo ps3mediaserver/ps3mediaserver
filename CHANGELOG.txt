@@ -2,6 +2,7 @@ Changelog:
 ==========
 
 1.71.1 - 2012-??-??
+        - Fixed bug that occurred when using ShowDVDTitleDuration
 
 1.71.0 - 2012-11-06
 

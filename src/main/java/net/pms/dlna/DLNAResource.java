@@ -982,7 +982,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		// Handle DVD track duration
-		if (mediaRenderer != null && mediaRenderer.isShowDVDTitleDuration() && getMedia().getDvdtrack() > 0) {
+		if (mediaRenderer != null && mediaRenderer.isShowDVDTitleDuration()
+				&& getMedia() != null && getMedia().getDvdtrack() > 0) {
 			dvdTrackDuration = getMedia().getDurationString();
 		} else {
 			format = smartRemove(format, "%d", false);
