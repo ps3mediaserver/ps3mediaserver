@@ -245,7 +245,7 @@ public abstract class Player {
 		}
 
 		if (matchedSub != null && params.sid == null) {
-			if (matchedSub.getLang() != null && matchedSub.getLang().equals("off")) {
+			if (configuration.isMencoderDisableSubs() || (matchedSub.getLang() != null && matchedSub.getLang().equals("off"))) {
 				logger.trace(" Disabled the subtitles: " + matchedSub);
 			} else {
 				params.sid = matchedSub;
