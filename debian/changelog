@@ -1,3 +1,27 @@
+ps3mediaserver (1.71.0+mencoder35004-1) quantal; urgency=low
+
+  * New upstream release 1.71.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Sat, 10 Nov 2012 21:24:17 +0400
+
+ps3mediaserver (1.70.0+git+mencoder35004-3) quantal; urgency=low
+
+  * Made build-arch target compile everything
+
+ -- I. Sokolov <happy.neko@gmail.com>  Sun, 28 Oct 2012 05:26:06 +0400
+
+ps3mediaserver (1.70.0+git+mencoder35004-2) quantal; urgency=low
+
+  * Made runscript renaming and installation successful even if build target is not executed
+
+ -- I. Sokolov <happy.neko@gmail.com>  Sun, 28 Oct 2012 05:03:09 +0400
+
+ps3mediaserver (1.70.0+git+mencoder35004-1) quantal; urgency=low
+
+  * Keep debian directory separate from orig tarball
+
+ -- I. Sokolov <happy.neko@gmail.com>  Sun, 28 Oct 2012 02:57:33 +0400
+
 ps3mediaserver (1.70.0+git+mencoder35003-1) quantal; urgency=low
 
   * New upstream release 1.70.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG)
