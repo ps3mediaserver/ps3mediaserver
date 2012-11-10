@@ -254,7 +254,8 @@ EXTERNALPROJECT_ADD(
 
 EXTERNALPROJECT_ADD(
     vpx
-    URL http://webm.googlecode.com/files/libvpx-v1.0.0.tar.bz2
+    GIT_REPOSITORY http://git.chromium.org/webm/libvpx.git
+    GIT_TAG 83e8f2f97 # 2012-11-09
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared
     BUILD_IN_SOURCE 1
 )
