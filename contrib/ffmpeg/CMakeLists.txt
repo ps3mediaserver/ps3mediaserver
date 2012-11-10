@@ -151,7 +151,7 @@ EXTERNALPROJECT_ADD(
     openssl
     URL http://www.openssl.org/source/openssl-1.0.1c.tar.gz
 
-    # Mac OSX hack to force the correct architecture
+    # Mac OSX build needs to force the correct architecture
     #CONFIGURE_COMMAND ./configure darwin64-x86_64-cc no-shared no-idea no-mdc2 no-rc5 --prefix=${CMAKE_BINARY_DIR} 
     #BUILD_COMMAND make depend MAKEDEPPROG=${CMAKE_C_COMPILER} && make
 
@@ -256,6 +256,13 @@ EXTERNALPROJECT_ADD(
     vpx
     GIT_REPOSITORY http://git.chromium.org/webm/libvpx.git
     GIT_TAG 83e8f2f97 # 2012-11-09
+
+    # Mac OSX build needs to force the correct architecture
+    # xavs is using old versions of config.guess and config.sub that do not recognize
+    # the same x86_64 architecture on Mac OSX that all other projects use. Forcing the
+    # architecture causes asm errors, so we disable asm as well.
+    #CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --host=x86_64-apple-darwin --disable-asm
+
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared
     BUILD_IN_SOURCE 1
 )
