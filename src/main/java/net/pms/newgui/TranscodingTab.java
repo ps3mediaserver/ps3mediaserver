@@ -353,15 +353,7 @@ public class TranscodingTab {
 		CellConstraints cc = new CellConstraints();
 
 		maxbuffer = new JTextField("" + configuration.getMaxMemoryBufferSize());
-		maxbuffer.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		maxbuffer.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
@@ -405,15 +397,7 @@ public class TranscodingTab {
 
 		chapter_interval = new JTextField("" + configuration.getChapterInterval());
 		chapter_interval.setEnabled(configuration.isChapterSupport());
-		chapter_interval.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		chapter_interval.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
@@ -508,15 +492,7 @@ public class TranscodingTab {
         builder.add(forceDTSinPCM, FormLayoutUtil.flip(cc.xyw(1, 19, 3), colSpec, orientation));
 
         abitrate = new JTextField("" + configuration.getAudioBitrate());
-		abitrate.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		abitrate.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
@@ -574,15 +550,7 @@ public class TranscodingTab {
 				}
 			}
 		});
-		vq.getEditor().getEditorComponent().addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		vq.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				vq.getItemListeners()[0].itemStateChanged(new ItemEvent(vq, 0, vq.getEditor().getItem(), ItemEvent.SELECTED));
@@ -616,15 +584,7 @@ public class TranscodingTab {
 		builder.addLabel(Messages.getString("TrTab2.8"), FormLayoutUtil.flip(cc.xy(1, 37), colSpec, orientation));
 
 		notranscode = new JTextField(configuration.getNoTranscode());
-		notranscode.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		notranscode.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setNoTranscode(notranscode.getText());
@@ -635,15 +595,7 @@ public class TranscodingTab {
 		builder.addLabel(Messages.getString("TrTab2.9"), FormLayoutUtil.flip(cc.xy(1, 39), colSpec, orientation));
 
 		forcetranscode = new JTextField(configuration.getForceTranscode());
-		forcetranscode.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		forcetranscode.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setForceTranscode(forcetranscode.getText());

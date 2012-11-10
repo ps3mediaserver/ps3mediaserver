@@ -192,15 +192,7 @@ public class NavigationShareTab {
 
 		//ThumbnailSeekPos
 		seekpos = new JTextField("" + configuration.getThumbnailSeekPos());
-		seekpos.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		seekpos.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
@@ -272,15 +264,7 @@ public class NavigationShareTab {
 
 		// AlternateThumbFolder
 		defaultThumbFolder = new JTextField(configuration.getAlternateThumbFolder());
-		defaultThumbFolder.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		defaultThumbFolder.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setAlternateThumbFolder(defaultThumbFolder.getText());

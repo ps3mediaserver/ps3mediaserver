@@ -30,10 +30,7 @@ import net.pms.formats.Format;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.util.StringTokenizer;
 
 public class MEncoderAviSynth extends MEncoderVideo {
@@ -87,15 +84,7 @@ public class MEncoderAviSynth extends MEncoderVideo {
 			i++;
 		}
 		textArea = new JTextArea(sb.toString());
-		textArea.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		textArea.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				StringBuilder sb = new StringBuilder();
