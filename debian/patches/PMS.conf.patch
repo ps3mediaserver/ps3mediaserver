@@ -63,7 +63,7 @@
  
  # Codec specific parameters
  # -------------------------
-@@ -666,7 +666,7 @@
+@@ -663,7 +663,7 @@
  # GUI Option: Subtitle font (string)
  # GUI offers a navigator to a folder generating an absolute path.
  # Default: empty.
@@ -72,7 +72,7 @@
  
  # Subtitles folder blank
  # ----------------------
-@@ -701,7 +701,7 @@
+@@ -698,7 +698,7 @@
  # from that will generate a number. Default is empty, causing PMS to pick
  # white.
  # Default: empty.
@@ -81,7 +81,7 @@
  
  # Style font scale
  # ----------------
-@@ -713,17 +713,17 @@
+@@ -710,17 +710,17 @@
  # GUI Option: Styled font outline
  # The outline parameter used for ASS subtitling.
  # Default: 1.
@@ -102,7 +102,7 @@
  
  # Plain font scale
  # ----------------
-@@ -735,7 +735,7 @@
+@@ -732,7 +732,7 @@
  # GUI Option: Plain font outline
  # The subfont outline parameter used for subtitling without ASS.
  # Default: 1.
@@ -111,7 +111,7 @@
  
  # GUI Option: Plain font blur
  # The subfont blur parameter used for subtitling without ASS.
-@@ -745,7 +745,7 @@
+@@ -742,7 +742,7 @@
  # GUI Option: Plain margin
  # The subpos parameter used for subtitling without ASS.
  # Default: 2.
@@ -120,7 +120,7 @@
  
  # Load subtitles
  # --------------
-@@ -759,7 +759,7 @@
+@@ -756,7 +756,7 @@
  # ------------------------
  # GUI Option: DVD/VOB subtitle quality
  # Default: 3.
@@ -129,7 +129,7 @@
  
  # Add borders
  # -----------
-@@ -833,23 +833,23 @@
+@@ -830,23 +830,23 @@
  # ---< Binary tools paths >------------------------------------------
  # Path to mencoder (absolute or relative from project.binaries.dir)
  # Default: Win: win32/mencoder.exe Mac: osx/mencoder Linux: mencoder + system PATH
