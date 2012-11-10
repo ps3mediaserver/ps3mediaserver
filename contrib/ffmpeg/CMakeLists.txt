@@ -258,6 +258,10 @@ EXTERNALPROJECT_ADD(
     xavs
     SVN_REPOSITORY https://xavs.svn.sourceforge.net/svnroot/xavs/trunk/
     SVN_REVISION -r55 # 2011-08-21
+
+    # Avoid "Server certificate verification failed: issuer is not trusted" error
+    SVN_TRUST_CERT 1
+
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared
     BUILD_IN_SOURCE 1
 )
