@@ -1282,55 +1282,7 @@ public class MEncoderVideo extends Player {
 			LOGGER.error("Cannot parse configured MEncoder overscan compensation height: \"{}\"", configuration.getMencoderOverscanCompensationHeight());
 		}
 
-		if (
-			!forceMencoder &&
-			params.sid == null &&
-			!dvd &&
-			!avisynth() &&
-			media != null && (
-				media.isVideoPS3Compatible(newInput) ||
-				!params.mediaRenderer.isH264Level41Limited()
-			) &&
-			media.isMuxable(params.mediaRenderer) &&
-			configuration.isMencoderMuxWhenCompatible() &&
-			params.mediaRenderer.isMuxH264MpegTS() && (
-				intOCW == 0 &&
-				intOCH == 0
-			)
-		) {
-			String expertOptions[] = getSpecificCodecOptions(
-				configuration.getCodecSpecificConfig(),
-				media,
-				params,
-				fileName,
-				externalSubtitlesFileName,
-				configuration.isMencoderIntelligentSync(),
-				false
-			);
-
-			boolean nomux = false;
-
-			for (String s : expertOptions) {
-				if (s.equals("-nomux")) {
-					nomux = true;
-				}
-			}
-
-			if (!nomux) {
-				TSMuxerVideo tv = new TSMuxerVideo(configuration);
-				params.forceFps = media.getValidFps(false);
-
-				if (media.getCodecV().equals("h264")) {
-					params.forceType = "V_MPEG4/ISO/AVC";
-				} else if (media.getCodecV().startsWith("mpeg2")) {
-					params.forceType = "V_MPEG-2";
-				} else if (media.getCodecV().equals("vc1")) {
-					params.forceType = "V_MS/VFW/WVC1";
-				}
-
-				return tv.launchTranscode(fileName, dlna, media, params);
-			}
-		} else if (params.sid == null && dvd && configuration.isMencoderRemuxMPEG2() && params.mediaRenderer.isMpeg2Supported()) {
+		if (params.sid == null && dvd && configuration.isMencoderRemuxMPEG2() && params.mediaRenderer.isMpeg2Supported()) {
 			String expertOptions[] = getSpecificCodecOptions(
 				configuration.getCodecSpecificConfig(),
 				media,

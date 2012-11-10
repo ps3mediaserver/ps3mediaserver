@@ -18,6 +18,7 @@
  */
 package net.pms.dlna;
 
+import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
 import net.pms.configuration.RendererConfiguration;
@@ -33,7 +34,6 @@ import net.pms.formats.FormatFactory;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.SizeLimitInputStream;
-import net.pms.Messages;
 import net.pms.network.HTTPResource;
 import net.pms.util.FileUtil;
 import net.pms.util.ImagesUtil;
@@ -1289,10 +1289,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						if (getPlayer() != null) {
 							// do we have some mpegts to offer ?
 							boolean mpegTsMux = TSMuxerVideo.ID.equals(getPlayer().id()) || VideoLanVideoStreaming.ID.equals(getPlayer().id());
-							if (!mpegTsMux) { // maybe, like the ps3, mencoder can launch tsmuxer if this a compatible H264 video
-								mpegTsMux = MEncoderVideo.ID.equals(getPlayer().id()) && ((getMediaSubtitle() == null && getMedia() != null && getMedia().getDvdtrack() == 0 && getMedia().isMuxable(mediaRenderer)
-									&& PMS.getConfiguration().isMencoderMuxWhenCompatible() && mediaRenderer.isMuxH264MpegTS())
-									|| mediaRenderer.isTranscodeToMPEGTSAC3());
+							if (!mpegTsMux) {
+								mpegTsMux = MEncoderVideo.ID.equals(getPlayer().id()) && mediaRenderer.isTranscodeToMPEGTSAC3();
 							}
 							if (mpegTsMux) {
 								dlnaspec = getMedia().isH264() && !VideoLanVideoStreaming.ID.equals(getPlayer().id()) && getMedia().isMuxable(mediaRenderer) ? "DLNA.ORG_PN=AVC_TS_HD_24_AC3_ISO" : "DLNA.ORG_PN=" + getMPEG_TS_SD_EU_ISOLocalizedValue(c);
