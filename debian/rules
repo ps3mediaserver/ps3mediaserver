@@ -49,6 +49,8 @@ get-orig-source:
 	( cd $(PACKAGE)-$(VER).orig  ; find . -type f \( -name "*-sources.jar" -o -name "*-javadoc.jar" -o -name "*-sources.zip" -o -name "*-javadoc.zip" -o -name "*-docs.zip" \) -exec rm -vf '{}' \; )
 	# revert patches to restore vanilla sources
 	( cd $(PACKAGE)-$(VER).orig  ; patch -Rp1 < ./../debian/patches/add-ant-build.patch )
+	# Let's clean the source from Debian packaging files
+	( cd $(PACKAGE)-$(VER).orig  ; rm -rf debian) )
 	dh_testdir
 	GZIP=--best tar -cz --owner root --group root --mode a+rX -f $(PACKAGE)_$(VER).orig.tar.gz $(PACKAGE)-$(VER).orig
 	rm -rf $(PACKAGE)-$(VER).orig
