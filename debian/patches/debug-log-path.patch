@@ -3,36 +3,48 @@ Description: log files should be in /var/log according to FHS
 Author: Papa Issa DIAKHATE <paissad@gmail.com>
 --- a/src/main/java/net/pms/logging/DebugLogPathDefiner.java
 +++ b/src/main/java/net/pms/logging/DebugLogPathDefiner.java
-@@ -52,22 +52,22 @@
- 		// Check if current directory is writable.
- 		// XXX dir.canWrite() has issues on Windows, so verify it directly:
- 		// http://hyperic.allrightname.com/javadoc/hq-util/org/hyperic/util/file/FileUtil.html#canWrite%28java.io.File%29
--		File file = new File("write_test_file");
-+		String username = System.getProperty("user.name");
-+		String logDirname = "/var/log/ps3mediaserver/" + username + "/";
-+		File logDir = new File(logDirname);
-+		File file = new File(logDirname + "write_test_file");
+@@ -19,12 +19,12 @@
+ package net.pms.logging;
  
- 		try {
--			if (!file.createNewFile()) {
--				LOGGER.debug("Cannot create new file in current directory.");
--			}
+ import ch.qos.logback.core.PropertyDefinerBase;
++import net.pms.util.FileUtil;
++import org.apache.commons.io.FileUtils;
+ 
+ import java.io.File;
+ import java.io.IOException;
+ 
+-import net.pms.util.FileUtil;
 -
--			if (file.canWrite()) {
--				if (!file.delete()) {
--					LOGGER.debug("Cannot delete file from current directory.");
-+			if (logDir.exists() && logDir.isDirectory() && file.createNewFile() && file.canWrite() && file.delete()) {
-+				return logDirname;
-+			} else if (!logDir.exists()) {
-+				if (logDir.mkdirs() && file.createNewFile() && file.canWrite() && file.delete()) {
-+					return logDirname;
- 				}
--				return new File("").getAbsolutePath();
- 			}
- 		} catch (IOException e) {
- 			// Could not create / write the file
--			LOGGER.debug("Current directory is not writable.");
-+			LOGGER.debug("Log directory is not writable.");
- 		}
+ /**
+  * Logback PropertyDefiner to set the path for the <code>debug.log</code> file.
+  * <p>
+@@ -47,12 +47,24 @@
+ 	 */
+ 	@Override
+ 	public String getPropertyValue() {
+-		File currentDirectory = new File("");
++		final String username = System.getProperty("user.name");
++		final File logDir = new File("/var/log/ps3mediaserver/" + username + "/");
  
- 		// Return path to temp folder, which should be writable
+-		// Check if current directory is writable.
+-		if (FileUtil.isDirectoryWritable(currentDirectory)) {
+-			return currentDirectory.getAbsolutePath();
+-		} else {
++		try {
++			FileUtils.forceMkdir(logDir);
++			if (FileUtil.isDirectoryWritable(logDir)) {
++				return logDir.getAbsolutePath();
++			} else {
++				final File currentDirectory = new File("");
++				// Check if current directory is writable.
++				if (FileUtil.isDirectoryWritable(currentDirectory)) {
++					return currentDirectory.getAbsolutePath();
++				} else {
++					// Return path to temp folder, which should be writable
++					return System.getProperty("java.io.tmpdir");
++				}
++			}
++		} catch (IOException e) {
+ 			// Return path to temp folder, which should be writable
+ 			return System.getProperty("java.io.tmpdir");
+ 		}
