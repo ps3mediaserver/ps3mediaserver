@@ -103,7 +103,7 @@ EXTERNALPROJECT_ADD(
 EXTERNALPROJECT_ADD(
     libass
     DEPENDS fontconfig freetype fribidi
-    URL https://libass.googlecode.com/files/libass-0.10.0.tar.gz
+    URL http://libass.googlecode.com/files/libass-0.10.0.tar.gz
     CONFIGURE_COMMAND PKG_CONFIG_PATH=${CMAKE_BINARY_DIR}/lib/pkgconfig ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --enable-static
     BUILD_IN_SOURCE 1
 )
@@ -142,7 +142,7 @@ EXTERNALPROJECT_ADD(
 
 EXTERNALPROJECT_ADD(
     openjpeg
-    URL https://openjpeg.googlecode.com/files/openjpeg-1.5.1.tar.gz
+    URL http://openjpeg.googlecode.com/files/openjpeg-1.5.1.tar.gz
     CONFIGURE_COMMAND ./bootstrap.sh && ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --enable-static
     BUILD_IN_SOURCE 1
 )
