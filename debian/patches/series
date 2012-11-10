@@ -3,7 +3,6 @@ PMS.conf.patch
 path-to-mediainfo-lib.patch
 debug-log-path.patch
 autoupdate-and-confdir.patch
-temp-path.patch
 media-database-path.patch
 remove-unstable-warning.patch
 PMS.sh.patch
