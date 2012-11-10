@@ -1997,7 +1997,7 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated internal switching to tsmuxer from other transcoding engines is disabled.
+	 * @deprecated automatic switching to tsMuxeR from other transcoding engines is disabled.
 	 */
 	@Deprecated
 	public void setMencoderMuxWhenCompatible(boolean value) {
@@ -2005,7 +2005,7 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated internal switching to tsmuxer from other transcoding engines is disabled.
+	 * @deprecated automatic switching to tsMuxeR from other transcoding engines is disabled.
 	 */
 	@Deprecated
 	public boolean isMencoderMuxWhenCompatible() {
