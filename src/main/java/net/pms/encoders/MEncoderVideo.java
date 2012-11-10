@@ -414,21 +414,6 @@ public class MEncoderVideo extends Player {
 			scaleY.setEnabled(false);
 		}
 
-		videoremux = new JCheckBox("<html>" + Messages.getString("MEncoderVideo.38") + "</html>");
-		videoremux.setContentAreaFilled(false);
-
-		if (configuration.isMencoderMuxWhenCompatible()) {
-			videoremux.setSelected(true);
-		}
-
-		videoremux.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				configuration.setMencoderMuxWhenCompatible((e.getStateChange() == ItemEvent.SELECTED));
-			}
-		});
-
-		builder.add(videoremux, FormLayoutUtil.flip(cc.xyw(1, 9, 13), colSpec, orientation));
-
 		cmp = builder.addSeparator(Messages.getString("MEncoderVideo.5"), FormLayoutUtil.flip(cc.xyw(1, 19, 15), colSpec, orientation));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
