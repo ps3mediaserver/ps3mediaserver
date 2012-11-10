@@ -3,6 +3,7 @@ Changelog:
 
 1.71.1 - 2012-??-??
         - Fixed bug that occurred when using ShowDVDTitleDuration
+        - Disabled internal switching to TSMuxeR from other transcoding engines. Select the one you want from TRANSCODE folder.
 
 1.71.0 - 2012-11-06
 
