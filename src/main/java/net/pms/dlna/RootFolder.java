@@ -19,15 +19,8 @@
 package net.pms.dlna;
 
 import com.sun.jna.Platform;
-
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.util.*;
-
+import net.pms.Messages;
+import net.pms.PMS;
 import net.pms.configuration.MapFileConfiguration;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
@@ -38,19 +31,21 @@ import net.pms.external.AdditionalFoldersAtRoot;
 import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.gui.IFrame;
-import net.pms.Messages;
-import net.pms.PMS;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import xmlwise.Plist;
 import xmlwise.XmlParseException;
+
+import java.io.*;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 public class RootFolder extends DLNAResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RootFolder.class);
@@ -782,15 +777,6 @@ public class RootFolder extends DLNAResource {
 					configuration.setMencoderNoOutOfSync(!configuration
 							.isMencoderNoOutOfSync());
 					return configuration.isMencoderNoOutOfSync();
-				}
-			});
-
-			res.addChild(new VirtualVideoAction(Messages.getString("PMS.14"), configuration.isMencoderMuxWhenCompatible()) {
-				@Override
-				public boolean enable() {
-					configuration.setMencoderMuxWhenCompatible(!configuration.isMencoderMuxWhenCompatible());
-
-					return configuration.isMencoderMuxWhenCompatible();
 				}
 			});
 
