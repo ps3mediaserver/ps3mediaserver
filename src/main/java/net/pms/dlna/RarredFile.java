@@ -37,14 +37,17 @@ public class RarredFile extends DLNAResource {
 
 	public RarredFile(File f) {
 		this.f = f;
-		setLastmodified(f.lastModified());
+		setLastModified(f.lastModified());
+
 		try {
 			rarFile = new Archive(f);
 			List<FileHeader> headers = rarFile.getFileHeaders();
+
 			for (FileHeader fh : headers) {
-				//if (fh.getFullUnpackSize() < MAX_ARCHIVE_ENTRY_SIZE && fh.getFullPackSize() < MAX_ARCHIVE_ENTRY_SIZE)
+				// if (fh.getFullUnpackSize() < MAX_ARCHIVE_ENTRY_SIZE && fh.getFullPackSize() < MAX_ARCHIVE_ENTRY_SIZE)
 				addChild(new RarredEntry(fh.getFileNameString(), f, fh.getFileNameString(), fh.getFullUnpackSize()));
 			}
+
 			rarFile.close();
 		} catch (RarException e) {
 			logger.error(null, e);
@@ -69,6 +72,8 @@ public class RarredFile extends DLNAResource {
 		return true;
 	}
 
+	// XXX unused
+	@Deprecated
 	public long lastModified() {
 		return 0;
 	}
@@ -81,11 +86,13 @@ public class RarredFile extends DLNAResource {
 	@Override
 	public boolean isValid() {
 		boolean t = false;
+
 		try {
 			t = f.exists() && !rarFile.isEncrypted();
 		} catch (Throwable th) {
 			logger.debug("Caught exception", th);
 		}
+
 		return t;
 	}
 }

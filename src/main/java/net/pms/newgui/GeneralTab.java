@@ -147,14 +147,14 @@ public class GeneralTab {
 						(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
 						Messages.getString("NetworkTab.11") +
 						Messages.getString("NetworkTab.12"),
-						"Information",
+						Messages.getString("Dialog.Information"),
 						JOptionPane.INFORMATION_MESSAGE);
 
 				} else {
 					JOptionPane.showMessageDialog(
 						(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
 						Messages.getString("NetworkTab.14"),
-						"Error",
+						Messages.getString("Dialog.Error"),
 						JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -453,8 +453,12 @@ public class GeneralTab {
 			bPlugin.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JOptionPane.showOptionDialog((JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), 
-							listener.config(), "Options", JOptionPane.CLOSED_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+					JOptionPane.showOptionDialog(
+							(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())), 
+							listener.config(),
+							Messages.getString("Dialog.Options"),
+							JOptionPane.CLOSED_OPTION,
+							JOptionPane.PLAIN_MESSAGE, null, null, null);
 				}
 			});
 			builder.add(bPlugin, cc.xy(1, i++));

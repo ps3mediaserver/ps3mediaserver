@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * @deprecated This package is a copy of a third-party library (xmlwise). Future releases will use the original library.
+ *
  * This is a hash map containing all attributes of a single
  * element.
  * <p>
@@ -16,6 +18,7 @@ import java.util.Map;
  * @author Christoffer Lerno
  */
 @SuppressWarnings({"serial"})
+@Deprecated
 public class XmlElementAttributes extends HashMap<String, String> {
 	/**
 	 * Creates an empty element attribute map.

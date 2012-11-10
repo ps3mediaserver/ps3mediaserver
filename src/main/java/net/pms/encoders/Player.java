@@ -59,6 +59,7 @@ public abstract class Player {
 	public abstract JComponent config();
 	public abstract String id();
 	public abstract String name();
+
 	public abstract int type();
 
 	// FIXME this is an implementation detail (and not a very good one).
@@ -256,7 +257,7 @@ public abstract class Player {
 			File video = new File(fileName);
 			FileUtil.doesSubtitlesExists(video, media, false);
 
-			if (configuration.getUseSubtitles()) {
+			if (configuration.isAutoloadSubtitles()) {
 				boolean forcedSubsFound = false;
 				// Priority to external subtitles
 				for (DLNAMediaSubtitle sub : media.getSubtitleTracksList()) {

@@ -10,11 +10,14 @@ import java.io.IOException;
 import java.io.StringReader;
 
 /**
+ * @deprecated This package is a copy of a third-party library (xmlwise). Future releases will use the original library.
+ *
  * Xmlwise convenience methods for loading xml documents and render them into
  * XmlElement trees.
  *
  * @author Christoffer Lerno
  */
+@Deprecated
 public class Xmlwise {
 	private Xmlwise() {
 	}

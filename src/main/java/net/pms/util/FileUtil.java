@@ -4,7 +4,9 @@ import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.formats.v2.SubtitleType;
+
 import org.mozilla.universalchardet.UniversalDetector;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +17,9 @@ import java.util.Map;
 import static org.apache.commons.lang.StringUtils.*;
 import static org.mozilla.universalchardet.Constants.*;
 
-
 public class FileUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
+	private static Map<File, File[]> cache;
 
 	public static File isFileExists(String f, String ext) {
 		return isFileExists(new File(f), ext);
@@ -39,27 +41,49 @@ public class FileUtil {
 		return f.substring(0, point);
 	}
 
-	public static File getFileNameWitNewExtension(File parent, File f, String ext) {
-		File ff = isFileExists(new File(parent, f.getName()), ext);
+	public static File getFileNameWithNewExtension(File parent, File file, String ext) {
+		File ff = isFileExists(new File(parent, file.getName()), ext);
+
 		if (ff != null && ff.exists()) {
 			return ff;
 		}
+
 		return null;
 	}
 
-	public static File getFileNameWitAddedExtension(File parent, File f, String ext) {
+	/**
+	 * @deprecated Use {@link #getFileNameWithNewExtension(File, File, String)}.
+	 */
+	@Deprecated
+	public static File getFileNameWitNewExtension(File parent, File f, String ext) {
+		return getFileNameWithNewExtension(parent, f, ext);
+	}
+
+	public static File getFileNameWithAddedExtension(File parent, File f, String ext) {
 		File ff = new File(parent, f.getName() + ext);
+
 		if (ff.exists()) {
 			return ff;
 		}
+
 		return null;
+	}
+
+	/**
+	 * @deprecated Use {@link #getFileNameWithAddedExtension(File, File, String)}.
+	 */
+	@Deprecated
+	public static File getFileNameWitAddedExtension(File parent, File file, String ext) {
+		return getFileNameWithAddedExtension(parent, file, ext);
 	}
 
 	public static File isFileExists(File f, String ext) {
 		int point = f.getName().lastIndexOf(".");
+
 		if (point == -1) {
 			point = f.getName().length();
 		}
+
 		File lowerCasedFilename = new File(f.getParentFile(), f.getName().substring(0, point) + "." + ext.toLowerCase());
 		if (lowerCasedFilename.exists()) {
 			return lowerCasedFilename;
@@ -69,16 +93,22 @@ public class FileUtil {
 		if (upperCasedFilename.exists()) {
 			return upperCasedFilename;
 		}
+
 		return null;
 	}
 
+	// FIXME needs to be renamed e.g. doSubtitlesExist or doesSubtitleExist
+	@Deprecated
 	public static boolean doesSubtitlesExists(File file, DLNAMediaInfo media) {
 		return doesSubtitlesExists(file, media, true);
 	}
 
+	// FIXME needs to be renamed e.g. doSubtitlesExist or doesSubtitleExist
+	@Deprecated
 	public static boolean doesSubtitlesExists(File file, DLNAMediaInfo media, boolean usecache) {
 		boolean found = browseFolderForSubtitles(file.getParentFile(), file, media, usecache);
 		String alternate = PMS.getConfiguration().getAlternateSubsFolder();
+
 		if (isNotBlank(alternate)) { // https://code.google.com/p/ps3mediaserver/issues/detail?id=737#c5
 			File subFolder = new File(alternate);
 			if (!subFolder.isAbsolute()) {
@@ -89,22 +119,25 @@ public class FileUtil {
 					LOGGER.debug("Caught exception", e);
 				}
 			}
+
 			if (subFolder.exists()) {
 				found = found || browseFolderForSubtitles(subFolder, file, media, usecache);
 			}
 		}
+
 		return found;
 	}
-	static Map<File, File[]> cache;
 
 	private synchronized static boolean browseFolderForSubtitles(File subFolder, File file, DLNAMediaInfo media, boolean usecache) {
 		boolean found = false;
 		if (!usecache) {
 			cache = null;
 		}
+
 		if (cache == null) {
 			cache = new HashMap<File, File[]>();
 		}
+
 		File allSubs[] = cache.get(subFolder);
 		if (allSubs == null) {
 			allSubs = subFolder.listFiles();
@@ -112,6 +145,7 @@ public class FileUtil {
 				cache.put(subFolder, allSubs);
 			}
 		}
+
 		String fileName = getFileNameWithoutExtension(file.getName()).toLowerCase();
 		if (allSubs != null) {
 			for (File f : allSubs) {
@@ -122,10 +156,10 @@ public class FileUtil {
 							int a = fileName.length();
 							int b = fName.length() - ext.length() - 1;
 							String code = "";
-							if (a <= b) // handling case with several dots: <video>..<extension>
-							{
+							if (a <= b) { // handling case with several dots: <video>..<extension>
 								code = fName.substring(a, b);
 							}
+
 							if (code.startsWith(".")) {
 								code = code.substring(1);
 							}
@@ -144,10 +178,12 @@ public class FileUtil {
 										} catch (FileNotFoundException ex) {
 											LOGGER.warn("Exception during external subtitles scan.", ex);
 										}
+
 										exists = true;
 									}
 								}
 							}
+
 							if (!exists) {
 								DLNAMediaSubtitle sub = new DLNAMediaSubtitle();
 								sub.setId(100 + (media == null ? 0 : media.getSubtitleTracksList().size())); // fake id, not used
@@ -169,11 +205,13 @@ public class FileUtil {
 									sub.setLang(code);
 									sub.setType(SubtitleType.valueOfFileExtension(ext));
 								}
+
 								try {
 									sub.setExternalFile(f);
 								} catch (FileNotFoundException ex) {
 									LOGGER.warn("Exception during external subtitles scan.", ex);
 								}
+
 								found = true;
 								if (media != null) {
 									media.getSubtitleTracksList().add(sub);
@@ -184,9 +222,9 @@ public class FileUtil {
 				}
 			}
 		}
+
 		return found;
 	}
-
 
 	/**
 	 * Detects charset/encoding for given file. Not 100% accurate for
@@ -205,6 +243,7 @@ public class FileUtil {
 		while ((numberOfBytesRead = bufferedInputStream.read(buf)) > 0 && !universalDetector.isDone()) {
 			universalDetector.handleData(buf, 0, numberOfBytesRead);
 		}
+
 		universalDetector.dataEnd();
 		String encoding = universalDetector.getDetectedCharset();
 
@@ -213,6 +252,7 @@ public class FileUtil {
 		} else {
 			LOGGER.debug("No encoding detected for {}.", file.getAbsolutePath());
 		}
+
 		universalDetector.reset();
 
 		return encoding;
@@ -276,6 +316,7 @@ public class FileUtil {
 		if (inputFile == null || !inputFile.canRead()) {
 			throw new FileNotFoundException("Can't read inputFile.");
 		}
+
 		try {
 			charset = getFileCharset(inputFile);
 		} catch (IOException ex) {
@@ -286,6 +327,7 @@ public class FileUtil {
 		if (isCharsetUTF16(charset)) {
 			if (!outputFile.exists()) {
 				BufferedReader reader = null;
+
 				try {
 					if (equalsIgnoreCase(charset, CHARSET_UTF_16LE)) {
 						reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF-16"));
@@ -296,16 +338,174 @@ public class FileUtil {
 					LOGGER.warn("Unsupported exception.", ex);
 					throw ex;
 				}
+
 				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"));
 				int c;
+
 				while ((c = reader.read()) != -1) {
 					writer.write(c);
 				}
+
 				writer.close();
 				reader.close();
 			}
 		} else {
 			throw new IllegalArgumentException("File is not UTF-16");
 		}
+	}
+
+	/**
+	 * Determine whether a file is readable by trying to read it. This works around JDK bugs which
+	 * return the wrong results for {@link java.io.File.canRead()} on Windows, and in some cases, on Unix.
+	 * <p>
+	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.
+	 * Note: this method changes the file access time.
+	 *
+	 * @since 1.71.0
+	 * @param file the File whose permissions are to be determined
+	 * @return <code>true</code> if the file is not null, exists, is a file and can be read, <code>false</code> otherwise
+	 */
+	// based on the workaround posted here:
+	// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4993360
+	// XXX why isn't this in Apache Commons?
+	public static boolean isFileReadable(File file) {
+		boolean isReadable = false;
+
+		if ((file != null) && file.isFile()) {
+			try {
+				new FileInputStream(file).close();
+				isReadable = true;
+			} catch (IOException ioe) { }
+		}
+
+		return isReadable;
+	}
+
+	/**
+	 * Determine whether a file is writable by trying to write it. This works around JDK bugs which
+	 * return the wrong results for {@link java.io.File.canWrite()} on Windows and, in some cases, on Unix.
+	 * <p>
+	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.
+	 * Note: this method changes the file access time and may change the file modification time.
+	 *
+	 * @since 1.71.0
+	 * @param file the File whose permissions are to be determined
+	 * @return <code>true</code> if the file is not null and either a) exists, is a file and can be written to or b) doesn't
+	 * exist and can be created; otherwise returns <code>false</code>
+	 */
+	// Loosely based on the workaround posted here:
+	// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4993360
+	// XXX why isn't this in Apache Commons?
+	public static boolean isFileWritable(File file) {
+		boolean isWritable = false;
+
+		if (file != null) {
+			boolean fileAlreadyExists = file.isFile(); // i.e. exists and is a File
+
+			if (fileAlreadyExists || !file.exists()) {
+				try {
+					// true: open for append: make sure the open
+					// doesn't clobber the file
+					new FileOutputStream(file, true).close();
+					isWritable = true;
+
+					if (!fileAlreadyExists) { // a new file has been "touch"ed; try to remove it
+						try {
+							if (!file.delete()) {;
+								LOGGER.warn("Can't delete temporary test file: {}", file.getAbsolutePath());
+							}
+						} catch (SecurityException se) {
+							LOGGER.error("Error deleting temporary test file: " + file.getAbsolutePath(), se);
+						}
+					}
+				} catch (IOException ioe) {
+				} catch (SecurityException se) { }
+			}
+		}
+
+		return isWritable;
+	}
+
+	/**
+	 * Determines whether the supplied directory is readable by trying to read its contents.
+	 * This works around JDK bugs which return the wrong results for {@link java.io.File.canRead()}
+	 * on Windows and possibly on Unix.
+	 * <p>
+	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.
+	 * Note: this method changes the file access time.
+	 *
+	 * @since 1.71.0
+	 * @param dir the File whose permissions are to be determined
+	 * @return <code>true</code> if the File is not null, exists, is a directory and can be read, <code>false</code> otherwise
+	 */
+	// XXX dir.canRead() has issues on Windows, so verify it directly:
+	// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6203387
+	public static boolean isDirectoryReadable(File dir) {
+		boolean isReadable = false;
+
+		if (dir != null) {
+			// new File("").isDirectory() is false, even though getAbsolutePath() returns the right path.
+			// this resolves it
+			dir = dir.getAbsoluteFile();
+
+			if (dir.isDirectory()) {
+				try {
+					File[] files = dir.listFiles(); // null if an I/O error occurs
+					isReadable = files != null;
+				} catch (SecurityException se) { }
+			}
+		}
+
+		return isReadable;
+	}
+
+	/**
+	 * Determines whether the supplied directory is writable by trying to write a file to it.
+	 * This works around JDK bugs which return the wrong results for {@link java.io.File.canWrite()}
+	 * on Windows and possibly on Unix.
+	 * <p>
+	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.
+	 * Note: this method changes the file access time and may change the file modification time.
+	 *
+	 * @since 1.71.0
+	 * @param dir the File whose permissions are to be determined
+	 * @return <code>true</code> if the File is not null, exists, is a directory and can be written to, <code>false</code> otherwise
+	 */
+	// XXX dir.canWrite() has issues on Windows, so verify it directly:
+	// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6203387
+	public static boolean isDirectoryWritable(File dir) {
+		boolean isWritable = false;
+
+		if (dir != null) {
+			// new File("").isDirectory() is false, even though getAbsolutePath() returns the right path.
+			// this resolves it
+			dir = dir.getAbsoluteFile();
+
+			if (dir.isDirectory()) {
+				File file = new File(
+					dir,
+					String.format(
+						"pms_directory_write_test_%d_%d.tmp",
+						System.currentTimeMillis(),
+						Thread.currentThread().getId()
+					)
+				);
+
+				try {
+					if (file.createNewFile()) {
+						if (isFileWritable(file)) {
+							isWritable = true;
+						}
+
+						if (!file.delete()) {
+							LOGGER.warn("Can't delete temporary test file: {}", file.getAbsolutePath());
+						}
+					}
+				} catch (IOException ioe) {
+				} catch (SecurityException se) { }
+			}
+		}
+
+		return isWritable;
 	}
 }

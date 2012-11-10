@@ -66,12 +66,12 @@ public class MapFile extends DLNAResource {
 
 	public MapFile() {
 		setConf(new MapFileConfiguration());
-		setLastmodified(0);
+		setLastModified(0);
 	}
 
 	public MapFile(MapFileConfiguration conf) {
 		setConf(conf);
-		setLastmodified(0);
+		setLastModified(0);
 	}
 
 	private boolean isFileRelevant(File f) {
@@ -150,11 +150,23 @@ public class MapFile extends DLNAResource {
 
 	private List<File> getFileList() {
 		List<File> out = new ArrayList<File>();
+
 		for (File file : this.conf.getFiles()) {
-			if (file != null && file.isDirectory() && file.canRead()) {
-				out.addAll(Arrays.asList(file.listFiles()));
+			if (file != null && file.isDirectory()) {
+				if (file.canRead()) {
+					File[] files = file.listFiles();
+
+					if (files == null) {
+						LOGGER.warn("Can't read files from directory: {}", file.getAbsolutePath());
+					} else {
+						out.addAll(Arrays.asList(files));
+					}
+				} else {
+					LOGGER.warn("Can't read directory: {}", file.getAbsolutePath());
+				}
 			}
 		}
+
 		return out;
 	}
 
@@ -250,13 +262,15 @@ public class MapFile extends DLNAResource {
 
 	@Override
 	public boolean isRefreshNeeded() {
-		long lastModif = 0;
+		long modified = 0;
+
 		for (File f : this.getConf().getFiles()) {
 			if (f != null) {
-				lastModif = Math.max(lastModif, f.lastModified());
+				modified = Math.max(modified, f.lastModified());
 			}
 		}
-		return getLastRefreshTime() < lastModif;
+
+		return getLastRefreshTime() < modified;
 	}
 
 	@Override
@@ -319,7 +333,7 @@ public class MapFile extends DLNAResource {
 	}
 
 	private boolean isSameLastModified(File f, DLNAResource d) {
-		return d.getLastmodified() == f.lastModified();
+		return d.getLastModified() == f.lastModified();
 	}
 
 	private boolean isRealFolder(DLNAResource d) {

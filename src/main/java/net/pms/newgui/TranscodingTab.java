@@ -380,7 +380,8 @@ public class TranscodingTab {
 		builder.addLabel(Messages.getString("NetworkTab.6").replaceAll("MAX_BUFFER_SIZE", configuration.getMaxMemoryBufferSizeStr()), FormLayoutUtil.flip(cc.xy(1, 3), colSpec, orientation));
 		builder.add(maxbuffer, FormLayoutUtil.flip(cc.xy(3, 3), colSpec, orientation));
 
-		builder.addLabel(Messages.getString("NetworkTab.7") + Runtime.getRuntime().availableProcessors() + ")", FormLayoutUtil.flip(cc.xy(1, 5), colSpec, orientation));
+		String nCpusLabel = String.format(Messages.getString("NetworkTab.7"), Runtime.getRuntime().availableProcessors());
+		builder.addLabel(nCpusLabel, FormLayoutUtil.flip(cc.xy(1, 5), colSpec, orientation));
 
 		String[] guiCores = new String[MAX_CORES];
 		for (int i = 0; i < MAX_CORES; i++) {
@@ -498,7 +499,7 @@ public class TranscodingTab {
                     JOptionPane.showMessageDialog(
                             (JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
                             Messages.getString("TrTab2.10"),
-                            "Information",
+                            Messages.getString("Dialog.Information"),
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             }

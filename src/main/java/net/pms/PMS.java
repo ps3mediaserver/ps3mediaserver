@@ -43,6 +43,7 @@ import net.pms.network.UPNPHelper;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
 import net.pms.update.AutoUpdater;
+import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
 import net.pms.util.PropertiesUtil;
 import net.pms.util.SystemErrWrapper;
@@ -266,7 +267,7 @@ public class PMS {
 	private DLNAMediaDatabase database;
 
 	private void initializeDatabase() {
-		database = new DLNAMediaDatabase("medias");
+		database = new DLNAMediaDatabase("medias"); // TODO: rename "medias" -> "cache"
 		database.init(false);
 	}
 
@@ -327,7 +328,6 @@ public class PMS {
         LOGGER.info("by shagrath / 2008-2012");
         LOGGER.info("http://ps3mediaserver.org");
         LOGGER.info("https://github.com/ps3mediaserver/ps3mediaserver");
-        LOGGER.info("http://ps3mediaserver.blogspot.com");
         LOGGER.info("");
 
 		String commitId = PropertiesUtil.getProjectProperties().get("git.commit.id");
@@ -342,11 +342,12 @@ public class PMS {
 		String cwd = new File("").getAbsolutePath();
 		LOGGER.info("Working directory: " + cwd);
 
-		LOGGER.info("Temp folder: " + configuration.getTempFolder());
+		LOGGER.info("Temp directory: " + configuration.getTempFolder());
 		LOGGER.info("Logging config file: " + LoggingConfigFileLoader.getConfigFilePath());
 
 		HashMap<String, String> lfps = LoggingConfigFileLoader.getLogFilePaths();
 
+		// debug.log filename(s) and path(s)
 		if (lfps != null && lfps.size() > 0) {
 			if (lfps.size() == 1) {
 				Entry<String, String> entry = lfps.entrySet().iterator().next();
@@ -371,13 +372,13 @@ public class PMS {
 		File profileFile = new File(profilePath);
 
 		if (profileFile.exists()) {
-			String status = String.format("%s%s",
-				profileFile.canRead()  ? "r" : "-",
-				profileFile.canWrite() ? "w" : "-"
+			String permissions = String.format("%s%s",
+				FileUtil.isFileReadable(profileFile) ? "r" : "-",
+				FileUtil.isFileWritable(profileFile) ? "w" : "-"
 			);
-			LOGGER.info("Profile status: " + status);
+			LOGGER.info("Profile permissions: " + permissions);
 		} else {
-			LOGGER.info("Profile status: no such file");
+			LOGGER.info("Profile permissions: no such file");
 		}
 
 		LOGGER.info("Profile name: " + configuration.getProfileName());
@@ -704,28 +705,38 @@ public class PMS {
 		LOGGER.error(msg, t);
 	}
 
-	/**Universally Unique Identifier used in the UPnP server.
-	 * 
+	/**
+	 * Universally Unique Identifier used in the UPnP server.
 	 */
 	private String uuid;
 
-	/**Creates a new {@link #uuid} for the UPnP server to use. Tries to follow the RFCs for creating the UUID based on the link MAC address.
+	/**
+	 * Creates a new {@link #uuid} for the UPnP server to use. Tries to follow the RFCs for creating the UUID based on the link MAC address.
 	 * Defaults to a random one if that method is not available.
 	 * @return {@link String} with an Universally Unique Identifier.
 	 */
-	public String usn() {
+	public synchronized String usn() {
 		if (uuid == null) {
-			//retrieve UUID from configuration
+			// retrieve UUID from configuration
 			uuid = getConfiguration().getUuid();
 
 			if (uuid == null) {
-				//create a new UUID based on the MAC address of the used network adapter
+				// create a new UUID based on the MAC address of the used network adapter
 				NetworkInterface ni = null;
+
 				try {
-					ni = NetworkConfiguration.getInstance().getNetworkInterfaceByServerName();
-					// if no ni comes from the server host name, we should get the default.
-					if (ni != null) {
-						ni = get().getServer().getNi();
+					// this retrieves the network interface via:
+					//
+					// 1) NetworkConfiguration.getAddressForNetworkInterfaceName(pmsConfInterfaceName)
+					// 2) NetworkConfiguration.getDefaultNetworkInterfaceAddress()
+
+					ni = get().getServer().getNetworkInterface();
+
+					// failing that, default to:
+					//
+					// 3) NetworkConfiguration.getNetworkInterfaceByServerName()
+					if (ni == null) {
+						ni = NetworkConfiguration.getInstance().getNetworkInterfaceByServerName();
 					}
 
 					if (ni != null) {
@@ -741,14 +752,15 @@ public class PMS {
 					LOGGER.debug("Caught exception", e);
 				}
 
-				//create random UUID if the generation by MAC address failed
+				// create random UUID if the generation by MAC address failed
 				if (uuid == null) {
 					uuid = UUID.randomUUID().toString();
 					LOGGER.info("Generated new random UUID");
 				}
 
-				//save the newly generated UUID
+				// save the newly generated UUID
 				getConfiguration().setUuid(uuid);
+
 				try {
 					getConfiguration().save();
 				} catch (ConfigurationException e) {
@@ -758,6 +770,7 @@ public class PMS {
 
             LOGGER.info("Using the following UUID configured in PMS.conf: " + uuid);
 		}
+
 		return "uuid:" + uuid;
 	}
 
@@ -842,6 +855,7 @@ public class PMS {
 
 		try {
 			Toolkit.getDefaultToolkit();
+
 			if (GraphicsEnvironment.isHeadless()) {
 				if (System.getProperty(NOCONSOLE) == null) {
 					System.setProperty(CONSOLE, Boolean.toString(true));
@@ -850,7 +864,8 @@ public class PMS {
 				headless = false;
 			}
 		} catch (Throwable t) {
-			System.err.println("Toolkit error: " + t.getMessage());
+			System.err.println("Toolkit error: " + t.getClass().getName() + ": " + t.getMessage());
+
 			if (System.getProperty(NOCONSOLE) == null) {
 				System.setProperty(CONSOLE, Boolean.toString(true));
 			}
@@ -872,8 +887,22 @@ public class PMS {
 			// create the PMS instance returned by get()
 			createInstance(); 
 		} catch (Throwable t) {
-			System.err.println("Configuration error: " + t.getMessage());
-			JOptionPane.showMessageDialog(null, "Configuration error:"+t.getMessage(), "Error initalizing PMS!", JOptionPane.ERROR_MESSAGE);
+			String errorMessage = String.format(
+				"Configuration error: %s: %s",
+				t.getClass().getName(),
+				t.getMessage()
+			);
+
+			System.err.println(errorMessage);
+
+			if (!headless && instance != null) {
+				JOptionPane.showMessageDialog(
+					((JFrame) (SwingUtilities.getWindowAncestor((Component) instance.getFrame()))),
+					errorMessage,
+					Messages.getString("PMS.42"),
+					JOptionPane.ERROR_MESSAGE
+				);
+			}
 		}
 	}
 
