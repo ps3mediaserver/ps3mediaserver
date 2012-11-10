@@ -8,7 +8,7 @@
 #     incremented in the following places prior to each PMS release:
 #
 #         * PMS_FFMPEG_VERSION in contrib/ffmpeg/vendor/ffmpeg-banner.patch
-#         * the corresponding version at the bottom of contrib/ffmpeg/README.md
+#         * the corresponding version at the *bottom* of contrib/ffmpeg/README.md
 #
 #     Note: the version should be incremented no more than *once* per PMS release.
 #
