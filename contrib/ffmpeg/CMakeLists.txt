@@ -256,13 +256,6 @@ EXTERNALPROJECT_ADD(
     vpx
     GIT_REPOSITORY http://git.chromium.org/webm/libvpx.git
     GIT_TAG 83e8f2f97 # 2012-11-09
-
-    # Mac OSX build needs to force the correct architecture
-    # xavs is using old versions of config.guess and config.sub that do not recognize
-    # the same x86_64 architecture on Mac OSX that all other projects use. Forcing the
-    # architecture causes asm errors, so we disable asm as well.
-    #CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --host=x86_64-apple-darwin --disable-asm
-
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared
     BUILD_IN_SOURCE 1
 )
@@ -274,6 +267,12 @@ EXTERNALPROJECT_ADD(
 
     # Avoid "Server certificate verification failed: issuer is not trusted" error
     SVN_TRUST_CERT 1
+
+    # Mac OSX build needs to force the correct architecture
+    # xavs is using old versions of config.guess and config.sub that do not recognize
+    # the same x86_64 architecture on Mac OSX that all other projects use. Forcing the
+    # architecture causes asm errors, so we disable asm as well.
+    #CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --host=x86_64-apple-darwin --disable-asm
 
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared
     BUILD_IN_SOURCE 1
