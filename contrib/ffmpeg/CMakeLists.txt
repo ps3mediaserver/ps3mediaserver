@@ -150,6 +150,11 @@ EXTERNALPROJECT_ADD(
 EXTERNALPROJECT_ADD(
     openssl
     URL http://www.openssl.org/source/openssl-1.0.1c.tar.gz
+
+    # Mac OSX hack to force the correct architecture
+    #CONFIGURE_COMMAND ./configure darwin64-x86_64-cc no-shared no-idea no-mdc2 no-rc5 --prefix=${CMAKE_BINARY_DIR} 
+    #BUILD_COMMAND make depend MAKEDEPPROG=${CMAKE_C_COMPILER} && make
+
     CONFIGURE_COMMAND ./config no-shared no-idea no-mdc2 no-rc5 --prefix=${CMAKE_BINARY_DIR}
     BUILD_COMMAND make depend && make
     BUILD_IN_SOURCE 1
