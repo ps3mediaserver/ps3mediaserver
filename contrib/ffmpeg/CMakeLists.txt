@@ -10,7 +10,11 @@
 #         * PMS_FFMPEG_VERSION in contrib/ffmpeg/vendor/ffmpeg-banner.patch
 #         * the corresponding version at the *bottom* of contrib/ffmpeg/README.md
 #
-#     Note: the version should be incremented no more than *once* per PMS release.
+#     Note:
+#
+#         * the version should be incremented no more than *once* per PMS release.
+#         * due to bugs in CMake, the build/ffmpeg-prefix directory may need to be removed each
+#           time the version is incremented in order for the patch to apply correctly
 #
 # links:
 #
@@ -389,14 +393,17 @@ SET(FFMPEG_CONFIGURE_OPTIONS
     --extra-cflags=-I${CMAKE_BINARY_DIR}/include/openjpeg-1.5 # see above
     --extra-cflags=-static
     --extra-ldflags=-L${CMAKE_BINARY_DIR}/lib
-
-    # Outcomment or remove the following line for Mac OSX, as it breaks compilation
-    --extra-ldflags=-static
-
     --extra-libs=-ldl
     --extra-libs=-liconv
     --prefix=${CMAKE_BINARY_DIR}
 )
+
+IF (NOT APPLE)
+    # Don't use this on OS X as it breaks compilation
+	LIST(APPEND FFMPEG_CONFIGURE_OPTIONS
+		--extra-ldflags=-static
+	)
+ENDIF()
 
 SET(FFMPEG_CONFIGURE_COMMAND
     env
