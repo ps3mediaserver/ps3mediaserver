@@ -14,7 +14,7 @@
 #
 #         * the version should be incremented no more than *once* per PMS release.
 #         * due to bugs in CMake, the build/ffmpeg-prefix directory may need to be removed each
-#           time the version is incremented in order for the patch to apply correctly
+#           time the version is incremented in order to ensure the patch is reapplied
 #
 # links:
 #
@@ -163,7 +163,7 @@ EXTERNALPROJECT_ADD(
     URL http://www.openssl.org/source/openssl-1.0.1c.tar.gz
 
     # Mac OSX build needs to force the correct architecture
-    #CONFIGURE_COMMAND ./configure darwin64-x86_64-cc no-shared no-idea no-mdc2 no-rc5 --prefix=${CMAKE_BINARY_DIR} 
+    #CONFIGURE_COMMAND ./configure darwin64-x86_64-cc no-shared no-idea no-mdc2 no-rc5 --prefix=${CMAKE_BINARY_DIR}
     #BUILD_COMMAND make depend MAKEDEPPROG=${CMAKE_C_COMPILER} && make
 
     CONFIGURE_COMMAND ./config no-shared no-idea no-mdc2 no-rc5 --prefix=${CMAKE_BINARY_DIR}
@@ -400,9 +400,9 @@ SET(FFMPEG_CONFIGURE_OPTIONS
 
 IF (NOT APPLE)
     # Don't use this on OS X as it breaks compilation
-	LIST(APPEND FFMPEG_CONFIGURE_OPTIONS
-		--extra-ldflags=-static
-	)
+    LIST(APPEND FFMPEG_CONFIGURE_OPTIONS
+        --extra-ldflags=-static
+    )
 ENDIF()
 
 SET(FFMPEG_CONFIGURE_COMMAND
