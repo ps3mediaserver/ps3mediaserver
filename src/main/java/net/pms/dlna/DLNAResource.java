@@ -50,6 +50,7 @@ import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 
 import static net.pms.util.StringUtil.*;
 
@@ -402,7 +403,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		setSpecificType(specificType);
 	}
 
-	/** Recursive function that searchs through all of the children until it finds
+	/** Recursive function that searches through all of the children until it finds
 	 * a {@link DLNAResource} that matches the name.<p> Only used by
 	 * {@link net.pms.dlna.RootFolder#addWebFolder(File webConf)
 	 * addWebFolder(File webConf)} while parsing the web.conf file.
@@ -921,8 +922,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		String dvdTrackDuration = "";
 		String engineFullName = "";
 		String engineShortName = "";
-		String fileNameWithExtension = "";
-		String fileNameWithoutExtension = "";
+		String filenameWithExtension = "";
+		String filenameWithoutExtension = "";
 		String subLangFullName = "";
 		String subLangShortName = "";
 		String subType = "";
@@ -953,12 +954,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			format = smartRemove(format, "%F", true);
 			format = smartRemove(format, "%f", true);
 		} else {
-			fileNameWithExtension = getName();
-			fileNameWithoutExtension = FileUtil.getFileNameWithoutExtension(fileNameWithExtension);
+			filenameWithExtension = getName();
+			filenameWithoutExtension = FileUtil.getFileNameWithoutExtension(filenameWithExtension);
 
 			// Check if file extensions are configured to be hidden
 			if (this instanceof RealFile && PMS.getConfiguration().isHideExtensions() && !isFolder()) {
-				fileNameWithExtension = fileNameWithoutExtension;
+				filenameWithExtension = filenameWithoutExtension;
 			}
 		}
 
@@ -1042,8 +1043,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		result = result.replaceAll("%d", dvdTrackDuration);
 		result = result.replaceAll("%E", engineFullName);
 		result = result.replaceAll("%e", engineShortName);
-		result = result.replaceAll("%F", fileNameWithExtension);
-		result = result.replaceAll("%f", fileNameWithoutExtension);
+		// XXX escape $ characters in the filename e.g. "The $10,000 Pyramid" -> "The \$10,000 Pyramid"
+		// otherwise they confuse replaceAll:
+		// http://www.ps3mediaserver.org/forum/viewtopic.php?f=3&t=15734
+		// http://cephas.net/blog/2006/02/09/javalangillegalargumentexception-illegal-group-reference-replaceall-and-dollar-signs/
+		result = result.replaceAll("%F", Matcher.quoteReplacement(filenameWithExtension));
+		result = result.replaceAll("%f", Matcher.quoteReplacement(filenameWithoutExtension));
 		result = result.replaceAll("%S", subLangFullName);
 		result = result.replaceAll("%s", subLangShortName);
 		result = result.replaceAll("%t", subType);

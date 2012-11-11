@@ -6,6 +6,7 @@ Changelog:
     Regressions:
         - Fixed bug that occurred when using ShowDVDTitleDuration
         - Fixed bug that caused embedded subtitles to be displayed when subtitles are disabled
+        - Fixed bug in handling of filenames with embedded $ characters
     Engines:
         - Removed option to automatically switch to tsMuxeR (available manually via the #--TRANSCODE--# folder)
 
