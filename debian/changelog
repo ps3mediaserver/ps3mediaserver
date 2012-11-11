@@ -1,6 +1,6 @@
 ps3mediaserver (1.71.0+mencoder35004-1) quantal; urgency=low
 
-  * New upstream release 1.71.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG)
+  * New upstream release 1.71.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG.txt)
 
  -- I. Sokolov <happy.neko@gmail.com>  Sat, 10 Nov 2012 21:24:17 +0400
 
@@ -24,13 +24,13 @@ ps3mediaserver (1.70.0+git+mencoder35004-1) quantal; urgency=low
 
 ps3mediaserver (1.70.0+git+mencoder35003-1) quantal; urgency=low
 
-  * New upstream release 1.70.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG)
+  * New upstream release 1.70.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG.txt)
 
  -- I. Sokolov <happy.neko@gmail.com>  Sun, 28 Oct 2012 01:03:49 +0400
 
 ps3mediaserver (1.60.0+git+mencoder35003-1) quantal; urgency=low
 
-  * New upstream release 1.60.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG)
+  * New upstream release 1.60.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG.txt)
   * mnecoder updated to r35003 vanilla
   * ffmpeg updated to 0.11.1 stable
 
@@ -38,7 +38,7 @@ ps3mediaserver (1.60.0+git+mencoder35003-1) quantal; urgency=low
 
 ps3mediaserver (1.54.00+git+mencoder34587-1) quantal; urgency=low
 
-  * New upstream release 1.54.00 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG)
+  * New upstream release 1.54.00 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG.txt)
 
  -- I. Sokolov <happy.neko@gmail.com>  Wed, 27 Jun 2012 12:21:47 +0400
 

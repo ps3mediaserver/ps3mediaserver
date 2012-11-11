@@ -113,7 +113,7 @@ install:
 	dh_installlogrotate
 	dh_installinit
 	dh_installman
-	dh_installchangelogs CHANGELOG
+	dh_installchangelogs CHANGELOG.txt
 	dh_compress
 
 binary-indep:
