@@ -272,7 +272,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * container. Its main purpose is to be unique in the parent container.
 	 *
 	 * @return The id string.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected String getId() {
 		return id;
@@ -285,7 +285,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * necessary to call it explicitly.
 	 *
 	 * @param id
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 * @see #addChildInternal(DLNAResource)
 	 */
 	protected void setId(String id) {
@@ -302,7 +302,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * http://www.mperfect.net/whsUpnp360/ .
 	 *
 	 * @return The resource id.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	public String getResourceId() {
 		if (getId() == null) {
@@ -2038,7 +2038,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * this resource.
 	 *
 	 * @param media The object containing detailed information.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setMedia(DLNAMediaInfo media) {
 		this.media = media;
@@ -2050,7 +2050,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * returns the one that should be played.
 	 *
 	 * @return The audio object containing detailed information.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	public DLNAMediaAudio getMediaAudio() {
 		return media_audio;
@@ -2062,7 +2062,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * determines the one that should be played.
 	 *
 	 * @param mediaAudio The audio object containing detailed information.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setMediaAudio(DLNAMediaAudio mediaAudio) {
 		this.media_audio = mediaAudio;
@@ -2074,7 +2074,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * subtitles, this method returns the one that should be displayed.
 	 *
 	 * @return The subtitle object containing detailed information.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	public DLNAMediaSubtitle getMediaSubtitle() {
 		return media_subtitle;
@@ -2086,7 +2086,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * subtitles, this method determines the one that should be used.
 	 *
 	 * @param mediaSubtitle The subtitle object containing detailed information.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setMediaSubtitle(DLNAMediaSubtitle mediaSubtitle) {
 		this.media_subtitle = mediaSubtitle;
@@ -2108,7 +2108,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Returns the timestamp at which this resource was last modified.
 	 *
 	 * @return The timestamp.
-	 * @since 1.71.0.0
+	 * @since 1.71.0
 	 */
 	public long getLastModified() {
 		return lastmodified; // TODO rename lastmodified -> lastModified
@@ -2120,7 +2120,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Sets the timestamp at which this resource was last modified.
 	 *
 	 * @param lastModified The timestamp to set.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	@Deprecated
 	protected void setLastmodified(long lastModified) {
@@ -2131,7 +2131,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Sets the timestamp at which this resource was last modified.
 	 *
 	 * @param lastModified The timestamp to set.
-	 * @since 1.71.0.0
+	 * @since 1.71.0
 	 */
 	protected void setLastModified(long lastModified) {
 		this.lastmodified = lastModified; // TODO rename lastmodified -> lastModified
@@ -2152,7 +2152,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * resource for the renderer. The player object can be null.
 	 *
 	 * @param player The player object to set.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setPlayer(Player player) {
 		this.player = player;
@@ -2174,7 +2174,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 *
 	 * @param discovered Set to true if this resource is discovered,
 	 * 			false otherwise.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setDiscovered(boolean discovered) {
 		this.discovered = discovered;
@@ -2184,7 +2184,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Returns true if this resource has subtitles in a file.
 	 *
 	 * @return the srtFile
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected boolean isSrtFile() {
 		return srtFile;
@@ -2194,7 +2194,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Set to true if this resource has subtitles in a file.
 	 *
 	 * @param srtFile the srtFile to set
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setSrtFile(boolean srtFile) {
 		this.srtFile = srtFile;
@@ -2216,7 +2216,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * to be refreshed, its counter should be updated.
 	 *
 	 * @param updateId The counter value to set.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setUpdateId(int updateId) {
 		this.updateId = updateId;
@@ -2227,7 +2227,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * to be refreshed, this counter is updated.
 	 *
 	 * @return The system update counter.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	public static int getSystemUpdateId() {
 		return systemUpdateId;
@@ -2238,7 +2238,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * to be refreshed, this counter should be updated.
 	 *
 	 * @param systemUpdateId The system update counter to set.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	public static void setSystemUpdateId(int systemUpdateId) {
 		DLNAResource.systemUpdateId = systemUpdateId;
@@ -2261,7 +2261,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * need to be shown.
 	 *
 	 * @param noName Set to true if the resource is nameless.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setNoName(boolean noName) {
 		this.noName = noName;
@@ -2280,7 +2280,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Sets the from - to time range for this resource.
 	 *
 	 * @param splitRange The time range to set.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setSplitRange(Range.Time splitRange) {
 		this.splitRange = splitRange;
@@ -2290,7 +2290,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Returns the number of the track to split from this resource.
 	 *
 	 * @return the splitTrack
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected int getSplitTrack() {
 		return splitTrack;
@@ -2300,7 +2300,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Sets the number of the track from this resource to split.
 	 *
 	 * @param splitTrack The track number.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setSplitTrack(int splitTrack) {
 		this.splitTrack = splitTrack;
@@ -2310,7 +2310,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Returns the default renderer configuration for this resource.
 	 *
 	 * @return The default renderer configuration.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected RendererConfiguration getDefaultRenderer() {
 		return defaultRenderer;
@@ -2320,7 +2320,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Sets the default renderer configuration for this resource.
 	 *
 	 * @param defaultRenderer The default renderer configuration to set.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setDefaultRenderer(RendererConfiguration defaultRenderer) {
 		this.defaultRenderer = defaultRenderer;
@@ -2330,7 +2330,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Returns whether or not this resource is handled by Avisynth.
 	 *
 	 * @return True if handled by Avisynth, otherwise false.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected boolean isAvisynth() {
 		return avisynth;
@@ -2340,7 +2340,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Sets whether or not this resource is handled by Avisynth.
 	 *
 	 * @param avisynth Set to true if handled by Avisyth, otherwise false.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setAvisynth(boolean avisynth) {
 		this.avisynth = avisynth;
@@ -2350,7 +2350,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Returns true if transcoding should be skipped for this resource.
 	 *
 	 * @return True if transcoding should be skipped, false otherwise.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected boolean isSkipTranscode() {
 		return skipTranscode;
@@ -2361,7 +2361,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 *
 	 * @param skipTranscode Set to true if trancoding should be skipped, false
 	 * 			otherwise.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setSkipTranscode(boolean skipTranscode) {
 		this.skipTranscode = skipTranscode;
@@ -2380,7 +2380,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Sets the list of children for this resource.
 	 *
 	 * @param children The list of children to set.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setChildren(List<DLNAResource> children) {
 		this.children = children;
@@ -2434,7 +2434,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Sets the timestamp when this resource was last refreshed.
 	 *
 	 * @param lastRefreshTime The timestamp to set.
-	 * @since 1.50.0.0
+	 * @since 1.50.0
 	 */
 	protected void setLastRefreshTime(long lastRefreshTime) {
 		this.lastRefreshTime = lastRefreshTime;
