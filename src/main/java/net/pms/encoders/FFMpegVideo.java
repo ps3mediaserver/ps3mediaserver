@@ -56,7 +56,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- * Pure FFmpeg video player. 
+ * Pure FFmpeg video player.
  */
 public class FFMpegVideo extends Player {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FFMpegVideo.class);
@@ -85,16 +85,16 @@ public class FFMpegVideo extends Player {
 	 * @param renderer the DLNA renderer the video is being streamed to
 	 * @param media metadata for the DLNA resource which is being transcoded
 	 * @return a rescale spec <code>String</code> or <code>null</code> if resizing isn't required.
-     */
+	 */
 	public static String getRescaleSpec(RendererConfiguration renderer, DLNAMediaInfo media) {
 		String rescaleSpec = null;
-        boolean isResolutionTooHighForRenderer = renderer.isVideoRescale() // renderer defines a max width/height
+		boolean isResolutionTooHighForRenderer = renderer.isVideoRescale() // renderer defines a max width/height
 			&& (media != null)
-            && (
-                (media.getWidth() > renderer.getMaxVideoWidth())
-                ||
-                (media.getHeight() > renderer.getMaxVideoHeight())
-            );
+			&& (
+					(media.getWidth() > renderer.getMaxVideoWidth())
+					||
+					(media.getHeight() > renderer.getMaxVideoHeight())
+			   );
 
 		if (isResolutionTooHighForRenderer) {
 			rescaleSpec = String.format(
@@ -117,7 +117,7 @@ public class FFMpegVideo extends Player {
 	 * @param renderer The {@link RendererConfiguration} instance whose <code>TranscodeVideo</code> profile is to be processed.
 	 * @return a {@link List} of <code>String</code>s representing the ffmpeg output parameters for the renderer according
 	 * to its <code>TranscodeVideo</code> profile.
-     */
+	 */
 	public static List<String> getTranscodeVideoOptions(RendererConfiguration renderer) {
 		List<String> transcodeOptions = new ArrayList<String>();
 
@@ -308,20 +308,25 @@ public class FFMpegVideo extends Player {
 		}
 
 		// quality (bitrate)
-		String sMaxVideoBitrate = renderer.getMaxVideoBitrate(); // always Mbit/s; if set, already validated as an integer
+		String sMaxVideoBitrate = renderer.getMaxVideoBitrate(); // currently Mbit/s
 		int iMaxVideoBitrate = 0;
 
 		if (sMaxVideoBitrate != null) {
 			try {
 				iMaxVideoBitrate = Integer.parseInt(sMaxVideoBitrate);
-			} catch (NumberFormatException nfe) { }
+			} catch (NumberFormatException nfe) {
+				LOGGER.error("Can't parse max video bitrate", nfe); // this should be handled in RendererConfiguration
+			}
 		}
 
 		if (iMaxVideoBitrate != 0) {
 			// limit the bitrate
 			// FIXME untested
 			cmdList.add("-b:v");
-			cmdList.add("" + iMaxVideoBitrate * 1000 * 1000); // convert megabits-per-second to bps (XXX convert mebibits-per-second?)
+			// convert megabits-per-second (as per the current option name: MaxVideoBitrateMbps) to bps
+			// FIXME rather than dealing with megabit vs mebibit issues here, this should be left up to the client i.e.
+			// the renderer.conf unit should be bits-per-second (and the option should be renamed: MaxVideoBitrateMbps -> MaxVideoBitrate)
+			cmdList.add("" + iMaxVideoBitrate * 1000 * 1000);
 		} else {
 			// preserve the bitrate
 			cmdList.add("-sameq");
@@ -410,14 +415,14 @@ public class FFMpegVideo extends Player {
 		// Check whether the subtitle actually has a language defined,
 		// uninitialized DLNAMediaSubtitle objects have a null language.
 		if (subtitle != null && subtitle.getLang() != null) {
-			// The resource needs a subtitle, but PMS does not support (embedded) subtitles for FFmpeg.
+			// The resource needs a subtitle, but PMS support for FFmpeg subtitles has not yet been implemented.
 			return false;
 		}
 
 		try {
 			String audioTrackName = resource.getMediaAudio().toString();
 			String defaultAudioTrackName = resource.getMedia().getAudioTracksList().get(0).toString();
-	
+
 			if (!audioTrackName.equals(defaultAudioTrackName)) {
 				// PMS only supports playback of the default audio track for FFmpeg
 				return false;
