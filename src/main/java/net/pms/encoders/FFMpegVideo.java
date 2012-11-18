@@ -315,7 +315,7 @@ public class FFMpegVideo extends Player {
 			try {
 				iMaxVideoBitrate = Integer.parseInt(sMaxVideoBitrate);
 			} catch (NumberFormatException nfe) {
-				LOGGER.error("Can't parse max video bitrate", nfe); // this should be handled in RendererConfiguration
+				LOGGER.error("Can't parse max video bitrate", nfe); // XXX this should be handled in RendererConfiguration
 			}
 		}
 
