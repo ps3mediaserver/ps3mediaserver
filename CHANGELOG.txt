@@ -1,7 +1,7 @@
 Changelog:
 ==========
 
-1.72.0 - 2012-??-??
+1.72.0 - 2012-11-18
 
     Regressions:
         - Fixed bug that occurred when using ShowDVDTitleDuration
