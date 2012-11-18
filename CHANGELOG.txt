@@ -3,6 +3,8 @@ Changelog:
 
 1.80.0 - 2012-??-??
 
+    PMS.conf:
+        - ffmpeg has been renamed ffmpeg_video_custom_options and now defaults to null
     Renderers:
         - Document TranscodeVideo and TranscodeAudio profiles
     Engines:
@@ -62,7 +64,6 @@ Changelog:
     Localized #--TRANSCODE--# folder name
     PMS.conf:
         - Added transcode_folder_name option to allow #--TRANSCODE--# folder name to be customized (issue GC963)
-        - ffmpeg has been renamed ffmpeg_video_custom_options and now defaults to null
     Make example PMS.conf behave more like built-in defaults
     Restore maximum buffer size to 600 MB (was 400 MB)
     Prevented image distortion on some DLNA clients with "Keep AC-3 track" option enabled
