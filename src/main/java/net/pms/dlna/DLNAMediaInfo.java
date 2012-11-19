@@ -1509,7 +1509,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 */
 	@Deprecated
 	public ArrayList<DLNAMediaAudio> getAudioCodes() {
-		if(audioTracks instanceof ArrayList) {
+		if (audioTracks instanceof ArrayList) {
 			return (ArrayList<DLNAMediaAudio>) audioTracks;
 		} else {
 			return new ArrayList<DLNAMediaAudio>();
@@ -1547,7 +1547,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 */
 	@Deprecated
 	public ArrayList<DLNAMediaSubtitle> getSubtitlesCodes() {
-		if(subtitleTracks instanceof ArrayList) {
+		if (subtitleTracks instanceof ArrayList) {
 			return (ArrayList<DLNAMediaSubtitle>) subtitleTracks;
 		} else {
 			return new ArrayList<DLNAMediaSubtitle>();

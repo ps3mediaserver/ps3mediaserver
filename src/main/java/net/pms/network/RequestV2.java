@@ -337,6 +337,7 @@ public class RequestV2 extends HTTPResource {
 							DLNAMediaSubtitle sub = subs.get(0);
 							String subtitleUrl;
 							String subExtension = sub.getType().getExtension();
+
 							if (isNotBlank(subExtension)) {
 								subtitleUrl = "http://" + PMS.get().getServer().getHost()
 										+ ':' + PMS.get().getServer().getPort() + "/get/"
@@ -346,6 +347,7 @@ public class RequestV2 extends HTTPResource {
 										+ ':' + PMS.get().getServer().getPort() + "/get/"
 										+ id + "/subtitle0000";
 							}
+
 							output.setHeader(subtitleHttpHeader, subtitleUrl);
 						}
 					}
@@ -444,6 +446,7 @@ public class RequestV2 extends HTTPResource {
 			} else {
 				output.setHeader(HttpHeaders.Names.CONTENT_TYPE, "image/jpeg");
 			}
+
 			output.setHeader(HttpHeaders.Names.ACCEPT_RANGES, "bytes");
 			output.setHeader(HttpHeaders.Names.CONNECTION, "keep-alive");
 			output.setHeader(HttpHeaders.Names.EXPIRES, getFUTUREDATE() + " GMT");
@@ -461,10 +464,12 @@ public class RequestV2 extends HTTPResource {
 				String s = new String(b);
 				s = s.replace("[uuid]", PMS.get().usn());//.substring(0, PMS.get().usn().length()-2));
 				String profileName = PMS.getConfiguration().getProfileName();
+
 				if (PMS.get().getServer().getHost() != null) {
 					s = s.replace("[host]", PMS.get().getServer().getHost());
 					s = s.replace("[port]", "" + PMS.get().getServer().getPort());
 				}
+
 				if (xbox) {
 					LOGGER.debug("DLNA changes for Xbox 360");
 					s = s.replace("PS3 Media Server", "PS3 Media Server [" + profileName + "] : Windows Media Connect");
@@ -495,6 +500,7 @@ public class RequestV2 extends HTTPResource {
 			response.append(CRLF);
 			response.append(HTTPXMLHelper.SOAP_ENCODING_HEADER);
 			response.append(CRLF);
+
 			if (soapaction != null && soapaction.contains("IsAuthorized")) {
 				response.append(HTTPXMLHelper.XBOX_2);
 				response.append(CRLF);
@@ -502,6 +508,7 @@ public class RequestV2 extends HTTPResource {
 				response.append(HTTPXMLHelper.XBOX_1);
 				response.append(CRLF);
 			}
+
 			response.append(HTTPXMLHelper.BROWSERESPONSE_FOOTER);
 			response.append(CRLF);
 			response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
@@ -564,6 +571,7 @@ public class RequestV2 extends HTTPResource {
 					|| soapaction.contains("ContentDirectory:1#Search"))) {
 				objectID = getEnclosingValue(content, "<ObjectID>", "</ObjectID>");
 				String containerID = null;
+
 				if ((objectID == null || objectID.length() == 0) && xbox) {
 					containerID = getEnclosingValue(content, "<ContainerID>", "</ContainerID>");
 					if (!containerID.contains("$")) {
@@ -573,6 +581,7 @@ public class RequestV2 extends HTTPResource {
 						containerID = null;
 					}
 				}
+
 				Object sI = getEnclosingValue(content, "<StartingIndex>", "</StartingIndex>");
 				Object rC = getEnclosingValue(content, "<RequestedCount>", "</RequestedCount>");
 				browseFlag = getEnclosingValue(content, "<BrowseFlag>", "</BrowseFlag>");
@@ -626,13 +635,21 @@ public class RequestV2 extends HTTPResource {
 					}
 				}
 
-				List<DLNAResource> files = PMS.get().getRootFolder(mediaRenderer).getDLNAResources(objectID, browseFlag != null && browseFlag.equals("BrowseDirectChildren"), startingIndex, requestCount, mediaRenderer);
+				List<DLNAResource> files = PMS.get().getRootFolder(mediaRenderer).getDLNAResources(
+					objectID,
+					browseFlag != null && browseFlag.equals("BrowseDirectChildren"),
+					startingIndex,
+					requestCount,
+					mediaRenderer
+				);
+
 				if (searchCriteria != null && files != null) {
 					for (int i = files.size() - 1; i >= 0; i--) {
 						if (!files.get(i).getName().equals(searchCriteria)) {
 							files.remove(i);
 						}
 					}
+
 					if (files.size() > 0) {
 						files = files.get(0).getChildren();
 					}
@@ -644,6 +661,7 @@ public class RequestV2 extends HTTPResource {
 						if (xbox && containerID != null) {
 							uf.setFakeParentId(containerID);
 						}
+
 						if (uf.isCompatible(mediaRenderer) && (uf.getPlayer() == null || uf.getPlayer().isPlayerCompatible(mediaRenderer))) {
 							response.append(uf.toString(mediaRenderer));
 						} else {
@@ -656,15 +674,19 @@ public class RequestV2 extends HTTPResource {
 				response.append(HTTPXMLHelper.RESULT_FOOTER);
 				response.append(CRLF);
 				int filessize = 0;
+
 				if (files != null) {
 					filessize = files.size();
 				}
+
 				response.append("<NumberReturned>").append(filessize - minus).append("</NumberReturned>");
 				response.append(CRLF);
 				DLNAResource parentFolder = null;
+
 				if (files != null && filessize > 0) {
 					parentFolder = files.get(0).getParent();
 				}
+
 				if (browseFlag != null && browseFlag.equals("BrowseDirectChildren") && mediaRenderer.isMediaParserV2() && mediaRenderer.isDLNATreeHack()) {
 					// with the new parser, files are parsed and analyzed *before* creating the DLNA tree,
 					// every 10 items (the ps3 asks 10 by 10),
@@ -673,30 +695,34 @@ public class RequestV2 extends HTTPResource {
 					// invalidated and hidden if format is broken or encrypted, etc.).
 					// let's send a fake total size to force the renderer to ask following items
 					int totalCount = startingIndex + requestCount + 1; // returns 11 when 10 asked
-					if (filessize - minus <= 0) // if no more elements, send the startingIndex
-					{
+					if (filessize - minus <= 0) { // if no more elements, send the startingIndex
 						totalCount = startingIndex;
 					}
 					response.append("<TotalMatches>").append(totalCount).append("</TotalMatches>");
 				} else if (browseFlag != null && browseFlag.equals("BrowseDirectChildren")) {
 					response.append("<TotalMatches>").append(((parentFolder != null) ? parentFolder.childrenNumber() : filessize) - minus).append("</TotalMatches>");
-				} else { //from upnp spec: If BrowseMetadata is specified in the BrowseFlags then TotalMatches = 1
+				} else { // from upnp spec: If BrowseMetadata is specified in the BrowseFlags then TotalMatches = 1
 					response.append("<TotalMatches>1</TotalMatches>");
 				}
+
 				response.append(CRLF);
 				response.append("<UpdateID>");
+
 				if (parentFolder != null) {
 					response.append(parentFolder.getUpdateId());
 				} else {
 					response.append("1");
 				}
+
 				response.append("</UpdateID>");
 				response.append(CRLF);
+
 				if (soapaction != null && soapaction.contains("ContentDirectory:1#Search")) {
 					response.append(HTTPXMLHelper.SEARCHRESPONSE_FOOTER);
 				} else {
 					response.append(HTTPXMLHelper.BROWSERESPONSE_FOOTER);
 				}
+
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
