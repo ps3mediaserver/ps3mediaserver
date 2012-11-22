@@ -15,6 +15,9 @@ Changelog:
             - custom FFmpeg options are now read before each transcode rather than only at startup (parity with custom MEncoder options)
             - rescale videos larger than the renderer's max height/width
         FFmpeg Audio: support all TranscodeAudio profiles
+    Misc:
+        - fix bug that prevents PMS running multiple profiles concurrently
+        - fix NPE for DLNA subtitle requests
 
 1.72.0 - 2012-11-18
 
