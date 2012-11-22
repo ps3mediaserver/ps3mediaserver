@@ -1780,13 +1780,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 			if (externalProcess == null || externalProcess.isDestroyed()) {
 				LOGGER.info("Starting transcode/remux of " + getName());
+
 				externalProcess = getPlayer().launchTranscode(
 					getSystemName(),
 					this,
 					getMedia(),
-					params);
+					params
+				);
+
 				if (params.waitbeforestart > 0) {
-					LOGGER.trace("Sleeping for " + params.waitbeforestart + " milliseconds");
+					LOGGER.trace("Sleeping for {} milliseconds", params.waitbeforestart);
 
 					try {
 						Thread.sleep(params.waitbeforestart);
@@ -1843,8 +1846,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					LOGGER.trace("External input stream instance is null... sounds not good, waiting 500ms");
 					try {
 						Thread.sleep(500);
-					} catch (InterruptedException e) {
-					}
+					} catch (InterruptedException e) { }
 				}
 			}
 
@@ -1860,6 +1862,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						externalProcess.stopProcess();
 					}
 				};
+
 				new Thread(r, "Hanging External Process Stopper").start();
 			}
 

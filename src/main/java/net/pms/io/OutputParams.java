@@ -83,7 +83,6 @@ public class OutputParams {
 		}
 
 		timeseek = 0;
-		outputFile = null;
 		env = null;
 	}
 
@@ -105,7 +104,7 @@ public class OutputParams {
 			+ losslessaudio + ", lossyaudio=" + lossyaudio + ", maxBufferSize=" + maxBufferSize
 			+ ", mediaRenderer=" + mediaRenderer + ", minBufferSize=" + minBufferSize + ", minFileSize="
 			+ minFileSize + ", no_videoencode=" + no_videoencode + ", noexitcheck=" + noexitcheck
-			+ ", outputFile=" + outputFile + ", output_pipes=" + Arrays.toString(output_pipes)
+			+ ", output_pipes=" + Arrays.toString(output_pipes)
 			+ ", secondread_minsize=" + secondread_minsize + ", shift_scr=" + shift_scr + ", sid=" + sid
 			+ ", stdin=" + stdin + ", timeend=" + timeend + ", timeseek=" + timeseek + ", toFrame=" + toFrame
 			+ ", waitbeforestart=" + waitbeforestart + ", workDir=" + workDir + ", env=" + env + "]";

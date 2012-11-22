@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+@Deprecated
+// no longer used
 public class BlockerFileInputStream extends UnusedInputStream {
 	private static final Logger logger = LoggerFactory.getLogger(BlockerFileInputStream.class);
 	private static final int CHECK_INTERVAL = 1000;

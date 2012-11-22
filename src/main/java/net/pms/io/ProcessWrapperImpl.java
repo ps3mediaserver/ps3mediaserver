@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Map;
 
 public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
-	private static final Logger logger = LoggerFactory.getLogger(ProcessWrapperImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessWrapperImpl.class);
 	private String cmdLine;
 	private Process process;
-	private OutputConsumer outConsumer;
+	private OutputConsumer stdoutConsumer;
 	private OutputConsumer stderrConsumer;
 	private OutputParams params;
 	private boolean destroyed;
@@ -122,11 +122,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 		ProcessBuilder pb = new ProcessBuilder(cmdArray);
 
 		try {
-			logger.debug("Starting " + cmdLine);
-
-			if (params.outputFile != null && params.outputFile.getParentFile().isDirectory()) {
-				pb.directory(params.outputFile.getParentFile());
-			}
+			LOGGER.debug("Starting " + cmdLine);
 
 			if (params.workDir != null && params.workDir.isDirectory()) {
 				pb.directory(params.workDir);
@@ -152,79 +148,98 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				}
 			}
 
+			// TODO fix the callers of this code to use simpler mechanisms to
+			// execute short-running commands (e.g. vlc -version) so
+			// that this class is only used to run long-running tasks i.e.
+			// transcodes. in that case, we won't need separate stdout and stderr
+			// and can merge them by calling:
+			// pb.redirectErrorStream(true);
 			process = pb.start();
 			PMS.get().currentProcesses.add(process);
+
 			stderrConsumer = keepStderr
 				? new OutputTextConsumer(process.getErrorStream(), true)
 				: new OutputTextLogger(process.getErrorStream());
 			stderrConsumer.start();
-			outConsumer = null;
+			stdoutConsumer = null;
 
-			if (params.outputFile != null) {
-				logger.debug("Writing to " + params.outputFile.getAbsolutePath());
-				outConsumer = keepStdout
-					? new OutputTextConsumer(process.getInputStream(), false)
-					: new OutputTextLogger(process.getInputStream());
-			} else if (params.input_pipes[0] != null) {
-				logger.debug("Reading pipe: " + params.input_pipes[0].getInputPipe());
+			if (params.input_pipes[0] != null) {
+				LOGGER.debug("Reading pipe: " + params.input_pipes[0].getInputPipe());
 				bo = params.input_pipes[0].getDirectBuffer();
 
 				if (bo == null || params.losslessaudio || params.lossyaudio || params.no_videoencode) {
 					InputStream is = params.input_pipes[0].getInputStream();
-					outConsumer = new OutputBufferConsumer((params.avidemux) ? new AviDemuxerInputStream(is, params, attachedProcesses) : is, params);
-					bo = outConsumer.getBuffer();
+
+					if (params.avidemux) {
+						is = new AviDemuxerInputStream(is, params, attachedProcesses);
+					}
+
+					stdoutConsumer = new OutputBufferConsumer(is, params);
+					bo = stdoutConsumer.getBuffer();
 				}
 
 				bo.attachThread(this);
 				new OutputTextLogger(process.getInputStream()).start();
 			} else if (params.log) {
-				outConsumer = keepStdout
+				stdoutConsumer = keepStdout
 					? new OutputTextConsumer(process.getInputStream(), true)
 					: new OutputTextLogger(process.getInputStream());
 			} else {
-				outConsumer = new OutputBufferConsumer(process.getInputStream(), params);
-				bo = outConsumer.getBuffer();
+				stdoutConsumer = new OutputBufferConsumer(process.getInputStream(), params);
+				bo = stdoutConsumer.getBuffer();
 				bo.attachThread(this);
+			}
+
+			if (stdoutConsumer != null) {
+				stdoutConsumer.start();
 			}
 
 			if (params.stdin != null) {
 				params.stdin.push(process.getOutputStream());
 			}
 
-			if (outConsumer != null) {
-				outConsumer.start();
-			}
-
 			Integer pid = ProcessUtil.getProcessID(process);
 
 			if (pid != null) {
-				logger.debug("Unix process ID (" + cmdArray[0] + "): " + pid);
+				LOGGER.debug("Unix process ID ({}): {}", cmdArray[0], pid);
 			}
 
 			ProcessUtil.waitFor(process);
 
+			// wait up to a second for the stderr consumer thread to finish
 			try {
-				if (outConsumer != null) {
-					outConsumer.join(1000);
+				if (stderrConsumer != null) {
+					stderrConsumer.join(1000);
 				}
 			} catch (InterruptedException e) { }
 
-			if (bo != null) {
-				bo.close();
-			}
+			// wait up to a second for the stdout consumer thread to finish
+			try {
+				if (stdoutConsumer != null) {
+					stdoutConsumer.join(1000);
+				}
+			} catch (InterruptedException e) { }
 		} catch (Exception e) {
-			logger.error("Fatal error in process initialization: ", e);
+			LOGGER.error("Error initializing process: ", e);
 			stopProcess();
 		} finally {
+			try {
+				if (bo != null) {
+					bo.close();
+				}
+			} catch (IOException ioe) {
+				LOGGER.debug("Error closing buffered output file", ioe.getMessage());
+			}
+
 			if (!destroyed && !params.noexitcheck) {
 				try {
 					success = true;
 					if (process != null && process.exitValue() != 0) {
-						logger.info("Process " + cmdArray[0] + " has a return code of " + process.exitValue() + "! Maybe an error occurred... check the log file");
+						LOGGER.info("Process {} has a return code of {}! Maybe an error occurred... check the log file", cmdArray[0], process.exitValue());
 						success = false;
 					}
 				} catch (IllegalThreadStateException itse) {
-					logger.error("An error occurred", itse);
+					LOGGER.error("Error reading process exit value", itse);
 				}
 			}
 
@@ -261,27 +276,23 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	public InputStream getInputStream(long seek) throws IOException {
 		if (bo != null) {
 			return bo.getInputStream(seek);
-		} else if (outConsumer != null && outConsumer.getBuffer() != null) {
-			return outConsumer.getBuffer().getInputStream(seek);
-		} else if (params.outputFile != null) {
-			BlockerFileInputStream fIn = new BlockerFileInputStream(this, params.outputFile, params.minFileSize);
-			fIn.skip(seek);
-			return fIn;
+		} else if (stdoutConsumer != null && stdoutConsumer.getBuffer() != null) {
+			return stdoutConsumer.getBuffer().getInputStream(seek);
 		}
 
 		return null;
 	}
 
 	public List<String> getOtherResults() {
-		if (outConsumer == null) {
+		if (stdoutConsumer == null) {
 			return null;
 		}
 
 		try {
-			outConsumer.join(1000);
+			stdoutConsumer.join(1000);
 		} catch (InterruptedException e) { }
 
-		return outConsumer.getResults();
+		return stdoutConsumer.getResults();
 	}
 
 	public List<String> getResults() {
@@ -299,9 +310,9 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				Integer pid = ProcessUtil.getProcessID(process);
 
 				if (pid != null) {
-					logger.debug("Stopping Unix process " + pid + ": " + this);
+					LOGGER.debug("Stopping Unix process " + pid + ": " + this);
 				} else {
-					logger.debug("Stopping process: " + this);
+					LOGGER.debug("Stopping process: " + this);
 				}
 
 				ProcessUtil.destroy(process);
@@ -315,8 +326,8 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				}
 			}
 
-			if (outConsumer != null && outConsumer.getBuffer() != null) {
-				outConsumer.getBuffer().reset();
+			if (stdoutConsumer != null && stdoutConsumer.getBuffer() != null) {
+				stdoutConsumer.getBuffer().reset();
 			}
 		}
 	}
@@ -331,7 +342,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 
 	public void setReadyToStop(boolean nullable) {
 		if (nullable != this.nullable) {
-			logger.trace("Ready to Stop: " + nullable);
+			LOGGER.trace("Ready to Stop: " + nullable);
 		}
 
 		this.nullable = nullable;
