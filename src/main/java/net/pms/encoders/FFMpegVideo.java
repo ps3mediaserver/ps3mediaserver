@@ -18,16 +18,14 @@
  */
 package net.pms.encoders;
 
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.Font;
-import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.StringTokenizer;
 
 import javax.swing.JComponent;
 import javax.swing.JTextField;
@@ -38,14 +36,13 @@ import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
-import net.pms.io.PipeIPCProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.Messages;
 import net.pms.network.HTTPResource;
 import net.pms.PMS;
 
-import static org.apache.commons.lang.BooleanUtils.isTrue;
+import org.apache.commons.lang.StringUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,40 +55,39 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * Pure FFmpeg video player.
  *
- * Design note: helper methods that return lists of <code>String</code>s representing options are public
+ * Design note:
+ *
+ * Helper methods that return lists of <code>String</code>s representing options are public
  * to facilitate composition e.g. a custom engine (plugin) that uses tsMuxeR for videos without
  * subtitles and FFmpeg otherwise needs to compose and call methods on both players.
+ *
+ * To avoid API churn, and to provide wiggle room for future functionality, all of these methods
+ * take RendererConfiguration (renderer) and DLNAMediaInfo (media) parameters, even if one or
+ * both of these parameters are unused.
  */
 public class FFMpegVideo extends Player {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FFMpegVideo.class);
-	private static final Map<String, Boolean> IGNORE_CUSTOM_OPTION = new HashMap<String, Boolean>();
 	private JTextField ffmpeg;
+	private static final String DEFAULT_QSCALE = "3";
 
 	// FIXME we have an id() accessor for this; no need for the field to be public
 	@Deprecated
 	public static final String ID = "ffmpegvideo";
 
-	// XXX this is a hack; see getSanitizedCustomArgs()
-	static {
-		IGNORE_CUSTOM_OPTION.put("-acodec",  true);
-		IGNORE_CUSTOM_OPTION.put("-f",       true);
-		IGNORE_CUSTOM_OPTION.put("-target",  true);
-		IGNORE_CUSTOM_OPTION.put("-threads", true);
-		IGNORE_CUSTOM_OPTION.put("-vcodec",  true);
-	}
-
 	/**
-	 * Returns a string representing the rescale spec for this transcode i.e. the ffmpeg -vf value
-	 * used to resize a video that's too wide and/or high for the specified renderer. If the renderer
-	 * has no size limits, or there's no media metadata, or the video is within the renderer's size limits
-	 * <code>null</code> is returned.
+	 * Returns a list of strings representing the rescale options for this transcode i.e. the ffmpeg -vf
+	 * options used to resize a video that's too wide and/or high for the specified renderer.
+	 * If the renderer has no size limits, or there's no media metadata, or the video is within the renderer's
+	 * size limits, an empty list is returned.
 	 *
 	 * @param renderer the DLNA renderer the video is being streamed to
 	 * @param media metadata for the DLNA resource which is being transcoded
-	 * @return a rescale spec <code>String</code> or <code>null</code> if resizing isn't required.
+	 * @return a {@link List} of <code>String</code>s representing the rescale options for this video,
+	 * or an empty list if the video doesn't need to be resized.
 	 */
-	public String getRescaleSpec(RendererConfiguration renderer, DLNAMediaInfo media) {
-		String rescaleSpec = null;
+	public List<String> getRescaleOptions(RendererConfiguration renderer, DLNAMediaInfo media) {
+		List<String> rescaleOptions = new ArrayList<String>();
+
 		boolean isResolutionTooHighForRenderer = renderer.isVideoRescale() // renderer defines a max width/height
 			&& (media != null)
 			&& (
@@ -101,15 +97,18 @@ public class FFMpegVideo extends Player {
 			   );
 
 		if (isResolutionTooHighForRenderer) {
-			rescaleSpec = String.format(
+			String rescaleSpec = String.format(
 				// http://stackoverflow.com/a/8351875
 				"scale=iw*min(%1$d/iw\\,%2$d/ih):ih*min(%1$d/iw\\,%2$d/ih),pad=%1$d:%2$d:(%1$d-iw)/2:(%2$d-ih)/2",
 				renderer.getMaxVideoWidth(),
 				renderer.getMaxVideoHeight()
 			);
+
+			rescaleOptions.add("-vf");
+			rescaleOptions.add(rescaleSpec);
 		}
 
-		return rescaleSpec;
+		return rescaleOptions;
 	}
 
 	/**
@@ -118,10 +117,11 @@ public class FFMpegVideo extends Player {
 	 * compatible with the renderer's <code>TranscodeVideo</code> profile.
 	 *
 	 * @param renderer The {@link RendererConfiguration} instance whose <code>TranscodeVideo</code> profile is to be processed.
+	 * @param media the media metadata for the video being streamed. May contain unset/null values (e.g. for web videos).
 	 * @return a {@link List} of <code>String</code>s representing the ffmpeg output parameters for the renderer according
 	 * to its <code>TranscodeVideo</code> profile.
 	 */
-	public List<String> getTranscodeVideoOptions(RendererConfiguration renderer) {
+	public List<String> getTranscodeVideoOptions(RendererConfiguration renderer, DLNAMediaInfo media) {
 		List<String> transcodeOptions = new ArrayList<String>();
 
 		if (renderer.isTranscodeToWMV()) { // WMV
@@ -153,7 +153,7 @@ public class FFMpegVideo extends Player {
 	}
 
 	/**
-	 * Takes a renderer and metadata for the current video and returns the bitrate spec for the current transcode according to
+	 * Takes a renderer and metadata for the current video and returns the video bitrate spec for the current transcode according to
 	 * the limits/requirements of the renderer.
 	 *
 	 * @param renderer a {@link RendererConfiguration} instance representing the renderer being streamed to
@@ -173,27 +173,35 @@ public class FFMpegVideo extends Player {
 			}
 		}
 
-		if (iMaxVideoBitrate != 0) {
-			// limit the bitrate
-			// FIXME untested
-			videoBitrateOptions.add("-b:v");
+		if (iMaxVideoBitrate == 0) { // unlimited: try to preserve the bitrate
+			videoBitrateOptions.add("-q:v"); // video qscale
+			videoBitrateOptions.add(DEFAULT_QSCALE);
+		} else { // limit the bitrate FIXME untested
 			// convert megabits-per-second (as per the current option name: MaxVideoBitrateMbps) to bps
 			// FIXME rather than dealing with megabit vs mebibit issues here, this should be left up to the client i.e.
 			// the renderer.conf unit should be bits-per-second (and the option should be renamed: MaxVideoBitrateMbps -> MaxVideoBitrate)
+			videoBitrateOptions.add("-b:v");
 			videoBitrateOptions.add("" + iMaxVideoBitrate * 1000 * 1000);
-		} else {
-			// preserve the bitrate
-			// XXX while this often preserves the bitrate, it's not what -sameq means
-			videoBitrateOptions.add("-sameq");
-			/*
-			if (media.getBitrate() != 0) {
-				videoBitrateOptions.add("-v:b");
-				videoBitrateOptions.add("" + media.getBitrate());
-			}
-			*/
 		}
 
 		return videoBitrateOptions;
+	}
+
+	/**
+	 * Takes a renderer and metadata for the current video and returns the audio bitrate spec for the current transcode according to
+	 * the limits/requirements of the renderer.
+	 *
+	 * @param renderer a {@link RendererConfiguration} instance representing the renderer being streamed to
+	 * @param media the media metadata for the video being streamed. May contain unset/null values (e.g. for web videos).
+	 * @return a {@link List} of <code>String</code>s representing the audio bitrate options for this transcode
+	 */
+	public List<String> getAudioBitrateOptions(RendererConfiguration renderer, DLNAMediaInfo media) {
+		List<String> audioBitrateOptions = new ArrayList<String>();
+
+		audioBitrateOptions.add("-q:a");
+		audioBitrateOptions.add(DEFAULT_QSCALE);
+
+		return audioBitrateOptions;
 	}
 
 	@Override
@@ -231,7 +239,14 @@ public class FFMpegVideo extends Player {
 	// unused; return this array for backwards-compatibility
 	@Deprecated
 	protected String[] getDefaultArgs() {
-		return new String[] { "-vcodec", "mpeg2video", "-f", "vob", "-acodec", "ac3" };
+		return new String[] {
+			"-vcodec",
+			"mpeg2video",
+			"-f",
+			"vob",
+			"-acodec",
+			"ac3"
+		};
 	}
 
 	@Override
@@ -240,51 +255,15 @@ public class FFMpegVideo extends Player {
 		return getDefaultArgs(); // unused; return this array for for backwards compatibility
 	}
 
-	// remove invalid (i.e. output) options from
-	// Transcoder Settings -> FFmpeg -> Custom settings
-	// and return them as a list of strings.
-	// this is called each time launchTranscode is called, which allows
-	// the options to be tweaked without restarting PMS (the same
-	// as custom MEncoder options)
-	// XXX this is a hack; we can't trap all "bad" options.
-	// either 1) don't allow custom options to be set 2) whitelist options (e.g. -vf)
-	// or 3) allow any options and let ffmpeg decide whether the added options are valid
-	private List<String> getSanitizedCustomArgs() {
-		List<String> customOptionsList = new ArrayList<String>();
+	private List<String> getCustomArgs() {
 		String customOptionsString = PMS.getConfiguration().getFfmpegSettings();
-		int tokens = 0;
 
-		if (customOptionsString != null) {
-			LOGGER.info("Custom ffmpeg options: {}", customOptionsString);
-			StringTokenizer st = new StringTokenizer(customOptionsString, " ");
-			tokens = st.countTokens();
-			boolean skip = false;
-
-			while (st.hasMoreTokens()) {
-				String token = st.nextToken();
-
-				if (skip) { // don't append to customOptionsList
-					skip = false;
-				} else {
-					Boolean value = IGNORE_CUSTOM_OPTION.get(token);
-
-					if (value == null) {
-						customOptionsList.add(token); // add this token
-					} else if (isTrue(value)) { // true: skip this option and its corresponding value e.g. -foo bar
-						skip = true;
-					} // false: skip this value-less option e.g. -foo
-				}
-			}
+		if (StringUtils.isNotBlank(customOptionsString)) {
+			LOGGER.debug("Custom ffmpeg output options: {}", customOptionsString);
 		}
 
-		if (tokens > customOptionsList.size()) {
-			LOGGER.warn(
-				"The following ffmpeg options cannot be changed and one or more have been ignored: {}",
-				IGNORE_CUSTOM_OPTION.keySet()
-			);
-		}
-
-		return customOptionsList;
+		String[] customOptions = StringUtils.split(customOptionsString);
+		return new ArrayList<String>(Arrays.asList(customOptions));
 	}
 
 	// XXX hardwired to false and not referenced anywhere else in the codebase
@@ -357,18 +336,17 @@ public class FFMpegVideo extends Player {
 		// add video bitrate options
 		cmdList.addAll(getVideoBitrateOptions(renderer, media));
 
+		// add audio bitrate options
+		cmdList.addAll(getAudioBitrateOptions(renderer, media));
+
 		// if the source is too large for the renderer, resize it
-		String rescale = getRescaleSpec(renderer, media);
-		if (rescale != null) {
-			cmdList.add("-vf");
-			cmdList.add(rescale);
-		}
+		cmdList.addAll(getRescaleOptions(renderer, media));
 
 		// add custom args
-		cmdList.addAll(getSanitizedCustomArgs());
+		cmdList.addAll(getCustomArgs());
 
 		// add the output options (-f, -acodec, -vcodec)
-		cmdList.addAll(getTranscodeVideoOptions(renderer));
+		cmdList.addAll(getTranscodeVideoOptions(renderer, media));
 
 		cmdList.add("pipe:");
 

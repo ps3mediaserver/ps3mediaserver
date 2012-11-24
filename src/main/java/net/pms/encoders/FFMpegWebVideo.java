@@ -128,10 +128,13 @@ public class FFMpegWebVideo extends FFMpegVideo {
 		cmdList.add("" + nThreads);
 
 		// add video bitrate options
-		cmdList.addAll(getVideoBitrateOptions(renderer, media));
+        cmdList.addAll(getVideoBitrateOptions(renderer, media));
 
-		// add the TranscodeVideo (output) options (-acodec, -vcodec, -f)
-		cmdList.addAll(getTranscodeVideoOptions(renderer));
+        // add audio bitrate options
+        cmdList.addAll(getAudioBitrateOptions(renderer, media));
+
+        // add the output options (-f, -acodec, -vcodec)
+        cmdList.addAll(getTranscodeVideoOptions(renderer, media));
 
 		// output file
 		cmdList.add(pipe.getInputPipe());
@@ -155,7 +158,7 @@ public class FFMpegWebVideo extends FFMpegVideo {
 
 		// give the mkfifo process a little time
 		try {
-			Thread.sleep(200);
+			Thread.sleep(300);
 		} catch (InterruptedException e) {
 			LOGGER.error("Thread interrupted while waiting for named pipe to be created", e);
 		}

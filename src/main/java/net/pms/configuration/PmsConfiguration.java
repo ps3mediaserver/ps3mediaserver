@@ -1672,7 +1672,7 @@ public class PmsConfiguration {
 	}
 
 	public String getFfmpegSettings() {
-		return getString(KEY_FFMPEG_VIDEO_CUSTOM_OPTIONS, null);
+		return getString(KEY_FFMPEG_VIDEO_CUSTOM_OPTIONS, "");
 	}
 
 	public boolean isMencoderNoOutOfSync() {
