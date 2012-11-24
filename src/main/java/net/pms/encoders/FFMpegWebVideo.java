@@ -128,13 +128,13 @@ public class FFMpegWebVideo extends FFMpegVideo {
 		cmdList.add("" + nThreads);
 
 		// add video bitrate options
-        cmdList.addAll(getVideoBitrateOptions(renderer, media));
+		cmdList.addAll(getVideoBitrateOptions(renderer, media));
 
-        // add audio bitrate options
-        cmdList.addAll(getAudioBitrateOptions(renderer, media));
+		// add audio bitrate options
+		cmdList.addAll(getAudioBitrateOptions(renderer, media));
 
-        // add the output options (-f, -acodec, -vcodec)
-        cmdList.addAll(getTranscodeVideoOptions(renderer, media));
+		// add the output options (-f, -acodec, -vcodec)
+		cmdList.addAll(getTranscodeVideoOptions(renderer, media));
 
 		// output file
 		cmdList.add(pipe.getInputPipe());
