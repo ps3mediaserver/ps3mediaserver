@@ -7,6 +7,8 @@ Changelog:
         - ffmpeg has been renamed ffmpeg_video_custom_options and now defaults to null
     Renderers:
         - Document TranscodeVideo and TranscodeAudio profiles
+        - Panasonic TVs: Add "exclusive" option to SeekByTime to work around a transcoding issue
+        - PS3: Restore seek-by-time support for streaming
     Engines:
         FFmpeg Video and FFmpeg Web Video:
             - support all three TranscodeVideo profiles: WMV, MPEGTSAC3 and MPEGPSAC3
