@@ -3,6 +3,8 @@ Changelog:
 
 1.80.0 - 2012-??-??
 
+    Regressions:
+        - Re-allow all transcode engines to be disabled
     PMS.conf:
         - ffmpeg has been renamed ffmpeg_video_custom_options and now defaults to null
     Renderers:
