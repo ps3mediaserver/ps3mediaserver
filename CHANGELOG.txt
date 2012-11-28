@@ -23,7 +23,10 @@ Changelog:
         - Updated Brazilian translation (thanks, Bruno Arueira)
     Misc:
         - fix bug that prevents PMS running multiple profiles concurrently
-        - fix NPE for DLNA subtitle requests
+        - fix NPE when responding to DLNA subtitle requests
+        - image thumbnailer:
+            - add thumbnail support for TIFF and other formats
+            - trap exception when handling unsupported formats
 
 1.72.0 - 2012-11-18
 

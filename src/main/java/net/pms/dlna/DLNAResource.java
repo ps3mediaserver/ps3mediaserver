@@ -467,9 +467,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 				boolean forceTranscodeV2 = false;
 				boolean parserV2 = child.getMedia() != null && getDefaultRenderer() != null && getDefaultRenderer().isMediaParserV2();
+
 				if (parserV2) {
 					// We already have useful info, just need to layout folders
 					String mimeType = getDefaultRenderer().getFormatConfiguration().match(child.getMedia());
+
 					if (mimeType != null) {
 						// This is streamable
 						child.getMedia().setMimeType(mimeType.equals(FormatConfiguration.MIMETYPE_AUTO) ? child.getMedia().getMimeType() : mimeType);
@@ -577,7 +579,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								try {
 									((AdditionalResourceFolderListener) listener).addAdditionalFolder(this, child);
 								} catch (Throwable t) {
-									LOGGER.error(String.format("Failed to add add additional folder for listener of type=%s", listener.getClass()), t);
+									LOGGER.error("Failed to add additional folder for listener of type: {}", listener.getClass(), t);
 								}
 							}
 						}
@@ -586,7 +588,12 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					}
 				}
 
-				if (child.getFormat() != null && child.getFormat().getSecondaryFormat() != null && child.getMedia() != null && getDefaultRenderer() != null && getDefaultRenderer().supportsFormat(child.getFormat().getSecondaryFormat())) {
+				if (child.getFormat() != null &&
+					child.getFormat().getSecondaryFormat() != null &&
+					child.getMedia() != null &&
+					getDefaultRenderer() != null &&
+					getDefaultRenderer().supportsFormat(child.getFormat().getSecondaryFormat())
+				) {
 					DLNAResource newChild = child.clone();
 					newChild.setFormat(newChild.getFormat().getSecondaryFormat());
 					newChild.first = child;
@@ -603,8 +610,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				}
 			}
 		} catch (Throwable t) {
-			LOGGER.error(String.format("Failed to add child '%s'", child.getName()), t);
-
+			LOGGER.error("Error adding child: {}", child.getName(), t);
 			child.setParent(null);
 			getChildren().remove(child);
 		}
@@ -706,10 +712,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 					int parallel_thread_number = 3;
 					if (resource instanceof DVDISOFile) {
-						parallel_thread_number = 1; // my dvd drive is dying wih 3 parallel threads
+						parallel_thread_number = 1; // my DVD drive is dying wih 3 parallel threads
 					}
 
-					ThreadPoolExecutor tpe = new ThreadPoolExecutor(Math.min(count, parallel_thread_number), count, 20, TimeUnit.SECONDS, queue);
+					ThreadPoolExecutor tpe = new ThreadPoolExecutor(
+						Math.min(count, parallel_thread_number),
+						count,
+						20,
+						TimeUnit.SECONDS,
+						queue
+					);
 
 					for (int i = start; i < start + count; i++) {
 						if (i < resource.getChildren().size()) {
@@ -752,10 +764,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	final protected void discoverWithRenderer(RendererConfiguration renderer, int count, boolean forced) {
-		// Discovering if not already done.
+		// discover children if it hasn't been done already
 		if (!isDiscovered()) {
 			discoverChildren();
 			boolean ready = true;
+
 			if (renderer.isMediaParserV2() && renderer.isDLNATreeHack()) {
 				ready = analyzeChildren(count);
 			} else {
@@ -1626,7 +1639,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				Runnable r = new Runnable() {
 					@Override
 					public void run() {
-						LOGGER.info(String.format("renderer: %s, file: %s", rendererId, getSystemName()));
+						LOGGER.info("renderer: {}, file: {}", rendererId, getSystemName());
 
 						for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 							if (listener instanceof StartStopListener) {
@@ -1637,7 +1650,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 										try {
 											((StartStopListener) listener).nowPlaying(getMedia(), self);
 										} catch (Throwable t) {
-											LOGGER.error(String.format("Notification of startPlaying event failed for StartStopListener %s", listener.getClass()), t);
+											LOGGER.error("Notification of startPlaying event failed for StartStopListener {}", listener.getClass(), t);
 										}
 									}
 								};
@@ -1679,7 +1692,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						@Override
 						public void run() {
 							if (refCount == 1) {
-								LOGGER.info(String.format("renderer: %s, file: %s", rendererId, getSystemName()));
+								LOGGER.info("renderer: {}, file: {}", rendererId, getSystemName());
 								PMS.get().getFrame().setStatusLine("");
 
 								for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
@@ -1691,7 +1704,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 												try {
 													((StartStopListener) listener).donePlaying(getMedia(), self);
 												} catch (Throwable t) {
-													LOGGER.error(String.format("Notification of donePlaying event failed for StartStopListener %s", listener.getClass()), t);
+													LOGGER.error("Notification of donePlaying event failed for StartStopListener {}", listener.getClass(), t);
 												}
 											}
 										};
@@ -1942,16 +1955,20 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		// need to override if some thumbnail work is to be done when mediaparserv2 enabled
 	}
 
-	/**Checks if a thumbnail exists, and if possible, generates one.
-	 * @param input InputFile to check or generate the thumbnail that is being asked for.
+	/**
+	 * Checks if a thumbnail exists, and, if not, generates one (if possible).
+	 * Called from Request/RequestV2 in response to thumbnail requests e.g. HEAD /get/0$1$0$42$3/thumbnail0000%5BExample.mkv
+	 * Calls DLNAMediaInfo.generateThumbnail, which in turn calls DLNAMediaInfo.parse.
+	 *
+	 * @param input InputFile to check or generate the thumbnail from.
 	 */
-	protected void checkThumbnail(InputFile input) {
+	protected void checkThumbnail(InputFile inputFile) {
 		if (getMedia() != null && !getMedia().isThumbready() && PMS.getConfiguration().isThumbnailGenerationEnabled()) {
 			getMedia().setThumbready(true);
-			getMedia().generateThumbnail(input, getFormat(), getType());
+			getMedia().generateThumbnail(inputFile, getFormat(), getType());
 
-			if (getMedia().getThumb() != null && PMS.getConfiguration().getUseCache() && input.getFile() != null) {
-				PMS.get().getDatabase().updateThumbnail(input.getFile().getAbsolutePath(), input.getFile().lastModified(), getType(), getMedia());
+			if (getMedia().getThumb() != null && PMS.getConfiguration().getUseCache() && inputFile.getFile() != null) {
+				PMS.get().getDatabase().updateThumbnail(inputFile.getFile().getAbsolutePath(), inputFile.getFile().lastModified(), getType(), getMedia());
 			}
 		}
 	}

@@ -179,7 +179,8 @@ public class MapFile extends DLNAResource {
 	public boolean analyzeChildren(int count) {
 		int currentChildrenCount = getChildren().size();
 		int vfolder = 0;
-		while ((getChildren().size() - currentChildrenCount) < count || count == -1) {
+
+		while (((getChildren().size() - currentChildrenCount) < count) || (count == -1)) {
 			if (vfolder < getConf().getChildren().size()) {
 				addChild(new MapFile(getConf().getChildren().get(vfolder)));
 				++vfolder;
@@ -187,9 +188,11 @@ public class MapFile extends DLNAResource {
 				if (discoverable.isEmpty()) {
 					break;
 				}
+
 				manageFile(discoverable.remove(0));
 			}
 		}
+
 		return discoverable.isEmpty();
 	}
 
