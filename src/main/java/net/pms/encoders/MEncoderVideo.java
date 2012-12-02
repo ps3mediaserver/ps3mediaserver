@@ -565,7 +565,7 @@ public class MEncoderVideo extends Player {
 			Messages.getString("MEncoderVideo.115"),
 			Messages.getString("MEncoderVideo.116"),
 			Messages.getString("MEncoderVideo.117"),
-			Messages.getString("MEncoderVideo.118"),			
+			Messages.getString("MEncoderVideo.118"),
 			Messages.getString("MEncoderVideo.119"),
 			Messages.getString("MEncoderVideo.120"),
 			Messages.getString("MEncoderVideo.121"),
@@ -1751,10 +1751,15 @@ public class MEncoderVideo extends Player {
 		 */
 
 		// handle embedded subtitles
-		// note: isEmbedded() and isExternal() are mutually exclusive
-		if (!configuration.isMencoderDisableSubs() && (params.sid != null) && params.sid.isEmbedded()) {
-			cmdList.add("-sid");
-			cmdList.add("" + params.sid.getId());
+		if ((params.sid != null) && params.sid.isEmbedded()) { // note: isEmbedded() and isExternal() are mutually exclusive
+			if (configuration.isMencoderDisableSubs()) {
+				// MKV: in some circumstances, MEncoder automatically selects an internal sub unless we explicitly disable (internal) subtitles
+				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=14&t=15891
+				cmdList.add("-nosub");
+			} else {
+				cmdList.add("-sid");
+				cmdList.add("" + params.sid.getId());
+			}
 		}
 
 		// -ofps
@@ -1839,7 +1844,7 @@ public class MEncoderVideo extends Player {
 
 			/*
 			 * Implement overscan compensation settings
-			 * 
+			 *
 			 * This feature takes into account aspect ratio,
 			 * making it less blunt than the Video Scaler option
 			 */
@@ -1909,7 +1914,7 @@ public class MEncoderVideo extends Player {
 				media.getWidth() > 0 &&
 				media.getHeight() > 0 &&
 				(
-					media.getWidth()  > params.mediaRenderer.getMaxVideoWidth() || 
+					media.getWidth()  > params.mediaRenderer.getMaxVideoWidth() ||
 					media.getHeight() > params.mediaRenderer.getMaxVideoHeight()
 				)
 			) {
@@ -1919,7 +1924,7 @@ public class MEncoderVideo extends Player {
 				/*
 				 * First we deal with some exceptions, then if they are not matched we will
 				 * let the renderer limits work.
-				 * 
+				 *
 				 * This is so, for example, we can still define a maximum resolution of
 				 * 1920x1080 in the renderer config file but still support 1920x1088 when
 				 * it's needed, otherwise we would either resize 1088 to 1080, meaning the
@@ -1980,7 +1985,7 @@ public class MEncoderVideo extends Player {
 		 * case we scale it down to the nearest 4.
 		 * This fixes the long-time bug of videos displaying in black and
 		 * white with diagonal strips of colour, weird one.
-		 * 
+		 *
 		 * TODO: Integrate this with the other stuff so that "scale" only
 		 * ever appears once in the MEncoder CMD.
 		 */
@@ -2254,7 +2259,7 @@ public class MEncoderVideo extends Player {
 				audioPipe.deleteLater();
 			} else {
 				// remove the -oac switch, otherwise the "too many video packets" errors appear again
-				for (ListIterator<String> it = cmdList.listIterator(); it.hasNext();) { 
+				for (ListIterator<String> it = cmdList.listIterator(); it.hasNext();) {
 					String option = it.next();
 
 					if (option.equals("-oac")) {
@@ -2326,7 +2331,7 @@ public class MEncoderVideo extends Player {
 				// it seems the -really-quiet prevents mencoder to stop the pipe output after some time...
 				// -mc 0.1 make the DTS-HD extraction works better with latest mencoder builds, and makes no impact on the regular DTS one
 				String ffmpegLPCMextract[] = new String[]{
-					executable(), 
+					executable(),
 					"-ss", "0",
 					fileName,
 					"-really-quiet",
