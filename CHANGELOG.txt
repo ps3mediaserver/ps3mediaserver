@@ -9,7 +9,7 @@ Changelog:
         - ffmpeg has been renamed ffmpeg_video_custom_options and now defaults to null
     Renderers:
         - Document TranscodeVideo and TranscodeAudio profiles
-        - Panasonic TVs: changed several settings for improved playback (thanks, ExSport!)
+        - Panasonic TVs: Add "exclusive" option to SeekByTime to work around a transcoding issue
         - PS3: Restore seek-by-time support for streaming
         - Android: allowing chunked transfer
     Engines:
