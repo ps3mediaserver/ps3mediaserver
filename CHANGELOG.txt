@@ -13,7 +13,6 @@ Changelog:
         - PS3: Restore seek-by-time support for streaming
         - Android: allowing chunked transfer
         - AirPlayer & iPad/iPhone: transcoding to WMV format gives better results
-        - Added support for Philips HTS (thanks, leroy!)
         - Improved support for Sony Bravia HX (thanks, mazey!)
     Engines:
         FFmpeg Video and FFmpeg Web Video:

@@ -86,9 +86,6 @@ public class RendererConfigurationTest {
 		// From PhilipsPFL.conf:
 		testCases.put("User-Agent: Windows2000/0.0 UPnP/1.0 PhilipsIntelSDK/1.4 DLNADOC/1.50", "Philips TV");
 
-		// From PhilipsHTS.conf:
-		testCases.put("User-Agent: IPI/1.0 UPnP/1.0 DLNADOC/1.50", "Philips HTS");
-
 		// From PS3.conf:
 		testCases.put("User-Agent: PLAYSTATION 3", "Playstation 3");
 		testCases.put("X-AV-Client-Info: av=5.0; cn=\"Sony Computer Entertainment Inc.\"; mn=\"PLAYSTATION 3\"; mv=\"1.0\"", "Playstation 3");
