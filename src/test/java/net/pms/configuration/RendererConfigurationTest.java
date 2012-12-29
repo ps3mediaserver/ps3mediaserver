@@ -68,6 +68,9 @@ public class RendererConfigurationTest {
 		// From BraviaEX.conf:
 		testCases.put("X-AV-Client-Info: av=5.0; cn=\"Sony Corporation\"; mn=\"BRAVIA KDL-32CX520\"; mv=\"1.7\";", "Sony Bravia EX");
 
+		// From BraviaHX.conf:
+		testCases.put("X-AV-Client-Info: av=5.0; cn=\"Sony Corporation\"; mn=\"BRAVIA KDL-55HX750\"; mv=\"1.7\";", "Sony Bravia HX");
+
 		// From Dlink510.conf:
         testCases.put("User-Agent: DLNADOC/1.50 INTEL_NMPR/2.1", "D-Link DSM-510");
 
