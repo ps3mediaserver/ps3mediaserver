@@ -12,6 +12,7 @@ Changelog:
         - Panasonic TVs: Add "exclusive" option to SeekByTime to work around a transcoding issue
         - PS3: Restore seek-by-time support for streaming
         - Android: allowing chunked transfer
+        - AirPlayer & iPad/iPhone: transcoding to WMV format gives better results
     Engines:
         FFmpeg Video and FFmpeg Web Video:
             - support all three TranscodeVideo profiles: WMV, MPEGTSAC3 and MPEGPSAC3
