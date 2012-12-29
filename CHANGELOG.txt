@@ -28,6 +28,7 @@ Changelog:
         - image thumbnailer:
             - add thumbnail support for TIFF and other formats
             - trap exception when handling unsupported formats
+        - fix response to M-SEARCH "ssdp:all" message (thanks, ler0y!)
 
 1.72.0 - 2012-11-18
 
