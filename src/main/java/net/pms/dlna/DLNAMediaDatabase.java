@@ -22,6 +22,7 @@ import com.sun.jna.Platform;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
+import net.pms.formats.Format;
 import net.pms.formats.v2.SubtitleType;
 
 import org.h2.engine.Constants;
@@ -428,7 +429,17 @@ public class DLNAMediaDatabase implements Runnable {
 				} else {
 					ps.setNull(4, Types.DOUBLE);
 				}
-				ps.setInt(5, media.getBitrate());
+
+				if (type != Format.IMAGE){
+					int databaseBitrate = media.getBitrate();
+					if (databaseBitrate == 0) {
+						LOGGER.debug("Could not parse the bitrate from: " + name);
+					}
+					ps.setInt(5, databaseBitrate);
+				} else {
+					ps.setInt(5, 0);
+				}
+
 				ps.setInt(6, media.getWidth());
 				ps.setInt(7, media.getHeight());
 				ps.setLong(8, media.getSize());
