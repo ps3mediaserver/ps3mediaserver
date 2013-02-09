@@ -18,31 +18,57 @@
  */
 package net.pms.newgui;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.sun.jna.Platform;
-import net.pms.Messages;
-import net.pms.PMS;
-import net.pms.configuration.PmsConfiguration;
-import net.pms.encoders.Player;
-import net.pms.encoders.PlayerFactory;
-import net.pms.util.FormLayoutUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Locale;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Locale;
+
+import net.pms.Messages;
+import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
+import net.pms.encoders.Player;
+import net.pms.encoders.PlayerFactory;
+import net.pms.util.FormLayoutUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.sun.jna.Platform;
 
 public class TranscodingTab {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TranscodingTab.class);
@@ -353,15 +379,7 @@ public class TranscodingTab {
 		CellConstraints cc = new CellConstraints();
 
 		maxbuffer = new JTextField("" + configuration.getMaxMemoryBufferSize());
-		maxbuffer.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		maxbuffer.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
@@ -405,15 +423,7 @@ public class TranscodingTab {
 
 		chapter_interval = new JTextField("" + configuration.getChapterInterval());
 		chapter_interval.setEnabled(configuration.isChapterSupport());
-		chapter_interval.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		chapter_interval.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
@@ -508,15 +518,7 @@ public class TranscodingTab {
         builder.add(forceDTSinPCM, FormLayoutUtil.flip(cc.xyw(1, 19, 3), colSpec, orientation));
 
         abitrate = new JTextField("" + configuration.getAudioBitrate());
-		abitrate.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		abitrate.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
@@ -574,15 +576,7 @@ public class TranscodingTab {
 				}
 			}
 		});
-		vq.getEditor().getEditorComponent().addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		vq.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				vq.getItemListeners()[0].itemStateChanged(new ItemEvent(vq, 0, vq.getEditor().getItem(), ItemEvent.SELECTED));
@@ -616,15 +610,7 @@ public class TranscodingTab {
 		builder.addLabel(Messages.getString("TrTab2.8"), FormLayoutUtil.flip(cc.xy(1, 37), colSpec, orientation));
 
 		notranscode = new JTextField(configuration.getNoTranscode());
-		notranscode.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		notranscode.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setNoTranscode(notranscode.getText());
@@ -635,15 +621,7 @@ public class TranscodingTab {
 		builder.addLabel(Messages.getString("TrTab2.9"), FormLayoutUtil.flip(cc.xy(1, 39), colSpec, orientation));
 
 		forcetranscode = new JTextField(configuration.getForceTranscode());
-		forcetranscode.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		forcetranscode.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setForceTranscode(forcetranscode.getText());

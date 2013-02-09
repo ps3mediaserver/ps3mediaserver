@@ -19,11 +19,10 @@
 package net.pms.encoders;
 
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.Font;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +30,8 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
+import net.pms.Messages;
+import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
@@ -39,12 +40,9 @@ import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
-import net.pms.Messages;
 import net.pms.network.HTTPResource;
-import net.pms.PMS;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -390,15 +388,7 @@ public class FFMpegVideo extends Player {
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		ffmpeg = new JTextField(PMS.getConfiguration().getFfmpegSettings());
-		ffmpeg.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		ffmpeg.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				PMS.getConfiguration().setFfmpegSettings(ffmpeg.getText());
