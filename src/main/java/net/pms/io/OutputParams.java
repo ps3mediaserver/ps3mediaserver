@@ -32,6 +32,7 @@ public class OutputParams {
 	@Deprecated
 	public File outputFile; // XXX no longer used
 
+	// TODO: Refactor all public variables to private with public getters and setters.
 	public File workDir;
 	public Map<String,String> env;
 	public double minFileSize;
