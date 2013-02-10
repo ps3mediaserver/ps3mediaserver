@@ -22,6 +22,7 @@ package net.pms.encoders;
 import java.awt.Font;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import javax.swing.JTextField;
 
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
@@ -41,6 +43,8 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
+import net.pms.util.FileUtil;
+import net.pms.util.ProcessUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -67,11 +71,29 @@ import com.jgoodies.forms.layout.FormLayout;
 public class FFMpegVideo extends Player {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FFMpegVideo.class);
 	private JTextField ffmpeg;
+	private final PmsConfiguration configuration;
 	private static final String DEFAULT_QSCALE = "3";
 
 	// FIXME we have an id() accessor for this; no need for the field to be public
 	@Deprecated
 	public static final String ID = "ffmpegvideo";
+
+	/**
+	 * This constructor is not used in the codebase.
+	 */
+	@Deprecated
+	public FFMpegVideo() {
+		this(PMS.getConfiguration());
+	}
+	
+	/**
+	 * Default constructor.
+	 *
+	 * @param configuration The PMS configuration options object
+	 */
+	public FFMpegVideo(PmsConfiguration configuration) {
+		this.configuration = configuration;
+	}
 
 	/**
 	 * Returns a list of strings representing the rescale options for this transcode i.e. the ffmpeg -vf
@@ -266,6 +288,47 @@ public class FFMpegVideo extends Player {
 		return customOptions;
 	}
 
+	/**
+	 * Returns subtitle options based on the provided media and output parameters.
+	 *
+	 * @param renderer The renderer configuration settings
+	 * @param media The media information
+	 * @param params The output parameter settings
+	 * @return The list of subtitle options
+	 */
+	private List<String> getSubtitleOptions(RendererConfiguration renderer,
+			DLNAMediaInfo media, OutputParams params) {
+
+		List<String> subtitleOptions = new ArrayList<String>();
+		String externalSubtitlesFileName = null;
+
+		if (params.sid != null) {
+			if (params.sid.isExternal()) {
+				// External subtitle file
+				if (params.sid.isExternalFileUtf16()) {
+					try {
+						// Convert UTF-16 -> UTF-8
+						File convertedSubtitles = new File(configuration.getTempFolder(), "utf8_" + params.sid.getExternalFile().getName());
+						FileUtil.convertFileFromUtf16ToUtf8(params.sid.getExternalFile(), convertedSubtitles);
+						externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(convertedSubtitles.getAbsolutePath());
+					} catch (IOException e) {
+						LOGGER.debug("Error converting file from UTF-16 to UTF-8", e);
+						externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(params.sid.getExternalFile().getAbsolutePath());
+					}
+				} else {
+					externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(params.sid.getExternalFile().getAbsolutePath());
+				}
+
+				// Burn in subtitles with the subtitles filter (available since ffmpeg 1.1)
+				subtitleOptions.add("-vf");
+				subtitleOptions.add("subtitles=" + externalSubtitlesFileName);
+			}
+			// TODO: Handle embedded subtitles
+		}
+
+		return subtitleOptions;
+	}
+
 	// XXX hardwired to false and not referenced anywhere else in the codebase
 	@Deprecated
 	public boolean mplayer() {
@@ -289,22 +352,12 @@ public class FFMpegVideo extends Player {
 		DLNAMediaInfo media,
 		OutputParams params
 	) throws IOException {
-		return getFFMpegTranscode(fileName, dlna, media, params, null);
-	}
-
-	// XXX pointless redirection of launchTranscode
-	// TODO remove this method and move its body into launchTranscode
-	// TODO call setAudioAndSubs to populate params with audio track/subtitles metadata
-	@Deprecated
-	protected ProcessWrapperImpl getFFMpegTranscode(
-		String fileName,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params,
-		String args[]
-	) throws IOException {
 		int nThreads = PMS.getConfiguration().getNumberOfCpuCores();
 		List<String> cmdList = new ArrayList<String>();
+
+		// Populate params with audio track and subtitles metadata
+		setAudioAndSubs(fileName, media, params, configuration);
+
 		RendererConfiguration renderer = params.mediaRenderer;
 
 		cmdList.add(executable());
@@ -342,6 +395,9 @@ public class FFMpegVideo extends Player {
 		// if the source is too large for the renderer, resize it
 		cmdList.addAll(getRescaleOptions(renderer, media));
 
+		// Add subtitle options
+		cmdList.addAll(getSubtitleOptions(renderer, media, params));
+		
 		// add custom args
 		cmdList.addAll(getCustomArgs());
 
@@ -365,6 +421,19 @@ public class FFMpegVideo extends Player {
 		pw.runInNewThread();
 
 		return pw;
+	}
+
+	// XXX pointless redirection of launchTranscode
+	// TODO remove this method and move its body into launchTranscode
+	@Deprecated
+	protected ProcessWrapperImpl getFFMpegTranscode(
+		String fileName,
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params,
+		String args[]
+	) throws IOException {
+		return (ProcessWrapperImpl) launchTranscode(fileName, dlna, media, params);
 	}
 
 	@Override

@@ -44,6 +44,10 @@ public class FFMpegAviSynthVideo extends FFMpegVideo {
 	private static final Logger logger = LoggerFactory.getLogger(FFMpegAviSynthVideo.class);
 	public static final String ID      = "avsffmpeg";
 
+	FFMpegAviSynthVideo() {
+		super(PMS.getConfiguration());
+	}
+
 	@Override
 	public String id() {
 		return ID;

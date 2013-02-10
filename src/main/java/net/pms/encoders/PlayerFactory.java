@@ -131,7 +131,7 @@ public final class PlayerFactory {
 			registerPlayer(new MEncoderAviSynth(configuration));
 		}
 
-		registerPlayer(new FFMpegVideo());
+		registerPlayer(new FFMpegVideo(configuration));
 		registerPlayer(new MPlayerAudio(configuration));
 		registerPlayer(new FFMpegWebVideo(configuration));
 		registerPlayer(new MEncoderWebVideo(configuration));
