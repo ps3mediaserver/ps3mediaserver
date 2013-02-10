@@ -24,6 +24,8 @@ import net.pms.util.ProcessUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.jna.Platform;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +35,10 @@ import java.util.Map;
 
 public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessWrapperImpl.class);
+
+	/** FONTCONFIG_PATH environment variable name */
+	private static final String FONTCONFIG_PATH = "FONTCONFIG_PATH";
+
 	private String cmdLine;
 	private Process process;
 	private OutputConsumer stdoutConsumer;
@@ -128,8 +134,13 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				pb.directory(params.workDir);
 			}
 
+			// Retrieve all environment variables of the process
+			Map<String,String> environment = pb.environment();
+
+			// The variable params.env is initialized to null in the OutputParams
+			// constructor and never set to another value in PMS code. Plugins
+			// might use it?
 			if (params.env != null && !params.env.isEmpty()) {
-				Map<String,String> environment = pb.environment();
 				// actual name of system path var is case-sensitive
 				String sysPathKey = PMS.get().isWindows() ? "Path" : "PATH";
 				// as is Map
@@ -145,6 +156,21 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 
 				if (PATH != null) {
 					environment.put(sysPathKey, PATH);
+				}
+			}
+
+			// Fontconfig on Mac OSX may have problems locating fonts. As a result
+			// subtitles may be rendered invisible. Force feed fontconfig the
+			// FONTCONFIG_PATH environment variable to the prepackaged fontconfig
+			// configuration directory that comes with PMS on Mac OSX to make
+			// sure it has sensible defaults.
+			if (Platform.isMac()) {
+				// Do not overwrite the variable if it already exists.
+				if (!environment.containsKey(FONTCONFIG_PATH)) {
+					String pmsWorkingDirectory = new File("").getAbsolutePath();
+					String fontconfigFontsPath = pmsWorkingDirectory + "/fonts";
+					LOGGER.trace("Setting FONTCONFIG_PATH to \"" + fontconfigFontsPath + "\"");
+					environment.put(FONTCONFIG_PATH, fontconfigFontsPath);
 				}
 			}
 
