@@ -23,7 +23,8 @@ Changelog:
             - rescale videos larger than the renderer's max height/width
         FFmpeg Audio: support all TranscodeAudio profiles
     Language updates:
-        - Updated Brazilian translation (thanks, Bruno Arueira)
+        - Updated Brazilian translation (thanks, Bruno Arueira!)
+        - Updated Catalan translation (thanks, oscaroe!)
     Misc:
         - fix bug that prevents PMS running multiple profiles concurrently
         - fix NPE when responding to DLNA subtitle requests
