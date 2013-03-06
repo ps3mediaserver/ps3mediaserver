@@ -18,10 +18,16 @@
  */
 package net.pms.encoders;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.Font;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
@@ -32,15 +38,13 @@ import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+
 import org.apache.commons.lang.StringUtils;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class FFMpegDVRMSRemux extends Player {
 	private JTextField altffpath;
@@ -79,11 +83,22 @@ public class FFMpegDVRMSRemux extends Player {
 		return Format.VIDEO;
 	}
 
+	@Deprecated
 	protected String[] getDefaultArgs() {
-		return new String[]{"-f", "vob", "-copyts", "-vcodec", "copy", "-acodec", "copy"};
+		return new String[] {
+			"-vcodec", "copy",
+			"-acodec", "copy",
+			"-threads", "2",
+			"-g", "1",
+			"-qscale", "1",
+			"-qmin", "2",
+			"-f", "vob",
+			"-copyts"
+		};
 	}
 
 	@Override
+	@Deprecated
 	public String[] args() {
 		return getDefaultArgs();
 
@@ -104,10 +119,13 @@ public class FFMpegDVRMSRemux extends Player {
 		String fileName,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
-		OutputParams params) throws IOException {
+		OutputParams params
+	) throws IOException {
 		return getFFMpegTranscode(fileName, dlna, media, params);
 	}
 
+	// pointless redirection of launchTranscode
+	@Deprecated
 	protected ProcessWrapperImpl getFFMpegTranscode(
 		String fileName,
 		DLNAResource dlna,
@@ -136,11 +154,14 @@ public class FFMpegDVRMSRemux extends Player {
 			cmdList.add(arg);
 		}
 
-		String[] ffmpegSettings = StringUtils.split(configuration.getFfmpegSettings());
+		String customSettingsString = configuration.getFfmpegSettings();
+		if (StringUtils.isNotBlank(customSettingsString)) {
+			String[] customSettingsArray = StringUtils.split(customSettingsString);
 
-		if (ffmpegSettings != null) {
-			for (String option : ffmpegSettings) {
-				cmdList.add(option);
+			if (customSettingsArray != null) {
+				for (String option : customSettingsArray) {
+					cmdList.add(option);
+				}
 			}
 		}
 
@@ -149,7 +170,6 @@ public class FFMpegDVRMSRemux extends Player {
 		cmdList.toArray(cmdArray);
 
 		cmdArray = finalizeTranscoderArgs(
-			this,
 			fileName,
 			dlna,
 			media,
@@ -167,7 +187,8 @@ public class FFMpegDVRMSRemux extends Player {
 	public JComponent config() {
 		FormLayout layout = new FormLayout(
 			"left:pref, 3dlu, p, 3dlu, 0:grow",
-			"p, 3dlu, p, 3dlu, 0:grow");
+			"p, 3dlu, p, 3dlu, 0:grow"
+		);
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setBorder(Borders.EMPTY_BORDER);
 		builder.setOpaque(false);
@@ -180,15 +201,7 @@ public class FFMpegDVRMSRemux extends Player {
 
 		builder.addLabel(Messages.getString("FFMpegDVRMSRemux.0"), cc.xy(1, 3));
 		altffpath = new JTextField(PMS.getConfiguration().getFfmpegAlternativePath());
-		altffpath.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		altffpath.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				PMS.getConfiguration().setFfmpegAlternativePath(altffpath.getText());

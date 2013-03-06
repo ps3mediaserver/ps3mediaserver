@@ -44,6 +44,10 @@ public class FFMpegAviSynthVideo extends FFMpegVideo {
 	private static final Logger logger = LoggerFactory.getLogger(FFMpegAviSynthVideo.class);
 	public static final String ID      = "avsffmpeg";
 
+	public FFMpegAviSynthVideo() {
+		super(PMS.getConfiguration());
+	}
+
 	@Override
 	public String id() {
 		return ID;
@@ -83,7 +87,7 @@ public class FFMpegAviSynthVideo extends FFMpegVideo {
 		}
 		String movieLine = "clip=DirectShowSource(\"" + fileName + "\"" + convertfps + ")";
 		String subLine = null;
-		if (subTrack != null && PMS.getConfiguration().getUseSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
+		if (subTrack != null && PMS.getConfiguration().isAutoloadSubtitles() && !PMS.getConfiguration().isMencoderDisableSubs()) {
 			logger.trace("Avisynth script: Using sub track: " + subTrack);
 			if (subTrack.getExternalFile() != null) {
 				String function = "TextSub";

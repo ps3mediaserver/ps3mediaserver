@@ -36,7 +36,7 @@ import java.lang.reflect.Method;
 import static java.util.Collections.singletonMap;
 
 public class MediaInfo {
-	private static final Logger logger = LoggerFactory.getLogger(MediaInfo.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MediaInfo.class);
 	static String libraryName;
 
 	static {
@@ -53,7 +53,7 @@ public class MediaInfo {
 				// If we do not, the system will look for dependencies, but only in the library path.
 				NativeLibrary.getInstance("zen");
 			} catch (LinkageError e) {
-				logger.warn("Error loading libzen: " + e.getMessage());
+				LOGGER.warn("Error loading libzen: " + e.getMessage());
 			}
 		}
 	}
@@ -96,6 +96,8 @@ public class MediaInfo {
 	}
 	private Pointer Handle;
 
+	@Deprecated
+	// FIXME rename StreamType
 	public enum StreamKind {
 		General,
 		Video,
@@ -107,6 +109,8 @@ public class MediaInfo {
 	}
 
 	// Enums
+	@Deprecated
+	// FIXME rename InfoType
 	public enum InfoKind {
 		/**
 		 * Unique name of parameter.
@@ -147,17 +151,19 @@ public class MediaInfo {
 	// Constructor/Destructor
 	public MediaInfo() {
 		try {
-			logger.info("Loading MediaInfo library");
+			LOGGER.info("Loading MediaInfo library");
 			Handle = MediaInfoDLL_Internal.INSTANCE.New();
-			logger.info("Loaded " + Option_Static("Info_Version"));
+			LOGGER.info("Loaded " + Option_Static("Info_Version"));
 		} catch (Throwable e) {
 			if (e != null) {
-				logger.info("Error loading MediaInfo library: " + e.getMessage());
+				LOGGER.info("Error loading MediaInfo library: " + e.getMessage());
 			}
+
 			if (!Platform.isWindows() && !Platform.isMac()) {
-				logger.info("Make sure you have libmediainfo and libzen installed");
+				LOGGER.info("Make sure you have libmediainfo and libzen installed");
 			}
-			logger.info("The server will now use the less accurate ffmpeg parsing method");
+
+			LOGGER.info("The server will now use the less accurate ffmpeg parsing method");
 		}
 	}
 

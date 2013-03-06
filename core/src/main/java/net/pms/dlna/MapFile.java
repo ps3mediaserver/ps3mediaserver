@@ -66,12 +66,12 @@ public class MapFile extends DLNAResource {
 
 	public MapFile() {
 		setConf(new MapFileConfiguration());
-		setLastmodified(0);
+		setLastModified(0);
 	}
 
 	public MapFile(MapFileConfiguration conf) {
 		setConf(conf);
-		setLastmodified(0);
+		setLastModified(0);
 	}
 
 	private boolean isFileRelevant(File f) {
@@ -150,11 +150,23 @@ public class MapFile extends DLNAResource {
 
 	private List<File> getFileList() {
 		List<File> out = new ArrayList<File>();
+
 		for (File file : this.conf.getFiles()) {
-			if (file != null && file.isDirectory() && file.canRead()) {
-				out.addAll(Arrays.asList(file.listFiles()));
+			if (file != null && file.isDirectory()) {
+				if (file.canRead()) {
+					File[] files = file.listFiles();
+
+					if (files == null) {
+						LOGGER.warn("Can't read files from directory: {}", file.getAbsolutePath());
+					} else {
+						out.addAll(Arrays.asList(files));
+					}
+				} else {
+					LOGGER.warn("Can't read directory: {}", file.getAbsolutePath());
+				}
 			}
 		}
+
 		return out;
 	}
 
@@ -167,7 +179,8 @@ public class MapFile extends DLNAResource {
 	public boolean analyzeChildren(int count) {
 		int currentChildrenCount = getChildren().size();
 		int vfolder = 0;
-		while ((getChildren().size() - currentChildrenCount) < count || count == -1) {
+
+		while (((getChildren().size() - currentChildrenCount) < count) || (count == -1)) {
 			if (vfolder < getConf().getChildren().size()) {
 				addChild(new MapFile(getConf().getChildren().get(vfolder)));
 				++vfolder;
@@ -175,9 +188,11 @@ public class MapFile extends DLNAResource {
 				if (discoverable.isEmpty()) {
 					break;
 				}
+
 				manageFile(discoverable.remove(0));
 			}
 		}
+
 		return discoverable.isEmpty();
 	}
 
@@ -250,13 +265,15 @@ public class MapFile extends DLNAResource {
 
 	@Override
 	public boolean isRefreshNeeded() {
-		long lastModif = 0;
+		long modified = 0;
+
 		for (File f : this.getConf().getFiles()) {
 			if (f != null) {
-				lastModif = Math.max(lastModif, f.lastModified());
+				modified = Math.max(modified, f.lastModified());
 			}
 		}
-		return getLastRefreshTime() < lastModif;
+
+		return getLastRefreshTime() < modified;
 	}
 
 	@Override
@@ -286,10 +303,12 @@ public class MapFile extends DLNAResource {
 			LOGGER.debug("File automatically added: " + f.getName());
 		}
 
+		// false: don't create the folder if it doesn't exist i.e. find the folder
 		TranscodeVirtualFolder vf = getTranscodeFolder(false);
 
 		for (DLNAResource f : removedFiles) {
 			getChildren().remove(f);
+
 			if (vf != null) {
 				for (int j = vf.getChildren().size() - 1; j >= 0; j--) {
 					if (vf.getChildren().get(j).getName().equals(f.getName())) {
@@ -319,7 +338,7 @@ public class MapFile extends DLNAResource {
 	}
 
 	private boolean isSameLastModified(File f, DLNAResource d) {
-		return d.getLastmodified() == f.lastModified();
+		return d.getLastModified() == f.lastModified();
 	}
 
 	private boolean isRealFolder(DLNAResource d) {
@@ -392,7 +411,7 @@ public class MapFile extends DLNAResource {
 
 	/**
 	 * @return the conf
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected MapFileConfiguration getConf() {
 		return conf;
@@ -400,7 +419,7 @@ public class MapFile extends DLNAResource {
 
 	/**
 	 * @param conf the conf to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setConf(MapFileConfiguration conf) {
 		this.conf = conf;
@@ -408,7 +427,7 @@ public class MapFile extends DLNAResource {
 
 	/**
 	 * @return the potentialCover
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public File getPotentialCover() {
 		return potentialCover;
@@ -416,7 +435,7 @@ public class MapFile extends DLNAResource {
 
 	/**
 	 * @param potentialCover the potentialCover to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setPotentialCover(File potentialCover) {
 		this.potentialCover = potentialCover;

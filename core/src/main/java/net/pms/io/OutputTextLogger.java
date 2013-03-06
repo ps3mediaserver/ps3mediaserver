@@ -18,6 +18,9 @@
  */
 package net.pms.io;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.LineIterator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,32 +34,28 @@ import java.util.List;
  *  A version of OutputTextConsumer that a) logs all output to the debug.log and b) doesn't store the output
  */
 public class OutputTextLogger extends OutputConsumer {
-	private static final Logger logger = LoggerFactory.getLogger(OutputTextLogger.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OutputTextLogger.class);
 
 	public OutputTextLogger(InputStream inputStream) {
 		super(inputStream);
 	}
 
 	public void run() {
-		BufferedReader br = null;
+		LineIterator it = null;
 
 		try {
-			br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-			String line = null;
+			it = IOUtils.lineIterator(inputStream, "UTF-8");
 
-			while ((line = br.readLine()) != null) {
-				logger.debug(line);
+			while (it.hasNext()) {
+				String line = it.nextLine();
+				LOGGER.debug(line);
 			}
 		} catch (IOException ioe) {
-			logger.debug("Error consuming stream of spawned process: " + ioe.getMessage());
+			LOGGER.debug("Error consuming input stream: {}", ioe.getMessage());
+		} catch (IllegalStateException ise) {
+			LOGGER.debug("Error reading from closed input stream: {}", ise.getMessage());
 		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					logger.debug("Caught exception", e);
-				}
-			}
+			LineIterator.closeQuietly(it); // clean up all associated resources
 		}
 	}
 

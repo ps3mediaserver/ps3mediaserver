@@ -1,6 +1,7 @@
 package net.pms.update;
 
 import net.pms.util.PmsProperties;
+import net.pms.util.Version;
 
 import java.io.IOException;
 

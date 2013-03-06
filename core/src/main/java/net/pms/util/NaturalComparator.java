@@ -83,7 +83,7 @@ public final class NaturalComparator {
      * @see #getNaturalComparator()
      */
     public static Comparator<String> getNaturalComparator(final Collator collator) {
-        if(collator == null) {
+        if (collator == null) {
             // it's important to explicitly handle this here - else the bug will manifest anytime later in possibly
             // unrelated code that tries to use the comparator
             throw new NullPointerException("collator must not be null");
@@ -202,13 +202,13 @@ public final class NaturalComparator {
             // both character indices are after a subword (or at zero)
 
             // Check if one string is at end
-            if(sIndex == sLength && tIndex == tLength) {
+            if (sIndex == sLength && tIndex == tLength) {
                 return 0;
             }
-            if(sIndex == sLength) {
+            if (sIndex == sLength) {
                 return -1;
             }
-            if(tIndex == tLength) {
+            if (tIndex == tLength) {
                 return 1;
             }
 
@@ -219,7 +219,7 @@ public final class NaturalComparator {
             boolean sCharIsDigit = Character.isDigit(sChar);
             boolean tCharIsDigit = Character.isDigit(tChar);
 
-            if(sCharIsDigit && tCharIsDigit) {
+            if (sCharIsDigit && tCharIsDigit) {
                 // Compare numbers
 
                 // skip leading 0s
@@ -227,7 +227,7 @@ public final class NaturalComparator {
                 while(sChar == '0') {
                     ++sLeadingZeroCount;
                     ++sIndex;
-                    if(sIndex == sLength) {
+                    if (sIndex == sLength) {
                         break;
                     }
                     sChar = s.charAt(sIndex);
@@ -236,41 +236,41 @@ public final class NaturalComparator {
                 while(tChar == '0') {
                     ++tLeadingZeroCount;
                     ++tIndex;
-                    if(tIndex == tLength) {
+                    if (tIndex == tLength) {
                         break;
                     }
                     tChar = t.charAt(tIndex);
                 }
                 boolean sAllZero = sIndex == sLength || !Character.isDigit(sChar);
                 boolean tAllZero = tIndex == tLength || !Character.isDigit(tChar);
-                if(sAllZero && tAllZero) {
+                if (sAllZero && tAllZero) {
                     continue;
                 }
-                if(sAllZero && !tAllZero) {
+                if (sAllZero && !tAllZero) {
                     return -1;
                 }
-                if(tAllZero) {
+                if (tAllZero) {
                     return 1;
                 }
 
                 int diff = 0;
                 do {
-                    if(diff == 0) {
+                    if (diff == 0) {
                         diff = sChar - tChar;
                     }
                     ++sIndex;
                     ++tIndex;
-                    if(sIndex == sLength && tIndex == tLength) {
+                    if (sIndex == sLength && tIndex == tLength) {
                         return diff != 0 ? diff : sLeadingZeroCount - tLeadingZeroCount;
                     }
-                    if(sIndex == sLength) {
-                        if(diff == 0) {
+                    if (sIndex == sLength) {
+                        if (diff == 0) {
                             return -1;
                         }
                         return Character.isDigit(t.charAt(tIndex)) ? -1 : diff;
                     }
-                    if(tIndex == tLength) {
-                        if(diff == 0) {
+                    if (tIndex == tLength) {
+                        if (diff == 0) {
                             return 1;
                         }
                         return Character.isDigit(s.charAt(sIndex)) ? 1 : diff;
@@ -279,24 +279,24 @@ public final class NaturalComparator {
                     tChar = t.charAt(tIndex);
                     sCharIsDigit = Character.isDigit(sChar);
                     tCharIsDigit = Character.isDigit(tChar);
-                    if(!sCharIsDigit && !tCharIsDigit) {
+                    if (!sCharIsDigit && !tCharIsDigit) {
                         // both number sub words have the same length
-                        if(diff != 0) {
+                        if (diff != 0) {
                             return diff;
                         }
                         break;
                     }
-                    if(!sCharIsDigit) {
+                    if (!sCharIsDigit) {
                         return -1;
                     }
-                    if(!tCharIsDigit) {
+                    if (!tCharIsDigit) {
                         return 1;
                     }
                 } while(true);
             }
             else {
                 // Compare words
-                if(collator != null) {
+                if (collator != null) {
                     // To use the collator the whole subwords have to be compared - character-by-character comparision
                     // is not possible. So find the two subwords first
                     int aw = sIndex;
@@ -311,36 +311,36 @@ public final class NaturalComparator {
                     String as = s.substring(aw, sIndex);
                     String bs = t.substring(bw, tIndex);
                     int subwordResult = collator.compare(as, bs);
-                    if(subwordResult != 0) {
+                    if (subwordResult != 0) {
                         return subwordResult;
                     }
                 }
                 else {
                     // No collator specified. All characters should be ascii only. Compare character-by-character.
                     do {
-                        if(sChar != tChar) {
-                            if(caseSensitive) {
+                        if (sChar != tChar) {
+                            if (caseSensitive) {
                                 return sChar - tChar;
                             }
                             sChar = Character.toUpperCase(sChar);
                             tChar = Character.toUpperCase(tChar);
-                            if(sChar != tChar) {
+                            if (sChar != tChar) {
                                 sChar = Character.toLowerCase(sChar);
                                 tChar = Character.toLowerCase(tChar);
-                                if(sChar != tChar) {
+                                if (sChar != tChar) {
                                     return sChar - tChar;
                                 }
                             }
                         }
                         ++sIndex;
                         ++tIndex;
-                        if(sIndex == sLength && tIndex == tLength) {
+                        if (sIndex == sLength && tIndex == tLength) {
                             return 0;
                         }
-                        if(sIndex == sLength) {
+                        if (sIndex == sLength) {
                             return -1;
                         }
-                        if(tIndex == tLength) {
+                        if (tIndex == tLength) {
                             return 1;
                         }
                         sChar = s.charAt(sIndex);

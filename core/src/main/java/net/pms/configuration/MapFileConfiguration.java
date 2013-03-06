@@ -14,11 +14,17 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.pms.util.FileUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author mfranco
  */
 public class MapFileConfiguration {
+	private static final Logger LOGGER = LoggerFactory.getLogger(MapFileConfiguration.class);
 	private String name;
 	private String thumbnailIcon;
 	private List<MapFileConfiguration> children;
@@ -59,14 +65,17 @@ public class MapFileConfiguration {
 
 	public static List<MapFileConfiguration> parse(String conf) {
 		if (conf != null && conf.startsWith("@")) {
-			File f = new File(conf.substring(1));
+			File file = new File(conf.substring(1));
 			conf = null;
-			if (f.canRead()) {
+
+			if (FileUtil.isFileReadable(file)) {
 				try {
-					conf = FileUtils.readFileToString(f);
+					conf = FileUtils.readFileToString(file);
 				} catch (IOException ex) {
 					return null;
 				}
+			} else {
+				LOGGER.warn("Can't read file: {}", file.getAbsolutePath());
 			}
 		}
 
@@ -77,24 +86,29 @@ public class MapFileConfiguration {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(File.class, new FileSerializer());
 		Gson gson = gsonBuilder.create();
-		Type listType = new TypeToken<ArrayList<MapFileConfiguration>>() {
-		}.getType();
+		Type listType = (new TypeToken<ArrayList<MapFileConfiguration>>() { }).getType();
 		List<MapFileConfiguration> out = gson.fromJson(conf, listType);
 		return out;
 	}
 }
 
 class FileSerializer implements JsonSerializer<File>, JsonDeserializer<File> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileSerializer.class);
+
 	public JsonElement serialize(File src, Type typeOfSrc, JsonSerializationContext context) {
 		return new JsonPrimitive(src.getAbsolutePath());
 	}
 
 	public File deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-		throws JsonParseException {
-		File f = new File(json.getAsJsonPrimitive().getAsString());
-		if (!f.canRead()) {
+		throws JsonParseException
+	{
+		File file = new File(json.getAsJsonPrimitive().getAsString());
+
+		if (!FileUtil.isDirectoryReadable(file)) {
+			LOGGER.warn("Can't read directory: {}", file.getAbsolutePath());
 			return null;
+		} else {
+			return file;
 		}
-		return f;
 	}
 }

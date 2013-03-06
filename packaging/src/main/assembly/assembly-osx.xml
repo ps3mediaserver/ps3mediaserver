@@ -43,6 +43,7 @@
 			<fileMode>0644</fileMode>
 			<includes>
 				<include>README.md</include>
+				<include>CHANGELOG.txt</include>
 			</includes>
 		</fileSet>
 
@@ -52,7 +53,6 @@
 			<outputDirectory>${project.core.name}.app/Contents/Resources/Java</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
-				<include>CHANGELOG</include>
 				<include>LICENSE.txt</include>
 			</includes>
 		</fileSet>

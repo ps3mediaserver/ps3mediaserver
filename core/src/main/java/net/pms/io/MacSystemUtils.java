@@ -1,8 +1,11 @@
 package net.pms.io;
 
+import org.apache.commons.io.IOUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -11,23 +14,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MacSystemUtils extends BasicSystemUtils {
-	private final static Logger logger = LoggerFactory.getLogger(MacSystemUtils.class); 
+	private final static Logger LOGGER = LoggerFactory.getLogger(MacSystemUtils.class);
 
-	public MacSystemUtils() {
-	}
+	public MacSystemUtils() { }
 
 	@Override
 	public void browseURI(String uri) {
 		try {
-			// On OSX, open the given URI with the "open" command.
+			// On OS X, open the given URI with the "open" command.
 			// This will open HTTP URLs in the default browser.
 			Runtime.getRuntime().exec(new String[] { "open", uri });
-			
 		} catch (IOException e) {
-			logger.trace("Unable to open the given URI: " + uri + ".");
+			LOGGER.trace("Unable to open the given URI: {}", uri);
 		}
 	}
-	
+
 	@Override
 	public boolean isNetworkInterfaceLoopback(NetworkInterface ni) throws SocketException {
 		return false;
@@ -35,29 +36,28 @@ public class MacSystemUtils extends BasicSystemUtils {
 
 	/**
 	 * Fetch the hardware address for a network interface.
-	 * 
-	 * @param ni Interface to fetch the mac address for
-	 * @return the mac address as bytes, or null if it couldn't be fetched.
+	 *
+	 * @param ni Interface to fetch the MAC address for
+	 * @return the MAC address as bytes, or null if it couldn't be fetched.
 	 * @throws SocketException
-	 *             This won't happen on Mac OS, since the NetworkInterface is
+	 *             This won't happen on OS X, since the NetworkInterface is
 	 *             only used to get a name.
 	 */
 	@Override
 	public byte[] getHardwareAddress(NetworkInterface ni) throws SocketException {
-		// On Mac OS, fetch the hardware address from the command line tool "ifconfig".
+		// On Mac OS X, fetch the hardware address from the command line tool "ifconfig".
 		byte[] aHardwareAddress = null;
+		InputStream inputStream = null;
 
 		try {
-			Process aProc = Runtime.getRuntime().exec(new String[] { "ifconfig", ni.getName(), "ether" });
-			aProc.waitFor();
-			OutputTextConsumer aConsumer = new OutputTextConsumer(aProc.getInputStream(), false);
-			aConsumer.run();
-			List<String> aLines = aConsumer.getResults();
+			Process process = Runtime.getRuntime().exec(new String[] { "ifconfig", ni.getName(), "ether" });
+			inputStream = process.getInputStream();
+			List<String> lines = IOUtils.readLines(inputStream);
 			String aMacStr = null;
 			Pattern aMacPattern = Pattern.compile("\\s*ether\\s*([a-d0-9]{2}:[a-d0-9]{2}:[a-d0-9]{2}:[a-d0-9]{2}:[a-d0-9]{2}:[a-d0-9]{2})");
 
-			for (String aLine : aLines) {
-				Matcher aMacMatcher = aMacPattern.matcher(aLine);
+			for (String line : lines) {
+				Matcher aMacMatcher = aMacPattern.matcher(line);
 
 				if (aMacMatcher.find()) {
 					aMacStr = aMacMatcher.group(1);
@@ -75,12 +75,11 @@ public class MacSystemUtils extends BasicSystemUtils {
 				}
 			}
 		} catch (IOException e) {
-			logger.debug("Failed to execute ifconfig", e);
-		} catch (InterruptedException e) {
-			logger.debug("Interrupted while waiting for ifconfig", e);
-			Thread.interrupted(); // XXX work around a Java bug - see ProcessUtil.waitFor()
+			LOGGER.warn("Failed to execute ifconfig", e);
+		} finally {
+			IOUtils.closeQuietly(inputStream);
 		}
-		return aHardwareAddress;
-	}	
 
+		return aHardwareAddress;
+	}
 }

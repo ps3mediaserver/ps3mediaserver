@@ -30,12 +30,17 @@
 
 	<groupId>github.com.taconaut</groupId>
 	<artifactId>pms</artifactId>
-	<version>1.70.0-mlx_0.9-SNAPSHOT</version>
+	<version>1.80.0-mlx_0.9-SNAPSHOT</version> <!-- XXX don't forget to update project.version.short below -->
 
 	<packaging>pom</packaging>
 	<name>PMS</name>
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
+
+	<!-- this is not required, but is recommended for plugin version checks -->
+	<prerequisites>
+		<maven>2.2.1</maven>
+	</prerequisites>
 
 	<organization>
 		<name>PS3 Media Server MLX</name>
@@ -155,7 +160,7 @@
 			<plugin>
 				<groupId>com.savage7.maven.plugins</groupId>
 				<artifactId>maven-external-dependency-plugin</artifactId>
-				<version>0.4</version>
+				<version>0.5</version>
 				<inherited>false</inherited>
 				<configuration>
 					<stagingDirectory>${project.build.directory}/dependencies/</stagingDirectory>
@@ -265,7 +270,6 @@
 				</configuration>
 
 				<executions>
-
 					<execution>
 						<id>clean-external-dependencies</id>
 						<phase>clean</phase>
@@ -288,7 +292,6 @@
 						</goals>
 					</execution>
 				</executions>
-
 			</plugin>
 		</plugins>
 	</build>
