@@ -150,7 +150,7 @@ public class FFMpegVideo extends Player {
 			transcodeOptions.add("wmv2");
 
 			transcodeOptions.add("-c:a");
-			transcodeOptions.add("wma2");
+			transcodeOptions.add("wmav2");
 
 			transcodeOptions.add("-f");
 			transcodeOptions.add("asf");

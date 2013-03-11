@@ -21,6 +21,7 @@ Changelog:
         FFmpeg Video:
             - custom FFmpeg options are now read before each transcode rather than only at startup (parity with custom MEncoder options)
             - rescale videos larger than the renderer's max height/width
+            - Updated to use "wmav2" codec (#1583)
         FFmpeg Audio: support all TranscodeAudio profiles
     Language updates:
         - Updated Brazilian translation (thanks, Bruno Arueira!)
