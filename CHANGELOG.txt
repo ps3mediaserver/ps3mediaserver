@@ -1,7 +1,7 @@
 Changelog:
 ==========
 
-1.80.0 - 2012-??-??
+1.80.0 - 2013-??-??
 
     Regressions:
         - Re-allow all transcode engines to be disabled
@@ -26,6 +26,7 @@ Changelog:
     Language updates:
         - Updated Brazilian translation (thanks, Bruno Arueira!)
         - Updated Catalan translation (thanks, oscaroe!)
+        - Updated simplified Chinese translation (thanks, lovenemesis!)
     Misc:
         - fix bug that prevents PMS running multiple profiles concurrently
         - fix NPE when responding to DLNA subtitle requests
