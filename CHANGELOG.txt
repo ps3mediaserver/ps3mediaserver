@@ -27,6 +27,7 @@ Changelog:
         - Updated Brazilian translation (thanks, Bruno Arueira!)
         - Updated Catalan translation (thanks, oscaroe!)
         - Updated simplified Chinese translation (thanks, lovenemesis!)
+        - Updated Italian translation (thanks, nocciola82!)
     Misc:
         - fix bug that prevents PMS running multiple profiles concurrently
         - fix NPE when responding to DLNA subtitle requests
