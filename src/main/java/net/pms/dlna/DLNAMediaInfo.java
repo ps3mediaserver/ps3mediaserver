@@ -91,7 +91,6 @@ public class DLNAMediaInfo implements Cloneable {
 
 	public static final long ENDFILE_POS = 99999475712L;
 	public static final long TRANS_SIZE = 100000000000L;
-
 	private boolean h264_parsed;
 
 	// Stored in database

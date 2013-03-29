@@ -19,7 +19,8 @@ Changelog:
             - support all three TranscodeVideo profiles: WMV, MPEGTSAC3 and MPEGPSAC3
             - preserve source video quality
         FFmpeg Video:
-            - custom FFmpeg options are now read before each transcode rather than only at startup (parity with custom MEncoder options)
+            - custom FFmpeg options are now read before each transcode rather than only at startup
+              (parity with custom MEncoder options)
             - rescale videos larger than the renderer's max height/width
             - Updated to use "wmav2" codec (#1583)
         FFmpeg Audio: support all TranscodeAudio profiles
@@ -37,6 +38,7 @@ Changelog:
             - add thumbnail support for TIFF and other formats
             - trap exception when handling unsupported formats
         - fix response to M-SEARCH "ssdp:all" message (thanks, ler0y!)
+        - Moved several transcoding settings from MEncoder to Common transcoding settings
 
 1.72.0 - 2012-11-18
 

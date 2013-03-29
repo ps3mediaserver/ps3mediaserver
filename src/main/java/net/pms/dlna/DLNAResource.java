@@ -536,7 +536,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 						boolean hasSubsToTranscode = false;
 
-						if (!PMS.getConfiguration().isMencoderDisableSubs()) {
+						if (!PMS.getConfiguration().isDisableSubtitles()) {
 							hasSubsToTranscode = (PMS.getConfiguration().isAutoloadSubtitles() && child.isSrtFile()) || hasEmbeddedSubs;
 						}
 

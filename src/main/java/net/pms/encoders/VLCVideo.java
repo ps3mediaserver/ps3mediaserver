@@ -18,22 +18,26 @@
  */
 package net.pms.encoders;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.sun.jna.Platform;
-
 import java.awt.ComponentOrientation;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 import net.pms.Messages;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
@@ -51,6 +55,10 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import com.sun.jna.Platform;
+
 /**
  * Use VLC as a backend transcoder. Note that 0.x and 1.x versions are
  * unsupported (and probably will crash). Only the latest version will be
@@ -62,9 +70,6 @@ public class VLCVideo extends Player {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VLCVideo.class);
 	protected final PmsConfiguration pmsconfig;
 	public static final String ID = "vlctranscoder";
-	protected JCheckBox hardwareAccel;
-	protected JTextField audioPri;
-	protected JTextField subtitlePri;
 	protected JTextField scale;
 	protected JCheckBox experimentalCodecs;
 	protected JCheckBox audioSyncEnabled;
@@ -175,14 +180,14 @@ public class VLCVideo extends Player {
 		String audioCodec;
 		String container;
 		String extraParams;
-		HashMap<String, Object> extraTrans = new HashMap();
+		HashMap<String, Object> extraTrans = new HashMap<String, Object>();
 		int sampleRate;
 	}
 
 	protected Map<String, Object> getEncodingArgs(CodecConfig config) {
 		// See: http://www.videolan.org/doc/streaming-howto/en/ch03.html
 		// See: http://wiki.videolan.org/Codec
-		Map<String, Object> args = new HashMap();
+		Map<String, Object> args = new HashMap<String, Object>();
 
 		// Codecs to use
 		args.put("vcodec", config.videoCodec);
@@ -250,7 +255,7 @@ public class VLCVideo extends Player {
 		cmdList.add("dummy");
 
 		// Hardware acceleration seems to be more stable now, so its enabled
-		if (hardwareAccel.isSelected()) {
+		if (pmsconfig.isVideoHardwareAcceleration()) {
 			cmdList.add("--ffmpeg-hw");
 		}
 
@@ -278,7 +283,7 @@ public class VLCVideo extends Player {
 				cmdList.add("--audio-track=" + params.aid.getId());
 			}
 		} else { // Not specified, use language from GUI
-			cmdList.add("--audio-language=" + audioPri.getText());
+			cmdList.add("--audio-language=" + pmsconfig.getAudioLanguages());
 		}
 
 		// Handle subtitle language
@@ -288,8 +293,9 @@ public class VLCVideo extends Player {
 			} else { // Load by ID (better)
 				cmdList.add("--sub-track=" + params.sid.getId());
 			}
-		} else if (!pmsconfig.isMencoderDisableSubs()){ // Not specified, use language from GUI if enabled
-			cmdList.add("--sub-language=" + subtitlePri.getText());
+		} else if (!pmsconfig.isDisableSubtitles()){ // Not specified, use language from GUI if enabled
+			// FIXME: VLC does not understand "loc" or "und".
+			cmdList.add("--sub-language=" + pmsconfig.getSubtitlesLanguages());
 		} else {
 			cmdList.add("--sub-" + disableSuffix);
 		}
@@ -327,7 +333,7 @@ public class VLCVideo extends Player {
 		// Pass to process wrapper
 		String[] cmdArray = new String[cmdList.size()];
 		cmdList.toArray(cmdArray);
-		cmdArray = finalizeTranscoderArgs(this, fileName, dlna, media, params, cmdArray);
+		cmdArray = finalizeTranscoderArgs(fileName, dlna, media, params, cmdArray);
 		LOGGER.trace("Finalized args: " + StringUtils.join(cmdArray, " "));
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.attachProcess(pipe_process);
@@ -354,14 +360,6 @@ public class VLCVideo extends Player {
 		DefaultFormBuilder mainPanel = new DefaultFormBuilder(layout);
 
 		mainPanel.appendSeparator(Messages.getString("VlcTrans.1"));
-		mainPanel.append(hardwareAccel = new JCheckBox(Messages.getString("VlcTrans.2"), pmsconfig.isVlcUseHardwareAccel()), 3);
-		hardwareAccel.setContentAreaFilled(false);
-		hardwareAccel.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				pmsconfig.setVlcUseHardwareAccel(e.getStateChange() == ItemEvent.SELECTED);
-			}
-		});
 		mainPanel.append(experimentalCodecs = new JCheckBox(Messages.getString("VlcTrans.3"), pmsconfig.isVlcExperimentalCodecs()), 3);
 		experimentalCodecs.setContentAreaFilled(false);
 		experimentalCodecs.addItemListener(new ItemListener() {
@@ -379,21 +377,6 @@ public class VLCVideo extends Player {
 			}
 		});
 		mainPanel.nextLine();
-
-		mainPanel.append(Messages.getString("VlcTrans.6"), audioPri = new JTextField(pmsconfig.getVlcAudioPri()));
-		audioPri.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				pmsconfig.setVlcAudioPri(audioPri.getText());
-			}
-		});
-		mainPanel.append(Messages.getString("VlcTrans.8"), subtitlePri = new JTextField(pmsconfig.getVlcSubtitlePri()));
-		subtitlePri.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				pmsconfig.setVlcSubtitlePri(subtitlePri.getText());
-			}
-		});
 
 		// Developer stuff. Theoretically is temporary 
 		mainPanel.appendSeparator(Messages.getString("VlcTrans.10"));
