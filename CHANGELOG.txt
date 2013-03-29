@@ -23,6 +23,8 @@ Changelog:
             - rescale videos larger than the renderer's max height/width
             - Updated to use "wmav2" codec (#1583)
         FFmpeg Audio: support all TranscodeAudio profiles
+        VLC:
+            - Added support for VLC as engine (thanks, LordQuackstar!)
     Language updates:
         - Updated Brazilian translation (thanks, Bruno Arueira!)
         - Updated Catalan translation (thanks, oscaroe!)

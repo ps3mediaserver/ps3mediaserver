@@ -89,7 +89,7 @@ public class BasicSystemUtils implements SystemUtils {
 	 * @see net.pms.io.SystemUtils#getVlcp()
 	 */
 	@Override
-	public String getVlcp() {
+	public String getVlcPath() {
 		return vlcp;
 	}
 
@@ -99,7 +99,7 @@ public class BasicSystemUtils implements SystemUtils {
 	 * @see net.pms.io.SystemUtils#getVlcv()
 	 */
 	@Override
-	public String getVlcv() {
+	public String getVlcVersion() {
 		return vlcv;
 	}
 

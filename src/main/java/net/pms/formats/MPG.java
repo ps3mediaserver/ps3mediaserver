@@ -44,7 +44,9 @@ public class MPG extends Format {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		PMS r3 = PMS.get();
 		for (String engine : PMS.getConfiguration().getEnginesAsList(r3.getRegistry())) {
-			if (engine.equals(MEncoderVideo.ID)) {
+			if (engine.equals(VLCVideo.ID)) {
+				a.add(VLCVideo.class);
+			} else if (engine.equals(MEncoderVideo.ID)) {
 				a.add(MEncoderVideo.class);
 			} else if (engine.equals(MEncoderAviSynth.ID) && PMS.get().getRegistry().isAvis()) {
 				a.add(MEncoderAviSynth.class);
