@@ -1375,13 +1375,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							}
 						}
 					} else { // streamed
-						// chocolateboy 2012-11-25: seek-by-time used to be disabled here for the PS3
-						// (the flag was left at the default seek-by-byte value) and only set to
-						// seek-by-both for non-PS3 renderers. I can't reproduce with PS3 firmware 4.31
-						// whatever (undocumented) issue led to the creation of this exception, so
-						// it has been removed unless/until someone can reproduce it (e.g. with old
-						// firmware)
-						dlnaOrgOpFlags = "11";
+						// See: http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=15841&start=10#p76201
+						dlnaOrgOpFlags = "01";
 					}
 				}
 

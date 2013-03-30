@@ -6,7 +6,7 @@ Changelog:
     Regressions:
         - Re-allow all transcode engines to be disabled
     PMS.conf:
-        - ffmpeg has been renamed ffmpeg_video_custom_options and now defaults to null
+        - FFmpeg has been renamed ffmpeg_video_custom_options and now defaults to null
     Renderers:
         - Document TranscodeVideo and TranscodeAudio profiles
         - Panasonic TVs: Add "exclusive" option to SeekByTime to work around a transcoding issue
@@ -14,14 +14,15 @@ Changelog:
         - Android: allowing chunked transfer
         - AirPlayer & iPad/iPhone: transcoding to WMV format gives better results
         - Improved support for Sony Bravia HX (thanks, mazey!)
+        - Improved streaming support for some renderers (thanks, ExSport!)
     Engines:
         FFmpeg Video and FFmpeg Web Video:
-            - support all three TranscodeVideo profiles: WMV, MPEGTSAC3 and MPEGPSAC3
-            - preserve source video quality
+            - Support all three TranscodeVideo profiles: WMV, MPEGTSAC3 and MPEGPSAC3
+            - Preserve source video quality
         FFmpeg Video:
-            - custom FFmpeg options are now read before each transcode rather than only at startup
+            - Custom FFmpeg options are now read before each transcode rather than only at startup
               (parity with custom MEncoder options)
-            - rescale videos larger than the renderer's max height/width
+            - Rescale videos larger than the renderer's max height/width
             - Updated to use "wmav2" codec (#1583)
         FFmpeg Audio: support all TranscodeAudio profiles
         VLC:
@@ -32,12 +33,12 @@ Changelog:
         - Updated simplified Chinese translation (thanks, lovenemesis!)
         - Updated Italian translation (thanks, nocciola82!)
     Misc:
-        - fix bug that prevents PMS running multiple profiles concurrently
-        - fix NPE when responding to DLNA subtitle requests
-        - image thumbnailer:
-            - add thumbnail support for TIFF and other formats
-            - trap exception when handling unsupported formats
-        - fix response to M-SEARCH "ssdp:all" message (thanks, ler0y!)
+        - Fixed bug that prevents PMS running multiple profiles concurrently
+        - Fixed NPE when responding to DLNA subtitle requests
+        - Image thumbnailer:
+            - Added thumbnail support for TIFF and other formats
+            - Trapped exception when handling unsupported formats
+        - Fixed response to M-SEARCH "ssdp:all" message (thanks, ler0y!)
         - Moved several transcoding settings from MEncoder to Common transcoding settings
 
 1.72.0 - 2012-11-18
