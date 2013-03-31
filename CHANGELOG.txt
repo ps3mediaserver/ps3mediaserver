@@ -40,6 +40,7 @@ Changelog:
             - Trapped exception when handling unsupported formats
         - Fixed response to M-SEARCH "ssdp:all" message (thanks, ler0y!)
         - Moved several transcoding settings from MEncoder to Common transcoding settings
+        - Help is now context sensitive
 
 1.72.0 - 2012-11-18
 
