@@ -797,8 +797,8 @@ public class PMS {
 			} else {
 				LOGGER.error("A serious error occurred during PMS init");
 			}
-		} catch (Throwable t) {
-			LOGGER.error("A serious error occurred during PMS init", t);
+		} catch (Exception e) {
+			LOGGER.error("A serious error occurred during PMS init", e);
 		}
 	}
 
