@@ -285,7 +285,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the number of bits per sample for the audio.
 	 * 
 	 * @return The number of bits per sample.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getBitsperSample() {
 		return bitsperSample;
@@ -295,7 +295,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the number of bits per sample for the audio.
 	 * 
 	 * @param bitsperSample The number of bits per sample to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setBitsperSample(int bitsperSample) {
 		this.bitsperSample = bitsperSample;
@@ -305,7 +305,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
      * Returns audio bitrate.
      *
      * @return Audio bitrate.
-     * @since 1.54
+     * @since 1.54.0
      */
     public int getBitRate() {
         return bitRate;
@@ -315,7 +315,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
      * Sets audio bitrate.
      *
      * @param bitRate Audio bitrate to set.
-     * @since 1.54
+     * @since 1.54.0
      */
     public void setBitRate(int bitRate) {
         this.bitRate = bitRate;
@@ -325,7 +325,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the sample frequency for the audio.
 	 * 
 	 * @return The sample frequency.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getSampleFrequency() {
 		return sampleFrequency;
@@ -335,7 +335,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the sample frequency for the audio.
 	 * 
 	 * @param sampleFrequency The sample frequency to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setSampleFrequency(String sampleFrequency) {
 		this.sampleFrequency = sampleFrequency;
@@ -345,7 +345,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the number of channels for the audio.
 	 * 
 	 * @return The number of channels
-	 * @since 1.50
+	 * @since 1.50.0
 	 * @deprecated Use getAudioProperties().getNumberOfChannels() instead
 	 */
 	@Deprecated
@@ -357,7 +357,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the number of channels for the audio.
 	 * 
 	 * @param numberOfChannels The number of channels to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 * @deprecated Use getAudioProperties().setNumberOfChannels(int numberOfChannels) instead
 	 */
 	@Deprecated
@@ -370,7 +370,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the name of the audio codec that is being used.
 	 * 
 	 * @return The name of the audio codec.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getCodecA() {
 		return codecA;
@@ -380,7 +380,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the name of the audio codec that is being used.
 	 * 
 	 * @param codecA The name of the audio codec to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setCodecA(String codecA) {
 		this.codecA = codecA;
@@ -390,7 +390,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the name of the album to which an audio track belongs.
 	 * 
 	 * @return The album name.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getAlbum() {
 		return album;
@@ -400,7 +400,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the name of the album to which an audio track belongs.
 	 * 
 	 * @param album The name of the album to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setAlbum(String album) {
 		this.album = album;
@@ -410,7 +410,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the name of the artist performing the audio track.
 	 * 
 	 * @return The artist name.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getArtist() {
 		return artist;
@@ -420,7 +420,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the name of the artist performing the audio track.
 	 * 
 	 * @param artist The artist name to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setArtist(String artist) {
 		this.artist = artist;
@@ -430,7 +430,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the name of the song for the audio track.
 	 * 
 	 * @return The song name.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getSongname() {
 		return songname;
@@ -440,7 +440,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the name of the song for the audio track.
 	 * 
 	 * @param songname The song name to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setSongname(String songname) {
 		this.songname = songname;
@@ -450,7 +450,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the name of the genre for the audio track.
 	 * 
 	 * @return The genre name.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getGenre() {
 		return genre;
@@ -460,7 +460,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the name of the genre for the audio track.
 	 * 
 	 * @param genre The name of the genre to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setGenre(String genre) {
 		this.genre = genre;
@@ -470,7 +470,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the year of inception for the audio track.
 	 * 
 	 * @return The year.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getYear() {
 		return year;
@@ -480,7 +480,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the year of inception for the audio track.
 	 * 
 	 * @param year The year to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setYear(int year) {
 		this.year = year;
@@ -490,7 +490,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the track number within an album for the audio.
 	 * 
 	 * @return The track number.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getTrack() {
 		return track;
@@ -500,7 +500,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the track number within an album for the audio.
 	 * 
 	 * @param track The track number to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setTrack(int track) {
 		this.track = track;
@@ -510,7 +510,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the delay for the audio.
 	 * 
 	 * @return The delay.
-	 * @since 1.50
+	 * @since 1.50.0
 	 * @deprecated Use getAudioProperties().getAudioDelay() instead
 	 */
 	@Deprecated
@@ -522,7 +522,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the delay for the audio.
 	 * 
 	 * @param audioDelay The delay to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 * @deprecated  Use getAudioProperties().setAudioDelay(int audioDelay) instead
 	 */
 	@Deprecated
@@ -535,7 +535,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the flavor for the audio.
 	 * 
 	 * @return The flavor.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getFlavor() {
 		return flavor;
@@ -545,7 +545,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the flavor for the audio.
 	 * 
 	 * @param flavor The flavor to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setFlavor(String flavor) {
 		this.flavor = flavor;
@@ -555,7 +555,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Returns the audio codec to use for muxing.
 	 * 
 	 * @return The audio codec to use.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getMuxingModeAudio() {
 		return muxingModeAudio;
@@ -565,7 +565,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * Sets the audio codec to use for muxing.
 	 * 
 	 * @param muxingModeAudio The audio codec to use.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setMuxingModeAudio(String muxingModeAudio) {
 		this.muxingModeAudio = muxingModeAudio;

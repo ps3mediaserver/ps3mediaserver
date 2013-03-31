@@ -29,7 +29,10 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class OutputParams {
-	public File outputFile;
+	@Deprecated
+	public File outputFile; // XXX no longer used
+
+	// TODO: Refactor all public variables to private with public getters and setters.
 	public File workDir;
 	public Map<String,String> env;
 	public double minFileSize;
@@ -40,8 +43,8 @@ public class OutputParams {
 	public int fromFrame;
 	public int toFrame;
 	public int waitbeforestart;
-	public PipeProcess input_pipes[] = new PipeProcess[2];
-	public PipeProcess output_pipes[] = new PipeProcess[2];
+	public PipeProcess[] input_pipes = new PipeProcess[2];
+	public PipeProcess[] output_pipes = new PipeProcess[2];
 	public DLNAMediaAudio aid;
 	public DLNAMediaSubtitle sid;
 	public int secondread_minsize;
@@ -65,19 +68,22 @@ public class OutputParams {
 		} else {
 			waitbeforestart = 6000;
 		}
+
 		fromFrame = -1;
 		toFrame = -1;
 		secondread_minsize = 1000000;
+
 		if (configuration != null) {
 			minFileSize = configuration.getMinStreamBuffer();
 			minBufferSize = configuration.getMinMemoryBufferSize();
 			maxBufferSize = configuration.getMaxMemoryBufferSize();
 		}
+
 		if (maxBufferSize < 100) {
 			maxBufferSize = 100;
 		}
+
 		timeseek = 0;
-		outputFile = null;
 		env = null;
 	}
 
@@ -99,7 +105,7 @@ public class OutputParams {
 			+ losslessaudio + ", lossyaudio=" + lossyaudio + ", maxBufferSize=" + maxBufferSize
 			+ ", mediaRenderer=" + mediaRenderer + ", minBufferSize=" + minBufferSize + ", minFileSize="
 			+ minFileSize + ", no_videoencode=" + no_videoencode + ", noexitcheck=" + noexitcheck
-			+ ", outputFile=" + outputFile + ", output_pipes=" + Arrays.toString(output_pipes)
+			+ ", output_pipes=" + Arrays.toString(output_pipes)
 			+ ", secondread_minsize=" + secondread_minsize + ", shift_scr=" + shift_scr + ", sid=" + sid
 			+ ", stdin=" + stdin + ", timeend=" + timeend + ", timeseek=" + timeseek + ", toFrame=" + toFrame
 			+ ", waitbeforestart=" + waitbeforestart + ", workDir=" + workDir + ", env=" + env + "]";

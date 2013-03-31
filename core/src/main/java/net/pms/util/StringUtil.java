@@ -1,5 +1,7 @@
 package net.pms.util;
 
+import org.apache.commons.lang.WordUtils;
+
 public class StringUtil {
 	/**Appends "&lt;<u>tag</u> " to the StringBuilder. This is a typical HTML/DIDL/XML tag opening.
 	 * @param sb String to append the tag beginning to.
@@ -74,5 +76,19 @@ public class StringUtil {
 		url = url.replace('<', '\u00b5');
 		url = url.replace('>', '\u00b5');
 		return url;
+	}
+
+	/**
+	 * Returns an abbreviated version of the supplied string.
+	 *
+	 * @param The String to abbreviate.
+	 * @return The abbreviated String.
+	 */
+	public static String abbreviate(String str) {
+		if (str == null) {
+			return null;
+		} else {
+			return WordUtils.capitalize(str).replaceAll("[^A-Z]", "");
+		}
 	}
 }

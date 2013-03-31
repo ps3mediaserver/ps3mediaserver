@@ -33,7 +33,7 @@ class ConfigurationUtil { // package-private
 	 * The value is returned with leading and trailing whitespace removed in both cases.
 	 * @param configuration The configuration to look up the key in.
 	 * @param key The key to look up.
-	 * @param def The default value to return when no valid key value can be found.
+	 * @param def The default value to return when no value is set for the key.
 	 * @return The value configured for the key.
 	 */
 
@@ -51,17 +51,18 @@ class ConfigurationUtil { // package-private
 	}
 
 	/**
-	 * Return the <code>String</code> value for a given configuration key.
+	 * Return the <code>String</code> value for a given, possibly-blank
+	 * (i.e. empty or all whitespace) configuration key.
 	 * If the value is not defined, the supplied default value is returned.
 	 * The value is returned with leading and trailing whitespace removed in both cases.
 	 * @param configuration The configuration to look up the key in.
 	 * @param key The key to look up.
-	 * @param def The default value to return when no valid key value can be found.
+	 * @param def The default value to return when no value is defined for the key.
 	 * @return The value configured for the key.
 	 */
 
 	// package-private
-	static String getBlankConfigurationString(Configuration configuration, String key, String def) {
+	static String getPossiblyBlankConfigurationString(Configuration configuration, String key, String def) {
 		String value = configuration.getString(key, def);
 
 		if (value != null) {

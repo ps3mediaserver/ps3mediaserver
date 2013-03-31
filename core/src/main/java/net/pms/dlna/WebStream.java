@@ -104,6 +104,8 @@ public class WebStream extends DLNAResource {
 		return false;
 	}
 
+	// XXX unused
+	@Deprecated
 	public long lastModified() {
 		return 0;
 	}
@@ -115,7 +117,7 @@ public class WebStream extends DLNAResource {
 
 	/**
 	 * @return the url
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected String getUrl() {
 		return url;
@@ -123,7 +125,7 @@ public class WebStream extends DLNAResource {
 
 	/**
 	 * @param url the url to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setUrl(String url) {
 		this.url = url;
@@ -131,7 +133,7 @@ public class WebStream extends DLNAResource {
 
 	/**
 	 * @return the fluxName
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected String getFluxName() {
 		return fluxName;
@@ -139,7 +141,7 @@ public class WebStream extends DLNAResource {
 
 	/**
 	 * @param fluxName the fluxName to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setFluxName(String fluxName) {
 		this.fluxName = fluxName;
@@ -147,7 +149,7 @@ public class WebStream extends DLNAResource {
 
 	/**
 	 * @return the thumbURL
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected String getThumbURL() {
 		return thumbURL;
@@ -155,7 +157,7 @@ public class WebStream extends DLNAResource {
 
 	/**
 	 * @param thumbURL the thumbURL to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setThumbURL(String thumbURL) {
 		this.thumbURL = thumbURL;

@@ -256,7 +256,7 @@ public class TSMuxerVideo extends Player {
 				if (media.getH264AnnexB() != null && media.getH264AnnexB().length > 0) {
 					StreamModifier sm = new StreamModifier();
 					sm.setHeader(media.getH264AnnexB());
-					sm.setH264_annexb(true);
+					sm.setH264AnnexB(true);
 					ffVideoPipe.setModifier(sm);
 				}
 			}
@@ -326,10 +326,10 @@ public class TSMuxerVideo extends Player {
 						// DTS remux or LPCM
 						StreamModifier sm = new StreamModifier();
 						sm.setPcm(pcm);
-						sm.setDtsembed(dtsRemux);
-						sm.setNbchannels(channels);
+						sm.setDtsEmbed(dtsRemux);
+						sm.setNbChannels(channels);
 						sm.setSampleFrequency(params.aid.getSampleRate() < 48000 ? 48000 : params.aid.getSampleRate());
-						sm.setBitspersample(16);
+						sm.setBitsPerSample(16);
 						String mixer = null;
 
 						if (pcm && !dtsRemux) {
@@ -344,12 +344,12 @@ public class TSMuxerVideo extends Player {
 							"-quiet",
 							"-really-quiet",
 							"-msglevel", "statusline=2",
-							"-channels", "" + sm.getNbchannels(),
+							"-channels", "" + sm.getNbChannels(),
 							"-ovc", "copy",
 							"-of", "rawaudio",
-							"-mc", sm.isDtsembed() ? "0.1" : "0",
+							"-mc", sm.isDtsEmbed() ? "0.1" : "0",
 							"-noskip",
-							"-oac", sm.isDtsembed() ? "copy" : "pcm",
+							"-oac", sm.isDtsEmbed() ? "copy" : "pcm",
 							isNotBlank(mixer) ? "-af" : "-quiet", isNotBlank(mixer) ? mixer : "-quiet",
 							singleMediaAudio ? "-quiet" : "-aid", singleMediaAudio ? "-quiet" : ("" + params.aid.getId()),
 							"-srate", "48000",
@@ -447,10 +447,10 @@ public class TSMuxerVideo extends Player {
 							// DTS remux or LPCM
 							StreamModifier sm = new StreamModifier();
 							sm.setPcm(pcm);
-							sm.setDtsembed(dtsRemux);
-							sm.setNbchannels(channels);
+							sm.setDtsEmbed(dtsRemux);
+							sm.setNbChannels(channels);
 							sm.setSampleFrequency(audio.getSampleRate() < 48000 ? 48000 : audio.getSampleRate());
-							sm.setBitspersample(16);
+							sm.setBitsPerSample(16);
 							if (!params.mediaRenderer.isMuxDTSToMpeg()) {
 								ffAudioPipe[i].setModifier(sm);
 							}
@@ -466,12 +466,12 @@ public class TSMuxerVideo extends Player {
 								"-quiet",
 								"-really-quiet",
 								"-msglevel", "statusline=2",
-								"-channels", "" + sm.getNbchannels(),
+								"-channels", "" + sm.getNbChannels(),
 								"-ovc", "copy",
 								"-of", "rawaudio",
-								"-mc", sm.isDtsembed() ? "0.1" : "0",
+								"-mc", sm.isDtsEmbed() ? "0.1" : "0",
 								"-noskip",
-								"-oac", sm.isDtsembed() ? "copy" : "pcm",
+								"-oac", sm.isDtsEmbed() ? "copy" : "pcm",
 								isNotBlank(mixer) ? "-af" : "-quiet", isNotBlank(mixer) ? mixer : "-quiet",
 								singleMediaAudio ? "-quiet" : "-aid", singleMediaAudio ? "-quiet" : ("" + audio.getId()),
 								"-srate", "48000",
@@ -645,13 +645,17 @@ public class TSMuxerVideo extends Player {
 				pw.println(type + ", \"" + ffAudioPipe[i].getOutputPipe() + "\", " + timeshift + "track=" + (2 + i));
 			}
 		}
+
 		pw.close();
 
 		PipeProcess tsPipe = new PipeProcess(System.currentTimeMillis() + "tsmuxerout.ts");
-		String[] cmdArray = new String[]{executable(), f.getAbsolutePath(), tsPipe.getInputPipe()};
+		String[] cmdArray = new String[]{
+			executable(),
+			f.getAbsolutePath(),
+			tsPipe.getInputPipe()
+		};
 
 		cmdArray = finalizeTranscoderArgs(
-			this,
 			fileName,
 			dlna,
 			media,
@@ -669,26 +673,27 @@ public class TSMuxerVideo extends Player {
 
 		try {
 			Thread.sleep(50);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) { }
+
 		tsPipe.deleteLater();
 
 		if (ffVideoPipe != null) {
 			ProcessWrapper ff_pipe_process = ffVideoPipe.getPipeProcess();
 			p.attachProcess(ff_pipe_process);
 			ff_pipe_process.runInNewThread();
+
 			try {
 				Thread.sleep(50);
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) { }
+
 			ffVideoPipe.deleteLater();
 
 			p.attachProcess(ffVideo);
 			ffVideo.runInNewThread();
+
 			try {
 				Thread.sleep(50);
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) { }
 		}
 
 		if (ffAudioPipe != null && params.aid != null) {
@@ -696,10 +701,11 @@ public class TSMuxerVideo extends Player {
 				ProcessWrapper ff_pipe_process = ffAudioPipe[i].getPipeProcess();
 				p.attachProcess(ff_pipe_process);
 				ff_pipe_process.runInNewThread();
+
 				try {
 					Thread.sleep(50);
-				} catch (InterruptedException e) {
-				}
+				} catch (InterruptedException e) { }
+
 				ffAudioPipe[i].deleteLater();
 				p.attachProcess(ffAudio[i]);
 				ffAudio[i].runInNewThread();
@@ -708,10 +714,10 @@ public class TSMuxerVideo extends Player {
 
 		try {
 			Thread.sleep(100);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) { }
 
 		p.runInNewThread();
+
 		return p;
 	}
 

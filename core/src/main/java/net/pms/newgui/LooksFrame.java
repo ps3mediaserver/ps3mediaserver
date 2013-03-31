@@ -51,7 +51,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class LooksFrame extends JFrame implements IFrame, Observer {
-	private static final Logger logger = LoggerFactory.getLogger(LooksFrame.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LooksFrame.class);
 	private final AutoUpdater autoUpdater;
 	private final PmsConfiguration configuration;
 	public static final String START_SERVICE = "start.service";
@@ -93,7 +93,6 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		if (Platform.isWindows()) {
 			try {
 				selectedLaf = (LookAndFeel) Class.forName("com.jgoodies.looks.windows.WindowsLookAndFeel").newInstance();
-				//selectedLaf = (LookAndFeel) Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance();
 			} catch (Exception e) {
 				selectedLaf = new PlasticLookAndFeel();
 			}
@@ -102,22 +101,23 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		} else {
 			try {
 				String systemClassName = UIManager.getSystemLookAndFeelClassName();
-				// workaround for gnome
+				// workaround for Gnome
 				try {
 					String gtkLAF = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
 					Class.forName(gtkLAF);
+
 					if (systemClassName.equals("javax.swing.plaf.metal.MetalLookAndFeel")) {
 						systemClassName = gtkLAF;
 					}
 				} catch (ClassNotFoundException ce) {
-					logger.debug("Caught exception", ce);
+					LOGGER.error("Error loading GTK look and feel: ", ce);
 				}
 
-				logger.debug("Choosing java look and feel: " + systemClassName);
+				LOGGER.trace("Choosing Java look and feel: " + systemClassName);
 				UIManager.setLookAndFeel(systemClassName);
 			} catch (Exception e1) {
 				selectedLaf = new PlasticLookAndFeel();
-				logger.error("Error while setting native look and feel: ", e1);
+				LOGGER.error("Error while setting native look and feel: ", e1);
 			}
 		}
 
@@ -139,7 +139,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			try {
 				UIManager.setLookAndFeel(selectedLaf);
 			} catch (UnsupportedLookAndFeelException e) {
-				logger.debug("Cannot change look and feel", e);
+				LOGGER.warn("Can't change look and feel", e);
 			}
 		}
 
@@ -178,6 +178,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		if (language != null && (language.equals("ja") || language.startsWith("zh"))) {
 			sf = new Font("Serif", Font.PLAIN, 12);
 		}
+
 		if (sf != null) {
 			UIManager.put("Button.font", sf);
 			UIManager.put("ToggleButton.font", sf);
@@ -232,15 +233,19 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		if (showScrollbars.equals("true")) {
 			setContentPane(
 				new JScrollPane(
-				jp,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS));
+					jp,
+					ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS
+				)
+			);
 		} else if (showScrollbars.equals("optional")) {
 			setContentPane(
 				new JScrollPane(
-				jp,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+					jp,
+					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
+				)
+			);
 		} else {
 			setContentPane(jp);
 		}
@@ -337,7 +342,6 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		//panel.applyComponentOrientation(orientation);
 		panel.add(status, BorderLayout.SOUTH);
 
-
 		return panel;
 	}
 
@@ -381,11 +385,13 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 
 	public void quit() {
 		WindowsNamedPipe.setLoop(false);
+
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
-			logger.error(null, e);
+			LOGGER.error(null, e);
 		}
+
 		System.exit(0);
 	}
 
@@ -402,10 +408,11 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	@Override
 	public void setStatusCode(int code, String msg, String icon) {
 		st.getJl().setText(msg);
+
 		try {
 			st.getImagePanel().set(ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/" + icon)));
 		} catch (IOException e) {
-			logger.error(null, e);
+			LOGGER.error(null, e);
 		}
 	}
 
@@ -423,11 +430,11 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	 * changed.<br>
 	 * The actions requiring a server restart are defined by {@link PmsConfiguration#NEED_RELOAD_FLAGS}
 	 * 
-	 * @param b true if the server has to be restarted, false otherwise
+	 * @param bool true if the server has to be restarted, false otherwise
 	 */
 	@Override
-	public void setReloadable(boolean b) {
-		if(b) {
+	public void setReloadable(boolean bool) {
+		if (bool) {
 			reload.setIcon(readImageIcon("reload_page_required-48.png"));
 			reload.setToolTipText(Messages.getString("LooksFrame.13"));
 		} else {
@@ -452,8 +459,8 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		if (autoUpdater != null) {
 			try {
 				AutoUpdateDialog.showIfNecessary(this, autoUpdater);
-			} catch (NoClassDefFoundError ncdf) {
-				logger.info("Class not found: " + ncdf.getMessage());
+			} catch (NoClassDefFoundError ncdfe) {
+				LOGGER.error("Error displaying AutoUpdateDialog", ncdfe);
 			}
 		}
 	}
@@ -462,6 +469,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		if (line == null) {
 			line = " ";
 		}
+
 		status.setText(line);
 	}
 

@@ -41,7 +41,7 @@ import java.util.Locale;
 import javax.swing.text.DefaultCaret;
 
 public class TracesTab {
-	private static final Logger logger = LoggerFactory.getLogger(TracesTab.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TracesTab.class);
 	private PmsConfiguration configuration;
 
 	class PopupTriggerMouseListener extends MouseAdapter {
@@ -133,27 +133,32 @@ public class TracesTab {
 		jListPane = new JScrollPane(jList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		builder.add(jListPane, cc.xyw(1, 1, 2));
 
-		// Add buttons opening log files
-		JPanel pLogFileButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		HashMap<String, String> logFiles = LoggingConfigFileLoader.getLogFilePaths();
-		for (String loggerName : logFiles.keySet()) {
+		// Add buttons to open logfiles (there may be more than one)
+		JPanel pLogfileButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		HashMap<String, String> logfiles = LoggingConfigFileLoader.getLogFilePaths();
+
+		for (String loggerName : logfiles.keySet()) {
 			JButton b = new JButton(loggerName);
-			b.setToolTipText(logFiles.get(loggerName));
+			b.setToolTipText(logfiles.get(loggerName));
+
 			b.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					File logFile = new File(((JButton) e.getSource()).getToolTipText());
+					File logfile = new File(((JButton) e.getSource()).getToolTipText());
 					try {
-						java.awt.Desktop.getDesktop().open(logFile);
-					} catch (IOException e1) {
-						logger.error(String.format("Failed to open file %s in default editor", logFile), e1);
+						java.awt.Desktop.getDesktop().open(logfile);
+					} catch (IOException ioe) {
+						LOGGER.error(String.format("Failed to open file %s in default editor", logfile), ioe);
+					} catch (UnsupportedOperationException usoe) {
+						LOGGER.error(String.format("Failed to open file %s in default editor", logfile), usoe);
 					}
 				}
 			});
-			pLogFileButtons.add(b);
-		}
-		builder.add(pLogFileButtons, cc.xy(2, 2));
 
+			pLogfileButtons.add(b);
+		}
+
+		builder.add(pLogfileButtons, cc.xy(2, 2));
 		return builder.getPanel();
 	}
 }

@@ -51,7 +51,7 @@ public class DLNAMediaLang {
 	 * "Undetermined" is returned.
 	 * 
 	 * @return The language name
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getLangFullName() {
 		if (StringUtils.isNotBlank(lang)) {
@@ -68,7 +68,7 @@ public class DLNAMediaLang {
 	 * Returns the unique id for this language object
 	 * 
 	 * @return The id.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public int getId() {
 		return id;
@@ -78,7 +78,7 @@ public class DLNAMediaLang {
 	 * Sets a unique id for this language object.
 	 * 
 	 * @param id The id to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -91,7 +91,7 @@ public class DLNAMediaLang {
 	 * (indicates an audio track or subtitle should be disabled).
 	 * 
 	 * @return The language code.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public String getLang() {
 		return lang;
@@ -102,7 +102,7 @@ public class DLNAMediaLang {
 	 * subtitle should be disabled).
 	 * 
 	 * @param lang The language code to set.
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setLang(String lang) {
 		this.lang = lang;

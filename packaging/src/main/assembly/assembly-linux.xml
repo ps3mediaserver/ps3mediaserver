@@ -51,6 +51,7 @@
 			<lineEnding>unix</lineEnding>
 			<includes>
 				<include>README.md</include>
+				<include>CHANGELOG.txt</include>
 			</includes>
 		</fileSet>
 
@@ -61,7 +62,6 @@
 			<fileMode>0644</fileMode>
 			<lineEnding>unix</lineEnding>
 			<includes>
-				<include>CHANGELOG</include>
 				<include>LICENSE.txt</include>
 			</includes>
 		</fileSet>

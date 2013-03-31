@@ -1,5 +1,7 @@
 package net.pms.configuration;
 
+import net.pms.util.FileUtil;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Handles finding a temporary folder.
+ * Handles finding a temporary directory.
  * 
  * @author Tim Cox (mail@tcox.org)
  */
@@ -48,7 +50,7 @@ class TempFolder {
 
 	private File getUserSpecifiedTempFolder(String userSpecifiedFolder) throws IOException {
 		if (userSpecifiedFolder != null && userSpecifiedFolder.length() == 0) {
-			throw new IOException("temporary folder path must not be empty if specified");
+			throw new IOException("Temporary directory path must not be empty if specified");
 		}
 
 		File folderFile = new File(userSpecifiedFolder);
@@ -67,11 +69,11 @@ class TempFolder {
 
 	private static void assertFolderIsValid(File folder) throws IOException {
 		if (!folder.isDirectory()) {
-			throw new IOException("Temp folder must be a folder: " + folder);
+			throw new IOException("Temp directory must be a directory: " + folder);
 		}
 
-		if (!folder.canWrite()) {
-			throw new IOException("Temp folder is not writable: " + folder);
+		if (!FileUtil.isDirectoryWritable(folder)) {
+			throw new IOException("Temp directory is not writable: " + folder);
 		}
 	}
 }

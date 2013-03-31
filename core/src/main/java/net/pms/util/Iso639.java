@@ -89,6 +89,7 @@ public class Iso639 {
 				}
 			}
 		}
+
 		return lang;
 	}
 
@@ -106,6 +107,7 @@ public class Iso639 {
 
 		String lang = null;
 		Iterator<Entry<String, String[]>> iterator = links.entrySet().iterator();
+
 		while (iterator.hasNext()) {
 			Entry<String, String[]> entry = iterator.next();
 			for (String c : entry.getValue()) {
@@ -157,12 +159,13 @@ public class Iso639 {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
 	/**
 	 * Verifies that two ISO codes match the same language. Returns true if a
-	 * match can be made, false otherwise. The alias "loc" can be used as code,
+	 * match can be made, false otherwise. The alias "loc" can be used as a code,
 	 * it will be replaced by the ISO code of the preferred language from the
 	 * PMS settings.
 	 *
@@ -193,6 +196,7 @@ public class Iso639 {
 				}
 			}
 		}
+
 		return false;
 	}
 

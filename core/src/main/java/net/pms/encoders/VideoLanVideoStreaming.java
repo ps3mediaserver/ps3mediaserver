@@ -141,7 +141,8 @@ public class VideoLanVideoStreaming extends Player {
 			getEncodingArgs(),
 			getMux(),
 			(isWindows ? "\\\\" : ""),
-			tsPipe.getInputPipe());
+			tsPipe.getInputPipe()
+		);
 
 		// XXX there's precious little documentation on how (if at all) VLC
 		// treats colons and hyphens (and :name= and --name=) differently
@@ -151,6 +152,7 @@ public class VideoLanVideoStreaming extends Player {
 		if (isWindows) {
 			cmdList.add("--dummy-quiet");
 		}
+
 		if (isWindows || Platform.isMac()) {
 			cmdList.add("--sout=" + transcodeSpec);
 		} else {
@@ -163,6 +165,7 @@ public class VideoLanVideoStreaming extends Player {
 		if (Platform.isMac()) {
 			cmdList.add("");
 		}
+
 		cmdList.add(fileName);
 		cmdList.add("vlc://quit");
 
@@ -170,7 +173,6 @@ public class VideoLanVideoStreaming extends Player {
 		cmdList.toArray(cmdArray);
 
 		cmdArray = finalizeTranscoderArgs(
-			this,
 			fileName,
 			dlna,
 			media,
@@ -182,8 +184,7 @@ public class VideoLanVideoStreaming extends Player {
 
 		try {
 			Thread.sleep(150);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) { }
 
 		pw.runInNewThread();
 		return pw;
