@@ -928,7 +928,7 @@ public class PmsConfiguration {
 	 }
 	 
 	 /**
-	  * @deprecated Use {@link #setDisableSubtitles()} instead.
+	  * @deprecated Use {@link #setDisableSubtitles(boolean)} instead.
 	  */
 	 public void setMencoderDisableSubs(boolean value) {
 		 setDisableSubtitles(value);
@@ -1111,7 +1111,7 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #setAudioLanguages()} instead.
+	 * @deprecated Use {@link #setAudioLanguages(String)} instead.
 	 */
 	public void setMencoderAudioLanguages(String value) {
 		setAudioLanguages(value);
@@ -1128,7 +1128,7 @@ public class PmsConfiguration {
 	}
 	
 	/**
-	 * @deprecated Use {@link #setSubtitlesLanguages()} instead.
+	 * @deprecated Use {@link #setSubtitlesLanguages(String)} instead.
 	 */
 	public void setMencoderSubLanguages(String value) {
 		setSubtitlesLanguages(value);
@@ -1145,7 +1145,7 @@ public class PmsConfiguration {
 	}
 	
 	/**
-	 * @deprecated Use {@link #setForcedSubtitleLanguage()} instead.
+	 * @deprecated Use {@link #setForcedSubtitleLanguage(String)} instead.
 	 */
 	public void setMencoderForcedSubLanguage(String value) {
 		setForcedSubtitleLanguage(value);
@@ -1161,7 +1161,7 @@ public class PmsConfiguration {
 	}
 	
 	/**
-	 * @deprecated Use {@link #setForcedSubtitleTags()} instead.
+	 * @deprecated Use {@link #setForcedSubtitleTags(String)} instead.
 	 */
 	public void setMencoderForcedSubTags(String value) {
 		setForcedSubtitleTags(value);
@@ -1334,7 +1334,8 @@ public class PmsConfiguration {
 	 * upscale the video itself.
 	 *
 	 * @return True if MEncoder should be used, false otherwise.
-	 * @see {@link #getMencoderScaleX(int)}, {@link #getMencoderScaleY(int)}
+	 * @see #getMencoderScaleX()
+	 * @see #getMencoderScaleY()
 	 */
 	public boolean isMencoderScaler() {
 		return getBoolean(KEY_MENCODER_SCALER, false);
@@ -1345,7 +1346,8 @@ public class PmsConfiguration {
 	 * optimal resolution. Set to false to leave upscaling to the renderer.
 	 *
 	 * @param value Set to true if MEncoder should be used to upscale.
-	 * @see {@link #setMencoderScaleX(int)}, {@link #setMencoderScaleY(int)}
+	 * @see #setMencoderScaleX(int)
+	 * @see #setMencoderScaleY(int)
 	 */
 	public void setMencoderScaler(boolean value) {
 		configuration.setProperty(KEY_MENCODER_SCALER, value);
@@ -1472,8 +1474,6 @@ public class PmsConfiguration {
 	 * This only determines whether a thumbnailer (e.g. dcraw, MPlayer)
 	 * is used to generate thumbnails. It does not reflect whether
 	 * thumbnails should be displayed or not.
-	 *
-	 * @return boolean indicating whether thumbnail generation is enabled.
 	 */
 	@Deprecated
 	public void setThumbnailsEnabled(boolean value) {
