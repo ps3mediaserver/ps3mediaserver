@@ -18,18 +18,26 @@
  */
 package net.pms.io;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import net.pms.PMS;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
-import net.pms.PMS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.util.ArrayList;
 
 public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WindowsNamedPipe.class);
@@ -67,17 +75,32 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 
 		Kernel32 SYNC_INSTANCE = (Kernel32) Native.synchronizedLibrary(INSTANCE);
 
-		class SECURITY_ATTRIBUTES extends Structure {
+		// @see http://msdn.microsoft.com/en-us/library/windows/desktop/aa379560%28v=vs.85%29.aspx
+		class LPSECURITY_ATTRIBUTES extends Structure {
 			public int nLength = size();
 			public Pointer lpSecurityDescriptor;
 			public boolean bInheritHandle;
+
+			@Override
+			protected ArrayList<String> getFieldOrder() {
+				return (ArrayList<String>) Arrays.asList(new String[] { "nLength",
+						"lpSecurityDescriptor", "bInheritHandle" });
+			}
 		}
 
-		public static class LPOVERLAPPED extends Structure { }
+		// @see http://msdn.microsoft.com/en-us/library/windows/desktop/ms684342%28v=vs.85%29.aspx
+		public static class LPOVERLAPPED extends Structure {
+			@Override
+			protected ArrayList<String> getFieldOrder() {
+				return (ArrayList<String>) Arrays.asList(new String[] {
+						"Internal", "InternalHigh", "Offset", "OffsetHigh",
+						"Pointer", "hEvent" });
+			}
+		}
 
 		Pointer CreateNamedPipeA(String lpName, int dwOpenMode, int dwPipeMode,
 			int nMaxInstances, int nOutBufferSize, int nInBufferSize,
-			int nDefaultTimeOut, SECURITY_ATTRIBUTES lpSecurityAttributes
+			int nDefaultTimeOut, LPSECURITY_ATTRIBUTES lpSecurityAttributes
 		);
 
 		boolean ConnectNamedPipe(Pointer handle, LPOVERLAPPED overlapped);
