@@ -334,7 +334,7 @@ public class PMS {
 		proxy = -1;
 
         LOGGER.info("Starting " + PropertiesUtil.getProjectProperties().get("project.name") + " " + getVersion());
-        LOGGER.info("by shagrath / 2008-2012");
+        LOGGER.info("by shagrath / 2008-2013");
         LOGGER.info("http://ps3mediaserver.org");
         LOGGER.info("https://github.com/ps3mediaserver/ps3mediaserver");
         LOGGER.info("");
