@@ -282,7 +282,7 @@ IF (APPLE)
     # architecture causes asm errors, so we disable asm as well.
     SET(CONFIGURE_COMMAND_XAVS ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --host=x86_64-apple-darwin --disable-asm)
 ELSE()
-    SET(CONFIGURE_COMMAND_XAVS ./config no-shared no-idea no-mdc2 no-rc5 --prefix=${CMAKE_BINARY_DIR})
+    SET(CONFIGURE_COMMAND_XAVS ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared)
 ENDIF()
 
 EXTERNALPROJECT_ADD(
