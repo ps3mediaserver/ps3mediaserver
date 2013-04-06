@@ -1,7 +1,7 @@
 Changelog:
 ==========
 
-1.80.0 - 2013-??-??
+1.80.0 - 2013-04-06
 
     Regressions:
         - Re-allow all transcode engines to be disabled
@@ -35,11 +35,14 @@ Changelog:
     Misc:
         - Fixed bug that prevents PMS running multiple profiles concurrently
         - Fixed NPE when responding to DLNA subtitle requests
+        - Fixed NPE for empty soapactions
         - Image thumbnailer:
             - Added thumbnail support for TIFF and other formats
             - Trapped exception when handling unsupported formats
         - Fixed response to M-SEARCH "ssdp:all" message (thanks, ler0y!)
+        - Fixed fontconfig configuration for Mac OSX, improving subtitle quality
         - Moved several transcoding settings from MEncoder to Common transcoding settings
+        - Layout improvements to remove scroll bars where possible
         - Help is now context sensitive
 
 1.72.0 - 2012-11-18
