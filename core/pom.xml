@@ -893,10 +893,6 @@
 											dest="${project.binaries}/win32/fonts/conf.avail/10-unhinted.conf"
 											usetimestamp="true" />
 										<get
-											src="${project.binaries-base}/win32/fonts/conf.avail/20-fix-globaladvance.conf"
-											dest="${project.binaries}/win32/fonts/conf.avail/20-fix-globaladvance.conf"
-											usetimestamp="true" />
-										<get
 											src="${project.binaries-base}/win32/fonts/conf.avail/20-unhint-small-vera.conf"
 											dest="${project.binaries}/win32/fonts/conf.avail/20-unhint-small-vera.conf"
 											usetimestamp="true" />
@@ -967,10 +963,6 @@
 										<get
 											src="${project.binaries-base}/win32/fonts/conf.avail/90-synthetic.conf"
 											dest="${project.binaries}/win32/fonts/conf.avail/90-synthetic.conf"
-											usetimestamp="true" />
-										<get
-											src="${project.binaries-base}/win32/fonts/conf.d/20-fix-globaladvance.conf"
-											dest="${project.binaries}/win32/fonts/conf.d/20-fix-globaladvance.conf"
 											usetimestamp="true" />
 										<get
 											src="${project.binaries-base}/win32/fonts/conf.d/20-unhint-small-vera.conf"
