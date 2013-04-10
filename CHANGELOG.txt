@@ -12,8 +12,8 @@ Changelog:
         - Add support for the file:// protocol
         - Match protocols (e.g. mms://...) before extensions (e.g. http://example.com/foo.mms)
 
-	Misc:
-	    - Media Parser v1: fix audio channel parsing
+    Misc:
+        - Media Parser v1: fix audio channel parsing
 
 1.80.0 - 2013-04-06
 
