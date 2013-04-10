@@ -31,7 +31,7 @@
 	<artifactId>pms</artifactId>
 	<name>PS3 Media Server</name>
 	<packaging>jar</packaging>
-	<version>1.80.1-SNAPSHOT</version> <!-- XXX don't forget to update project.version.short below -->
+	<version>1.81.0-SNAPSHOT</version> <!-- XXX don't forget to update project.version.short below -->
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
 
@@ -74,7 +74,7 @@
 
 	<properties>
 		<!-- NSIS needs a version without "-SNAPSHOT" or "-b1" -->
-		<project.version.short>1.80.1</project.version.short>
+		<project.version.short>1.81.0</project.version.short>
 
 		<!--
 			JNA 3.4.0 solves issue #1152, but causes a bug in Windows.

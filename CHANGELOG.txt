@@ -1,8 +1,12 @@
 Changelog:
 ==========
 
-1.80.1 - 2013-??-??
+1.81.0 - 2013-??-??
 
+    Engines:
+        FFmpeg:
+            Add/fix audio channel options
+            Build script: add https support
 
 1.80.0 - 2013-04-06
 
