@@ -116,18 +116,18 @@ public class FFMpegDVRMSRemux extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String fileName,
+		String filename,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
 		OutputParams params
 	) throws IOException {
-		return getFFMpegTranscode(fileName, dlna, media, params);
+		return getFFMpegTranscode(filename, dlna, media, params);
 	}
 
 	// pointless redirection of launchTranscode
 	@Deprecated
 	protected ProcessWrapperImpl getFFMpegTranscode(
-		String fileName,
+		String filename,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
 		OutputParams params
@@ -148,7 +148,7 @@ public class FFMpegDVRMSRemux extends Player {
 		}
 
 		cmdList.add("-i");
-		cmdList.add(fileName);
+		cmdList.add(filename);
 
 		for (String arg : args()) {
 			cmdList.add(arg);
@@ -170,7 +170,7 @@ public class FFMpegDVRMSRemux extends Player {
 		cmdList.toArray(cmdArray);
 
 		cmdArray = finalizeTranscoderArgs(
-			fileName,
+			filename,
 			dlna,
 			media,
 			params,

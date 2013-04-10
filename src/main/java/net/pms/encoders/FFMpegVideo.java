@@ -328,12 +328,12 @@ public class FFMpegVideo extends Player {
 		int nChannels = params.aid == null ? -1 : params.aid.getAudioProperties().getNumberOfChannels();
 
 		if (nChannels == -1) { // unknown (e.g. web video)
-			ac = 2;
+			ac = 2; // works fine if the video has < 2 channels
 		} else if (nChannels > 2) {
 			// TODO getAudioChannelCount should only return 2 or 6 (as per the GUI)
 			int outputChannels = configuration.getAudioChannelCount();
 
-		    if (outputChannels <= 2) {
+			if (outputChannels <= 2) {
 				ac = outputChannels;
 			} else if (params.mediaRenderer.isTranscodeToWMV()) {
 				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=16590
@@ -445,7 +445,7 @@ public class FFMpegVideo extends Player {
 		cmdList.add(executable());
 
 		cmdList.add("-loglevel");
-		cmdList.add("warning");
+		cmdList.add("warning"); // XXX this should probably be configurable, for debugging
 
 		if (params.timeseek > 0) {
 			cmdList.add("-ss");
