@@ -1399,7 +1399,6 @@ public class PmsConfiguration {
 	 *
 	 * @return The number of audio channels.
 	 */
-	// XXX this should probably be restricted to 6 or 2 as it is in the GUI
 	public int getAudioChannelCount() {
 		return getInt(KEY_AUDIO_CHANNEL_COUNT, 6);
 	}
@@ -1410,7 +1409,6 @@ public class PmsConfiguration {
 	 *
 	 * @param value The number of audio channels.
 	 */
-	// XXX this should probably be restricted to 6 or 2 as it is in the GUI
 	public void setAudioChannelCount(int value) {
 		configuration.setProperty(KEY_AUDIO_CHANNEL_COUNT, value);
 	}

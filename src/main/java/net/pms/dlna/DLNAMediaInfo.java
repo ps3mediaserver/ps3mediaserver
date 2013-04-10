@@ -96,6 +96,40 @@ public class DLNAMediaInfo implements Cloneable {
 	// Stored in database
 	private Double durationSec;
 
+	private static final Map<String, Integer> AUDIO_CHANNEL_LAYOUT = new HashMap<String, Integer>();
+
+	// map ffmpeg's audio layout field to the corresponding number of channels
+	// see: libavutil/channel_layout.c
+	static {
+		AUDIO_CHANNEL_LAYOUT.put("mono", 1);
+		AUDIO_CHANNEL_LAYOUT.put("downmix", 2);
+		AUDIO_CHANNEL_LAYOUT.put("stereo", 2);
+		AUDIO_CHANNEL_LAYOUT.put("2.1", 3);
+		AUDIO_CHANNEL_LAYOUT.put("3.0", 3);
+		AUDIO_CHANNEL_LAYOUT.put("3.0(back)", 3);
+		AUDIO_CHANNEL_LAYOUT.put("4.0", 4);
+		AUDIO_CHANNEL_LAYOUT.put("quad", 4);
+		AUDIO_CHANNEL_LAYOUT.put("quad(side)", 4);
+		AUDIO_CHANNEL_LAYOUT.put("3.1", 4);
+		AUDIO_CHANNEL_LAYOUT.put("5.0", 5);
+		AUDIO_CHANNEL_LAYOUT.put("5.0(side)", 5);
+		AUDIO_CHANNEL_LAYOUT.put("4.1", 5);
+		AUDIO_CHANNEL_LAYOUT.put("5:1", 6);
+		AUDIO_CHANNEL_LAYOUT.put("5.1", 6);
+		AUDIO_CHANNEL_LAYOUT.put("5.1(side)", 6);
+		AUDIO_CHANNEL_LAYOUT.put("6.0", 6);
+		AUDIO_CHANNEL_LAYOUT.put("6.0(front)", 6);
+		AUDIO_CHANNEL_LAYOUT.put("hexagonal", 6);
+		AUDIO_CHANNEL_LAYOUT.put("6.1", 7);
+		AUDIO_CHANNEL_LAYOUT.put("6.1", 7);
+		AUDIO_CHANNEL_LAYOUT.put("6.1(front)", 7);
+		AUDIO_CHANNEL_LAYOUT.put("7.0", 7);
+		AUDIO_CHANNEL_LAYOUT.put("7.0(front)", 7);
+		AUDIO_CHANNEL_LAYOUT.put("7.1", 8);
+		AUDIO_CHANNEL_LAYOUT.put("7.1(wide)", 8);
+		AUDIO_CHANNEL_LAYOUT.put("octagonal", 8);
+	}
+
 	/**
 	 * @deprecated Use standard getter and setter to access this variable.
 	 */
@@ -763,23 +797,17 @@ public class DLNAMediaInfo implements Cloneable {
 
 								while (st.hasMoreTokens()) {
 									String token = st.nextToken().trim();
+									Integer nChannels;
+
 									if (token.startsWith("Stream")) {
 										audio.setCodecA(token.substring(token.indexOf("Audio: ") + 7));
-
 									} else if (token.endsWith("Hz")) {
 										audio.setSampleFrequency(token.substring(0, token.indexOf("Hz")).trim());
-									} else if (token.equals("mono")) {
-										audio.getAudioProperties().setNumberOfChannels(1);
-									} else if (token.equals("stereo")) {
-										audio.getAudioProperties().setNumberOfChannels(2);
-									} else if (token.equals("5:1") || token.equals("5.1") || token.equals("6 channels")) {
-										audio.getAudioProperties().setNumberOfChannels(6);
-									} else if (token.equals("5 channels")) {
-										audio.getAudioProperties().setNumberOfChannels(5);
-									} else if (token.equals("4 channels")) {
-										audio.getAudioProperties().setNumberOfChannels(4);
-									} else if (token.equals("2 channels")) {
-										audio.getAudioProperties().setNumberOfChannels(2);
+									} else if ((nChannels = AUDIO_CHANNEL_LAYOUT.get(token)) != null) {
+										audio.getAudioProperties().setNumberOfChannels(nChannels);
+									} else if (token.matches("\\d+(?:\\s+channels?)")) { // implicitly anchored at both ends e.g. ^ ... $
+										// setNumberOfChannels(String) parses the number out of the string
+										audio.getAudioProperties().setNumberOfChannels(token);
 									} else if (token.equals("s32")) {
 										audio.setBitsperSample(32);
 									} else if (token.equals("s24")) {
@@ -788,6 +816,7 @@ public class DLNAMediaInfo implements Cloneable {
 										audio.setBitsperSample(16);
 									}
 								}
+
 								int FFmpegMetaDataNr = FFmpegMetaData.nextIndex();
 								if (FFmpegMetaDataNr > -1) line = lines.get(FFmpegMetaDataNr);
 								if (line.indexOf("Metadata:") > -1) {

@@ -323,18 +323,16 @@ public class FFMpegVideo extends Player {
 
 	public List<String> getAudioChannelOptions(String filename, DLNAResource dlna, DLNAMediaInfo media, OutputParams params) {
 		List<String> audioChannelOptions = new ArrayList<String>();
-
 		int ac = -1; // -1: don't change the number of audio channels
 		int nChannels = params.aid == null ? -1 : params.aid.getAudioProperties().getNumberOfChannels();
 
 		if (nChannels == -1) { // unknown (e.g. web video)
 			ac = 2; // works fine if the video has < 2 channels
 		} else if (nChannels > 2) {
-			// TODO getAudioChannelCount should only return 2 or 6 (as per the GUI)
-			int outputChannels = configuration.getAudioChannelCount();
+			int maxOutputChannels = configuration.getAudioChannelCount();
 
-			if (outputChannels <= 2) {
-				ac = outputChannels;
+			if (maxOutputChannels <= 2) {
+				ac = maxOutputChannels;
 			} else if (params.mediaRenderer.isTranscodeToWMV()) {
 				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=16590
 				// XXX WMA Pro (wmapro) supports > 2 channels, but ffmpeg doesn't have an encoder for it
