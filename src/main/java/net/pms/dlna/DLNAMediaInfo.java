@@ -121,7 +121,6 @@ public class DLNAMediaInfo implements Cloneable {
 		AUDIO_CHANNEL_LAYOUT.put("6.0(front)", 6);
 		AUDIO_CHANNEL_LAYOUT.put("hexagonal", 6);
 		AUDIO_CHANNEL_LAYOUT.put("6.1", 7);
-		AUDIO_CHANNEL_LAYOUT.put("6.1", 7);
 		AUDIO_CHANNEL_LAYOUT.put("6.1(front)", 7);
 		AUDIO_CHANNEL_LAYOUT.put("7.0", 7);
 		AUDIO_CHANNEL_LAYOUT.put("7.0(front)", 7);
