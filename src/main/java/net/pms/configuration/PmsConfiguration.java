@@ -1807,7 +1807,7 @@ public class PmsConfiguration {
 	 * @return The string of network interface names to skip.
 	 */
 	public List<String> getSkipNetworkInterfaces() {
-		return getStringList(KEY_SKIP_NETWORK_INTERFACES, "tap,vmnet,vnic");
+		return getStringList(KEY_SKIP_NETWORK_INTERFACES, "tap,vmnet,vnic,virtualbox");
 	}
 
 	public void setSkipLoopFilterEnabled(boolean value) {
