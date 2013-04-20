@@ -16,7 +16,7 @@ following commands (replace <version> with the version you're downloading/using 
     # if wget isn't installed, run: sudo apt-get install wget
     wget https://ps3mediaserver.googlecode.com/files/pms-generic-linux-unix-<version>.tgz
 
-3) Extract the tarball into the pms-<version> directory:
+3) Extract the tarball into a pms-<version> directory:
 
     tar xzvf pms-generic-linux-unix-<version>.tgz
 
