@@ -2,6 +2,7 @@ Changelog:
 ==========
 
 1.81.0 - 2013-??-??
+
     Engines:
         FFmpeg:
             - Add/fix audio channel options
