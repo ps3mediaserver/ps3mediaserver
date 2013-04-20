@@ -2,7 +2,6 @@ Changelog:
 ==========
 
 1.81.0 - 2013-??-??
-
     Engines:
         FFmpeg:
             - Add/fix audio channel options
@@ -14,6 +13,7 @@ Changelog:
 
     Misc:
         - Media Parser v1: fix audio channel parsing
+        - Fix for "Can't assign requested address" bug after update to Java 1.6.0_45 on Mac OSX
 
 1.80.0 - 2013-04-06
 
