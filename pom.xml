@@ -31,7 +31,7 @@
 	<artifactId>pms</artifactId>
 	<name>PS3 Media Server</name>
 	<packaging>jar</packaging>
-	<version>1.81.0-SNAPSHOT</version> <!-- XXX don't forget to update project.version.short below -->
+	<version>1.81.0</version> <!-- XXX don't forget to update project.version.short below -->
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
 
@@ -103,8 +103,8 @@
 		<project.binaries>${project.basedir}/target/bin</project.binaries>
 
 		<!-- Snapshots should get their binaries from the trunk, releases from a tag -->
-		<!-- <project.binaries-base>http://ps3mediaserver.googlecode.com/svn/tags/${project.version}/ps3mediaserver</project.binaries-base> -->
-		<project.binaries-base>http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver</project.binaries-base>
+		<project.binaries-base>http://ps3mediaserver.googlecode.com/svn/tags/${project.version}/ps3mediaserver</project.binaries-base>
+		<!-- <project.binaries-base>http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver</project.binaries-base> -->
 
 		<maven.nsis.project.template>${project.basedir}/src/main/external-resources/nsis/project.jelly</maven.nsis.project.template>
 		<maven-javadoc-plugin-version>2.9</maven-javadoc-plugin-version>
