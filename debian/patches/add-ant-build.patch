@@ -1677,7 +1677,7 @@ Description: add ant build support
 +maven.repo.local=target/ant-dependencies
 --- /dev/null
 +++ b/build.xml
-@@ -0,0 +1,230 @@
+@@ -0,0 +1,225 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +
 +<!-- ====================================================================== -->
@@ -1795,11 +1795,6 @@ Description: add ant build support
 +    <mkdir dir="${maven.build.outputDir}/resources"/>
 +    <copy todir="${maven.build.outputDir}/resources">
 +      <fileset dir="${maven.build.resourceDir.0}"/>
-+    </copy>
-+    <copy todir="${maven.build.outputDir}">
-+      <fileset dir="${maven.build.resourceDir.2}">
-+        <include name="**/*.properties"/>
-+      </fileset>
 +    </copy>
 +  </target>
 +
