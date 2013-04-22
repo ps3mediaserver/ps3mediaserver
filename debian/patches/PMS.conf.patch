@@ -27,16 +27,16 @@
  
  # Hide cache folder
  # -----------------
-@@ -388,7 +388,7 @@
- # GUI Option: Ordered list of engines (selector)
- # System generates list of available engines, list depends on host.
- # Default: "mencoder,avsmencoder,tsmuxer,ffmpegvideo,ffmpegaudio,mplayeraudio,tsmuxeraudio,ffmpegwebvideo,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux,rawthumbs"
--engines =
-+engines = tsmuxer,mencoder,ffmpegvideo,ffmpegaudio,mplayeraudio,tsmuxeraudio,ffmpegwebvideo,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,rawthumbs
+@@ -390,7 +390,7 @@
+ # disable all engines.
+ # Default: "mencoder,avsmencoder,tsmuxer,ffmpegvideo,vlctranscoder,ffmpegaudio,mplayeraudio,tsmuxeraudio,ffmpegwebvideo,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,ffmpegdvrmsremux,rawthumbs"
+ 
+-# engines =
++engines = tsmuxer,mencoder,ffmpegvideo,vlctranscoder,ffmpegaudio,mplayeraudio,tsmuxeraudio,ffmpegwebvideo,vlcvideo,mencoderwebvideo,mplayervideodump,mplayerwebaudio,vlcaudio,rawthumbs
  
  # ----------------------------------------------------------------------------
  # Transcoding Settings: Common settings
-@@ -457,7 +457,7 @@
+@@ -459,7 +459,7 @@
  # ------------------
  # GUI Option: Keep DTS track (no re-encode, compatible with AV receiver through optical or HDMI output) (toggle)
  # Default: false.
@@ -45,7 +45,7 @@
  
  # Use LPCM for audio
  # ---------------------------
-@@ -491,7 +491,7 @@
+@@ -493,7 +493,7 @@
  # Sets the quality for MPEG-2 conversion; MPEG-2 is the fallback format if the client
  # does not support a video format natively.
  # Default: "keyint=5:vqscale=1:vqmin=2"
@@ -54,16 +54,7 @@
  
  # ---< Misc options >---------------------------------------------------------
  
-@@ -569,7 +569,7 @@
- # ------------
- # GUI Option: Remux videos
- # Default: true.
--mencoder_mux_compatible =
-+mencoder_mux_compatible = false
- 
- # Codec specific parameters
- # -------------------------
-@@ -663,7 +663,7 @@
+@@ -658,7 +658,7 @@
  # GUI Option: Subtitle font (string)
  # GUI offers a navigator to a folder generating an absolute path.
  # Default: empty.
@@ -72,7 +63,7 @@
  
  # Subtitles folder blank
  # ----------------------
-@@ -698,7 +698,7 @@
+@@ -693,7 +693,7 @@
  # from that will generate a number. Default is empty, causing PMS to pick
  # white.
  # Default: empty.
@@ -81,7 +72,7 @@
  
  # Style font scale
  # ----------------
-@@ -710,17 +710,17 @@
+@@ -705,17 +705,17 @@
  # GUI Option: Styled font outline
  # The outline parameter used for ASS subtitling.
  # Default: 1.
@@ -102,7 +93,7 @@
  
  # Plain font scale
  # ----------------
-@@ -732,7 +732,7 @@
+@@ -727,7 +727,7 @@
  # GUI Option: Plain font outline
  # The subfont outline parameter used for subtitling without ASS.
  # Default: 1.
@@ -111,7 +102,7 @@
  
  # GUI Option: Plain font blur
  # The subfont blur parameter used for subtitling without ASS.
-@@ -742,7 +742,7 @@
+@@ -737,7 +737,7 @@
  # GUI Option: Plain margin
  # The subpos parameter used for subtitling without ASS.
  # Default: 2.
@@ -120,7 +111,7 @@
  
  # Load subtitles
  # --------------
-@@ -756,7 +756,7 @@
+@@ -751,7 +751,7 @@
  # ------------------------
  # GUI Option: DVD/VOB subtitle quality
  # Default: 3.
@@ -129,7 +120,7 @@
  
  # Add borders
  # -----------
-@@ -830,23 +830,23 @@
+@@ -860,23 +860,23 @@
  # ---< Binary tools paths >------------------------------------------
  # Path to mencoder (absolute or relative from project.binaries.dir)
  # Default: Win: win32/mencoder.exe Mac: osx/mencoder Linux: mencoder + system PATH
