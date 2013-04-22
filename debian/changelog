@@ -1,3 +1,9 @@
+ps3mediaserver (1.81.0+mencoder35005-2) quantal; urgency=low
+
+  * Ant build fixed
+
+ -- I. Sokolov <happy.neko@gmail.com>  Tue, 23 Apr 2013 02:07:02 +0400
+
 ps3mediaserver (1.81.0+mencoder35005-1) quantal; urgency=low
 
   * Build our own YSAM version 1.2.0
