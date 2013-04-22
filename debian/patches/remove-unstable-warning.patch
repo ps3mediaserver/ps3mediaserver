@@ -1,7 +1,7 @@
 Description: Remove unstable warning in window title
 --- a/src/main/java/net/pms/newgui/LooksFrame.java
 +++ b/src/main/java/net/pms/newgui/LooksFrame.java
-@@ -252,11 +252,6 @@
+@@ -266,11 +266,6 @@
  		String projectVersion = PropertiesUtil.getProjectProperties().get("project.version");
  		String title = projectName + " " + projectVersion;
  
