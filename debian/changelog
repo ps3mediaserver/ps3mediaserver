@@ -1,3 +1,9 @@
+ps3mediaserver (1.81.0+mencoder35004-1) quantal; urgency=low
+
+  * New upstream release 1.81.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG.txt)
+
+ -- I. Sokolov <happy.neko@gmail.com>  Mon, 22 Apr 2013 21:56:50 +0400
+
 ps3mediaserver (1.71.0+mencoder35004-1) quantal; urgency=low
 
   * New upstream release 1.71.0 (https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG.txt)
