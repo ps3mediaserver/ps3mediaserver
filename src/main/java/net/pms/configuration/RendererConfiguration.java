@@ -29,82 +29,77 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 public class RendererConfiguration {
-	/*
-	 * Static section
-	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RendererConfiguration.class);
 	private static ArrayList<RendererConfiguration> rendererConfs;
 	private static PmsConfiguration pmsConfiguration;
 	private static RendererConfiguration defaultConf;
 	private static Map<InetAddress, RendererConfiguration> addressAssociation = new HashMap<InetAddress, RendererConfiguration>();
+
 	private RootFolder rootFolder;
-
-	private static final String RENDERER_NAME = "RendererName";
-	private static final String RENDERER_ICON = "RendererIcon";
-	private static final String USER_AGENT = "UserAgentSearch";
-	private static final String USER_AGENT_ADDITIONAL_HEADER = "UserAgentAdditionalHeader";
-	private static final String USER_AGENT_ADDITIONAL_SEARCH = "UserAgentAdditionalHeaderSearch";
-	private static final String VIDEO = "Video";
-	private static final String AUDIO = "Audio";
-	private static final String IMAGE = "Image";
-	private static final String SEEK_BY_TIME = "SeekByTime";
-	
-	private static final String DEPRECATED_MPEGPSAC3 = "MPEGAC3"; // XXX deprecated: old name with missing container
-	private static final String MPEGPSAC3 = "MPEGPSAC3";
-	private static final String MPEGTSAC3 = "MPEGTSAC3";
-	private static final String WMV = "WMV";
-	private static final String LPCM = "LPCM";
-	private static final String WAV = "WAV";
-	private static final String MP3 = "MP3";
-
-	private static final String TRANSCODE_AUDIO = "TranscodeAudio";
-	private static final String TRANSCODE_VIDEO = "TranscodeVideo";
-	private static final String DEFAULT_VBV_BUFSIZE = "DefaultVBVBufSize";
-	private static final String MUX_H264_WITH_MPEGTS = "MuxH264ToMpegTS";
-	private static final String MUX_DTS_TO_MPEG = "MuxDTSToMpeg";
-	private static final String WRAP_DTS_INTO_PCM = "WrapDTSIntoPCM";
-	private static final String MUX_LPCM_TO_MPEG = "MuxLPCMToMpeg";
-	private static final String MAX_VIDEO_BITRATE = "MaxVideoBitrateMbps";
-	private static final String MAX_VIDEO_WIDTH = "MaxVideoWidth";
-	private static final String MAX_VIDEO_HEIGHT = "MaxVideoHeight";
-	private static final String USE_SAME_EXTENSION = "UseSameExtension";
-	private static final String MIME_TYPES_CHANGES = "MimeTypesChanges";
-	private static final String TRANSCODE_EXT = "TranscodeExtensions";
-	private static final String STREAM_EXT = "StreamExtensions";
-	private static final String H264_L41_LIMITED = "H264Level41Limited";
-	private static final String TRANSCODE_AUDIO_441KHZ = "TranscodeAudioTo441kHz";
-	private static final String TRANSCODED_SIZE = "TranscodedVideoFileSize";
-	private static final String DLNA_PN_CHANGES = "DLNAProfileChanges";
-	private static final String TRANSCODE_FAST_START = "TranscodeFastStart";
-	private static final String AUTO_EXIF_ROTATE = "AutoExifRotate";
-	private static final String DLNA_ORGPN_USE = "DLNAOrgPN";
-	private static final String DLNA_LOCALIZATION_REQUIRED = "DLNALocalizationRequired";
-	private static final String MEDIAPARSERV2 = "MediaInfo";
-	private static final String MEDIAPARSERV2_THUMB = "MediaParserV2_ThumbnailGeneration";
-	private static final String SUPPORTED = "Supported";
-	private static final String CUSTOM_MENCODER_QUALITY_SETTINGS = "CustomMencoderQualitySettings";
-	private static final String CUSTOM_MENCODER_OPTIONS = "CustomMencoderOptions";
-	private static final String SHOW_AUDIO_METADATA = "ShowAudioMetadata";
-	private static final String SHOW_SUB_METADATA = "ShowSubMetadata";
-	private static final String DLNA_TREE_HACK = "CreateDLNATreeFaster";
-	private static final String CHUNKED_TRANSFER = "ChunkedTransfer";
-	private static final String SUBTITLE_HTTP_HEADER = "SubtitleHttpHeader";
-	private static final String LONG_FILE_NAME_FORMAT = "LongFileNameFormat";
-	private static final String SHORT_FILE_NAME_FORMAT = "ShortFileNameFormat";
-
-	// Sony devices require JPG thumbnails
-	private static final String FORCE_JPG_THUMBNAILS = "ForceJPGThumbnails";
-
-	// Ditlew
-	private static final String SHOW_DVD_TITLE_DURATION = "ShowDVDTitleDuration";
-	private static final String CBR_VIDEO_BITRATE = "CBRVideoBitrate";
-	private static final String BYTE_TO_TIMESEEK_REWIND_SECONDS = "ByteToTimeseekRewindSeconds";
-
 	private final PropertiesConfiguration configuration;
 	private FormatConfiguration formatConfiguration;
 	private int rank;
 	private final Map<String, String> mimes;
 	private final Map<String, String> DLNAPN;
+
+	// property values
+	private static final String DEPRECATED_MPEGPSAC3 = "MPEGAC3"; // XXX deprecated: old name with missing container
+	private static final String EXCLUSIVE = "exclusive";
+	private static final String LPCM = "LPCM";
+	private static final String MP3 = "MP3";
+	private static final String MPEGPSAC3 = "MPEGPSAC3";
+	private static final String MPEGTSAC3 = "MPEGTSAC3";
+	private static final String WAV = "WAV";
+	private static final String WMV = "WMV";
+
+	// property names
+	private static final String AUDIO = "Audio";
+	private static final String AUTO_EXIF_ROTATE = "AutoExifRotate";
+	private static final String BYTE_TO_TIMESEEK_REWIND_SECONDS = "ByteToTimeseekRewindSeconds"; // Ditlew
+	private static final String CBR_VIDEO_BITRATE = "CBRVideoBitrate"; // Ditlew
+	private static final String CHUNKED_TRANSFER = "ChunkedTransfer";
+	private static final String CUSTOM_MENCODER_OPTIONS = "CustomMencoderOptions";
+	private static final String CUSTOM_MENCODER_QUALITY_SETTINGS = "CustomMencoderQualitySettings";
+	private static final String DEFAULT_VBV_BUFSIZE = "DefaultVBVBufSize";
+	private static final String DLNA_LOCALIZATION_REQUIRED = "DLNALocalizationRequired";
+	private static final String DLNA_ORGPN_USE = "DLNAOrgPN";
+	private static final String DLNA_PN_CHANGES = "DLNAProfileChanges";
+	private static final String DLNA_TREE_HACK = "CreateDLNATreeFaster";
+	private static final String FORCE_JPG_THUMBNAILS = "ForceJPGThumbnails"; // Sony devices require JPG thumbnails
+	private static final String H264_L41_LIMITED = "H264Level41Limited";
+	private static final String IMAGE = "Image";
+	private static final String LONG_FILE_NAME_FORMAT = "LongFileNameFormat";
+	private static final String MAX_VIDEO_BITRATE = "MaxVideoBitrateMbps";
+	private static final String MAX_VIDEO_HEIGHT = "MaxVideoHeight";
+	private static final String MAX_VIDEO_WIDTH = "MaxVideoWidth";
+	private static final String MEDIAPARSERV2 = "MediaInfo";
+	private static final String MEDIAPARSERV2_THUMB = "MediaParserV2_ThumbnailGeneration";
+	private static final String MIME_TYPES_CHANGES = "MimeTypesChanges";
+	private static final String MUX_DTS_TO_MPEG = "MuxDTSToMpeg";
+	private static final String MUX_H264_WITH_MPEGTS = "MuxH264ToMpegTS";
+	private static final String MUX_LPCM_TO_MPEG = "MuxLPCMToMpeg";
+	private static final String RENDERER_ICON = "RendererIcon";
+	private static final String RENDERER_NAME = "RendererName";
+	private static final String SEEK_BY_TIME = "SeekByTime";
+	private static final String SHORT_FILE_NAME_FORMAT = "ShortFileNameFormat";
+	private static final String SHOW_AUDIO_METADATA = "ShowAudioMetadata";
+	private static final String SHOW_DVD_TITLE_DURATION = "ShowDVDTitleDuration"; // Ditlew
+	private static final String SHOW_SUB_METADATA = "ShowSubMetadata";
+	private static final String STREAM_EXT = "StreamExtensions";
+	private static final String SUBTITLE_HTTP_HEADER = "SubtitleHttpHeader";
+	private static final String SUPPORTED = "Supported";
+	private static final String TRANSCODE_AUDIO_441KHZ = "TranscodeAudioTo441kHz";
+	private static final String TRANSCODE_AUDIO = "TranscodeAudio";
+	private static final String TRANSCODED_SIZE = "TranscodedVideoFileSize";
+	private static final String TRANSCODE_EXT = "TranscodeExtensions";
+	private static final String TRANSCODE_FAST_START = "TranscodeFastStart";
+	private static final String TRANSCODE_VIDEO = "TranscodeVideo";
+	private static final String USER_AGENT_ADDITIONAL_HEADER = "UserAgentAdditionalHeader";
+	private static final String USER_AGENT_ADDITIONAL_SEARCH = "UserAgentAdditionalHeaderSearch";
+	private static final String USER_AGENT = "UserAgentSearch";
+	private static final String USE_SAME_EXTENSION = "UseSameExtension";
+	private static final String VIDEO = "Video";
+	private static final String WRAP_DTS_INTO_PCM = "WrapDTSIntoPCM";
 
 	public static RendererConfiguration getDefaultConf() {
 		return defaultConf;
@@ -192,7 +187,7 @@ public class RendererConfiguration {
 	}
 
 	public static void resetAllRenderers() {
-		for(RendererConfiguration rc : rendererConfs) {
+		for (RendererConfiguration rc : rendererConfs) {
 			rc.rootFolder = null;
 		}
 	}
@@ -202,6 +197,7 @@ public class RendererConfiguration {
 			rootFolder = new RootFolder();
 			rootFolder.discoverChildren();
 		}
+
 		return rootFolder;
 	}
 
@@ -244,6 +240,7 @@ public class RendererConfiguration {
 				}
 			}
 		}
+
 		return null;
 	}
 
@@ -257,6 +254,7 @@ public class RendererConfiguration {
 			// to be the only way to get here.
 			LOGGER.info("Another renderer like " + r.getRendererName() + " was found!");
 		}
+
 		return r;
 	}
 
@@ -287,6 +285,7 @@ public class RendererConfiguration {
 				}
 			}
 		}
+
 		return null;
 	}
 
@@ -438,6 +437,7 @@ public class RendererConfiguration {
 			default:
 				break;
 		}
+
 		return false;
 	}
 
@@ -513,6 +513,7 @@ public class RendererConfiguration {
 				}
 			} else if (mimetype != null && mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
 				mimetype = getFormatConfiguration().match(FormatConfiguration.LPCM, null, null);
+
 				if (mimetype != null) {
 					if (isTranscodeAudioTo441()) {
 						mimetype += ";rate=44100;channels=2";
@@ -520,38 +521,66 @@ public class RendererConfiguration {
 						mimetype += ";rate=48000;channels=2";
 					}
 				}
+
 				if (isTranscodeToWAV()) {
 					mimetype = getFormatConfiguration().match(FormatConfiguration.WAV, null, null);
 				} else if (isTranscodeToMP3()) {
 					mimetype = getFormatConfiguration().match(FormatConfiguration.MP3, null, null);
 				}
 			}
+
 			return mimetype;
 		}
+
 		if (mimetype != null && mimetype.equals(HTTPResource.VIDEO_TRANSCODE)) {
 			mimetype = HTTPResource.MPEG_TYPEMIME;
 			if (isTranscodeToWMV()) {
-				mimetype = HTTPResource.WMV_TYPEMIME;
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.WMV, FormatConfiguration.WMV, FormatConfiguration.WMA)
+					: HTTPResource.WMV_TYPEMIME;
+			} else if (isTranscodeToMPEGTSAC3()) {
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.MPEGTS, FormatConfiguration.MPEG2, FormatConfiguration.AC3)
+					: HTTPResource.MPEG_TYPEMIME;
+			} else { // default: MPEGPSAC3
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.MPEGPS, FormatConfiguration.MPEG2, FormatConfiguration.AC3)
+					: HTTPResource.MPEG_TYPEMIME;
 			}
-		} else if (mimetype != null && mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
-			mimetype = HTTPResource.AUDIO_LPCM_TYPEMIME;
-			if (mimetype != null) {
+		} else if (mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
+			if (isTranscodeToWAV()) {
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.WAV, null, null)
+					: HTTPResource.AUDIO_WAV_TYPEMIME;
+			} else if (isTranscodeToMP3()) {
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.MP3, null, null)
+					: HTTPResource.AUDIO_MP3_TYPEMIME;
+			} else { // default: LPCM
+				mimetype = isMediaParserV2()
+					? getFormatConfiguration().match(FormatConfiguration.LPCM, null, null)
+					: HTTPResource.AUDIO_LPCM_TYPEMIME;
+
 				if (isTranscodeAudioTo441()) {
 					mimetype += ";rate=44100;channels=2";
 				} else {
 					mimetype += ";rate=48000;channels=2";
 				}
 			}
+
 			if (isTranscodeToMP3()) {
 				mimetype = HTTPResource.AUDIO_MP3_TYPEMIME;
 			}
+
 			if (isTranscodeToWAV()) {
 				mimetype = HTTPResource.AUDIO_WAV_TYPEMIME;
 			}
 		}
+
 		if (mimes.containsKey(mimetype)) {
 			return mimes.get(mimetype);
 		}
+
 		return mimetype;
 	}
 
@@ -676,16 +705,35 @@ public class RendererConfiguration {
 
 	public String getUseSameExtension(String file) {
 		String s = getString(USE_SAME_EXTENSION, null);
+
 		if (s != null) {
 			s = file + "." + s;
 		} else {
 			s = file;
 		}
+
 		return s;
 	}
 
+	/**
+	 * Returns true if SeekByTime is set to "true" or "exclusive", false otherwise.
+	 * Default value is false.
+	 *
+	 * @return true if the renderer supports seek-by-time, false otherwise.
+	 */
 	public boolean isSeekByTime() {
-		return getBoolean(SEEK_BY_TIME, true);
+		return isSeekByTimeExclusive() || getBoolean(SEEK_BY_TIME, false);
+	}
+
+	/**
+	 * Returns true if SeekByTime is set to "exclusive", false otherwise.
+	 * Default value is false.
+	 *
+	 * @return true if the renderer supports seek-by-time exclusively
+	 * (i.e. not in conjunction with seek-by-byte), false otherwise.
+	 */
+	public boolean isSeekByTimeExclusive() {
+		return getString(SEEK_BY_TIME, "").equalsIgnoreCase("exclusive");
 	}
 
 	public boolean isMuxH264MpegTS() {
@@ -693,9 +741,11 @@ public class RendererConfiguration {
 		if (isMediaParserV2()) {
 			muxCompatible = getFormatConfiguration().match(FormatConfiguration.MPEGTS, FormatConfiguration.H264, null) != null;
 		}
+
 		if (Platform.isMac() && System.getProperty("os.version") != null && System.getProperty("os.version").contains("10.4.")) {
 			muxCompatible = false; // no tsMuxeR for 10.4 (yet?)
 		}
+
 		return muxCompatible;
 	}
 
@@ -707,6 +757,7 @@ public class RendererConfiguration {
 		if (isMediaParserV2()) {
 			return getFormatConfiguration().isDTSSupported();
 		}
+
 		return getBoolean(MUX_DTS_TO_MPEG, false);
 	}
 
@@ -722,6 +773,7 @@ public class RendererConfiguration {
 		if (isMediaParserV2()) {
 			return getFormatConfiguration().isLPCMSupported();
 		}
+
 		return getBoolean(MUX_LPCM_TO_MPEG, true);
 	}
 
@@ -764,11 +816,13 @@ public class RendererConfiguration {
 	}
 
 	/**
-	 * Returns the maximum bit rate supported by the media renderer as defined
+	 * Returns the maximum bitrate (in megabits-per-second) supported by the media renderer as defined
 	 * in the renderer configuration. The default value is <code>null</code>.
 	 *
-	 * @return The bit rate.
+	 * @return The bitrate.
 	 */
+	@Deprecated
+	// TODO this should return an integer and the units should be bits-per-second
 	public String getMaxVideoBitrate() {
 		return getString(MAX_VIDEO_BITRATE, null);
 	}
@@ -800,6 +854,8 @@ public class RendererConfiguration {
 	 * @return The maximum video width.
 	 */
 	public int getMaxVideoWidth() {
+		// FIXME why is this 1920 if the default value is 0 (unlimited)?
+		// XXX we should also require width and height to both be 0 or both be > 0
 		return getInt(MAX_VIDEO_WIDTH, 1920);
 	}
 
@@ -810,9 +866,17 @@ public class RendererConfiguration {
 	 * @return The maximum video height.
 	 */
 	public int getMaxVideoHeight() {
+		// FIXME why is this 1080 if the default value is 0 (unlimited)?
+		// XXX we should also require width and height to both be 0 or both be > 0
 		return getInt(MAX_VIDEO_HEIGHT, 1080);
 	}
 
+	/**
+	 * Returns <code>true</code> if the renderer has a maximum supported width
+	 * or height, <code>false</code> otherwise.
+	 *
+	 * @return boolean indicating whether the renderer may need videos to be resized.
+	 */
 	public boolean isVideoRescale() {
 		return getMaxVideoWidth() > 0 && getMaxVideoHeight() > 0;
 	}

@@ -31,7 +31,7 @@
 	<artifactId>pms</artifactId>
 	<name>PS3 Media Server</name>
 	<packaging>jar</packaging>
-	<version>1.71.0</version>
+	<version>1.81.0</version> <!-- XXX don't forget to update project.version.short below -->
 	<url>http://www.ps3mediaserver.org/</url>
 	<inceptionYear>2008</inceptionYear>
 
@@ -74,7 +74,7 @@
 
 	<properties>
 		<!-- NSIS needs a version without "-SNAPSHOT" or "-b1" -->
-		<project.version.short>1.71.0</project.version.short>
+		<project.version.short>1.81.0</project.version.short>
 
 		<!--
 			JNA 3.4.0 solves issue #1152, but causes a bug in Windows.
@@ -108,7 +108,7 @@
 
 		<maven.nsis.project.template>${project.basedir}/src/main/external-resources/nsis/project.jelly</maven.nsis.project.template>
 		<maven-javadoc-plugin-version>2.9</maven-javadoc-plugin-version>
-		<git-commit-id-plugin-version>2.1.0</git-commit-id-plugin-version>
+		<git-commit-id-plugin-version>2.1.4</git-commit-id-plugin-version>
 	</properties>
 
 	<pluginRepositories>
@@ -166,12 +166,24 @@
 			</snapshots>
 		</repository>
 
-        <!-- JUnRar by Edmund Wagner -->
-        <repository>
-            <id>JUnRar mirror repository</id>
-            <name>JUnRar mirror repository</name>
-            <url>https://junrar-repository.googlecode.com/svn/deploy/</url>
-        </repository>
+		<!-- JUnRar by Edmund Wagner -->
+		<repository>
+			<id>JUnRar mirror repository</id>
+			<name>JUnRar mirror repository</name>
+			<url>https://junrar-repository.googlecode.com/svn/deploy/</url>
+		</repository>
+
+		<!-- for jai-imageio-core-standalone, which is used by Thumbnailator -->
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+
     </repositories>
 
 	<dependencies>
@@ -261,7 +273,7 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j-version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
@@ -274,7 +286,7 @@
 			<version>2.2.2</version>
 		</dependency>
 
-		<!-- originally, hamcrest-all 1.2RC2 for the artifact change, see: https://code.google.com/p/hamcrest/issues/detail?id=12#c54 
+		<!-- originally, hamcrest-all 1.2RC2 for the artifact change, see: https://code.google.com/p/hamcrest/issues/detail?id=12#c54
 			FIXME: verify if needed -->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
@@ -305,6 +317,25 @@
 			<groupId>net.coobird</groupId>
 			<artifactId>thumbnailator</artifactId>
 			<version>0.4.2</version>
+		</dependency>
+
+		<!--
+			this is not used on its own, but rather provides
+			ImageReader subclasses that make support for additional
+			formats (e.g. TIFF) available to the ImageIO API, and thus
+			to Thumbnailator (our built-in image thumbnailer).
+
+			XXX be careful upgrading this. this version is redistributable;
+			other versions may not be:
+
+			https://code.google.com/p/thumbnailator/issues/detail?id=32
+			https://github.com/stain/jai-imageio-core
+			http://stackoverflow.com/questions/1209583/using-java-advanced-imaging-with-maven
+		-->
+		<dependency>
+			<groupId>net.java.dev.jai-imageio</groupId>
+			<artifactId>jai-imageio-core-standalone</artifactId>
+			<version>1.2-pre-dr-b04-2011-07-04</version>
 		</dependency>
 
 		<dependency>
@@ -386,6 +417,7 @@
             <version>1.4</version>
             <scope>test</scope>
         </dependency>
+
 	</dependencies>
 
 	<build>
@@ -393,16 +425,16 @@
 
 		<resources>
 			<!--
-				squashed bug: this needs to be defined explicitly if a <resources>...</resources> 
+				squashed bug: this needs to be defined explicitly if a <resources>...</resources>
 				section is used
 			-->
 
 			<resource>
 				<directory>src/main/resources</directory>
 				<!--
-					By default Maven packages resources in the top-level of the jar. 
-					For compatibility with trunk PMS, we preserve that destination. If this is 
-					ever changed to the Maven default, a handful of files will need to be changed 
+					By default, Maven packages resources in the top-level of the jar.
+					For compatibility with trunk PMS, we preserve that destination. If this is
+					ever changed to the Maven default, a handful of files will need to be changed
 					to reference "/resource.name" rather than "/resources/resource.name"
 				-->
 				<targetPath>resources</targetPath>
@@ -423,18 +455,6 @@
 
 				<!-- Filter to replace Maven properties -->
 				<filtering>true</filtering>
-			</resource>
-
-			<!--
-				There are (or were) reportedly issues with Eclipse's "Externalize Strings" 
-				wizard if these aren't in the source tree, so keep them here for now, even 
-				though it's Mavenly-incorrect.
-			-->
-			<resource>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**/*.properties</include>
-				</includes>
 			</resource>
 
 			<!-- Copy and filter the NSIS header file to replace Maven properties -->
@@ -543,7 +563,7 @@
 					</configuration>
 				</plugin>
 			</plugins>
-		</pluginManagement>		
+		</pluginManagement>
 
 		<plugins>
 			<!--
@@ -611,15 +631,15 @@
 				exist in a public Maven repository. That is why we store some jar files in the
 				"src/main/external-resources/lib" directory and have this plugin take care of
 				the installation at build time.
-				
+
 				Note: The plugin does not work automatically in Maven 3. To install the required
 				dependencies execute the following commands:
-				
-				mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external
-				mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
-				
+
+					mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external
+					mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
+
 				Checksums can be calculated with "openssl sha1 [filename]".
-				
+
 				See: http://code.google.com/p/maven-external-dependency-plugin/issues/detail?id=8#c4
 			-->
 			<plugin>
@@ -646,7 +666,7 @@
 							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
 							<extractFileChecksum>f3955d59f2263fb889b02febec74377647a2eaba</extractFileChecksum>
 						</artifactItem>
-		
+
 						<artifactItem>
 							<groupId>com.jgoodies</groupId>
 							<artifactId>forms</artifactId>
@@ -659,7 +679,7 @@
 							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
 							<extractFileChecksum>de8a67990cbeae62910cc2022f06c466476f2f2b</extractFileChecksum>
 						</artifactItem>
-		
+
 						<artifactItem>
 							<groupId>com.jgoodies</groupId>
 							<artifactId>looks</artifactId>
@@ -672,7 +692,7 @@
 							<extractFile>jgoodies-{artifactId}-{version}/jgoodies-{artifactId}-{version}.{packaging}</extractFile>
 							<extractFileChecksum>535745c08e342f7ea78556baad44a4a52ffb7863</extractFileChecksum>
 						</artifactItem>
-		
+
 						<artifactItem>
 							<groupId>jwbroek.cuelib</groupId>
 							<artifactId>cuelib</artifactId>
@@ -746,10 +766,10 @@
 						<version>1.2</version>
 					</dependency>
 				</dependencies>
-				
+
 				<configuration>
 					<reportPlugins>
-			
+
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-project-info-reports-plugin</artifactId>
@@ -883,7 +903,7 @@
 									<locale>sl</locale>
 									<locale>sv</locale>
 									<locale>zhs</locale>
-									<locale>zht</locale>				
+									<locale>zht</locale>
 								</locales>
 							</configuration>
 						</plugin>
@@ -927,7 +947,7 @@
 					when browsing folders with files in them on Windows.
 				-->
 				<jna-version>3.2.5</jna-version>
-			</properties>			
+			</properties>
 
 			<pluginRepositories>
 				<pluginRepository>
@@ -941,14 +961,14 @@
 					</releases>
 				</pluginRepository>
 			</pluginRepositories>
-			
+
 			<build>
 				<plugins>
 
 					<!-- Plugin to assemble a jar with dependencies -->
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.3</version>
+						<version>2.4</version>
 						<executions>
 							<execution>
 								<id>make-jar-with-dependencies-win</id>
@@ -963,13 +983,24 @@
 									<archive>
 										<manifest>
 											<mainClass>net.pms.PMS</mainClass>
+											<!--
+												this is required to make the ImageIo image "plugins" provided by jai-imageio-core-standalone work.
+												without it, the following exception is thrown when PMS starts:
+
+												Configuration error: java.util.ServiceConfigurationError: javax.imageio.spi.ImageInputStreamSpi:
+													Provider com.sun.media.imageioimpl.stream.ChannelImageInputStreamSpi could not be instantiated:
+														java.lang.IllegalArgumentException: vendorName == null!
+
+												See: https://thierrywasyl.wordpress.com/2009/07/24/jai-how-to-solve-vendorname-null-exception/
+											-->
+											<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 										</manifest>
 									</archive>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
-				
+
 					<!--
 						Plugin to move the pms-x.x.x-jar-with-dependencies.jar to pms.jar
 					-->
@@ -1100,12 +1131,12 @@
 							</execution>
 						</executions>
 					</plugin>
-					
+
 					<!--
 						Plugin to build a Windows installer using the nullsoft scriptable install system (NSIS)
 						The "generate-project" goal generates a file "target/project.nsh", which contains the
 						definitions for project variables like "${PROJECT_BASEDIR}" that can be used in the
-						"pms.nsi" and "setup.nsi" files. 
+						"pms.nsi" and "setup.nsi" files.
 					-->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
@@ -1157,12 +1188,12 @@
 					<family>unix</family>
 				</os>
 			</activation>
-			
+
 			<build>
 				<plugins>
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.2.1</version>
+						<version>2.4</version>
 						<executions>
 							<!-- Assemble a jar with dependencies -->
 							<execution>
@@ -1178,6 +1209,7 @@
 									<archive>
 										<manifest>
 											<mainClass>net.pms.PMS</mainClass>
+											<addDefaultImplementationEntries>true</addDefaultImplementationEntries> <!-- see above for documentation -->
 										</manifest>
 									</archive>
 								</configuration>
@@ -1197,6 +1229,7 @@
 									<archive>
 										<manifest>
 											<mainClass>net.pms.PMS</mainClass>
+											<addDefaultImplementationEntries>true</addDefaultImplementationEntries> <!-- see above for documentation -->
 										</manifest>
 									</archive>
 								</configuration>
@@ -1250,7 +1283,7 @@
 					</plugin>
 
 				</plugins>
-			</build>			
+			</build>
 		</profile>
 
 
@@ -1267,7 +1300,7 @@
 			</activation>
 			<build>
 				<plugins>
-			
+
 					<!--
 						Plugin to download binaries before assembly
 					-->
@@ -1342,7 +1375,7 @@
 
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.2.1</version>
+						<version>2.4</version>
 						<executions>
 							<!-- Assemble a jar with dependencies -->
 							<execution>
@@ -1358,13 +1391,14 @@
 									<archive>
 										<manifest>
 											<mainClass>net.pms.PMS</mainClass>
+											<addDefaultImplementationEntries>true</addDefaultImplementationEntries> <!-- see above for documentation -->
 										</manifest>
 									</archive>
 								</configuration>
 							</execution>
 
 							<!--
-								Assemble the PMS files in the right place before creating 
+								Assemble the PMS files in the right place before creating
 								the App Bundle and DMG disk image.
 							-->
 							<execution>
@@ -1380,11 +1414,12 @@
 									<archive>
 										<manifest>
 											<mainClass>net.pms.PMS</mainClass>
+											<addDefaultImplementationEntries>true</addDefaultImplementationEntries> <!-- see above for documentation -->
 										</manifest>
 									</archive>
 								</configuration>
 							</execution>
-							
+
 						</executions>
 					</plugin>
 
@@ -1454,7 +1489,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile> 		
+		</profile>
 	</profiles>
 
 </project>

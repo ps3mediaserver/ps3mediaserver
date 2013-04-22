@@ -18,6 +18,8 @@
  */
 package net.pms.io;
 
+import org.apache.commons.io.IOUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +37,7 @@ public abstract class OutputConsumer extends Thread {
 
 	@Deprecated
 	public void destroy() {
-		try {
-			inputStream.close();
-		} catch (IOException e) {
-			LOGGER.debug("Failed to close stream", e);
-		}
+		IOUtils.closeQuietly(inputStream);
 	}
 
 	public abstract BufferedOutputFile getBuffer();

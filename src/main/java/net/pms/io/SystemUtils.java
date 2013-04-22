@@ -22,9 +22,9 @@ public interface SystemUtils {
 
 	public abstract boolean isKerioFirewall();
 
-	public abstract String getVlcp();
+	public abstract String getVlcPath();
 
-	public abstract String getVlcv();
+	public abstract String getVlcVersion();
 
 	public abstract boolean isAvis();
 

@@ -223,7 +223,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @return the url
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected String getUrl() {
 		return url;
@@ -231,7 +231,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @param url the url to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setUrl(String url) {
 		this.url = url;
@@ -239,7 +239,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @return the tempItemTitle
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected String getTempItemTitle() {
 		return tempItemTitle;
@@ -247,7 +247,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @param tempItemTitle the tempItemTitle to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setTempItemTitle(String tempItemTitle) {
 		this.tempItemTitle = tempItemTitle;
@@ -255,7 +255,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @return the tempItemLink
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected String getTempItemLink() {
 		return tempItemLink;
@@ -263,7 +263,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @param tempItemLink the tempItemLink to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setTempItemLink(String tempItemLink) {
 		this.tempItemLink = tempItemLink;
@@ -271,7 +271,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @return the tempFeedLink
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected String getTempFeedLink() {
 		return tempFeedLink;
@@ -279,7 +279,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @param tempFeedLink the tempFeedLink to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setTempFeedLink(String tempFeedLink) {
 		this.tempFeedLink = tempFeedLink;
@@ -287,7 +287,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @return the tempCategory
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected String getTempCategory() {
 		return tempCategory;
@@ -295,7 +295,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @param tempCategory the tempCategory to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setTempCategory(String tempCategory) {
 		this.tempCategory = tempCategory;
@@ -303,7 +303,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @return the tempItemThumbURL
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected String getTempItemThumbURL() {
 		return tempItemThumbURL;
@@ -311,7 +311,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @param tempItemThumbURL the tempItemThumbURL to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setTempItemThumbURL(String tempItemThumbURL) {
 		this.tempItemThumbURL = tempItemThumbURL;
@@ -319,7 +319,7 @@ public class Feed extends DLNAResource {
 
 	/**
 	 * @param name the name to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setName(String name) {
 		this.name = name;

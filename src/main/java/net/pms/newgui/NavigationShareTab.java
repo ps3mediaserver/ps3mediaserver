@@ -18,32 +18,52 @@
  */
 package net.pms.newgui;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.sun.jna.Platform;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.Locale;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaDatabase;
 import net.pms.util.FormLayoutUtil;
 import net.pms.util.KeyedComboBoxModel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.util.Locale;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.sun.jna.Platform;
 
 public class NavigationShareTab {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NavigationShareTab.class);
 	public static final String ALL_DRIVES = Messages.getString("FoldTab.0");
 
 	private static final String PANEL_COL_SPEC = "left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref, 25dlu, pref, default:grow";
-	private static final String PANEL_ROW_SPEC = "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 10dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 10dlu, fill:default:grow";
+	private static final String PANEL_ROW_SPEC = "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 8dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 8dlu, fill:default:grow";
 	private static final String SHARED_FOLDER_COL_SPEC = "left:pref, left:pref, pref, pref, pref, 0:grow";
 	private static final String SHARED_FOLDER_ROW_SPEC = "p, 3dlu, p, 3dlu, fill:default:grow";
 	
@@ -145,20 +165,20 @@ public class NavigationShareTab {
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		builder.add(archive, FormLayoutUtil.flip(cc.xyw(1, 15, 3), colSpec, orientation));
-		builder.add(hidevideosettings, FormLayoutUtil.flip(cc.xyw(4, 15, 3), colSpec, orientation));
-		builder.add(hidetranscode, FormLayoutUtil.flip(cc.xyw(8, 15, 3), colSpec, orientation));
+		builder.add(hidevideosettings, FormLayoutUtil.flip(cc.xyw(4, 15, 2), colSpec, orientation));
+		builder.add(hidetranscode, FormLayoutUtil.flip(cc.xyw(7, 15, 4), colSpec, orientation));
 
 		builder.add(hideextensions, FormLayoutUtil.flip(cc.xyw(1, 17, 3), colSpec, orientation));
-		builder.add(hideengines, FormLayoutUtil.flip(cc.xyw(4, 17, 3), colSpec, orientation));
-		builder.add(hideemptyfolders, FormLayoutUtil.flip(cc.xyw(8, 17, 3), colSpec, orientation));
+		builder.add(hideengines, FormLayoutUtil.flip(cc.xyw(4, 17, 2), colSpec, orientation));
+		builder.add(hideemptyfolders, FormLayoutUtil.flip(cc.xyw(7, 17, 4), colSpec, orientation));
 
 		builder.add(itunes, FormLayoutUtil.flip(cc.xyw(1, 19, 3), colSpec, orientation));
-		builder.add(iphoto, FormLayoutUtil.flip(cc.xyw(4, 19, 3), colSpec, orientation));
-		builder.add(aperture, FormLayoutUtil.flip(cc.xyw(8, 19, 3), colSpec, orientation));
+		builder.add(iphoto, FormLayoutUtil.flip(cc.xyw(4, 19, 2), colSpec, orientation));
+		builder.add(aperture, FormLayoutUtil.flip(cc.xyw(7, 19, 4), colSpec, orientation));
 
 		builder.add(cacheenable, FormLayoutUtil.flip(cc.xy(1, 21), colSpec, orientation));
-		builder.add(cachereset, FormLayoutUtil.flip(cc.xyw(4, 21, 3), colSpec, orientation));
-		builder.add(hidemedialibraryfolder, FormLayoutUtil.flip(cc.xyw(8, 21, 3), colSpec, orientation));
+		builder.add(cachereset, FormLayoutUtil.flip(cc.xyw(4, 21, 2), colSpec, orientation));
+		builder.add(hidemedialibraryfolder, FormLayoutUtil.flip(cc.xyw(7, 21, 4), colSpec, orientation));
 
 		builder.addLabel(Messages.getString("FoldTab.18"), FormLayoutUtil.flip(cc.xyw(1, 23, 3), colSpec, orientation));
 		builder.add(sortmethod, FormLayoutUtil.flip(cc.xyw(4, 23, 3), colSpec, orientation));
@@ -192,15 +212,7 @@ public class NavigationShareTab {
 
 		//ThumbnailSeekPos
 		seekpos = new JTextField("" + configuration.getThumbnailSeekPos());
-		seekpos.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		seekpos.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
@@ -272,15 +284,7 @@ public class NavigationShareTab {
 
 		// AlternateThumbFolder
 		defaultThumbFolder = new JTextField(configuration.getAlternateThumbFolder());
-		defaultThumbFolder.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+		defaultThumbFolder.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				configuration.setAlternateThumbFolder(defaultThumbFolder.getText());

@@ -37,7 +37,6 @@ import net.pms.gui.IFrame;
 import net.pms.io.*;
 import net.pms.logging.LoggingConfigFileLoader;
 import net.pms.network.HTTPServer;
-import net.pms.network.NetworkConfiguration;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
 import net.pms.newgui.LooksFrame;
@@ -48,6 +47,8 @@ import net.pms.util.ProcessUtil;
 import net.pms.util.PropertiesUtil;
 import net.pms.util.SystemErrWrapper;
 import net.pms.util.TaskRunner;
+import net.pms.util.Version;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
@@ -61,9 +62,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.BindException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -90,6 +88,17 @@ public class PMS {
 	// TODO(tcox):  This shouldn't be static
 	private static PmsConfiguration configuration;
 
+	/**
+	 * Universally Unique Identifier used in the UPnP server.
+	 */
+	private String uuid;
+
+	/**
+	 * Relative location of a context sensitive help page in the documentation
+	 * directory.
+	 */
+	private static String helpPage = "index.html";
+	
 	/**Returns a pointer to the main PMS GUI.
 	 * @return {@link net.pms.gui.IFrame} Main PMS window.
 	 */
@@ -193,7 +202,7 @@ public class PMS {
 	}
 
 	/**Executes a new Process and creates a fork that waits for its results. 
-	 * TODO:Extend explanation on where this is being used.
+	 * TODO Extend explanation on where this is being used.
 	 * @param name Symbolic name for the process to be launched, only used in the trace log
 	 * @param error (boolean) Set to true if you want PMS to add error messages to the trace pane
 	 * @param workDir (File) optional working directory to run the process in
@@ -325,7 +334,7 @@ public class PMS {
 		proxy = -1;
 
         LOGGER.info("Starting " + PropertiesUtil.getProjectProperties().get("project.name") + " " + getVersion());
-        LOGGER.info("by shagrath / 2008-2012");
+        LOGGER.info("by shagrath / 2008-2013");
         LOGGER.info("http://ps3mediaserver.org");
         LOGGER.info("https://github.com/ps3mediaserver/ps3mediaserver");
         LOGGER.info("");
@@ -402,8 +411,19 @@ public class PMS {
 			}
 		}
 
-		if (registry.getVlcv() != null && registry.getVlcp() != null) {
-			LOGGER.info("Found VideoLAN version " + registry.getVlcv() + " at: " + registry.getVlcp());
+		// Check if VLC is found
+		String vlcVersion = registry.getVlcVersion();
+		String vlcPath = registry.getVlcPath();
+
+		if (vlcVersion != null && vlcPath != null) {
+			LOGGER.info("Found VideoLAN version " + vlcVersion + " at: " + vlcPath);
+
+			Version vlc = new Version(vlcVersion);
+			Version requiredVersion = new Version("2.0.2");
+
+			if (vlc.compareTo(requiredVersion) <= 0) {
+				LOGGER.error("Only VLC versions 2.0.2 and above are supported");
+			}
 		}
 
 		//check if Kerio is installed
@@ -521,8 +541,6 @@ public class PMS {
 					}
 					get().getServer().stop();
 					Thread.sleep(500);
-				} catch (IOException e) {
-					LOGGER.debug("Caught exception", e);
 				} catch (InterruptedException e) {
 					LOGGER.debug("Caught exception", e);
 				}
@@ -706,59 +724,22 @@ public class PMS {
 	}
 
 	/**
-	 * Universally Unique Identifier used in the UPnP server.
-	 */
-	private String uuid;
-
-	/**
-	 * Creates a new {@link #uuid} for the UPnP server to use. Tries to follow the RFCs for creating the UUID based on the link MAC address.
-	 * Defaults to a random one if that method is not available.
+	 * Creates a new random {@link #uuid}. These are used to uniquely identify the server to renderers (i.e.
+	 * renderers treat multiple servers with the same UUID as the same server).
 	 * @return {@link String} with an Universally Unique Identifier.
 	 */
+	// XXX don't use the MAC address to seed the UUID as it breaks multiple profiles:
+	// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&p=75542#p75542
 	public synchronized String usn() {
 		if (uuid == null) {
 			// retrieve UUID from configuration
 			uuid = getConfiguration().getUuid();
 
 			if (uuid == null) {
-				// create a new UUID based on the MAC address of the used network adapter
-				NetworkInterface ni = null;
+				uuid = UUID.randomUUID().toString();
+				LOGGER.info("Generated new random UUID: {}", uuid);
 
-				try {
-					// this retrieves the network interface via:
-					//
-					// 1) NetworkConfiguration.getAddressForNetworkInterfaceName(pmsConfInterfaceName)
-					// 2) NetworkConfiguration.getDefaultNetworkInterfaceAddress()
-
-					ni = get().getServer().getNetworkInterface();
-
-					// failing that, default to:
-					//
-					// 3) NetworkConfiguration.getNetworkInterfaceByServerName()
-					if (ni == null) {
-						ni = NetworkConfiguration.getInstance().getNetworkInterfaceByServerName();
-					}
-
-					if (ni != null) {
-						byte[] addr = getRegistry().getHardwareAddress(ni); // return null when java.net.preferIPv4Stack=true
-						if (addr != null) {
-							uuid = UUID.nameUUIDFromBytes(addr).toString();
-							LOGGER.info(String.format("Generated new UUID based on the MAC address of the network adapter '%s'", ni.getDisplayName()));
-						}
-					}
-				} catch (SocketException e) {
-					LOGGER.debug("Caught exception", e);
-				} catch (UnknownHostException e) {
-					LOGGER.debug("Caught exception", e);
-				}
-
-				// create random UUID if the generation by MAC address failed
-				if (uuid == null) {
-					uuid = UUID.randomUUID().toString();
-					LOGGER.info("Generated new random UUID");
-				}
-
-				// save the newly generated UUID
+				// save the newly-generated UUID
 				getConfiguration().setUuid(uuid);
 
 				try {
@@ -768,7 +749,7 @@ public class PMS {
 				}
 			}
 
-            LOGGER.info("Using the following UUID configured in PMS.conf: " + uuid);
+            LOGGER.info("Using the following UUID configured in PMS.conf: {}", uuid);
 		}
 
 		return "uuid:" + uuid;
@@ -1007,5 +988,25 @@ public class PMS {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Sets the relative URL of a context sensitive help page located in the
+	 * documentation directory.
+	 * 
+	 * @param page The help page.
+	 */
+	public static void setHelpPage(String page) {
+		helpPage = page;
+	}
+
+	/**
+	 * Returns the relative URL of a context sensitive help page in the
+	 * documentation directory.
+	 *
+	 * @return The help page.
+	 */
+	public static String getHelpPage() {
+		return helpPage;
 	}
 }

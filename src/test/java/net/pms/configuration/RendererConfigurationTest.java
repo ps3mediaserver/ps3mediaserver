@@ -17,23 +17,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package net.pms.test;
+package net.pms.configuration;
 
-import ch.qos.logback.classic.LoggerContext;
-import net.pms.configuration.PmsConfiguration;
-import net.pms.configuration.RendererConfiguration;
+import static net.pms.configuration.RendererConfiguration.getRendererConfigurationByUA;
+import static net.pms.configuration.RendererConfiguration.getRendererConfigurationByUAAHH;
+import static net.pms.configuration.RendererConfiguration.loadRendererConfigurations;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
-
-import static net.pms.configuration.RendererConfiguration.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import ch.qos.logback.classic.LoggerContext;
 
 
 /**
@@ -63,6 +68,9 @@ public class RendererConfigurationTest {
 		// From BraviaEX.conf:
 		testCases.put("X-AV-Client-Info: av=5.0; cn=\"Sony Corporation\"; mn=\"BRAVIA KDL-32CX520\"; mv=\"1.7\";", "Sony Bravia EX");
 
+		// From BraviaHX.conf:
+		testCases.put("X-AV-Client-Info: av=5.0; cn=\"Sony Corporation\"; mn=\"BRAVIA KDL-55HX750\"; mv=\"1.7\";", "Sony Bravia HX");
+
 		// From Dlink510.conf:
         testCases.put("User-Agent: DLNADOC/1.50 INTEL_NMPR/2.1", "D-Link DSM-510");
 
@@ -77,7 +85,7 @@ public class RendererConfigurationTest {
 		
 		// From PhilipsPFL.conf:
 		testCases.put("User-Agent: Windows2000/0.0 UPnP/1.0 PhilipsIntelSDK/1.4 DLNADOC/1.50", "Philips TV");
-		
+
 		// From PS3.conf:
 		testCases.put("User-Agent: PLAYSTATION 3", "Playstation 3");
 		testCases.put("X-AV-Client-Info: av=5.0; cn=\"Sony Computer Entertainment Inc.\"; mn=\"PLAYSTATION 3\"; mv=\"1.0\"", "Playstation 3");

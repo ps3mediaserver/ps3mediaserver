@@ -85,11 +85,13 @@ public class FileUtil {
 		}
 
 		File lowerCasedFilename = new File(f.getParentFile(), f.getName().substring(0, point) + "." + ext.toLowerCase());
+
 		if (lowerCasedFilename.exists()) {
 			return lowerCasedFilename;
 		}
 
 		File upperCasedFilename = new File(f.getParentFile(), f.getName().substring(0, point) + "." + ext.toUpperCase());
+
 		if (upperCasedFilename.exists()) {
 			return upperCasedFilename;
 		}
@@ -97,13 +99,13 @@ public class FileUtil {
 		return null;
 	}
 
-	// FIXME needs to be renamed e.g. doSubtitlesExist or doesSubtitleExist
+	// FIXME rename e.g. isSubtitleExists, isSubtitlesExist...
 	@Deprecated
 	public static boolean doesSubtitlesExists(File file, DLNAMediaInfo media) {
 		return doesSubtitlesExists(file, media, true);
 	}
 
-	// FIXME needs to be renamed e.g. doSubtitlesExist or doesSubtitleExist
+	// FIXME rename e.g. isSubtitleExists...
 	@Deprecated
 	public static boolean doesSubtitlesExists(File file, DLNAMediaInfo media, boolean usecache) {
 		boolean found = browseFolderForSubtitles(file.getParentFile(), file, media, usecache);
@@ -111,8 +113,10 @@ public class FileUtil {
 
 		if (isNotBlank(alternate)) { // https://code.google.com/p/ps3mediaserver/issues/detail?id=737#c5
 			File subFolder = new File(alternate);
+
 			if (!subFolder.isAbsolute()) {
 				subFolder = new File(file.getParent() + "/" + alternate);
+
 				try {
 					subFolder = subFolder.getCanonicalFile();
 				} catch (IOException e) {
@@ -130,6 +134,7 @@ public class FileUtil {
 
 	private synchronized static boolean browseFolderForSubtitles(File subFolder, File file, DLNAMediaInfo media, boolean usecache) {
 		boolean found = false;
+
 		if (!usecache) {
 			cache = null;
 		}
@@ -138,24 +143,29 @@ public class FileUtil {
 			cache = new HashMap<File, File[]>();
 		}
 
-		File allSubs[] = cache.get(subFolder);
+		File[] allSubs = cache.get(subFolder);
+
 		if (allSubs == null) {
 			allSubs = subFolder.listFiles();
+
 			if (allSubs != null) {
 				cache.put(subFolder, allSubs);
 			}
 		}
 
 		String fileName = getFileNameWithoutExtension(file.getName()).toLowerCase();
+
 		if (allSubs != null) {
 			for (File f : allSubs) {
 				if (f.isFile() && !f.isHidden()) {
 					String fName = f.getName().toLowerCase();
+
 					for (String ext : SubtitleType.getSupportedFileExtensions()) {
 						if (fName.length() > ext.length() && fName.startsWith(fileName) && endsWithIgnoreCase(fName, "." + ext)) {
 							int a = fileName.length();
 							int b = fName.length() - ext.length() - 1;
 							String code = "";
+
 							if (a <= b) { // handling case with several dots: <video>..<extension>
 								code = fName.substring(a, b);
 							}
@@ -213,6 +223,7 @@ public class FileUtil {
 								}
 
 								found = true;
+
 								if (media != null) {
 									media.getSubtitleTracksList().add(sub);
 								}
@@ -313,6 +324,7 @@ public class FileUtil {
 	 */
 	public static void convertFileFromUtf16ToUtf8(File inputFile, File outputFile) throws IOException {
 		String charset;
+
 		if (inputFile == null || !inputFile.canRead()) {
 			throw new FileNotFoundException("Can't read inputFile.");
 		}
@@ -356,7 +368,7 @@ public class FileUtil {
 
 	/**
 	 * Determine whether a file is readable by trying to read it. This works around JDK bugs which
-	 * return the wrong results for {@link java.io.File.canRead()} on Windows, and in some cases, on Unix.
+	 * return the wrong results for {@link java.io.File#canRead()} on Windows, and in some cases, on Unix.
 	 * <p>
 	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.
 	 * Note: this method changes the file access time.
@@ -383,7 +395,7 @@ public class FileUtil {
 
 	/**
 	 * Determine whether a file is writable by trying to write it. This works around JDK bugs which
-	 * return the wrong results for {@link java.io.File.canWrite()} on Windows and, in some cases, on Unix.
+	 * return the wrong results for {@link java.io.File#canWrite()} on Windows and, in some cases, on Unix.
 	 * <p>
 	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.
 	 * Note: this method changes the file access time and may change the file modification time.
@@ -428,7 +440,7 @@ public class FileUtil {
 
 	/**
 	 * Determines whether the supplied directory is readable by trying to read its contents.
-	 * This works around JDK bugs which return the wrong results for {@link java.io.File.canRead()}
+	 * This works around JDK bugs which return the wrong results for {@link java.io.File#canRead()}
 	 * on Windows and possibly on Unix.
 	 * <p>
 	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.
@@ -461,7 +473,7 @@ public class FileUtil {
 
 	/**
 	 * Determines whether the supplied directory is writable by trying to write a file to it.
-	 * This works around JDK bugs which return the wrong results for {@link java.io.File.canWrite()}
+	 * This works around JDK bugs which return the wrong results for {@link java.io.File#canWrite()}
 	 * on Windows and possibly on Unix.
 	 * <p>
 	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.

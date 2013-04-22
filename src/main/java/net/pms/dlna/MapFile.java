@@ -179,7 +179,8 @@ public class MapFile extends DLNAResource {
 	public boolean analyzeChildren(int count) {
 		int currentChildrenCount = getChildren().size();
 		int vfolder = 0;
-		while ((getChildren().size() - currentChildrenCount) < count || count == -1) {
+
+		while (((getChildren().size() - currentChildrenCount) < count) || (count == -1)) {
 			if (vfolder < getConf().getChildren().size()) {
 				addChild(new MapFile(getConf().getChildren().get(vfolder)));
 				++vfolder;
@@ -187,9 +188,11 @@ public class MapFile extends DLNAResource {
 				if (discoverable.isEmpty()) {
 					break;
 				}
+
 				manageFile(discoverable.remove(0));
 			}
 		}
+
 		return discoverable.isEmpty();
 	}
 
@@ -300,10 +303,12 @@ public class MapFile extends DLNAResource {
 			LOGGER.debug("File automatically added: " + f.getName());
 		}
 
+		// false: don't create the folder if it doesn't exist i.e. find the folder
 		TranscodeVirtualFolder vf = getTranscodeFolder(false);
 
 		for (DLNAResource f : removedFiles) {
 			getChildren().remove(f);
+
 			if (vf != null) {
 				for (int j = vf.getChildren().size() - 1; j >= 0; j--) {
 					if (vf.getChildren().get(j).getName().equals(f.getName())) {
@@ -406,7 +411,7 @@ public class MapFile extends DLNAResource {
 
 	/**
 	 * @return the conf
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected MapFileConfiguration getConf() {
 		return conf;
@@ -414,7 +419,7 @@ public class MapFile extends DLNAResource {
 
 	/**
 	 * @param conf the conf to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	protected void setConf(MapFileConfiguration conf) {
 		this.conf = conf;
@@ -422,7 +427,7 @@ public class MapFile extends DLNAResource {
 
 	/**
 	 * @return the potentialCover
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public File getPotentialCover() {
 		return potentialCover;
@@ -430,7 +435,7 @@ public class MapFile extends DLNAResource {
 
 	/**
 	 * @param potentialCover the potentialCover to set
-	 * @since 1.50
+	 * @since 1.50.0
 	 */
 	public void setPotentialCover(File potentialCover) {
 		this.potentialCover = potentialCover;

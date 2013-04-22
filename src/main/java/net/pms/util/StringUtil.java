@@ -81,7 +81,7 @@ public class StringUtil {
 	/**
 	 * Returns an abbreviated version of the supplied string.
 	 *
-	 * @param The String to abbreviate.
+	 * @param str The String to abbreviate.
 	 * @return The abbreviated String.
 	 */
 	public static String abbreviate(String str) {

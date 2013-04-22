@@ -11,3 +11,4 @@ pms.iml
 .project
 .settings
 target
+.pc/
