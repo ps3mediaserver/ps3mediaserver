@@ -50,8 +50,10 @@ import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
 import net.pms.util.FormLayoutUtil;
+import net.pms.util.PlayerUtil;
 
 import org.apache.commons.lang3.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +110,7 @@ public class VLCVideo extends Player {
 
 	@Override
 	public String name() {
-		return "VLC";
+		return "VLC Video";
 	}
 
 	@Override
@@ -129,9 +131,8 @@ public class VLCVideo extends Player {
 
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		// VLC is a general transcoder that should support every format
-		// Until problem occurs, assume compatible
-		return true;
+		// only handle local video - web video is handled by VLCWebVideo
+		return PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.WEB, false);
 	}
 
 	/**

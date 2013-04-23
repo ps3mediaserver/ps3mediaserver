@@ -20,11 +20,13 @@ package net.pms.encoders;
 
 import bsh.EvalError;
 import bsh.Interpreter;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
+
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
@@ -44,9 +46,12 @@ import net.pms.newgui.MyComboBoxModel;
 import net.pms.util.CodecUtil;
 import net.pms.util.FileUtil;
 import net.pms.util.FormLayoutUtil;
+import net.pms.util.PlayerUtil;
 import net.pms.util.ProcessUtil;
+
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -2279,7 +2284,7 @@ public class MEncoderVideo extends Player {
 
 	@Override
 	public String name() {
-		return "MEncoder";
+		return "MEncoder Video";
 	}
 
 	@Override
@@ -2431,22 +2436,8 @@ public class MEncoderVideo extends Player {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.VIDEO) {
-			return false;
-		}
-
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.ISO)
-					|| id.equals(Format.Identifier.MKV)
-					|| id.equals(Format.Identifier.MPG)) {
-				return true;
-			}
-		}
-
-		return false;
+		return PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.ISO)
+			|| PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.MKV)
+			|| PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.MPG);
 	}
 }

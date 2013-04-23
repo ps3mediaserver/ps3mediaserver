@@ -22,6 +22,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
@@ -33,6 +34,7 @@ import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
+import net.pms.util.PlayerUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -224,23 +226,10 @@ public class MPlayerAudio extends Player {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.AUDIO) {
-			return false;
-		}
+		return PlayerUtil.isType(resource, Format.AUDIO, Format.Identifier.FLAC)
+			|| PlayerUtil.isType(resource, Format.AUDIO, Format.Identifier.M4A)
+			|| PlayerUtil.isType(resource, Format.AUDIO, Format.Identifier.OGG)
+			|| PlayerUtil.isType(resource, Format.AUDIO, Format.Identifier.WAV);
 
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.FLAC)
-					|| id.equals(Format.Identifier.M4A)
-					|| id.equals(Format.Identifier.OGG)
-					|| id.equals(Format.Identifier.WAV)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

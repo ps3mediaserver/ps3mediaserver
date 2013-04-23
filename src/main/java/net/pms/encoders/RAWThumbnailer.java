@@ -8,6 +8,7 @@ import net.pms.io.InternalJavaProcessImpl;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.util.PlayerUtil;
 
 import javax.swing.*;
 import java.io.ByteArrayInputStream;
@@ -122,21 +123,10 @@ public class RAWThumbnailer extends Player {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.AUDIO) {
-			return false;
-		}
-
-		if (resource.getMediaSubtitle() != null) {
+		if (PlayerUtil.isType(resource, Format.AUDIO, Format.Identifier.RAW)) {
 			// PMS does not support FFmpeg subtitles at the moment.
-			return false;
-		}
-
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.RAW)) {
+			// XXX does this belong here?
+			if (resource.getMediaSubtitle() == null) {
 				return true;
 			}
 		}

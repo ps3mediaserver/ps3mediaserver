@@ -44,6 +44,7 @@ import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
 import net.pms.util.FileUtil;
+import net.pms.util.PlayerUtil;
 import net.pms.util.ProcessUtil;
 
 import org.apache.commons.lang3.StringUtils;
@@ -372,7 +373,7 @@ public class FFMpegVideo extends Player {
 
 	@Override
 	public String name() {
-		return "FFmpeg";
+		return "FFmpeg Video";
 	}
 
 	@Override
@@ -557,7 +558,10 @@ public class FFMpegVideo extends Player {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.VIDEO) {
+		if (!(
+			PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.MKV) ||
+			PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.MPG)
+		)) {
 			return false;
 		}
 
@@ -584,16 +588,6 @@ public class FFMpegVideo extends Player {
 		} catch (IndexOutOfBoundsException e) {
 			LOGGER.trace("FFmpeg cannot determine compatibility based on default audio track for "
 					+ resource.getSystemName());
-		}
-
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.MKV) || id.equals(Format.Identifier.MPG)) {
-				return true;
-			}
 		}
 
 		return false;

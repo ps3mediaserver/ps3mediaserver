@@ -7,6 +7,7 @@ Changelog:
         - Added support for M4A files encoded with Fraunhofer AAC
 
     Engines:
+        new engine: VLCWebVideo ("vlcwebvideo")
         MEncoder Video:
             - Fixed bug that caused embedded subtitles to be displayed instead of external (thanks, SubJunk)
         tsMuxeR:

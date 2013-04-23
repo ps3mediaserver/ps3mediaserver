@@ -24,6 +24,7 @@ import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
+import net.pms.util.PlayerUtil;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class MPlayerWebAudio extends MPlayerAudio {
 
 	@Override
 	public String name() {
-		return "MPlayer Web";
+		return "MPlayer Web Audio";
 	}
 
 	@Override
@@ -74,20 +75,6 @@ public class MPlayerWebAudio extends MPlayerAudio {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.AUDIO) {
-			return false;
-		}
-
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.WEB)) {
-				return true;
-			}
-		}
-
-		return false;
+		return PlayerUtil.isWebAudio(resource);
 	}
 }

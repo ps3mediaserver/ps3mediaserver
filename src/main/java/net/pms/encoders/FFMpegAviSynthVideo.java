@@ -32,6 +32,7 @@ import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.formats.v2.SubtitleType;
+import net.pms.util.PlayerUtil;
 import net.pms.util.ProcessUtil;
 
 import org.slf4j.Logger;
@@ -141,21 +142,7 @@ public class FFMpegAviSynthVideo extends FFMpegVideo {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.VIDEO) {
-			return false;
-		}
-
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.MKV)
-					|| id.equals(Format.Identifier.MPG)) {
-				return true;
-			}
-		}
-
-		return false;
+		return PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.MKV)
+			|| PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.MPG);
 	}
 }

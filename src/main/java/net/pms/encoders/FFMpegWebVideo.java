@@ -31,6 +31,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.util.PlayerUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,20 +198,6 @@ public class FFMpegWebVideo extends FFMpegVideo {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.VIDEO) {
-			return false;
-		}
-
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.WEB)) {
-				return true;
-			}
-		}
-
-		return false;
+		return PlayerUtil.isWebVideo(resource);
 	}
 }

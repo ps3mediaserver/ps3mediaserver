@@ -22,6 +22,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
 import net.pms.Messages;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
@@ -30,10 +31,11 @@ import net.pms.formats.Format;
 import net.pms.io.*;
 import net.pms.util.CodecUtil;
 import net.pms.util.FormLayoutUtil;
+import net.pms.util.PlayerUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -41,10 +43,13 @@ import java.io.*;
 import java.net.URL;
 import java.util.Locale;
 
+import javax.swing.*;
+
 import static net.pms.formats.v2.AudioUtils.getLPCMChannelMappingForMencoder;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.startsWith;
 
+// FIXME rename TsMuxeRVideo
 public class TSMuxerVideo extends Player {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TSMuxerVideo.class);
 	private static final String COL_SPEC = "left:pref, 0:grow";
@@ -869,7 +874,10 @@ public class TSMuxerVideo extends Player {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.VIDEO) {
+		if (!(
+			PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.MKV) ||
+			PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.MPG)
+		)) {
 			return false;
 		}
 
@@ -891,19 +899,9 @@ public class TSMuxerVideo extends Player {
 				return false;
 			}
 		} catch (NullPointerException e) {
-			LOGGER.trace("FFmpeg cannot determine compatibility based on audio track for " + resource.getSystemName());
+			LOGGER.trace("tsMuxeR cannot determine compatibility based on audio track for " + resource.getSystemName());
 		} catch (IndexOutOfBoundsException e) {
-			LOGGER.trace("FFmpeg cannot determine compatibility based on default audio track for " + resource.getSystemName());
-		}
-
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.MKV) || id.equals(Format.Identifier.MPG)) {
-				return true;
-			}
+			LOGGER.trace("tsMuxeR cannot determine compatibility based on default audio track for " + resource.getSystemName());
 		}
 
 		return false;

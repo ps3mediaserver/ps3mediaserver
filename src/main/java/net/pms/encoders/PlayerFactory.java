@@ -136,6 +136,7 @@ public final class PlayerFactory {
 		registerPlayer(new MPlayerAudio(configuration));
 		registerPlayer(new FFMpegWebVideo(configuration));
 		registerPlayer(new MEncoderWebVideo(configuration));
+		registerPlayer(new VLCWebVideo(configuration));
 		registerPlayer(new MPlayerWebVideoDump(configuration));
 		registerPlayer(new MPlayerWebAudio(configuration));
 		registerPlayer(new TSMuxerVideo(configuration));
@@ -265,18 +266,32 @@ public final class PlayerFactory {
 	 */
 	public static Player getPlayer(final DLNAResource resource) {
 		if (resource == null) {
+			LOGGER.warn("invalid resource (null): no player found");
 			return null;
+		} else {
+			LOGGER.trace("getting player for {}", resource.getName());
 		}
 
 		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry());
 
 		for (Player player : players) {
-			if (enabledEngines.contains(player.id()) && player.isCompatible(resource)) {
-				// Player is enabled and compatible
-				LOGGER.trace("Selecting player " + player.name() + " for resource " + resource.getName());
-				return player;
-			} 
+			boolean enabled = enabledEngines.contains(player.id());
+
+			if (enabled) {
+				boolean compatible = player.isCompatible(resource);
+
+				LOGGER.trace("player: {}, enabled: {}, compatible: {}", player.name(), enabled, compatible);
+
+				if (compatible) {
+					// Player is enabled and compatible
+					return player;
+				}
+			} else {
+				LOGGER.trace("player: {}, enabled: {}, compatible: {}", player.name(), false, null);
+			}
 		}
+
+		LOGGER.trace("no player found for {}", resource.getName());
 
 		return null;
 	}

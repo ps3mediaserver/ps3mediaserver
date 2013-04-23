@@ -26,6 +26,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.util.PlayerUtil;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -140,7 +141,7 @@ public class MEncoderWebVideo extends Player {
 
 	@Override
 	public String name() {
-		return "MEncoder Web";
+		return "MEncoder Web Video";
 	}
 
 	@Override
@@ -163,20 +164,6 @@ public class MEncoderWebVideo extends Player {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.VIDEO) {
-			return false;
-		}
-
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.WEB)) {
-				return true;
-			}
-		}
-
-		return false;
+		return PlayerUtil.isWebVideo(resource);
 	}
 }

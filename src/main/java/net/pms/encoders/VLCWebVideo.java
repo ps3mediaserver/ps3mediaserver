@@ -19,26 +19,21 @@
 package net.pms.encoders;
 
 import net.pms.configuration.PmsConfiguration;
-import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
-import net.pms.io.OutputParams;
-import net.pms.io.ProcessWrapper;
 import net.pms.util.PlayerUtil;
 
-import javax.swing.*;
-import java.io.IOException;
+public class VLCWebVideo extends VLCVideo {
+	@Deprecated
+	public static final String ID = "vlcwebvideo";
 
-public class TsMuxerAudio extends TSMuxerVideo {
-	public static final String ID = "tsmuxeraudio";
-
-	public TsMuxerAudio(PmsConfiguration configuration) {
+	public VLCWebVideo(PmsConfiguration configuration) {
 		super(configuration);
 	}
 
 	@Override
-	public JComponent config() {
-		return null;
+	public int purpose() {
+		return VIDEO_WEBSTREAM_PLAYER;
 	}
 
 	@Override
@@ -48,33 +43,12 @@ public class TsMuxerAudio extends TSMuxerVideo {
 
 	@Override
 	public boolean isTimeSeekable() {
-		return true;
-	}
-
-	@Override
-	public ProcessWrapper launchTranscode(
-		String fileName,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params) throws IOException {
-		params.timeend = media.getDurationInSeconds();
-		params.waitbeforestart = 2500;
-		return super.launchTranscode(fileName, dlna, media, params);
+		return false;
 	}
 
 	@Override
 	public String name() {
-		return "Audio High Fidelity";
-	}
-
-	@Override
-	public int purpose() {
-		return AUDIO_SIMPLEFILE_PLAYER;
-	}
-
-	@Override
-	public int type() {
-		return Format.VIDEO;
+		return "VLC Web Video";
 	}
 
 	/**
@@ -82,6 +56,6 @@ public class TsMuxerAudio extends TSMuxerVideo {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		return PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.AUDIO_AS_VIDEO);
+		return PlayerUtil.isWebVideo(resource);
 	}
 }
