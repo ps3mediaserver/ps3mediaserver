@@ -1,3 +1,9 @@
+ps3mediaserver (1.81.0+mencoder35005-3) quantal; urgency=low
+
+  * Add VideoLAN dependency to support new vlc transcoding engine
+
+ -- I. Sokolov <happy.neko@gmail.com>  Wed, 24 Apr 2013 21:34:20 +0400
+
 ps3mediaserver (1.81.0+mencoder35005-2) quantal; urgency=low
 
   * Ant build fixed

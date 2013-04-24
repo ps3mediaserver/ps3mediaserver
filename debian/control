@@ -8,7 +8,7 @@ Homepage: https://code.google.com/p/ps3mediaserver/
 
 Package: ps3mediaserver
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, flac, imagemagick, default-jre, ps3mediaserver-multiarch [amd64], libfreetype6 [i386], ttf-ubuntu-font-family
+Depends: ${shlibs:Depends}, ${misc:Depends}, flac, vlc, imagemagick, default-jre, ps3mediaserver-multiarch [amd64], libfreetype6 [i386], ttf-ubuntu-font-family
 Description: DLNA Media Server
  PS3 Media Server is a DLNA compliant UPnP Media Server for the PS3 and other renderers, written in Java, 
  with the purpose of streaming or transcoding any kind of media files, with minimum configuration. 
