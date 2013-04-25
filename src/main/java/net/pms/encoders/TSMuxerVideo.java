@@ -77,10 +77,23 @@ public class TSMuxerVideo extends Player {
 		this.configuration = configuration;
 	}
 
+	@Override
 	public boolean excludeFormat(Format extension) {
 		String m = extension.getMatchedId();
-		return m != null && !m.equals("mp4") && !m.equals("mkv") && !m.equals("ts") && !m.equals("tp") && !m.equals("m2ts") && !m.equals("m2t") && !m.equals("mpg") && !m.equals("evo") && !m.equals("mpeg")
-			&& !m.equals("vob") && !m.equals("m2v") && !m.equals("mts") && !m.equals("mov");
+		return m != null &&
+			!m.equals("mp4") &&
+			!m.equals("mkv") &&
+			!m.equals("ts") &&
+			!m.equals("tp") &&
+			!m.equals("m2ts") &&
+			!m.equals("m2t") &&
+			!m.equals("mpg") &&
+			!m.equals("evo") &&
+			!m.equals("mpeg") &&
+			!m.equals("vob") &&
+			!m.equals("m2v") &&
+			!m.equals("mts") &&
+			!m.equals("mov");
 	}
 
 	@Override
@@ -113,11 +126,12 @@ public class TSMuxerVideo extends Player {
 		String fileName,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
-		OutputParams params) throws IOException {
+		OutputParams params
+	) throws IOException {
 		setAudioAndSubs(fileName, media, params, configuration);
 
-		PipeIPCProcess ffVideoPipe = null;
-		ProcessWrapperImpl ffVideo = null;
+		PipeIPCProcess ffVideoPipe;
+		ProcessWrapperImpl ffVideo;
 
 		PipeIPCProcess ffAudioPipe[] = null;
 		ProcessWrapperImpl ffAudio[] = null;
@@ -159,7 +173,12 @@ public class TSMuxerVideo extends Player {
 			ffparams.maxBufferSize = 1;
 			ffVideo = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
 
-			if (fileName.toLowerCase().endsWith(".flac") && media != null && media.getFirstAudioTrack().getBitsperSample() >= 24 && media.getFirstAudioTrack().getSampleRate() % 48000 == 0) {
+			if (
+				fileName.toLowerCase().endsWith(".flac") &&
+                media != null &&
+				media.getFirstAudioTrack().getBitsperSample() >= 24 &&
+				media.getFirstAudioTrack().getSampleRate() % 48000 == 0
+			) {
 				ffAudioPipe = new PipeIPCProcess[1];
 				ffAudioPipe[0] = new PipeIPCProcess(System.currentTimeMillis() + "flacaudio", System.currentTimeMillis() + "audioout", false, true);
 
