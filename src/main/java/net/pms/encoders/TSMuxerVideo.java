@@ -508,13 +508,10 @@ public class TSMuxerVideo extends Player {
 		PrintWriter pw = new PrintWriter(f);
 		pw.print("MUXOPT --no-pcr-on-video-pid");
 		pw.print(" --new-audio-pes");
-		if (ffVideo != null) {
-			pw.print(" --no-asyncio");
-		}
+		pw.print(" --no-asyncio");
 		pw.print(" --vbr");
 		pw.println(" --vbv-len=500");
 
-		if (ffVideoPipe != null) {
 			String videoparams = "level=4.1, insertSEI, contSPS, track=1";
 			if (this instanceof TsMuxerAudio) {
 				videoparams = "track=224";
@@ -523,7 +520,6 @@ public class TSMuxerVideo extends Player {
 				fps = "25";
 			}
 			pw.println(videoType + ", \"" + ffVideoPipe.getOutputPipe() + "\", " + (fps != null ? ("fps=" + fps + ", ") : "") + (width != -1 ? ("video-width=" + width + ", ") : "") + (height != -1 ? ("video-height=" + height + ", ") : "") + videoparams);
-		}
 
 		// disable LPCM transcoding for MP4 container with non-H264 video as workaround for mencoder's A/V sync bug
 		boolean mp4_with_non_h264 = (media.getContainer().equals("mp4") && !media.getCodecV().equals("h264"));
@@ -579,9 +575,9 @@ public class TSMuxerVideo extends Player {
 			for (int i = 0; i < media.getAudioTracksList().size(); i++) {
 				DLNAMediaAudio lang = media.getAudioTracksList().get(i);
 				String timeshift = "";
-				boolean ac3Remux = false;
-				boolean dtsRemux = false;
-				boolean pcm = false;
+				boolean ac3Remux;
+				boolean dtsRemux;
+				boolean pcm;
                 boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && lang.getAudioProperties().getNumberOfChannels() == 2)
 					&& (lang.getBitRate() > 370000 && lang.getBitRate() < 400000);
                 ac3Remux = lang.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3();
@@ -609,11 +605,11 @@ public class TSMuxerVideo extends Player {
 					// AC-3 remux takes priority
 					type = "A_AC3";
 				} else {
-					if ( pcm )
+					if (pcm)
 					{
 						type = "A_LPCM";
 					}
-					if ( dtsRemux )
+					if (dtsRemux)
 					{
 						type = "A_LPCM";
 						if (params.mediaRenderer.isMuxDTSToMpeg()) {
@@ -659,28 +655,25 @@ public class TSMuxerVideo extends Player {
 		}
 		tsPipe.deleteLater();
 
-		if (ffVideoPipe != null) {
-			ProcessWrapper ff_pipe_process = ffVideoPipe.getPipeProcess();
-			p.attachProcess(ff_pipe_process);
-			ff_pipe_process.runInNewThread();
+		ProcessWrapper ff_pipe_process = ffVideoPipe.getPipeProcess();
+		p.attachProcess(ff_pipe_process);
+		ff_pipe_process.runInNewThread();
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+		}
+		ffVideoPipe.deleteLater();
 
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) { }
-
-			ffVideoPipe.deleteLater();
-
-			p.attachProcess(ffVideo);
-			ffVideo.runInNewThread();
-
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) { }
+		p.attachProcess(ffVideo);
+		ffVideo.runInNewThread();
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
 		}
 
 		if (ffAudioPipe != null && params.aid != null) {
 			for (int i = 0; i < ffAudioPipe.length; i++) {
-				ProcessWrapper ff_pipe_process = ffAudioPipe[i].getPipeProcess();
+				ff_pipe_process = ffAudioPipe[i].getPipeProcess();
 				p.attachProcess(ff_pipe_process);
 				ff_pipe_process.runInNewThread();
 				try {
