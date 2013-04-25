@@ -23,7 +23,6 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import net.pms.Messages;
-import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.*;
@@ -47,7 +46,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.startsWith;
 
 public class TSMuxerVideo extends Player {
-	private static final Logger logger = LoggerFactory.getLogger(TSMuxerVideo.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TSMuxerVideo.class);
 	private static final String COL_SPEC = "left:pref, 0:grow";
 	private static final String ROW_SPEC = "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow";
 
@@ -193,15 +192,15 @@ public class TSMuxerVideo extends Player {
 					rate = "" + media.getFirstAudioTrack().getSampleRate();
 				}
 
-                String[] flacCmd = new String[] {
-                        configuration.getFfmpegPath(),
-                        "-i", fileName,
-                        "-ar", rate,
-                        "-f", "wav",
-                        "-acodec", depth,
-                        "-y",
-                        ffAudioPipe[0].getInputPipe()
-                };
+				String[] flacCmd = new String[] {
+					configuration.getFfmpegPath(),
+					"-i", fileName,
+					"-ar", rate,
+					"-f", "wav",
+					"-acodec", depth,
+					"-y",
+					ffAudioPipe[0].getInputPipe()
+				};
 
 				ffparams = new OutputParams(configuration);
 				ffparams.maxBufferSize = 1;
@@ -247,7 +246,7 @@ public class TSMuxerVideo extends Player {
 				boolean compat = (media.isVideoPS3Compatible(newInput) || !params.mediaRenderer.isH264Level41Limited());
 
 				if (!compat && params.mediaRenderer.isPS3()) {
-					logger.info("The video will not play or will show a black screen on the PS3...");
+					LOGGER.info("The video will not play or will show a black screen on the PS3...");
 				}
 
 				if (media.getH264AnnexB() != null && media.getH264AnnexB().length > 0) {
@@ -706,7 +705,7 @@ public class TSMuxerVideo extends Player {
 		try {
 			outputFileName = configuration.getTempFolder() + "/" + outputFileName;
 		} catch (IOException e) {
-			logger.warn("Failure to determine temporary folder.", e);
+			LOGGER.warn("Failure to determine temporary folder.", e);
 		}
 
 		File outputFile = new File(outputFileName);
@@ -728,25 +727,22 @@ public class TSMuxerVideo extends Player {
 					outputStream.write(buffer, 0, byteCount);
 				}
 			} catch (final IOException e) {
-				logger.error("Failure on saving the embedded resource " + resourceName
-						+ " to the file " + outputFile.getAbsolutePath(), e);
+				LOGGER.error("Failure on saving the embedded resource " + resourceName + " to the file " + outputFile.getAbsolutePath(), e);
 			} finally {
 				if (inputStream != null) {
 					try {
 						inputStream.close();
 					} catch (final IOException e) {
-						logger.warn("Problem closing an input stream while reading data from the embedded resource "
-								+ resourceName, e);
+						LOGGER.warn("Problem closing an input stream while reading data from the embedded resource " + resourceName, e);
 					}
 				}
-	
+
 				if (outputStream != null) {
 					try {
 						outputStream.flush();
 						outputStream.close();
 					} catch (final IOException e) {
-						logger.warn("Problem closing the output stream while writing the file "
-								+ outputFile.getAbsolutePath(), e);
+						LOGGER.warn("Problem closing the output stream while writing the file " + outputFile.getAbsolutePath(), e);
 					}
 				}
 			}
@@ -797,6 +793,7 @@ public class TSMuxerVideo extends Player {
 			tsmuxerforcefps.setSelected(true);
 		}
 		tsmuxerforcefps.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setTsmuxerForceFps(e.getStateChange() == ItemEvent.SELECTED);
 			}
@@ -810,6 +807,7 @@ public class TSMuxerVideo extends Player {
 		}
 
 		muxallaudiotracks.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent e) {
 				configuration.setMuxAllAudioTracks(e.getStateChange() == ItemEvent.SELECTED);
 			}
@@ -824,10 +822,12 @@ public class TSMuxerVideo extends Player {
 		return panel;
 	}
 
+	@Override
 	public boolean isInternalSubtitlesSupported() {
 		return false;
 	}
 
+	@Override
 	public boolean isExternalSubtitlesSupported() {
 		return false;
 	}
@@ -864,11 +864,9 @@ public class TSMuxerVideo extends Player {
 				return false;
 			}
 		} catch (NullPointerException e) {
-			logger.trace("FFmpeg cannot determine compatibility based on audio track for "
-					+ resource.getSystemName());
+			LOGGER.trace("FFmpeg cannot determine compatibility based on audio track for " + resource.getSystemName());
 		} catch (IndexOutOfBoundsException e) {
-			logger.trace("FFmpeg cannot determine compatibility based on default audio track for "
-					+ resource.getSystemName());
+			LOGGER.trace("FFmpeg cannot determine compatibility based on default audio track for " + resource.getSystemName());
 		}
 
 		Format format = resource.getFormat();
