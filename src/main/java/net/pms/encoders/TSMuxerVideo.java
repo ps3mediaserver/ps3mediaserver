@@ -289,9 +289,15 @@ public class TSMuxerVideo extends Player {
 					ffAudioPipe = new PipeIPCProcess[numAudioTracks];
 					ffAudioPipe[0] = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true);
 
-                    // disable AC-3 remux for stereo tracks with 384 kbits bitrate and PS3 renderer (PS3 FW bug?)
-					boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && params.aid.getAudioProperties().getNumberOfChannels() == 2)
-						&& (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
+					/*
+					 Disable AC-3 remux for stereo tracks with 384 kbits bitrate and PS3 renderer (PS3 FW bug?)
+					 TODO check new firmwares
+					 Commented out until we can find a way to detect when a video has an audio track that switches from 2 to 6 channels
+					 because MEncoder can't handle those files, which are very common these days.
+					*/
+                    // final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && params.aid.getAudioProperties().getNumberOfChannels() == 2)
+					//	&& (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
+					final boolean ps3_and_stereo_and_384_kbits = false;
 					ac3Remux = (params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3());
                     dtsRemux = configuration.isDTSEmbedInPCM() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
 
@@ -399,9 +405,15 @@ public class TSMuxerVideo extends Player {
 						DLNAMediaAudio audio = media.getAudioTracksList().get(i);
 						ffAudioPipe[i] = new PipeIPCProcess(System.currentTimeMillis() + "ffmpeg" + i, System.currentTimeMillis() + "audioout" + i, false, true);
 
-                        // disable AC-3 remux for stereo tracks with 384 kbits bitrate and PS3 renderer (PS3 FW bug?)
-						boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && audio.getAudioProperties().getNumberOfChannels() == 2)
-							&& (audio.getBitRate() > 370000 && audio.getBitRate() < 400000);
+						/*
+						 Disable AC-3 remux for stereo tracks with 384 kbits bitrate and PS3 renderer (PS3 FW bug?)
+					 	 TODO check new firmwares
+					 	 Commented out until we can find a way to detect when a video has an audio track that switches from 2 to 6 channels
+					 	 because MEncoder can't handle those files, which are very common these days.
+					 	*/
+						// final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && audio.getAudioProperties().getNumberOfChannels() == 2)
+						//	&& (audio.getBitRate() > 370000 && audio.getBitRate() < 400000);
+						final boolean ps3_and_stereo_and_384_kbits = false;
                         ac3Remux = audio.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3();
 						dtsRemux = configuration.isDTSEmbedInPCM() && audio.isDTS() && params.mediaRenderer.isDTSPlayable();
 
@@ -521,15 +533,22 @@ public class TSMuxerVideo extends Player {
 			}
 			pw.println(videoType + ", \"" + ffVideoPipe.getOutputPipe() + "\", " + (fps != null ? ("fps=" + fps + ", ") : "") + (width != -1 ? ("video-width=" + width + ", ") : "") + (height != -1 ? ("video-height=" + height + ", ") : "") + videoparams);
 
-		// disable LPCM transcoding for MP4 container with non-H264 video as workaround for mencoder's A/V sync bug
+		// Disable LPCM transcoding for MP4 container with non-H264 video as workaround for mencoder's A/V sync bug
 		boolean mp4_with_non_h264 = (media.getContainer().equals("mp4") && !media.getCodecV().equals("h264"));
 		if (ffAudioPipe != null && ffAudioPipe.length == 1) {
 			String timeshift = "";
 			boolean ac3Remux;
 			boolean dtsRemux;
 			boolean pcm;
-			boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && params.aid.getAudioProperties().getNumberOfChannels() == 2)
-				&& (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
+			/*
+			 Disable AC-3 remux for stereo tracks with 384 kbits bitrate and PS3 renderer (PS3 FW bug?)
+			 TODO check new firmwares
+			 Commented out until we can find a way to detect when a video has an audio track that switches from 2 to 6 channels
+			 because MEncoder can't handle those files, which are very common these days.
+			*/
+			// final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && params.aid.getAudioProperties().getNumberOfChannels() == 2)
+			//	&& (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
+			final boolean ps3_and_stereo_and_384_kbits = false;
 			ac3Remux = params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3();
 			dtsRemux = configuration.isDTSEmbedInPCM() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
 			pcm = configuration.isMencoderUsePcm() &&
@@ -578,8 +597,15 @@ public class TSMuxerVideo extends Player {
 				boolean ac3Remux;
 				boolean dtsRemux;
 				boolean pcm;
-                boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && lang.getAudioProperties().getNumberOfChannels() == 2)
-					&& (lang.getBitRate() > 370000 && lang.getBitRate() < 400000);
+				/*
+				 Disable AC-3 remux for stereo tracks with 384 kbits bitrate and PS3 renderer (PS3 FW bug?)
+			  	 TODO check new firmwares
+			  	 Commented out until we can find a way to detect when a video has an audio track that switches from 2 to 6 channels
+			  	 because MEncoder can't handle those files, which are very common these days.
+			 	*/
+                // final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && lang.getAudioProperties().getNumberOfChannels() == 2)
+				//	&& (lang.getBitRate() > 370000 && lang.getBitRate() < 400000);
+				final boolean ps3_and_stereo_and_384_kbits = false;
                 ac3Remux = lang.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3();
 				dtsRemux = configuration.isDTSEmbedInPCM() && lang.isDTS() && params.mediaRenderer.isDTSPlayable();
 				pcm = configuration.isMencoderUsePcm() &&
