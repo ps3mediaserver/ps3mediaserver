@@ -193,19 +193,15 @@ public class TSMuxerVideo extends Player {
 					rate = "" + media.getFirstAudioTrack().getSampleRate();
 				}
 
-				String[] flacCmd = new String[] {
-					configuration.getFfmpegPath(),
-					"-ar",
-					rate,
-					"-i",
-					fileName,
-					"-f",
-					"wav",
-					"-acodec",
-					depth,
-					"-y",
-					ffAudioPipe[0].getInputPipe()
-				};
+                String[] flacCmd = new String[] {
+                        configuration.getFfmpegPath(),
+                        "-i", fileName,
+                        "-ar", rate,
+                        "-f", "wav",
+                        "-acodec", depth,
+                        "-y",
+                        ffAudioPipe[0].getInputPipe()
+                };
 
 				ffparams = new OutputParams(PMS.getConfiguration());
 				ffparams.maxBufferSize = 1;

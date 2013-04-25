@@ -3,6 +3,10 @@ Changelog:
 
 1.82.0 - 2013-??-??
 
+    Engines:
+        tsMuxeR:
+            - Fixed 24-bit FLAC support with tsMuxeR
+
     Misc:
         - Fix issue with VirtualBox and PMS launchers (thanks, thepadawan42)
 
