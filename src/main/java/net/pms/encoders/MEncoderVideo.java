@@ -1502,18 +1502,25 @@ public class MEncoderVideo extends Player {
 		 * subs" options if any of the internal conditions for disabling subtitles are met.
 		 */
 		if (isDisableSubtitles(params)) {
+			// Ensure that internal subtitles are not automatically loaded
 			// MKV: in some circumstances, MEncoder automatically selects an internal sub unless we explicitly disable (internal) subtitles
 			// http://www.ps3mediaserver.org/forum/viewtopic.php?f=14&t=15891
 			cmdList.add("-nosub");
-			// make sure external subs are not automatically loaded
+			// Ensure that external subtitles are not automatically loaded
 			cmdList.add("-noautosub");
 		} else {
 			// note: isEmbedded() and isExternal() are mutually exclusive
 			if (params.sid.isEmbedded()) { // internal (embedded) subs
+				// Ensure that external subtitles are not automatically loaded
+				cmdList.add("-noautosub");
+				// Specify which internal subtitle we want
 				cmdList.add("-sid");
 				cmdList.add("" + params.sid.getId());
-			} else { // external subtitles
+			} else if (externalSubtitlesFileName != null) { // external subtitles
 				assert params.sid.isExternal(); // confirm the mutual exclusion
+
+				// Ensure that internal subtitles are not automatically loaded
+				cmdList.add("-nosub");
 
 				if (params.sid.getType() == SubtitleType.VOBSUB) {
 					cmdList.add("-vobsub");

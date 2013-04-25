@@ -4,6 +4,8 @@ Changelog:
 1.82.0 - 2013-??-??
 
     Engines:
+        MEncoder:
+            - Fixed bug that caused embedded subtitles to be displayed instead of external
         tsMuxeR:
             - Fixed 24-bit FLAC support with tsMuxeR
 
