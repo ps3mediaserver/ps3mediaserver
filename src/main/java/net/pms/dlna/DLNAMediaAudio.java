@@ -18,6 +18,7 @@
  */
 package net.pms.dlna;
 
+import net.pms.configuration.FormatConfiguration;
 import net.pms.formats.v2.AudioProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,7 +183,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * @return True if the MP3 audio codec is used.
 	 */
 	public boolean isMP3() {
-		return getCodecA() != null && getCodecA().equalsIgnoreCase("mp3");
+		return getCodecA() != null && getCodecA().equalsIgnoreCase(FormatConfiguration.MP3);
 	}
 
 	/**
@@ -191,7 +192,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 	 * @return True if the AAC audio codec is used.
 	 */
 	public boolean isAAC() {
-		return getCodecA() != null && getCodecA().equalsIgnoreCase("aac");
+		return getCodecA() != null && getCodecA().equalsIgnoreCase(FormatConfiguration.AAC);
 	}
 
 	/**
@@ -255,7 +256,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 			return "LPCM";
 		} else if (getCodecA() != null && getCodecA().equals("vorbis")) {
 			return "OGG";
-		} else if (getCodecA() != null && getCodecA().equals("aac")) {
+		} else if (getCodecA() != null && getCodecA().equals(FormatConfiguration.AAC)) {
 			return "AAC";
 		} else if (getCodecA() != null && getCodecA().equals("mp3")) {
 			return "MP3";

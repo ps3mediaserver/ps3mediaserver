@@ -19,32 +19,9 @@
 package net.pms.dlna;
 
 import com.sun.jna.Platform;
-
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
-
-import javax.imageio.ImageIO;
-
-import net.coobird.thumbnailator.tasks.UnsupportedFormatException;
-import net.coobird.thumbnailator.Thumbnails.Builder;
 import net.coobird.thumbnailator.Thumbnails;
-
+import net.coobird.thumbnailator.Thumbnails.Builder;
+import net.coobird.thumbnailator.tasks.UnsupportedFormatException;
 import net.pms.PMS;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.AudioAsVideo;
@@ -53,12 +30,7 @@ import net.pms.formats.v2.SubtitleType;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
-import net.pms.util.AVCHeader;
-import net.pms.util.CoverUtil;
-import net.pms.util.FileUtil;
-import net.pms.util.MpegUtil;
-import net.pms.util.ProcessUtil;
-
+import net.pms.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
@@ -66,15 +38,23 @@ import org.apache.sanselan.common.IImageMetadata;
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata;
 import org.apache.sanselan.formats.tiff.TiffField;
 import org.apache.sanselan.formats.tiff.constants.TiffConstants;
-
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.*;
+import java.util.List;
+
+import static org.apache.commons.lang3.StringUtils.contains;
+import static org.apache.commons.lang3.StringUtils.startsWith;
 
 /**
  * This class keeps track of media file metadata scanned by the MediaInfo library.
@@ -1085,15 +1065,15 @@ public class DLNAMediaInfo implements Cloneable {
 			setMimeType(HTTPResource.MPEG_TYPEMIME);
 		} else if (getCodecV() == null && codecA != null && codecA.contains("mp3")) {
 			setMimeType(HTTPResource.AUDIO_MP3_TYPEMIME);
-		} else if (getCodecV() == null && codecA != null && codecA.contains("aac")) {
+		} else if (getCodecV() == null && contains(codecA, "aac")) {
 			setMimeType(HTTPResource.AUDIO_MP4_TYPEMIME);
-		} else if (getCodecV() == null && codecA != null && codecA.contains("flac")) {
+		} else if (getCodecV() == null && contains(codecA, "flac")) {
 			setMimeType(HTTPResource.AUDIO_FLAC_TYPEMIME);
-		} else if (getCodecV() == null && codecA != null && codecA.contains("vorbis")) {
+		} else if (getCodecV() == null && contains(codecA, "vorbis")) {
 			setMimeType(HTTPResource.AUDIO_OGG_TYPEMIME);
-		} else if (getCodecV() == null && codecA != null && (codecA.contains("asf") || codecA.startsWith("wm"))) {
+		} else if (getCodecV() == null && (contains(codecA, "asf") || startsWith(codecA, "wm"))) {
 			setMimeType(HTTPResource.AUDIO_WMA_TYPEMIME);
-		} else if (getCodecV() == null && codecA != null && (codecA.startsWith("pcm") || codecA.contains("wav"))) {
+		} else if (getCodecV() == null && (contains(codecA, "wav") || startsWith(codecA, "pcm"))) {
 			setMimeType(HTTPResource.AUDIO_WAV_TYPEMIME);
 		} else {
 			setMimeType(HTTPResource.getDefaultMimeType(type));
