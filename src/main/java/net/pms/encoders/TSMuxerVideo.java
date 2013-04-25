@@ -153,7 +153,7 @@ public class TSMuxerVideo extends Player {
 
 			videoType = "V_MPEG4/ISO/AVC";
 
-			OutputParams ffparams = new OutputParams(PMS.getConfiguration());
+			OutputParams ffparams = new OutputParams(configuration);
 			ffparams.maxBufferSize = 1;
 			ffVideo = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
 
@@ -175,7 +175,7 @@ public class TSMuxerVideo extends Player {
 					fileName
 				};
 
-				ffparams = new OutputParams(PMS.getConfiguration());
+				ffparams = new OutputParams(configuration);
 				ffparams.maxBufferSize = 1;
 				ffAudio = new ProcessWrapperImpl[1];
 				ffAudio[0] = new ProcessWrapperImpl(flacCmd, ffparams);
@@ -203,7 +203,7 @@ public class TSMuxerVideo extends Player {
                         ffAudioPipe[0].getInputPipe()
                 };
 
-				ffparams = new OutputParams(PMS.getConfiguration());
+				ffparams = new OutputParams(configuration);
 				ffparams.maxBufferSize = 1;
 				ffAudio = new ProcessWrapperImpl[1];
 				ffAudio[0] = new ProcessWrapperImpl(flacCmd, ffparams);
@@ -258,7 +258,7 @@ public class TSMuxerVideo extends Player {
 				}
 			}
 
-			OutputParams ffparams = new OutputParams(PMS.getConfiguration());
+			OutputParams ffparams = new OutputParams(configuration);
 			ffparams.maxBufferSize = 1;
 			ffparams.stdin = params.stdin;
 			ffVideo = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
@@ -319,7 +319,7 @@ public class TSMuxerVideo extends Player {
 						channels = configuration.getAudioChannelCount(); // 5.1 max for AC-3 encoding
 					}
 
-					if ( !ac3Remux && (dtsRemux || pcm) ) {
+					if (!ac3Remux && (dtsRemux || pcm)) {
 						// DTS remux or LPCM
 						StreamModifier sm = new StreamModifier();
 						sm.setPcm(pcm);
@@ -381,7 +381,7 @@ public class TSMuxerVideo extends Player {
 						};
 					}
 
-					ffparams = new OutputParams(PMS.getConfiguration());
+					ffparams = new OutputParams(configuration);
 					ffparams.maxBufferSize = 1;
 					ffparams.stdin = params.stdin;
 					ffAudio = new ProcessWrapperImpl[numAudioTracks];
@@ -488,7 +488,7 @@ public class TSMuxerVideo extends Player {
 							};
 						}
 
-						ffparams = new OutputParams(PMS.getConfiguration());
+						ffparams = new OutputParams(configuration);
 						ffparams.maxBufferSize = 1;
 						ffparams.stdin = params.stdin;
 						ffAudio[i] = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
@@ -676,11 +676,10 @@ public class TSMuxerVideo extends Player {
 				ProcessWrapper ff_pipe_process = ffAudioPipe[i].getPipeProcess();
 				p.attachProcess(ff_pipe_process);
 				ff_pipe_process.runInNewThread();
-
 				try {
 					Thread.sleep(50);
-				} catch (InterruptedException e) { }
-
+				} catch (InterruptedException e) {
+				}
 				ffAudioPipe[i].deleteLater();
 				p.attachProcess(ffAudio[i]);
 				ffAudio[i].runInNewThread();
@@ -705,7 +704,7 @@ public class TSMuxerVideo extends Player {
 		String outputFileName = resourceName.substring(resourceName.lastIndexOf("/") + 1);
 
 		try {
-			outputFileName = PMS.getConfiguration().getTempFolder() + "/" + outputFileName;
+			outputFileName = configuration.getTempFolder() + "/" + outputFileName;
 		} catch (IOException e) {
 			logger.warn("Failure to determine temporary folder.", e);
 		}
@@ -716,15 +715,15 @@ public class TSMuxerVideo extends Player {
 		if (!outputFile.exists()) {
 			final URL resourceUrl = getClass().getClassLoader().getResource(resourceName);
 			byte[] buffer = new byte[1024];
-			int byteCount = 0;
-	
+			int byteCount;
+
 			InputStream inputStream = null;
 			OutputStream outputStream = null;
-	
+
 			try {
 				inputStream = resourceUrl.openStream();
 				outputStream = new FileOutputStream(outputFileName);
-	
+
 				while ((byteCount = inputStream.read(buffer)) >= 0) {
 					outputStream.write(buffer, 0, byteCount);
 				}
