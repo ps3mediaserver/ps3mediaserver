@@ -126,12 +126,12 @@ public class TSMuxerVideo extends Player {
 		}
 
 		String videoType = "V_MPEG4/ISO/AVC";
-		if (media != null && startsWith(media.getCodecV(), "mpeg2")) {
+		if (startsWith(media.getCodecV(), "mpeg2")) {
 			videoType = "V_MPEG-2";
 		}
 
 		if (this instanceof TsMuxerAudio && media.getFirstAudioTrack() != null) {
-			String fakeFileName = writeResourceToFile("/resources/images/fake.jpg"); 
+			String fakeFileName = writeResourceToFile("/resources/images/fake.jpg");
 			ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "fakevideo", System.currentTimeMillis() + "videoout", false, true);
 
 			String timeEndValue1 = "-t";
@@ -166,7 +166,6 @@ public class TSMuxerVideo extends Player {
 
 			if (
 				fileName.toLowerCase().endsWith(".flac") &&
-                media != null &&
 				media.getFirstAudioTrack().getBitsperSample() >= 24 &&
 				media.getFirstAudioTrack().getSampleRate() % 48000 == 0
 			) {
@@ -192,11 +191,11 @@ public class TSMuxerVideo extends Player {
 				String depth = "pcm_s16le";
 				String rate = "48000";
 
-				if (media != null && media.getFirstAudioTrack().getBitsperSample() >= 24) {
+				if (media.getFirstAudioTrack().getBitsperSample() >= 24) {
 					depth = "pcm_s24le";
 				}
 
-				if (media != null && media.getFirstAudioTrack().getSampleRate() > 48000) {
+				if (media.getFirstAudioTrack().getSampleRate() > 48000) {
 					rate = "" + media.getFirstAudioTrack().getSampleRate();
 				}
 
@@ -272,16 +271,16 @@ public class TSMuxerVideo extends Player {
 
 			int numAudioTracks = 1;
 
-			if (media != null && media.getAudioTracksList() != null && media.getAudioTracksList().size() > 1 && configuration.isMuxAllAudioTracks()) {
+			if (media.getAudioTracksList() != null && media.getAudioTracksList().size() > 1 && configuration.isMuxAllAudioTracks()) {
 				numAudioTracks = media.getAudioTracksList().size();
 			}
 
-			boolean singleMediaAudio = media != null && media.getAudioTracksList().size() <= 1;
+			boolean singleMediaAudio = media.getAudioTracksList().size() <= 1;
 
 			if (params.aid != null) {
-				boolean ac3Remux = false;
-				boolean dtsRemux = false;
-				boolean pcm = false;
+				boolean ac3Remux;
+				boolean dtsRemux;
+				boolean pcm;
 
 				// Disable LPCM transcoding for MP4 container with non-H264 video as workaround for MEncoder's A/V sync bug
 				boolean mp4_with_non_h264 = (media.getContainer().equals("mp4") && !media.getCodecV().equals("h264"));
@@ -530,9 +529,9 @@ public class TSMuxerVideo extends Player {
 		boolean mp4_with_non_h264 = (media.getContainer().equals("mp4") && !media.getCodecV().equals("h264"));
 		if (ffAudioPipe != null && ffAudioPipe.length == 1) {
 			String timeshift = "";
-			boolean ac3Remux = false;
-			boolean dtsRemux = false;
-			boolean pcm = false;
+			boolean ac3Remux;
+			boolean dtsRemux;
+			boolean pcm;
 			boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && params.aid.getAudioProperties().getNumberOfChannels() == 2)
 				&& (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
 			ac3Remux = params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3();
