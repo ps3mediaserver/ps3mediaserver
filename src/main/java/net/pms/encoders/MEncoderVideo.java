@@ -20,9 +20,9 @@ package net.pms.encoders;
 
 import static net.pms.formats.v2.AudioUtils.getLPCMChannelMappingForMencoder;
 import static org.apache.commons.lang.BooleanUtils.isTrue;
-import static org.apache.commons.lang.StringUtils.defaultString;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

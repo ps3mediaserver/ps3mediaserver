@@ -4,7 +4,7 @@ import net.pms.util.PropertiesUtil;
 
 import java.io.File;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 class LinuxDefaultPaths implements ProgramPaths {
     private final String BINARIES_SEARCH_PATH = getBinariesSearchPath();

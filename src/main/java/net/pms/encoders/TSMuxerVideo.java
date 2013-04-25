@@ -19,7 +19,7 @@
 package net.pms.encoders;
 
 import static net.pms.formats.v2.AudioUtils.getLPCMChannelMappingForMencoder;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.awt.ComponentOrientation;
 import java.awt.Font;
