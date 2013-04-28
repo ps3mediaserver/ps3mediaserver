@@ -81,7 +81,7 @@ public class PmsConfiguration {
 	private static final String KEY_EMBED_DTS_IN_PCM = "embed_dts_in_pcm";
 	private static final String KEY_ENGINES = "engines";
 	private static final String KEY_FFMPEG_ALTERNATIVE_PATH = "alternativeffmpegpath"; // deprecated: FFMpegDVRMSRemux will be removed and DVR-MS will be transcoded
-	private static final String KEY_FFMPEG_VIDEO_CUSTOM_OPTIONS = "ffmpeg_video_custom_options";
+	private static final String KEY_FFMPEG_MUX_COMPATIBLE = "ffmpeg_mux_compatible";
 	private static final String KEY_FIX_25FPS_AV_MISMATCH = "fix_25fps_av_mismatch";
 	private static final String KEY_FORCED_SUBTITLE_LANGUAGE = "forced_sub_lang";
 	private static final String KEY_FORCED_SUBTITLE_TAGS = "forced_sub_tags";
@@ -881,11 +881,11 @@ public class PmsConfiguration {
 	/**
 	 * Returns the number of seconds from the start of a video file (the seek
 	 * position) where the thumbnail image for the movie should be extracted
-	 * from. Default is 1 second.
+	 * from. Default is 2 seconds.
 	 * @return The seek position in seconds.
 	 */
 	public int getThumbnailSeekPos() {
-		return getInt(KEY_THUMBNAIL_SEEK_POS, 1);
+		return getInt(KEY_THUMBNAIL_SEEK_POS, 2);
 	}
 
 	/**
@@ -1735,14 +1735,6 @@ public class PmsConfiguration {
 		return bufferType.equals(BUFFER_TYPE_FILE);
 	}
 
-	public void setFfmpegSettings(String value) {
-		configuration.setProperty(KEY_FFMPEG_VIDEO_CUSTOM_OPTIONS, value);
-	}
-
-	public String getFfmpegSettings() {
-		return getString(KEY_FFMPEG_VIDEO_CUSTOM_OPTIONS, "");
-	}
-
 	public boolean isMencoderNoOutOfSync() {
 		return getBoolean(KEY_MENCODER_NO_OUT_OF_SYNC, true);
 	}
@@ -2114,6 +2106,14 @@ public class PmsConfiguration {
 	@Deprecated
 	public boolean isMencoderMuxWhenCompatible() {
 		return false;
+	}
+
+	public void setFFmpegMuxWhenCompatible(boolean value) {
+		configuration.setProperty(KEY_FFMPEG_MUX_COMPATIBLE, value);
+	}
+
+	public boolean isFFmpegMuxWhenCompatible() {
+		return getBoolean(KEY_FFMPEG_MUX_COMPATIBLE, false);
 	}
 
 	public void setMuxAllAudioTracks(boolean value) {
