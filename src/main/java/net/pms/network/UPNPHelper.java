@@ -28,6 +28,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -362,11 +363,18 @@ public class UPNPHelper {
 
 						NetworkInterface ni = NetworkConfiguration.getInstance().getNetworkInterfaceByServerName();
 
-						if (ni != null) {
-							multicastSocket.setNetworkInterface(ni);
-						} else if (PMS.get().getServer().getNetworkInterface() != null) {
-							LOGGER.trace("Setting multicast network interface: " + PMS.get().getServer().getNetworkInterface());
-							multicastSocket.setNetworkInterface(PMS.get().getServer().getNetworkInterface());
+						try {
+							// Setting the network interface will throw a SocketException on Mac OSX
+							// with Java 1.6.0_45 or higher, but if we don't do it some Windows
+							// configurations will not listen at all.
+							if (ni != null) {
+									multicastSocket.setNetworkInterface(ni);
+							} else if (PMS.get().getServer().getNetworkInterface() != null) {
+									multicastSocket.setNetworkInterface(PMS.get().getServer().getNetworkInterface());
+									LOGGER.trace("Setting multicast network interface: " + PMS.get().getServer().getNetworkInterface());
+							}
+						} catch (SocketException e) {
+							// Not setting the network interface will work just fine on Mac OSX.
 						}
 
 						multicastSocket.setTimeToLive(4);
