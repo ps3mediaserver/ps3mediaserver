@@ -3,11 +3,17 @@ Changelog:
 
 1.82.0 - 2013-??-??
 
+    General:
+        - Added support for M4A files encoded with Fraunhofer AAC
+
     Engines:
-        MEncoder:
-            - Fixed bug that caused embedded subtitles to be displayed instead of external
+        MEncoder Video:
+            - Fixed bug that caused embedded subtitles to be displayed instead of external (thanks, SubJunk)
         tsMuxeR:
-            - Fixed 24-bit FLAC support with tsMuxeR
+            - Fixed 24-bit FLAC support with tsMuxeR (thanks, SubJunk)
+
+    Renderers:
+        - PS3: TV series with sound problems after "previously on" block should now play normally with Keep AC-3 track option enabled (thanks, SubJunk)
 
     Misc:
         - Fix issue with VirtualBox and PMS launchers (thanks, thepadawan42)
