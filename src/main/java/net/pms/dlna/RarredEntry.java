@@ -20,10 +20,8 @@ package net.pms.dlna;
 
 import com.github.junrar.Archive;
 import com.github.junrar.rarfile.FileHeader;
-
 import net.pms.formats.Format;
 import net.pms.util.FileUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +87,7 @@ public class RarredEntry extends DLNAResource implements IPushOutput {
 	@Override
 	public boolean isValid() {
 		checktype();
-		setSrtFile(FileUtil.doesSubtitlesExists(file, null));
+		setSrtFile(FileUtil.isSubtitlesExists(file, null));
 		return getFormat() != null;
 	}
 

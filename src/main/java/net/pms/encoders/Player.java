@@ -18,15 +18,6 @@
  */
 package net.pms.encoders;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.swing.JComponent;
-
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
@@ -41,9 +32,16 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.util.FileUtil;
 import net.pms.util.Iso639;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public abstract class Player {
 	private static final Logger logger = LoggerFactory.getLogger(Player.class);
@@ -289,7 +287,7 @@ public abstract class Player {
 		if (!configuration.isDisableSubtitles() && params.sid == null && media != null) {
 			// Check for subtitles again
 			File video = new File(fileName);
-			FileUtil.doesSubtitlesExists(video, media, false);
+			FileUtil.isSubtitlesExists(video, media, false);
 
 			if (configuration.isAutoloadSubtitles()) {
 				boolean forcedSubsFound = false;
