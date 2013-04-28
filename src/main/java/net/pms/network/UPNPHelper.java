@@ -360,6 +360,15 @@ public class UPNPHelper {
 							LOGGER.warn("Finally, acquiring port " + PMS.getConfiguration().getUpnpPort() + " was successful!");
 						}
 
+						NetworkInterface ni = NetworkConfiguration.getInstance().getNetworkInterfaceByServerName();
+
+						if (ni != null) {
+							multicastSocket.setNetworkInterface(ni);
+						} else if (PMS.get().getServer().getNetworkInterface() != null) {
+							LOGGER.trace("Setting multicast network interface: " + PMS.get().getServer().getNetworkInterface());
+							multicastSocket.setNetworkInterface(PMS.get().getServer().getNetworkInterface());
+						}
+
 						multicastSocket.setTimeToLive(4);
 						multicastSocket.setReuseAddress(true);
 						InetAddress upnpAddress = getUPNPAddress();
