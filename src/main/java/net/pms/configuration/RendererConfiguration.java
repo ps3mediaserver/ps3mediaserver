@@ -99,6 +99,7 @@ public class RendererConfiguration {
 	private static final String USE_SAME_EXTENSION = "UseSameExtension";
 	private static final String VIDEO = "Video";
 	private static final String WRAP_DTS_INTO_PCM = "WrapDTSIntoPCM";
+	private static final String OVERRIDE_VF = "OverrideVideoFilter";
 
 	public static RendererConfiguration getDefaultConf() {
 		return defaultConf;
@@ -1048,5 +1049,9 @@ public class RendererConfiguration {
 
 	public boolean isRescaleByRenderer() {
 		return getBoolean(RESCALE_BY_RENDERER, true);
+	}
+
+	public String getFFmpegVideoFilterOverride() {
+		return getString(OVERRIDE_VF, null);
 	}
 }
