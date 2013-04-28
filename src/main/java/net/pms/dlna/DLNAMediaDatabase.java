@@ -23,7 +23,6 @@ import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
 import net.pms.formats.v2.SubtitleType;
-
 import org.h2.engine.Constants;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.h2.jdbcx.JdbcDataSource;
@@ -34,14 +33,11 @@ import org.h2.tools.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
@@ -144,13 +140,13 @@ public class DLNAMediaDatabase implements Runnable {
 				if (!FileUtils.exists(dbDir)){
 					LOGGER.debug("The cache has been deleted because it was corrupt or had the wrong version");
 				} else {
-					if (!java.awt.GraphicsEnvironment.isHeadless()) {
+					if (!PMS.isHeadless()) {
 						JOptionPane.showMessageDialog(
 							(JFrame) (SwingUtilities.getWindowAncestor((Component) PMS.get().getFrame())),
 							String.format(Messages.getString("DLNAMediaDatabase.5"), dbDir),
 							Messages.getString("Dialog.Error"),
-		                    JOptionPane.ERROR_MESSAGE);
-					}	
+							JOptionPane.ERROR_MESSAGE);
+					}
 					LOGGER.debug("Damaged cache can't be deleted. Stop the program and delete the folder \"" + dbDir + "\" manually");
 				}
 			}
