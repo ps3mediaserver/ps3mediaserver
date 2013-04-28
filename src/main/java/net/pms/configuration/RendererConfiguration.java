@@ -1,7 +1,6 @@
 package net.pms.configuration;
 
 import com.sun.jna.Platform;
-
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
@@ -11,12 +10,10 @@ import net.pms.formats.Format;
 import net.pms.network.HTTPResource;
 import net.pms.network.SpeedStats;
 import net.pms.util.PropertiesUtil;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +66,7 @@ public class RendererConfiguration {
 	private static final String H264_L41_LIMITED = "H264Level41Limited";
 	private static final String IMAGE = "Image";
 	private static final String LONG_FILE_NAME_FORMAT = "LongFileNameFormat";
+	private static final String KEEP_ASPECT_RATIO = "KeepAspectRatio";
 	private static final String MAX_VIDEO_BITRATE = "MaxVideoBitrateMbps";
 	private static final String MAX_VIDEO_HEIGHT = "MaxVideoHeight";
 	private static final String MAX_VIDEO_WIDTH = "MaxVideoWidth";
@@ -80,6 +78,7 @@ public class RendererConfiguration {
 	private static final String MUX_LPCM_TO_MPEG = "MuxLPCMToMpeg";
 	private static final String RENDERER_ICON = "RendererIcon";
 	private static final String RENDERER_NAME = "RendererName";
+	private static final String RESCALE_BY_RENDERER = "RescaleByRenderer";
 	private static final String SEEK_BY_TIME = "SeekByTime";
 	private static final String SHORT_FILE_NAME_FORMAT = "ShortFileNameFormat";
 	private static final String SHOW_AUDIO_METADATA = "ShowAudioMetadata";
@@ -1041,5 +1040,13 @@ public class RendererConfiguration {
 			// Not natively supported.
 			return false;
 		}
+	}
+
+	public boolean isKeepAspectRatio() {
+		return getBoolean(KEEP_ASPECT_RATIO, false);
+	}
+
+	public boolean isRescaleByRenderer() {
+		return getBoolean(RESCALE_BY_RENDERER, true);
 	}
 }
