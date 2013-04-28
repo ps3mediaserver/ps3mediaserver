@@ -8,6 +8,8 @@ libmediainfo.dylib
 MediaInfo64.dll
 MediaInfo.dll
 pms.iml
+core/fonts
+core/src/main/external-resources/plugins/*.jar
 .project
 .settings
 target

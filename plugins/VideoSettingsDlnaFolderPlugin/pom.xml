@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>pms-video-settings-dlna-folder-plugin</artifactId>
+	<version>3.0-SNAPSHOT</version>
+
+	<name>PMS Video Settings DLNA Folder Plugin</name>
+	<description>This plugin adds a folder containing video properties which can be switched on/off</description>
+	<packaging>jar</packaging>
+
+	<parent>
+		<groupId>github.com.taconaut</groupId>
+		<artifactId>pms-plugins</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

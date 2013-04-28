@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>pms-plugins</artifactId>
+	<version>1.0.0</version>
+
+	<name>PMS Plugins</name>
+	<description>Base pom used by all official plugins</description>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>github.com.taconaut</groupId>
+		<artifactId>pms</artifactId>
+		<version>1.82.0-mlx_0.9-SNAPSHOT</version>
+	</parent>
+
+	<modules>
+		<module>FileSystemDlnaFolderPlugin</module>
+		<module>ImdbMovieImportPlugin</module>
+		<module>iPhotoDlnaFolderPlugin</module>
+		<module>iTunesDlnaFolderPlugin</module>
+		<module>PlayCountWatcherPlugin</module>
+		<module>ShutdownPlugin</module>
+		<module>TmdbMovieImportPlugin</module>
+		<module>TmdbRater</module>
+		<module>VideoSettingsDlnaFolderPlugin</module>
+		<module>WebDlnaFolderPlugin</module>
+		<module>WebservicePlugin</module>
+	</modules>
+
+	<properties>
+		<finalName>${project.artifactId}-${project.version}</finalName>
+		<exportFolder>../target</exportFolder>
+	</properties>
+
+	<repositories>
+		<!-- Sonatype -->
+		<repository>
+			<id>sonatype.org</id>
+			<name>Sonatype Repository</name>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>github.com.taconaut</groupId>
+			<artifactId>pms-core</artifactId>
+			<version>1.82.0-mlx_0.9-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<!-- Export all built plugins to target dir at the root of the project -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.7</version>
+					<executions>
+						<execution>
+							<id>copy-plugin</id>
+							<phase>package</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+							<configuration>
+								<target>
+									<!-- Lose the version string while copying -->
+									<copy
+										file="${project.basedir}/target/${project.build.finalName}.${project.packaging}"
+										tofile="${project.basedir}/../../core/src/main/external-resources/plugins/${project.artifactId}.${project.packaging}"
+										overwrite="true" />
+								</target>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- Ignore/Execute plugin execution to avoid .m2e warnings in eclipse -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<!-- copy-dependency plugin -->
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+
+			<!-- Filter properties files to replace Maven properties -->
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+
+			<!-- Don't filter other files -->
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+	</build>
+</project>

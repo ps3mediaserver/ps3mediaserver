@@ -1,0 +1,42 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+
+	<!--
+		This assembly takes care of gathering all dependencies in the
+		target directory, to prepare for OS specific assembly.
+	-->
+
+	<id>assembly-dependencies</id>
+	<formats>
+		<format>dir</format>
+	</formats>
+	<baseDirectory>..</baseDirectory>
+	<includeBaseDirectory>true</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory></outputDirectory>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<includes>
+				<include>github.com.taconaut:pms-core</include>
+			</includes>
+
+			<!-- Using "pms.jar" for backwards compatibility -->
+			<outputFileNameMapping>pms.jar</outputFileNameMapping>
+		</dependencySet>
+
+		<dependencySet>
+			<outputDirectory>plugins</outputDirectory>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<includes>
+				<include>github.com.taconaut:pms-*-plugin</include>
+			</includes>
+
+			<!-- Strip the version numbers to simplify installation: existing jars will be overwritten -->
+			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+		</dependencySet>
+	</dependencySets>
+</assembly>
