@@ -1,6 +1,6 @@
 package net.pms.util;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 public class StringUtil {
 	/**Appends "&lt;<u>tag</u> " to the StringBuilder. This is a typical HTML/DIDL/XML tag opening.
@@ -81,7 +81,7 @@ public class StringUtil {
 	/**
 	 * Returns an abbreviated version of the supplied string.
 	 *
-	 * @param The String to abbreviate.
+	 * @param str The String to abbreviate.
 	 * @return The abbreviated String.
 	 */
 	public static String abbreviate(String str) {

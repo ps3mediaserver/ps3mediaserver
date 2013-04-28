@@ -63,7 +63,7 @@ public class NavigationShareTab {
 	public static final String ALL_DRIVES = Messages.getString("FoldTab.0");
 
 	private static final String PANEL_COL_SPEC = "left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref, 25dlu, pref, default:grow";
-	private static final String PANEL_ROW_SPEC = "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 10dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 10dlu, fill:default:grow";
+	private static final String PANEL_ROW_SPEC = "p, 3dlu,  p, 3dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 8dlu, p, 3dlu,  p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 8dlu, fill:default:grow";
 	private static final String SHARED_FOLDER_COL_SPEC = "left:pref, left:pref, pref, pref, pref, 0:grow";
 	private static final String SHARED_FOLDER_ROW_SPEC = "p, 3dlu, p, 3dlu, fill:default:grow";
 	
@@ -165,20 +165,20 @@ public class NavigationShareTab {
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		builder.add(archive, FormLayoutUtil.flip(cc.xyw(1, 15, 3), colSpec, orientation));
-		builder.add(hidevideosettings, FormLayoutUtil.flip(cc.xyw(4, 15, 3), colSpec, orientation));
-		builder.add(hidetranscode, FormLayoutUtil.flip(cc.xyw(8, 15, 3), colSpec, orientation));
+		builder.add(hidevideosettings, FormLayoutUtil.flip(cc.xyw(4, 15, 2), colSpec, orientation));
+		builder.add(hidetranscode, FormLayoutUtil.flip(cc.xyw(7, 15, 4), colSpec, orientation));
 
 		builder.add(hideextensions, FormLayoutUtil.flip(cc.xyw(1, 17, 3), colSpec, orientation));
-		builder.add(hideengines, FormLayoutUtil.flip(cc.xyw(4, 17, 3), colSpec, orientation));
-		builder.add(hideemptyfolders, FormLayoutUtil.flip(cc.xyw(8, 17, 3), colSpec, orientation));
+		builder.add(hideengines, FormLayoutUtil.flip(cc.xyw(4, 17, 2), colSpec, orientation));
+		builder.add(hideemptyfolders, FormLayoutUtil.flip(cc.xyw(7, 17, 4), colSpec, orientation));
 
 		builder.add(itunes, FormLayoutUtil.flip(cc.xyw(1, 19, 3), colSpec, orientation));
-		builder.add(iphoto, FormLayoutUtil.flip(cc.xyw(4, 19, 3), colSpec, orientation));
-		builder.add(aperture, FormLayoutUtil.flip(cc.xyw(8, 19, 3), colSpec, orientation));
+		builder.add(iphoto, FormLayoutUtil.flip(cc.xyw(4, 19, 2), colSpec, orientation));
+		builder.add(aperture, FormLayoutUtil.flip(cc.xyw(7, 19, 4), colSpec, orientation));
 
 		builder.add(cacheenable, FormLayoutUtil.flip(cc.xy(1, 21), colSpec, orientation));
-		builder.add(cachereset, FormLayoutUtil.flip(cc.xyw(4, 21, 3), colSpec, orientation));
-		builder.add(hidemedialibraryfolder, FormLayoutUtil.flip(cc.xyw(8, 21, 3), colSpec, orientation));
+		builder.add(cachereset, FormLayoutUtil.flip(cc.xyw(4, 21, 2), colSpec, orientation));
+		builder.add(hidemedialibraryfolder, FormLayoutUtil.flip(cc.xyw(7, 21, 4), colSpec, orientation));
 
 		builder.addLabel(Messages.getString("FoldTab.18"), FormLayoutUtil.flip(cc.xyw(1, 23, 3), colSpec, orientation));
 		builder.add(sortmethod, FormLayoutUtil.flip(cc.xyw(4, 23, 3), colSpec, orientation));

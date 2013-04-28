@@ -55,7 +55,7 @@ All binaries and support files will be installed by the package in the `/usr/loc
 
 ## Tips <a name="Tips"></a>
 
-To find cross-platform variables for build tools &c. look in contrib/ffmpeg/build/CMakeCache.txt.
+To find cross-platform variables for build tools &c. look in build/CMakeCache.txt.
 
 To see build output suppressed by automake:
 
@@ -67,10 +67,27 @@ or:
 
 See [here](https://lists.gnu.org/archive/html/bug-autoconf/2012-01/msg00009.html) for more details.
 
+To make a specific target:
+
+	cd build
+	make <target> # eg make nettle
+
+`--enable-static` and `--disable-shared` work with most configure scripts. If `--enable-shared` is not supported,
+it's usually ignored (and reported as a warning at the end of the config.log).
+
+Type `./configure --help` to see the configuration options. Removing unused features such as documentation and binaries
+can speed up build time, work around bugs, and reduce dependency wrangling.
+
+### Troubleshooting:
+
+Check the package's config.log.
+
+Extract the command lines from build/CMakeFiles/&lt;package&gt;.dir/build.make and try running them manually.
+
 ## Credits <a name="Credits"></a>
 
 The helper and this documentation are based on [sffmpeg](https://github.com/pyke369/sffmpeg) by [pyke369](https://github.com/pyke369).
 
 ## Version <a name="Version"></a>
 
-PMS3
+PMS4

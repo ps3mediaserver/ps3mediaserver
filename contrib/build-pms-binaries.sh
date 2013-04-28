@@ -1708,7 +1708,8 @@ fi
 initialize
 
 # Build static libraries to link against
-#build_yasm # for systems where YASM version is below 1.0.0
+# for systems where YASM version is below 1.2.0
+build_yasm
 build_zlib
 build_bzip2
 build_expat

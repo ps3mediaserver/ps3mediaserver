@@ -39,6 +39,8 @@ import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
@@ -56,16 +58,28 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	private final PmsConfiguration configuration;
 	public static final String START_SERVICE = "start.service";
 	private static final long serialVersionUID = 8723727186288427690L;
+	protected static final Dimension PREFERRED_SIZE = new Dimension(1000, 750);
+	// https://code.google.com/p/ps3mediaserver/issues/detail?id=949
+	protected static final Dimension MINIMUM_SIZE = new Dimension(800, 480);
+
+	/**
+	 * List of context sensitive help pages URLs. These URLs should be relative
+	 * to the documentation directory and in the same order as the tabs. The
+	 * value <code>null</code> means "don't care", activating the tab will not
+	 * change the help page.
+	 */
+	protected static final String[] HELP_PAGES = { "index.html", null,
+			"general_configuration.html", "navigation_share.html",
+			"transcoding.html", null, null };
+
 	private NavigationShareTab ft;
 	private StatusTab st;
 	private TracesTab tt;
 	private TranscodingTab tr;
 	private GeneralTab nt;
+	private HelpTab ht;
 	private AbstractButton reload;
 	private JLabel status;
-	protected static final Dimension PREFERRED_SIZE = new Dimension(1000, 750);
-	// https://code.google.com/p/ps3mediaserver/issues/detail?id=949
-	protected static final Dimension MINIMUM_SIZE = new Dimension(800, 480);
 	private static boolean lookAndFeelInitialized = false;
 
 	public TracesTab getTt() {
@@ -346,23 +360,38 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 	}
 
 	public JComponent buildMain() {
-		JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
+		final JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
 
 		st = new StatusTab(configuration);
 		tt = new TracesTab(configuration);
 		tr = new TranscodingTab(configuration);
 		nt = new GeneralTab(configuration);
 		ft = new NavigationShareTab(configuration);
+		ht = new HelpTab();
 
-		tabbedPane.addTab(Messages.getString("LooksFrame.18"),/* readImageIcon("server-16.png"),*/ st.build());
-		tabbedPane.addTab(Messages.getString("LooksFrame.19"),/* readImageIcon("mail_new-16.png"),*/ tt.build());
-		tabbedPane.addTab(Messages.getString("LooksFrame.20"),/* readImageIcon("advanced-16.png"),*/ nt.build());
-		tabbedPane.addTab(Messages.getString("LooksFrame.22"), /*readImageIcon("bookmark-16.png"),*/ ft.build());
-		tabbedPane.addTab(Messages.getString("ML.Tab.Header"),/*  readImageIcon("mail_new-16.png"), */new MediaLibraryTab().build());
-		tabbedPane.addTab(Messages.getString("LooksFrame.27"),/*  readImageIcon("mail_new-16.png"), */new PluginsTab());
-		tabbedPane.addTab(Messages.getString("LooksFrame.21"),/* readImageIcon("player_play-16.png"),*/ tr.build());
-		tabbedPane.addTab(Messages.getString("LooksFrame.24"), /* readImageIcon("mail_new-16.png"), */ new HelpTab().build());
-		tabbedPane.addTab(Messages.getString("LooksFrame.25"), /*readImageIcon("documentinfo-16.png"),*/ new AboutTab().build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.18"), st.build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.19"), tt.build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.20"), nt.build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.22"), ft.build());
+		tabbedPane.addTab(Messages.getString("ML.Tab.Header"), new MediaLibraryTab().build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.27"), new PluginsTab());
+		tabbedPane.addTab(Messages.getString("LooksFrame.21"), tr.build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.24"), ht.build());
+		tabbedPane.addTab(Messages.getString("LooksFrame.25"), new AboutTab().build());
+
+		tabbedPane.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				int selectedIndex = tabbedPane.getSelectedIndex();
+
+				if (HELP_PAGES[selectedIndex] != null) {
+					PMS.setHelpPage(HELP_PAGES[selectedIndex]);
+
+					// Update the contents of the help tab itself
+					ht.updateContents();
+				}
+			}
+		});
 
 		tabbedPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 

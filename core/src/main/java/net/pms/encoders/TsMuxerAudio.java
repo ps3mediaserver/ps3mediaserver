@@ -81,7 +81,7 @@ public class TsMuxerAudio extends TSMuxerVideo {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.AUDIO) {
+        if (resource == null || resource.getFormat().getType() != Format.VIDEO) {
 			return false;
 		}
 

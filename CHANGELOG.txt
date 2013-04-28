@@ -1,12 +1,40 @@
 Changelog:
 ==========
 
-1.80.0 - 2012-??-??
+1.82.0 - 2013-??-??
+
+    Engines:
+        MEncoder:
+            - Fixed bug that caused embedded subtitles to be displayed instead of external
+        tsMuxeR:
+            - Fixed 24-bit FLAC support with tsMuxeR
+
+    Misc:
+        - Fix issue with VirtualBox and PMS launchers (thanks, thepadawan42)
+
+1.81.0 - 2013-04-21
+
+    Engines:
+        FFmpeg:
+            - Add/fix audio channel options
+            - Build script: add HTTPS support
+
+    WEB.conf:
+        - Add support for the file:// protocol
+        - Match protocols (e.g. mms://...) before extensions (e.g. http://example.com/foo.mms)
+
+    Misc:
+        - Media Parser v1: fix audio channel parsing
+        - Fix for "Can't assign requested address" bug after update to Java 1.6.0_45 on Mac OSX
+
+1.80.0 - 2013-04-06
 
     Regressions:
         - Re-allow all transcode engines to be disabled
+
     PMS.conf:
-        - ffmpeg has been renamed ffmpeg_video_custom_options and now defaults to null
+        - FFmpeg has been renamed ffmpeg_video_custom_options and now defaults to null
+
     Renderers:
         - Document TranscodeVideo and TranscodeAudio profiles
         - Panasonic TVs: Add "exclusive" option to SeekByTime to work around a transcoding issue
@@ -14,24 +42,39 @@ Changelog:
         - Android: allowing chunked transfer
         - AirPlayer & iPad/iPhone: transcoding to WMV format gives better results
         - Improved support for Sony Bravia HX (thanks, mazey!)
+        - Improved streaming support for some renderers (thanks, ExSport!)
+
     Engines:
         FFmpeg Video and FFmpeg Web Video:
-            - support all three TranscodeVideo profiles: WMV, MPEGTSAC3 and MPEGPSAC3
-            - preserve source video quality
+            - Support all three TranscodeVideo profiles: WMV, MPEGTSAC3 and MPEGPSAC3
+            - Preserve source video quality
         FFmpeg Video:
-            - custom FFmpeg options are now read before each transcode rather than only at startup (parity with custom MEncoder options)
-            - rescale videos larger than the renderer's max height/width
+            - Custom FFmpeg options are now read before each transcode rather than only at startup
+              (parity with custom MEncoder options)
+            - Rescale videos larger than the renderer's max height/width
+            - Updated to use "wmav2" codec (#1583)
         FFmpeg Audio: support all TranscodeAudio profiles
+        VLC:
+            - Added support for VLC as engine (thanks, LordQuackstar!)
+
     Language updates:
         - Updated Brazilian translation (thanks, Bruno Arueira!)
         - Updated Catalan translation (thanks, oscaroe!)
+        - Updated simplified Chinese translation (thanks, lovenemesis!)
+        - Updated Italian translation (thanks, nocciola82!)
+
     Misc:
-        - fix bug that prevents PMS running multiple profiles concurrently
-        - fix NPE when responding to DLNA subtitle requests
-        - image thumbnailer:
-            - add thumbnail support for TIFF and other formats
-            - trap exception when handling unsupported formats
-        - fix response to M-SEARCH "ssdp:all" message (thanks, ler0y!)
+        - Fixed bug that prevents PMS running multiple profiles concurrently
+        - Fixed NPE when responding to DLNA subtitle requests
+        - Fixed NPE for empty soapactions
+        - Image thumbnailer:
+            - Added thumbnail support for TIFF and other formats
+            - Trapped exception when handling unsupported formats
+        - Fixed response to M-SEARCH "ssdp:all" message (thanks, ler0y!)
+        - Fixed fontconfig configuration for Mac OSX, improving subtitle quality
+        - Moved several transcoding settings from MEncoder to Common transcoding settings
+        - Layout improvements to remove scroll bars where possible
+        - Help is now context sensitive
 
 1.72.0 - 2012-11-18
 
@@ -39,6 +82,7 @@ Changelog:
         - Fixed bug that occurred when using ShowDVDTitleDuration
         - Fixed bug that caused embedded subtitles to be displayed when subtitles are disabled
         - Fixed bug in handling of filenames with embedded $ characters
+
     Engines:
         - Removed option to automatically switch to tsMuxeR (available manually via the #--TRANSCODE--# folder)
 
@@ -48,16 +92,20 @@ Changelog:
         - Updated MEncoder and MPlayer to SB41
         - Updated ffmpeg to 1.0 (Zeranoe Build 2012-10-10)
         - Fixed file permissions bug
+
     Mac OS X subtitles:
         - Changed audio/subtitle defaults to accept anything
         - Removed fontconfig from MEncoder for improved subs compatibility
+
     Renderers:
         - Improved Android.conf video support
         - Added support for Samsung SMT-G7400 (UPC Horizon)
         - Fixed bug that prevented Galaxy Nexus pictures displaying
+
     Language updates:
         - Updated Chinese Traditional translation (thanks, mcc!)
         - Added Turkish icon
+
     Misc:
         - Updated MediaInfo to 0.7.60 (GC1508)
         - Updated h2 database to 1.3.168 (thanks, valib!)

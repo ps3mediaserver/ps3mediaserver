@@ -14,7 +14,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.commons.lang.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.mozilla.universalchardet.Constants.*;
 
 public class FileUtil {
@@ -368,7 +368,7 @@ public class FileUtil {
 
 	/**
 	 * Determine whether a file is readable by trying to read it. This works around JDK bugs which
-	 * return the wrong results for {@link java.io.File.canRead()} on Windows, and in some cases, on Unix.
+	 * return the wrong results for {@link java.io.File#canRead()} on Windows, and in some cases, on Unix.
 	 * <p>
 	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.
 	 * Note: this method changes the file access time.
@@ -395,7 +395,7 @@ public class FileUtil {
 
 	/**
 	 * Determine whether a file is writable by trying to write it. This works around JDK bugs which
-	 * return the wrong results for {@link java.io.File.canWrite()} on Windows and, in some cases, on Unix.
+	 * return the wrong results for {@link java.io.File#canWrite()} on Windows and, in some cases, on Unix.
 	 * <p>
 	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.
 	 * Note: this method changes the file access time and may change the file modification time.
@@ -440,7 +440,7 @@ public class FileUtil {
 
 	/**
 	 * Determines whether the supplied directory is readable by trying to read its contents.
-	 * This works around JDK bugs which return the wrong results for {@link java.io.File.canRead()}
+	 * This works around JDK bugs which return the wrong results for {@link java.io.File#canRead()}
 	 * on Windows and possibly on Unix.
 	 * <p>
 	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.
@@ -473,7 +473,7 @@ public class FileUtil {
 
 	/**
 	 * Determines whether the supplied directory is writable by trying to write a file to it.
-	 * This works around JDK bugs which return the wrong results for {@link java.io.File.canWrite()}
+	 * This works around JDK bugs which return the wrong results for {@link java.io.File#canWrite()}
 	 * on Windows and possibly on Unix.
 	 * <p>
 	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.

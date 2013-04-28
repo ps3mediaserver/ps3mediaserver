@@ -102,11 +102,11 @@ public class AboutTab {
 		lMplayerLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lMplayerLink.addMouseListener(mplayerLink);
 
-		final LinkMouseListener mplayerSubJunkBuildsLink = new LinkMouseListener("SubJunk's MPlayer builds",
-			"http://www.spirton.com/mplayer-mencoder-subjunk-build/");
-		JLabel lMplayerSubJunkBuildsLink = builder.addLabel(mplayerSubJunkBuildsLink.getLabel(), cc.xy(2, 13, "center, fill"));
-		lMplayerSubJunkBuildsLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		lMplayerSubJunkBuildsLink.addMouseListener(mplayerSubJunkBuildsLink);
+		final LinkMouseListener vlcLink = new LinkMouseListener("VLC media player",
+			"http://www.videolan.org/vlc/");
+		JLabel lVlcLink = builder.addLabel(vlcLink.getLabel(), cc.xy(2, 13, "center, fill"));
+		lVlcLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lVlcLink.addMouseListener(vlcLink);
 
 		final LinkMouseListener mediaInfoLink = new LinkMouseListener("MediaInfo",
 			"http://mediainfo.sourceforge.net/en");

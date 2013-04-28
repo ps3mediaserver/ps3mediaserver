@@ -2,15 +2,15 @@ package net.pms.dlna;
 
 import net.pms.configuration.FormatConfiguration;
 import net.pms.formats.v2.SubtitleType;
-
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.StringTokenizer;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class LibMediaInfoParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LibMediaInfoParser.class);
@@ -208,6 +208,32 @@ public class LibMediaInfoParser {
 
 				if (subPrepped) {
 					addSub(currentSubTrack, media);
+				}
+
+				/*
+				 Native M4A/AAC streaming bug: http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=16691
+				 Some M4A files have generic codec id "mp42" instead of "M4A". For example:
+
+				 General
+				 Format                                   : MPEG-4
+				 Format profile                           : Apple audio with iTunes info
+				 Codec ID                                 : M4A
+
+				 vs
+
+				 General
+				 Format                                   : MPEG-4
+				 Format profile                           : Base Media / Version 2
+				 Codec ID                                 : mp42
+
+				 As workaround set container type to AAC for MP4 files with single AAC audio track and no video.
+				*/
+				if (FormatConfiguration.MP4.equals(media.getContainer())
+						&& isBlank(media.getCodecV())
+						&& media.getAudioTracksList() != null
+						&& media.getAudioTracksList().size() == 1
+						&& FormatConfiguration.AAC.equals(media.getAudioTracksList().get(0).getCodecA())) {
+					media.setContainer(FormatConfiguration.AAC);
 				}
 
 				media.finalize(type, inputFile);

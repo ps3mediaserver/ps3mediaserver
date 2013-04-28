@@ -50,6 +50,8 @@ import net.pms.util.ProcessUtil;
 import net.pms.util.PropertiesUtil;
 import net.pms.util.SystemErrWrapper;
 import net.pms.util.TaskRunner;
+import net.pms.util.Version;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
@@ -94,6 +96,12 @@ public class PMS {
 	 */
 	private String uuid;
 
+	/**
+	 * Relative location of a context sensitive help page in the documentation
+	 * directory.
+	 */
+	private static String helpPage = "index.html";
+	
 	/**Returns a pointer to the main PMS GUI.
 	 * @return {@link IFrame} Main PMS window.
 	 */
@@ -330,7 +338,7 @@ public class PMS {
 		proxy = -1;
 
         LOGGER.info("Starting " + PropertiesUtil.getProjectProperties().get("project.name") + " " + getVersion());
-        LOGGER.info("by shagrath / 2008-2012");
+        LOGGER.info("by shagrath / 2008-2013");
         LOGGER.info("http://ps3mediaserver.org");
         LOGGER.info("https://github.com/ps3mediaserver/ps3mediaserver");
         LOGGER.info("");
@@ -405,8 +413,19 @@ public class PMS {
 			}
 		}
 
-		if (registry.getVlcv() != null && registry.getVlcp() != null) {
-			LOGGER.info("Found VideoLAN version " + registry.getVlcv() + " at: " + registry.getVlcp());
+		// Check if VLC is found
+		String vlcVersion = registry.getVlcVersion();
+		String vlcPath = registry.getVlcPath();
+
+		if (vlcVersion != null && vlcPath != null) {
+			LOGGER.info("Found VideoLAN version " + vlcVersion + " at: " + vlcPath);
+
+			Version vlc = new Version(vlcVersion);
+			Version requiredVersion = new Version("2.0.2");
+
+			if (vlc.compareTo(requiredVersion) <= 0) {
+				LOGGER.error("Only VLC versions 2.0.2 and above are supported");
+			}
 		}
 
 		//check if Kerio is installed
@@ -508,8 +527,6 @@ public class PMS {
 					}
 					get().getServer().stop();
 					Thread.sleep(500);
-				} catch (IOException e) {
-					LOGGER.debug("Caught exception", e);
 				} catch (InterruptedException e) {
 					LOGGER.debug("Caught exception", e);
 				}
@@ -978,5 +995,25 @@ public class PMS {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Sets the relative URL of a context sensitive help page located in the
+	 * documentation directory.
+	 * 
+	 * @param page The help page.
+	 */
+	public static void setHelpPage(String page) {
+		helpPage = page;
+	}
+
+	/**
+	 * Returns the relative URL of a context sensitive help page in the
+	 * documentation directory.
+	 *
+	 * @return The help page.
+	 */
+	public static String getHelpPage() {
+		return helpPage;
 	}
 }

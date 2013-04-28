@@ -129,7 +129,7 @@ public class FFMpegAudio extends FFMpegVideo {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String fileName,
+		String filename,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
 		OutputParams params
@@ -144,7 +144,7 @@ public class FFMpegAudio extends FFMpegVideo {
 		cmdList.add(executable());
 
 		cmdList.add("-loglevel");
-		cmdList.add("warning");
+		cmdList.add("warning"); // XXX this should probably be configurable, for debugging
 
 		if (params.timeseek > 0) {
 			cmdList.add("-ss");
@@ -156,7 +156,7 @@ public class FFMpegAudio extends FFMpegVideo {
 		cmdList.add("" + nThreads);
 
 		cmdList.add("-i");
-		cmdList.add(fileName);
+		cmdList.add(filename);
 
 		// encoder threads
 		cmdList.add("-threads");
@@ -196,7 +196,7 @@ public class FFMpegAudio extends FFMpegVideo {
 		cmdList.toArray(cmdArray);
 
 		cmdArray = finalizeTranscoderArgs(
-			fileName,
+			filename,
 			dlna,
 			media,
 			params,

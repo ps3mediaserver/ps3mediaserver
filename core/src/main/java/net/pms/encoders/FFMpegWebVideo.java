@@ -73,7 +73,7 @@ public class FFMpegWebVideo extends FFMpegVideo {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String fileName,
+		String filename,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
 		OutputParams params
@@ -83,7 +83,7 @@ public class FFMpegWebVideo extends FFMpegVideo {
 		RendererConfiguration renderer = params.mediaRenderer;
 
 		// basename of the named pipe:
-		// ffmpeg -loglevel warning -threads nThreads -i URL -threads nThreads -transcode-video-options /path/to/fifoName
+		// ffmpeg -loglevel warning -threads nThreads -i URL -threads nThreads -audio-channel-options -transcode-video-options /path/to/fifoName
 		String fifoName = String.format(
 			"ffmpegwebvideo_%d_%d",
 			Thread.currentThread().getId(),
@@ -101,8 +101,8 @@ public class FFMpegWebVideo extends FFMpegVideo {
 		int nThreads = configuration.getNumberOfCpuCores();
 
 		// XXX work around an ffmpeg bug: http://ffmpeg.org/trac/ffmpeg/ticket/998
-		if (fileName.startsWith("mms:")) {
-			fileName = "mmsh:" + fileName.substring(4);
+		if (filename.startsWith("mms:")) {
+			filename = "mmsh:" + filename.substring(4);
 		}
 
 		// build the command line
@@ -115,27 +115,30 @@ public class FFMpegWebVideo extends FFMpegVideo {
 		cmdList.add("-y");
 
 		cmdList.add("-loglevel");
-		cmdList.add("warning");
+		cmdList.add("warning"); // XXX this should probably be configurable, for debugging
 
 		// decoder threads
 		cmdList.add("-threads");
 		cmdList.add("" + nThreads);
 
 		cmdList.add("-i");
-		cmdList.add(fileName);
+		cmdList.add(filename);
 
 		// encoder threads
 		cmdList.add("-threads");
 		cmdList.add("" + nThreads);
 
-		// add video bitrate options
-		cmdList.addAll(getVideoBitrateOptions(renderer, media));
+		// add video bitrate options (-b:a)
+		cmdList.addAll(getVideoBitrateOptions(filename, dlna, media, params));
 
-		// add audio bitrate options
-		cmdList.addAll(getAudioBitrateOptions(renderer, media));
+		// add audio bitrate options (-b:v)
+		cmdList.addAll(getAudioBitrateOptions(filename, dlna, media, params));
+
+		// add audio channels (-ac)
+		cmdList.addAll(getAudioChannelOptions(filename, dlna, media, params));
 
 		// add the output options (-f, -acodec, -vcodec)
-		cmdList.addAll(getTranscodeVideoOptions(renderer, media));
+		cmdList.addAll(getVideoTranscodeOptions(filename, dlna, media, params));
 
 		// output file
 		cmdList.add(pipe.getInputPipe());
@@ -146,7 +149,7 @@ public class FFMpegWebVideo extends FFMpegVideo {
 
 		// hook to allow plugins to customize this command line
 		cmdArray = finalizeTranscoderArgs(
-			fileName,
+			filename,
 			dlna,
 			media,
 			params,

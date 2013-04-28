@@ -21,6 +21,8 @@ package net.pms.newgui;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
+import net.pms.PMS;
 import net.pms.util.PropertiesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,18 +68,7 @@ public class HelpTab {
 		editorPane.setContentType("text/html");
 		editorPane.setBackground(Color.WHITE);
 
-		try {
-			// Read the HTML help file
-			String documentationDir = PropertiesUtil.getProjectProperties().get("project.documentation.dir");
-			File file = new File(documentationDir + "/index.html");
-
-			// Display the HTML help file in the editor
-			editorPane.setPage(file.toURI().toURL());
-		} catch (MalformedURLException e) {
-			LOGGER.debug("Caught exception", e);
-		} catch (IOException e) {
-			LOGGER.debug("Caught exception", e);
-		}
+		updateContents();
 
 		// Enable internal anchor links
 		editorPane.addHyperlinkListener(new HyperlinkListener() {
@@ -111,5 +102,26 @@ public class HelpTab {
 		builder.add(pane, cc.xy(2, 2));
 
 		return builder.getPanel();
+	}
+
+	/**
+	 * Load the current help page in the editor pane. 
+	 */
+	public void updateContents() {
+		if (editorPane != null) {
+			try {
+				// Read the HTML help file
+				String documentationDir = PropertiesUtil.getProjectProperties().get("project.documentation.dir");
+				String helpPage = PMS.getHelpPage();
+				File file = new File(documentationDir + "/" + helpPage);
+	
+				// Display the HTML help file in the editor
+				editorPane.setPage(file.toURI().toURL());
+			} catch (MalformedURLException e) {
+				LOGGER.debug("Caught exception", e);
+			} catch (IOException e) {
+				LOGGER.debug("Caught exception", e);
+			}
+		}
 	}
 }
