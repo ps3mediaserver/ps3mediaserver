@@ -214,7 +214,7 @@ EXTERNALPROJECT_ADD(
 
 EXTERNALPROJECT_ADD(
     zlib
-    URL http://zlib.net/zlib-1.2.7.tar.gz
+    URL http://zlib.net/zlib-1.2.8.tar.gz
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --static
     BUILD_IN_SOURCE 1
 )
