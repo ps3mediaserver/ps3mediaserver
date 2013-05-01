@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -141,7 +142,7 @@ public class SubtitleUtils {
 		return convertedSubtitles;
 	}
 
-	private enum TimingFormat {
+	enum TimingFormat {
 		ASS_TIMING,
 		SRT_TIMING,
 		SECONDS_TIMING;
@@ -159,18 +160,18 @@ public class SubtitleUtils {
 			throw new NullPointerException("timingFormat should not be null.");
 		}
 
-		double s = time % 60;
+		double s = Math.abs(time % 60);
 		int h = (int) (time / 3600);
-		int m = ((int) (time / 60)) % 60;
+		int m = Math.abs(((int) (time / 60)) % 60);
 		switch (timingFormat) {
 			case ASS_TIMING:
-				return String.format("%01d:%02d:%02.2f", h, m, s);
+				return trim(String.format(Locale.ENGLISH, "% 02d:%02d:%02.2f", h, m, s));
 			case SRT_TIMING:
-				return String.format("%02d:%02d:%02.3f", h, m, s);
+				return trim(String.format(Locale.ENGLISH, "% 03d:%02d:%02.3f", h, m, s));
 			case SECONDS_TIMING:
-				return String.format("%02d:%02d:%02d", h, m, s);
+				return trim(String.format(Locale.ENGLISH, "% 03d:%02d:%02.0f", h, m, s));
 			default:
-				return String.format("%02d:%02d:%02d", h, m, s);
+				return trim(String.format(Locale.ENGLISH, "% 03d:%02d:%02.0f", h, m, s));
 		}
 	}
 
