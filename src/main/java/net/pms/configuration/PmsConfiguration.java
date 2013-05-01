@@ -81,6 +81,7 @@ public class PmsConfiguration {
 	private static final String KEY_EMBED_DTS_IN_PCM = "embed_dts_in_pcm";
 	private static final String KEY_ENGINES = "engines";
 	private static final String KEY_FFMPEG_ALTERNATIVE_PATH = "alternativeffmpegpath"; // deprecated: FFMpegDVRMSRemux will be removed and DVR-MS will be transcoded
+	private static final String KEY_FFMPEG_MULTITHREADING = "ffmpeg_multithreading";
 	private static final String KEY_FFMPEG_MUX_COMPATIBLE = "ffmpeg_mux_compatible";
 	private static final String KEY_FIX_25FPS_AV_MISMATCH = "fix_25fps_av_mismatch";
 	private static final String KEY_FORCED_SUBTITLE_LANGUAGE = "forced_sub_lang";
@@ -1733,6 +1734,15 @@ public class PmsConfiguration {
 	public boolean isFileBuffer() {
 		String bufferType = getString(KEY_BUFFER_TYPE, "");
 		return bufferType.equals(BUFFER_TYPE_FILE);
+	}
+
+	public void setFfmpegMultithreading(boolean value) {
+		configuration.setProperty(KEY_FFMPEG_MULTITHREADING, value);
+	}
+
+	public boolean isFfmpegMultithreading() {
+		boolean isMultiCore = getNumberOfCpuCores() > 1;
+		return getBoolean(KEY_FFMPEG_MULTITHREADING, isMultiCore);
 	}
 
 	public boolean isMencoderNoOutOfSync() {
