@@ -191,7 +191,11 @@ public class SubtitleUtils {
 			int h = Integer.parseInt(st.nextToken());
 			int m = Integer.parseInt(st.nextToken());
 			double s = Double.parseDouble(st.nextToken());
-			return h * 3600 + m * 60 + s;
+			if (h >= 0) {
+				return h * 3600 + m * 60 + s;
+			} else {
+				return h * 3600 - m * 60 - s;
+			}
 		} catch (NumberFormatException nfe) {
 			LOGGER.debug("Failed to convert timing string \"" + timingString + "\".");
 			throw nfe;

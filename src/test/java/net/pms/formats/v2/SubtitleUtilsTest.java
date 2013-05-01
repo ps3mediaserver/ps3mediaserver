@@ -18,17 +18,17 @@
  */
 package net.pms.formats.v2;
 
+import ch.qos.logback.classic.LoggerContext;
 import net.pms.dlna.DLNAMediaSubtitle;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.LoggerContext;
-
 import java.io.File;
 
 import static net.pms.formats.v2.SubtitleType.VOBSUB;
+import static net.pms.formats.v2.SubtitleUtils.TimingFormat.*;
 import static net.pms.formats.v2.SubtitleUtils.getSubCpOptionForMencoder;
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -130,5 +130,43 @@ public class SubtitleUtilsTest {
 		DLNAMediaSubtitle sub7 = new DLNAMediaSubtitle();
 		sub7.setExternalFile(file_utf8_3);
 		assertThat(getSubCpOptionForMencoder(sub7)).isNull();
+	}
+
+	@Test
+	public void testConvertTimeToSubtitleTimingString_withAssFormat() {
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.056, ASS_TIMING)).isEqualTo("1:24:17.06");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(-5057.056, ASS_TIMING)).isEqualTo("-1:24:17.06");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.1, ASS_TIMING)).isEqualTo("1:24:17.10");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(46814, ASS_TIMING)).isEqualTo("13:00:14.00");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(-46814, ASS_TIMING)).isEqualTo("-13:00:14.00");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.056, SRT_TIMING)).isEqualTo("01:24:17.056");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(-5057.056, SRT_TIMING)).isEqualTo("-01:24:17.056");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.1, SRT_TIMING)).isEqualTo("01:24:17.100");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.056, SECONDS_TIMING)).isEqualTo("01:24:17");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(-5057.056, SECONDS_TIMING)).isEqualTo("-01:24:17");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.956, SECONDS_TIMING)).isEqualTo("01:24:18");
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void testConvertTimeToSubtitleTimingString_withNullTimingFormat() {
+		SubtitleUtils.convertTimeToSubtitleTimingString(5057.056, null);
+	}
+
+	@Test
+	public void testConvertSubtitleTimingStringToTime_() {
+		assertThat(SubtitleUtils.convertSubtitleTimingStringToTime("1:24:17.10")).isEqualTo(5057.1);
+		assertThat(SubtitleUtils.convertSubtitleTimingStringToTime("01:24:17.056")).isEqualTo(5057.056);
+		assertThat(SubtitleUtils.convertSubtitleTimingStringToTime("-01:24:17.056")).isEqualTo(-5057.056);
+		assertThat(SubtitleUtils.convertSubtitleTimingStringToTime("01:24:17")).isEqualTo(5057);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testConvertSubtitleTimingStringToTime_withNullTimingString() {
+		SubtitleUtils.convertSubtitleTimingStringToTime(null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testConvertSubtitleTimingStringToTime_withEmptyTimingString() {
+		SubtitleUtils.convertSubtitleTimingStringToTime("");
 	}
 }
