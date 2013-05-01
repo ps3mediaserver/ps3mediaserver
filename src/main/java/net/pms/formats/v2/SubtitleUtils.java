@@ -18,15 +18,24 @@
  */
 package net.pms.formats.v2;
 
+import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaSubtitle;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.mozilla.universalchardet.Constants.*;
 
 public class SubtitleUtils {
+	private final static Logger LOGGER = LoggerFactory.getLogger(SubtitleUtils.class);
+	private final static PmsConfiguration configuration = PMS.getConfiguration();
 	private final static Map<String, String> fileCharsetToMencoderSubcpOptionMap = new HashMap<String, String>() {
 		{
 			// Cyrillic / Russian
@@ -74,5 +83,117 @@ public class SubtitleUtils {
 			return null;
 		}
 		return fileCharsetToMencoderSubcpOptionMap.get(dlnaMediaSubtitle.getExternalFileCharacterSet());
+	}
+
+	/**
+	 * Shift timing of subtitles in SSA/ASS format
+	 *
+	 * @param inputSubtitles Subtitles file in SSA/ASS format
+	 * @param timeShift  Time stamp value
+	 * @return Converted subtitles file
+	 * @throws IOException
+	 */
+	public static File shiftSubtitlesTiming(final File inputSubtitles, double timeShift) throws IOException {
+		if (inputSubtitles == null) {
+			throw new NullPointerException("inputSubtitles should not be null.");
+		}
+		if (isBlank(inputSubtitles.getName())) {
+			throw new NullPointerException("inputSubtitles should not have blank name.");
+		}
+
+		final File convertedSubtitles = new File(configuration.getTempFolder(), inputSubtitles.getName() + System.currentTimeMillis() + ".tmp");
+		FileUtils.forceDeleteOnExit(convertedSubtitles);
+		final BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles)));
+		final BufferedWriter output = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(convertedSubtitles)));
+		String line;
+		double startTime;
+		double endTime;
+		try {
+			while ((line = input.readLine()) != null) {
+				if (startsWith(line, "Dialogue:")) {
+					String[] timings = split(line, ",");
+					if (timings.length >= 3 && isNotBlank(timings[1]) && isNotBlank(timings[1])) {
+						startTime = convertSubtitleTimingStringToTime(timings[1]);
+						endTime = convertSubtitleTimingStringToTime(timings[2]);
+						if (startTime >= timeShift) {
+							timings[1] = convertTimeToSubtitleTimingString(startTime - timeShift, TimingFormat.ASS_TIMING);
+							timings[2] = convertTimeToSubtitleTimingString(endTime - timeShift, TimingFormat.ASS_TIMING);
+							output.write(join(timings, ",") + "\n");
+						} else {
+							continue;
+						}
+					} else {
+						output.write(line + "\n");
+					}
+				} else {
+					output.write(line + "\n");
+				}
+			}
+		} finally {
+			if (output != null) {
+				output.flush();
+				output.close();
+			}
+			if (input != null) {
+				input.close();
+			}
+		}
+		return convertedSubtitles;
+	}
+
+	private enum TimingFormat {
+		ASS_TIMING,
+		SRT_TIMING,
+		SECONDS_TIMING;
+	}
+
+	/**
+	 * Converts time in seconds to subtitle timing string.
+	 *
+	 * @param time in seconds
+	 * @param timingFormat format of timing string
+	 * @return timing string
+	 */
+	static String convertTimeToSubtitleTimingString(final double time, final TimingFormat timingFormat) {
+		if (timingFormat == null) {
+			throw new NullPointerException("timingFormat should not be null.");
+		}
+
+		double s = time % 60;
+		int h = (int) (time / 3600);
+		int m = ((int) (time / 60)) % 60;
+		switch (timingFormat) {
+			case ASS_TIMING:
+				return String.format("%01d:%02d:%02.2f", h, m, s);
+			case SRT_TIMING:
+				return String.format("%02d:%02d:%02.3f", h, m, s);
+			case SECONDS_TIMING:
+				return String.format("%02d:%02d:%02d", h, m, s);
+			default:
+				return String.format("%02d:%02d:%02d", h, m, s);
+		}
+	}
+
+	/**
+	 * Converts subtitle timing string to seconds.
+	 *
+	 * @param timingString in format OO:00:00.000
+	 * @return seconds or null if conversion failed
+	 */
+	static Double convertSubtitleTimingStringToTime(final String timingString) throws NumberFormatException {
+		if (isBlank(timingString)) {
+			throw new IllegalArgumentException("timingString should not be blank.");
+		}
+
+		final StringTokenizer st = new StringTokenizer(timingString, ":");
+		try {
+			int h = Integer.parseInt(st.nextToken());
+			int m = Integer.parseInt(st.nextToken());
+			double s = Double.parseDouble(st.nextToken());
+			return h * 3600 + m * 60 + s;
+		} catch (NumberFormatException nfe) {
+			LOGGER.debug("Failed to convert timing string \"" + timingString + "\".");
+			throw nfe;
+		}
 	}
 }
