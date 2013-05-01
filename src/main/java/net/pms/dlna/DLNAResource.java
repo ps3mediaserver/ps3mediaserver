@@ -21,6 +21,7 @@ package net.pms.dlna;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
@@ -68,6 +69,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private static final int STOP_PLAYING_DELAY = 4000;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAResource.class);
 	private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
@@ -482,7 +484,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				}
 
 				if (child.getFormat() != null) {
-					setSkipTranscode(child.getFormat().skip(PMS.getConfiguration().getNoTranscode(), getDefaultRenderer() != null ? getDefaultRenderer().getStreamedExtensions() : null));
+					setSkipTranscode(child.getFormat().skip(configuration.getNoTranscode(), getDefaultRenderer() != null ? getDefaultRenderer().getStreamedExtensions() : null));
 				}
 
 				if (child.getFormat() != null && (child.getFormat().transcodable() || parserV2) && (child.getMedia() == null || parserV2)) {
@@ -523,7 +525,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					if (player != null && !allChildrenAreFolders) {
 						boolean forceTranscode = false;
 						if (child.getFormat() != null) {
-							forceTranscode = child.getFormat().skip(PMS.getConfiguration().getForceTranscode(), getDefaultRenderer() != null ? getDefaultRenderer().getTranscodedExtensions() : null);
+							forceTranscode = child.getFormat().skip(configuration.getForceTranscode(), getDefaultRenderer() != null ? getDefaultRenderer().getTranscodedExtensions() : null);
 						}
 
 						boolean hasEmbeddedSubs = false;
@@ -536,8 +538,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 						boolean hasSubsToTranscode = false;
 
-						if (!PMS.getConfiguration().isDisableSubtitles()) {
-							hasSubsToTranscode = (PMS.getConfiguration().isAutoloadSubtitles() && child.isSrtFile()) || hasEmbeddedSubs;
+						if (!configuration.isDisableSubtitles()) {
+							hasSubsToTranscode = (configuration.isAutoloadSubtitles() && child.isSrtFile()) || hasEmbeddedSubs;
 						}
 
 						boolean isIncompatible = false;
@@ -632,7 +634,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			return null;
 		}
 
-		if (PMS.getConfiguration().getHideTranscodeEnabled()) {
+		if (configuration.getHideTranscodeEnabled()) {
 			return null;
 		}
 
@@ -1002,13 +1004,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			filenameWithoutExtension = FileUtil.getFileNameWithoutExtension(filenameWithExtension);
 
 			// Check if file extensions are configured to be hidden
-			if (this instanceof RealFile && PMS.getConfiguration().isHideExtensions() && !isFolder()) {
+			if (this instanceof RealFile && configuration.isHideExtensions() && !isFolder()) {
 				filenameWithExtension = filenameWithoutExtension;
 			}
 		}
 
 		// Handle engine name
-		if (PMS.getConfiguration().isHideEngineNames()) {
+		if (configuration.isHideEngineNames()) {
 			format = smartRemove(format, "%E", true);
 			format = smartRemove(format, "%e", true);
 		} else {
@@ -1293,7 +1295,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			addXMLTagAndAttribute(
 				sb,
 				"dc:title",
-				encodeXML(firstAudioTrack.getSongname() + (getPlayer() != null && !PMS.getConfiguration().isHideEngineNames() ? (" [" + getPlayer().name() + "]") : ""))
+				encodeXML(firstAudioTrack.getSongname() + (getPlayer() != null && !configuration.isHideEngineNames() ? (" [" + getPlayer().name() + "]") : ""))
 			);
 		} else { // Ditlew - org
 			// Ditlew
@@ -1502,7 +1504,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							// calculate WAV size
 							if (firstAudioTrack != null) {
 								int defaultFrequency = mediaRenderer.isTranscodeAudioTo441() ? 44100 : 48000;
-								if (!PMS.getConfiguration().isAudioResample()) {
+								if (!configuration.isAudioResample()) {
 									try {
 										// FIXME: Which exception could be thrown here?
 										defaultFrequency = firstAudioTrack.getSampleRate();
@@ -1802,7 +1804,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 			return fis;
 		} else {
-			OutputParams params = new OutputParams(PMS.getConfiguration());
+			OutputParams params = new OutputParams(configuration);
 			params.aid = getMediaAudio();
 			params.sid = getMediaSubtitle();
 			params.mediaRenderer = mediarenderer;
@@ -1958,11 +1960,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @param inputFile File to check or generate the thumbnail for.
 	 */
 	protected void checkThumbnail(InputFile inputFile) {
-		if (getMedia() != null && !getMedia().isThumbready() && PMS.getConfiguration().isThumbnailGenerationEnabled()) {
+		if (getMedia() != null && !getMedia().isThumbready() && configuration.isThumbnailGenerationEnabled()) {
 			getMedia().setThumbready(true);
 			getMedia().generateThumbnail(inputFile, getFormat(), getType());
 
-			if (getMedia().getThumb() != null && PMS.getConfiguration().getUseCache() && inputFile.getFile() != null) {
+			if (getMedia().getThumb() != null && configuration.getUseCache() && inputFile.getFile() != null) {
 				PMS.get().getDatabase().updateThumbnail(inputFile.getFile().getAbsolutePath(), inputFile.getFile().lastModified(), getType(), getMedia());
 			}
 		}
