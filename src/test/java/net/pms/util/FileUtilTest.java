@@ -313,6 +313,6 @@ public class FileUtilTest {
 		assertThat(FileUtil.getFileNameWithoutExtension("a/b/c.txt")).isEqualTo("c");
 		assertThat(FileUtil.getFileNameWithoutExtension("a.txt")).isEqualTo("a");
 		assertThat(FileUtil.getFileNameWithoutExtension("a/b/c")).isEqualTo("c");
-		assertThat(FileUtil.getFileNameWithoutExtension("a/b/c/ ")).isEqualTo("");
+		assertThat(FileUtil.getFileNameWithoutExtension("a/b/c/")).isEqualTo("");
 	}
 }
