@@ -41,7 +41,6 @@ public class RendererConfiguration {
 
 	// property values
 	private static final String DEPRECATED_MPEGPSAC3 = "MPEGAC3"; // XXX deprecated: old name with missing container
-	private static final String EXCLUSIVE = "exclusive";
 	private static final String LPCM = "LPCM";
 	private static final String MP3 = "MP3";
 	private static final String MPEGPSAC3 = "MPEGPSAC3";
@@ -57,7 +56,7 @@ public class RendererConfiguration {
 	private static final String CBR_VIDEO_BITRATE = "CBRVideoBitrate"; // Ditlew
 	private static final String CHUNKED_TRANSFER = "ChunkedTransfer";
 	private static final String CUSTOM_MENCODER_OPTIONS = "CustomMencoderOptions";
-	private static final String CUSTOM_MENCODER_QUALITY_SETTINGS = "CustomMencoderQualitySettings";
+	private static final String CUSTOM_MENCODER_MPEG2_OPTIONS = "CustomMencoderQualitySettings"; // TODO (breaking change): value should be CustomMEncoderMPEG2Options
 	private static final String DEFAULT_VBV_BUFSIZE = "DefaultVBVBufSize";
 	private static final String DLNA_LOCALIZATION_REQUIRED = "DLNALocalizationRequired";
 	private static final String DLNA_ORGPN_USE = "DLNAOrgPN";
@@ -100,6 +99,7 @@ public class RendererConfiguration {
 	private static final String USE_SAME_EXTENSION = "UseSameExtension";
 	private static final String VIDEO = "Video";
 	private static final String WRAP_DTS_INTO_PCM = "WrapDTSIntoPCM";
+	private static final String CUSTOM_FFMPEG_OPTIONS = "CustomFFmpegOptions";
 	private static final String OVERRIDE_VF = "OverrideVideoFilter";
 
 	public static RendererConfiguration getDefaultConf() {
@@ -196,7 +196,9 @@ public class RendererConfiguration {
 	public RootFolder getRootFolder() {
 		if (rootFolder == null) {
 			rootFolder = new RootFolder();
-			rootFolder.discoverChildren();
+			if (pmsConfiguration.getUseCache()) {
+				rootFolder.discoverChildren();
+			}
 		}
 
 		return rootFolder;
@@ -424,6 +426,7 @@ public class RendererConfiguration {
 		if (DLNAPN.containsKey(old)) {
 			return DLNAPN.get(old);
 		}
+
 		return old;
 	}
 
@@ -538,7 +541,6 @@ public class RendererConfiguration {
 		}
 
 		if (mimetype != null && mimetype.equals(HTTPResource.VIDEO_TRANSCODE)) {
-			mimetype = HTTPResource.MPEG_TYPEMIME;
 			if (isTranscodeToWMV()) {
 				mimetype = isMediaParserV2()
 					? getFormatConfiguration().match(FormatConfiguration.WMV, FormatConfiguration.WMV, FormatConfiguration.WMA)
@@ -552,7 +554,7 @@ public class RendererConfiguration {
 					? getFormatConfiguration().match(FormatConfiguration.MPEGPS, FormatConfiguration.MPEG2, FormatConfiguration.AC3)
 					: HTTPResource.MPEG_TYPEMIME;
 			}
-		} else if (mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
+		} else if (HTTPResource.AUDIO_TRANSCODE.equals(mimetype)) {
 			if (isTranscodeToWAV()) {
 				mimetype = isMediaParserV2()
 					? getFormatConfiguration().match(FormatConfiguration.WAV, null, null)
@@ -599,7 +601,7 @@ public class RendererConfiguration {
 	 */
 	public boolean matchUserAgent(String header) {
 		String userAgent = getUserAgent();
-		Pattern userAgentPattern = null;
+		Pattern userAgentPattern;
 
 		if (StringUtils.isNotBlank(userAgent)) {
 			userAgentPattern = Pattern.compile(userAgent, Pattern.CASE_INSENSITIVE);
@@ -620,7 +622,7 @@ public class RendererConfiguration {
 	 */
 	public boolean matchAdditionalUserAgent(String header) {
 		String userAgentAdditionalHeader = getUserAgentAdditionalHttpHeaderSearch();
-		Pattern userAgentAddtionalPattern = null;
+		Pattern userAgentAddtionalPattern;
 
 		if (StringUtils.isNotBlank(userAgentAdditionalHeader)) {
 			userAgentAddtionalPattern = Pattern.compile(userAgentAdditionalHeader, Pattern.CASE_INSENSITIVE);
@@ -832,14 +834,48 @@ public class RendererConfiguration {
 		return getString(MAX_VIDEO_BITRATE, null);
 	}
 
+	@Deprecated
+	public String getCustomMencoderQualitySettings() {
+		return getCustomMEncoderMPEG2Options();
+	}
+
 	/**
-	 * Returns the override settings for MEncoder quality settings in PMS as
+	 * Returns the override settings for MEncoder quality settings as
 	 * defined in the renderer configuration. The default value is "".
 	 *
 	 * @return The MEncoder quality settings.
 	 */
-	public String getCustomMencoderQualitySettings() {
-		return getString(CUSTOM_MENCODER_QUALITY_SETTINGS, "");
+	public String getCustomMEncoderMPEG2Options() {
+		return getString(CUSTOM_MENCODER_MPEG2_OPTIONS, "");
+	}
+
+	/**
+	 * Converts the getCustomMencoderQualitySettings() from MEncoder's format to FFmpeg's.
+	 *
+	 * @return The FFmpeg quality settings.
+	 */
+	public String getCustomFFmpegMPEG2Options() {
+		String mpegSettings = getCustomMEncoderMPEG2Options();
+
+		String mpegSettingsArray[] = mpegSettings.split(":");
+
+		String pairArray[];
+		String returnString = "";
+		for (String pair : mpegSettingsArray) {
+			pairArray = pair.split("=");
+
+			if ("keyint".equals(pairArray[0])) {
+				returnString += "-g " + pairArray[1] + " ";
+			} else if ("vqscale".equals(pairArray[0])) {
+				returnString += "-q:v " + pairArray[1] + " ";
+			} else if ("vqmin".equals(pairArray[0])) {
+				returnString += "-qmin " + pairArray[1] + " ";
+			} else if ("vqmax".equals(pairArray[0])) {
+				returnString += "-qmax " + pairArray[1] + " ";
+			}
+		}
+
+		return returnString;
 	}
 
 	/**
@@ -970,6 +1006,7 @@ public class RendererConfiguration {
 		return ConfigurationUtil.getNonBlankConfigurationString(configuration, key, def);
     }
 
+	@Override
 	public String toString() {
 		return getRendererName();
 	}
@@ -1046,6 +1083,10 @@ public class RendererConfiguration {
 			// Not natively supported.
 			return false;
 		}
+	}
+
+	public String getCustomFFmpegOptions() {
+		return getString(CUSTOM_FFMPEG_OPTIONS, "");
 	}
 
 	public boolean isKeepAspectRatio() {
