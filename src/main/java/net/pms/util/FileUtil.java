@@ -4,6 +4,7 @@ import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.formats.v2.SubtitleType;
+import org.apache.commons.io.FilenameUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,24 +26,20 @@ public class FileUtil {
 		return isFileExists(new File(f), ext);
 	}
 
-	public static String getExtension(String f) {
-		int point = f.lastIndexOf(".");
-
-		if (point == -1) {
-			return null;
-		}
-
-		return f.substring(point + 1);
+	/**
+	 * @deprecated use {@link FilenameUtils#getExtension(String filePath)} instead.
+	 */
+	@Deprecated
+	public static String getExtension(final String filePath) {
+		return FilenameUtils.getExtension(filePath);
 	}
 
-	public static String getFileNameWithoutExtension(String f) {
-		int point = f.lastIndexOf(".");
-
-		if (point == -1) {
-			point = f.length();
-		}
-
-		return f.substring(0, point);
+	/**
+	 * @deprecated use {@link FilenameUtils#getBaseName(String filePath)} instead.
+	 */
+	@Deprecated
+	public static String getFileNameWithoutExtension(final String filePath) {
+		return FilenameUtils.getBaseName(filePath);
 	}
 
 	public static String getFileNameWithRewriting(String f) {
@@ -318,7 +315,7 @@ public class FileUtil {
 			}
 		}
 
-		String fileName = getFileNameWithoutExtension(file.getName()).toLowerCase();
+		String fileName = FilenameUtils.getBaseName(file.getName()).toLowerCase();
 		if (allSubs != null) {
 			for (File f : allSubs) {
 				if (f.isFile() && !f.isHidden()) {

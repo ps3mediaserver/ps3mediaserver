@@ -20,6 +20,7 @@ package net.pms.dlna;
 
 import net.pms.formats.Format;
 import net.pms.util.FileUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 
 	@Override
 	public String getSystemName() {
-		return FileUtil.getFileNameWithoutExtension(file.getAbsolutePath()) + "." + FileUtil.getExtension(zeName);
+		return FilenameUtils.getBaseName(file.getAbsolutePath()) + "." + FilenameUtils.getExtension(zeName);
 	}
 
 	@Override

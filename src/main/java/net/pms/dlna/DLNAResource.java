@@ -36,10 +36,10 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.SizeLimitInputStream;
 import net.pms.network.HTTPResource;
-import net.pms.util.FileUtil;
 import net.pms.util.ImagesUtil;
 import net.pms.util.Iso639;
 import net.pms.util.MpegUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1001,7 +1001,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			format = smartRemove(format, "%f", true);
 		} else {
 			filenameWithExtension = getName();
-			filenameWithoutExtension = FileUtil.getFileNameWithoutExtension(filenameWithExtension);
+			filenameWithoutExtension = FilenameUtils.getBaseName(filenameWithExtension);
 
 			// Check if file extensions are configured to be hidden
 			if (this instanceof RealFile && configuration.isHideExtensions() && !isFolder()) {
