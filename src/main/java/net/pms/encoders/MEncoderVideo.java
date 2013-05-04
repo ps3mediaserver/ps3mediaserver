@@ -996,42 +996,76 @@ public class MEncoderVideo extends Player {
 		}
 
 		if (configuration.getMPEG2MainSettings() != null) {
-			String mainConfig = configuration.getMPEG2MainSettings();
-			String customSettings = params.mediaRenderer.getCustomMencoderQualitySettings();
+			String mpeg2Options = configuration.getMPEG2MainSettings();
+			String mpeg2OptionsRenderer = params.mediaRenderer.getCustomMEncoderMPEG2Options();
 
-			// Custom settings in PMS may override the settings of the saved configuration
-			if (isNotBlank(customSettings)) {
-				mainConfig = customSettings;
-			}
+			// Renderer settings take priority over user settings
+			if (isNotBlank(mpeg2OptionsRenderer)) {
+				mpeg2Options = mpeg2OptionsRenderer;
+			} else {
+				// Remove comment from the value
+				if (mpeg2Options.contains("/*")) {
+					mpeg2Options = mpeg2Options.substring(mpeg2Options.indexOf("/*"));
+				}
 
-			if (mainConfig.contains("/*")) {
-				mainConfig = mainConfig.substring(mainConfig.indexOf("/*"));
+				// Find out the maximum bandwidth we are supposed to use
+				int defaultMaxBitrates[] = getVideoBitrateConfig(configuration.getMaximumBitrate());
+				int rendererMaxBitrates[] = new int[2];
+
+				if (params.mediaRenderer.getMaxVideoBitrate() != null) {
+					rendererMaxBitrates = getVideoBitrateConfig(params.mediaRenderer.getMaxVideoBitrate());
+				}
+
+				if ((rendererMaxBitrates[0] > 0) && (rendererMaxBitrates[0] < defaultMaxBitrates[0])) {
+					defaultMaxBitrates = rendererMaxBitrates;
+				}
+
+				int maximumBitrate = defaultMaxBitrates[0];
+
+				// Determine a good quality setting based on video attributes
+				if (mpeg2Options.contains("Automatic")) {
+					mpeg2Options = "keyint=5:vqscale=1:vqmin=2:vqmax=3";
+
+					// It has been reported that non-PS3 renderers prefer keyint 5 but prefer it for PS3 because it lowers the average bitrate
+					if (params.mediaRenderer.isPS3()) {
+						mpeg2Options = "keyint=25:vqscale=1:vqmin=2:vqmax=3";
+					}
+
+					if (mpeg2Options.contains("Wireless") || maximumBitrate < 70) {
+						// Lower quality for 720p+ content
+						if (media.getWidth() > 1280) {
+							mpeg2Options = "keyint=25:vqmax=7:vqmin=2";
+						} else if (media.getWidth() > 720) {
+							mpeg2Options = "keyint=25:vqmax=5:vqmin=2";
+						}
+					}
+				}
 			}
 
 			// Ditlew - WDTV Live (+ other byte asking clients), CBR. This probably ought to be placed in addMaximumBitrateConstraints(..)
 			int cbr_bitrate = params.mediaRenderer.getCBRVideoBitrate();
 			String cbr_settings = (cbr_bitrate > 0) ?
-				":vrc_buf_size=5000:vrc_minrate=" + cbr_bitrate + ":vrc_maxrate=" + cbr_bitrate + ":vbitrate=" + ((cbr_bitrate > 16000) ? cbr_bitrate * 1000 : cbr_bitrate) :
-				"";
+					":vrc_buf_size=5000:vrc_minrate=" + cbr_bitrate + ":vrc_maxrate=" + cbr_bitrate + ":vbitrate=" + ((cbr_bitrate > 16000) ? cbr_bitrate * 1000 : cbr_bitrate) :
+					"";
+
 			String encodeSettings = "-lavcopts autoaspect=1:vcodec=" + vcodec +
-				(wmv ? ":acodec=wmav2:abitrate=448" : (cbr_settings + ":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") +
-				":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid))) +
-				":threads=" + (wmv ? 1 : configuration.getMencoderMaxThreads()) +
-				("".equals(mainConfig) ? "" : ":" + mainConfig);
+					(wmv && !params.mediaRenderer.isXBOX() ? ":acodec=wmav2:abitrate=448" : (cbr_settings + ":acodec=" + (configuration.isMencoderAc3Fixed() ? "ac3_fixed" : "ac3") +
+							":abitrate=" + CodecUtil.getAC3Bitrate(configuration, params.aid))) +
+					":threads=" + (wmv && !params.mediaRenderer.isXBOX() ? 1 : configuration.getMencoderMaxThreads()) +
+					("".equals(mpeg2Options) ? "" : ":" + mpeg2Options);
 
 			String audioType = "ac3";
-
 			if (dtsRemux) {
 				audioType = "dts";
 			} else if (pcm) {
 				audioType = "pcm";
 			}
 
-			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, mainConfig, params.mediaRenderer, audioType);
+			encodeSettings = addMaximumBitrateConstraints(encodeSettings, media, mpeg2Options, params.mediaRenderer, audioType);
 			st = new StringTokenizer(encodeSettings, " ");
 
 			{
-				int i = overriddenMainArgs.length; // old length
+				int i = overriddenMainArgs.length; // Old length
 				overriddenMainArgs = Arrays.copyOf(overriddenMainArgs, overriddenMainArgs.length + st.countTokens());
 
 				while (st.hasMoreTokens()) {
