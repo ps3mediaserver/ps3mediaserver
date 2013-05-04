@@ -155,7 +155,7 @@ public class FFMpegVideo extends Player {
 
 		}
 
-		if (renderer.isKeepAspectRatio() && renderer.isRescaleByRenderer()) {
+		if (renderer.isPadVideoWithBlackBordersTo169AR() && renderer.isRescaleByRenderer()) {
 			if (media != null
 				&& media.isMediaparsed()
 				&& media.getHeight() != 0
@@ -168,7 +168,7 @@ public class FFMpegVideo extends Player {
 
 		String rescaleSpec = null;
 
-		if (isResolutionTooHighForRenderer || (renderer.isKeepAspectRatio() && !renderer.isRescaleByRenderer())) {
+		if (isResolutionTooHighForRenderer || (renderer.isPadVideoWithBlackBordersTo169AR() && !renderer.isRescaleByRenderer())) {
 			rescaleSpec = String.format(
 				// http://stackoverflow.com/a/8351875
 				"scale=iw*min(%1$d/iw\\,%2$d/ih):ih*min(%1$d/iw\\,%2$d/ih),pad=%1$d:%2$d:(%1$d-iw)/2:(%2$d-ih)/2",

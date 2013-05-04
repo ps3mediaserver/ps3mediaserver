@@ -66,7 +66,7 @@ public class RendererConfiguration {
 	private static final String H264_L41_LIMITED = "H264Level41Limited";
 	private static final String IMAGE = "Image";
 	private static final String LONG_FILE_NAME_FORMAT = "LongFileNameFormat";
-	private static final String KEEP_ASPECT_RATIO = "KeepAspectRatio";
+	private static final String KEEP_PAD_VIDEO_WITH_BLACK_BORDERS = "PadVideoWithBlackBordersTo169AR";
 	private static final String MAX_VIDEO_BITRATE = "MaxVideoBitrateMbps";
 	private static final String MAX_VIDEO_HEIGHT = "MaxVideoHeight";
 	private static final String MAX_VIDEO_WIDTH = "MaxVideoWidth";
@@ -1089,10 +1089,25 @@ public class RendererConfiguration {
 		return getString(CUSTOM_FFMPEG_OPTIONS, "");
 	}
 
-	public boolean isKeepAspectRatio() {
-		return getBoolean(KEEP_ASPECT_RATIO, false);
+	/**
+	 * Some renderers like Panasonic TV internally rescale the video.
+	 * This option forces MEncoder and FFmpeg to pad video with black borders to 16:9 AR.
+	 *
+	 * @return True if MEncoder and FFmpeg should pad video with black borders. Default value is false.
+	 */
+	public boolean isPadVideoWithBlackBordersTo169AR() {
+		return getBoolean(KEEP_PAD_VIDEO_WITH_BLACK_BORDERS, false);
 	}
 
+	/**
+	 * Normally the renderer is responsible for video rescaling to output (TV) resolution.
+	 * If this option is false then PMS will do rescaling.
+	 * It can make better video quality but the CPU and bandwidth are more utilised and can produce jerking video on WiFi.
+	 *
+	 * Works only for FFmpeg and together with PadVideoWithBlackBordersTo169AR.
+	 *
+	 * @return True if the renderer is capable of rescaling video. Default value is true.
+	 */
 	public boolean isRescaleByRenderer() {
 		return getBoolean(RESCALE_BY_RENDERER, true);
 	}
