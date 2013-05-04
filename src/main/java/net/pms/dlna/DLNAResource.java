@@ -247,6 +247,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	@Deprecated
 	protected long lastRefreshTime;
 
+	protected HashMap<String,Object> attachments = null;
+
 	/**
 	 * Returns parent object, usually a folder type of resource. In the DLDI
 	 * queries, the UPNP server needs to give out the parent container where
@@ -624,7 +626,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * If no folder exists and the create argument is false, null is returned.
 	 * If no folder exists and the create argument is true, a new transcode folder is created.
 	 * This method is called on the parent frolder each time a child is added to that parent
-	 * (via {@link addChild(DLNAResource)}.
+	 * (via {@link #addChild(DLNAResource)}.
 	 * @param create
 	 * @return the transcode virtual folder
 	 */
@@ -2483,5 +2485,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	protected void setLastRefreshTime(long lastRefreshTime) {
 		this.lastRefreshTime = lastRefreshTime;
+	}
+
+	public void attach(String key, Object data) {
+		if (attachments == null) {
+			attachments = new HashMap<String, Object>();
+		}
+		attachments.put(key, data);
+	}
+
+	public Object getAttachment(String key) {
+		return attachments == null ? null : attachments.get(key);
 	}
 }
