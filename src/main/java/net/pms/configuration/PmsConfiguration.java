@@ -39,6 +39,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
+import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.StringUtils.join;
+import static org.apache.commons.lang3.StringUtils.split;
+
 /**
  * Container for all configurable PMS settings. Settings are typically defined by three things:
  * a unique key for use in the configuration file "PMS.conf", a getter (and setter) method and
@@ -51,12 +55,12 @@ public class PmsConfiguration {
 	private static final int DEFAULT_PROXY_SERVER_PORT = -1;
 	private static final int DEFAULT_SERVER_PORT = 5001;
 
-	// MEncoder has a hardwired maximum of 8 threads for -lavcopts and -lavdopts:
+	/*
+	 * MEncoder has a hardwired maximum of 8 threads for -lavcopts and 16
+	 * for -lavdopts.
 	// https://code.google.com/p/ps3mediaserver/issues/detail?id=517
+	*/
 	private static final int MENCODER_MAX_THREADS = 8;
-
-	// TODO: Get this out of here
-	private static boolean avsHackLogged = false;
 
 	private static final String KEY_ALTERNATE_SUBS_FOLDER = "alternate_subs_folder";
 	private static final String KEY_ALTERNATE_THUMB_FOLDER = "alternate_thumb_folder";
@@ -65,18 +69,25 @@ public class PmsConfiguration {
 	private static final String KEY_AUDIO_CHANNEL_COUNT = "audiochannels"; // TODO (breaking change): should be renamed to e.g. audio_channels
 	private static final String KEY_AUDIO_LANGUAGES = "mencoder_audiolangs"; // TODO (breaking change): should be renamed to e.g. audio_languages
 	private static final String KEY_AUDIO_RESAMPLE = "audio_resample";
+	private static final String KEY_AUDIO_SUB_LANGS = "mencoder_audiosublangs"; // TODO (breaking change): should be renamed to e.g. audiosublangs
 	private static final String KEY_AUDIO_THUMBNAILS_METHOD = "audio_thumbnails_method";
-	private static final String KEY_AUTOLOAD_SUBTITLES = "autoloadsrt"; // TODO (breaking change): rename to e.g. autoload_subtitles or autoload_external_subtitles
 	private static final String KEY_AUTO_UPDATE = "auto_update";
+	private static final String KEY_AUTOLOAD_SUBTITLES = "autoloadsrt"; // TODO (breaking change): rename to e.g. autoload_subtitles or autoload_external_subtitles
 	private static final String KEY_AVISYNTH_CONVERT_FPS = "avisynth_convertfps"; // TODO (breaking change): rename to e.g. avisynth_convert_fps
 	private static final String KEY_AVISYNTH_SCRIPT = "avisynth_script";
-	private static final String KEY_BUFFER_MAX = "buffer_max"; // FIXME what is this? if it should be kept, it needs to be a) documented and b) renamed (breaking change)
+	private static final String KEY_ASS_MARGIN = "mencoder_ass_margin"; // TODO (breaking change): should be renamed to e.g. ass_margin
+	private static final String KEY_ASS_OUTLINE = "mencoder_ass_outline"; // TODO (breaking change): should be renamed to e.g. ass_outline
+	private static final String KEY_ASS_SCALE = "mencoder_ass_scale"; // TODO (breaking change): should be renamed to e.g. ass_scale
+	private static final String KEY_ASS_SHADOW = "mencoder_ass_shadow"; // TODO (breaking change): should be renamed to e.g. ass_shadow
+	private static final String KEY_BUFFER_MAX = "buffer_max";
+	private static final String KEY_SCRIPT_DIR = "script_dir";
 	private static final String KEY_BUFFER_TYPE = "buffertype"; // FIXME deprecated: unused
 	private static final String KEY_CHAPTER_INTERVAL = "chapter_interval";
 	private static final String KEY_CHAPTER_SUPPORT = "chapter_support";
 	private static final String KEY_CHARSET_ENCODING = "charsetencoding"; // TODO (breaking change): should be renamed to e.g. charset_encoding
 	private static final String KEY_CODEC_SPEC_SCRIPT = "codec_spec_script";
 	private static final String KEY_DISABLE_FAKESIZE = "disable_fakesize";
+	public static final String KEY_DISABLE_SUBTITLES = "mencoder_disablesubs"; // TODO (breaking change): should be renamed to e.g. disable_subtitles
 	private static final String KEY_DVDISO_THUMBNAILS = "dvd_isos_thumbnails";
 	private static final String KEY_EMBED_DTS_IN_PCM = "embed_dts_in_pcm";
 	private static final String KEY_ENGINES = "engines";
@@ -97,29 +108,20 @@ public class PmsConfiguration {
 	private static final String KEY_HIDE_VIDEO_SETTINGS = "hidevideosettings"; // TODO (breaking change): should be renamed to e.g. hide_video_settings
 	private static final String KEY_HTTP_ENGINE_V2 = "http_engine_v2";
 	private static final String KEY_IMAGE_THUMBNAILS_ENABLED = "image_thumbnails";
-	private static final String KEY_IPHOTO_ENABLED = "iphoto";
 	private static final String KEY_IP_FILTER = "ip_filter";
+	private static final String KEY_IPHOTO_ENABLED = "iphoto";
 	private static final String KEY_ITUNES_ENABLED = "itunes";
 	private static final String KEY_LANGUAGE = "language";
 	private static final String KEY_MAX_AUDIO_BUFFER = "maxaudiobuffer"; // TODO (breaking change): should be renamed to e.g. maximum_audio_buffer_size
 	private static final String KEY_MAX_BITRATE = "maximumbitrate"; // TODO (breaking change): should be renamed to e.g. maximum_bitrate
 	private static final String KEY_MAX_MEMORY_BUFFER_SIZE = "maxvideobuffer"; // TODO (breaking change): should be renamed to e.g. maximum_video_buffer_size
-	private static final String KEY_MENCODER_AC3_FIXED = "mencoder_ac3_fixed";
 	private static final String KEY_MENCODER_ASS = "mencoder_ass";
+	private static final String KEY_MENCODER_AC3_FIXED = "mencoder_ac3_fixed";
 	private static final String KEY_MENCODER_ASS_DEFAULTSTYLE = "mencoder_ass_defaultstyle";
-	private static final String KEY_MENCODER_ASS_MARGIN = "mencoder_ass_margin";
-	private static final String KEY_MENCODER_ASS_OUTLINE = "mencoder_ass_outline";
-	private static final String KEY_MENCODER_ASS_SCALE = "mencoder_ass_scale";
-	private static final String KEY_MENCODER_ASS_SHADOW = "mencoder_ass_shadow";
-	private static final String KEY_MENCODER_AUDIO_SUB_LANGS = "mencoder_audiosublangs";
 	private static final String KEY_MENCODER_CUSTOM_OPTIONS = "mencoder_decode"; // TODO (breaking change): should be renamed to e.g. mencoder_custom_options
-	public static final String KEY_DISABLE_SUBTITLES = "mencoder_disablesubs"; // TODO (breaking change): should be renamed to e.g. disable_subtitles
 	private static final String KEY_MENCODER_FONT_CONFIG = "mencoder_fontconfig";
-	private static final String KEY_MENCODER_FORCED_SUB_LANG = "forced_sub_lang";
-	private static final String KEY_MENCODER_FORCED_SUB_TAGS = "forced_sub_tags";
 	private static final String KEY_MENCODER_FORCE_FPS = "mencoder_forcefps";
 	private static final String KEY_MENCODER_INTELLIGENT_SYNC = "mencoder_intelligent_sync";
-	private static final String KEY_MENCODER_MAIN_SETTINGS = "mencoder_encode";
 	private static final String KEY_MENCODER_MAX_THREADS = "mencoder_max_threads";
 	private static final String KEY_MENCODER_MT = "mencoder_mt";
 	private static final String KEY_MENCODER_NOASS_BLUR = "mencoder_noass_blur";
@@ -135,13 +137,13 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_SCALEX = "mencoder_scalex";
 	private static final String KEY_MENCODER_SCALEY = "mencoder_scaley";
 	private static final String KEY_MENCODER_SUB_FRIBIDI = "mencoder_subfribidi";
-	private static final String KEY_MENCODER_USE_PCM = "mencoder_usepcm";
 	private static final String KEY_MENCODER_USE_PCM_FOR_HQ_AUDIO_ONLY = "mencoder_usepcm_for_hq_audio_only";
 	private static final String KEY_MENCODER_VOBSUB_SUBTITLE_QUALITY = "mencoder_vobsub_subtitle_quality";
 	private static final String KEY_MENCODER_YADIF = "mencoder_yadif";
 	private static final String KEY_MINIMIZED = "minimized";
 	private static final String KEY_MIN_MEMORY_BUFFER_SIZE = "minvideobuffer"; // TODO (breaking change): should be renamed to e.g. minimum_video_buffer_size
 	private static final String KEY_MIN_STREAM_BUFFER = "minwebbuffer"; // TODO (breaking change): should be renamed to e.g. minimum_web_buffer_size
+	private static final String KEY_MPEG2_MAIN_SETTINGS = "mencoder_encode"; // TODO (breaking change): should be renamed to e.g. mpeg2_main_settings
 	private static final String KEY_MUX_ALLAUDIOTRACKS = "tsmuxer_mux_all_audiotracks";
 	private static final String KEY_NETWORK_INTERFACE = "network_interface";
 	private static final String KEY_NOTRANSCODE = "notranscode";
@@ -157,9 +159,9 @@ public class PmsConfiguration {
 	private static final String KEY_SERVER_HOSTNAME = "hostname";
 	private static final String KEY_SERVER_PORT = "port";
 	private static final String KEY_SHARES = "shares";
-	private static final String KEY_SKIP_LOOP_FILTER_ENABLED = "skiploopfilter"; // TODO (breaking change): should be renamed to e.g. skip_loop_filter
+	private static final String KEY_SKIP_LOOP_FILTER_ENABLED = "skiploopfilter"; // TODO (breaking change): should be renamed to e.g. mencoder_skip_loop_filter
 	private static final String KEY_SKIP_NETWORK_INTERFACES = "skip_network_interfaces";
-	private static final String KEY_SORT_METHOD = "key_sort_method";
+	private static final String KEY_SORT_METHOD = "key_sort_method"; // TODO (breaking change): should be renamed to e.g. sort_method
 	private static final String KEY_SUBS_COLOR = "subs_color";
 	private static final String KEY_SUBTITLES_CODEPAGE = "mencoder_subcp"; // TODO (breaking change): should be renamed to e.g. subtitles_sodepage
 	private static final String KEY_SUBTITLES_LANGUAGES = "mencoder_sublangs"; // TODO (breaking change): should be renamed to e.g. subtitles_languages
@@ -175,8 +177,9 @@ public class PmsConfiguration {
 	private static final String KEY_UPNP_PORT = "upnp_port";
 	private static final String KEY_USE_CACHE = "usecache"; // TODO (breaking change): should be renamed to e.g. use_cache
 	private static final String KEY_USE_MPLAYER_FOR_THUMBS = "use_mplayer_for_video_thumbs";
+	private static final String KEY_USE_PCM = "mencoder_usepcm"; // TODO (breaking change): should be renamed to e.g. usepcm
 	private static final String KEY_UUID = "uuid";
-	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay";
+	private static final String KEY_VIDEOTRANSCODE_START_DELAY = "key_videotranscode_start_delay"; // TODO (breaking change): should be renamed to e.g. videotranscode_start_delay
 	private static final String KEY_VIRTUAL_FOLDERS = "vfolders";
 	private static final String KEY_VLC_USE_EXPERIMENTAL_CODECS = "VLC_use_experimental_codecs"; // TODO (breaking change): should be lower case
 	private static final String KEY_VLC_AUDIO_SYNC_ENABLED = "VLC_audio_sync_enabled"; // TODO (breaking change): should be lower case
@@ -186,16 +189,16 @@ public class PmsConfiguration {
 	private static final String KEY_VLC_SAMPLE_RATE = "VLC_sample_rate"; // TODO (breaking change): should be lower case
 	private static final String KEY_VIDEO_HW_ACCELERATION = "video_hardware_acceleration";
 
-	// the name of the subdirectory under which PMS config files are stored for this build (default: PMS).
-	// see Build for more details
+	// The name of the subdirectory under which PMS config files are stored for this build (default: UMS).
+	// See Build for more details
 	private static final String PROFILE_DIRECTORY_NAME = Build.getProfileDirectoryName();
 
-	// the default profile name displayed on the renderer
+	// The default profile name displayed on the renderer
 	private static String HOSTNAME;
 
 	private static String DEFAULT_AVI_SYNTH_SCRIPT;
 	private static final String BUFFER_TYPE_FILE = "file"; // deprecated: unused
-	private static final int MAX_MAX_MEMORY_DEFAULT_SIZE = 600;
+	private static final int MAX_MAX_MEMORY_DEFAULT_SIZE = 400;
 	private static final int BUFFER_MEMORY_FACTOR = 368;
 	private static int MAX_MAX_MEMORY_BUFFER_SIZE = MAX_MAX_MEMORY_DEFAULT_SIZE;
 	private static final char LIST_SEPARATOR = ',';
@@ -210,30 +213,30 @@ public class PmsConfiguration {
 	 * The set of the keys defining when the HTTP server has to restarted due to a configuration change
 	 */
 	public static final Set<String> NEED_RELOAD_FLAGS = new HashSet<String>(
-		Arrays.asList(
-			KEY_ALTERNATE_THUMB_FOLDER,
-			KEY_NETWORK_INTERFACE,
-			KEY_IP_FILTER,
-			KEY_SORT_METHOD,
-			KEY_HIDE_EMPTY_FOLDERS,
-			KEY_HIDE_TRANSCODE_FOLDER,
-			KEY_HIDE_MEDIA_LIBRARY_FOLDER,
-			KEY_OPEN_ARCHIVES,
-			KEY_USE_CACHE,
-			KEY_HIDE_ENGINENAMES,
-			KEY_ITUNES_ENABLED,
-			KEY_IPHOTO_ENABLED,
-			KEY_APERTURE_ENABLED,
-			KEY_ENGINES,
-			KEY_FOLDERS,
-			KEY_HIDE_VIDEO_SETTINGS,
-			KEY_AUDIO_THUMBNAILS_METHOD,
-			KEY_NOTRANSCODE,
-			KEY_FORCETRANSCODE,
-			KEY_SERVER_PORT,
-			KEY_SERVER_HOSTNAME,
-			KEY_CHAPTER_SUPPORT,
-			KEY_HIDE_EXTENSIONS
+		asList(
+				KEY_ALTERNATE_THUMB_FOLDER,
+				KEY_NETWORK_INTERFACE,
+				KEY_IP_FILTER,
+				KEY_SORT_METHOD,
+				KEY_HIDE_EMPTY_FOLDERS,
+				KEY_HIDE_TRANSCODE_FOLDER,
+				KEY_HIDE_MEDIA_LIBRARY_FOLDER,
+				KEY_OPEN_ARCHIVES,
+				KEY_USE_CACHE,
+				KEY_HIDE_ENGINENAMES,
+				KEY_ITUNES_ENABLED,
+				KEY_IPHOTO_ENABLED,
+				KEY_APERTURE_ENABLED,
+				KEY_ENGINES,
+				KEY_FOLDERS,
+				KEY_HIDE_VIDEO_SETTINGS,
+				KEY_AUDIO_THUMBNAILS_METHOD,
+				KEY_NOTRANSCODE,
+				KEY_FORCETRANSCODE,
+				KEY_SERVER_PORT,
+				KEY_SERVER_HOSTNAME,
+				KEY_CHAPTER_SUPPORT,
+				KEY_HIDE_EXTENSIONS
 		)
 	);
 
@@ -283,10 +286,17 @@ public class PmsConfiguration {
 	 */
 	private static final String DEFAULT_PROFILE_FILENAME = "PMS.conf";
 	private static final String ENV_PROFILE_PATH = "PMS_PROFILE";
-	private static final String PROFILE_DIRECTORY; // path to directory containing PMS config files
-	private static final String PROFILE_PATH; // abs path to profile file e.g. /path/to/PMS.conf
-    private static final String SKEL_PROFILE_PATH ; // abs path to skel (default) profile file e.g. /etc/skel/.config/ps3mediaserver/PMS.conf
-                                                    // "project.skelprofile.dir" project property
+
+	// Path to directory containing PMS config files
+	private static final String PROFILE_DIRECTORY;
+
+	// Absolute path to profile file e.g. /path/to/PMS.conf
+	private static final String PROFILE_PATH;
+
+	// Absolute path to skel (default) profile file e.g. /etc/skel/.config/ps3mediaserver/PMS.conf
+	// "project.skelprofile.dir" project property
+    private static final String SKEL_PROFILE_PATH;
+
 	private static final String PROPERTY_PROFILE_PATH = "pms.profile.path";
 
 	static {
@@ -303,7 +313,6 @@ public class PmsConfiguration {
 
 			// if it exists, we know whether it's a file or directory
 			// otherwise, it must be a file since we don't autovivify directories
-
 			if (f.isDirectory()) {
 				PROFILE_DIRECTORY = FilenameUtils.normalize(f.getAbsolutePath());
 				PROFILE_PATH = FilenameUtils.normalize(new File(f, DEFAULT_PROFILE_FILENAME).getAbsolutePath());
@@ -312,7 +321,7 @@ public class PmsConfiguration {
 				PROFILE_DIRECTORY = FilenameUtils.normalize(f.getParentFile().getAbsolutePath());
 			}
 		} else {
-			String profileDir = null;
+			String profileDir;
 
 			if (Platform.isWindows()) {
 				String programData = System.getenv("ALLUSERSPROFILE");
@@ -348,7 +357,8 @@ public class PmsConfiguration {
 
 			PROFILE_PATH = FilenameUtils.normalize(new File(PROFILE_DIRECTORY, DEFAULT_PROFILE_FILENAME).getAbsolutePath());
 		}
-        // set SKEL_PROFILE_PATH for Linux systems
+
+		// Set SKEL_PROFILE_PATH for Linux systems
         String skelDir = PropertiesUtil.getProjectProperties().get("project.skelprofile.dir");
         if (Platform.isLinux() && StringUtils.isNotBlank(skelDir)) {
             SKEL_PROFILE_PATH = FilenameUtils.normalize(new File(new File(skelDir, PROFILE_DIRECTORY_NAME).getAbsolutePath(), DEFAULT_PROFILE_FILENAME).getAbsolutePath());
@@ -372,8 +382,8 @@ public class PmsConfiguration {
 	 * Constructor that will initialize the PMS configuration.
 	 *
 	 * @param loadFile Set to true to attempt to load the PMS configuration
-	 * 					file from the profile path. Set to false to skip
-	 * 					loading.
+	 *                 file from the profile path. Set to false to skip
+	 *                 loading.
 	 * @throws org.apache.commons.configuration.ConfigurationException
 	 * @throws java.io.IOException
 	 */
@@ -395,7 +405,7 @@ public class PmsConfiguration {
 
 				if (pmsSkelConfFile.isFile()) {
 					if (FileUtil.isFileReadable(pmsSkelConfFile)) {
-						// load defaults from skel file, save them later to PROFILE_PATH
+						// Load defaults from skel file, save them later to PROFILE_PATH
 						configuration.load(pmsSkelConfFile);
 						LOGGER.info("Default configuration loaded from " + SKEL_PROFILE_PATH);
 					} else {
@@ -412,14 +422,7 @@ public class PmsConfiguration {
 		Locale.setDefault(new Locale(getLanguage()));
 
 		// Set DEFAULT_AVI_SYNTH_SCRIPT according to language
-		DEFAULT_AVI_SYNTH_SCRIPT =
-			Messages.getString("MEncoderAviSynth.4") +
-			Messages.getString("MEncoderAviSynth.5") +
-			Messages.getString("MEncoderAviSynth.6") +
-			Messages.getString("MEncoderAviSynth.7") +
-			Messages.getString("MEncoderAviSynth.8") +
-			Messages.getString("MEncoderAviSynth.10") +
-			Messages.getString("MEncoderAviSynth.11");
+		DEFAULT_AVI_SYNTH_SCRIPT = "<movie>\n<sub>\n";
 
 		long usableMemory = (Runtime.getRuntime().maxMemory() / 1048576) - BUFFER_MEMORY_FACTOR;
 		if (usableMemory > MAX_MAX_MEMORY_DEFAULT_SIZE) {
@@ -683,20 +686,12 @@ public class PmsConfiguration {
 	/**
 	 * Returns the preferred maximum size for the transcoding memory buffer in megabytes.
 	 * The value returned has a top limit of {@link #MAX_MAX_MEMORY_BUFFER_SIZE}. Default
-	 * value is 400.
+	 * value is 200.
 	 *
 	 * @return The maximum memory buffer size.
 	 */
 	public int getMaxMemoryBufferSize() {
-		return Math.max(0, Math.min(MAX_MAX_MEMORY_BUFFER_SIZE, getInt(KEY_MAX_MEMORY_BUFFER_SIZE, 400)));
-	}
-
-	/**
-	 * Returns the top limit that can be set for the maximum memory buffer size.
-	 * @return The top limit.
-	 */
-	public String getMaxMemoryBufferSizeStr() {
-		return String.valueOf(MAX_MAX_MEMORY_BUFFER_SIZE);
+		return Math.max(0, Math.min(MAX_MAX_MEMORY_BUFFER_SIZE, getInt(KEY_MAX_MEMORY_BUFFER_SIZE, 200)));
 	}
 
 	/**
@@ -710,15 +705,23 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Returns the font scale used for ASS subtitling. Default value is 1.0.
-	 * @return The ASS font scale.
+	 * @deprecated Use {@link #getAssScale()} instead.
 	 */
+	@Deprecated
 	public String getMencoderAssScale() {
-		return getString(KEY_MENCODER_ASS_SCALE, "1.0");
+		return getAssScale();
 	}
 
 	/**
-	 * Some versions of mencoder produce garbled audio because the "ac3" codec is used
+	 * Returns the font scale used for ASS subtitling. Default value is 1.4.
+	 * @return The ASS font scale.
+	 */
+	public String getAssScale() {
+		return getString(KEY_ASS_SCALE, "1.4");
+	}
+
+	/**
+	 * Some versions of MEncoder produce garbled audio because the "ac3" codec is used
 	 * instead of the "ac3_fixed" codec. Returns true if "ac3_fixed" should be used.
 	 * Default is false.
 	 * See https://code.google.com/p/ps3mediaserver/issues/detail?id=1092#c1
@@ -729,27 +732,51 @@ public class PmsConfiguration {
 	}
 
 	/**
+	 * @deprecated Use {@link #getAssMargin()} instead.
+	 */
+	@Deprecated
+	public String getMencoderAssMargin() {
+		return getAssMargin();
+	}
+
+	/**
 	 * Returns the margin used for ASS subtitling. Default value is 10.
 	 * @return The ASS margin.
 	 */
-	public String getMencoderAssMargin() {
-		return getString(KEY_MENCODER_ASS_MARGIN, "10");
+	public String getAssMargin() {
+		return getString(KEY_ASS_MARGIN, "10");
+	}
+
+	/**
+	 * @deprecated Use {@link #getAssOutline()} instead.
+	 */
+	@Deprecated
+	public String getMencoderAssOutline() {
+		return getAssOutline();
 	}
 
 	/**
 	 * Returns the outline parameter used for ASS subtitling. Default value is 1.
 	 * @return The ASS outline parameter.
 	 */
-	public String getMencoderAssOutline() {
-		return getString(KEY_MENCODER_ASS_OUTLINE, "1");
+	public String getAssOutline() {
+		return getString(KEY_ASS_OUTLINE, "1");
+	}
+
+	/**
+	 * @deprecated Use {@link #getAssShadow()} instead.
+	 */
+	@Deprecated
+	public String getMencoderAssShadow() {
+		return getAssShadow();
 	}
 
 	/**
 	 * Returns the shadow parameter used for ASS subtitling. Default value is 1.
 	 * @return The ASS shadow parameter.
 	 */
-	public String getMencoderAssShadow() {
-		return getString(KEY_MENCODER_ASS_SHADOW, "1");
+	public String getAssShadow() {
+		return getString(KEY_ASS_SHADOW, "1");
 	}
 
 	/**
@@ -797,7 +824,7 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Some versions of mencoder produce garbled audio because the "ac3" codec is used
+	 * Some versions of MEncoder produce garbled audio because the "ac3" codec is used
 	 * instead of the "ac3_fixed" codec.
 	 * See https://code.google.com/p/ps3mediaserver/issues/detail?id=1092#c1
 	 * @param value Set to true if "ac3_fixed" should be used.
@@ -807,35 +834,67 @@ public class PmsConfiguration {
 	}
 
 	/**
+	 * @deprecated Use {@link #setAssMargin(String value)} instead.
+	 */
+	@Deprecated
+	public void setMencoderAssMargin(String value) {
+		setAssMargin(value);
+	}
+
+	/**
 	 * Set the margin used for ASS subtitling.
 	 * @param value The ASS margin value to set.
 	 */
-	public void setMencoderAssMargin(String value) {
-		configuration.setProperty(KEY_MENCODER_ASS_MARGIN, value);
+	public void setAssMargin(String value) {
+		configuration.setProperty(KEY_ASS_MARGIN, value);
+	}
+
+	/**
+	 * @deprecated Use {@link #getAssOutline()} instead.
+	 */
+	@Deprecated
+	public void setMencoderAssOutline(String value) {
+		setAssOutline(value);
 	}
 
 	/**
 	 * Set the outline parameter used for ASS subtitling.
 	 * @param value The ASS outline parameter value to set.
 	 */
-	public void setMencoderAssOutline(String value) {
-		configuration.setProperty(KEY_MENCODER_ASS_OUTLINE, value);
+	public void setAssOutline(String value) {
+		configuration.setProperty(KEY_ASS_OUTLINE, value);
+	}
+
+	/**
+	 * @deprecated Use {@link #getAssShadow()} instead.
+	 */
+	@Deprecated
+	public void setMencoderAssShadow(String value) {
+		setAssShadow(value);
 	}
 
 	/**
 	 * Set the shadow parameter used for ASS subtitling.
 	 * @param value The ASS shadow parameter value to set.
 	 */
-	public void setMencoderAssShadow(String value) {
-		configuration.setProperty(KEY_MENCODER_ASS_SHADOW, value);
+	public void setAssShadow(String value) {
+		configuration.setProperty(KEY_ASS_SHADOW, value);
+	}
+
+	/**
+	 * @deprecated Use {@link #setAssScale(String value)} instead.
+	 */
+	@Deprecated
+	public void setMencoderAssScale(String value) {
+		setAssScale(value);
 	}
 
 	/**
 	 * Set the font scale used for ASS subtitling.
 	 * @param value The ASS font scale value to set.
 	 */
-	public void setMencoderAssScale(String value) {
-		configuration.setProperty(KEY_MENCODER_ASS_SCALE, value);
+	public void setAssScale(String value) {
+		configuration.setProperty(KEY_ASS_SCALE, value);
 	}
 
 	/**
@@ -863,7 +922,7 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Set the maximum number of concurrent mencoder threads.
+	 * Set the maximum number of concurrent MEncoder threads.
 	 * XXX Currently unused.
 	 * @param value The maximum number of concurrent threads.
 	 */
@@ -901,57 +960,67 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Older versions of mencoder do not support ASS/SSA subtitles on all
-	 * platforms. Returns true if mencoder supports them. Default is true
-	 * on Windows and OS X, false otherwise.
-	 * See https://code.google.com/p/ps3mediaserver/issues/detail?id=1097
-	 * @return True if mencoder supports ASS/SSA subtitles.
+	 * Returns whether the user wants ASS/SSA subtitle support. Default is
+	 * true.
+	 *
+	 * @return True if MEncoder should use ASS/SSA support.
 	 */
 	public boolean isMencoderAss() {
-		return getBoolean(KEY_MENCODER_ASS, Platform.isWindows() || Platform.isMac());
+		return getBoolean(KEY_MENCODER_ASS, true);
 	}
 	
 	/**
 	 * @deprecated Use {@link #isDisableSubtitles()} instead.
 	 */
-	 public boolean isMencoderDisableSubs() {
-		 return isDisableSubtitles();
-	 }
-	 
-		
-	 /**
-	  * Returns whether or not subtitles should be disabled for all
-	  * transcoding engines. Default is false, meaning subtitles should not
-	  * be disabled.
-	  * @return True if subtitles should be disabled, false otherwise.
-	  */
-	 public boolean isDisableSubtitles() {
-		 return getBoolean(KEY_DISABLE_SUBTITLES, false);
-	 }
-	 
-	 /**
-	  * @deprecated Use {@link #setDisableSubtitles(boolean)} instead.
-	  */
-	 public void setMencoderDisableSubs(boolean value) {
-		 setDisableSubtitles(value);
-	 }
+	@Deprecated
+ 	public boolean isMencoderDisableSubs() {
+		return isDisableSubtitles();
+ 	}
 
-	 /**
-	  * Set whether or not subtitles should be disabled for
-	  * all transcoding engines.
-	  * @param value Set to true if subtitles should be disabled.
-	  */
-	 public void setDisableSubtitles(boolean value) {
-		 configuration.setProperty(KEY_DISABLE_SUBTITLES, value);
-	 }
+	/**
+	 * Returns whether or not subtitles should be disabled for all
+	 * transcoding engines. Default is false, meaning subtitles should not
+	 * be disabled.
+	 *
+	 * @return True if subtitles should be disabled, false otherwise.
+	 */
+	public boolean isDisableSubtitles() {
+		return getBoolean(KEY_DISABLE_SUBTITLES, false);
+	}
+
+	/**
+	 * @deprecated Use {@link #setDisableSubtitles(boolean)} instead.
+	 */
+	@Deprecated
+	public void setMencoderDisableSubs(boolean value) {
+		setDisableSubtitles(value);
+	}
+
+	/**
+	 * Set whether or not subtitles should be disabled for
+	 * all transcoding engines.
+	 *
+	 * @param value Set to true if subtitles should be disabled.
+	 */
+	public void setDisableSubtitles(boolean value) {
+		configuration.setProperty(KEY_DISABLE_SUBTITLES, value);
+	}
+
+	/**
+	 * @deprecated Use {@link #isUsePCM()} instead.
+	 */
+	@Deprecated
+	public boolean isMencoderUsePcm() {
+		return isUsePCM();
+	}
 
 	/**
 	 * Returns whether or not the Pulse Code Modulation audio format should be
-	 * forced when using MEncoder as transcoding engine. The default is false.
+	 * forced. The default is false.
 	 * @return True if PCM should be forced, false otherwise.
 	 */
-	public boolean isMencoderUsePcm() {
-		return getBoolean(KEY_MENCODER_USE_PCM, false);
+	public boolean isUsePCM() {
+		return getBoolean(KEY_USE_PCM, false);
 	}
 
 	/**
@@ -983,16 +1052,17 @@ public class PmsConfiguration {
 	/**
 	 * @deprecated Use {@link #getAudioLanguages()} instead.
 	 */
+	@Deprecated
 	public String getMencoderAudioLanguages() {
 		return getAudioLanguages();
 	}
 
 	/**
 	 * Returns the audio language priority as a comma separated
-	 * string. For example: <code>"eng,fre,jpn,ger,und"</code>, where "und"
+	 * string. For example: <code>"loc,eng,fre,jpn,ger,und"</code>, where "und"
 	 * stands for "undefined".
 	 * Can be a blank string.
-	 * Default value is locale-specific.
+	 * Default value is "loc,eng,fre,jpn,ger,und".
 	 *
 	 * @return The audio language priority string.
 	 */
@@ -1003,16 +1073,17 @@ public class PmsConfiguration {
 	/**
 	 * @deprecated Use {@link #getSubtitlesLanguages()} instead.
 	 */
+	@Deprecated
 	public String getMencoderSubLanguages() {
 		return getSubtitlesLanguages();
 	}
 
 	/**
-	 * Returns the subtitle language priority as a comma separated
-	 * string. For example: <code>"loc,eng,fre,jpn,ger,und"</code>, where "loc"
-	 * stands for the preferred local language and "und" stands for "undefined".
+	 * Returns the subtitle language priority as a comma-separated
+	 * string. For example: <code>"loc,eng,fre,jpn,ger,und"</code>, where "und"
+	 * stands for "undefined".
 	 * Can be a blank string.
-	 * Default value is locale-specific.
+	 * Default value is a localized list (e.g. "loc,eng,fre,jpn,ger,und").
 	 *
 	 * @return The subtitle language priority string.
 	 */
@@ -1023,6 +1094,7 @@ public class PmsConfiguration {
 	/**
 	 * @deprecated Use {@link #getForcedSubtitleLanguage()} instead.
 	 */
+	@Deprecated
 	public String getMencoderForcedSubLanguage() {
 		return getForcedSubtitleLanguage();
 	}
@@ -1040,6 +1112,7 @@ public class PmsConfiguration {
 	/**
 	 * @deprecated Use {@link #getForcedSubtitleTags()} instead.
 	 */
+	@Deprecated
 	public String getMencoderForcedSubTags() {
   		return getForcedSubtitleTags();
   	}
@@ -1054,20 +1127,27 @@ public class PmsConfiguration {
   	}
 	
 	/**
+	 * @deprecated Use {@link #getAudioSubLanguages()} instead.
+	 */
+	@Deprecated
+	public String getMencoderAudioSubLanguages() {
+		return getAudioSubLanguages();
+	}
+
+	/**
 	 * Returns a string of audio language and subtitle language pairs
-	 * ordered by priority for MEncoder to try to match. Audio language
+	 * ordered by priority to try to match. Audio language
 	 * and subtitle language should be comma separated as a pair,
 	 * individual pairs should be semicolon separated. "*" can be used to
 	 * match any language. Subtitle language can be defined as "off".
-	 * Can be a blank string.
-	 * Default value is locale-specific, but is usually <code>"*,*"</code>.
+	 * Default value is <code>"*,*"</code>.
 	 *
 	 * @return The audio and subtitle languages priority string.
 	 */
-	public String getMencoderAudioSubLanguages() {
+	public String getAudioSubLanguages() {
 		return ConfigurationUtil.getPossiblyBlankConfigurationString(
 			configuration,
-			KEY_MENCODER_AUDIO_SUB_LANGS,
+			KEY_AUDIO_SUB_LANGS,
 			Messages.getString("MEncoderVideo.128")
 		);
 	}
@@ -1113,7 +1193,7 @@ public class PmsConfiguration {
 	 * Set to true if MEncoder should be forced to use the framerate that is
 	 * parsed by FFmpeg.
 	 * @param value Set to true if the framerate should be forced, false
-	 * 			otherwise.
+	 *              otherwise.
 	 */
 	public void setMencoderForceFps(boolean value) {
 		configuration.setProperty(KEY_MENCODER_FORCE_FPS, value);
@@ -1131,12 +1211,13 @@ public class PmsConfiguration {
 	/**
 	 * @deprecated Use {@link #setAudioLanguages(String)} instead.
 	 */
+	@Deprecated
 	public void setMencoderAudioLanguages(String value) {
 		setAudioLanguages(value);
 	}
 
 	/**
-	 * Sets the audio language priority for MEncoder as a comma separated
+	 * Sets the audio language priority as a comma separated
 	 * string. For example: <code>"eng,fre,jpn,ger,und"</code>, where "und"
 	 * stands for "undefined".
 	 * @param value The audio language priority string.
@@ -1148,6 +1229,7 @@ public class PmsConfiguration {
 	/**
 	 * @deprecated Use {@link #setSubtitlesLanguages(String)} instead.
 	 */
+	@Deprecated
 	public void setMencoderSubLanguages(String value) {
 		setSubtitlesLanguages(value);
 	}
@@ -1165,6 +1247,7 @@ public class PmsConfiguration {
 	/**
 	 * @deprecated Use {@link #setForcedSubtitleLanguage(String)} instead.
 	 */
+	@Deprecated
 	public void setMencoderForcedSubLanguage(String value) {
 		setForcedSubtitleLanguage(value);
 	}
@@ -1195,16 +1278,24 @@ public class PmsConfiguration {
 	}
 	
 	/**
+	 * @deprecated Use {@link #setAudioSubLanguages(String value)} instead.
+	 */
+	@Deprecated
+	public void setMencoderAudioSubLanguages(String value) {
+		setAudioSubLanguages(value);
+	}
+
+	/**
 	 * Sets a string of audio language and subtitle language pairs
-	 * ordered by priority for MEncoder to try to match. Audio language
+	 * ordered by priority to try to match. Audio language
 	 * and subtitle language should be comma separated as a pair,
 	 * individual pairs should be semicolon separated. "*" can be used to
 	 * match any language. Subtitle language can be defined as "off". For
 	 * example: <code>"en,off;jpn,eng;*,eng;*;*"</code>.
 	 * @param value The audio and subtitle languages priority string.
 	 */
-	public void setMencoderAudioSubLanguages(String value) {
-		configuration.setProperty(KEY_MENCODER_AUDIO_SUB_LANGS, value);
+	public void setAudioSubLanguages(String value) {
+		configuration.setProperty(KEY_AUDIO_SUB_LANGS, value);
 	}
 
 	/**
@@ -1289,11 +1380,11 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Older versions of mencoder do not support ASS/SSA subtitles on all
-	 * platforms. Set to true if mencoder supports them. Default should be
+	 * Older versions of MEncoder do not support ASS/SSA subtitles on all
+	 * platforms. Set to true if MEncoder supports them. Default should be
 	 * true on Windows and OS X, false otherwise.
 	 * See https://code.google.com/p/ps3mediaserver/issues/detail?id=1097
-	 * @param value Set to true if mencoder supports ASS/SSA subtitles.
+	 * @param value Set to true if MEncoder supports ASS/SSA subtitles.
 	 */
 	public void setMencoderAss(boolean value) {
 		configuration.setProperty(KEY_MENCODER_ASS, value);
@@ -1309,12 +1400,20 @@ public class PmsConfiguration {
 	}
 
 	/**
+	 * @deprecated Use {@link #setUsePCM(boolean value)} instead.
+	 */
+	@Deprecated
+	public void setMencoderUsePcm(boolean value) {
+		setUsePCM(value);
+	}
+
+	/**
 	 * Sets whether or not the Pulse Code Modulation audio format should be
-	 * forced when using MEncoder as transcoding engine.
+	 * forced.
 	 * @param value Set to true if PCM should be forced.
 	 */
-	public void setMencoderUsePcm(boolean value) {
-		configuration.setProperty(KEY_MENCODER_USE_PCM, value);
+	public void setUsePCM(boolean value) {
+		configuration.setProperty(KEY_USE_PCM, value);
 	}
 
 	/**
@@ -1459,13 +1558,16 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * Returns the maximum video bitrate to be used by MEncoder. The default
-	 * value is 110.
+	 * Returns the maximum video bitrate to be used by MEncoder and FFmpeg.
 	 *
 	 * @return The maximum video bitrate.
 	 */
 	public String getMaximumBitrate() {
-		return getString(KEY_MAX_BITRATE, "110");
+		String maximumBitrate = getString(KEY_MAX_BITRATE, "110");
+		if ("0".equals(maximumBitrate)) {
+			maximumBitrate = "1000";
+		}
+		return maximumBitrate;
 	}
 
 	/**
@@ -1479,13 +1581,6 @@ public class PmsConfiguration {
 
 	/**
 	 * @deprecated Use {@link #isThumbnailGenerationEnabled()} instead.
-	 * <p>
-	 * Returns true if thumbnail generation is enabled, false otherwise.
-	 * This only determines whether a thumbnailer (e.g. dcraw, MPlayer)
-	 * is used to generate thumbnails. It does not reflect whether
-	 * thumbnails should be displayed or not.
-	 *
-	 * @return boolean indicating whether thumbnail generation is enabled.
 	 */
 	@Deprecated
 	public boolean getThumbnailsEnabled() {
@@ -1503,7 +1598,7 @@ public class PmsConfiguration {
 
 	/**
 	 * @deprecated Use {@link #setThumbnailGenerationEnabled(boolean)} instead.
-	 * <p>
+	 *
 	 * Sets the thumbnail generation option.
 	 * This only determines whether a thumbnailer (e.g. dcraw, MPlayer)
 	 * is used to generate thumbnails. It does not reflect whether
@@ -1769,6 +1864,44 @@ public class PmsConfiguration {
 		return bufferType.equals(BUFFER_TYPE_FILE);
 	}
 
+	@Deprecated
+	public String getFfmpegSettings() {
+		return getMPEG2MainSettingsFFmpeg();
+	}
+
+	/**
+	 * Converts the getMPEG2MainSettings() from MEncoder's format to FFmpeg's.
+	 *
+	 * @return MPEG-2 settings formatted for FFmpeg.
+	 */
+	public String getMPEG2MainSettingsFFmpeg() {
+		String mpegSettings = getMPEG2MainSettings();
+
+		if (mpegSettings.contains("Automatic")) {
+			return mpegSettings;
+		}
+
+		String mpegSettingsArray[] = mpegSettings.split(":");
+
+		String pairArray[];
+		String returnString = "";
+		for (String pair : mpegSettingsArray) {
+			pairArray = pair.split("=");
+
+			if ("keyint".equals(pairArray[0])) {
+				returnString += "-g " + pairArray[1] + " ";
+			} else if ("vqscale".equals(pairArray[0])) {
+				returnString += "-q:v " + pairArray[1] + " ";
+			} else if ("vqmin".equals(pairArray[0])) {
+				returnString += "-qmin " + pairArray[1] + " ";
+			} else if ("vqmax".equals(pairArray[0])) {
+				returnString += "-qmax " + pairArray[1] + " ";
+			}
+		}
+
+		return returnString;
+	}
+
 	public void setFfmpegMultithreading(boolean value) {
 		configuration.setProperty(KEY_FFMPEG_MULTITHREADING, value);
 	}
@@ -1849,12 +1982,28 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_SKIP_LOOP_FILTER_ENABLED, value);
 	}
 
+	/**
+	 * @deprecated Use {@link #getMPEG2MainSettings()} instead.
+	 */
+	@Deprecated
 	public String getMencoderMainSettings() {
-		return getString(KEY_MENCODER_MAIN_SETTINGS, "keyint=5:vqscale=1:vqmin=2");
+		return getMPEG2MainSettings();
 	}
 
+	public String getMPEG2MainSettings() {
+		return getString(KEY_MPEG2_MAIN_SETTINGS, "Automatic (Wired)");
+	}
+
+	/**
+	 * @deprecated Use {@link #setMPEG2MainSettings(String)} instead.
+	 */
+	@Deprecated
 	public void setMencoderMainSettings(String value) {
-		configuration.setProperty(KEY_MENCODER_MAIN_SETTINGS, value);
+		setMPEG2MainSettings(value);
+	}
+
+	public void setMPEG2MainSettings(String value) {
+		configuration.setProperty(KEY_MPEG2_MAIN_SETTINGS, value);
 	}
 
 	public String getMencoderVobsubSubtitleQuality() {
@@ -1873,7 +2022,6 @@ public class PmsConfiguration {
 		if (value.trim().length() == 0) {
 			value = "0";
 		}
-
 		configuration.setProperty(KEY_MENCODER_OVERSCAN_COMPENSATION_WIDTH, value);
 	}
 
@@ -1885,7 +2033,6 @@ public class PmsConfiguration {
 		if (value.trim().length() == 0) {
 			value = "0";
 		}
-
 		configuration.setProperty(KEY_MENCODER_OVERSCAN_COMPENSATION_HEIGHT, value);
 	}
 
@@ -1894,8 +2041,7 @@ public class PmsConfiguration {
 	}
 
 	public List<String> getEnginesAsList(SystemUtils registry) {
-		String defaultEngines = StringUtils.join(
-			new String[] {
+		final String defaultEngines = join(asList(
 				"mencoder",
 				"avsmencoder",
 				"tsmuxer",
@@ -1911,12 +2057,9 @@ public class PmsConfiguration {
 				"mplayerwebaudio",
 				"vlcaudio",
 				"ffmpegdvrmsremux",
-				"rawthumbs"
-			},
-			","
-		);
+				"rawthumbs"), LIST_SEPARATOR);
 
-		List<String> engines = stringToList(
+		final List<String> engines = stringToList(
 			// possibly blank: an empty string means: disable all engines
 			// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=15416
 			ConfigurationUtil.getPossiblyBlankConfigurationString(
@@ -1926,38 +2069,15 @@ public class PmsConfiguration {
 			)
 		);
 
-		engines = hackAvs(registry, engines);
 		return engines;
 	}
 
 	private static String listToString(List<String> enginesAsList) {
-		return StringUtils.join(enginesAsList, LIST_SEPARATOR);
+		return join(enginesAsList, LIST_SEPARATOR);
 	}
 
 	private static List<String> stringToList(String input) {
-		List<String> output = new ArrayList<String>();
-		Collections.addAll(output, StringUtils.split(input, LIST_SEPARATOR));
-		return output;
-	}
-
-	// TODO: Get this out of here
-	private static List<String> hackAvs(SystemUtils registry, List<String> input) {
-		List<String> toBeRemoved = new ArrayList<String>();
-		for (String engineId : input) {
-			if (engineId.startsWith("avs") && !registry.isAvis() && Platform.isWindows()) {
-				if (!avsHackLogged) {
-					LOGGER.info("AviSynth is not installed. You cannot use " + engineId + " as a transcoding engine.");
-					avsHackLogged = true;
-				}
-
-				toBeRemoved.add(engineId);
-			}
-		}
-
-		List<String> output = new ArrayList<String>();
-		output.addAll(input);
-		output.removeAll(toBeRemoved);
-		return output;
+		return new ArrayList<String>(asList(split(input, LIST_SEPARATOR)));
 	}
 
 	public void save() throws ConfigurationException {
@@ -2331,7 +2451,7 @@ public class PmsConfiguration {
 	 * renderer when no match can be made.
 	 *
 	 * @return The name of the renderer PMS should fall back on when header
-	 * 			matching fails.
+	 *         matching fails.
 	 * @see #isRendererForceDefault()
 	 */
 	public String getRendererDefault() {
@@ -2345,8 +2465,8 @@ public class PmsConfiguration {
 	 * match can be made.
 	 *
 	 * @param value The name of the renderer to fall back on. This has to be
-	 * 				<code>""</code> or a case insensitive match with the name
-	 * 				used in any render configuration file.
+	 *              <code>""</code> or a case insensitive match with the name
+	 *              used in any render configuration file.
 	 * @see #setRendererForceDefault(boolean)
 	 */
 	public void setRendererDefault(String value) {
@@ -2371,8 +2491,7 @@ public class PmsConfiguration {
 	 * and instead force picking the defined fallback renderer. Set to false
 	 * to make PMS attempt to recognize connecting renderers by their headers.
 	 *
-	 * @param value Set to true when the fallback renderer should always be
-	 *				picked.
+	 * @param value True when the fallback renderer should always be picked.
 	 * @see #setRendererDefault(String)
 	 */
 	public void setRendererForceDefault(boolean value) {
@@ -2470,24 +2589,25 @@ public class PmsConfiguration {
 	public boolean isVlcExperimentalCodecs() {
 		return getBoolean(KEY_VLC_USE_EXPERIMENTAL_CODECS, false);
 	}
-	public void setVlcExperimentalCodecs(boolean b) {
-		configuration.setProperty(KEY_VLC_USE_EXPERIMENTAL_CODECS, b);
+
+	public void setVlcExperimentalCodecs(boolean value) {
+		configuration.setProperty(KEY_VLC_USE_EXPERIMENTAL_CODECS, value);
 	}
 
 	public boolean isVlcAudioSyncEnabled() {
 		return getBoolean(KEY_VLC_AUDIO_SYNC_ENABLED, false);
 	}
 
-	public void setVlcAudioSyncEnabled(boolean b) {
-		configuration.setProperty(KEY_VLC_AUDIO_SYNC_ENABLED, b);
+	public void setVlcAudioSyncEnabled(boolean value) {
+		configuration.setProperty(KEY_VLC_AUDIO_SYNC_ENABLED, value);
 	}
 
 	public boolean isVlcSubtitleEnabled() {
 		return getBoolean(KEY_VLC_SUBTITLE_ENABLED, true);
 	}
 
-	public void setVlcSubtitleEnabled(boolean b) {
-		configuration.setProperty(KEY_VLC_SUBTITLE_ENABLED, b);
+	public void setVlcSubtitleEnabled(boolean value) {
+		configuration.setProperty(KEY_VLC_SUBTITLE_ENABLED, value);
 	}
 
 	public String getVlcScale() {

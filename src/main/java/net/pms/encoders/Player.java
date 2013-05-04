@@ -244,7 +244,7 @@ public abstract class Player {
 			return;
 		}
 
-		StringTokenizer st1 = new StringTokenizer(configuration.getMencoderAudioSubLanguages(), ";");
+		StringTokenizer st1 = new StringTokenizer(configuration.getAudioSubLanguages(), ";");
 
 		while (st1.hasMoreTokens()) {
 			String pair = st1.nextToken();
@@ -277,7 +277,7 @@ public abstract class Player {
 		}
 
 		if (matchedSub != null && params.sid == null) {
-			if (configuration.isMencoderDisableSubs() || (matchedSub.getLang() != null && matchedSub.getLang().equals("off"))) {
+			if (configuration.isDisableSubtitles() || (matchedSub.getLang() != null && matchedSub.getLang().equals("off"))) {
 				logger.trace(" Disabled the subtitles: " + matchedSub);
 			} else {
 				params.sid = matchedSub;
