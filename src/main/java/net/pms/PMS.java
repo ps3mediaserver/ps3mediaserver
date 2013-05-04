@@ -987,20 +987,18 @@ public class PMS {
 	 *
 	 * @return true if server is running in headless (console) mode, false otherwise
 	 */
-	public static boolean isHeadless() {
-		synchronized (isHeadless) {
-			if (isHeadless == null) {
-				try {
-					javax.swing.JDialog d = new javax.swing.JDialog();
-					d.dispose();
-					isHeadless = false;
-				} catch (Throwable throwable) {
-					isHeadless = true;
-				}
+	public static synchronized boolean isHeadless() {
+		if (isHeadless == null) {
+			try {
+				javax.swing.JDialog d = new javax.swing.JDialog();
+				d.dispose();
+				isHeadless = false;
+			} catch (Throwable throwable) {
+				isHeadless = true;
 			}
-
-			return isHeadless;
 		}
+
+		return isHeadless;
 	}
 
 	/**
