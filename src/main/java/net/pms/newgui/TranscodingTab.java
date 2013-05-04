@@ -845,7 +845,7 @@ public class TranscodingTab {
 		builder.add(fontselect, FormLayoutUtil.flip(cc.xyw(11, 10, 2), colSpec, orientation));
 
 		builder.addLabel(Messages.getString("MEncoderVideo.12"), FormLayoutUtil.flip(cc.xy(1, 12), colSpec, orientation));
-		builder.addLabel(Messages.getString("MEncoderVideo.133"), FormLayoutUtil.flip(cc.xy(1, 12, CellConstraints.RIGHT, CellConstraints.CENTER), colSpec, orientation));
+		builder.addLabel(Messages.getString("MEncoderVideo.133"), FormLayoutUtil.flip(cc.xy(1, 14), colSpec, orientation));
 		ass_scale = new JTextField(configuration.getAssScale());
 		ass_scale.addKeyListener(new KeyAdapter() {
 			@Override
@@ -897,7 +897,7 @@ public class TranscodingTab {
 				configuration.setAutoloadSubtitles((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
-		builder.add(subs, FormLayoutUtil.flip(cc.xyw(1, 14, 13), colSpec, orientation));
+		builder.add(subs, FormLayoutUtil.flip(cc.xyw(1, 16, 13), colSpec, orientation));
 
 		subColor = new JButton();
 		subColor.setText(Messages.getString("MEncoderVideo.31"));
@@ -917,7 +917,7 @@ public class TranscodingTab {
 				}
 			}
 		});
-		builder.add(subColor, FormLayoutUtil.flip(cc.xyw(13, 14, 3), colSpec, orientation));
+		builder.add(subColor, FormLayoutUtil.flip(cc.xyw(13, 16, 3), colSpec, orientation));
 
 		final JPanel panel = builder.getPanel();
 		
