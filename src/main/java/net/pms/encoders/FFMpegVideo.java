@@ -141,11 +141,13 @@ public class FFMpegVideo extends Player {
 						s.append("/");
 						break;
 					case ']':
+						s.append("\\]");
+						break;
 					case '[':
-						s.append("\\");
+						s.append("\\[");
+						break;
 					default:
 						s.append(ch);
-						break;
 				}
 			}
 
@@ -1138,7 +1140,7 @@ public class FFMpegVideo extends Player {
 			subtitlesDirectory.mkdirs();
 		}
 
-		String convertedSubsPath = subtitlesDirectory.getAbsolutePath() + File.separator + FilenameUtils.getBaseName(new File(fileName).getName()) + "_" + new File(fileName).lastModified();
+		String convertedSubsPath = subtitlesDirectory.getAbsolutePath() + File.separator + FilenameUtils.getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" + new File(fileName).lastModified();
 
 		if (params.sid.isEmbedded()) {
 			convertedSubsPath = convertedSubsPath + "_EMB_ID" + params.sid.getId() + ".ass";
@@ -1221,11 +1223,11 @@ public class FFMpegVideo extends Player {
 
 		if (params.sid.isEmbedded()) {
 			tempSubsFile = new File(subtitlesDirectory.getAbsolutePath() + File.separator +
-					FilenameUtils.getBaseName(new File(fileName).getName()) + "_" +
+					FilenameUtils.getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" +
 					new File(fileName).lastModified() + "_EMB_ID" + params.sid.getId() + ".ass");
 		} else {
 			tempSubsFile = new File(subtitlesDirectory.getAbsolutePath() + File.separator +
-					FilenameUtils.getBaseName(new File(fileName).getName()) + "_" +
+					FilenameUtils.getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" +
 					new File(fileName).lastModified() + "_EXT.ass");
 		}
 
