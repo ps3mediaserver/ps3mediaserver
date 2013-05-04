@@ -32,7 +32,6 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
 import net.pms.util.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.IImageMetadata;
@@ -55,8 +54,7 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
-import static org.apache.commons.lang3.StringUtils.contains;
-import static org.apache.commons.lang3.StringUtils.startsWith;
+import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * This class keeps track of media file metadata scanned by the MediaInfo library.
@@ -393,7 +391,7 @@ public class DLNAMediaInfo implements Cloneable {
 		args[0] = getFfmpegPath();
 		boolean dvrms = media.getFile() != null && media.getFile().getAbsolutePath().toLowerCase().endsWith("dvr-ms");
 
-		if (dvrms && StringUtils.isNotBlank(configuration.getFfmpegAlternativePath())) {
+		if (dvrms && isNotBlank(configuration.getFfmpegAlternativePath())) {
 			args[0] = configuration.getFfmpegAlternativePath();
 		}
 
@@ -1642,6 +1640,16 @@ public class DLNAMediaInfo implements Cloneable {
 	 */
 	public void setAspectRatioVideoTrack(String aspect) {
 		this.aspectRatioVideoTrack = aspect;
+	}
+
+
+	/**
+	 * Check if media has different Aspect Ratios for container and video track.
+	 *
+	 * @return true if container's AR is set and differs from video AR, false otherwise.
+	 */
+	public boolean isAspectRatioMismatch() {
+		return isNotBlank(getAspectRatioContainer()) && !equalsIgnoreCase(getAspectRatioContainer(), getAspectRatioVideoTrack());
 	}
 
 	/**

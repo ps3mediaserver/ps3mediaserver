@@ -293,6 +293,15 @@ public class FFMpegVideo extends Player {
 				transcodeOptions.add("h264_mp4toannexb");
 				transcodeOptions.add("-fflags");
 				transcodeOptions.add("+genpts");
+				// Set correct container Aspect Ratio if remuxed video track has different AR
+				// TODO does not work with ffmpeg 1.2
+				// https://ffmpeg.org/trac/ffmpeg/ticket/2046
+				// possible solution http://forum.doom9.org/showthread.php?t=152419
+				//
+				// if (media.isAspectRatioMismatch()) {
+				//	transcodeOptions.add("-aspect");
+				//	transcodeOptions.add(media.getAspectRatioContainer());
+				// }
 
 				videoRemux = true;
 			} else if (renderer.isTranscodeToH264TSAC3()) {
