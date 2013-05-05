@@ -1140,19 +1140,19 @@ public class FFMpegVideo extends Player {
 			subtitlesDirectory.mkdirs();
 		}
 
-		String convertedSubsPath = subtitlesDirectory.getAbsolutePath() + File.separator + FilenameUtils.getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" + new File(fileName).lastModified();
+		String convertedSubsPath = subtitlesDirectory.getAbsolutePath();
 
 		if (params.sid.isEmbedded()) {
-			convertedSubsPath = convertedSubsPath + "_EMB_ID" + params.sid.getId() + ".ass";
+			convertedSubsPath = convertedSubsPath + File.separator + FilenameUtils.getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" + new File(fileName).length() + "_EMB_ID" + params.sid.getId() + ".ass";
 			if (new File(convertedSubsPath).canRead()) {
 				tempSubs = new File(convertedSubsPath);
 			} else {
 				tempSubs = extractOrConvertSubtitlesTrackToAssFile(fileName, media, params);
 			}
 		} else if (params.sid.isExternal()) { // Convert external subs to ASS format
-			convertedSubsPath = convertedSubsPath + "_EXT.ass";
+			convertedSubsPath = convertedSubsPath + File.separator + FilenameUtils.getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" + params.sid.getExternalFile().length() + "_EXT.ass";
 			File tmp = new File(convertedSubsPath);
-			if (tmp.canRead() && (tmp.lastModified() > params.sid.getExternalFile().lastModified())) {
+			if (tmp.canRead()) {
 				tempSubs = tmp;
 			} else {
 				String externalSubtitlesFileName;
@@ -1224,11 +1224,11 @@ public class FFMpegVideo extends Player {
 		if (params.sid.isEmbedded()) {
 			tempSubsFile = new File(subtitlesDirectory.getAbsolutePath() + File.separator +
 					FilenameUtils.getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" +
-					new File(fileName).lastModified() + "_EMB_ID" + params.sid.getId() + ".ass");
+					new File(fileName).length() + "_EMB_ID" + params.sid.getId() + ".ass");
 		} else {
 			tempSubsFile = new File(subtitlesDirectory.getAbsolutePath() + File.separator +
 					FilenameUtils.getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" +
-					new File(fileName).lastModified() + "_EXT.ass");
+					new File(fileName).length() + "_EXT.ass");
 		}
 
 		cmdList.add(tempSubsFile.getAbsolutePath());
