@@ -2276,7 +2276,7 @@ public class PmsConfiguration {
 	}
 
 	public boolean isFFmpegMuxWhenCompatible() {
-		return getBoolean(KEY_FFMPEG_MUX_COMPATIBLE, false);
+		return getBoolean(KEY_FFMPEG_MUX_COMPATIBLE, true);
 	}
 
 	public void setFFmpegFontConfig(boolean value) {
