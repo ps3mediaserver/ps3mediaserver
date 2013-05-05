@@ -91,7 +91,6 @@ public class FFMpegVideo extends Player {
 
 	private JCheckBox multiThreadingCheckBox;
 	private JCheckBox videoRemuxCheckBox;
-	private JCheckBox fontConfigCheckBox;
 
 	@Deprecated
 	public FFMpegVideo() {
@@ -1027,17 +1026,6 @@ public class FFMpegVideo extends Player {
 			}
 		});
 		builder.add(videoRemuxCheckBox, cc.xy(2, 5));
-
-		fontConfigCheckBox = new JCheckBox(Messages.getString("MEncoderVideo.21"));
-		fontConfigCheckBox.setContentAreaFilled(false);
-		fontConfigCheckBox.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				configuration.setFFmpegFontConfig(e.getStateChange() == ItemEvent.SELECTED);
-			}
-		});
-		builder.add(fontConfigCheckBox, cc.xy(2, 7));
-		fontConfigCheckBox.setSelected(configuration.isFFmpegFontConfig());
 
 		return builder.getPanel();
 	}

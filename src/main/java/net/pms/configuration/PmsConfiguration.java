@@ -93,7 +93,6 @@ public class PmsConfiguration {
 	private static final String KEY_ENGINES = "engines";
 	private static final String KEY_FFMPEG_ALTERNATIVE_PATH = "alternativeffmpegpath"; // deprecated: FFMpegDVRMSRemux will be removed and DVR-MS will be transcoded
 	private static final String KEY_FFMPEG_MULTITHREADING = "ffmpeg_multithreading";
-	private static final String KEY_FFMPEG_FONT_CONFIG = "ffmpeg_font_config";
 	private static final String KEY_FFMPEG_MUX_COMPATIBLE = "ffmpeg_mux_compatible";
 	private static final String KEY_FIX_25FPS_AV_MISMATCH = "fix_25fps_av_mismatch";
 	private static final String KEY_FONT = "mencoder_font"; // TODO (breaking change): should be renamed to e.g. font
@@ -2277,14 +2276,6 @@ public class PmsConfiguration {
 
 	public boolean isFFmpegMuxWhenCompatible() {
 		return getBoolean(KEY_FFMPEG_MUX_COMPATIBLE, true);
-	}
-
-	public void setFFmpegFontConfig(boolean value) {
-		configuration.setProperty(KEY_FFMPEG_FONT_CONFIG, value);
-	}
-
-	public boolean isFFmpegFontConfig() {
-		return getBoolean(KEY_FFMPEG_FONT_CONFIG, false);
 	}
 
 	public void setMuxAllAudioTracks(boolean value) {
