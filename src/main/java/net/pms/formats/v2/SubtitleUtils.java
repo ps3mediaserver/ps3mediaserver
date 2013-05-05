@@ -22,6 +22,7 @@ import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaSubtitle;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import static org.apache.commons.lang.StringUtils.splitPreserveAllTokens;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.mozilla.universalchardet.Constants.*;
 
@@ -102,7 +104,7 @@ public class SubtitleUtils {
 			throw new NullPointerException("inputSubtitles should not have blank name.");
 		}
 
-		final File convertedSubtitles = new File(configuration.getTempFolder(), inputSubtitles.getName() + System.currentTimeMillis() + ".tmp");
+		final File convertedSubtitles = new File(configuration.getTempFolder(), FilenameUtils.getBaseName(inputSubtitles.getName()) + System.currentTimeMillis() + ".tmp");
 		FileUtils.forceDeleteOnExit(convertedSubtitles);
 		final BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles)));
 		final BufferedWriter output = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(convertedSubtitles)));
@@ -112,7 +114,7 @@ public class SubtitleUtils {
 		try {
 			while ((line = input.readLine()) != null) {
 				if (startsWith(line, "Dialogue:")) {
-					String[] timings = split(line, ",");
+					String[] timings = splitPreserveAllTokens(line, ",");
 					if (timings.length >= 3 && isNotBlank(timings[1]) && isNotBlank(timings[1])) {
 						startTime = convertSubtitleTimingStringToTime(timings[1]);
 						endTime = convertSubtitleTimingStringToTime(timings[2]);
