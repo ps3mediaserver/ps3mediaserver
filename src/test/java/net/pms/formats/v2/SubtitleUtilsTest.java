@@ -153,10 +153,13 @@ public class SubtitleUtilsTest {
 	}
 
 	@Test
-	public void testConvertSubtitleTimingStringToTime_() {
+	public void testConvertSubtitleTimingStringToTime() {
 		assertThat(SubtitleUtils.convertSubtitleTimingStringToTime("1:24:17.10")).isEqualTo(5057.1);
+		assertThat(SubtitleUtils.convertSubtitleTimingStringToTime("1:24:17,10")).isEqualTo(5057.1);
 		assertThat(SubtitleUtils.convertSubtitleTimingStringToTime("01:24:17.056")).isEqualTo(5057.056);
+		assertThat(SubtitleUtils.convertSubtitleTimingStringToTime("01:24:17,056")).isEqualTo(5057.056);
 		assertThat(SubtitleUtils.convertSubtitleTimingStringToTime("-01:24:17.056")).isEqualTo(-5057.056);
+		assertThat(SubtitleUtils.convertSubtitleTimingStringToTime("-01:24:17,056")).isEqualTo(-5057.056);
 		assertThat(SubtitleUtils.convertSubtitleTimingStringToTime("01:24:17")).isEqualTo(5057);
 	}
 

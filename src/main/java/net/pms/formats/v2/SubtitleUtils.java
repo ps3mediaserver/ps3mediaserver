@@ -220,7 +220,7 @@ public class SubtitleUtils {
 		try {
 			int h = Integer.parseInt(st.nextToken());
 			int m = Integer.parseInt(st.nextToken());
-			double s = Double.parseDouble(st.nextToken());
+			double s = Double.parseDouble(replace(st.nextToken(), ",", "."));
 			if (h >= 0) {
 				return h * 3600 + m * 60 + s;
 			} else {
