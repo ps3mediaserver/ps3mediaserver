@@ -1115,7 +1115,9 @@ public class FFMpegVideo extends Player {
 		}
 
 		if (params.sid.isEmbedded()) {
-			// TODO extract track with real file extension (ass or srt)
+			/* TODO disable embedded subtitles extraction because of a) broken track ids b) unacceptable duration of remux
+			   process for large files and/or slow (network) drives
+  			   TODO extract track with real file extension (ass or srt)
 			final String convertedSubsPath = subtitlesDirectory.getAbsolutePath() + File.separator + getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" + new File(fileName).length() + "_EMB_ID" + params.sid.getId() + ".ass";
 			final File tmp = new File(convertedSubsPath);
 
@@ -1124,6 +1126,7 @@ public class FFMpegVideo extends Player {
 			} else {
 				tempSubs = extractEmbeddedSubtitlesTrack(fileName, media, params);
 			}
+			*/
 		} else if (params.sid.isExternal()) {
 			tempSubs = params.sid.getExternalFile();
 		}
@@ -1176,6 +1179,25 @@ public class FFMpegVideo extends Player {
 
 		if (params.sid.isEmbedded()) {
 			cmdList.add("-map");
+			/* TODO broken code. Consider following example file:
+				Stream #0:0(eng): Video: h264 (High), yuv420p, 720x576, SAR 178:139 DAR 445:278, 25 fps, 25 tbr, 1k tbn, 50 tbc (default)
+				Metadata:
+				  title           : H264
+				Stream #0:1(rus): Subtitle: subrip
+				Metadata:
+				  title           : rus
+				Stream #0:2(rus): Audio: mp3, 48000 Hz, stereo, s16p, 128 kb/s
+				Metadata:
+				  title           : rus
+				Stream #0:3(eng): Audio: mp3, 48000 Hz, stereo, s16p, 119 kb/s (default)
+				Metadata:
+				  title           : eng
+				Stream #0:4(eng): Subtitle: subrip (default)
+				Metadata:
+				  title           : eng
+
+				FFMpeg sub track ids would be completely different. We should pass real ids.
+			 */
 			cmdList.add("0:" + (params.sid.getId() + media.getAudioTracksList().size() + 1));
 		}
 

@@ -160,6 +160,8 @@ public class LibMediaInfoParser {
 									if (streamType == MediaInfo.StreamType.Audio) {
 										currentAudioTrack.setId(media.getAudioTracksList().size());
 									} else if (streamType == MediaInfo.StreamType.Text) {
+										// TODO questionable approach. What if audio and sub tracks are mixed?
+										// definitely would not work with ffmpeg
 										currentSubTrack.setId(media.getSubtitleTracksList().size());
 									}
 								}
