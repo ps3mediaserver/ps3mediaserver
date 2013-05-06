@@ -218,11 +218,7 @@ public class FFMpegWebVideo extends FFMpegVideo {
 		cmdList.add("-i");
 		cmdList.add(filename);
 
-		if (tempSubs == null) {
-			cmdList.addAll(getVideoFilterOptions(null, renderer, media));
-		} else {
-			cmdList.addAll(getVideoFilterOptions(tempSubs.getAbsolutePath(), renderer, media));
-		}
+		cmdList.addAll(getVideoFilterOptions(tempSubs, renderer, media));
 
 		// Encoder threads
 		cmdList.add("-threads");

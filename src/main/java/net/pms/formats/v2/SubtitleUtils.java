@@ -22,7 +22,6 @@ import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaSubtitle;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import static org.apache.commons.lang.StringUtils.splitPreserveAllTokens;
+import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.mozilla.universalchardet.Constants.*;
 
@@ -89,47 +88,75 @@ public class SubtitleUtils {
 	}
 
 	/**
-	 * Shift timing of subtitles in SSA/ASS format
+	 * Shift timing of subtitles in SSA/ASS or SRT format
 	 *
-	 * @param inputSubtitles Subtitles file in SSA/ASS format
+	 * @param inputSubtitles Subtitles file in SSA/ASS or SRT format
 	 * @param timeShift  Time stamp value
 	 * @return Converted subtitles file
 	 * @throws IOException
 	 */
-	public static File shiftSubtitlesTiming(final File inputSubtitles, double timeShift) throws IOException {
+	public static File shiftSubtitlesTiming(final File inputSubtitles, double timeShift, SubtitleType subtitleType) throws IOException {
 		if (inputSubtitles == null) {
 			throw new NullPointerException("inputSubtitles should not be null.");
 		}
 		if (isBlank(inputSubtitles.getName())) {
 			throw new NullPointerException("inputSubtitles should not have blank name.");
 		}
+		if (subtitleType == null) {
+			throw new NullPointerException("subtitleType should not be null.");
+		}
+		if (!(timeShift > 0)) {
+			return inputSubtitles; // time shifting is not needed
+		}
 
-		final File convertedSubtitles = new File(configuration.getTempFolder(), FilenameUtils.getBaseName(inputSubtitles.getName()) + System.currentTimeMillis() + ".tmp");
+		final File convertedSubtitles = new File(configuration.getTempFolder(), getBaseName(inputSubtitles.getName()) + System.currentTimeMillis() + ".tmp");
 		FileUtils.forceDeleteOnExit(convertedSubtitles);
 		final BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles)));
 		final BufferedWriter output = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(convertedSubtitles)));
 		String line;
 		double startTime;
 		double endTime;
+
 		try {
-			while ((line = input.readLine()) != null) {
-				if (startsWith(line, "Dialogue:")) {
-					String[] timings = splitPreserveAllTokens(line, ",");
-					if (timings.length >= 3 && isNotBlank(timings[1]) && isNotBlank(timings[1])) {
-						startTime = convertSubtitleTimingStringToTime(timings[1]);
-						endTime = convertSubtitleTimingStringToTime(timings[2]);
-						if (startTime >= timeShift) {
-							timings[1] = convertTimeToSubtitleTimingString(startTime - timeShift, TimingFormat.ASS_TIMING);
-							timings[2] = convertTimeToSubtitleTimingString(endTime - timeShift, TimingFormat.ASS_TIMING);
-							output.write(join(timings, ",") + "\n");
+			if (SubtitleType.ASS.equals(subtitleType)) {
+				while ((line = input.readLine()) != null) {
+					if (startsWith(line, "Dialogue:")) {
+						String[] timings = splitPreserveAllTokens(line, ",");
+						if (timings.length >= 3 && isNotBlank(timings[1]) && isNotBlank(timings[1])) {
+							startTime = convertSubtitleTimingStringToTime(timings[1]);
+							endTime = convertSubtitleTimingStringToTime(timings[2]);
+							if (startTime >= timeShift) {
+								timings[1] = convertTimeToSubtitleTimingString(startTime - timeShift, TimingFormat.ASS_TIMING);
+								timings[2] = convertTimeToSubtitleTimingString(endTime - timeShift, TimingFormat.ASS_TIMING);
+								output.write(join(timings, ",") + "\n");
+							} else {
+								continue;
+							}
 						} else {
-							continue;
+							output.write(line + "\n");
 						}
 					} else {
 						output.write(line + "\n");
 					}
-				} else {
-					output.write(line + "\n");
+				}
+			} else if (SubtitleType.SUBRIP.equals(subtitleType)) {
+				int n = 1;
+				while ((line = input.readLine()) != null) {
+					if (contains(line, ("-->"))) {
+						startTime = convertSubtitleTimingStringToTime(line.substring(0, line.indexOf("-->") - 1));
+						endTime = convertSubtitleTimingStringToTime(line.substring(line.indexOf("-->") + 4));
+						if (startTime >= timeShift) {
+							output.write("" + (n++) + "\n");
+							output.write(convertTimeToSubtitleTimingString(startTime - timeShift, TimingFormat.SRT_TIMING));
+							output.write(" --> ");
+							output.write(convertTimeToSubtitleTimingString(endTime - timeShift, TimingFormat.SRT_TIMING) + "\n");
+
+							while (isNotBlank(line = input.readLine())) { // Read all following subs lines
+								output.write(line + "\n");
+							}
+							output.write("" + "\n");
+						}
+					}
 				}
 			}
 		} finally {
@@ -141,6 +168,7 @@ public class SubtitleUtils {
 				input.close();
 			}
 		}
+
 		return convertedSubtitles;
 	}
 
