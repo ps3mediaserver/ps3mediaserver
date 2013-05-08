@@ -20,12 +20,14 @@ package net.pms.formats.v2;
 
 import ch.qos.logback.classic.LoggerContext;
 import net.pms.dlna.DLNAMediaSubtitle;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 import static net.pms.formats.v2.SubtitleType.VOBSUB;
 import static net.pms.formats.v2.SubtitleUtils.TimingFormat.*;
@@ -171,5 +173,30 @@ public class SubtitleUtilsTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testConvertSubtitleTimingStringToTime_withEmptyTimingString() {
 		SubtitleUtils.convertSubtitleTimingStringToTime("");
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void testShiftSubtitlesTiming_withNullInputSubtitles() throws IOException {
+		SubtitleUtils.shiftSubtitlesTiming(null, 12, SubtitleType.ASS);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testShiftSubtitlesTiming_withBlankInputSubtitlesName() throws IOException {
+		SubtitleUtils.shiftSubtitlesTiming(new File("no-name-file.test") {
+			@Override
+			public String getName() {
+				return "";
+			}
+		}, 12, SubtitleType.ASS);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void testShiftSubtitlesTiming_withNullSubtitleType() throws IOException {
+		SubtitleUtils.shiftSubtitlesTiming(new File("good-file.test"), 12, null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testShiftSubtitlesTiming_withInvalidSubtitleType() throws IOException, ConfigurationException {
+		SubtitleUtils.shiftSubtitlesTiming(new File("good-file.test"), 12, SubtitleType.VOBSUB);
 	}
 }

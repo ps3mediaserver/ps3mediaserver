@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import static java.util.Arrays.asList;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.mozilla.universalchardet.Constants.*;
@@ -100,10 +101,13 @@ public class SubtitleUtils {
 			throw new NullPointerException("inputSubtitles should not be null.");
 		}
 		if (isBlank(inputSubtitles.getName())) {
-			throw new NullPointerException("inputSubtitles should not have blank name.");
+			throw new IllegalArgumentException("inputSubtitles should not have blank name.");
 		}
 		if (subtitleType == null) {
 			throw new NullPointerException("subtitleType should not be null.");
+		}
+		if (!asList(SubtitleType.SUBRIP, SubtitleType.ASS).contains(subtitleType)) {
+			throw new IllegalArgumentException("subtitleType " + subtitleType + " is not supported.");
 		}
 		if (!(timeShift > 0)) {
 			return inputSubtitles; // time shifting is not needed
