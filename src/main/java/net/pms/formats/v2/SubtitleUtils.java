@@ -26,12 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
-import static java.util.Arrays.asList;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.mozilla.universalchardet.Constants.*;
@@ -106,7 +102,7 @@ public class SubtitleUtils {
 		if (subtitleType == null) {
 			throw new NullPointerException("subtitleType should not be null.");
 		}
-		if (!asList(SubtitleType.SUBRIP, SubtitleType.ASS).contains(subtitleType)) {
+		if (!EnumSet.of(SubtitleType.SUBRIP, SubtitleType.ASS).contains(subtitleType)) {
 			throw new IllegalArgumentException("subtitleType " + subtitleType + " is not supported.");
 		}
 		if (!(timeShift > 0)) {
