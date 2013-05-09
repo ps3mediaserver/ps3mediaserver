@@ -248,29 +248,18 @@ public class FFMpegVideo extends Player {
 			transcodeOptions.add("-f");
 			transcodeOptions.add("asf");
 		} else { // MPEGPSAC3, MPEGTSAC3 or H264TSAC3
-			final boolean isTsMuxeRVideoEngineEnabled = configuration.getEnginesAsList(PMS.get().getRegistry()).contains(TSMuxerVideo.ID);
-
-			// Output audio codec
-			dtsRemux = isTsMuxeRVideoEngineEnabled
-						&& configuration.isDTSEmbedInPCM()
-						&& params.aid != null
-						&& params.aid.isDTS()
-						&& renderer.isDTSPlayable();
-
-			if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && renderer.isTranscodeToAC3()) {
+			if (isAc3Remux()) {
 				// AC-3 remux
 				transcodeOptions.add("-c:a");
 				transcodeOptions.add("copy");
+			} else if (isDtsRemux()) {
+				// Audio is added in a separate process later
+				transcodeOptions.add("-an");
+			} else if (type() == Format.AUDIO) {
+				// Skip
 			} else {
-				if (dtsRemux) {
-					// Audio is added in a separate process later
-					transcodeOptions.add("-an");
-				} else if (type() == Format.AUDIO) {
-					// Skip
-				} else {
-					transcodeOptions.add("-c:a");
-					transcodeOptions.add("ac3");
-				}
+				transcodeOptions.add("-c:a");
+				transcodeOptions.add("ac3");
 			}
 
 			InputFile newInput = null;
@@ -305,7 +294,7 @@ public class FFMpegVideo extends Player {
 				//	transcodeOptions.add(media.getAspectRatioContainer());
 				// }
 
-				videoRemux = true;
+				setVideoRemux(true);
 			} else if (renderer.isTranscodeToH264TSAC3()) {
 				transcodeOptions.add("-c:v");
 				transcodeOptions.add("libx264");
@@ -313,20 +302,20 @@ public class FFMpegVideo extends Player {
 				transcodeOptions.add("20");
 				transcodeOptions.add("-preset");
 				transcodeOptions.add("superfast");
-			} else if (!dtsRemux) {
+			} else if (!isDtsRemux()) {
 				transcodeOptions.add("-c:v");
 				transcodeOptions.add("mpeg2video");
 			}
 
 			// Output file format
-				transcodeOptions.add("-f");
-			if (dtsRemux) {
-				if (videoRemux) {
+			transcodeOptions.add("-f");
+			if (isDtsRemux()) {
+				if (isVideoRemux()) {
 					transcodeOptions.add("rawvideo");
 				} else {
 					transcodeOptions.add("mpeg2video");
 				}
-			} else if (renderer.isTranscodeToMPEGTSAC3() || renderer.isTranscodeToH264TSAC3() || videoRemux) { // MPEGTSAC3
+			} else if (renderer.isTranscodeToMPEGTSAC3() || renderer.isTranscodeToH264TSAC3() || isVideoRemux()) { // MPEGTSAC3
 				transcodeOptions.add("mpegts");
 			} else { // default: MPEGPSAC3
 				transcodeOptions.add("vob");
@@ -606,19 +595,16 @@ public class FFMpegVideo extends Player {
 
 		final boolean isTsMuxeRVideoEngineEnabled = configuration.getEnginesAsList(PMS.get().getRegistry()).contains(TSMuxerVideo.ID);
 
-		ac3Remux = false;
-		dtsRemux = false;
+		setAc3Remux(false);
+		setDtsRemux(false);
+		setVideoRemux(false);
 
 		if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && renderer.isTranscodeToAC3()) {
 			// AC-3 remux takes priority
-			ac3Remux = true;
-		} else {
-			// Now check for DTS remux and LPCM streaming
-			dtsRemux = isTsMuxeRVideoEngineEnabled &&
-				configuration.isDTSEmbedInPCM() &&
-				params.aid != null &&
-				params.aid.isDTS() &&
-				params.mediaRenderer.isDTSPlayable();
+			setAc3Remux(true);
+		} else if (isTsMuxeRVideoEngineEnabled && configuration.isDTSEmbedInPCM() && params.aid != null && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable()) {
+			// Now check for DTS remux
+			setDtsRemux(true);
 		}
 
 		String frameRateRatio = media.getValidFps(true);
@@ -698,7 +684,7 @@ public class FFMpegVideo extends Player {
 			}
 
 			// Make room for audio
-			if (dtsRemux) {
+			if (isDtsRemux()) {
 				defaultMaxBitrates[0] = defaultMaxBitrates[0] - 1510;
 			} else {
 				defaultMaxBitrates[0] = defaultMaxBitrates[0] - configuration.getAudioBitrate();
@@ -715,7 +701,7 @@ public class FFMpegVideo extends Player {
 			 * Level 4.1-limited renderers like the PS3 can stutter when H.264 video exceeds
 			 * this bitrate
 			 */
-			if (renderer.isTranscodeToH264TSAC3() || videoRemux) {
+			if (renderer.isTranscodeToH264TSAC3() || isVideoRemux()) {
 				if (
 					params.mediaRenderer.isH264Level41Limited() &&
 					defaultMaxBitrates[0] > 31250000
@@ -732,8 +718,8 @@ public class FFMpegVideo extends Player {
 			cmdList.add("" + defaultMaxBitrates[0]);
 		}
 
-		// Audio bitrate
-		if (!ac3Remux && !dtsRemux && !(type() == Format.AUDIO)) {
+		// Set audio bitrate and channel count only when doing audio transcoding
+		if (!isAc3Remux() && !isDtsRemux() && !(type() == Format.AUDIO)) {
 			int channels;
 			if (renderer.isTranscodeToWMV() && !renderer.isXBOX()) {
 				channels = 2;
@@ -755,7 +741,7 @@ public class FFMpegVideo extends Player {
 		}
 
 		// Add MPEG-2 quality settings
-		if (!renderer.isTranscodeToH264TSAC3() && !videoRemux) {
+		if (!renderer.isTranscodeToH264TSAC3() && !isVideoRemux()) {
 			String mpeg2Options = configuration.getMPEG2MainSettingsFFmpeg();
 			String mpeg2OptionsRenderer = params.mediaRenderer.getCustomFFmpegMPEG2Options();
 
@@ -793,7 +779,7 @@ public class FFMpegVideo extends Player {
 			parseOptions(renderer.getCustomFFmpegOptions(), cmdList);
 		}
 
-		if (!dtsRemux) {
+		if (!isDtsRemux()) {
 			cmdList.add("pipe:");
 		}
 
@@ -810,7 +796,7 @@ public class FFMpegVideo extends Player {
 
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 
-		if (dtsRemux) {
+		if (isDtsRemux()) {
 			PipeProcess pipe;
 			pipe = new PipeProcess(System.currentTimeMillis() + "tsmuxerout.ts");
 
@@ -851,7 +837,7 @@ public class FFMpegVideo extends Player {
 			PipeIPCProcess ffAudioPipe = new PipeIPCProcess(System.currentTimeMillis() + "ffmpegaudio01", System.currentTimeMillis() + "audioout", false, true);
 			StreamModifier sm = new StreamModifier();
 			sm.setPcm(false);
-			sm.setDtsEmbed(dtsRemux);
+			sm.setDtsEmbed(isDtsRemux());
 			sm.setSampleFrequency(48000);
 			sm.setBitsPerSample(16);
 			sm.setNbChannels(2);
@@ -910,7 +896,7 @@ public class FFMpegVideo extends Player {
 			pwMux.println("MUXOPT --no-pcr-on-video-pid --no-asyncio --new-audio-pes --vbr --vbv-len=500");
 			String videoType = "V_MPEG-2";
 
-			if (videoRemux) {
+			if (isVideoRemux()) {
 				videoType = "V_MPEG4/ISO/AVC";
 			}
 
@@ -924,7 +910,7 @@ public class FFMpegVideo extends Player {
 			}
 
 			String audioType = "A_AC3";
-			if (dtsRemux) {
+			if (isDtsRemux()) {
 				if (params.mediaRenderer.isMuxDTSToMpeg()) {
 					// Renderer can play proper DTS track
 					audioType = "A_DTS";
@@ -1225,5 +1211,29 @@ public class FFMpegVideo extends Player {
 	 */
 	public boolean isDisableSubtitles(OutputParams params) {
 		return configuration.isDisableSubtitles() || (params.sid == null);
+	}
+
+	private boolean isAc3Remux() {
+		return ac3Remux;
+	}
+
+	private void setAc3Remux(boolean ac3Remux) {
+		this.ac3Remux = ac3Remux;
+	}
+
+	private boolean isDtsRemux() {
+		return dtsRemux;
+	}
+
+	private void setDtsRemux(boolean dtsRemux) {
+		this.dtsRemux = dtsRemux;
+	}
+
+	private boolean isVideoRemux() {
+		return videoRemux;
+	}
+
+	private void setVideoRemux(boolean videoRemux) {
+		this.videoRemux = videoRemux;
 	}
 }
