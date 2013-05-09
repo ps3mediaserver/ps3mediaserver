@@ -21,6 +21,7 @@ package net.pms.encoders;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
@@ -125,10 +126,10 @@ public class FFMpegWebVideo extends FFMpegVideo {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		RendererConfiguration renderer = params.mediaRenderer;
-		File tempSubs = null;
+		DLNAMediaSubtitle tempSubs = null;
 
 		if (!isDisableSubtitles(params)) {
-			tempSubs = getSubtitleFile(filename, media, params);
+			tempSubs = getSubtitles(filename, media, params);
 		}
 
 		// XXX work around an ffmpeg bug: http://ffmpeg.org/trac/ffmpeg/ticket/998

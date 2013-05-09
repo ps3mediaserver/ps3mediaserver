@@ -1,6 +1,6 @@
 /*
  * PS3 Media Server, for streaming any medias to your PS3.
- * Copyright (C) 2012  I. Sokolov
+ * Copyright (C) 2012-2013  I. Sokolov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,14 +19,18 @@
 package net.pms.formats.v2;
 
 import ch.qos.logback.classic.LoggerContext;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaSubtitle;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static net.pms.formats.v2.SubtitleType.VOBSUB;
@@ -36,15 +40,24 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class SubtitleUtilsTest {
 	private final Class<?> CLASS = SubtitleUtilsTest.class;
+	@Rule
+	public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	/**
 	 * Set up testing conditions before running the tests.
 	 */
 	@Before
-	public final void setUp() {
+	public final void setUp() throws IOException, ConfigurationException {
 		// Silence all log messages from the PMS code that is being tested
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 		context.reset();
+
+		SubtitleUtils.setConfiguration(new PmsConfiguration() {
+			@Override
+			public File getTempFolder() throws IOException {
+				return temporaryFolder.newFolder("subutils");
+			}
+		});
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -135,15 +148,15 @@ public class SubtitleUtilsTest {
 	}
 
 	@Test
-	public void testConvertTimeToSubtitleTimingString_withAssFormat() {
+	public void testConvertTimeToSubtitleTimingString() {
 		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.056, ASS_TIMING)).isEqualTo("1:24:17.06");
 		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(-5057.056, ASS_TIMING)).isEqualTo("-1:24:17.06");
 		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.1, ASS_TIMING)).isEqualTo("1:24:17.10");
 		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(46814, ASS_TIMING)).isEqualTo("13:00:14.00");
 		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(-46814, ASS_TIMING)).isEqualTo("-13:00:14.00");
-		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.056, SRT_TIMING)).isEqualTo("01:24:17.056");
-		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(-5057.056, SRT_TIMING)).isEqualTo("-01:24:17.056");
-		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.1, SRT_TIMING)).isEqualTo("01:24:17.100");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.056, SRT_TIMING)).isEqualTo("01:24:17,056");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(-5057.056, SRT_TIMING)).isEqualTo("-01:24:17,056");
+		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.1, SRT_TIMING)).isEqualTo("01:24:17,100");
 		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.056, SECONDS_TIMING)).isEqualTo("01:24:17");
 		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(-5057.056, SECONDS_TIMING)).isEqualTo("-01:24:17");
 		assertThat(SubtitleUtils.convertTimeToSubtitleTimingString(5057.956, SECONDS_TIMING)).isEqualTo("01:24:18");
@@ -176,27 +189,62 @@ public class SubtitleUtilsTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testShiftSubtitlesTiming_withNullInputSubtitles() throws IOException {
-		SubtitleUtils.shiftSubtitlesTiming(null, 12, SubtitleType.ASS);
+	public void testShiftSubtitlesTimingWithUtfConversion_withNullInputSubtitles() throws IOException {
+		SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(null, 12);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testShiftSubtitlesTiming_withBlankInputSubtitlesName() throws IOException {
-		SubtitleUtils.shiftSubtitlesTiming(new File("no-name-file.test") {
+	public void testShiftSubtitlesTimingWithUtfConversion_withInputSubtitles_withoutExternalFile() throws IOException {
+		SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(new DLNAMediaSubtitle(), 12);
+	}
+
+	@Test(expected = FileNotFoundException.class)
+	public void testShiftSubtitlesTimingWithUtfConversion_withInputSubtitles_withBlankExternalFileName() throws IOException {
+		final DLNAMediaSubtitle inputSubtitles = new DLNAMediaSubtitle();
+		inputSubtitles.setExternalFile(new File("no-name-file.test") {
 			@Override
 			public String getName() {
 				return "";
 			}
-		}, 12, SubtitleType.ASS);
+		});
+		SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(inputSubtitles, 12);
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testShiftSubtitlesTiming_withNullSubtitleType() throws IOException {
-		SubtitleUtils.shiftSubtitlesTiming(new File("good-file.test"), 12, null);
+	public void testShiftSubtitlesTimingWithUtfConversion_withNullSubtitleType() throws IOException {
+		final DLNAMediaSubtitle inputSubtitles = new DLNAMediaSubtitle();
+		inputSubtitles.setExternalFile(FileUtils.toFile(CLASS.getResource("../../util/russian-utf8-without-bom.srt")));
+		SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(inputSubtitles, 12);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testShiftSubtitlesTiming_withInvalidSubtitleType() throws IOException, ConfigurationException {
-		SubtitleUtils.shiftSubtitlesTiming(new File("good-file.test"), 12, SubtitleType.VOBSUB);
+	public void testShiftSubtitlesTimingWithUtfConversion_withInvalidSubtitleType() throws IOException {
+		final DLNAMediaSubtitle inputSubtitles = new DLNAMediaSubtitle();
+		inputSubtitles.setExternalFile(FileUtils.toFile(CLASS.getResource("../../util/russian-utf8-without-bom.srt")));
+		SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(inputSubtitles, 12);
+	}
+
+	@Test
+	public void testShiftSubtitlesTimingWithUtfConversion_charsetConversion_withoutTimeShift() throws IOException {
+		final DLNAMediaSubtitle inputSubtitles = new DLNAMediaSubtitle();
+		inputSubtitles.setExternalFile(FileUtils.toFile(CLASS.getResource("../../util/russian-cp1251.srt")));
+		final DLNAMediaSubtitle convertedSubtitles = SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(inputSubtitles, 0);
+		assertThat(convertedSubtitles.isExternalFileUtf8()).isTrue();
+	}
+
+	@Test
+	public void testShiftSubtitlesTimingWithUtfConversion_doNotConvertUtf8_withoutTimeShift() throws IOException {
+		final DLNAMediaSubtitle inputSubtitles = new DLNAMediaSubtitle();
+		inputSubtitles.setExternalFile(FileUtils.toFile(CLASS.getResource("../../util/russian-utf8-without-bom.srt")));
+		final DLNAMediaSubtitle convertedSubtitles = SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(inputSubtitles, 0);
+		assertThat(convertedSubtitles.getExternalFile()).hasSameContentAs(inputSubtitles.getExternalFile());
+	}
+
+	@Test
+	public void testIsSupportsTimeShifting() {
+		assertThat(SubtitleUtils.isSupportsTimeShifting(null)).isFalse();
+		assertThat(SubtitleUtils.isSupportsTimeShifting(SubtitleType.ASS)).isTrue();
+		assertThat(SubtitleUtils.isSupportsTimeShifting(SubtitleType.SUBRIP)).isTrue();
+		assertThat(SubtitleUtils.isSupportsTimeShifting(SubtitleType.VOBSUB)).isFalse();
 	}
 }

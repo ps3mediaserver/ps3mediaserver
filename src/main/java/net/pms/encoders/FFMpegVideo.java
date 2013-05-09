@@ -28,6 +28,7 @@ import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
 import net.pms.dlna.InputFile;
 import net.pms.formats.Format;
@@ -118,7 +119,7 @@ public class FFMpegVideo extends Player {
 	 * @return a {@link List} of <code>String</code>s representing the rescale options for this video,
 	 * or an empty list if the video doesn't need to be resized.
 	 */
-	public List<String> getVideoFilterOptions(File tempSubs, RendererConfiguration renderer, DLNAMediaInfo media) throws IOException {
+	public List<String> getVideoFilterOptions(DLNAMediaSubtitle tempSubs, RendererConfiguration renderer, DLNAMediaInfo media) throws IOException {
 		List<String> videoFilterOptions = new ArrayList<String>();
 		String subsOption = null;
 		String padding = null;
@@ -130,7 +131,7 @@ public class FFMpegVideo extends Player {
 
 		if (tempSubs != null) {
 			StringBuilder s = new StringBuilder();
-			CharacterIterator it = new StringCharacterIterator(tempSubs.getAbsolutePath());
+			CharacterIterator it = new StringCharacterIterator(tempSubs.getExternalFile().getAbsolutePath());
 
 			for (char ch = it.first(); ch != CharacterIterator.DONE; ch = it.next()) {
 				switch (ch) {
@@ -574,11 +575,11 @@ public class FFMpegVideo extends Player {
 		List<String> cmdList = new ArrayList<String>();
 		RendererConfiguration renderer = params.mediaRenderer;
 		setAudioAndSubs(filename, media, params, configuration);
-		File tempSubs = null;
+		DLNAMediaSubtitle tempSubs = null;
 //		params.waitbeforestart = 1000;
 
 		if (!isDisableSubtitles(params)) {
-			tempSubs = getSubtitleFile(filename, media, params);
+			tempSubs = getSubtitles(filename, media, params);
 		}
 
 		cmdList.add(executable());
@@ -1084,17 +1085,15 @@ public class FFMpegVideo extends Player {
 	}
 
 	/**
-	 * @deprecated use {@link #getSubtitleFile(String, net.pms.dlna.DLNAMediaInfo, net.pms.io.OutputParams)} instead.
+	 * @deprecated use {@link #getSubtitles(String, net.pms.dlna.DLNAMediaInfo, net.pms.io.OutputParams)} instead.
 	 */
 	@Deprecated
-	public File subsConversion(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
-		return getSubtitleFile(fileName, media, params);
+	public DLNAMediaSubtitle subsConversion(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
+		return getSubtitles(fileName, media, params);
 	}
 
 	/**
-	 * Extracts embedded subtitles from video to file in SSA/ASS format, converts external SRT
-	 * subtitles file to SSA/ASS format and applies fontconfig setting to that converted file
-	 * and applies timeseeking when required.
+	 * Shift timing of external subtitles in SSA/ASS or SRT format and converts charset to UTF8 if necessary
 	 *
 	 * @param fileName Video file
 	 * @param media Media file metadata
@@ -1102,8 +1101,8 @@ public class FFMpegVideo extends Player {
 	 * @return Converted subtitle file
 	 * @throws IOException
 	 */
-	public File getSubtitleFile(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
-		File tempSubs = null;
+	public DLNAMediaSubtitle getSubtitles(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
+		DLNAMediaSubtitle tempSubs = null;
 
 		if (params.sid.getId() == -1) {
 			return null;
@@ -1114,26 +1113,9 @@ public class FFMpegVideo extends Player {
 			subtitlesDirectory.mkdirs();
 		}
 
-		if (params.sid.isEmbedded()) {
-			/* TODO disable embedded subtitles extraction because of a) broken track ids b) unacceptable duration of remux
-			   process for large files and/or slow (network) drives
-  			   TODO extract track with real file extension (ass or srt)
-			final String convertedSubsPath = subtitlesDirectory.getAbsolutePath() + File.separator + getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" + new File(fileName).length() + "_EMB_ID" + params.sid.getId() + ".ass";
-			final File tmp = new File(convertedSubsPath);
-
-			if (tmp.canRead()) {
-				tempSubs = tmp;
-			} else {
-				tempSubs = extractEmbeddedSubtitlesTrack(fileName, media, params);
-			}
-			*/
-		} else if (params.sid.isExternal()) {
-			tempSubs = params.sid.getExternalFile();
-		}
-
-		if (tempSubs != null && params.timeseek > 0 && params.sid.getType() != null) {
+		if (params.sid.isExternal() && SubtitleUtils.isSupportsTimeShifting(params.sid.getType())) {
 			try {
-				tempSubs = SubtitleUtils.shiftSubtitlesTiming(tempSubs, params.timeseek, params.sid.getType());
+				tempSubs = SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(params.sid, params.timeseek);
 			} catch (IOException e) {
 				LOGGER.debug("Applying times shift caused an error: " + e);
 				tempSubs = null;

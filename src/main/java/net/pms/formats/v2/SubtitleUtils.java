@@ -26,7 +26,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.*;
+import java.nio.charset.Charset;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -34,7 +40,7 @@ import static org.mozilla.universalchardet.Constants.*;
 
 public class SubtitleUtils {
 	private final static Logger LOGGER = LoggerFactory.getLogger(SubtitleUtils.class);
-	private final static PmsConfiguration configuration = PMS.getConfiguration();
+	private static PmsConfiguration configuration = PMS.getConfiguration();
 	private final static Map<String, String> fileCharsetToMencoderSubcpOptionMap = new HashMap<String, String>() {
 		{
 			// Cyrillic / Russian
@@ -67,6 +73,19 @@ public class SubtitleUtils {
 			put(CHARSET_SHIFT_JIS, "shift-jis");
 		}
 	};
+	private static final EnumSet<SubtitleType> SUPPORTS_TIME_SHIFTING = EnumSet.of(SubtitleType.SUBRIP, SubtitleType.ASS);
+	private static final DecimalFormat ASS_DECIMAL_FORMAT = new DecimalFormat("00.00");
+	private static final DecimalFormat SRT_DECIMAL_FORMAT = new DecimalFormat("00.000");
+
+	static {
+		final DecimalFormatSymbols dotDecimalSeparator = new DecimalFormatSymbols();
+		dotDecimalSeparator.setDecimalSeparator('.');
+		ASS_DECIMAL_FORMAT.setDecimalFormatSymbols(dotDecimalSeparator);
+
+		final DecimalFormatSymbols commaDecimalSeparator = new DecimalFormatSymbols();
+		commaDecimalSeparator.setDecimalSeparator(',');
+		SRT_DECIMAL_FORMAT.setDecimalFormatSymbols(commaDecimalSeparator);
+	}
 
 	/**
 	 * Returns value for -subcp option for non UTF-8 external subtitles based on
@@ -85,40 +104,54 @@ public class SubtitleUtils {
 	}
 
 	/**
-	 * Shift timing of subtitles in SSA/ASS or SRT format
+	 * Shift timing of subtitles in SSA/ASS or SRT format and converts charset to UTF8 if necessary
+	 *
 	 *
 	 * @param inputSubtitles Subtitles file in SSA/ASS or SRT format
 	 * @param timeShift  Time stamp value
 	 * @return Converted subtitles file
 	 * @throws IOException
 	 */
-	public static File shiftSubtitlesTiming(final File inputSubtitles, double timeShift, SubtitleType subtitleType) throws IOException {
+	public static DLNAMediaSubtitle shiftSubtitlesTimingWithUtfConversion(final DLNAMediaSubtitle inputSubtitles, double timeShift) throws IOException {
 		if (inputSubtitles == null) {
 			throw new NullPointerException("inputSubtitles should not be null.");
 		}
-		if (isBlank(inputSubtitles.getName())) {
-			throw new IllegalArgumentException("inputSubtitles should not have blank name.");
+		if (!inputSubtitles.isExternal()) {
+			throw new IllegalArgumentException("inputSubtitles should be external.");
 		}
-		if (subtitleType == null) {
-			throw new NullPointerException("subtitleType should not be null.");
+		if (isBlank(inputSubtitles.getExternalFile().getName())) {
+			throw new IllegalArgumentException("inputSubtitles' external file should not have blank name.");
 		}
-		if (!EnumSet.of(SubtitleType.SUBRIP, SubtitleType.ASS).contains(subtitleType)) {
-			throw new IllegalArgumentException("subtitleType " + subtitleType + " is not supported.");
+		if (inputSubtitles.getType() == null) {
+			throw new NullPointerException("inputSubtitles.getType() should not be null.");
 		}
-		if (!(timeShift > 0)) {
-			return inputSubtitles; // time shifting is not needed
+		if (!isSupportsTimeShifting(inputSubtitles.getType())) {
+			throw new IllegalArgumentException("inputSubtitles.getType() " + inputSubtitles.getType() + " is not supported.");
 		}
 
-		final File convertedSubtitles = new File(configuration.getTempFolder(), getBaseName(inputSubtitles.getName()) + System.currentTimeMillis() + ".tmp");
-		FileUtils.forceDeleteOnExit(convertedSubtitles);
-		final BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles)));
-		final BufferedWriter output = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(convertedSubtitles)));
+		final File convertedSubtitlesFile = new File(configuration.getTempFolder(), getBaseName(inputSubtitles.getExternalFile().getName()) + System.currentTimeMillis() + ".tmp");
+		FileUtils.forceDeleteOnExit(convertedSubtitlesFile);
+		BufferedReader input;
+
+		final boolean isSubtitlesCodepageForcedInConfigurationAndSupportedByJVM = isNotBlank(configuration.getSubtitlesCodepage()) && Charset.isSupported(configuration.getSubtitlesCodepage());
+		final boolean isSubtitlesCodepageAutoDetectedAndSupportedByJVM = isNotBlank(inputSubtitles.getExternalFileCharacterSet()) && Charset.isSupported(inputSubtitles.getExternalFileCharacterSet());
+		if (!inputSubtitles.isExternalFileUtf()
+				&& (isSubtitlesCodepageForcedInConfigurationAndSupportedByJVM || isSubtitlesCodepageAutoDetectedAndSupportedByJVM)) {
+			if (isSubtitlesCodepageForcedInConfigurationAndSupportedByJVM) {
+				input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles.getExternalFile()), Charset.forName(configuration.getSubtitlesCodepage())));
+			} else {
+				input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles.getExternalFile()), Charset.forName(inputSubtitles.getExternalFileCharacterSet())));
+			}
+		} else {
+			input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles.getExternalFile())));
+		}
+		final BufferedWriter output = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(convertedSubtitlesFile), Charset.forName("UTF-8")));
 		String line;
 		double startTime;
 		double endTime;
 
 		try {
-			if (SubtitleType.ASS.equals(subtitleType)) {
+			if (SubtitleType.ASS.equals(inputSubtitles.getType())) {
 				while ((line = input.readLine()) != null) {
 					if (startsWith(line, "Dialogue:")) {
 						String[] timings = splitPreserveAllTokens(line, ",");
@@ -139,7 +172,7 @@ public class SubtitleUtils {
 						output.write(line + "\n");
 					}
 				}
-			} else if (SubtitleType.SUBRIP.equals(subtitleType)) {
+			} else if (SubtitleType.SUBRIP.equals(inputSubtitles.getType())) {
 				int n = 1;
 				while ((line = input.readLine()) != null) {
 					if (contains(line, ("-->"))) {
@@ -169,7 +202,22 @@ public class SubtitleUtils {
 			}
 		}
 
+		final  DLNAMediaSubtitle convertedSubtitles = new DLNAMediaSubtitle();
+		convertedSubtitles.setExternalFile(convertedSubtitlesFile);
+		convertedSubtitles.setType(inputSubtitles.getType());
+		convertedSubtitles.setLang(inputSubtitles.getLang());
+		convertedSubtitles.setFlavor(inputSubtitles.getFlavor());
+		convertedSubtitles.setId(inputSubtitles.getId());
 		return convertedSubtitles;
+	}
+
+	/**
+	 * Check if subtitleType supports time shifting
+	 * @param subtitleType to check
+	 * @return true if subtitleType can be time shifted with {@link #shiftSubtitlesTimingWithUtfConversion(net.pms.dlna.DLNAMediaSubtitle, double)}
+	 */
+	public static boolean isSupportsTimeShifting(SubtitleType subtitleType) {
+		return SUPPORTS_TIME_SHIFTING.contains(subtitleType);
 	}
 
 	enum TimingFormat {
@@ -195,13 +243,13 @@ public class SubtitleUtils {
 		int m = Math.abs(((int) (time / 60)) % 60);
 		switch (timingFormat) {
 			case ASS_TIMING:
-				return trim(String.format(Locale.ENGLISH, "% 02d:%02d:%02.2f", h, m, s));
+				return trim(String.format("% 02d:%02d:%s", h, m, ASS_DECIMAL_FORMAT.format(s)));
 			case SRT_TIMING:
-				return trim(String.format(Locale.ENGLISH, "% 03d:%02d:%02.3f", h, m, s));
+				return trim(String.format("% 03d:%02d:%s", h, m, SRT_DECIMAL_FORMAT.format(s)));
 			case SECONDS_TIMING:
-				return trim(String.format(Locale.ENGLISH, "% 03d:%02d:%02.0f", h, m, s));
+				return trim(String.format("% 03d:%02d:%02.0f", h, m, s));
 			default:
-				return trim(String.format(Locale.ENGLISH, "% 03d:%02d:%02.0f", h, m, s));
+				return trim(String.format("% 03d:%02d:%02.0f", h, m, s));
 		}
 	}
 
@@ -230,5 +278,14 @@ public class SubtitleUtils {
 			LOGGER.debug("Failed to convert timing string \"" + timingString + "\".");
 			throw nfe;
 		}
+	}
+
+	/**
+	 * For testing purposes.
+	 *
+	 * @param configuration
+	 */
+	static void setConfiguration(PmsConfiguration configuration) {
+		SubtitleUtils.configuration = configuration;
 	}
 }
