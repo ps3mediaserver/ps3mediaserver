@@ -131,7 +131,7 @@ public class FFMpegVideo extends Player {
 
 		if (tempSubs != null) {
 			StringBuilder s = new StringBuilder();
-			CharacterIterator it = new StringCharacterIterator(tempSubs.getExternalFile().getAbsolutePath());
+			CharacterIterator it = new StringCharacterIterator(ProcessUtil.getShortFileNameIfWideChars(tempSubs.getExternalFile().getAbsolutePath()));
 
 			for (char ch = it.first(); ch != CharacterIterator.DONE; ch = it.next()) {
 				switch (ch) {
