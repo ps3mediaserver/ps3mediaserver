@@ -5,7 +5,9 @@ import net.pms.io.Gob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 
 // see https://code.google.com/p/ps3mediaserver/issues/detail?id=680
@@ -141,5 +143,22 @@ public class ProcessUtil {
 
 	public static String getShortFileNameIfWideChars(String name) {
 		return PMS.get().getRegistry().getShortPathNameW(name);
+	}
+
+	// Run cmd and return combined stdout/stderr
+	public static String run(String... cmd) {
+		try {
+			ProcessBuilder pb = new ProcessBuilder(cmd);
+			pb.redirectErrorStream(true);
+			Process p = pb.start();
+			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line;
+			StringBuilder output = new StringBuilder();
+			while ((line = br.readLine()) != null) {
+				output.append(line).append("\n");
+			}
+			return output.toString();
+		} catch (Exception e) {}
+		return "";
 	}
 }

@@ -18,20 +18,17 @@
  */
 package net.pms.formats;
 
-import java.util.ArrayList;
-
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
-import net.pms.encoders.FFMpegWebVideo;
-import net.pms.encoders.MEncoderWebVideo;
-import net.pms.encoders.MPlayerWebAudio;
-import net.pms.encoders.MPlayerWebVideoDump;
-import net.pms.encoders.Player;
-import net.pms.encoders.VideoLanAudioStreaming;
-import net.pms.encoders.VideoLanVideoStreaming;
+import net.pms.encoders.*;
+
+import java.util.ArrayList;
 
 public class WEB extends Format {
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
+
 	/**
 	 * {@inheritDoc} 
 	 */
@@ -60,7 +57,7 @@ public class WEB extends Format {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		if (type == AUDIO) {
 			PMS r = PMS.get();
-			for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
+			for (String engine : configuration.getEnginesAsList(r.getRegistry())) {
 				if (engine.equals(MPlayerWebAudio.ID)) {
 					a.add(MPlayerWebAudio.class);
 				} else if (engine.equals(VideoLanAudioStreaming.ID)) {
@@ -69,7 +66,7 @@ public class WEB extends Format {
 			}
 		} else {
 			PMS r = PMS.get();
-			for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
+			for (String engine : configuration.getEnginesAsList(r.getRegistry())) {
 				if (engine.equals(FFMpegWebVideo.ID)) {
 					a.add(FFMpegWebVideo.class);
 				} else if (engine.equals(MEncoderWebVideo.ID)) {
@@ -91,7 +88,7 @@ public class WEB extends Format {
 	@Override
 	// TODO remove screen - it's been tried numerous times (see forum) and it doesn't work
 	public String[] getId() {
-		return new String[] { "file", "http", "mms", "mmsh", "mmst", "rtsp", "rtp", "udp", "screen" };
+		return new String[] { "file", "http", "mms", "mmsh", "mmst", "rtsp", "rtp", "udp", "screen", "rtmp", "https" };
 	}
 
 	@Override

@@ -51,7 +51,7 @@ public class RealFile extends MapFile {
 		checktype();
 
 		if (getType() == Format.VIDEO && file.exists() && PMS.getConfiguration().isAutoloadSubtitles() && file.getName().length() > 4) {
-			setSrtFile(FileUtil.doesSubtitlesExists(file, null));
+			setSrtFile(FileUtil.isSubtitlesExists(file, null));
 		}
 
 		boolean valid = file.exists() && (getFormat() != null || file.isDirectory());

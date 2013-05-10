@@ -42,13 +42,7 @@ import net.pms.network.UPNPHelper;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
 import net.pms.update.AutoUpdater;
-import net.pms.util.FileUtil;
-import net.pms.util.ProcessUtil;
-import net.pms.util.PropertiesUtil;
-import net.pms.util.SystemErrWrapper;
-import net.pms.util.TaskRunner;
-import net.pms.util.Version;
-
+import net.pms.util.*;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
@@ -73,6 +67,7 @@ public class PMS {
 	private static final String CONSOLE = "console";
 	private static final String NOCONSOLE = "noconsole";
 	private static final String PROFILES = "profiles";
+	private static Boolean isHeadless;
 
 	/**
 	 * @deprecated The version has moved to the resources/project.properties file. Use {@link #getVersion()} instead. 
@@ -816,7 +811,6 @@ public class PMS {
 
 	public static void main(String args[]) throws IOException, ConfigurationException {
 		boolean displayProfileChooser = false;
-		boolean headless = true;
 
 		if (args.length > 0) {
 			for (int a = 0; a < args.length; a++) {
@@ -837,12 +831,10 @@ public class PMS {
 		try {
 			Toolkit.getDefaultToolkit();
 
-			if (GraphicsEnvironment.isHeadless()) {
+			if (isHeadless()) {
 				if (System.getProperty(NOCONSOLE) == null) {
 					System.setProperty(CONSOLE, Boolean.toString(true));
 				}
-			} else {
-				headless = false;
 			}
 		} catch (Throwable t) {
 			System.err.println("Toolkit error: " + t.getClass().getName() + ": " + t.getMessage());
@@ -852,7 +844,7 @@ public class PMS {
 			}
 		}
 
-		if (!headless && displayProfileChooser) {
+		if (!isHeadless() && displayProfileChooser) {
 			ProfileChooser.display();
 		}
 
@@ -876,7 +868,7 @@ public class PMS {
 
 			System.err.println(errorMessage);
 
-			if (!headless && instance != null) {
+			if (!isHeadless() && instance != null) {
 				JOptionPane.showMessageDialog(
 					((JFrame) (SwingUtilities.getWindowAncestor((Component) instance.getFrame()))),
 					errorMessage,
@@ -988,6 +980,25 @@ public class PMS {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Check if server is running in headless (console) mode.
+	 *
+	 * @return true if server is running in headless (console) mode, false otherwise
+	 */
+	public static synchronized boolean isHeadless() {
+		if (isHeadless == null) {
+			try {
+				javax.swing.JDialog d = new javax.swing.JDialog();
+				d.dispose();
+				isHeadless = false;
+			} catch (Throwable throwable) {
+				isHeadless = true;
+			}
+		}
+
+		return isHeadless;
 	}
 
 	/**

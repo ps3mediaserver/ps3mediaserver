@@ -49,7 +49,7 @@ import java.util.StringTokenizer;
 
 public class RootFolder extends DLNAResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RootFolder.class);
-	private final PmsConfiguration configuration = PMS.getConfiguration();
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private boolean running;
 
 	public RootFolder() {
@@ -182,9 +182,10 @@ public class RootFolder extends DLNAResource {
 		frame.setStatusLine(null);
 	}
 
-	/*
+	/**
 	 * @deprecated Use {@link #stopScan()} instead.
 	 */
+	@Deprecated
 	public void stopscan() {
 		stopScan();
 	}
@@ -265,7 +266,7 @@ public class RootFolder extends DLNAResource {
 		if (webConf.exists()) {
 			try {
 				LineNumberReader br = new LineNumberReader(new InputStreamReader(new FileInputStream(webConf), "UTF-8"));
-				String line = null;
+					String line;
 				while ((line = br.readLine()) != null) {
 					line = line.trim();
 
@@ -336,8 +337,7 @@ public class RootFolder extends DLNAResource {
 	 * Splits the first part of a WEB.conf spec into a pair of Strings
 	 * representing the resource type and its DLNA folder.
 	 *
-	 * @param spec
-	 *            (String) to be split
+	 * @param spec (String) to be split
 	 * @return Array of (String) that represents the tokenized entry.
 	 */
 	private String[] parseFeedKey(String spec) {
@@ -358,8 +358,7 @@ public class RootFolder extends DLNAResource {
 	 * Splits the second part of a WEB.conf spec into a triple of Strings
 	 * representing the DLNA path, resource URI and optional thumbnail URI.
 	 *
-	 * @param spec
-	 *            (String) to be split
+	 * @param spec (String) to be split
 	 * @return Array of (String) that represents the tokenized entry.
 	 */
 	private String[] parseFeedValue(String spec) {
@@ -375,8 +374,8 @@ public class RootFolder extends DLNAResource {
 	}
 
 	/**
-	 * Creates, populates and returns a virtual folder mirroring
-	 * the contents of the system's iPhoto folder.
+	 * Creates, populates and returns a virtual folder mirroring the
+	 * contents of the system's iPhoto folder.
 	 * Mac OS X only.
 	 *
 	 * @return iPhotoVirtualFolder the populated <code>VirtualFolder</code>, or null if one couldn't be created.
@@ -464,9 +463,9 @@ public class RootFolder extends DLNAResource {
 	}
 
 	/**
-	 * Returns Aperture folder. Used by manageRoot, so it is usually used as a
-	 * folder at the root folder. Only works when PMS is run on Mac OS X. TODO:
-	 * Requirements for Aperture.
+	 * Returns Aperture folder. Used by manageRoot, so it is usually used as
+	 * a folder at the root folder. Only works when PMS is run on Mac OS X.
+	 * TODO: Requirements for Aperture.
 	 */
 	private DLNAResource getApertureFolder() {
 		VirtualFolder res = null;
@@ -478,7 +477,7 @@ public class RootFolder extends DLNAResource {
 				process = Runtime.getRuntime().exec("defaults read com.apple.iApps ApertureLibraries");
 				BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 				// Every line entry is one aperture library. We want all of them as a dlna folder.
-				String line = null;
+				String line;
 				res = new VirtualFolder("Aperture libraries", null);
 
 				while ((line = in.readLine()) != null) {
@@ -499,14 +498,14 @@ public class RootFolder extends DLNAResource {
 			} catch (Exception e) {
 				LOGGER.error("Something went wrong with the aperture library scan: ", e);
 			} finally {
-				// Avoid zombie processes, or open stream failures...
+				// Avoid zombie processes, or open stream failures
 				if (process != null) {
 					try {
-						// the process seems to always finish, so we can wait for it.
-						// if the result code is not read by parent. The process might turn into a zombie (they are real!)
+						// The process seems to always finish, so we can wait for it.
+						// If the result code is not read by parent. The process might turn into a zombie (they are real!)
 						process.waitFor();
 					} catch (InterruptedException e) {
-						// Can this thread be interrupted? don't think so or, and even when.. what will happen?
+						// Can this thread be interrupted? Don't think so, or, and even when, what will happen?
 						LOGGER.warn("Interrupted while waiting for stream for process" + e.getMessage());
 					}
 
@@ -563,7 +562,7 @@ public class RootFolder extends DLNAResource {
 			}
 
 			LOGGER.info("Going to parse aperture library: " + mediaName);
-			res  = new VirtualFolder(mediaName, null);
+			res = new VirtualFolder(mediaName, null);
 			listOfAlbums = (List<?>) iPhotoLib.get("List of Albums"); // the list of events (rolls)
 
 			for (Object item : listOfAlbums) {
@@ -580,14 +579,13 @@ public class RootFolder extends DLNAResource {
 		return res;
 	}
 
-
 	private VirtualFolder createApertureAlbum(
 		Map<?, ?> photoList,
 		Map<?, ?> album, List<?> listOfAlbums
 	) {
 
 		List<?> albumPhotos;
-		int albumId = (Integer)album.get("AlbumId");
+		int albumId = (Integer) album.get("AlbumId");
 		VirtualFolder vAlbum = new VirtualFolder(album.get("AlbumName").toString(), null);
 
 		for (Object item : listOfAlbums) {
@@ -595,7 +593,7 @@ public class RootFolder extends DLNAResource {
 
 			if (sub.get("Parent") != null) {
 				// recursive album creation
-				int parent = (Integer)sub.get("Parent");
+				int parent = (Integer) sub.get("Parent");
 
 				if (parent == albumId) {
 					VirtualFolder subAlbum = createApertureAlbum(photoList, sub, listOfAlbums);
@@ -618,7 +616,7 @@ public class RootFolder extends DLNAResource {
 			if (firstPhoto) {
 				Object x = photoList.get("ThumbPath");
 
-				if (x!=null) {
+				if (x != null) {
 					vAlbum.setThumbnail(x.toString());
 				}
 
@@ -635,13 +633,13 @@ public class RootFolder extends DLNAResource {
 	/**
 	 * Returns the iTunes XML file. This file has all the information of the
 	 * iTunes database. The methods used in this function depends on whether PMS
-	 * runs on MacOsX or Windows.
+	 * runs on Mac OS X or Windows.
 	 *
 	 * @return (String) Absolute path to the iTunes XML file.
 	 * @throws Exception
 	 */
 	private String getiTunesFile() throws Exception {
-		String line = null;
+		String line;
 		String iTunesFile = null;
 
 		if (Platform.isMac()) {
@@ -678,7 +676,7 @@ public class RootFolder extends DLNAResource {
 			}
 
 			if (location != null) {
-				// add the iTunes folder to the end
+				// Add the iTunes folder to the end
 				location = location + "\\iTunes\\iTunes Music Library.xml";
 				iTunesFile = location;
 			} else {
@@ -691,17 +689,15 @@ public class RootFolder extends DLNAResource {
 
 	/**
 	 * Returns iTunes folder. Used by manageRoot, so it is usually used as a
-	 * folder at the root folder. Only works when PMS is run on MacOsX or
-	 * Windows.
-	 * <p>
-	 * The iTunes XML is parsed fully when this method is called, so it can take
-	 * some time for larger (+1000 albums) databases. TODO: Check if only music
-	 * is being added.
-	 * <P>
+	 * folder at the root folder. Only works on Mac OS X or Windows.
+	 *
+	 * The iTunes XML is parsed fully when this method is called, so it can
+	 * take some time for larger (+1000 albums) databases.
+	 *
 	 * This method does not support genius playlists and does not provide a
 	 * media library.
 	 *
-	 * @see RootFolder#getiTunesFile(boolean)
+	 * @see RootFolder#getiTunesFile()
 	 */
 	private DLNAResource getiTunesFolder() {
 		DLNAResource res = null;
@@ -725,27 +721,164 @@ public class RootFolder extends DLNAResource {
 
 					for (Object item : Playlists) {
 						Playlist = (Map<?, ?>) item;
-						VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(), null);
-						PlaylistTracks = (List<?>) Playlist.get("Playlist Items"); // list of tracks in a playlist
 
-						if (PlaylistTracks != null) {
-							for (Object t : PlaylistTracks) {
-								Map<?, ?> td = (Map<?, ?>) t;
-								track = (Map<?, ?>) Tracks.get(td.get("Track ID").toString());
+						if (!"Library".equals(Playlist.get("Name").toString())
+								&& !"Movies".equals(Playlist.get("Name").toString())
+								&& !"TV Shows".equals(Playlist.get("Name").toString())
+								&& !"Genius".equals(Playlist.get("Name").toString())) {
+							if ("Music".equals(Playlist.get("Name").toString())) {
+								// Create virtual folders for artists, albums and genres
 
-								if (
-									track != null &&
-									track.get("Location") != null &&
-									track.get("Location").toString().startsWith("file://")
-								) {
-									URI tURI2 = new URI(track.get("Location").toString());
-									RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
-									pf.addChild(file);
+								VirtualFolder virtualFolderArtists = new VirtualFolder("Browse by Artist", null);
+								VirtualFolder virtualFolderAlbums = new VirtualFolder("Browse by Albums", null);
+								VirtualFolder virtualFolderGenres = new VirtualFolder("Browse by Genre", null);
+								PlaylistTracks = (List<?>) Playlist.get("Playlist Items"); // list of tracks in a playlist
+
+								String artistName;
+								String albumName;
+								String genreName;
+								if (PlaylistTracks != null) {
+									for (Object t : PlaylistTracks) {
+										Map<?, ?> td = (Map<?, ?>) t;
+										track = (Map<?, ?>) Tracks.get(td.get("Track ID").toString());
+
+										if (track != null) {
+											artistName = (String) track.get("Artist");
+											albumName = (String) track.get("Album");
+											genreName = (String) track.get("Genre");
+
+											if (artistName == null) {
+												artistName = "Unknown Artist";
+											}
+
+											if (albumName == null) {
+												albumName = "Unknown Album";
+											}
+
+											if (genreName == null) {
+												genreName = "Unknown Genre";
+											} else if ("".equals(genreName.replaceAll("[^a-zA-Z]", ""))) {
+												// This prevents us from adding blank or numerical genres
+												genreName = "Unknown Genre";
+											}
+
+											// Replace &nbsp with space and then trim
+											artistName = artistName.replace('\u0160', ' ').trim();
+											albumName = albumName.replace('\u0160', ' ').trim();
+											genreName = genreName.replace('\u0160', ' ').trim();
+											if (track.get("Location") != null
+													&& track.get("Location").toString().startsWith("file://")) {
+												{
+													URI tURI2 = new URI(track.get("Location").toString());
+													RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
+													VirtualFolder individualArtistFolder = null;
+													for (DLNAResource artist : virtualFolderArtists.getChildren()) {
+														if (artist.getName().equals(artistName)) {
+															individualArtistFolder = (VirtualFolder) artist;
+															break;
+														}
+													}
+													if (individualArtistFolder == null) {
+														individualArtistFolder = new VirtualFolder(artistName, null);
+														virtualFolderArtists.addChild(individualArtistFolder);
+													}
+													individualArtistFolder.addChild(file);
+												}
+
+												{
+													URI tURI2 = new URI(track.get("Location").toString());
+													RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
+													VirtualFolder individualAlbumFolder = null;
+													for (DLNAResource album : virtualFolderAlbums.getChildren()) {
+														if (album.getName().equals(albumName)) {
+															individualAlbumFolder = (VirtualFolder) album;
+															break;
+														}
+													}
+													if (individualAlbumFolder == null) {
+														individualAlbumFolder = new VirtualFolder(albumName, null);
+														virtualFolderAlbums.addChild(individualAlbumFolder);
+													}
+													individualAlbumFolder.addChild(file);
+												}
+
+												{
+													URI tURI2 = new URI(track.get("Location").toString());
+													RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
+													VirtualFolder individualGenreFolder = null;
+													for (DLNAResource genre : virtualFolderGenres.getChildren()) {
+														if (genre.getName().equals(genreName)) {
+															individualGenreFolder = (VirtualFolder) genre;
+															break;
+														}
+													}
+													if (individualGenreFolder == null) {
+														individualGenreFolder = new VirtualFolder(genreName, null);
+														virtualFolderGenres.addChild(individualGenreFolder);
+													}
+													individualGenreFolder.addChild(file);
+												}
+											}
+										}
+									}
 								}
+
+								res.addChild(virtualFolderArtists);
+								res.addChild(virtualFolderAlbums);
+								res.addChild(virtualFolderGenres);
+
+								// Sort the virtual folders alphabetically
+								java.util.Collections.sort(virtualFolderArtists.getChildren(), new java.util.Comparator() {
+									@Override
+									public int compare(Object o1, Object o2) {
+										VirtualFolder a = (VirtualFolder) o1;
+										VirtualFolder b = (VirtualFolder) o2;
+										return a.getName().compareToIgnoreCase(b.getName());
+									}
+								});
+
+								java.util.Collections.sort(virtualFolderAlbums.getChildren(), new java.util.Comparator() {
+									@Override
+									public int compare(Object o1, Object o2) {
+										VirtualFolder a = (VirtualFolder) o1;
+										VirtualFolder b = (VirtualFolder) o2;
+										return a.getName().compareToIgnoreCase(b.getName());
+									}
+								});
+
+								java.util.Collections.sort(virtualFolderGenres.getChildren(), new java.util.Comparator() {
+									@Override
+									public int compare(Object o1, Object o2) {
+										VirtualFolder a = (VirtualFolder) o1;
+										VirtualFolder b = (VirtualFolder) o2;
+										return a.getName().compareToIgnoreCase(b.getName());
+									}
+								});
+							} else {
+								// Add all playlists
+								VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(), null);
+								PlaylistTracks = (List<?>) Playlist.get("Playlist Items"); // list of tracks in a playlist
+
+								if (PlaylistTracks != null) {
+									for (Object t : PlaylistTracks) {
+										Map<?, ?> td = (Map<?, ?>) t;
+										track = (Map<?, ?>) Tracks.get(td.get("Track ID").toString());
+
+										if (
+												track != null
+														&& track.get("Location") != null
+														&& track.get("Location").toString().startsWith("file://")
+												) {
+											URI tURI2 = new URI(track.get("Location").toString());
+											RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
+											pf.addChild(file);
+										}
+									}
+								}
+
+								res.addChild(pf);
 							}
 						}
-
-						res.addChild(pf);
 					}
 				} else {
 					LOGGER.info("Could not find the iTunes file");
@@ -759,9 +892,9 @@ public class RootFolder extends DLNAResource {
 	}
 
 	/**
-	 * Returns Video Settings folder. Used by manageRoot, so it is usually used
-	 * as a folder at the root folder. Child objects are created when this
-	 * folder is created.
+	 * Returns Video Settings folder. Used by manageRoot, so it is usually
+	 * used as a folder at the root folder. Child objects are created when
+	 * this folder is created.
 	 */
 	private DLNAResource getVideoSettingssFolder() {
 		DLNAResource res = null;
@@ -774,8 +907,7 @@ public class RootFolder extends DLNAResource {
 			res.addChild(new VirtualVideoAction(Messages.getString("PMS.3"), configuration.isMencoderNoOutOfSync()) {
 				@Override
 				public boolean enable() {
-					configuration.setMencoderNoOutOfSync(!configuration
-							.isMencoderNoOutOfSync());
+					configuration.setMencoderNoOutOfSync(!configuration.isMencoderNoOutOfSync());
 					return configuration.isMencoderNoOutOfSync();
 				}
 			});
@@ -798,7 +930,7 @@ public class RootFolder extends DLNAResource {
 				}
 			});
 
-			vfSub.addChild(new VirtualVideoAction(Messages.getString("PMS.10"), configuration.isDisableSubtitles()) {
+			vfSub.addChild(new VirtualVideoAction(Messages.getString("TrTab2.51"), configuration.isDisableSubtitles()) {
 				@Override
 				public boolean enable() {
 					boolean oldValue = configuration.isDisableSubtitles();
@@ -869,8 +1001,8 @@ public class RootFolder extends DLNAResource {
 	}
 
 	/**
-	 * Returns as many folders as plugins providing root folders are loaded into
-	 * memory (need to implement AdditionalFolder(s)AtRoot)
+	 * Returns as many folders as plugins providing root folders are loaded
+	 * into memory (need to implement AdditionalFolder(s)AtRoot)
 	 */
 	private List<DLNAResource> getAdditionalFoldersAtRoot() {
 		List<DLNAResource> res = new ArrayList<DLNAResource>();
