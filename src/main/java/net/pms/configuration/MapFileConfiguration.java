@@ -6,18 +6,16 @@ package net.pms.configuration;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import net.pms.util.FileUtil;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.pms.util.FileUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -99,9 +97,7 @@ class FileSerializer implements JsonSerializer<File>, JsonDeserializer<File> {
 		return new JsonPrimitive(src.getAbsolutePath());
 	}
 
-	public File deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-		throws JsonParseException
-	{
+	public File deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		File file = new File(json.getAsJsonPrimitive().getAsString());
 
 		if (!FileUtil.isDirectoryReadable(file)) {
