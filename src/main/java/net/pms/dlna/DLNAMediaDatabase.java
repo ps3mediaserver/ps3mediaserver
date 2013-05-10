@@ -92,7 +92,7 @@ public class DLNAMediaDatabase implements Runnable {
 			url = String.format("jdbc:h2:%s\\%s/%s", profileDir, dir, dbName);
 			fileDir = new File(profileDir, dir);
 		} else {
-			url = Constants.START_URL + dir + "/" + dbName;
+			url = Constants.START_URL + dir + File.separatorChar + dbName;
 		}
 		dbDir = fileDir.getAbsolutePath();
 		LOGGER.debug("Using database URL: " + url);
