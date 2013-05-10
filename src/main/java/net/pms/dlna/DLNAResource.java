@@ -1303,22 +1303,19 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		addAttribute(sb, "restricted", "true");
 		endTag(sb);
 
-		String wireshark = "";
 		final DLNAMediaAudio firstAudioTrack = getMedia() != null ? getMedia().getFirstAudioTrack() : null;
 		if (firstAudioTrack != null && StringUtils.isNotBlank(firstAudioTrack.getSongname())) {
-			wireshark = firstAudioTrack.getSongname() + (getPlayer() != null && !configuration.isHideEngineNames() ? (" [" + getPlayer().name() + "]") : "");
 			addXMLTagAndAttribute(
 				sb,
 				"dc:title",
-				encodeXML(wireshark)
+				encodeXML(firstAudioTrack.getSongname() + (getPlayer() != null && !configuration.isHideEngineNames() ? (" [" + getPlayer().name() + "]") : ""))
 			);
 		} else { // Ditlew - org
 			// Ditlew
-			wireshark = ((isFolder() || getPlayer() == null) ? getDisplayName() : mediaRenderer.getUseSameExtension(getDisplayName(mediaRenderer)));
 			addXMLTagAndAttribute(
 				sb,
 				"dc:title",
-				encodeXML(wireshark)
+				encodeXML(((isFolder() || getPlayer() == null) ? getDisplayName() : mediaRenderer.getUseSameExtension(getDisplayName(mediaRenderer))))
 			);
 		}
 
@@ -1462,26 +1459,21 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				}
 
 				String tempString = "http-get:*:" + mime + ":" + (dlnaspec != null ? (dlnaspec + ";") : "") + getDlnaOrgOpFlags();
-				wireshark = wireshark + " " + tempString;
 				addAttribute(sb, "protocolInfo", tempString);
 
 				if (getFormat() != null && getFormat().isVideo() && getMedia() != null && getMedia().isMediaparsed()) {
 					if (getPlayer() == null && getMedia() != null) {
-						wireshark = wireshark + " " + "size=" + getMedia().getSize();
 						addAttribute(sb, "size", getMedia().getSize());
 					} else {
 						long transcoded_size = mediaRenderer.getTranscodedSize();
 						if (transcoded_size != 0) {
-							wireshark = wireshark + " " + "size=" + transcoded_size;
 							addAttribute(sb, "size", transcoded_size);
 						}
 					}
 					if (getMedia().getDuration() != null) {
 						if (getSplitRange().isEndLimitAvailable()) {
-							wireshark = wireshark + " " + "duration=" + DLNAMediaInfo.getDurationString(getSplitRange().getDuration());
 							addAttribute(sb, "duration", DLNAMediaInfo.getDurationString(getSplitRange().getDuration()));
 						} else {
-							wireshark = wireshark + " " + "duration=" + getMedia().getDurationString();
 							addAttribute(sb, "duration", getMedia().getDurationString());
 						}
 					}
@@ -1499,20 +1491,17 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					}
 				} else if (getFormat() != null && getFormat().isImage()) {
 					if (getMedia() != null && getMedia().isMediaparsed()) {
-						wireshark = wireshark + " " + "size=" + getMedia().getSize();
 						addAttribute(sb, "size", getMedia().getSize());
 						if (getMedia().getResolution() != null) {
 							addAttribute(sb, "resolution", getMedia().getResolution());
 						}
 					} else {
-						wireshark = wireshark + " " + "size=" + length();
 						addAttribute(sb, "size", length());
 					}
 				} else if (getFormat() != null && getFormat().isAudio()) {
 					if (getMedia() != null && getMedia().isMediaparsed()) {
 						addAttribute(sb, "bitrate", getMedia().getBitrate());
 						if (getMedia().getDuration() != null) {
-							wireshark = wireshark + " " + "duration=" + DLNAMediaInfo.getDurationString(getMedia().getDuration());
 							addAttribute(sb, "duration", DLNAMediaInfo.getDurationString(getMedia().getDuration()));
 						}
 						if (firstAudioTrack != null && firstAudioTrack.getSampleFrequency() != null) {
@@ -1523,7 +1512,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						}
 
 						if (getPlayer() == null) {
-							wireshark = wireshark + " " + "size=" + getMedia().getSize();
 							addAttribute(sb, "size", getMedia().getSize());
 						} else {
 							// Calculate WAV size
@@ -1543,24 +1531,18 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								}
 								int finalsize = (int) (getMedia().getDurationInSeconds() * defaultFrequency * 2 * na);
 								LOGGER.debug("Calculated size: " + finalsize);
-								wireshark = wireshark + " " + "size=" + finalsize;
 								addAttribute(sb, "size", finalsize);
 							}
 						}
 					} else {
-						wireshark = wireshark + " " + "size=" + length();
 						addAttribute(sb, "size", length());
 					}
 				} else {
-					wireshark = wireshark + " " + "size=" + DLNAMediaInfo.TRANS_SIZE + " duration=" + "09:59:59";
 					addAttribute(sb, "size", DLNAMediaInfo.TRANS_SIZE);
 					addAttribute(sb, "duration", "09:59:59");
 					addAttribute(sb, "bitrate", "1000000");
 				}
 				endTag(sb);
-				wireshark = wireshark + " " + getFileURL();
-				LOGGER.trace("Network debugger: " + wireshark);
-				wireshark = "";
 				sb.append(getFileURL());
 				closeTag(sb, "res");
 			}
