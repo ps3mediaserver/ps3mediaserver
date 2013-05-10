@@ -20,13 +20,16 @@ package net.pms.io;
 
 import com.sun.jna.Platform;
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
 public class PipeProcess {
-	private static final Logger logger = LoggerFactory.getLogger(PipeProcess.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PipeProcess.class);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
+
 	private String linuxPipeName;
 	private WindowsNamedPipe mk;
 	private boolean forcereconnect;
@@ -60,9 +63,9 @@ public class PipeProcess {
 
 	private static String getPipeName(String pipeName) {
 		try {
-			return PMS.getConfiguration().getTempFolder() + "/" + pipeName;
+			return configuration.getTempFolder() + "/" + pipeName;
 		} catch (IOException e) {
-			logger.error("Pipe may not be in temporary directory", e);
+			LOGGER.error("Pipe may not be in temporary directory", e);
 			return pipeName;
 		}
 	}
@@ -83,7 +86,7 @@ public class PipeProcess {
 
 	public ProcessWrapper getPipeProcess() {
 		if (!PMS.get().isWindows()) {
-			OutputParams mkfifo_vid_params = new OutputParams(PMS.getConfiguration());
+			OutputParams mkfifo_vid_params = new OutputParams(configuration);
 			mkfifo_vid_params.maxBufferSize = 0.1;
 			mkfifo_vid_params.log = true;
 			String cmdArray[];
@@ -97,6 +100,7 @@ public class PipeProcess {
 			ProcessWrapperImpl mkfifo_vid_process = new ProcessWrapperImpl(cmdArray, mkfifo_vid_params);
 			return mkfifo_vid_process;
 		}
+
 		return mk;
 	}
 
@@ -111,25 +115,29 @@ public class PipeProcess {
 		if (!PMS.get().isWindows()) {
 			return null;
 		}
+
 		return mk.getDirectBuffer();
 	}
 
 	public InputStream getInputStream() throws IOException {
 		if (!PMS.get().isWindows()) {
-			logger.trace("Opening file " + linuxPipeName + " for reading...");
+			LOGGER.trace("Opening file " + linuxPipeName + " for reading...");
 			RandomAccessFile raf = new RandomAccessFile(linuxPipeName, "r");
+
 			return new FileInputStream(raf.getFD());
 		}
+
 		return mk.getReadable();
 	}
 
 	public OutputStream getOutputStream() throws IOException {
 		if (!PMS.get().isWindows()) {
-			logger.trace("Opening file " + linuxPipeName + " for writing...");
+			LOGGER.trace("Opening file " + linuxPipeName + " for writing...");
 			RandomAccessFile raf = new RandomAccessFile(linuxPipeName, "rw");
-			FileOutputStream fout = new FileOutputStream(raf.getFD());
-			return fout;
+
+			return new FileOutputStream(raf.getFD());
 		}
+
 		return mk.getWritable();
 	}
 }

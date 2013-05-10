@@ -18,12 +18,8 @@
  */
 package net.pms.dlna;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.Player;
@@ -31,11 +27,17 @@ import net.pms.encoders.PlayerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * This class populates the file-specific transcode folder with content.
  */
 public class FileTranscodeVirtualFolder extends VirtualFolder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileTranscodeVirtualFolder.class);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private boolean resolved;
 
 	/**
@@ -95,11 +97,11 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 	}
 
 	private void addChapterFile(DLNAResource source) {
-		if (PMS.getConfiguration().isChapterSupport() && PMS.getConfiguration().getChapterInterval() > 0) {
+		if (configuration.isChapterSupport() && configuration.getChapterInterval() > 0) {
 			ChapterFileTranscodeVirtualFolder chapterFolder = new ChapterFileTranscodeVirtualFolder(
 				"Chapters:" + source.getDisplayName(),
 				null,
-				PMS.getConfiguration().getChapterInterval()
+				configuration.getChapterInterval()
 			);
 			DLNAResource newSeekChild = source.clone();
 			newSeekChild.setNoName(true);
@@ -131,8 +133,8 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 
 			// Only add the option if the renderer is compatible with the format
 			if (justStreamed.getFormat() != null
-					&& (justStreamed.getFormat().isCompatible(child.getMedia(),
-							renderer) || justStreamed.isSkipTranscode())) {
+					&& (justStreamed.getFormat().isCompatible(child.getMedia(),	renderer)
+						||justStreamed.isSkipTranscode())) {
 				justStreamed.setPlayer(null);
 				justStreamed.setMedia(child.getMedia());
 				justStreamed.setNoName(true);
@@ -140,9 +142,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 				addChapterFile(justStreamed);
 
 				if (renderer != null) {
-					LOGGER.debug("Duplicate " + child.getName()
-							+ " for direct streaming to renderer: "
-							+ renderer.getRendererName());
+					LOGGER.debug("Duplicate " + child.getName() + " for direct streaming to renderer: " + renderer.getRendererName());
 				}
 			}
 

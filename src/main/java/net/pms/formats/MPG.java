@@ -19,11 +19,13 @@
 package net.pms.formats;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.encoders.*;
 
 import java.util.ArrayList;
 
 public class MPG extends Format {
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	/**
 	 * {@inheritDoc} 
 	 */
@@ -37,13 +39,13 @@ public class MPG extends Format {
 		PMS r = PMS.get();
 		PMS r1 = PMS.get();
 		PMS r2 = PMS.get();
-		if (PMS.getConfiguration().getEnginesAsList(r.getRegistry()) == null || PMS.getConfiguration().getEnginesAsList(r1.getRegistry()).isEmpty() || PMS.getConfiguration().getEnginesAsList(r2.getRegistry()).contains("none"))
+		if (configuration.getEnginesAsList(r.getRegistry()) == null || configuration.getEnginesAsList(r1.getRegistry()).isEmpty() || configuration.getEnginesAsList(r2.getRegistry()).contains("none"))
 		{
 			return null;
 		}
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		PMS r3 = PMS.get();
-		for (String engine : PMS.getConfiguration().getEnginesAsList(r3.getRegistry())) {
+		for (String engine : configuration.getEnginesAsList(r3.getRegistry())) {
 			if (engine.equals(VLCVideo.ID)) {
 				a.add(VLCVideo.class);
 			} else if (engine.equals(MEncoderVideo.ID)) {
@@ -77,7 +79,7 @@ public class MPG extends Format {
 	public String[] getId() {
 		return new String[] { "mpg", "mpeg", "mpe", "mod", "tivo", "ty", "tmf",
 				"ts", "tp", "m2t", "m2ts", "m2p", "mts", "mp4", "m4v", "avi",
-				"wmv", "wm", "vob", "divx", "div", "vdr" };
+				"wmv", "wm", "vob", "divx", "div", "vdr" , "wtv"};
 	}
 
 	/**

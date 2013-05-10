@@ -19,6 +19,7 @@
 package net.pms.external;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ public class ExternalFactory {
 	 * For logging messages.
 	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalFactory.class);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 
 	/**
 	 * List of external listener class instances.
@@ -94,7 +96,7 @@ public class ExternalFactory {
 	 * and registered for later use.
 	 */
 	public static void lookup() {
-		File pluginDirectory = new File(PMS.getConfiguration().getPluginDirectory());
+		File pluginDirectory = new File(configuration.getPluginDirectory());
 		LOGGER.info("Searching for plugins in " + pluginDirectory.getAbsolutePath());
 
 		if (!pluginDirectory.exists()) {
