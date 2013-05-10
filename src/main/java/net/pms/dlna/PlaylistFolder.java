@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class PlaylistFolder extends DLNAResource {
-	private static final Logger logger = LoggerFactory.getLogger(PlaylistFolder.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PlaylistFolder.class);
 	private File playlistfile;
 	private boolean valid = true;
 
@@ -65,10 +65,10 @@ public class PlaylistFolder extends DLNAResource {
 					line = line.trim();
 					if (line.startsWith("#EXTM3U")) {
 						m3u = true;
-						logger.debug("Reading m3u playlist: " + playlistfile.getName());
+						LOGGER.debug("Reading m3u playlist: " + playlistfile.getName());
 					} else if (line.length() > 0 && line.equals("[playlist]")) {
 						pls = true;
-						logger.debug("Reading PLS playlist: " + playlistfile.getName());
+						LOGGER.debug("Reading PLS playlist: " + playlistfile.getName());
 					}
 				}
 				String fileName = null;
@@ -128,18 +128,20 @@ public class PlaylistFolder extends DLNAResource {
 						}
 					}
 				}
-				br.close();
+				if (br != null) {
+					br.close();
+				}
 			} catch (NumberFormatException e) {
-				logger.error(null, e);
+				LOGGER.error(null, e);
 			} catch (IOException e) {
-				logger.error(null, e);
+				LOGGER.error(null, e);
 			}
 			for (Entry entry : entries) {
 				if (entry == null) {
 					continue;
 				}
 				String fileName = entry.fileName;
-				logger.debug("Adding " + (pls ? "PLS " : (m3u ? "M3U " : "")) + "entry: " + entry);
+				LOGGER.debug("Adding " + (pls ? "PLS " : (m3u ? "M3U " : "")) + "entry: " + entry);
 				if (!fileName.toLowerCase().startsWith("http://") && !fileName.toLowerCase().startsWith("mms://")) {
 					File en1 = new File(playlistfile.getParentFile(), fileName);
 					File en2 = new File(fileName);
