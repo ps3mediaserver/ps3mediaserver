@@ -416,6 +416,7 @@ public class FileUtil {
 		}
 
 		universalDetector.dataEnd();
+		bufferedInputStream.close();
 		String encoding = universalDetector.getDetectedCharset();
 
 		if (encoding != null) {

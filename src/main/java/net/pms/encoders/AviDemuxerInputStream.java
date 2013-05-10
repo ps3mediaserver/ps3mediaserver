@@ -18,17 +18,16 @@
  */
 package net.pms.encoders;
 
-import java.io.*;
-import java.util.ArrayList;
-
-import net.pms.io.*;
 import net.pms.PMS;
+import net.pms.io.*;
 import net.pms.util.H264AnnexBInputStream;
 import net.pms.util.PCMAudioOutputStream;
 import net.pms.util.ProcessUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.ArrayList;
 
 public class AviDemuxerInputStream extends InputStream {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AviDemuxerInputStream.class);
@@ -82,6 +81,7 @@ public class AviDemuxerInputStream extends InputStream {
 				}
 			};
 
+			pin.close();
 			vOut = pout;
 			new Thread(r, "Avi Demuxer").start();
 		} else {
