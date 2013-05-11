@@ -35,6 +35,7 @@ import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
+import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
@@ -346,6 +347,21 @@ public class FFMpegVideo extends Player {
 			audioChannelOptions.add("" + ac);
 		}
 
+		// select audio stream
+		if (media != null) { // XXX may be null (e.g. for web video)
+			List<DLNAMediaAudio> audioTracks = media.getAudioTracksList();
+
+			if (audioTracks.size() > 1) {
+				// set the video stream
+				audioChannelOptions.add("-map");
+				audioChannelOptions.add("0:v");
+
+				// select the correct audio stream
+				audioChannelOptions.add("-map");
+				audioChannelOptions.add("0:a:" + audioTracks.indexOf(params.aid));
+			}
+		}
+
 		return audioChannelOptions;
 	}
 
@@ -565,31 +581,15 @@ public class FFMpegVideo extends Player {
 			return false;
 		}
 
-		DLNAMediaSubtitle subtitle = resource.getMediaSubtitle();
-
-		// Check whether the subtitle actually has a language defined,
-		// uninitialized DLNAMediaSubtitle objects have a null language.
-		if (subtitle != null && subtitle.getLang() != null) {
-			// The resource needs a subtitle, but PMS support for FFmpeg subtitles has not yet been implemented.
-			return false;
-		}
-
-		try {
-			String audioTrackName = resource.getMediaAudio().toString();
-			String defaultAudioTrackName = resource.getMedia().getAudioTracksList().get(0).toString();
-
-			if (!audioTrackName.equals(defaultAudioTrackName)) {
-				// PMS only supports playback of the default audio track for FFmpeg
+		// subtitle support is not yet implemented
+		DLNAMediaInfo media = resource.getMedia();
+		if (media != null) {
+			List<DLNAMediaSubtitle> subtitles = media.getSubtitleTracksList();
+			if (subtitles.size() > 0) {
 				return false;
 			}
-		} catch (NullPointerException e) {
-			LOGGER.trace("FFmpeg cannot determine compatibility based on audio track for "
-					+ resource.getSystemName());
-		} catch (IndexOutOfBoundsException e) {
-			LOGGER.trace("FFmpeg cannot determine compatibility based on default audio track for "
-					+ resource.getSystemName());
 		}
 
-		return false;
+		return true;
 	}
 }

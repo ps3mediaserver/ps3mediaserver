@@ -41,6 +41,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.*;
 import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 
 import javax.swing.*;
@@ -881,29 +882,15 @@ public class TSMuxerVideo extends Player {
 			return false;
 		}
 
-		DLNAMediaSubtitle subtitle = resource.getMediaSubtitle();
-
-		// Check whether the subtitle actually has a language defined,
-		// uninitialized DLNAMediaSubtitle objects have a null language.
-		if (subtitle != null && subtitle.getLang() != null) {
-			// The resource needs a subtitle, but PMS does not support subtitles for tsMuxeR.
-			return false;
-		}
-
-		try {
-			String audioTrackName = resource.getMediaAudio().toString();
-			String defaultAudioTrackName = resource.getMedia().getAudioTracksList().get(0).toString();
-	
-			if (!audioTrackName.equals(defaultAudioTrackName)) {
-				// PMS only supports playback of the default audio track for tsMuxeR
+		// subtitles are not supported by tsMuxeR
+		DLNAMediaInfo media = resource.getMedia();
+		if (media != null) {
+			List<DLNAMediaSubtitle> subtitles = media.getSubtitleTracksList();
+			if (subtitles.size() > 0) {
 				return false;
 			}
-		} catch (NullPointerException e) {
-			LOGGER.trace("tsMuxeR cannot determine compatibility based on audio track for " + resource.getSystemName());
-		} catch (IndexOutOfBoundsException e) {
-			LOGGER.trace("tsMuxeR cannot determine compatibility based on default audio track for " + resource.getSystemName());
 		}
 
-		return false;
+		return true;
 	}
 }
