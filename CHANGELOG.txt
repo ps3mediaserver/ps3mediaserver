@@ -4,6 +4,7 @@ Changelog:
 1.82.0 - 2013-??-??
 
     General:
+        - A lot of backports from UMS (thanks, all UMS developers)
         - Added support for M4A files encoded with Fraunhofer AAC
 
     Engines:
