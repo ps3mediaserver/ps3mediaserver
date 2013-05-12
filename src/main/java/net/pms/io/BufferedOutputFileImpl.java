@@ -116,11 +116,9 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 			copy = new byte[newSize];
 		} catch (OutOfMemoryError e) {
 			if (buffer.length == 0) {
-				LOGGER.trace("Cannot initialize buffer to " + formatter.format(newSize) + " bytes.");
+				LOGGER.error("Cannot initialize buffer to " + formatter.format(newSize) + " bytes.", e);
 			} else {
-				LOGGER.debug("Cannot grow buffer size from " + formatter.format(buffer.length) + " bytes to " + formatter.format(newSize) + " bytes.");
-				LOGGER.debug("Error given: " + e);
-
+				LOGGER.warn("Cannot grow buffer size from " + formatter.format(buffer.length) + " bytes to " + formatter.format(newSize) + " bytes.", e);
 			}
 
 			// Could not allocate the requested new size, use 30% of free memory instead.
@@ -140,11 +138,10 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 					// Try to allocate the realistic alternative size
 					copy = new byte[(int) realisticSize];
 				} catch (OutOfMemoryError e2) {
-					LOGGER.debug("Cannot grow buffer size from " + formatter.format(buffer.length) + " bytes to " + formatter.format(realisticSize) + " bytes either.");
-					LOGGER.trace("freeMemory: " + formatter.format(Runtime.getRuntime().freeMemory()));
-					LOGGER.trace("totalMemory: " + formatter.format(Runtime.getRuntime().totalMemory()));
-					LOGGER.trace("maxMemory: " + formatter.format(Runtime.getRuntime().maxMemory()));
-					LOGGER.debug("Error given: " + e2);
+					LOGGER.error("Cannot grow buffer size from " + formatter.format(buffer.length) + " bytes to " + formatter.format(realisticSize) + " bytes either.", e2);
+					LOGGER.error("freeMemory: " + formatter.format(Runtime.getRuntime().freeMemory()));
+					LOGGER.error("totalMemory: " + formatter.format(Runtime.getRuntime().totalMemory()));
+					LOGGER.error("maxMemory: " + formatter.format(Runtime.getRuntime().maxMemory()));
 
 					// Cannot allocate memory, no other option than to return the original.
 					return buffer;
@@ -153,13 +150,13 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 		}
 
 		if (buffer.length == 0) {
-			LOGGER.trace("Successfully initialized buffer to " + formatter.format(copy.length) + " bytes.");
+			LOGGER.info("Successfully initialized buffer to " + formatter.format(copy.length) + " bytes.");
 		} else {
 			try {
 				System.arraycopy(buffer, 0, copy, 0, buffer.length);
-				LOGGER.trace("Successfully grown buffer from " + formatter.format(buffer.length) + " bytes to " + formatter.format(copy.length) + " bytes.");
-			} catch (NullPointerException npe) {
-				LOGGER.trace("Cannot grow buffer size, error copying buffer contents.");
+				LOGGER.info("Successfully grown buffer from " + formatter.format(buffer.length) + " bytes to " + formatter.format(copy.length) + " bytes.");
+			} catch (Exception ex) {
+				LOGGER.error("Cannot grow buffer size, error copying buffer contents.", ex);
 			}
 		}
 
@@ -701,13 +698,13 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 		if (mb >= endOF - len) {
 			try {
 				System.arraycopy(buffer, mb, buf, off, endOF - mb - cut);
-			} catch (ArrayIndexOutOfBoundsException e) {
-				LOGGER.trace("Something went wrong with the buffer, error: " + e);
-				LOGGER.trace("buffer: " + buffer);
-				LOGGER.trace("mb: " + mb);
-				LOGGER.trace("buf: " + buf);
-				LOGGER.trace("off: " + off);
-				LOGGER.trace("endOF - mb - cut: " + (endOF - mb - cut));
+			} catch (ArrayIndexOutOfBoundsException ex) {
+				LOGGER.error("Something went wrong with the buffer.", ex);
+				LOGGER.error("buffer.length: " + formatter.format(buffer.length) + " bytes.");
+				LOGGER.error("mb: " + mb);
+				LOGGER.error("buf.length: " + formatter.format(buf.length) + " bytes.");
+				LOGGER.error("off: " + off);
+				LOGGER.error("endOF - mb - cut: " + (endOF - mb - cut));
 			}
 			return endOF - mb;
 		} else {
@@ -762,10 +759,11 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 
 		try {
 			return 0xff & buffer[(int) (readCount % maxMemorySize)];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			LOGGER.info("Buffer read ArrayIndexOutOfBoundsException error:");
-			LOGGER.info("readCount: \"" + readCount + "\"");
-			LOGGER.info("maxMemorySize: \"" + maxMemorySize + "\"");
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			LOGGER.error("Buffer read ArrayIndexOutOfBoundsException error.", ex);
+			LOGGER.error("buffer.length: " + formatter.format(buffer.length) + " bytes.");
+			LOGGER.error("readCount: \"" + readCount + "\"");
+			LOGGER.error("maxMemorySize: \"" + maxMemorySize + "\"");
 			return -1;
 		}
 	}
@@ -819,15 +817,15 @@ public class BufferedOutputFileImpl extends OutputStream implements BufferedOutp
 		if (debugOutput != null) {
 			try {
 				debugOutput.close();
-			} catch (IOException e) {
-				LOGGER.debug("Caught exception", e);
+			} catch (IOException ex) {
+				LOGGER.warn("Caught exception", ex);
 			}
 		}
 
 		timer.cancel();
 
 		if (buffer != null) {
-			LOGGER.trace("Destroying buffer");
+			LOGGER.info("Destroying buffer");
 			buffer = null;
 		}
 
