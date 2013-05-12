@@ -67,8 +67,8 @@ public class TsMuxerAudio extends TSMuxerVideo {
 	}
 
 	@Override
-	public int purpose() {
-		return AUDIO_SIMPLEFILE_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.AUDIO_FILE_PLAYER;
 	}
 
 	@Override

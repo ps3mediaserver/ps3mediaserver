@@ -458,8 +458,8 @@ public class FFMpegVideo extends Player {
 	}
 
 	@Override
-	public int purpose() {
-		return VIDEO_SIMPLEFILE_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.VIDEO_FILE_PLAYER;
 	}
 
 	@Override

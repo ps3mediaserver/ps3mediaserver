@@ -45,15 +45,17 @@ import java.util.StringTokenizer;
 
 public abstract class Player {
 	private static final Logger logger = LoggerFactory.getLogger(Player.class);
-
-	public static final int VIDEO_SIMPLEFILE_PLAYER = 0;
-	public static final int AUDIO_SIMPLEFILE_PLAYER = 1;
-	public static final int VIDEO_WEBSTREAM_PLAYER = 2;
-	public static final int AUDIO_WEBSTREAM_PLAYER = 3;
-	public static final int MISC_PLAYER = 4;
 	public static final String NATIVE = "NATIVE";
 
-	public abstract int purpose();
+	/**
+	 * @deprecated use {@link #getPurpose()} instead.
+	 */
+	@Deprecated
+	public final int purpose() {
+		return getPurpose().getId();
+	}
+
+	public abstract PlayerPurpose getPurpose();
 	public abstract JComponent config();
 	public abstract String id();
 	public abstract String name();

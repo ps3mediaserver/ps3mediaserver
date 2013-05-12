@@ -341,7 +341,7 @@ public class TranscodingTab {
 				}
 			});
 			tabbedPanel.add(en.id(), jc);
-			parent[p.purpose()].add(en);
+			parent[p.getPurpose().getId()].add(en);
 		}
 
 		for (int i = 0; i < tree.getRowCount(); i++) {

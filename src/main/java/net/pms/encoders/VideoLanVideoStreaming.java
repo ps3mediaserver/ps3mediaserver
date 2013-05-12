@@ -42,8 +42,8 @@ public class VideoLanVideoStreaming extends Player {
 	}
 
 	@Override
-	public int purpose() {
-		return VIDEO_WEBSTREAM_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.VIDEO_WEB_STREAM_PLAYER;
 	}
 
 	@Override

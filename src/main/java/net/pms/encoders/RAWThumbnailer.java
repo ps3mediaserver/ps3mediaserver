@@ -83,8 +83,8 @@ public class RAWThumbnailer extends Player {
 	}
 
 	@Override
-	public int purpose() {
-		return MISC_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.MISC_PLAYER;
 	}
 
 	@Override

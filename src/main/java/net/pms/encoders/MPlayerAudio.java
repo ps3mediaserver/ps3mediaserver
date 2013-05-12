@@ -62,8 +62,8 @@ public class MPlayerAudio extends Player {
 	}
 
 	@Override
-	public int purpose() {
-		return AUDIO_SIMPLEFILE_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.AUDIO_FILE_PLAYER;
 	}
 
 	@Override
