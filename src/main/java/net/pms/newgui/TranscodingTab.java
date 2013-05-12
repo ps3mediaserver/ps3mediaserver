@@ -28,6 +28,7 @@ import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.encoders.Player;
 import net.pms.encoders.PlayerFactory;
+import net.pms.encoders.PlayerPurpose;
 import net.pms.util.FormLayoutUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,11 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
+import static net.pms.encoders.PlayerPurpose.*;
 
 public class TranscodingTab {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TranscodingTab.class);
@@ -70,7 +75,7 @@ public class TranscodingTab {
 	private JTextField notranscode;
 	private JTextField maxbuffer;
 	private JComboBox nbcores;
-	private DefaultMutableTreeNode parent[];
+	private Map<PlayerPurpose, DefaultMutableTreeNode> engineTreeNodes;
 	private JPanel tabbedPanel;
 	private CardLayout cl;
 	private JTextField abitrate;
@@ -255,17 +260,17 @@ public class TranscodingTab {
 		tabbedPanel.add(commonEnc.id(), commonEnc.getConfigPanel());
 		root.add(commonEnc);
 
-		parent = new DefaultMutableTreeNode[5];
-		parent[0] = new DefaultMutableTreeNode(Messages.getString("TrTab2.14"));
-		parent[1] = new DefaultMutableTreeNode(Messages.getString("TrTab2.15"));
-		parent[2] = new DefaultMutableTreeNode(Messages.getString("TrTab2.16"));
-		parent[3] = new DefaultMutableTreeNode(Messages.getString("TrTab2.17"));
-		parent[4] = new DefaultMutableTreeNode(Messages.getString("TrTab2.18"));
-		root.add(parent[0]);
-		root.add(parent[1]);
-		root.add(parent[2]);
-		root.add(parent[3]);
-		root.add(parent[4]);
+		engineTreeNodes = new HashMap<PlayerPurpose, DefaultMutableTreeNode>(5);
+		engineTreeNodes.put(VIDEO_FILE_PLAYER, new DefaultMutableTreeNode(Messages.getString("TrTab2.14")));
+		engineTreeNodes.put(AUDIO_FILE_PLAYER, new DefaultMutableTreeNode(Messages.getString("TrTab2.15")));
+		engineTreeNodes.put(VIDEO_WEB_STREAM_PLAYER, new DefaultMutableTreeNode(Messages.getString("TrTab2.16")));
+		engineTreeNodes.put(AUDIO_WEB_STREAM_PLAYER, new DefaultMutableTreeNode(Messages.getString("TrTab2.17")));
+		engineTreeNodes.put(MISC_PLAYER, new DefaultMutableTreeNode(Messages.getString("TrTab2.18")));
+		root.add(engineTreeNodes.get(VIDEO_FILE_PLAYER));
+		root.add(engineTreeNodes.get(AUDIO_FILE_PLAYER));
+		root.add(engineTreeNodes.get(VIDEO_WEB_STREAM_PLAYER));
+		root.add(engineTreeNodes.get(AUDIO_WEB_STREAM_PLAYER));
+		root.add(engineTreeNodes.get(MISC_PLAYER));
 
 		tree = new JTree(new DefaultTreeModel(root)) {
 			private static final long serialVersionUID = -6703434752606636290L;
@@ -341,7 +346,7 @@ public class TranscodingTab {
 				}
 			});
 			tabbedPanel.add(en.id(), jc);
-			parent[p.getPurpose().getId()].add(en);
+			engineTreeNodes.get(p.getPurpose()).add(en);
 		}
 
 		for (int i = 0; i < tree.getRowCount(); i++) {
