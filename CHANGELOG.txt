@@ -7,16 +7,19 @@ Changelog:
         - Added support for M4A files encoded with Fraunhofer AAC
 
     Engines:
-        - Clean up engine names
-        - new engine: VLCWebVideo ("vlcwebvideo")
         - FFmpeg:
-            - fix bug that disabled FFmpeg for compatible files
-            - fix audio channel selection (thanks, valib)
+            - Fix bug that disabled FFmpeg for compatible files
+            - Fix audio channel selection (thanks, valib)
         - MEncoder Video:
             - Fixed bug that caused embedded subtitles to be displayed instead of external (thanks, SubJunk)
         - tsMuxeR:
             - Fixed 24-bit FLAC support with tsMuxeR (thanks, SubJunk)
-            - fix bug that disabled tsMuxeR for compatible files
+            - Fix bug that disabled tsMuxeR for compatible files
+        - dcraw Thumbnailer:
+            - Fix image transcoding
+        - Misc:
+            - New engine: VLCWebVideo ("vlcwebvideo")
+            - Clean up engine names
 
     Renderers:
         - PS3: TV series with sound problems after "previously on" block should now play normally with Keep AC-3 track option enabled (thanks, SubJunk)
