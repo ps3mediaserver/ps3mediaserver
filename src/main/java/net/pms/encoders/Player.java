@@ -45,7 +45,6 @@ import java.util.StringTokenizer;
 
 public abstract class Player {
 	private static final Logger logger = LoggerFactory.getLogger(Player.class);
-	public static final String NATIVE = "NATIVE";
 
 	/**
 	 * @deprecated use {@link #getPurpose()} instead.
@@ -69,6 +68,9 @@ public abstract class Player {
 	public abstract String[] args();
 
 	public abstract String mimeType();
+	public boolean isNative() {
+		return false;
+	}
 	public abstract String executable();
 	private static List<FinalizeTranscoderArgsListener> finalizeTranscoderArgsListeners =
 		new ArrayList<FinalizeTranscoderArgsListener>();

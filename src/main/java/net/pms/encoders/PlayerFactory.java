@@ -162,7 +162,7 @@ public final class PlayerFactory {
 		boolean ok = false;
 		allPlayers.add(player);
 
-		if (Player.NATIVE.equals(player.executable())) {
+		if (player.isNative()) {
 			ok = true;
 		} else {
 			if (Platform.isWindows()) {
