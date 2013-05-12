@@ -81,8 +81,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *         OutputParams params
  *     )
  */
-public class FFMpegVideo extends Player {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FFMpegVideo.class);
+public class FFmpegVideo extends Player {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FFmpegVideo.class);
 	private static final String DEFAULT_QSCALE = "3";
 	private static final String SUB_DIR = "subs";
 	protected static PmsConfiguration configuration;
@@ -95,12 +95,12 @@ public class FFMpegVideo extends Player {
 	private JCheckBox videoRemuxCheckBox;
 
 	@Deprecated
-	public FFMpegVideo() {
+	public FFmpegVideo() {
 		this(PMS.getConfiguration());
 	}
 	
-	public FFMpegVideo(PmsConfiguration configuration) {
-		FFMpegVideo.configuration = configuration;
+	public FFmpegVideo(PmsConfiguration configuration) {
+		FFmpegVideo.configuration = configuration;
 	}
 
 	// FIXME we have an id() accessor for this; no need for the field to be public
@@ -1164,7 +1164,7 @@ public class FFMpegVideo extends Player {
 				Metadata:
 				  title           : eng
 
-				FFMpeg sub track ids would be completely different. We should pass real ids.
+				FFmpeg sub track ids would be completely different. We should pass real ids.
 			 */
 			cmdList.add("0:" + (params.sid.getId() + media.getAudioTracksList().size() + 1));
 		}

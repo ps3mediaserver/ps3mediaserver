@@ -386,7 +386,7 @@ public class DLNAMediaInfo implements Cloneable {
 		setThumb(forThumbnail.getThumb());
 	}
 
-	private ProcessWrapperImpl getFFMpegThumbnail(InputFile media) {
+	private ProcessWrapperImpl getFFmpegThumbnail(InputFile media) {
 		String args[] = new String[14];
 		args[0] = getFfmpegPath();
 		boolean dvrms = media.getFile() != null && media.getFile().getAbsolutePath().toLowerCase().endsWith("dvr-ms");
@@ -745,7 +745,7 @@ public class DLNAMediaInfo implements Cloneable {
 
 			if (ffmpeg_parsing) {
 				if (!thumbOnly || !configuration.isUseMplayerForVideoThumbs()) {
-					pw = getFFMpegThumbnail(inputFile);
+					pw = getFFmpegThumbnail(inputFile);
 				}
 
 				String input = "-";
@@ -1406,7 +1406,7 @@ public class DLNAMediaInfo implements Cloneable {
 			}
 		};
 
-		Thread failsafe = new Thread(r, "FFMpeg AnnexB Frame Header Failsafe");
+		Thread failsafe = new Thread(r, "FFmpeg AnnexB Frame Header Failsafe");
 		failsafe.start();
 		pw.runInSameThread();
 

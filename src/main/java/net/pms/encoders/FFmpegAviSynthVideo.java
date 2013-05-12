@@ -18,6 +18,16 @@
  */
 package net.pms.encoders;
 
+import net.pms.PMS;
+import net.pms.dlna.DLNAMediaSubtitle;
+import net.pms.dlna.DLNAResource;
+import net.pms.formats.Format;
+import net.pms.formats.v2.SubtitleType;
+import net.pms.util.ProcessUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,26 +35,14 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import javax.swing.JComponent;
-
-import net.pms.PMS;
-import net.pms.dlna.DLNAMediaSubtitle;
-import net.pms.dlna.DLNAResource;
-import net.pms.formats.Format;
-import net.pms.formats.v2.SubtitleType;
-import net.pms.util.ProcessUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * This class handles the Windows specific AviSynth/FFmpeg player combination. 
  */
-public class FFMpegAviSynthVideo extends FFMpegVideo {
-	private static final Logger logger = LoggerFactory.getLogger(FFMpegAviSynthVideo.class);
+public class FFmpegAviSynthVideo extends FFmpegVideo {
+	private static final Logger logger = LoggerFactory.getLogger(FFmpegAviSynthVideo.class);
 	public static final String ID      = "avsffmpeg";
 
-	public FFMpegAviSynthVideo() {
+	public FFmpegAviSynthVideo() {
 		super(PMS.getConfiguration());
 	}
 

@@ -91,7 +91,7 @@ public class PmsConfiguration {
 	private static final String KEY_DVDISO_THUMBNAILS = "dvd_isos_thumbnails";
 	private static final String KEY_EMBED_DTS_IN_PCM = "embed_dts_in_pcm";
 	private static final String KEY_ENGINES = "engines";
-	private static final String KEY_FFMPEG_ALTERNATIVE_PATH = "alternativeffmpegpath"; // deprecated: FFMpegDVRMSRemux will be removed and DVR-MS will be transcoded
+	private static final String KEY_FFMPEG_ALTERNATIVE_PATH = "alternativeffmpegpath"; // deprecated: FFmpegDVRMSRemux will be removed and DVR-MS will be transcoded
 	private static final String KEY_FFMPEG_MULTITHREADING = "ffmpeg_multithreading";
 	private static final String KEY_FFMPEG_MUX_COMPATIBLE = "ffmpeg_mux_compatible";
 	private static final String KEY_FIX_25FPS_AV_MISMATCH = "fix_25fps_av_mismatch";

@@ -46,8 +46,8 @@ import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
-public class FFMpegWebVideo extends FFMpegVideo {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FFMpegWebVideo.class);
+public class FFmpegWebVideo extends FFmpegVideo {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FFmpegWebVideo.class);
 	private static List<String> protocols;
 	public static PatternMap<Object> excludes = new PatternMap<Object>();
 
@@ -87,7 +87,7 @@ public class FFMpegWebVideo extends FFMpegVideo {
 		return false;
 	}
 
-	public FFMpegWebVideo(PmsConfiguration configuration) {
+	public FFmpegWebVideo(PmsConfiguration configuration) {
 		super(configuration);
 
 		if (!init) {

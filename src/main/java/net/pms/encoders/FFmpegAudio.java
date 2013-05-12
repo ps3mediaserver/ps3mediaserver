@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FFMpegAudio extends FFMpegVideo {
+public class FFmpegAudio extends FFmpegVideo {
 	public static final String ID = "ffmpegaudio";
 	private final PmsConfiguration configuration;
 
@@ -48,7 +48,7 @@ public class FFMpegAudio extends FFMpegVideo {
 	@Deprecated
 	JCheckBox noresample;
 
-	public FFMpegAudio(PmsConfiguration configuration) {
+	public FFmpegAudio(PmsConfiguration configuration) {
 		super(configuration);
 		this.configuration = configuration;
 	}

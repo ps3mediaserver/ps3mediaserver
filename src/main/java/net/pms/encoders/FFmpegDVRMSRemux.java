@@ -42,7 +42,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FFMpegDVRMSRemux extends Player {
+public class FFmpegDVRMSRemux extends Player {
 	private JTextField altffpath;
 	public static final String ID = "ffmpegdvrmsremux";
 
@@ -66,7 +66,7 @@ public class FFMpegDVRMSRemux extends Player {
 		return false;
 	}
 
-	public FFMpegDVRMSRemux() {
+	public FFmpegDVRMSRemux() {
 	}
 
 	@Override
@@ -117,16 +117,16 @@ public class FFMpegDVRMSRemux extends Player {
 		DLNAMediaInfo media,
 		OutputParams params
 	) throws IOException {
-		return getFFMpegTranscode(filename, dlna, media, params);
+		return getFFmpegTranscode(filename, dlna, media, params);
 	}
 
 	// pointless redirection of launchTranscode
 	@Deprecated
-	protected ProcessWrapperImpl getFFMpegTranscode(
-		String filename,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
+	protected ProcessWrapperImpl getFFmpegTranscode(
+			String filename,
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params
 	) throws IOException {
 		PmsConfiguration configuration = PMS.getConfiguration();
 		String ffmpegAlternativePath = configuration.getFfmpegAlternativePath();

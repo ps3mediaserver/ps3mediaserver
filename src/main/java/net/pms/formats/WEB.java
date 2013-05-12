@@ -67,8 +67,8 @@ public class WEB extends Format {
 		} else {
 			PMS r = PMS.get();
 			for (String engine : configuration.getEnginesAsList(r.getRegistry())) {
-				if (engine.equals(FFMpegWebVideo.ID)) {
-					a.add(FFMpegWebVideo.class);
+				if (engine.equals(FFmpegWebVideo.ID)) {
+					a.add(FFmpegWebVideo.class);
 				} else if (engine.equals(MEncoderWebVideo.ID)) {
 					a.add(MEncoderWebVideo.class);
 				} else if (engine.equals(VideoLanVideoStreaming.ID)) {
