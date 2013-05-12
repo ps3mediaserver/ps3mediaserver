@@ -17,6 +17,7 @@ Changelog:
             - Fix bug that disabled tsMuxeR for compatible files
         - dcraw Thumbnailer:
             - Fix image transcoding
+            - Add support for more extensions
         - Misc:
             - New engine: VLCWebVideo ("vlcwebvideo")
             - Clean up engine names
