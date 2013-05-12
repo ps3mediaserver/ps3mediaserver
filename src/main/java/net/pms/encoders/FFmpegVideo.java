@@ -593,7 +593,7 @@ public class FFmpegVideo extends Player {
 		cmdList.add("-threads");
 		cmdList.add("" + nThreads);
 
-		final boolean isTsMuxeRVideoEngineEnabled = configuration.getEnginesAsList(PMS.get().getRegistry()).contains(TSMuxerVideo.ID);
+		final boolean isTsMuxeRVideoEngineEnabled = configuration.getEnginesAsList(PMS.get().getRegistry()).contains(TsMuxeRVideo.ID);
 
 		setAc3Remux(false);
 		setDtsRemux(false);
@@ -800,7 +800,7 @@ public class FFmpegVideo extends Player {
 			PipeProcess pipe;
 			pipe = new PipeProcess(System.currentTimeMillis() + "tsmuxerout.ts");
 
-			TSMuxerVideo ts = new TSMuxerVideo(configuration);
+			TsMuxeRVideo ts = new TsMuxeRVideo(configuration);
 			File f = new File(configuration.getTempFolder(), "pms-tsmuxer.meta");
 			String cmd[] = new String[]{ ts.executable(), f.getAbsolutePath(), pipe.getInputPipe() };
 			pw = new ProcessWrapperImpl(cmd, params);

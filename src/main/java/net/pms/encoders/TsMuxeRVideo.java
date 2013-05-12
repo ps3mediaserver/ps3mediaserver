@@ -45,15 +45,15 @@ import static net.pms.formats.v2.AudioUtils.getLPCMChannelMappingForMencoder;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.startsWith;
 
-public class TSMuxerVideo extends Player {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TSMuxerVideo.class);
+public class TsMuxeRVideo extends Player {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TsMuxeRVideo.class);
 	private static final String COL_SPEC = "left:pref, 0:grow";
 	private static final String ROW_SPEC = "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow";
 
 	public static final String ID = "tsmuxer";
 	private PmsConfiguration configuration;
 
-	public TSMuxerVideo(PmsConfiguration configuration) {
+	public TsMuxeRVideo(PmsConfiguration configuration) {
 		this.configuration = configuration;
 	}
 
@@ -130,7 +130,7 @@ public class TSMuxerVideo extends Player {
 			videoType = "V_MPEG-2";
 		}
 
-		if (this instanceof TsMuxerAudio && media.getFirstAudioTrack() != null) {
+		if (this instanceof TsMuxeRAudio && media.getFirstAudioTrack() != null) {
 			String fakeFileName = writeResourceToFile("/resources/images/fake.jpg");
 			ffVideoPipe = new PipeIPCProcess(System.currentTimeMillis() + "fakevideo", System.currentTimeMillis() + "videoout", false, true);
 
@@ -525,7 +525,7 @@ public class TSMuxerVideo extends Player {
 		pw.println(" --vbv-len=500");
 
 			String videoparams = "level=4.1, insertSEI, contSPS, track=1";
-			if (this instanceof TsMuxerAudio) {
+			if (this instanceof TsMuxeRAudio) {
 				videoparams = "track=224";
 			}
 			if (configuration.isFix25FPSAvMismatch()) {
@@ -574,11 +574,11 @@ public class TSMuxerVideo extends Player {
 				// AC-3 remux takes priority
 				type = "A_AC3";
 			} else {
-				if ( pcm || this instanceof TsMuxerAudio )
+				if ( pcm || this instanceof TsMuxeRAudio)
 				{
 					type = "A_LPCM";
 				}
-				if ( dtsRemux || this instanceof TsMuxerAudio )
+				if ( dtsRemux || this instanceof TsMuxeRAudio)
 				{
 					type = "A_LPCM";
 					if (params.mediaRenderer.isMuxDTSToMpeg()) {

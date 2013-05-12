@@ -136,8 +136,8 @@ public final class PlayerFactory {
 		registerPlayer(new MEncoderWebVideo(configuration));
 		registerPlayer(new MPlayerWebVideoDump(configuration));
 		registerPlayer(new MPlayerWebAudio(configuration));
-		registerPlayer(new TSMuxerVideo(configuration));
-		registerPlayer(new TsMuxerAudio(configuration));
+		registerPlayer(new TsMuxeRVideo(configuration));
+		registerPlayer(new TsMuxeRAudio(configuration));
 		registerPlayer(new VideoLanAudioStreaming(configuration));
 		registerPlayer(new VideoLanVideoStreaming(configuration));
 

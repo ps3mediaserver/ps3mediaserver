@@ -28,10 +28,10 @@ import net.pms.io.ProcessWrapper;
 import javax.swing.*;
 import java.io.IOException;
 
-public class TsMuxerAudio extends TSMuxerVideo {
+public class TsMuxeRAudio extends TsMuxeRVideo {
 	public static final String ID = "tsmuxeraudio";
 
-	public TsMuxerAudio(PmsConfiguration configuration) {
+	public TsMuxeRAudio(PmsConfiguration configuration) {
 		super(configuration);
 	}
 

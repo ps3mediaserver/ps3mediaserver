@@ -1420,7 +1420,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 							if (getPlayer() != null) {
 								// Do we have some mpegts to offer?
-								boolean mpegTsMux = TSMuxerVideo.ID.equals(getPlayer().id()) || VideoLanVideoStreaming.ID.equals(getPlayer().id());
+								boolean mpegTsMux = TsMuxeRVideo.ID.equals(getPlayer().id()) || VideoLanVideoStreaming.ID.equals(getPlayer().id());
 								boolean isMuxableResult = getMedia().isMuxable(mediaRenderer);
 								if (!mpegTsMux) {
 									mpegTsMux = MEncoderVideo.ID.equals(getPlayer().id()) && mediaRenderer.isTranscodeToMPEGTSAC3();

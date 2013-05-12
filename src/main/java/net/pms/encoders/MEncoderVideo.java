@@ -856,7 +856,7 @@ public class MEncoderVideo extends Player {
 		//	&& (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
 		final boolean ps3_and_stereo_and_384_kbits = false;
 
-		final boolean isTSMuxerVideoEngineEnabled = PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry()).contains(TSMuxerVideo.ID);
+		final boolean isTSMuxerVideoEngineEnabled = PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry()).contains(TsMuxeRVideo.ID);
 		final boolean mencoderAC3RemuxAudioDelayBug = (params.aid != null) && (params.aid.getAudioProperties().getAudioDelay() != 0) && (params.timeseek == 0);
         if (!mencoderAC3RemuxAudioDelayBug && configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
 			// AC3 remux takes priority
@@ -1881,7 +1881,7 @@ public class MEncoderVideo extends Player {
 
 				pipe = new PipeProcess(System.currentTimeMillis() + "tsmuxerout.ts");
 
-				TSMuxerVideo ts = new TSMuxerVideo(configuration);
+				TsMuxeRVideo ts = new TsMuxeRVideo(configuration);
 				File f = new File(configuration.getTempFolder(), "pms-tsmuxer.meta");
 				String cmd[] = new String[]{ ts.executable(), f.getAbsolutePath(), pipe.getInputPipe() };
 				pw = new ProcessWrapperImpl(cmd, params);
