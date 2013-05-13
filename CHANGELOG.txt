@@ -3,9 +3,6 @@ Changelog:
 
 1.82.0 - 2013-??-??
 
-    General:
-        - Added support for M4A files encoded with Fraunhofer AAC
-
     Engines:
         - FFmpeg:
             - Fix bug that disabled FFmpeg for compatible files
@@ -27,6 +24,8 @@ Changelog:
 
     Misc:
         - Fix issue with VirtualBox and PMS launchers (thanks, thepadawan42)
+        - Added support for M4A files encoded with Fraunhofer AAC
+        - The sample WEB.conf is now installed to the profile directory (if it doesn't already exist) on Windows
 
 1.81.0 - 2013-04-21
 
