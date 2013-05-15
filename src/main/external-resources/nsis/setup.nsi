@@ -87,7 +87,6 @@ Section "Program Files"
   ReadENVStr $R0 ALLUSERSPROFILE
   SetOutPath "$R0\PMS"
   AccessControl::GrantOnFile "$R0\PMS" "(S-1-5-32-545)" "FullAccess"
-  File "${PROJECT_BASEDIR}\src\main\external-resources\WEB.conf"
 SectionEnd
 
 Section "Start Menu Shortcuts"
