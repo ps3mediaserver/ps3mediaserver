@@ -215,9 +215,9 @@ public class FFMpegAudio extends FFMpegVideo {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		return PlayerUtil.isType(resource, Format.AUDIO, Format.Identifier.FLAC)
-			|| PlayerUtil.isType(resource, Format.AUDIO, Format.Identifier.M4A)
-			|| PlayerUtil.isType(resource, Format.AUDIO, Format.Identifier.OGG)
-			|| PlayerUtil.isType(resource, Format.AUDIO, Format.Identifier.WAV);
+		return PlayerUtil.isAudio(resource, Format.Identifier.FLAC)
+			|| PlayerUtil.isAudio(resource, Format.Identifier.M4A)
+			|| PlayerUtil.isAudio(resource, Format.Identifier.OGG)
+			|| PlayerUtil.isAudio(resource, Format.Identifier.WAV);
 	}
 }

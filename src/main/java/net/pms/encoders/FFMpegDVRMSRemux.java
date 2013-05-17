@@ -223,6 +223,6 @@ public class FFMpegDVRMSRemux extends Player {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		return PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.DVRMS);
+		return PlayerUtil.isVideo(resource, Format.Identifier.DVRMS);
 	}
 }

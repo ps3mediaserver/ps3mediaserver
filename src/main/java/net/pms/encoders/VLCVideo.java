@@ -132,7 +132,8 @@ public class VLCVideo extends Player {
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
 		// only handle local video - web video is handled by VLCWebVideo
-		return PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.WEB, false);
+		return PlayerUtil.isVideo(resource)
+			&& !PlayerUtil.isWebVideo(resource);
 	}
 
 	/**

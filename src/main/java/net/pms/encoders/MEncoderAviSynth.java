@@ -145,7 +145,7 @@ public class MEncoderAviSynth extends MEncoderVideo {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		return PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.MKV)
-			|| PlayerUtil.isType(resource, Format.VIDEO, Format.Identifier.MPG);
+		return PlayerUtil.isVideo(resource, Format.Identifier.MKV)
+			|| PlayerUtil.isVideo(resource, Format.Identifier.MPG);
 	}
 }
