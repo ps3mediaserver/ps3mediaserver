@@ -9,6 +9,7 @@ Changelog:
             - Fix audio channel selection (thanks, valib)
         - MEncoder Video:
             - Fixed bug that caused embedded subtitles to be displayed instead of external (thanks, SubJunk)
+            - Fixed handling of per-renderer aspect-ratio settings (thanks, ExSport)
         - tsMuxeR:
             - Fixed 24-bit FLAC support with tsMuxeR (thanks, SubJunk)
             - Fix bug that disabled tsMuxeR for compatible files

@@ -1153,15 +1153,11 @@ public class MEncoderVideo extends Player {
 		}
 
 		if (isNotBlank(rendererMencoderOptions)) {
-			/*
-			 * ignore the renderer's custom MEncoder options if a) we're streaming a DVD (i.e. via dvd://)
-			 * or b) the renderer's MEncoder options contain overscan settings (those are handled
-			 * separately)
-			 */
-
+			// don't use the renderer-specific options if they break DVD streaming
 			// XXX we should weed out the unused/unwanted settings and keep the rest
 			// (see sanitizeArgs()) rather than ignoring the options entirely
-			if (rendererMencoderOptions.contains("expand=") || dvd) {
+			if (dvd && rendererMencoderOptions.contains("expand=")) {
+				LOGGER.warn("renderer MEncoder options are incompatible with DVD streaming; ignoring: " + rendererMencoderOptions);
 				rendererMencoderOptions = null;
 			}
 		}
