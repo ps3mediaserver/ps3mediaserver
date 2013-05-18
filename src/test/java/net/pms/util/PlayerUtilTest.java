@@ -53,7 +53,7 @@ public class PlayerUtilTest {
 	public void setUp() {
 		// Silence all log messages from the PMS code that is being tested
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        context.reset();
+		context.reset();
 
 		// initialise the fixtures
 		// XXX we need to call isValid to call checktype(), which is needed to initialise the format
@@ -72,7 +72,7 @@ public class PlayerUtilTest {
 	}
 
 	@Test
-	// sanityCheck
+	// sanity check
 	public void testFixtures() {
 		assertNotNull(image);
 		assertNotNull(image.getFormat());

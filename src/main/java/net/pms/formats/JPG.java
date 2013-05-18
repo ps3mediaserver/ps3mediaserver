@@ -40,7 +40,12 @@ public class JPG extends Format {
 	 */
 	@Override
 	public String[] getId() {
-		return new String[]{"jpeg", "jpg", "jpe", "mpo"};
+		return new String[]{
+			"jpe",
+			"jpeg",
+			"jpg",
+			"mpo",
+		};
 	}
 
 	/**
