@@ -324,8 +324,8 @@ public class VLCVideo extends Player {
 		cmdList.add("--sout");
 		cmdList.add(transcodeSpec);
 
-		// Force VLC to die when finished
-		cmdList.add("vlc:// quit");
+		// Force VLC to exit when finished
+		cmdList.add("vlc://quit");
 
 		// Add any extra parameters
 		if (!extraParams.getText().trim().isEmpty()) { // Add each part as a new item
