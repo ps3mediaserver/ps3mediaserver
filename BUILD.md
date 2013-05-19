@@ -43,7 +43,7 @@ First all required software has to be installed:
 
     * (Windows) http://www.oracle.com/technetwork/java/javase/downloads/index.html 
         - Be sure to remember the install location. 
-    * (Linux)   `sudo apt-get install sun-java6-jdk`
+    * (Linux)   `sudo apt-get install openjdk-7-jdk`
     * (Mac OSX) https://developer.apple.com/downloads/index.action?name=for%20Xcode%20-
 	- Look for java Developer Package
 
