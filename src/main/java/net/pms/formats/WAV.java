@@ -45,6 +45,8 @@ public class WAV extends Format {
 		return true;
 	}
 
+	// XXX unused
+	@Deprecated
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();

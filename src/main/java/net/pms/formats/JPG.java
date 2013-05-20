@@ -63,6 +63,8 @@ public class JPG extends Format {
 		return true;
 	}
 
+	// XXX unused
+	@Deprecated
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		return null;

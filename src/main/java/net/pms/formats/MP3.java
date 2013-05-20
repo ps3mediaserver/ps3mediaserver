@@ -58,6 +58,8 @@ public class MP3 extends Format {
 		return true;
 	}
 
+	// XXX unused
+	@Deprecated
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		return null;

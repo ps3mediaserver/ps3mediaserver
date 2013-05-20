@@ -33,6 +33,8 @@ public class AudioAsVideo extends MKV {
 		return Identifier.AUDIO_AS_VIDEO;
 	}
 
+	// XXX unused
+	@Deprecated
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();

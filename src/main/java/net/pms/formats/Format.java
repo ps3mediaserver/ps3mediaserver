@@ -154,6 +154,9 @@ public abstract class Format implements Cloneable {
 	}
 
 	public abstract boolean transcodable();
+
+	// XXX unused
+	@Deprecated
 	public abstract ArrayList<Class<? extends Player>> getProfiles();
 
 	public String mimeType() {

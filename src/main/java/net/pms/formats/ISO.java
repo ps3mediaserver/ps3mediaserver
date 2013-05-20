@@ -45,7 +45,8 @@ public class ISO extends MPG {
 		return Identifier.ISO;
 	}
 
-
+	// XXX unused
+	@Deprecated
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> list = new ArrayList<Class<? extends Player>>();

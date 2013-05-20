@@ -88,6 +88,8 @@ public class RAW extends JPG {
 		return false;
 	}
 
+	// XXX unused
+	@Deprecated
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> profiles = new ArrayList<Class<? extends Player>>();

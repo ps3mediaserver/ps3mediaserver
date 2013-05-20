@@ -32,6 +32,8 @@ public class MPG extends Format {
 		return Identifier.MPG;
 	}
 
+	// XXX unused
+	@Deprecated
 	@Override
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		PMS r = PMS.get();
