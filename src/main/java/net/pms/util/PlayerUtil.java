@@ -4,6 +4,11 @@ import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 
 public class PlayerUtil {
+	/**
+	 * This class is not meant to be instantiated.
+	 */
+	private PlayerUtil() { }
+
 	// Returns whether or not the supplied DLNA resource matches the supplied format and format identifier
 	private static boolean isType(DLNAResource resource, int matchType, Format.Identifier matchIdentifier) {
 		boolean match = false;
@@ -17,7 +22,7 @@ public class PlayerUtil {
 			if ((format != null) && ((format.getType() & matchType) == matchType)) {
 				if (matchIdentifier == null) { // match any identifier
 					match = true;
-				} else { // match the specified identifier
+				} else { // match the specified format identifier
 					Format.Identifier identifier = format.getIdentifier();
 					match = identifier.equals(matchIdentifier);
 				}
@@ -41,7 +46,8 @@ public class PlayerUtil {
 	 * Returns whether or not the supplied DLNA resource is an image file.
 	 *
 	 * @param resource the DLNA resource
-	 * @return true if the DLNA resource is an image file with the specified identifier, false otherwise
+	 * @param identifier the format identifier to match against
+	 * @return true if the DLNA resource is an image file with the specified format identifier, false otherwise
 	 */
 	public static boolean isImage(DLNAResource resource, Format.Identifier identifier) {
 		return isType(resource, Format.IMAGE, identifier);
@@ -61,7 +67,8 @@ public class PlayerUtil {
 	 * Returns whether or not the supplied DLNA resource is an audio file.
 	 *
 	 * @param resource the DLNA resource
-	 * @return true if the DLNA resource is an audio file with the specified identifier, false otherwise
+	 * @param identifier the format identifier to match against
+	 * @return true if the DLNA resource is an audio file with the specified format identifier, false otherwise
 	 */
 	public static boolean isAudio(DLNAResource resource, Format.Identifier identifier) {
 		return isType(resource, Format.AUDIO, identifier);
@@ -81,8 +88,8 @@ public class PlayerUtil {
 	 * Returns whether or not the supplied DLNA resource is a video file.
 	 *
 	 * @param resource the DLNA resource
-	 * @param identifier the {@link Format.Identifier} to match against
-	 * @return true if the DLNA resource is a video file with the specified identifier, false otherwise.
+	 * @param identifier the format identifier to match against
+	 * @return true if the DLNA resource is a video file with the specified format identifier, false otherwise.
 	 */
 	public static boolean isVideo(DLNAResource resource, Format.Identifier identifier) {
 		return isType(resource, Format.VIDEO, identifier);
