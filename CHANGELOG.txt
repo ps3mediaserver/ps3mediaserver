@@ -6,6 +6,7 @@ Changelog:
     General:
         - A lot of backports from UMS (thanks, all UMS developers)
         - Added support for M4A files encoded with Fraunhofer AAC
+        - More accurate checks for reference frames count to allow more videos to be remuxed instead of transcoding
 
     Engines:
         MEncoder Video:
