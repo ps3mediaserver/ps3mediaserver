@@ -176,6 +176,8 @@ public class DLNAMediaInfo implements Cloneable {
 	@Deprecated
 	public int bitsPerPixel;
 
+	private byte referenceFrameCount = -1;
+
 	private List<DLNAMediaAudio> audioTracks = new ArrayList<DLNAMediaAudio>();
 	private List<DLNAMediaSubtitle> subtitleTracks = new ArrayList<DLNAMediaSubtitle>();
 
@@ -1698,6 +1700,25 @@ public class DLNAMediaInfo implements Cloneable {
 	 */
 	public void setBitsPerPixel(int bitsPerPixel) {
 		this.bitsPerPixel = bitsPerPixel;
+	}
+
+	/**
+	 * @return reference frame count for video stream or {@code -1} if not parsed.
+	 */
+	public byte getReferenceFrameCount() {
+		return referenceFrameCount;
+	}
+
+	/**
+	 * Sets reference frame count for video stream or {@code -1} if not parsed.
+	 *
+	 * @param referenceFrameCount
+	 */
+	public void setReferenceFrameCount(byte referenceFrameCount) {
+		if (referenceFrameCount < -1) {
+			throw new IllegalArgumentException("referenceFrameCount should be >= -1.");
+		}
+		this.referenceFrameCount = referenceFrameCount;
 	}
 
 	/**

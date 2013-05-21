@@ -93,6 +93,8 @@ public class LibMediaInfoParser {
 								}
 							} else if (key.equals("Duration/String1") && streamType == MediaInfo.StreamType.General) {
 								media.setDuration(getDuration(value));
+							} else if (key.equals("Format_Settings_RefFrames/String") && streamType == MediaInfo.StreamType.Video) {
+								media.setReferenceFrameCount(getReferenceFrameCount(value));
 							} else if (key.equals("Format_Settings_QPel") && streamType == MediaInfo.StreamType.Video) {
 								media.putExtra(FormatConfiguration.MI_QPEL, value);
 							} else if (key.equals("Format_Settings_GMC") && streamType == MediaInfo.StreamType.Video) {
@@ -423,6 +425,18 @@ public class LibMediaInfoParser {
 
 		int pixels = Integer.parseInt(value);
 		return pixels;
+	}
+
+	public static byte getReferenceFrameCount(String value) {
+		try {
+			// Values like "16 frame3"
+			return Byte.parseByte(StringUtils.substringBefore(value, " "));
+		} catch (NumberFormatException ex) {
+			// Not parsed
+			LOGGER.warn("Could not parse ReferenceFrameCount value {}." , value);
+			LOGGER.warn("Exception: ", ex);
+			return -1;
+		}
 	}
 
 	public static int getBitrate(String value) {
