@@ -21,11 +21,15 @@ package net.pms.configuration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 
-/*
- * Helper methods for classes that wrap config (property) files e.g. PmsConfiguration and RendererConfiguration.
+/**
+ * Helper methods for classes that wrap config (property) files e.g. {@link PmsConfiguration} and {@link RendererConfiguration}.
  */
-
 class ConfigurationUtil { // package-private
+	/**
+	 * This class is not meant to be instantiated.
+	 */
+	private ConfigurationUtil() { }
+
 	/**
 	 * Return the <code>String</code> value for a given configuration key if the
 	 * value is non-blank (i.e. not null, not an empty string, not all whitespace).
