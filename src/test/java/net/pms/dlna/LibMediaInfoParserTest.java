@@ -33,4 +33,14 @@ public class LibMediaInfoParserTest {
 		assertThat(LibMediaInfoParser.getReferenceFrameCount("strange1")).isEqualTo((byte) -1);
 		assertThat(LibMediaInfoParser.getReferenceFrameCount("6ref")).isEqualTo((byte) -1);
 	}
+
+	@Test
+	public void testGetAvcLevel() throws Exception {
+		assertThat(LibMediaInfoParser.getAvcLevel("Main@L2.0")).isEqualTo("2.0");
+		assertThat(LibMediaInfoParser.getAvcLevel("High@L3.0")).isEqualTo("3.0");
+		assertThat(LibMediaInfoParser.getAvcLevel("High@L4.0")).isEqualTo("4.0");
+		assertThat(LibMediaInfoParser.getAvcLevel("High@L4.1")).isEqualTo("4.1");
+		assertThat(LibMediaInfoParser.getAvcLevel("5.1")).isNull();
+		assertThat(LibMediaInfoParser.getAvcLevel("level5")).isNull();
+	}
 }

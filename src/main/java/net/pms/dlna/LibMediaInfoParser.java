@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.StringTokenizer;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class LibMediaInfoParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LibMediaInfoParser.class);
@@ -399,6 +400,8 @@ public class LibMediaInfoParser {
 			format = FormatConfiguration.BMP;
 		} else if (value.equals("tiff")) {
 			format = FormatConfiguration.TIFF;
+		} else if (StringUtils.contains(value, "@l") && streamType == MediaInfo.StreamType.Video) {
+			media.setAvcLevel(getAvcLevel(value));
 		}
 
 		if (format != null) {
@@ -427,6 +430,10 @@ public class LibMediaInfoParser {
 		return pixels;
 	}
 
+	/**
+	 * @param value {@code Format_Settings_RefFrames/String} value to parse.
+	 * @return reference frame count or {@code -1} if could not parse.
+	 */
 	public static byte getReferenceFrameCount(String value) {
 		try {
 			// Values like "16 frame3"
@@ -436,6 +443,24 @@ public class LibMediaInfoParser {
 			LOGGER.warn("Could not parse ReferenceFrameCount value {}." , value);
 			LOGGER.warn("Exception: ", ex);
 			return -1;
+		}
+	}
+
+	/**
+	 * @param value {@code Format_Profile} value to parse.
+	 * @return AVC level or {@code null} if could not parse.
+	 */
+	public static String getAvcLevel(String value) {
+		// Example values:
+		// High@L3.0
+		// High@L4.0
+		// High@L4.1
+		final String avcLevel = StringUtils.substringAfterLast(value, "@l");
+		if (isNotBlank(avcLevel)) {
+			return avcLevel;
+		} else {
+			LOGGER.warn("Could not parse AvcLevel value {}." , value);
+			return null;
 		}
 	}
 
