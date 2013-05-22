@@ -44,6 +44,10 @@ for documentation and contributions to the community.
 * sarraken, bleuecinephile, bd.azerty, fabounnet for the support and feedback
 * smo for the Jenkins server
 
+Special thanks to the following companies:
+* ej-technologies for [JProfiler](http://www.ej-technologies.com/products/jprofiler/overview.html) Java Profiler
+* JetBrains for [IntelliJ IDEA](https://www.jetbrains.com/idea/) Java IDE
+
 See the `CHANGELOG` for more thanks.
 
 Building
