@@ -10,7 +10,7 @@ The following software packages are required:
 * Maven
 * External libraries
 
-Read the [Full instructions](#full_instructions) section for a complete explanation of how to
+Read the [Full instructions](#full-instructions) section for a complete explanation of how to
 install all required software and how to build PMS for each operating system.
 
 # Short instructions <a name="short-instructions"></a>
