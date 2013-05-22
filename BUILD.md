@@ -32,7 +32,9 @@ The result will be built in the "target" directory:
 
 First all required software has to be installed:
 
-## 1. Download and install the Java JDK (the JRE is not enough)
+## 1. Download and install the Java JDK
+
+Note: the JRE is not enough.
 
 ### Windows
 
@@ -110,12 +112,14 @@ Nothing to do.
 
 Nothing to do.
 
-## 5. Download the PMS source code by cloning the GitHub repository
+## 5. Download the PMS source code
 
     git clone git://github.com/ps3mediaserver/ps3mediaserver.git
     cd ps3mediaserver
 
-## 6. Resolve and install external libraries needed by the build process
+## 6. Resolve and install external libraries
+
+These are needed by the build process:
 
     mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external
     mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
