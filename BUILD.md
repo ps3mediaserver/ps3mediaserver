@@ -180,7 +180,7 @@ The Windows installer can then be built by running:
 
     NSISDIR=/path/to/src/main/external-resources/third-party/nsis mvn package -P windows
 
-Adjust the path to the `nsis` directory accordingly e.g. if you're in the PMS root build directory:
+Adjust the path to the `nsis` directory accordingly e.g. if you're in the PMS build directory:
 
     NSISDIR=$PWD/src/main/external-resources/third-party/nsis mvn package -P windows
 
