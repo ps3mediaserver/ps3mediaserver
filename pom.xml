@@ -106,7 +106,6 @@
 		<!-- <project.binaries-base>http://ps3mediaserver.googlecode.com/svn/tags/${project.version}/ps3mediaserver</project.binaries-base> -->
 		<project.binaries-base>http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver</project.binaries-base>
 
-		<maven.nsis.project.template>${project.basedir}/src/main/external-resources/nsis/project.jelly</maven.nsis.project.template>
 		<maven-javadoc-plugin-version>2.9</maven-javadoc-plugin-version>
 		<git-commit-id-plugin-version>2.1.4</git-commit-id-plugin-version>
 	</properties>
