@@ -80,8 +80,6 @@ public class PmsConfiguration {
 	private static final String KEY_ASS_SCALE = "mencoder_ass_scale"; // TODO (breaking change): should be renamed to e.g. ass_scale
 	private static final String KEY_ASS_SHADOW = "mencoder_ass_shadow"; // TODO (breaking change): should be renamed to e.g. ass_shadow
 	private static final String KEY_BUFFER_MAX = "buffer_max";
-	private static final String KEY_SCRIPT_DIR = "script_dir";
-	private static final String KEY_BUFFER_TYPE = "buffertype"; // FIXME deprecated: unused
 	private static final String KEY_CHAPTER_INTERVAL = "chapter_interval";
 	private static final String KEY_CHAPTER_SUPPORT = "chapter_support";
 	private static final String KEY_CODEC_SPEC_SCRIPT = "codec_spec_script";
@@ -193,7 +191,6 @@ public class PmsConfiguration {
 	private static String HOSTNAME;
 
 	private static String DEFAULT_AVI_SYNTH_SCRIPT;
-	private static final String BUFFER_TYPE_FILE = "file"; // deprecated: unused
 	private static final int MAX_MAX_MEMORY_DEFAULT_SIZE = 400;
 	private static final int BUFFER_MEMORY_FACTOR = 368;
 	private static int MAX_MAX_MEMORY_BUFFER_SIZE = MAX_MAX_MEMORY_DEFAULT_SIZE;
@@ -693,14 +690,6 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #getAssScale()} instead.
-	 */
-	@Deprecated
-	public String getMencoderAssScale() {
-		return getAssScale();
-	}
-
-	/**
 	 * Returns the font scale used for ASS subtitling. Default value is 1.4.
 	 * @return The ASS font scale.
 	 */
@@ -720,14 +709,6 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #getAssMargin()} instead.
-	 */
-	@Deprecated
-	public String getMencoderAssMargin() {
-		return getAssMargin();
-	}
-
-	/**
 	 * Returns the margin used for ASS subtitling. Default value is 10.
 	 * @return The ASS margin.
 	 */
@@ -736,27 +717,11 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #getAssOutline()} instead.
-	 */
-	@Deprecated
-	public String getMencoderAssOutline() {
-		return getAssOutline();
-	}
-
-	/**
 	 * Returns the outline parameter used for ASS subtitling. Default value is 1.
 	 * @return The ASS outline parameter.
 	 */
 	public String getAssOutline() {
 		return getString(KEY_ASS_OUTLINE, "1");
-	}
-
-	/**
-	 * @deprecated Use {@link #getAssShadow()} instead.
-	 */
-	@Deprecated
-	public String getMencoderAssShadow() {
-		return getAssShadow();
 	}
 
 	/**
@@ -822,27 +787,11 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #setAssMargin(String value)} instead.
-	 */
-	@Deprecated
-	public void setMencoderAssMargin(String value) {
-		setAssMargin(value);
-	}
-
-	/**
 	 * Set the margin used for ASS subtitling.
 	 * @param value The ASS margin value to set.
 	 */
 	public void setAssMargin(String value) {
 		configuration.setProperty(KEY_ASS_MARGIN, value);
-	}
-
-	/**
-	 * @deprecated Use {@link #getAssOutline()} instead.
-	 */
-	@Deprecated
-	public void setMencoderAssOutline(String value) {
-		setAssOutline(value);
 	}
 
 	/**
@@ -854,27 +803,11 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #getAssShadow()} instead.
-	 */
-	@Deprecated
-	public void setMencoderAssShadow(String value) {
-		setAssShadow(value);
-	}
-
-	/**
 	 * Set the shadow parameter used for ASS subtitling.
 	 * @param value The ASS shadow parameter value to set.
 	 */
 	public void setAssShadow(String value) {
 		configuration.setProperty(KEY_ASS_SHADOW, value);
-	}
-
-	/**
-	 * @deprecated Use {@link #setAssScale(String value)} instead.
-	 */
-	@Deprecated
-	public void setMencoderAssScale(String value) {
-		setAssScale(value);
 	}
 
 	/**
@@ -958,14 +891,6 @@ public class PmsConfiguration {
 	}
 	
 	/**
-	 * @deprecated Use {@link #isDisableSubtitles()} instead.
-	 */
-	@Deprecated
- 	public boolean isMencoderDisableSubs() {
-		return isDisableSubtitles();
- 	}
-
-	/**
 	 * Returns whether or not subtitles should be disabled for all
 	 * transcoding engines. Default is false, meaning subtitles should not
 	 * be disabled.
@@ -977,14 +902,6 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #setDisableSubtitles(boolean)} instead.
-	 */
-	@Deprecated
-	public void setMencoderDisableSubs(boolean value) {
-		setDisableSubtitles(value);
-	}
-
-	/**
 	 * Set whether or not subtitles should be disabled for
 	 * all transcoding engines.
 	 *
@@ -992,14 +909,6 @@ public class PmsConfiguration {
 	 */
 	public void setDisableSubtitles(boolean value) {
 		configuration.setProperty(KEY_DISABLE_SUBTITLES, value);
-	}
-
-	/**
-	 * @deprecated Use {@link #isUsePCM()} instead.
-	 */
-	@Deprecated
-	public boolean isMencoderUsePcm() {
-		return isUsePCM();
 	}
 
 	/**
@@ -1021,28 +930,12 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #getFont()} instead.
-	 */
-	@Deprecated
-	public String getMencoderFont() {
-		return getFont();
-	}
-
-	/**
 	 * Returns the name of a TrueType font to use for subtitles.
 	 * Default is <code>""</code>.
 	 * @return The font name.
 	 */
 	public String getFont() {
 		return getString(KEY_FONT, "");
-	}
-
-	/**
-	 * @deprecated Use {@link #getAudioLanguages()} instead.
-	 */
-	@Deprecated
-	public String getMencoderAudioLanguages() {
-		return getAudioLanguages();
 	}
 
 	/**
@@ -1059,14 +952,6 @@ public class PmsConfiguration {
 	}
 	
 	/**
-	 * @deprecated Use {@link #getSubtitlesLanguages()} instead.
-	 */
-	@Deprecated
-	public String getMencoderSubLanguages() {
-		return getSubtitlesLanguages();
-	}
-
-	/**
 	 * Returns the subtitle language priority as a comma-separated
 	 * string. For example: <code>"loc,eng,fre,jpn,ger,und"</code>, where "und"
 	 * stands for "undefined".
@@ -1080,14 +965,6 @@ public class PmsConfiguration {
 	}
 	
 	/**
-	 * @deprecated Use {@link #getForcedSubtitleLanguage()} instead.
-	 */
-	@Deprecated
-	public String getMencoderForcedSubLanguage() {
-		return getForcedSubtitleLanguage();
-	}
-
-	/**
 	 * Returns the ISO 639 language code for the subtitle language that should
 	 * be forced.
 	 * Can be a blank string.
@@ -1098,14 +975,6 @@ public class PmsConfiguration {
 	}
 	
 	/**
-	 * @deprecated Use {@link #getForcedSubtitleTags()} instead.
-	 */
-	@Deprecated
-	public String getMencoderForcedSubTags() {
-  		return getForcedSubtitleTags();
-  	}
-
-	/**
 	 * Returns the tag string that identifies the subtitle language that
 	 * should be forced.
 	 * @return The tag string.
@@ -1114,14 +983,6 @@ public class PmsConfiguration {
   		return getString(KEY_FORCED_SUBTITLE_TAGS, "forced");
   	}
 	
-	/**
-	 * @deprecated Use {@link #getAudioSubLanguages()} instead.
-	 */
-	@Deprecated
-	public String getMencoderAudioSubLanguages() {
-		return getAudioSubLanguages();
-	}
-
 	/**
 	 * Returns a string of audio language and subtitle language pairs
 	 * ordered by priority to try to match. Audio language
@@ -1148,14 +1009,6 @@ public class PmsConfiguration {
 	 */
 	public boolean isMencoderSubFribidi() {
 		return getBoolean(KEY_MENCODER_SUB_FRIBIDI, false);
-	}
-
-	/**
-	 * @deprecated Use {@link #getSubtitlesCodepage()} instead.
-	 */
-	@Deprecated
-	public String getMencoderSubCp() {
-		return getSubtitlesCodepage();
 	}
 
 	/**
@@ -1197,14 +1050,6 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #setAudioLanguages(String)} instead.
-	 */
-	@Deprecated
-	public void setMencoderAudioLanguages(String value) {
-		setAudioLanguages(value);
-	}
-
-	/**
 	 * Sets the audio language priority as a comma separated
 	 * string. For example: <code>"eng,fre,jpn,ger,und"</code>, where "und"
 	 * stands for "undefined".
@@ -1214,14 +1059,6 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_AUDIO_LANGUAGES, value);
 	}
 	
-	/**
-	 * @deprecated Use {@link #setSubtitlesLanguages(String)} instead.
-	 */
-	@Deprecated
-	public void setMencoderSubLanguages(String value) {
-		setSubtitlesLanguages(value);
-	}
-
 	/**
 	 * Sets the subtitle language priority as a comma
 	 * separated string. For example: <code>"eng,fre,jpn,ger,und"</code>,
@@ -1233,27 +1070,12 @@ public class PmsConfiguration {
 	}
 	
 	/**
-	 * @deprecated Use {@link #setForcedSubtitleLanguage(String)} instead.
-	 */
-	@Deprecated
-	public void setMencoderForcedSubLanguage(String value) {
-		setForcedSubtitleLanguage(value);
-	}
-
-	/**
 	 * Sets the ISO 639 language code for the subtitle language that should
 	 * be forced.
 	 * @param value The subtitle language code.
 	 */
 	public void setForcedSubtitleLanguage(String value) {
 		configuration.setProperty(KEY_FORCED_SUBTITLE_LANGUAGE, value);
-	}
-	
-	/**
-	 * @deprecated Use {@link #setForcedSubtitleTags(String)} instead.
-	 */
-	public void setMencoderForcedSubTags(String value) {
-		setForcedSubtitleTags(value);
 	}
 
 	/**
@@ -1263,14 +1085,6 @@ public class PmsConfiguration {
 	 */
 	public void setForcedSubtitleTags(String value) {
 		configuration.setProperty(KEY_FORCED_SUBTITLE_TAGS, value);
-	}
-	
-	/**
-	 * @deprecated Use {@link #setAudioSubLanguages(String value)} instead.
-	 */
-	@Deprecated
-	public void setMencoderAudioSubLanguages(String value) {
-		setAudioSubLanguages(value);
 	}
 
 	/**
@@ -1287,17 +1101,6 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #getMencoderCustomOptions()} instead.
-	 * <p>
-	 * Returns custom commandline options to pass on to MEncoder.
-	 * @return The custom options string.
-	 */
-	@Deprecated
-	public String getMencoderDecode() {
-		return getMencoderCustomOptions();
-	}
-
-	/**
 	 * Returns custom commandline options to pass on to MEncoder.
 	 * @return The custom options string.
 	 */
@@ -1306,30 +1109,11 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #setMencoderCustomOptions(String)} instead.
-	 * <p>
-	 * Sets custom commandline options to pass on to MEncoder.
-	 * @param value The custom options string.
-	 */
-	@Deprecated
-	public void setMencoderDecode(String value) {
-		setMencoderCustomOptions(value);
-	}
-
-	/**
 	 * Sets custom commandline options to pass on to MEncoder.
 	 * @param value The custom options string.
 	 */
 	public void setMencoderCustomOptions(String value) {
 		configuration.setProperty(KEY_MENCODER_CUSTOM_OPTIONS, value);
-	}
-
-	/**
-	 * @deprecated Use {@link #setSubtitlesCodepage(String value)} instead.
-	 */
-	@Deprecated
-	public void setMencoderSubCp(String value) {
-		setSubtitlesCodepage(value);
 	}
 
 	/**
@@ -1349,14 +1133,6 @@ public class PmsConfiguration {
 	 */
 	public void setMencoderSubFribidi(boolean value) {
 		configuration.setProperty(KEY_MENCODER_SUB_FRIBIDI, value);
-	}
-
-	/**
-	 * @deprecated Use {@link #setFont(String value)} instead.
-	 */
-	@Deprecated
-	public void setMencoderFont(String value) {
-		setFont(value);
 	}
 
 	/**
@@ -1385,14 +1161,6 @@ public class PmsConfiguration {
 	 */
 	public void setMencoderFontConfig(boolean value) {
 		configuration.setProperty(KEY_MENCODER_FONT_CONFIG, value);
-	}
-
-	/**
-	 * @deprecated Use {@link #setUsePCM(boolean value)} instead.
-	 */
-	@Deprecated
-	public void setMencoderUsePcm(boolean value) {
-		setUsePCM(value);
 	}
 
 	/**
@@ -1568,33 +1336,12 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated Use {@link #isThumbnailGenerationEnabled()} instead.
-	 */
-	@Deprecated
-	public boolean getThumbnailsEnabled() {
-		return isThumbnailGenerationEnabled();
-	}
-
-	/**
 	 * Returns true if thumbnail generation is enabled, false otherwise.
 	 *
 	 * @return boolean indicating whether thumbnail generation is enabled.
 	 */
 	public boolean isThumbnailGenerationEnabled() {
 		return getBoolean(KEY_THUMBNAIL_GENERATION_ENABLED, true);
-	}
-
-	/**
-	 * @deprecated Use {@link #setThumbnailGenerationEnabled(boolean)} instead.
-	 *
-	 * Sets the thumbnail generation option.
-	 * This only determines whether a thumbnailer (e.g. dcraw, MPlayer)
-	 * is used to generate thumbnails. It does not reflect whether
-	 * thumbnails should be displayed or not.
-	 */
-	@Deprecated
-	public void setThumbnailsEnabled(boolean value) {
-		setThumbnailGenerationEnabled(value);
 	}
 
 	/**
@@ -1675,14 +1422,6 @@ public class PmsConfiguration {
 	}
 
 	/**
-	 * @deprecated use {@link #isAutoloadSubtitles()} instead.
-	 */
-	@Deprecated
-	public boolean getUseSubtitles() {
-		return isAutoloadSubtitles();
-	}
-
-	/**
 	 * Returns true when PMS should check for external subtitle files with the
 	 * same name as the media (*.srt, *.sub, *.ass, etc.). The default value is
 	 * true.
@@ -1692,14 +1431,6 @@ public class PmsConfiguration {
 	 */
 	public boolean isAutoloadSubtitles() {
 		return getBoolean(KEY_AUTOLOAD_SUBTITLES, true);
-	}
-
-	/**
-	 * @deprecated use {@link #setAutoloadSubtitles(boolean)} instead.
-	 */
-	@Deprecated
-	public void setUseSubtitles(boolean value) {
-		setAutoloadSubtitles(value);
 	}
 
 	/**
@@ -1830,17 +1561,6 @@ public class PmsConfiguration {
 		return getInt(KEY_MIN_STREAM_BUFFER, 1);
 	}
 
-	@Deprecated
-	public boolean isFileBuffer() {
-		String bufferType = getString(KEY_BUFFER_TYPE, "");
-		return bufferType.equals(BUFFER_TYPE_FILE);
-	}
-
-	@Deprecated
-	public String getFfmpegSettings() {
-		return getMPEG2MainSettingsFFmpeg();
-	}
-
 	/**
 	 * Converts the getMPEG2MainSettings() from MEncoder's format to FFmpeg's.
 	 *
@@ -1946,24 +1666,8 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_SKIP_LOOP_FILTER_ENABLED, value);
 	}
 
-	/**
-	 * @deprecated Use {@link #getMPEG2MainSettings()} instead.
-	 */
-	@Deprecated
-	public String getMencoderMainSettings() {
-		return getMPEG2MainSettings();
-	}
-
 	public String getMPEG2MainSettings() {
 		return getString(KEY_MPEG2_MAIN_SETTINGS, "Automatic (Wired)");
-	}
-
-	/**
-	 * @deprecated Use {@link #setMPEG2MainSettings(String)} instead.
-	 */
-	@Deprecated
-	public void setMencoderMainSettings(String value) {
-		setMPEG2MainSettings(value);
 	}
 
 	public void setMPEG2MainSettings(String value) {
@@ -2023,7 +1727,7 @@ public class PmsConfiguration {
 				"ffmpegdvrmsremux",
 				"rawthumbs"), LIST_SEPARATOR);
 
-		final List<String> engines = stringToList(
+		return stringToList(
 			// possibly blank: an empty string means: disable all engines
 			// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=15416
 			ConfigurationUtil.getPossiblyBlankConfigurationString(
@@ -2032,8 +1736,6 @@ public class PmsConfiguration {
 				defaultEngines
 			)
 		);
-
-		return engines;
 	}
 
 	private static String listToString(List<String> enginesAsList) {
@@ -2217,22 +1919,6 @@ public class PmsConfiguration {
 
 	public boolean isDTSEmbedInPCM() {
 		return getBoolean(KEY_EMBED_DTS_IN_PCM, false);
-	}
-
-	/**
-	 * @deprecated automatic switching to tsMuxeR from other transcoding engines is disabled.
-	 */
-	@Deprecated
-	public void setMencoderMuxWhenCompatible(boolean value) {
-		// noop
-	}
-
-	/**
-	 * @deprecated automatic switching to tsMuxeR from other transcoding engines is disabled.
-	 */
-	@Deprecated
-	public boolean isMencoderMuxWhenCompatible() {
-		return false;
 	}
 
 	public void setFFmpegMuxWhenCompatible(boolean value) {
