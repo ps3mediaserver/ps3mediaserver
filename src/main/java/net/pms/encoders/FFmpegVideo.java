@@ -217,7 +217,7 @@ public class FFmpegVideo extends Player {
 	}
 
 	@Deprecated
-	public List<String> getTranscodeVideoOptions(RendererConfiguration renderer, DLNAMediaInfo media, OutputParams params) {
+	public synchronized List<String> getTranscodeVideoOptions(RendererConfiguration renderer, DLNAMediaInfo media, OutputParams params) {
 		return getTranscodeVideoOptions(renderer, media, params, null);
 	}
 
@@ -235,7 +235,7 @@ public class FFmpegVideo extends Player {
 	 * @return a {@link List} of <code>String</code>s representing the FFmpeg output parameters for the renderer according
 	 * to its <code>TranscodeVideo</code> profile.
 	 */
-	public List<String> getTranscodeVideoOptions(RendererConfiguration renderer, DLNAMediaInfo media, OutputParams params, String fileName) {
+	public synchronized List<String> getTranscodeVideoOptions(RendererConfiguration renderer, DLNAMediaInfo media, OutputParams params, String fileName) {
 		List<String> transcodeOptions = new ArrayList<String>();
 
 		if (renderer.isTranscodeToWMV() && !renderer.isXBOX()) { // WMV
@@ -537,12 +537,6 @@ public class FFmpegVideo extends Player {
 		return getDefaultArgs(); // unused; return this array for for backwards compatibility
 	}
 
-	// XXX hardwired to false and not referenced anywhere else in the codebase
-	@Deprecated
-	public boolean mplayer() {
-		return false;
-	}
-
 	@Override
 	public String mimeType() {
 		return HTTPResource.VIDEO_TRANSCODE;
@@ -554,7 +548,7 @@ public class FFmpegVideo extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(
+	public synchronized ProcessWrapper launchTranscode(
 		String filename,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
@@ -1213,27 +1207,27 @@ public class FFmpegVideo extends Player {
 		return configuration.isDisableSubtitles() || (params.sid == null);
 	}
 
-	private boolean isAc3Remux() {
+	private synchronized boolean isAc3Remux() {
 		return ac3Remux;
 	}
 
-	private void setAc3Remux(boolean ac3Remux) {
+	private synchronized void setAc3Remux(boolean ac3Remux) {
 		this.ac3Remux = ac3Remux;
 	}
 
-	private boolean isDtsRemux() {
+	private synchronized boolean isDtsRemux() {
 		return dtsRemux;
 	}
 
-	private void setDtsRemux(boolean dtsRemux) {
+	private synchronized void setDtsRemux(boolean dtsRemux) {
 		this.dtsRemux = dtsRemux;
 	}
 
-	private boolean isVideoRemux() {
+	private synchronized boolean isVideoRemux() {
 		return videoRemux;
 	}
 
-	private void setVideoRemux(boolean videoRemux) {
+	private synchronized void setVideoRemux(boolean videoRemux) {
 		this.videoRemux = videoRemux;
 	}
 }

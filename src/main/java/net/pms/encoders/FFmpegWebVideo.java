@@ -117,7 +117,7 @@ public class FFmpegWebVideo extends FFmpegVideo {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(
+	public synchronized ProcessWrapper launchTranscode(
 		String filename,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
