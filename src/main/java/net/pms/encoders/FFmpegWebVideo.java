@@ -21,7 +21,6 @@ package net.pms.encoders;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
-import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
@@ -126,11 +125,6 @@ public class FFmpegWebVideo extends FFmpegVideo {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		RendererConfiguration renderer = params.mediaRenderer;
-		DLNAMediaSubtitle tempSubs = null;
-
-		if (!isDisableSubtitles(params)) {
-			tempSubs = getSubtitles(filename, media, params);
-		}
 
 		// XXX work around an ffmpeg bug: http://ffmpeg.org/trac/ffmpeg/ticket/998
 		if (filename.startsWith("mms:")) {
@@ -219,20 +213,20 @@ public class FFmpegWebVideo extends FFmpegVideo {
 		cmdList.add("-i");
 		cmdList.add(filename);
 
-		cmdList.addAll(getVideoFilterOptions(tempSubs, renderer, media));
+		cmdList.addAll(getVideoFilterOptions(filename, dlna, media, params));
 
 		// Encoder threads
 		cmdList.add("-threads");
 		cmdList.add("" + nThreads);
 
 		// Add the output options (-f, -acodec, -vcodec)
-		cmdList.addAll(getTranscodeVideoOptions(renderer, media, params, null));
+		cmdList.addAll(getVideoTranscodeOptions(filename, dlna, media, params));
 
 		// Add video bitrate options
-		cmdList.addAll(getVideoBitrateOptions(renderer, media));
+		cmdList.addAll(getVideoBitrateOptions(filename, dlna, media, params));
 
 		// Add audio bitrate options
-		cmdList.addAll(getAudioBitrateOptions(renderer, media));
+		cmdList.addAll(getAudioBitrateOptions(filename, dlna, media, params));
 
 		// Add any remaining custom options
 		if (!customOptions.isEmpty()) {
