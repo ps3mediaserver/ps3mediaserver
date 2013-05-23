@@ -106,11 +106,11 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String fileName,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params) throws IOException {
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params) throws IOException {
 		boolean isWindows = Platform.isWindows();
+		final String filename = dlna.getSystemName();
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux());
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 
@@ -166,14 +166,14 @@ public class VideoLanVideoStreaming extends Player {
 			cmdList.add("");
 		}
 
-		cmdList.add(fileName);
+		cmdList.add(filename);
 		cmdList.add("vlc://quit");
 
 		String[] cmdArray = new String[cmdList.size()];
 		cmdList.toArray(cmdArray);
 
 		cmdArray = finalizeTranscoderArgs(
-			fileName,
+			filename,
 			dlna,
 			media,
 			params,

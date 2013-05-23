@@ -117,14 +117,14 @@ public class FFmpegWebVideo extends FFmpegVideo {
 
 	@Override
 	public synchronized ProcessWrapper launchTranscode(
-		String filename,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params
 	) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		RendererConfiguration renderer = params.mediaRenderer;
+		String filename = dlna.getSystemName();
 
 		// XXX work around an ffmpeg bug: http://ffmpeg.org/trac/ffmpeg/ticket/998
 		if (filename.startsWith("mms:")) {
@@ -213,20 +213,20 @@ public class FFmpegWebVideo extends FFmpegVideo {
 		cmdList.add("-i");
 		cmdList.add(filename);
 
-		cmdList.addAll(getVideoFilterOptions(filename, dlna, media, params));
+		cmdList.addAll(getVideoFilterOptions(dlna, media, params));
 
 		// Encoder threads
 		cmdList.add("-threads");
 		cmdList.add("" + nThreads);
 
 		// Add the output options (-f, -acodec, -vcodec)
-		cmdList.addAll(getVideoTranscodeOptions(filename, dlna, media, params));
+		cmdList.addAll(getVideoTranscodeOptions(dlna, media, params));
 
 		// Add video bitrate options
-		cmdList.addAll(getVideoBitrateOptions(filename, dlna, media, params));
+		cmdList.addAll(getVideoBitrateOptions(dlna, media, params));
 
 		// Add audio bitrate options
-		cmdList.addAll(getAudioBitrateOptions(filename, dlna, media, params));
+		cmdList.addAll(getAudioBitrateOptions(dlna, media, params));
 
 		// Add any remaining custom options
 		if (!customOptions.isEmpty()) {

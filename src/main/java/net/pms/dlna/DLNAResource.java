@@ -1787,7 +1787,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			}
 		}
 
+		// determine source of the stream
 		if (getPlayer() == null) {
+			// no transcoding
 			if (this instanceof IPushOutput) {
 				PipedOutputStream out = new PipedOutputStream();
 				InputStream fis = new PipedInputStream(out);
@@ -1827,6 +1829,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			}
 			return fis;
 		} else {
+			// pipe transcoding result
 			OutputParams params = new OutputParams(configuration);
 			params.aid = getMediaAudio();
 			params.sid = getMediaSubtitle();
@@ -1840,14 +1843,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				params.stdin = (IPushOutput) this;
 			}
 
+			// (re)start transcoding process if necessary
 			if (externalProcess == null || externalProcess.isDestroyed()) {
+				// first playback attempt => start new transcoding process
 				LOGGER.info("Starting transcode/remux of " + getName());
-				externalProcess = getPlayer().launchTranscode(
-					getSystemName(),
-					this,
-					getMedia(),
-					params
-				);
+				externalProcess = getPlayer().launchTranscode(this, getMedia(), params);
 				if (params.waitbeforestart > 0) {
 					LOGGER.trace("Sleeping for {} milliseconds", params.waitbeforestart);
 					try {
@@ -1859,6 +1859,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				}
 			} else if (params.timeseek > 0 && getMedia() != null && getMedia().isMediaparsed()
 					&& getMedia().getDurationInSeconds() > 0) {
+				// time seek request => stop running transcode process and start new one
 				LOGGER.debug("Requesting time seek: " + params.timeseek + " seconds");
 				params.minBufferSize = 1;
 				Runnable r = new Runnable() {
@@ -1868,12 +1869,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					}
 				};
 				new Thread(r, "External Process Stopper").start();
-				ProcessWrapper newExternalProcess = getPlayer().launchTranscode(
-					getSystemName(),
-					this,
-					getMedia(),
-					params
-				);
+				ProcessWrapper newExternalProcess = getPlayer().launchTranscode(this, getMedia(), params);
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -1893,7 +1889,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				is = externalProcess.getInputStream(low);
 				timer++;
 				if (is == null) {
-					LOGGER.trace("External input stream instance is null... sounds not good, waiting 500ms");
+					LOGGER.warn("External input stream instance is null... sounds not good, waiting 500ms");
 					try {
 						Thread.sleep(500);
 					} catch (InterruptedException e) {
@@ -1909,7 +1905,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				Runnable r = new Runnable() {
 					@Override
 					public void run() {
-						LOGGER.trace("External input stream instance is null... stopping process");
+						LOGGER.error("External input stream instance is null... stopping process");
 						externalProcess.stopProcess();
 					}
 				};

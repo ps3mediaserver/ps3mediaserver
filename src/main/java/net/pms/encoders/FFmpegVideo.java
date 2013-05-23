@@ -74,7 +74,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  * parameters are unused e.g.:
  *
  *     public List<String> getAudioBitrateOptions(
- *         String filename,
  *         DLNAResource dlna,
  *         DLNAMediaInfo media,
  *         OutputParams params
@@ -112,14 +111,13 @@ public class FFmpegVideo extends Player {
 	 * If the renderer has no size limits, or there's no media metadata, or the video is within the renderer's
 	 * size limits, an empty list is returned.
 	 *
-	 * @param filename
 	 * @param dlna
 	 * @param media metadata for the DLNA resource which is being transcoded
 	 * @param params
 	 * @return a {@link List} of <code>String</code>s representing the rescale options for this video,
 	 * or an empty list if the video doesn't need to be resized.
 	 */
-	public List<String> getVideoFilterOptions(String filename, DLNAResource dlna, DLNAMediaInfo media, OutputParams params) throws IOException {
+	public List<String> getVideoFilterOptions(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) throws IOException {
 		List<String> videoFilterOptions = new ArrayList<String>();
 		String subsOption = null;
 		String padding = null;
@@ -127,7 +125,7 @@ public class FFmpegVideo extends Player {
 
 		DLNAMediaSubtitle tempSubs = null;
 		if (!isDisableSubtitles(params)) {
-			tempSubs = getSubtitles(filename, media, params);
+			tempSubs = getSubtitles(params);
 		}
 
 		final boolean isResolutionTooHighForRenderer = renderer.isVideoRescale() // renderer defines a max width/height
@@ -228,16 +226,15 @@ public class FFmpegVideo extends Player {
 	 * audio codec and container) compatible with the renderer's
 	 * <code>TranscodeVideo</code> profile.
 	 *
-	 * @param fileName the name of the file
-	 *
 	 * @param dlna
 	 * @param media the media metadata for the video being streamed. May contain unset/null values (e.g. for web videos).
 	 * @param params output parameters
 	 * @return a {@link List} of <code>String</code>s representing the FFmpeg output parameters for the renderer according
 	 * to its <code>TranscodeVideo</code> profile.
 	 */
-	public synchronized List<String> getVideoTranscodeOptions(String fileName, DLNAResource dlna, DLNAMediaInfo media, OutputParams params) {
+	public synchronized List<String> getVideoTranscodeOptions(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) {
 		List<String> transcodeOptions = new ArrayList<String>();
+		final String filename = dlna.getSystemName();
 		final RendererConfiguration renderer = params.mediaRenderer;
 
 		if (renderer.isTranscodeToWMV() && !renderer.isXBOX()) { // WMV
@@ -265,9 +262,9 @@ public class FFmpegVideo extends Player {
 			}
 
 			InputFile newInput = null;
-			if (fileName != null) {
+			if (filename != null) {
 				newInput = new InputFile();
-				newInput.setFilename(fileName);
+				newInput.setFilename(filename);
 				newInput.setPush(params.stdin);
 			}
 
@@ -331,13 +328,12 @@ public class FFmpegVideo extends Player {
 	 * Returns the video bitrate spec for the current transcode according
 	 * to the limits/requirements of the renderer.
 	 *
-	 * @param filename
 	 * @param dlna
 	 * @param media the media metadata for the video being streamed. May contain unset/null values (e.g. for web videos).
 	 * @param params
 	 * @return a {@link List} of <code>String</code>s representing the video bitrate options for this transcode
 	 */
-	public List<String> getVideoBitrateOptions(String filename, DLNAResource dlna, DLNAMediaInfo media, OutputParams params) { // media is currently unused
+	public List<String> getVideoBitrateOptions(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) { // media is currently unused
 		List<String> videoBitrateOptions = new ArrayList<String>();
 		String sMaxVideoBitrate = params.mediaRenderer.getMaxVideoBitrate(); // currently Mbit/s
 		int iMaxVideoBitrate = 0;
@@ -368,13 +364,12 @@ public class FFmpegVideo extends Player {
 	 * Returns the audio bitrate spec for the current transcode according
 	 * to the limits/requirements of the renderer.
 	 *
-	 * @param filename
 	 * @param dlna
 	 * @param media the media metadata for the video being streamed. May contain unset/null values (e.g. for web videos).
 	 * @param params
 	 * @return a {@link List} of <code>String</code>s representing the audio bitrate options for this transcode
 	 */
-	public List<String> getAudioBitrateOptions(String filename, DLNAResource dlna, DLNAMediaInfo media, OutputParams params) {
+	public List<String> getAudioBitrateOptions(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) {
 		List<String> audioBitrateOptions = new ArrayList<String>();
 
 		audioBitrateOptions.add("-q:a");
@@ -386,15 +381,14 @@ public class FFmpegVideo extends Player {
 	/**
 	 * Returns the audio channel (-ac) options.
 	 *
-	 * @param filename The name of the file being transcoded.
 	 * @param dlna The DLNA resource representing the file being transcoded.
 	 * @param media the media metadata for the file being transcoded. May contain null fields (e.g. for web videos).
-	 * @param params The {@link OutputParams} context object used to store miscellaneous parameters for this request.
+	 * @param params The {@link net.pms.io.OutputParams} context object used to store miscellaneous parameters for this request.
 	 * @return The list of audio channel options.
 	 * @since 1.81.0
 	 */
 
-	public List<String> getAudioChannelOptions(String filename, DLNAResource dlna, DLNAMediaInfo media, OutputParams params) {
+	public List<String> getAudioChannelOptions(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) {
 		List<String> audioChannelOptions = new ArrayList<String>();
 		int ac = -1; // -1: don't change the number of audio channels
 		int nChannels = params.aid == null ? -1 : params.aid.getAudioProperties().getNumberOfChannels();
@@ -513,14 +507,14 @@ public class FFmpegVideo extends Player {
 
 	@Override
 	public synchronized ProcessWrapper launchTranscode(
-		String filename,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params
 	) throws IOException {
 		int nThreads = configuration.getNumberOfCpuCores();
 		List<String> cmdList = new ArrayList<String>();
 		RendererConfiguration renderer = params.mediaRenderer;
+		final String filename = dlna.getSystemName();
 		setAudioAndSubs(filename, media, params, configuration);
 //		params.waitbeforestart = 1000;
 
@@ -595,7 +589,7 @@ public class FFmpegVideo extends Player {
 		// if the source is too large for the renderer, resize it
 		// and/or add subtitles to video filter
 		// FFmpeg must be compiled with --enable-libass parameter
-		cmdList.addAll(getVideoFilterOptions(filename, dlna, media, params));
+		cmdList.addAll(getVideoFilterOptions(dlna, media, params));
 
 		int defaultMaxBitrates[] = getVideoBitrateConfig(configuration.getMaximumBitrate());
 		int rendererMaxBitrates[] = new int[2];
@@ -725,7 +719,7 @@ public class FFmpegVideo extends Player {
 		}
 
 		// Add the output options (-f, -c:a, -c:v, etc.)
-		cmdList.addAll(getVideoTranscodeOptions(filename, dlna, media, params));
+		cmdList.addAll(getVideoTranscodeOptions(dlna, media, params));
 
 		// Add custom options
 		if (StringUtils.isNotEmpty(renderer.getCustomFFmpegOptions())) {
@@ -1024,23 +1018,13 @@ public class FFmpegVideo extends Player {
 	}
 
 	/**
-	 * @deprecated use {@link #getSubtitles(String, net.pms.dlna.DLNAMediaInfo, net.pms.io.OutputParams)} instead.
-	 */
-	@Deprecated
-	public DLNAMediaSubtitle subsConversion(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
-		return getSubtitles(fileName, media, params);
-	}
-
-	/**
 	 * Shift timing of external subtitles in SSA/ASS or SRT format and converts charset to UTF8 if necessary
 	 *
-	 * @param fileName Video file
-	 * @param media Media file metadata
 	 * @param params Output parameters
 	 * @return Converted subtitle file
 	 * @throws IOException
 	 */
-	public DLNAMediaSubtitle getSubtitles(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
+	public DLNAMediaSubtitle getSubtitles(OutputParams params) throws IOException {
 		DLNAMediaSubtitle tempSubs = null;
 
 		if (params.sid.getId() == -1) {

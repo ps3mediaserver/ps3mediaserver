@@ -112,18 +112,16 @@ public class FFmpegDVRMSRemux extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String filename,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params
 	) throws IOException {
-		return getFFmpegTranscode(filename, dlna, media, params);
+		return getFFmpegTranscode(dlna, media, params);
 	}
 
 	// pointless redirection of launchTranscode
 	@Deprecated
 	protected ProcessWrapperImpl getFFmpegTranscode(
-			String filename,
 			DLNAResource dlna,
 			DLNAMediaInfo media,
 			OutputParams params
@@ -131,6 +129,7 @@ public class FFmpegDVRMSRemux extends Player {
 		PmsConfiguration configuration = PMS.getConfiguration();
 		String ffmpegAlternativePath = configuration.getFfmpegAlternativePath();
 		List<String> cmdList = new ArrayList<String>();
+		final String filename = dlna.getSystemName();
 
 		if (ffmpegAlternativePath != null && ffmpegAlternativePath.length() > 0) {
 			cmdList.add(ffmpegAlternativePath);

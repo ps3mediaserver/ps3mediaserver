@@ -103,12 +103,12 @@ public class TsMuxeRVideo extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String fileName,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params
 	) throws IOException {
-		setAudioAndSubs(fileName, media, params, configuration);
+		final String filename = dlna.getSystemName();
+		setAudioAndSubs(filename, media, params, configuration);
 
 		PipeIPCProcess ffVideoPipe;
 		ProcessWrapperImpl ffVideo;
@@ -165,7 +165,7 @@ public class TsMuxeRVideo extends Player {
 			ffVideo = new ProcessWrapperImpl(ffmpegLPCMextract, ffparams);
 
 			if (
-				fileName.toLowerCase().endsWith(".flac") &&
+				filename.toLowerCase().endsWith(".flac") &&
 				media.getFirstAudioTrack().getBitsperSample() >= 24 &&
 				media.getFirstAudioTrack().getSampleRate() % 48000 == 0
 			) {
@@ -178,7 +178,7 @@ public class TsMuxeRVideo extends Player {
 					"-d",
 					"-f",
 					"-F",
-					fileName
+					filename
 				};
 
 				ffparams = new OutputParams(configuration);
@@ -201,7 +201,7 @@ public class TsMuxeRVideo extends Player {
 
 				String[] flacCmd = new String[] {
 					configuration.getFfmpegPath(),
-					"-i", fileName,
+					"-i", filename,
 					"-ar", rate,
 					"-f", "wav",
 					"-acodec", depth,
@@ -225,7 +225,7 @@ public class TsMuxeRVideo extends Player {
 			// Special handling for evo files
 			String evoValue1 = "-quiet";
 			String evoValue2 = "-quiet";
-			if (fileName.toLowerCase().endsWith(".evo")) {
+			if (filename.toLowerCase().endsWith(".evo")) {
 				evoValue1 = "-psprobe";
 				evoValue2 = "1000000";
 			}
@@ -233,7 +233,7 @@ public class TsMuxeRVideo extends Player {
 			String[] ffmpegLPCMextract = new String[] {
 				mencoderPath,
 				"-ss", params.timeseek > 0 ? "" + params.timeseek : "0",
-				params.stdin != null ? "-" : fileName,
+				params.stdin != null ? "-" : filename,
 				evoValue1, evoValue2,
 				"-really-quiet",
 				"-msglevel", "statusline=2",
@@ -246,7 +246,7 @@ public class TsMuxeRVideo extends Player {
 			};
 
 			InputFile newInput = new InputFile();
-			newInput.setFilename(fileName);
+			newInput.setFilename(filename);
 			newInput.setPush(params.stdin);
 
 			if (media != null) {
@@ -348,7 +348,7 @@ public class TsMuxeRVideo extends Player {
 						ffmpegLPCMextract = new String[] {
 							mencoderPath,
 							"-ss", params.timeseek > 0 ? "" + params.timeseek : "0",
-							params.stdin != null ? "-" : fileName,
+							params.stdin != null ? "-" : filename,
 							evoValue1, evoValue2,
 							"-really-quiet",
 							"-msglevel", "statusline=2",
@@ -373,7 +373,7 @@ public class TsMuxeRVideo extends Player {
 						ffmpegLPCMextract = new String[] {
 							mencoderPath,
 							"-ss", params.timeseek > 0 ? "" + params.timeseek : "0",
-							params.stdin != null ? "-" : fileName,
+							params.stdin != null ? "-" : filename,
 							evoValue1, evoValue2,
 							"-really-quiet",
 							"-msglevel", "statusline=2",
@@ -466,7 +466,7 @@ public class TsMuxeRVideo extends Player {
 							ffmpegLPCMextract = new String[]{
 								mencoderPath,
 								"-ss", params.timeseek > 0 ? "" + params.timeseek : "0",
-								params.stdin != null ? "-" : fileName,
+								params.stdin != null ? "-" : filename,
 								evoValue1, evoValue2,
 								"-really-quiet",
 								"-msglevel", "statusline=2",
@@ -486,7 +486,7 @@ public class TsMuxeRVideo extends Player {
 							ffmpegLPCMextract = new String[]{
 								mencoderPath,
 								"-ss", params.timeseek > 0 ? "" + params.timeseek : "0",
-								params.stdin != null ? "-" : fileName,
+								params.stdin != null ? "-" : filename,
 								evoValue1, evoValue2,
 								"-really-quiet",
 								"-msglevel", "statusline=2",
@@ -659,7 +659,7 @@ public class TsMuxeRVideo extends Player {
 		};
 
 		cmdArray = finalizeTranscoderArgs(
-			fileName,
+			filename,
 			dlna,
 			media,
 			params,

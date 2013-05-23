@@ -127,11 +127,11 @@ public class FFmpegAudio extends FFmpegVideo {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String filename,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params
 	) throws IOException {
+		final String filename = dlna.getSystemName();
 		params.maxBufferSize = configuration.getMaxAudioBuffer();
 		params.waitbeforestart = 2000;
 		params.manageFastStart();
