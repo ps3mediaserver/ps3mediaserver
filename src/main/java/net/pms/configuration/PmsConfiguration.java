@@ -20,7 +20,6 @@ package net.pms.configuration;
 
 import com.sun.jna.Platform;
 import net.pms.Messages;
-import net.pms.io.SystemUtils;
 import net.pms.util.FileUtil;
 import net.pms.util.PropertiesUtil;
 import org.apache.commons.configuration.Configuration;
@@ -365,9 +364,8 @@ public class PmsConfiguration {
 	 * from the profile path.
 	 *
 	 * @throws org.apache.commons.configuration.ConfigurationException
-	 * @throws java.io.IOException
 	 */
-	public PmsConfiguration() throws ConfigurationException, IOException {
+	public PmsConfiguration() throws ConfigurationException {
 		this(true);
 	}
 
@@ -378,9 +376,8 @@ public class PmsConfiguration {
 	 *                 file from the profile path. Set to false to skip
 	 *                 loading.
 	 * @throws org.apache.commons.configuration.ConfigurationException
-	 * @throws java.io.IOException
 	 */
-	public PmsConfiguration(boolean loadFile) throws ConfigurationException, IOException {
+	public PmsConfiguration(boolean loadFile) throws ConfigurationException {
 		configuration = new PropertiesConfiguration();
 		configuration.setListDelimiter((char) 0);
 
@@ -498,15 +495,6 @@ public class PmsConfiguration {
 	 */
 	public boolean isTsmuxerForceFps() {
 		return getBoolean(KEY_TSMUXER_FORCEFPS, true);
-	}
-
-	/**
-	 * Force tsMuxeR to mux all audio tracks.
-	 * TODO: Remove this redundant code.
-	 * @return True
-	 */
-	public boolean isTsmuxerPreremuxAc3() {
-		return true;
 	}
 
 	/**
@@ -1708,7 +1696,7 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_ENGINES, listToString(enginesAsList));
 	}
 
-	public List<String> getEnginesAsList(SystemUtils registry) {
+	public List<String> getEnginesAsList() {
 		final String defaultEngines = join(asList(
 				"mencoder",
 				"avsmencoder",
@@ -1728,13 +1716,13 @@ public class PmsConfiguration {
 				"rawthumbs"), LIST_SEPARATOR);
 
 		return stringToList(
-			// possibly blank: an empty string means: disable all engines
-			// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=15416
-			ConfigurationUtil.getPossiblyBlankConfigurationString(
-				configuration,
-				KEY_ENGINES,
-				defaultEngines
-			)
+				// possibly blank: an empty string means: disable all engines
+				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=15416
+				ConfigurationUtil.getPossiblyBlankConfigurationString(
+						configuration,
+						KEY_ENGINES,
+						defaultEngines
+				)
 		);
 	}
 

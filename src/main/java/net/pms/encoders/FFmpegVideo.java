@@ -540,7 +540,7 @@ public class FFmpegVideo extends Player {
 		cmdList.add("-threads");
 		cmdList.add("" + nThreads);
 
-		final boolean isTsMuxeRVideoEngineEnabled = configuration.getEnginesAsList(PMS.get().getRegistry()).contains(TsMuxeRVideo.ID);
+		final boolean isTsMuxeRVideoEngineEnabled = configuration.getEnginesAsList().contains(TsMuxeRVideo.ID);
 
 		setAc3Remux(false);
 		setDtsRemux(false);

@@ -39,13 +39,13 @@ public class MPG extends Format {
 		PMS r = PMS.get();
 		PMS r1 = PMS.get();
 		PMS r2 = PMS.get();
-		if (configuration.getEnginesAsList(r.getRegistry()) == null || configuration.getEnginesAsList(r1.getRegistry()).isEmpty() || configuration.getEnginesAsList(r2.getRegistry()).contains("none"))
+		if (configuration.getEnginesAsList() == null || configuration.getEnginesAsList().isEmpty() || configuration.getEnginesAsList().contains("none"))
 		{
 			return null;
 		}
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		PMS r3 = PMS.get();
-		for (String engine : configuration.getEnginesAsList(r3.getRegistry())) {
+		for (String engine : configuration.getEnginesAsList()) {
 			if (engine.equals(VLCVideo.ID)) {
 				a.add(VLCVideo.class);
 			} else if (engine.equals(MEncoderVideo.ID)) {

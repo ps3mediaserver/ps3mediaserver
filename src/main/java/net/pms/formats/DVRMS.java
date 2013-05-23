@@ -37,7 +37,7 @@ public class DVRMS extends Format {
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		PMS r = PMS.get();
-		for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
+		for (String engine : PMS.getConfiguration().getEnginesAsList()) {
 			/*if (engine.equals(MEncoderVideo.ID))
 			a.add(MEncoderVideo.class);*/
 			if (engine.equals(FFmpegDVRMSRemux.ID)) {

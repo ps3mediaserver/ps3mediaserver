@@ -57,7 +57,7 @@ public class WEB extends Format {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		if (type == AUDIO) {
 			PMS r = PMS.get();
-			for (String engine : configuration.getEnginesAsList(r.getRegistry())) {
+			for (String engine : configuration.getEnginesAsList()) {
 				if (engine.equals(MPlayerWebAudio.ID)) {
 					a.add(MPlayerWebAudio.class);
 				} else if (engine.equals(VideoLanAudioStreaming.ID)) {
@@ -66,7 +66,7 @@ public class WEB extends Format {
 			}
 		} else {
 			PMS r = PMS.get();
-			for (String engine : configuration.getEnginesAsList(r.getRegistry())) {
+			for (String engine : configuration.getEnginesAsList()) {
 				if (engine.equals(FFmpegWebVideo.ID)) {
 					a.add(FFmpegWebVideo.class);
 				} else if (engine.equals(MEncoderWebVideo.ID)) {

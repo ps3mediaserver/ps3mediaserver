@@ -309,7 +309,7 @@ public class TranscodingTab {
 		ArrayList<Player> ordPlayers = new ArrayList<Player>();
 		PMS r = PMS.get();
 
-		for (String id : configuration.getEnginesAsList(r.getRegistry())) {
+		for (String id : configuration.getEnginesAsList()) {
 			//boolean matched = false;
 			for (Player p : PlayerFactory.getAllPlayers()) {
 				if (p.id().equals(id)) {

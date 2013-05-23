@@ -76,7 +76,7 @@ public final class PlayerFactory {
 
 		@Override
 		public int compare(Player player1, Player player2) {
-			List<String> prefs = configuration.getEnginesAsList(PMS.get().getRegistry());
+			List<String> prefs = configuration.getEnginesAsList();
 			Integer index1 = prefs.indexOf(player1.id());
 			Integer index2 = prefs.indexOf(player2.id());
 
@@ -266,7 +266,7 @@ public final class PlayerFactory {
 			return null;
 		}
 
-		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry());
+		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList();
 
 		for (Player player : players) {
 			if (enabledEngines.contains(player.id()) && player.isCompatible(resource)) {
@@ -324,7 +324,7 @@ public final class PlayerFactory {
 			return null;
 		}
 
-		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry());
+		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList();
 		ArrayList<Player> compatiblePlayers = new ArrayList<Player>();
 		
 		for (Player player : players) {
