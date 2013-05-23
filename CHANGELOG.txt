@@ -28,6 +28,7 @@ Changelog:
     Misc:
         - Fix issue with VirtualBox and PMS launchers (thanks, thepadawan42)
         - Added support for M4A files encoded with Fraunhofer AAC
+        - Upgrade Thumbnailator to 0.4.4 to fix out-of-memory errors (thanks, coobird)
 
 1.81.0 - 2013-04-21
 
