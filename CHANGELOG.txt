@@ -4,18 +4,38 @@ Changelog:
 1.82.0 - 2013-??-??
 
     General:
-        - A lot of backports from UMS (thanks, all UMS developers)
+        - A lot of backports from UMS (thanks, all UMS developers!)
         - Added support for M4A files encoded with Fraunhofer AAC
         - More accurate checks for reference frames count to allow more videos to be remuxed instead of transcoding
 
     Engines:
+		FFmpeg Video and FFmpeg Web Video:
+			- General improvements of usability and stability
+			- Support for lossless video remuxing if supported by renderer
+			- Support for AC-3 and DTS audio tracks remuxing
+			- Support for external SRT and SSA/ASS subtitles
+			- Support for auto charset detection of non UTF-8 external subtitles
         MEncoder Video:
             - Fixed bug that caused embedded subtitles to be displayed instead of external (thanks, SubJunk)
         tsMuxeR:
             - Fixed 24-bit FLAC support with tsMuxeR (thanks, SubJunk)
 
     Renderers:
-        - PS3: TV series with sound problems after "previously on" block should now play normally with Keep AC-3 track option enabled (thanks, SubJunk)
+        - PS3: TV series with sound problems after "Previously on.." block should now play normally with Keep AC-3 track option enabled (thanks, SubJunk)
+        - Xbox 360: improved quality
+        - Improved Sony Blu-ray Player support (thanks, skeptical)
+        - Added renderer profiles (thanks, UMS developers):
+            - KalemSoft Media Player
+            - Sony Bravia EX620 series TVs
+            - Netgear NeoTV
+            - Onkyo TX-NR717
+            - Sharp Aquos TVs
+            - Showtime 4 PS3 homebrew player
+            - Sony Home Theatre Systems
+            - Telstra T-Box
+            - VideoWeb TV
+            - Vizio Smart TV
+            - Yamaha RX-V3900
 
     Misc:
         - Fix issue with VirtualBox and PMS launchers (thanks, thepadawan42)
