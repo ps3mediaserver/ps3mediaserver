@@ -492,7 +492,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				}
 
 				if (child.getFormat() != null) {
-					setSkipTranscode(child.getFormat().skip(configuration.getNoTranscode(), getDefaultRenderer() != null ? getDefaultRenderer().getStreamedExtensions() : null));
+					setSkipTranscode(child.getFormat().skip(configuration.getDisableTranscodeForExtensions(), getDefaultRenderer() != null ? getDefaultRenderer().getStreamedExtensions() : null));
 				}
 
 				if (child.getFormat() != null && (child.getFormat().transcodable() || parserV2) && (child.getMedia() == null || parserV2)) {
@@ -533,7 +533,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					if (player != null && !allChildrenAreFolders) {
 						boolean forceTranscode = false;
 						if (child.getFormat() != null) {
-							forceTranscode = child.getFormat().skip(configuration.getForceTranscode(), getDefaultRenderer() != null ? getDefaultRenderer().getTranscodedExtensions() : null);
+							forceTranscode = child.getFormat().skip(configuration.getForceTranscodeForExtensions(), getDefaultRenderer() != null ? getDefaultRenderer().getTranscodedExtensions() : null);
 						}
 
 						boolean hasEmbeddedSubs = false;
@@ -547,7 +547,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						boolean hasSubsToTranscode = false;
 
 						if (!configuration.isDisableSubtitles()) {
-							hasSubsToTranscode = (configuration.isAutoloadSubtitles() && child.isSrtFile()) || hasEmbeddedSubs;
+							hasSubsToTranscode = (configuration.isAutoloadExternalSubtitles() && child.isSrtFile()) || hasEmbeddedSubs;
 						}
 
 						boolean isIncompatible = false;

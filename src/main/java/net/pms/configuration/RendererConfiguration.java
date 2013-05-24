@@ -1074,7 +1074,7 @@ public class RendererConfiguration {
 			String noTranscode = "";
 
 			if (PMS.getConfiguration() != null) {
-				noTranscode = PMS.getConfiguration().getNoTranscode();
+				noTranscode = PMS.getConfiguration().getDisableTranscodeForExtensions();
 			}
 
 			// Is the format among the ones to be streamed?

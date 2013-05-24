@@ -546,10 +546,10 @@ public class FFmpegVideo extends Player {
 		setDtsRemux(false);
 		setVideoRemux(false);
 
-		if (configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && renderer.isTranscodeToAC3()) {
+		if (configuration.isAudioRemuxAC3() && params.aid != null && params.aid.isAC3() && renderer.isTranscodeToAC3()) {
 			// AC-3 remux takes priority
 			setAc3Remux(true);
-		} else if (isTsMuxeRVideoEngineEnabled && configuration.isDTSEmbedInPCM() && params.aid != null && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable()) {
+		} else if (isTsMuxeRVideoEngineEnabled && configuration.isAudioEmbedDtsInPcm() && params.aid != null && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable()) {
 			// Now check for DTS remux
 			setDtsRemux(true);
 		}

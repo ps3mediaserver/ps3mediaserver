@@ -229,7 +229,7 @@ public class MEncoderVideo extends Player {
 			public void actionPerformed(ActionEvent e) {
 				JPanel codecPanel = new JPanel(new BorderLayout());
 				final JTextArea textArea = new JTextArea();
-				textArea.setText(configuration.getCodecSpecificConfig());
+				textArea.setText(configuration.getMencoderCodecSpecificConfig());
 				textArea.setFont(new Font("Courier", Font.PLAIN, 12));
 				JScrollPane scrollPane = new JScrollPane(textArea);
 				scrollPane.setPreferredSize(new java.awt.Dimension(900, 100));
@@ -294,7 +294,7 @@ public class MEncoderVideo extends Player {
 							JOptionPane.ERROR_MESSAGE
 						);
 					} else {
-						configuration.setCodecSpecificConfig(newCodecparam);
+						configuration.setMencoderCodecSpecificConfig(newCodecparam);
 						break;
 					}
 				}
@@ -814,7 +814,7 @@ public class MEncoderVideo extends Player {
 
 		if (params.sid == null && dvd && configuration.isMencoderRemuxMPEG2() && params.mediaRenderer.isMpeg2Supported()) {
 			String expertOptions[] = getSpecificCodecOptions(
-				configuration.getCodecSpecificConfig(),
+				configuration.getMencoderCodecSpecificConfig(),
 				media,
 				params,
 				filename,
@@ -858,12 +858,12 @@ public class MEncoderVideo extends Player {
 
 		final boolean isTSMuxerVideoEngineEnabled = PMS.getConfiguration().getEnginesAsList().contains(TsMuxeRVideo.ID);
 		final boolean mencoderAC3RemuxAudioDelayBug = (params.aid != null) && (params.aid.getAudioProperties().getAudioDelay() != 0) && (params.timeseek == 0);
-        if (!mencoderAC3RemuxAudioDelayBug && configuration.isRemuxAC3() && params.aid != null && params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
+        if (!mencoderAC3RemuxAudioDelayBug && configuration.isAudioRemuxAC3() && params.aid != null && params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
 			// AC3 remux takes priority
 			ac3Remux = true;
 		} else {
 			// now check for DTS remux and LPCM streaming
-			dtsRemux = isTSMuxerVideoEngineEnabled && configuration.isDTSEmbedInPCM() &&
+			dtsRemux = isTSMuxerVideoEngineEnabled && configuration.isAudioEmbedDtsInPcm() &&
 				(
 					!dvd ||
 					configuration.isMencoderRemuxMPEG2()
@@ -871,7 +871,7 @@ public class MEncoderVideo extends Player {
 				params.aid.isDTS() &&
 				!avisynth() &&
 				params.mediaRenderer.isDTSPlayable();
-			pcm = isTSMuxerVideoEngineEnabled && configuration.isUsePCM() &&
+			pcm = isTSMuxerVideoEngineEnabled && configuration.isAudioUsePCM() &&
 				(
 					!dvd ||
 					configuration.isMencoderRemuxMPEG2()
@@ -1078,7 +1078,7 @@ public class MEncoderVideo extends Player {
 
 		if (media != null) {
 			String expertOptions [] = getSpecificCodecOptions(
-				configuration.getCodecSpecificConfig(),
+				configuration.getMencoderCodecSpecificConfig(),
 				media,
 				params,
 				filename,
@@ -1616,7 +1616,7 @@ public class MEncoderVideo extends Player {
 		// TODO this is better handled by a plugin with scripting support and will be removed
 		if (media != null) {
 			String expertOptions[] = getSpecificCodecOptions(
-				configuration.getCodecSpecificConfig(),
+				configuration.getMencoderCodecSpecificConfig(),
 				media,
 				params,
 				filename,

@@ -297,10 +297,10 @@ public class TsMuxeRVideo extends Player {
                     // final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && params.aid.getAudioProperties().getNumberOfChannels() == 2)
 					//	&& (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
 					final boolean ps3_and_stereo_and_384_kbits = false;
-					ac3Remux = (params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3());
-                    dtsRemux = configuration.isDTSEmbedInPCM() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
+					ac3Remux = (params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isAudioRemuxAC3());
+                    dtsRemux = configuration.isAudioEmbedDtsInPcm() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
 
-					pcm = configuration.isUsePCM() &&
+					pcm = configuration.isAudioUsePCM() &&
 						!mp4_with_non_h264 &&
 						(
 							params.aid.isLossless() ||
@@ -413,10 +413,10 @@ public class TsMuxeRVideo extends Player {
 						// final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && audio.getAudioProperties().getNumberOfChannels() == 2)
 						//	&& (audio.getBitRate() > 370000 && audio.getBitRate() < 400000);
 						final boolean ps3_and_stereo_and_384_kbits = false;
-                        ac3Remux = audio.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3();
-						dtsRemux = configuration.isDTSEmbedInPCM() && audio.isDTS() && params.mediaRenderer.isDTSPlayable();
+                        ac3Remux = audio.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isAudioRemuxAC3();
+						dtsRemux = configuration.isAudioEmbedDtsInPcm() && audio.isDTS() && params.mediaRenderer.isDTSPlayable();
 
-						pcm = configuration.isUsePCM() &&
+						pcm = configuration.isAudioUsePCM() &&
 							!mp4_with_non_h264 &&
 							(
 								audio.isLossless() ||
@@ -548,9 +548,9 @@ public class TsMuxeRVideo extends Player {
 			// final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && params.aid.getAudioProperties().getNumberOfChannels() == 2)
 			//	&& (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
 			final boolean ps3_and_stereo_and_384_kbits = false;
-			ac3Remux = params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3();
-			dtsRemux = configuration.isDTSEmbedInPCM() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
-			pcm = configuration.isUsePCM() &&
+			ac3Remux = params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isAudioRemuxAC3();
+			dtsRemux = configuration.isAudioEmbedDtsInPcm() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
+			pcm = configuration.isAudioUsePCM() &&
 				!mp4_with_non_h264 &&
 				(
 					params.aid.isLossless() ||
@@ -605,9 +605,9 @@ public class TsMuxeRVideo extends Player {
                 // final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && lang.getAudioProperties().getNumberOfChannels() == 2)
 				//	&& (lang.getBitRate() > 370000 && lang.getBitRate() < 400000);
 				final boolean ps3_and_stereo_and_384_kbits = false;
-                ac3Remux = lang.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isRemuxAC3();
-				dtsRemux = configuration.isDTSEmbedInPCM() && lang.isDTS() && params.mediaRenderer.isDTSPlayable();
-				pcm = configuration.isUsePCM() &&
+                ac3Remux = lang.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isAudioRemuxAC3();
+				dtsRemux = configuration.isAudioEmbedDtsInPcm() && lang.isDTS() && params.mediaRenderer.isDTSPlayable();
+				pcm = configuration.isAudioUsePCM() &&
 					!mp4_with_non_h264 &&
 					(
 						lang.isLossless() ||

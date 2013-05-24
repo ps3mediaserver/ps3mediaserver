@@ -300,7 +300,7 @@ public abstract class Player {
 			File video = new File(fileName);
 			FileUtil.isSubtitlesExists(video, media, false);
 
-			if (configuration.isAutoloadSubtitles()) {
+			if (configuration.isAutoloadExternalSubtitles()) {
 				boolean forcedSubsFound = false;
 				// Priority to external subtitles
 				for (DLNAMediaSubtitle sub : media.getSubtitleTracksList()) {
