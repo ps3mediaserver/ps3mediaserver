@@ -176,45 +176,56 @@ this can be done with:
 
     sudo apt-get install nsis
 
-The Windows installer can then be built by running:
+Then the `NSISDIR` environment needs to be set to the **absolute path** to the
+`nsis` directory. This can either be set per-command:
 
-    NSISDIR=/path/to/src/main/external-resources/third-party/nsis mvn package -P windows
+    NSISDIR=$PWD/src/main/external-resources/third-party/nsis mvn ...
 
-Adjust the path to the `nsis` directory accordingly e.g. if you're in the PMS build directory:
-
-    NSISDIR=$PWD/src/main/external-resources/third-party/nsis mvn package -P windows
-
-Note that the `NSISDIR` environment variable must be an **absolute path**.
-
-If you regularly cross-compile the Windows installer, you can save time by
-setting up an alias or script to run this command, or by persisting the `NSISDIR` variable
-e.g. temporarily:
+\- temporarily in the current shell:
 
     export NSISDIR=$PWD/src/main/external-resources/third-party/nsis
+    mvn ...
 
-\- or permanently by setting it in the shell's rc file e.g.:
+\- or permanently:
 
+    # these two commands only need to be run once
     echo "export NSISDIR=$PWD/src/main/external-resources/third-party/nsis" >> ~/.bashrc
     source ~/.bashrc
 
-Thereafter, the Windows installer can be built without setting the environment variable each time:
+    mvn...
 
-    mvn package -P windows
+For the sake of brevity, the following examples assume it has already been set.
+
+The Windows installer can now be built with one of the following commands:
+
+### On Linux
+
+    mvn package -P system-makensis,windows
+
+### On Mac OS X
+
+    mvn package -P system-makensis,windows,-osx
 
 ## Building the Linux tarball
 
-This can be built on any platform without any additional configuration:
+### On Windows
 
-    mvn package -P linux
+    mvn package -P linux,-windows
 
-## Building everything
+### On Mac OS X
 
-Currently, the Mac OS X installer can only be built on Mac OS X, making it
-the only platform that can build all three targets. To build a release
-for all platforms on Mac OS X, make sure `makensis` is installed,
-then run:
+    mvn package -P linux,-osx
 
-    NSISDIR=$PWD/src/main/external-resources/third-party/nsis mvn package -P linux,osx,windows
+## Building the Mac DMG file
+
+Currently, the Mac OS X distribution can only be built on Mac OS X
+e.g. with the default profile:
+
+    mvn package
+
+Or it can be specified explicitly:
+
+    mvn package -P osx
 
 # Instructions for developers <a name="developers"></a>
 
