@@ -19,44 +19,26 @@
 
 package net.pms.test.formats;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeTrue;
-
-import java.io.IOException;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import ch.qos.logback.classic.LoggerContext;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.LibMediaInfoParser;
-import net.pms.formats.DVRMS;
-import net.pms.formats.Format;
-import net.pms.formats.GIF;
-import net.pms.formats.ISO;
-import net.pms.formats.JPG;
-import net.pms.formats.M4A;
-import net.pms.formats.MKV;
-import net.pms.formats.MP3;
-import net.pms.formats.MPG;
-import net.pms.formats.OGG;
-import net.pms.formats.PNG;
-import net.pms.formats.RAW;
-import net.pms.formats.TIF;
-import net.pms.formats.WAV;
-import net.pms.formats.WEB;
+import net.pms.formats.*;
 import net.pms.network.HTTPResource;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.LoggerContext;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeTrue;
 
 
 /**
@@ -75,8 +57,6 @@ public class FormatRecognitionTest {
 
 		try {
 			pmsConf = new PmsConfiguration(false);
-		} catch (IOException e) {
-			// This should be impossible since no configuration file will be loaded.
 		} catch (ConfigurationException e) {
 			// This should be impossible since no configuration file will be loaded.
 		}
@@ -386,8 +366,6 @@ public class FormatRecognitionTest {
 			PMS.setConfiguration(new PmsConfiguration());
 			configurationLoaded = true;
 		} catch (ConfigurationException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
