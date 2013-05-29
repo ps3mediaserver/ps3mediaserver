@@ -213,6 +213,7 @@ public final class PlayerFactory {
 	 * 
 	 * @return The list of players.
 	 */
+	// TODO (breaking change): return List<Player>
 	public static ArrayList<Player> getAllPlayers() {
 		return allPlayers;
 	}
@@ -222,6 +223,7 @@ public final class PlayerFactory {
 	 * 
 	 * @return The list of players.
 	 */
+	// TODO (breaking change): return List<Player>
 	public static ArrayList<Player> getPlayers() {
 		return players;
 	}
@@ -264,12 +266,12 @@ public final class PlayerFactory {
 	 *         otherwise.
 	 * @since 1.60.0
 	 */
-	public static Player getPlayer(final DLNAResource resource) {
-		if (resource == null) {
+	public static Player getPlayer(final DLNAResource dlna) {
+		if (dlna == null) {
 			LOGGER.warn("invalid resource (null): no player found");
 			return null;
 		} else {
-			LOGGER.trace("getting player for {}", resource.getName());
+			LOGGER.trace("getting player for {}", dlna.getName());
 		}
 
 		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry());
@@ -278,20 +280,20 @@ public final class PlayerFactory {
 			boolean enabled = enabledEngines.contains(player.id());
 
 			if (enabled) {
-				boolean compatible = player.isCompatible(resource);
+				boolean compatible = player.isCompatible(dlna);
 
-				LOGGER.trace("player: {}, enabled: {}, compatible: {}", player.name(), enabled, compatible);
+				LOGGER.trace("dlna: {}, player: {}, enabled: {}, compatible: {}", new Object[] { dlna.getName(), player.name(), enabled, compatible });
 
 				if (compatible) {
 					// Player is enabled and compatible
 					return player;
 				}
 			} else {
-				LOGGER.trace("player: {}, enabled: {}", player.name(), false);
+				LOGGER.trace("dlna: {},  player: {}, enabled: {}", new Object[] { dlna.getName(), player.name(), false });
 			}
 		}
 
-		LOGGER.trace("no player found for {}", resource.getName());
+		LOGGER.trace("no player found for {}", dlna.getName());
 
 		return null;
 	}
@@ -336,6 +338,7 @@ public final class PlayerFactory {
 	 *				<code>null</code> otherwise.
 	 * @since 1.60.0
 	 */
+	// TODO (breaking change): return List<Player>
 	public static ArrayList<Player> getPlayers(final DLNAResource resource) {
 		if (resource == null) {
 			return null;

@@ -1,11 +1,18 @@
 Changelog:
 ==========
 
-1.82.1 - 2013-??-??
+1.83.0 - 2013-??-??
 
     Engines:
         - VLC Web Video:
             - Fix NPE
+
+    Transcode folder:
+        - add entries for audio files
+        - add missing entries for video files
+        - add entries for web video and web audio files
+        - allow the chapter folder prefix to be localized
+        - hide chapter folders if the duration of the video is less than the chapter length
 
 1.82.0 - 2013-06-03
 

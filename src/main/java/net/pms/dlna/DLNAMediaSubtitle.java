@@ -40,7 +40,6 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	private File externalFile;
 	private String externalFileCharacterSet;
 
-
 	/**
 	 * Returns whether or not the subtitles are embedded.
 	 *

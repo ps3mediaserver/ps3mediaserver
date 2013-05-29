@@ -1558,6 +1558,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @return the audioTracks
 	 * @since 1.60.0
 	 */
+	// TODO (breaking change): rename to getAudioTracks
 	public List<DLNAMediaAudio> getAudioTracksList() {
 		return audioTracks;
 	}
@@ -1579,6 +1580,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @param audioTracks the audioTracks to set
 	 * @since 1.60.0
 	 */
+	// TODO (breaking change): rename to setAudioTracks
 	public void setAudioTracksList(List<DLNAMediaAudio> audioTracks) {
 		this.audioTracks = audioTracks;
 	}
@@ -1596,6 +1598,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @return the subtitleTracks
 	 * @since 1.60.0
 	 */
+	// TODO (breaking change): rename to getSubtitleTracks
 	public List<DLNAMediaSubtitle> getSubtitleTracksList() {
 		return subtitleTracks;
 	}
@@ -1617,6 +1620,7 @@ public class DLNAMediaInfo implements Cloneable {
 	 * @param subtitleTracks the subtitleTracks to set
 	 * @since 1.60.0
 	 */
+	// TODO (breaking change): rename to setSubtitleTracks
 	public void setSubtitleTracksList(List<DLNAMediaSubtitle> subtitleTracks) {
 		this.subtitleTracks = subtitleTracks;
 	}

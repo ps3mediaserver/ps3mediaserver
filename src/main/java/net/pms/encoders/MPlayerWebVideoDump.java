@@ -55,41 +55,57 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media,
-		OutputParams params) throws IOException {
+	public ProcessWrapper launchTranscode(
+		String filename,
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		params.waitbeforestart = 6000;
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
-		PipeProcess audioP = new PipeProcess("mplayer_webvid" + System.currentTimeMillis());
+		PipeProcess pipeProcess = new PipeProcess("mplayer_web_video" + System.currentTimeMillis());
 
-		String mPlayerdefaultAudioArgs[] = new String[]{PMS.getConfiguration().getMplayerPath(), fileName, "-nocache", "-dumpstream", "-quiet", "-dumpfile", audioP.getInputPipe()};
-		params.input_pipes[0] = audioP;
+		String mPlayerDefaultAudioArgs[] = new String[]{
+			PMS.getConfiguration().getMplayerPath(),
+			filename,
+			"-nocache",
+			"-prefer-ipv4",
+			"-dumpstream",
+			"-quiet",
+			"-dumpfile",
+			pipeProcess.getInputPipe()
+		};
 
-		ProcessWrapper mkfifo_process = audioP.getPipeProcess();
+		params.input_pipes[0] = pipeProcess;
+		ProcessWrapper mkfifo_process = pipeProcess.getPipeProcess();
 
-		mPlayerdefaultAudioArgs = finalizeTranscoderArgs(
-			fileName,
+		mPlayerDefaultAudioArgs = finalizeTranscoderArgs(
+			filename,
 			dlna,
 			media,
 			params,
-			mPlayerdefaultAudioArgs
+			mPlayerDefaultAudioArgs
 		);
 
-		ProcessWrapperImpl pw = new ProcessWrapperImpl(mPlayerdefaultAudioArgs, params);
+		ProcessWrapperImpl pw = new ProcessWrapperImpl(mPlayerDefaultAudioArgs, params);
 		pw.attachProcess(mkfifo_process);
 		mkfifo_process.runInNewThread();
+
 		try {
 			Thread.sleep(300);
 		} catch (InterruptedException e) {
 		}
 
-		audioP.deleteLater();
+		pipeProcess.deleteLater();
 		pw.runInNewThread();
+
 		try {
 			Thread.sleep(300);
 		} catch (InterruptedException e) {
 		}
+
 		return pw;
 	}
 

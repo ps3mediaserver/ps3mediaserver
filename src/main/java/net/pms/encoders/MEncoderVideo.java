@@ -2084,7 +2084,7 @@ public class MEncoderVideo extends Player {
 				if (media != null && media.getAudioTracksList().size() > 1 && params.aid != null) {
 					if (media.getContainer() != null && (media.getContainer().equals(FormatConfiguration.AVI) || media.getContainer().equals(FormatConfiguration.FLV))) {
 						// TODO confirm (MP4s, OGMs and MOVs already tested: first aid is 0; AVIs: first aid is 1)
-						// for AVIs, FLVs ans MOVs mencoder starts audio tracks numbering from 1
+						// for AVIs, FLVs and MOVs mencoder starts audio tracks numbering from 1
 						aid = "" + (params.aid.getId() + 1);
 					} else {
 						// everything else from 0

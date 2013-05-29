@@ -336,6 +336,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 *
 	 * @return true, if this contain can have a transcode folder
 	 */
+	// TODO (breaking change): should be protected
 	public boolean isTranscodeFolderAvailable() {
 		return true;
 	}
@@ -522,9 +523,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 					if (player != null && !allChildrenAreFolders) {
 						boolean forceTranscode = false;
-						if (child.getFormat() != null) {
-							forceTranscode = child.getFormat().skip(PMS.getConfiguration().getForceTranscode(), getDefaultRenderer() != null ? getDefaultRenderer().getTranscodedExtensions() : null);
-						}
+						forceTranscode = child.getFormat().skip(PMS.getConfiguration().getForceTranscode(), getDefaultRenderer() != null ? getDefaultRenderer().getTranscodedExtensions() : null);
 
 						boolean hasEmbeddedSubs = false;
 
@@ -556,11 +555,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							LOGGER.trace("Switching " + child.getName() + " to player " + player.toString() + " for transcoding");
 						}
 
-						// Should the child be added to the transcode folder?
-						if (child.getFormat().isVideo() && child.isTranscodeFolderAvailable()) {
-							// true: create (and append) the #--TRANSCODE--# folder to this folder if it doesn't already exist
+						// Should the child be added to the #--TRANSCODE--# folder?
+						if ((child.getFormat().isVideo() || child.getFormat().isAudio()) && child.isTranscodeFolderAvailable()) {
+							// true: create (and append) the #--TRANSCODE--# folder to this
+							// folder if supported/enabled and if it doesn't already exist
 							VirtualFolder transcodeFolder = getTranscodeFolder(true);
-
 							if (transcodeFolder != null) {
 								VirtualFolder fileTranscodeFolder = new FileTranscodeVirtualFolder(child.getName(), null);
 
@@ -628,10 +627,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	// XXX package-private: used by MapFile; should be protected?
 	TranscodeVirtualFolder getTranscodeFolder(boolean create) {
-		if (!isTranscodeFolderAvailable()) {
-			return null;
-		}
-
 		if (PMS.getConfiguration().getHideTranscodeEnabled()) {
 			return null;
 		}
@@ -946,7 +941,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * @return String representing the item.
 	 */
 	public String getDisplayName(RendererConfiguration mediaRenderer) {
-
 		// Chapter virtual folder ignores formats and only displays the start time
 		if (getSplitRange().isEndLimitAvailable()) {
 			return ">> " + DLNAMediaInfo.getDurationString(getSplitRange().getStart());
@@ -974,9 +968,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		String subFlavor = "";
 		String externalSubs = "";
 
-		// Entries in the transcoding virtual folder get their audio details
-		// set. So if this is the case, use the short file name format.
-		boolean useShortFormat = (getMediaAudio() != null);
+		// the display names of #--TRANSCODE--# folder files may need to
+		// pack in a lot of information (e.g. engine, audio track, subtitle
+		// track) so we use a compact format to try to prevent them being
+		// truncated or scrolling off the screen
+		boolean useShortFormat = isNoName();
 
 		// Determine the format
 		if (mediaRenderer != null) {
