@@ -1,4 +1,42 @@
-# Build instructions <a name="build-instructions"></a>
+## Table of Contents
+
+- [Build instructions](#build-instructions)
+- [Short instructions](#short-instructions)
+- [Full instructions](#full-instructions)
+	- [1. Download and install the Java JDK](#1-download-and-install-the-java-jdk)
+		- [Windows](#windows)
+		- [Linux](#linux)
+		- [Mac OS X](#mac-os-x)
+	- [2. Download and install Git](#2-download-and-install-git)
+		- [Windows](#windows-1)
+		- [Linux](#linux-1)
+		- [Mac OS X](#mac-os-x-1)
+	- [3. Download and extract Maven](#3-download-and-extract-maven)
+		- [Windows](#windows-2)
+		- [Linux](#linux-2)
+		- [Mac OS X](#mac-os-x-2)
+	- [4. Set environment variables](#4-set-environment-variables)
+		- [Windows](#windows-3)
+		- [Linux](#linux-3)
+		- [Mac OS X](#mac-os-x-3)
+	- [5. Download the PMS source code](#5-download-the-pms-source-code)
+	- [6. Resolve and install external libraries](#6-resolve-and-install-external-libraries)
+	- [7. Update to the latest source (optional)](#7-update-to-the-latest-source-optional)
+	- [8. Compile the latest version of PMS](#8-compile-the-latest-version-of-pms)
+	- [Automatic builds](#automatic-builds)
+		- [Windows](#windows-4)
+		- [Linux, Mac OS X &c.](#linux-mac-os-x-&c)
+- [Cross-compilation](#cross-compilation)
+	- [Building the Windows binaries](#building-the-windows-binaries)
+		- [On Linux](#on-linux)
+		- [On Mac OS X](#on-mac-os-x)
+	- [Building the Linux tarball](#building-the-linux-tarball)
+		- [On Windows](#on-windows)
+		- [On Mac OS X](#on-mac-os-x-1)
+	- [Building the Mac DMG file](#building-the-mac-dmg-file)
+- [Instructions for developers](#instructions-for-developers)
+
+# Build instructions
 
 The latest release of PS3 Media Server can be downloaded from: http://www.ps3mediaserver.org/
 
@@ -13,7 +51,7 @@ The following software packages are required:
 Read the [Full instructions](#full-instructions) section for a complete explanation of how to
 install all required software and how to build PMS for each operating system.
 
-# Short instructions <a name="short-instructions"></a>
+# Short instructions
 
 If all required software packages are installed, the following commands will
 download the latest sources and build PMS:
@@ -28,7 +66,7 @@ The result will be built in the "target" directory:
 * Linux: `pms-linux-generic-x.xx.x.tar.gz`
 * Mac OS X: `pms-macosx-x.xx.x.dmg`
 
-# Full instructions <a name="full-instructions"></a>
+# Full instructions
 
 First all required software has to be installed:
 
@@ -159,7 +197,7 @@ These last two commands can easily be automated using a script e.g.:
     git pull
     mvn package
 
-# Cross-compilation <a name="cross-compilation"></a>
+# Cross-compilation
 
 By default, `mvn package` builds an installer or distibution file for the
 platform it is being compiled on e.g. `PMS-setup.exe` on Windows and a tarball on Linux.
@@ -227,7 +265,7 @@ Or it can be specified explicitly:
 
     mvn package -P osx
 
-# Instructions for developers <a name="developers"></a>
+# Instructions for developers
 
 The previous sections described how to build the latest version of PMS from its
 sources. For most people this will be enough to keep up to date with the latest
