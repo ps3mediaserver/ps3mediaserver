@@ -44,11 +44,7 @@ for documentation and contributions to the community.
 * sarraken, bleuecinephile, bd.azerty, fabounnet for the support and feedback
 * smo for the Jenkins server
 
-Special thanks to the following companies:
-* ej-technologies for [JProfiler](http://www.ej-technologies.com/products/jprofiler/overview.html) Java Profiler
-* JetBrains for [IntelliJ IDEA](https://www.jetbrains.com/idea/) Java IDE
-
-See the `CHANGELOG` for more thanks.
+See the [CHANGELOG](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG.txt) for more thanks.
 
 Building
 ------------
@@ -79,6 +75,7 @@ On Windows:
 
 For more information, see http://help.github.com/line-endings/
 
-See [BUILD.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/BUILD.md) for instructions on how to set up your local development
-environment.
-
+See [BUILD.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/BUILD.md) for instructions on how
+to set up your local development environment, and
+[Development.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/Development.md) for more information
+on development tools and environments.
