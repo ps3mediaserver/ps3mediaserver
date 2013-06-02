@@ -76,5 +76,5 @@ On Windows:
 
 For more information, see http://help.github.com/line-endings/
 
-See [Development.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/Development.md)
+See [DEVELOP.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/DEVELOP.md)
 for detailed information on setting up a PMS development environment.

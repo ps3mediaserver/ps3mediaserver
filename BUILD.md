@@ -269,4 +269,4 @@ Or it can be specified explicitly:
 
 Now that you have a build environment set up, you can start hacking on
 PMS. Instructions and tips for developing/patching PMS can be found
-[here](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/Development.md).
+[here](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/DEVELOP.md).
