@@ -47,7 +47,9 @@ public class RendererConfiguration {
 	private static final String EXCLUSIVE = "exclusive";
 	private static final String LPCM = "LPCM";
 	private static final String MP3 = "MP3";
+	// TODO (breaking change): rename MPEG2PS
 	private static final String MPEGPSAC3 = "MPEGPSAC3";
+	// TODO (breaking change): rename MPEG2TS
 	private static final String MPEGTSAC3 = "MPEGTSAC3";
 	private static final String WAV = "WAV";
 	private static final String WMV = "WMV";

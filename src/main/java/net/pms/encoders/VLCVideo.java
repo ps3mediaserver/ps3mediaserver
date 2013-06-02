@@ -61,6 +61,9 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import com.sun.jna.Platform;
 
+// FIXME (breaking change): VLCWebVideo doesn't customize any of this, so everything should be *private*
+// TODO (when transcoding to MPEG-2): handle non-MPEG-2 compatible input framerates
+
 /**
  * Use VLC as a backend transcoder. Note that 0.x and 1.x versions are
  * unsupported (and probably will crash). Only the latest version will be
@@ -143,38 +146,44 @@ public class VLCVideo extends Player {
 	 * @return The codec configuration
 	 */
 	protected CodecConfig genConfig(RendererConfiguration renderer) {
-		CodecConfig config = new CodecConfig();
+		CodecConfig codecConfig = new CodecConfig();
 		if (renderer.isTranscodeToWMV()) {
 			// Assume WMV = XBox = all media renderers with this flag
 			LOGGER.debug("Using XBox WMV codecs");
-			config.videoCodec = "wmv2";
-			config.audioCodec = "wma";
-			config.container = "asf";
-		} else if (renderer.isTranscodeToMPEGTSAC3()) {
-			// Default codecs for DLNA standard
-			LOGGER.debug("Using DLNA standard codecs with ts container");
-			config.videoCodec = "mp2v";
-			config.audioCodec = "mp2a"; // NOTE: a52 sometimes causes audio to stop after ~5 mins
-			config.container = "ts";
-		} else {
-			// Default codecs for DLNA standard
-			LOGGER.debug("Using DLNA standard codecs with ps (default) container");
-			config.videoCodec = "mp2v";
-			config.audioCodec = "mp2a"; // NOTE: a52 sometimes causes audio to stop after ~5 mins
-			config.container = "ps";
+			codecConfig.videoCodec = "wmv2";
+			codecConfig.audioCodec = "wma";
+			codecConfig.container = "asf";
+		} else { // Default codecs for DLNA standard
+			codecConfig.videoCodec = "mp2v";
+			// XXX a52 (AC-3) causes the audio to cut out after
+			// a while (5, 10, and 45 minutes have been spotted)
+			// with versions as recent as 2.0.5. MP2 works without
+			// issue, so we use that as a workaround for now.
+			// codecConfig.audioCodec = "a52";
+			codecConfig.audioCodec = "mp2a";
+
+			if (renderer.isTranscodeToMPEGTSAC3()) {
+				LOGGER.debug("Using standard DLNA codecs with an MPEG-PS container");
+				codecConfig.container = "ts";
+			} else {
+				LOGGER.debug("Using standard DLNA codecs with an MPEG-TS (default) container");
+				codecConfig.container = "ps";
+			}
 		}
-		LOGGER.trace("Using " + config.videoCodec + ", " + config.audioCodec + ", " + config.container);
+
+		LOGGER.trace("Using " + codecConfig.videoCodec + ", " + codecConfig.audioCodec + ", " + codecConfig.container);
 
 		// Audio sample rate handling
 		if (sampleRateOverride.isSelected()) {
-			config.sampleRate = Integer.valueOf(sampleRate.getText());
+			codecConfig.sampleRate = Integer.valueOf(sampleRate.getText());
 		}
 
 		// This has caused garbled audio, so only enable when told to
 		if (audioSyncEnabled.isSelected()) {
-			config.extraTrans.put("audio-sync", "");
+			codecConfig.extraTrans.put("audio-sync", "");
 		}
-		return config;
+
+		return codecConfig;
 	}
 
 	protected static class CodecConfig {
@@ -186,14 +195,14 @@ public class VLCVideo extends Player {
 		int sampleRate;
 	}
 
-	protected Map<String, Object> getEncodingArgs(CodecConfig config) {
+	protected Map<String, Object> getEncodingArgs(CodecConfig codecConfig) {
 		// See: http://www.videolan.org/doc/streaming-howto/en/ch03.html
 		// See: http://wiki.videolan.org/Codec
 		Map<String, Object> args = new HashMap<String, Object>();
 
 		// Codecs to use
-		args.put("vcodec", config.videoCodec);
-		args.put("acodec", config.audioCodec);
+		args.put("vcodec", codecConfig.videoCodec);
+		args.put("acodec", codecConfig.audioCodec);
 
 		// Bitrate in kbit/s (TODO: Use global option?)
 		args.put("vb", "4096");
@@ -206,7 +215,7 @@ public class VLCVideo extends Player {
 		args.put("channels", 2);
 
 		// Static sample rate
-		args.put("samplerate", config.sampleRate);
+		args.put("samplerate", codecConfig.sampleRate);
 
 		// Recommended on VLC DVD encoding page
 		args.put("keyint", 16);
@@ -221,8 +230,11 @@ public class VLCVideo extends Player {
 		// Hardcode subtitles into video
 		args.put("soverlay", "");
 
+		// enable multi-threading
+		args.put("threads", "" + pmsconfig.getNumberOfCpuCores());
+
 		// Add extra args
-		args.putAll(config.extraTrans);
+		args.putAll(codecConfig.extraTrans);
 
 		return args;
 	}
@@ -232,9 +244,9 @@ public class VLCVideo extends Player {
 		boolean isWindows = Platform.isWindows();
 
 		// Make sure we can play this
-		CodecConfig config = genConfig(params.mediaRenderer);
+		CodecConfig codecConfig = genConfig(params.mediaRenderer);
 
-		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + config.container);
+		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + codecConfig.container);
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 
 		LOGGER.trace("filename: " + fileName);
@@ -256,9 +268,16 @@ public class VLCVideo extends Player {
 		cmdList.add("-I");
 		cmdList.add("dummy");
 
-		// Hardware acceleration seems to be more stable now, so its enabled
+		// XXX hardware acceleration causes issues with some videos
+		// on VLC 2.0.5, so disable it by default.
+		// Note: it's enabled by default in 2.0.5 (and possibly
+		// earlier), so, if not enabled, it needs to be explicitly
+		// disabled
 		if (pmsconfig.isVideoHardwareAcceleration()) {
+			LOGGER.warn("VLC hardware acceleration support is an experimental feature. Please disable it before reporting issues.");
 			cmdList.add("--ffmpeg-hw");
+		} else {
+			cmdList.add("--no-ffmpeg-hw");
 		}
 
 		// Useful for the more esoteric codecs people use
@@ -310,7 +329,7 @@ public class VLCVideo extends Player {
 
 		// Generate encoding args
 		StringBuilder encodingArgsBuilder = new StringBuilder();
-		for (Map.Entry<String, Object> curEntry : getEncodingArgs(config).entrySet()) {
+		for (Map.Entry<String, Object> curEntry : getEncodingArgs(codecConfig).entrySet()) {
 			encodingArgsBuilder.append(curEntry.getKey()).append("=").append(curEntry.getValue()).append(",");
 		}
 
@@ -318,7 +337,7 @@ public class VLCVideo extends Player {
 		String transcodeSpec = String.format(
 				"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
 				encodingArgsBuilder.toString(),
-				config.container,
+				codecConfig.container,
 				(isWindows ? "\\\\" : ""),
 				tsPipe.getInputPipe());
 		cmdList.add("--sout");
