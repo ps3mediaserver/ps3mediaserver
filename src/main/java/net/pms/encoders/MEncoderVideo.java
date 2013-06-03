@@ -1498,7 +1498,7 @@ public class MEncoderVideo extends Player {
 		/*
 		 * handle subtitles
 		 *
-		 * try to reconcile the fact that the handling of "Definitely disable subtitles" is spread out
+		 * try to reconcile the fact that the handling of "Disable subtitles" is spread out
 		 * over net.pms.encoders.Player.setAudioAndSubs and here by setting both of MEncoder's "disable
 		 * subs" options if any of the internal conditions for disabling subtitles are met.
 		 */
