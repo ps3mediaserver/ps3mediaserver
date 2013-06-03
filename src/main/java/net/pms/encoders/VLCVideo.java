@@ -244,6 +244,7 @@ public class VLCVideo extends Player {
 		DLNAMediaInfo media,
 		OutputParams params
 	) throws IOException {
+		final String filename = dlna.getSystemName();
 		boolean isWindows = Platform.isWindows();
 
 		// Make sure we can play this
@@ -251,12 +252,6 @@ public class VLCVideo extends Player {
 
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + codecConfig.container);
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
-
-		final String filename = dlna.getSystemName();
-		LOGGER.trace("filename: " + filename);
-		LOGGER.trace("dlna: " + dlna.getName());
-		LOGGER.trace("media: " + media); // XXX may be null (e.g. for web videos)
-		LOGGER.trace("params: " + params);
 
 		// XXX it can take a long time for Windows to create a named pipe
 		// (and mkfifo can be slow if /tmp isn't memory-mapped), so start this as early as possible
