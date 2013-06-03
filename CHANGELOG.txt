@@ -1,7 +1,7 @@
 Changelog:
 ==========
 
-1.82.0 - 2013-??-??
+1.82.0 - 2013-06-03
 
     Engines:
         - dcraw Thumbnailer:
