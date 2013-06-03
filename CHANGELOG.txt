@@ -24,10 +24,10 @@ Changelog:
             - Clean up engine names
 
     Renderers:
-        - PS3: TV series with sound problems after "previously on" block should now play normally with Keep AC-3 track option enabled (thanks, SubJunk)
+        - PS3: TV series with sound problems after "previously on" block should now play normally with the "Keep AC-3 track" option enabled (thanks, SubJunk)
 
     Language updates:
-        - Updated Dutch translation (thanks, leroy!)
+        - Updated Dutch translation (thanks, leroy)
 
     Misc:
         - Fix issue with VirtualBox and PMS launchers (thanks, thepadawan42)
