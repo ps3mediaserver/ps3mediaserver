@@ -16,6 +16,10 @@ Changelog:
         - allow the chapter folder prefix to be localized
         - hide chapter folders if the duration of the video is less than the chapter length
 
+    Misc:
+        - Send thumbnails properly to Samsung 2012 ES and EH models (thanks, dmitche3!)
+
+
 1.82.0 - 2013-06-03
 
     Engines:
