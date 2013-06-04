@@ -4,6 +4,8 @@ Changelog:
 1.83.0 - 2013-??-??
 
     Engines:
+        - tsMuxeR:
+            - regression: restore the pre-1.82.0 compatibility logic
         - VLC Web Video:
             - Fix NPE
 

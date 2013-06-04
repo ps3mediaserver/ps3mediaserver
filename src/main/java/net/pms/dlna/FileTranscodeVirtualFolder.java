@@ -219,7 +219,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 			}
 
 			// assemble copies for each combination of audio, subtitle and player
-			ArrayList<DLNAResource> entries = new ArrayList<DLNAResource>();
+			ArrayList<DLNAResource> copies = new ArrayList<DLNAResource>();
 
 			// create copies of the audio/subtitle track lists as we're making (local)
 			// modifications to them
@@ -288,16 +288,16 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 					// create a copy for each compatible player
 					for (Player player : players) {
 						DLNAResource copy = createResourceWithAudioSubtitlePlayer(child, audio, subtitle, player);
-						entries.add(copy);
+						copies.add(copy);
 					}
 				}
 			}
 
 			// Sort the list of combinations
-			Collections.sort(entries, new ResourceSort(PlayerFactory.getAllPlayers()));
+			Collections.sort(copies, new ResourceSort(PlayerFactory.getAllPlayers()));
 
 			// Now add the sorted list of combinations to the folder
-			for (DLNAResource dlna : entries) {
+			for (DLNAResource dlna : copies) {
 				LOGGER.trace(
 					"Adding {}: audio: {}, subtitle: {}, player: {}",
 					new Object[] {

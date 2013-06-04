@@ -874,19 +874,38 @@ public class TSMuxerVideo extends Player {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isCompatible(DLNAResource resource) {
+	public boolean isCompatible(DLNAResource dlna) {
 		if (!(
-			PlayerUtil.isVideo(resource, Format.Identifier.MKV) ||
-			PlayerUtil.isVideo(resource, Format.Identifier.MPG)
+			PlayerUtil.isVideo(dlna, Format.Identifier.MKV) ||
+			PlayerUtil.isVideo(dlna, Format.Identifier.MPG)
 		)) {
 			return false;
 		}
 
-		// subtitles are not supported by tsMuxeR
-		DLNAMediaInfo media = resource.getMedia();
-		if (media != null) {
-			List<DLNAMediaSubtitle> subtitles = media.getSubtitleTracksList();
-			if (subtitles.size() > 0) {
+		/*
+		 * Notes:
+		 *
+		 * 1) isCompatible is used for two separate tasks: 1) selection
+		 * of #--TRANSCODE--# folder entries (PlayerFactory.getPlayers)
+		 * and 2) assignment of the default player for a resource
+		 * (PlayerFactory.getPlayer)
+		 *
+		 * 2) for resources that aren't in the #--TRANSCODE--# folder, it's understood
+		 * that tsMuxeR will only stream the first audio track and that it won't/can't
+		 * stream subtitles, so no need to check either
+		 */
+		if (dlna.isNoName()) { // #--TRANSCODE--# folder entry
+			DLNAMediaAudio dlnaMediaAudio = dlna.getMediaAudio();
+
+			// media is non-null and audioTrackList is non-empty by definition if
+			// mediaAudio has been set (see FileTranscodeVirtualFolder)
+			if ((dlnaMediaAudio != null) && !dlnaMediaAudio.toString().equals(dlna.getMedia().getFirstAudioTrack().toString())) {
+				// PMS only supports playback of the first audio track for tsMuxeR
+				return false;
+			}
+
+			// XXX why is tsMuxeR compatible if the subtitle language is null?
+			if ((dlna.getMediaSubtitle() != null) && (dlna.getMediaSubtitle().getLang() != null)) {
 				return false;
 			}
 		}

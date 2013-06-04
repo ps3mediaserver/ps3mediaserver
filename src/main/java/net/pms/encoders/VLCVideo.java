@@ -315,7 +315,7 @@ public class VLCVideo extends Player {
 			} else { // Load by ID (better)
 				cmdList.add("--sub-track=" + params.sid.getId());
 			}
-		} else if (!pmsconfig.isDisableSubtitles()){ // Not specified, use language from GUI if enabled
+		} else if (!pmsconfig.isDisableSubtitles()) { // Not specified, use language from GUI if enabled
 			// FIXME: VLC does not understand "loc" or "und".
 			cmdList.add("--sub-language=" + pmsconfig.getSubtitlesLanguages());
 		} else {
