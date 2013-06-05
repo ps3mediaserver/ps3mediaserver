@@ -18,26 +18,27 @@
  */
 package net.pms.dlna;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import net.pms.Messages;
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.encoders.Player;
 import net.pms.encoders.PlayerFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * This class populates the file-specific transcode folder with content.
  */
 public class FileTranscodeVirtualFolder extends VirtualFolder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileTranscodeVirtualFolder.class);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private boolean resolved;
 
 	// FIXME unused
@@ -152,8 +153,8 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 			return;
 		}
 
-		int chapterInterval = PMS.getConfiguration().isChapterSupport() ?
-			PMS.getConfiguration().getChapterInterval() :
+		int chapterInterval = configuration.isChapterSupport() ?
+			configuration.getChapterInterval() :
 			-1;
 
 		if ((chapterInterval > 0) && isSeekable(dlna)) {
