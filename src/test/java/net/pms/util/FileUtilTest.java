@@ -18,16 +18,12 @@
  */
 package net.pms.util;
 
+import ch.qos.logback.classic.LoggerContext;
 import org.apache.commons.io.FileUtils;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.mozilla.universalchardet.Constants;
-
 import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.LoggerContext;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -302,5 +298,21 @@ public class FileUtilTest {
 		assertThat(dir).isNotNull();
 		assertThat(dir.isDirectory()).isTrue();
 		assertThat(FileUtil.isDirectoryWritable(dir)).isTrue();
+	}
+
+	@Test
+	public void testGetExtension() {
+		assertThat(FileUtil.getExtension("foo.txt")).isEqualTo("txt");
+		assertThat(FileUtil.getExtension("a/b/c.jpg")).isEqualTo("jpg");
+		assertThat(FileUtil.getExtension("a/b.txt/c")).isEqualTo("");
+		assertThat(FileUtil.getExtension("a/b/c ")).isEqualTo("");
+	}
+
+	@Test
+	public void testGetFileNameWithoutExtension() {
+		assertThat(FileUtil.getFileNameWithoutExtension("a/b/c.txt")).isEqualTo("c");
+		assertThat(FileUtil.getFileNameWithoutExtension("a.txt")).isEqualTo("a");
+		assertThat(FileUtil.getFileNameWithoutExtension("a/b/c")).isEqualTo("c");
+		assertThat(FileUtil.getFileNameWithoutExtension("a/b/c/")).isEqualTo("");
 	}
 }

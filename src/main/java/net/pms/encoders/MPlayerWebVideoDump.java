@@ -45,8 +45,8 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 	}
 
 	@Override
-	public int purpose() {
-		return VIDEO_WEBSTREAM_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.VIDEO_WEB_STREAM_PLAYER;
 	}
 
 	@Override
@@ -56,16 +56,15 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String filename,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
-	) throws IOException {
+			DLNAResource dlna, 
+			DLNAMediaInfo media,
+			OutputParams params) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		params.waitbeforestart = 6000;
 		params.maxBufferSize = PMS.getConfiguration().getMaxAudioBuffer();
 		PipeProcess pipeProcess = new PipeProcess("mplayer_web_video" + System.currentTimeMillis());
+		final String filename = dlna.getSystemName();
 
 		String mPlayerDefaultAudioArgs[] = new String[]{
 			PMS.getConfiguration().getMplayerPath(),

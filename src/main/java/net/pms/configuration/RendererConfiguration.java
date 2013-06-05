@@ -1,7 +1,6 @@
 package net.pms.configuration;
 
 import com.sun.jna.Platform;
-
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaInfo;
@@ -11,12 +10,10 @@ import net.pms.formats.Format;
 import net.pms.network.HTTPResource;
 import net.pms.network.SpeedStats;
 import net.pms.util.PropertiesUtil;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +41,13 @@ public class RendererConfiguration {
 
 	// property values
 	private static final String DEPRECATED_MPEGPSAC3 = "MPEGAC3"; // XXX deprecated: old name with missing container
-	private static final String EXCLUSIVE = "exclusive";
 	private static final String LPCM = "LPCM";
 	private static final String MP3 = "MP3";
 	// TODO (breaking change): rename MPEG2PS
 	private static final String MPEGPSAC3 = "MPEGPSAC3";
 	// TODO (breaking change): rename MPEG2TS
 	private static final String MPEGTSAC3 = "MPEGTSAC3";
+	private static final String H264TSAC3 = "H264TSAC3";
 	private static final String WAV = "WAV";
 	private static final String WMV = "WMV";
 
@@ -61,7 +58,7 @@ public class RendererConfiguration {
 	private static final String CBR_VIDEO_BITRATE = "CBRVideoBitrate"; // Ditlew
 	private static final String CHUNKED_TRANSFER = "ChunkedTransfer";
 	private static final String CUSTOM_MENCODER_OPTIONS = "CustomMencoderOptions";
-	private static final String CUSTOM_MENCODER_QUALITY_SETTINGS = "CustomMencoderQualitySettings";
+	private static final String CUSTOM_MENCODER_MPEG2_OPTIONS = "CustomMencoderQualitySettings"; // TODO (breaking change): value should be CustomMEncoderMPEG2Options
 	private static final String DEFAULT_VBV_BUFSIZE = "DefaultVBVBufSize";
 	private static final String DLNA_LOCALIZATION_REQUIRED = "DLNALocalizationRequired";
 	private static final String DLNA_ORGPN_USE = "DLNAOrgPN";
@@ -71,6 +68,7 @@ public class RendererConfiguration {
 	private static final String H264_L41_LIMITED = "H264Level41Limited";
 	private static final String IMAGE = "Image";
 	private static final String LONG_FILE_NAME_FORMAT = "LongFileNameFormat";
+	private static final String KEEP_PAD_VIDEO_WITH_BLACK_BORDERS = "PadVideoWithBlackBordersTo169AR";
 	private static final String MAX_VIDEO_BITRATE = "MaxVideoBitrateMbps";
 	private static final String MAX_VIDEO_HEIGHT = "MaxVideoHeight";
 	private static final String MAX_VIDEO_WIDTH = "MaxVideoWidth";
@@ -82,6 +80,7 @@ public class RendererConfiguration {
 	private static final String MUX_LPCM_TO_MPEG = "MuxLPCMToMpeg";
 	private static final String RENDERER_ICON = "RendererIcon";
 	private static final String RENDERER_NAME = "RendererName";
+	private static final String RESCALE_BY_RENDERER = "RescaleByRenderer";
 	private static final String SEEK_BY_TIME = "SeekByTime";
 	private static final String SHORT_FILE_NAME_FORMAT = "ShortFileNameFormat";
 	private static final String SHOW_AUDIO_METADATA = "ShowAudioMetadata";
@@ -102,6 +101,8 @@ public class RendererConfiguration {
 	private static final String USE_SAME_EXTENSION = "UseSameExtension";
 	private static final String VIDEO = "Video";
 	private static final String WRAP_DTS_INTO_PCM = "WrapDTSIntoPCM";
+	private static final String CUSTOM_FFMPEG_OPTIONS = "CustomFFmpegOptions";
+	private static final String OVERRIDE_VF = "OverrideVideoFilter";
 
 	public static RendererConfiguration getDefaultConf() {
 		return defaultConf;
@@ -197,7 +198,9 @@ public class RendererConfiguration {
 	public RootFolder getRootFolder() {
 		if (rootFolder == null) {
 			rootFolder = new RootFolder();
-			rootFolder.discoverChildren();
+			if (pmsConfiguration.getUseCache()) {
+				rootFolder.discoverChildren();
+			}
 		}
 
 		return rootFolder;
@@ -425,6 +428,7 @@ public class RendererConfiguration {
 		if (DLNAPN.containsKey(old)) {
 			return DLNAPN.get(old);
 		}
+
 		return old;
 	}
 
@@ -460,7 +464,7 @@ public class RendererConfiguration {
 	}
 
 	public boolean isTranscodeToAC3() {
-		return isTranscodeToMPEGPSAC3() || isTranscodeToMPEGTSAC3();
+		return isTranscodeToMPEGPSAC3() || isTranscodeToMPEGTSAC3() || isTranscodeToH264TSAC3();
 	}
 
 	public boolean isTranscodeToMPEGPSAC3() {
@@ -470,6 +474,10 @@ public class RendererConfiguration {
 
 	public boolean isTranscodeToMPEGTSAC3() {
 		return getVideoTranscode().equals(MPEGTSAC3);
+	}
+
+	public boolean isTranscodeToH264TSAC3() {
+		return getVideoTranscode().equals(H264TSAC3);
 	}
 
 	public boolean isAutoRotateBasedOnExif() {
@@ -535,7 +543,6 @@ public class RendererConfiguration {
 		}
 
 		if (mimetype != null && mimetype.equals(HTTPResource.VIDEO_TRANSCODE)) {
-			mimetype = HTTPResource.MPEG_TYPEMIME;
 			if (isTranscodeToWMV()) {
 				mimetype = isMediaParserV2()
 					? getFormatConfiguration().match(FormatConfiguration.WMV, FormatConfiguration.WMV, FormatConfiguration.WMA)
@@ -549,7 +556,7 @@ public class RendererConfiguration {
 					? getFormatConfiguration().match(FormatConfiguration.MPEGPS, FormatConfiguration.MPEG2, FormatConfiguration.AC3)
 					: HTTPResource.MPEG_TYPEMIME;
 			}
-		} else if (mimetype.equals(HTTPResource.AUDIO_TRANSCODE)) {
+		} else if (HTTPResource.AUDIO_TRANSCODE.equals(mimetype)) {
 			if (isTranscodeToWAV()) {
 				mimetype = isMediaParserV2()
 					? getFormatConfiguration().match(FormatConfiguration.WAV, null, null)
@@ -596,7 +603,7 @@ public class RendererConfiguration {
 	 */
 	public boolean matchUserAgent(String header) {
 		String userAgent = getUserAgent();
-		Pattern userAgentPattern = null;
+		Pattern userAgentPattern;
 
 		if (StringUtils.isNotBlank(userAgent)) {
 			userAgentPattern = Pattern.compile(userAgent, Pattern.CASE_INSENSITIVE);
@@ -617,7 +624,7 @@ public class RendererConfiguration {
 	 */
 	public boolean matchAdditionalUserAgent(String header) {
 		String userAgentAdditionalHeader = getUserAgentAdditionalHttpHeaderSearch();
-		Pattern userAgentAddtionalPattern = null;
+		Pattern userAgentAddtionalPattern;
 
 		if (StringUtils.isNotBlank(userAgentAdditionalHeader)) {
 			userAgentAddtionalPattern = Pattern.compile(userAgentAdditionalHeader, Pattern.CASE_INSENSITIVE);
@@ -829,14 +836,48 @@ public class RendererConfiguration {
 		return getString(MAX_VIDEO_BITRATE, null);
 	}
 
+	@Deprecated
+	public String getCustomMencoderQualitySettings() {
+		return getCustomMEncoderMPEG2Options();
+	}
+
 	/**
-	 * Returns the override settings for MEncoder quality settings in PMS as
+	 * Returns the override settings for MEncoder quality settings as
 	 * defined in the renderer configuration. The default value is "".
 	 *
 	 * @return The MEncoder quality settings.
 	 */
-	public String getCustomMencoderQualitySettings() {
-		return getString(CUSTOM_MENCODER_QUALITY_SETTINGS, "");
+	public String getCustomMEncoderMPEG2Options() {
+		return getString(CUSTOM_MENCODER_MPEG2_OPTIONS, "");
+	}
+
+	/**
+	 * Converts the getCustomMencoderQualitySettings() from MEncoder's format to FFmpeg's.
+	 *
+	 * @return The FFmpeg quality settings.
+	 */
+	public String getCustomFFmpegMPEG2Options() {
+		String mpegSettings = getCustomMEncoderMPEG2Options();
+
+		String mpegSettingsArray[] = mpegSettings.split(":");
+
+		String pairArray[];
+		String returnString = "";
+		for (String pair : mpegSettingsArray) {
+			pairArray = pair.split("=");
+
+			if ("keyint".equals(pairArray[0])) {
+				returnString += "-g " + pairArray[1] + " ";
+			} else if ("vqscale".equals(pairArray[0])) {
+				returnString += "-q:v " + pairArray[1] + " ";
+			} else if ("vqmin".equals(pairArray[0])) {
+				returnString += "-qmin " + pairArray[1] + " ";
+			} else if ("vqmax".equals(pairArray[0])) {
+				returnString += "-qmax " + pairArray[1] + " ";
+			}
+		}
+
+		return returnString;
 	}
 
 	/**
@@ -967,6 +1008,7 @@ public class RendererConfiguration {
 		return ConfigurationUtil.getNonBlankConfigurationString(configuration, key, def);
     }
 
+	@Override
 	public String toString() {
 		return getRendererName();
 	}
@@ -1034,7 +1076,7 @@ public class RendererConfiguration {
 			String noTranscode = "";
 
 			if (PMS.getConfiguration() != null) {
-				noTranscode = PMS.getConfiguration().getNoTranscode();
+				noTranscode = PMS.getConfiguration().getDisableTranscodeForExtensions();
 			}
 
 			// Is the format among the ones to be streamed?
@@ -1043,5 +1085,36 @@ public class RendererConfiguration {
 			// Not natively supported.
 			return false;
 		}
+	}
+
+	public String getCustomFFmpegOptions() {
+		return getString(CUSTOM_FFMPEG_OPTIONS, "");
+	}
+
+	/**
+	 * Some renderers like Panasonic TV internally rescale the video.
+	 * This option forces MEncoder and FFmpeg to pad video with black borders to 16:9 AR.
+	 *
+	 * @return True if MEncoder and FFmpeg should pad video with black borders. Default value is false.
+	 */
+	public boolean isPadVideoWithBlackBordersTo169AR() {
+		return getBoolean(KEEP_PAD_VIDEO_WITH_BLACK_BORDERS, false);
+	}
+
+	/**
+	 * Normally the renderer is responsible for video rescaling to output (TV) resolution.
+	 * If this option is false then PMS will do rescaling.
+	 * It can make better video quality but the CPU and bandwidth are more utilised and can produce jerking video on WiFi.
+	 *
+	 * Works only for FFmpeg and together with PadVideoWithBlackBordersTo169AR.
+	 *
+	 * @return True if the renderer is capable of rescaling video. Default value is true.
+	 */
+	public boolean isRescaleByRenderer() {
+		return getBoolean(RESCALE_BY_RENDERER, true);
+	}
+
+	public String getFFmpegVideoFilterOverride() {
+		return getString(OVERRIDE_VF, null);
 	}
 }

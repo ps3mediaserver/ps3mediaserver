@@ -18,19 +18,10 @@
  */
 package net.pms.encoders;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.StringTokenizer;
-
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
@@ -38,10 +29,13 @@ import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.util.PlayerUtil;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.StringTokenizer;
 
 public class MEncoderAviSynth extends MEncoderVideo {
 	public MEncoderAviSynth(PmsConfiguration configuration) {
@@ -120,8 +114,8 @@ public class MEncoderAviSynth extends MEncoderVideo {
 	}
 
 	@Override
-	public int purpose() {
-		return VIDEO_SIMPLEFILE_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.VIDEO_FILE_PLAYER;
 	}
 	public static final String ID = "avsmencoder";
 

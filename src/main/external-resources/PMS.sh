@@ -48,5 +48,15 @@ if $cygwin; then
     JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
 fi
 
+# Configure fontconfig (used by our build of ffmpeg)
+if [ "x$FONTCONFIG_PATH" = "x" ]; then
+    FONTCONFIG_PATH=/etc/fonts
+    export FONTCONFIG_PATH
+fi
+if [ "x$FONTCONFIG_FILE" = "x" ]; then
+    FONTCONFIG_FILE=/etc/fonts/fonts.conf
+    export FONTCONFIG_FILE
+fi
+
 # Execute the JVM
 exec "$JAVA" $JAVA_OPTS -Xmx768M -Xss1024k -Dfile.encoding=UTF-8 -Djava.net.preferIPv4Stack=true -Djna.nosys=true -classpath "$PMS_JARS" net.pms.PMS "$@"

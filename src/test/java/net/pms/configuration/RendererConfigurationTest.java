@@ -19,26 +19,18 @@
 
 package net.pms.configuration;
 
-import static net.pms.configuration.RendererConfiguration.getRendererConfigurationByUA;
-import static net.pms.configuration.RendererConfiguration.getRendererConfigurationByUAAHH;
-import static net.pms.configuration.RendererConfiguration.loadRendererConfigurations;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import ch.qos.logback.classic.LoggerContext;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.LoggerContext;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static net.pms.configuration.RendererConfiguration.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 /**
@@ -126,8 +118,6 @@ public class RendererConfigurationTest {
 
 		try {
 			pmsConf = new PmsConfiguration(false);
-		} catch (IOException e) {
-			// This should be impossible since no configuration file will be loaded.
 		} catch (ConfigurationException e) {
 			// This should be impossible since no configuration file will be loaded.
 		}
@@ -154,8 +144,6 @@ public class RendererConfigurationTest {
 
 		try {
 			pmsConf = new PmsConfiguration(false);
-		} catch (IOException e) {
-			// This should be impossible since no configuration file will be loaded.
 		} catch (ConfigurationException e) {
 			// This should be impossible since no configuration file will be loaded.
 		}
@@ -182,8 +170,6 @@ public class RendererConfigurationTest {
 
 		try {
 			pmsConf = new PmsConfiguration(false);
-		} catch (IOException e) {
-			// This should be impossible since no configuration file will be loaded.
 		} catch (ConfigurationException e) {
 			// This should be impossible since no configuration file will be loaded.
 		}

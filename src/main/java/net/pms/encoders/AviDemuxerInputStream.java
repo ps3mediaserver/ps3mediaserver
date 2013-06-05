@@ -18,17 +18,16 @@
  */
 package net.pms.encoders;
 
-import java.io.*;
-import java.util.ArrayList;
-
-import net.pms.io.*;
 import net.pms.PMS;
+import net.pms.io.*;
 import net.pms.util.H264AnnexBInputStream;
 import net.pms.util.PCMAudioOutputStream;
 import net.pms.util.ProcessUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.ArrayList;
 
 public class AviDemuxerInputStream extends InputStream {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AviDemuxerInputStream.class);
@@ -82,6 +81,7 @@ public class AviDemuxerInputStream extends InputStream {
 				}
 			};
 
+			pin.close();
 			vOut = pout;
 			new Thread(r, "Avi Demuxer").start();
 		} else {
@@ -92,7 +92,7 @@ public class AviDemuxerInputStream extends InputStream {
 			public void run() {
 				try {
 					// TODO(tcox): Is this used anymore?
-					TSMuxerVideo ts = new TSMuxerVideo(PMS.getConfiguration());
+					TsMuxeRVideo ts = new TsMuxeRVideo(PMS.getConfiguration());
 					File f = new File(PMS.getConfiguration().getTempFolder(), "pms-tsmuxer.meta");
 					PrintWriter pw = new PrintWriter(f);
 					pw.println("MUXOPT --no-pcr-on-video-pid --no-asyncio --new-audio-pes --vbr --vbv-len=500");

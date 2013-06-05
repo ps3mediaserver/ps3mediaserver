@@ -20,6 +20,7 @@ package net.pms.dlna;
 
 import net.pms.PMS;
 import net.pms.configuration.MapFileConfiguration;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.formats.FormatFactory;
@@ -43,6 +44,7 @@ import java.util.*;
  */
 public class MapFile extends DLNAResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MapFile.class);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private List<File> discoverable;
 
 	/**
@@ -76,7 +78,7 @@ public class MapFile extends DLNAResource {
 
 	private boolean isFileRelevant(File f) {
 		String fileName = f.getName().toLowerCase();
-		return (PMS.getConfiguration().isArchiveBrowsing() && (fileName.endsWith(".zip") || fileName.endsWith(".cbz")
+		return (configuration.isArchiveBrowsing() && (fileName.endsWith(".zip") || fileName.endsWith(".cbz")
 			|| fileName.endsWith(".rar") || fileName.endsWith(".cbr")))
 			|| fileName.endsWith(".iso") || fileName.endsWith(".img")
 			|| fileName.endsWith(".m3u") || fileName.endsWith(".m3u8") || fileName.endsWith(".pls") || fileName.endsWith(".cue");
@@ -85,7 +87,7 @@ public class MapFile extends DLNAResource {
 	private boolean isFolderRelevant(File f) {
 		boolean isRelevant = false;
 
-		if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders()) {
+		if (f.isDirectory() && configuration.isHideEmptyFolders()) {
 			File[] children = f.listFiles();
 
 			// listFiles() returns null if "this abstract pathname does not denote a directory, or if an I/O error occurs".
@@ -110,7 +112,6 @@ public class MapFile extends DLNAResource {
 				}
 			}
 		}
-
 		return isRelevant;
 	}
 
@@ -119,9 +120,9 @@ public class MapFile extends DLNAResource {
 			String lcFilename = f.getName().toLowerCase();
 
 			if (!f.isHidden()) {
-				if (PMS.getConfiguration().isArchiveBrowsing() && (lcFilename.endsWith(".zip") || lcFilename.endsWith(".cbz"))) {
+				if (configuration.isArchiveBrowsing() && (lcFilename.endsWith(".zip") || lcFilename.endsWith(".cbz"))) {
 					addChild(new ZippedFile(f));
-				} else if (PMS.getConfiguration().isArchiveBrowsing() && (lcFilename.endsWith(".rar") || lcFilename.endsWith(".cbr"))) {
+				} else if (configuration.isArchiveBrowsing() && (lcFilename.endsWith(".rar") || lcFilename.endsWith(".cbr"))) {
 					addChild(new RarredFile(f));
 				} else if ((lcFilename.endsWith(".iso") || lcFilename.endsWith(".img")) || (f.isDirectory() && f.getName().toUpperCase().equals("VIDEO_TS"))) {
 					addChild(new DVDISOFile(f));
@@ -131,7 +132,7 @@ public class MapFile extends DLNAResource {
 					addChild(new CueFolder(f));
 				} else {
 					/* Optionally ignore empty directories */
-					if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders() && !isFolderRelevant(f)) {
+					if (f.isDirectory() && configuration.isHideEmptyFolders() && !isFolderRelevant(f)) {
 						LOGGER.debug("Ignoring empty/non-relevant directory: " + f.getName());
 					} else { // Otherwise add the file
 						addChild(new RealFile(f));
@@ -179,7 +180,6 @@ public class MapFile extends DLNAResource {
 	public boolean analyzeChildren(int count) {
 		int currentChildrenCount = getChildren().size();
 		int vfolder = 0;
-
 		while (((getChildren().size() - currentChildrenCount) < count) || (count == -1)) {
 			if (vfolder < getConf().getChildren().size()) {
 				addChild(new MapFile(getConf().getChildren().get(vfolder)));
@@ -192,7 +192,6 @@ public class MapFile extends DLNAResource {
 				manageFile(discoverable.remove(0));
 			}
 		}
-
 		return discoverable.isEmpty();
 	}
 
@@ -208,9 +207,10 @@ public class MapFile extends DLNAResource {
 
 		List<File> files = getFileList();
 
-		switch (PMS.getConfiguration().getSortMethod()) {
+		switch (configuration.getSortMethod()) {
 			case 4: // Locale-sensitive natural sort
 				Collections.sort(files, new Comparator<File>() {
+					@Override
 					public int compare(File f1, File f2) {
 						return NaturalComparator.compareNatural(collator, f1.getName(), f2.getName());
 					}
@@ -226,7 +226,7 @@ public class MapFile extends DLNAResource {
 				break;
 			case 2: // Sort by modified date, oldest first
 				Collections.sort(files, new Comparator<File>() {
-
+					@Override
 					public int compare(File f1, File f2) {
 						return Long.valueOf(f1.lastModified()).compareTo(Long.valueOf(f2.lastModified()));
 					}
@@ -234,7 +234,7 @@ public class MapFile extends DLNAResource {
 				break;
 			case 1: // Sort by modified date, newest first
 				Collections.sort(files, new Comparator<File>() {
-
+					@Override
 					public int compare(File f1, File f2) {
 						return Long.valueOf(f2.lastModified()).compareTo(Long.valueOf(f1.lastModified()));
 					}

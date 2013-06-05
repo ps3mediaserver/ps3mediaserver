@@ -18,15 +18,6 @@
  */
 package net.pms.encoders;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.swing.JComponent;
-
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaAudio;
@@ -41,21 +32,29 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.util.FileUtil;
 import net.pms.util.Iso639;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public abstract class Player {
 	private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
-	public static final int VIDEO_SIMPLEFILE_PLAYER = 0;
-	public static final int AUDIO_SIMPLEFILE_PLAYER = 1;
-	public static final int VIDEO_WEBSTREAM_PLAYER = 2;
-	public static final int AUDIO_WEBSTREAM_PLAYER = 3;
-	public static final int MISC_PLAYER = 4;
-	public static final String NATIVE = "NATIVE";
+	/**
+	 * @deprecated use {@link #getPurpose()} instead.
+	 */
+	@Deprecated
+	public final int purpose() {
+		return getPurpose().getId();
+	}
 
-	public abstract int purpose();
+	public abstract PlayerPurpose getPurpose();
 	public abstract JComponent config();
 	public abstract String id();
 	public abstract String name();
@@ -69,6 +68,9 @@ public abstract class Player {
 	public abstract String[] args();
 
 	public abstract String mimeType();
+	public boolean isNative() {
+		return false;
+	}
 	public abstract String executable();
 	private static List<FinalizeTranscoderArgsListener> finalizeTranscoderArgsListeners =
 		new ArrayList<FinalizeTranscoderArgsListener>();
@@ -116,11 +118,18 @@ public abstract class Player {
 		return false;
 	}
 
+	/**
+	 * @deprecated Use {@link #launchTranscode(net.pms.dlna.DLNAResource, net.pms.dlna.DLNAMediaInfo, net.pms.io.OutputParams)} instead.
+	 */
+	@Deprecated
+	public final ProcessWrapper launchTranscode(String filename, DLNAResource dlna, DLNAMediaInfo media, OutputParams params) throws IOException {
+		return launchTranscode(dlna, media, params);
+	}
+
 	public abstract ProcessWrapper launchTranscode(
-		String filename,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params
 	) throws IOException;
 
 	@Override
@@ -246,7 +255,7 @@ public abstract class Player {
 			return;
 		}
 
-		StringTokenizer st1 = new StringTokenizer(configuration.getMencoderAudioSubLanguages(), ";");
+		StringTokenizer st1 = new StringTokenizer(configuration.getAudioSubLanguages(), ";");
 
 		while (st1.hasMoreTokens()) {
 			String pair = st1.nextToken();
@@ -279,7 +288,7 @@ public abstract class Player {
 		}
 
 		if (matchedSub != null && params.sid == null) {
-			if (configuration.isMencoderDisableSubs() || (matchedSub.getLang() != null && matchedSub.getLang().equals("off"))) {
+			if (configuration.isDisableSubtitles() || (matchedSub.getLang() != null && matchedSub.getLang().equals("off"))) {
 				logger.trace(" Disabled the subtitles: " + matchedSub);
 			} else {
 				params.sid = matchedSub;
@@ -289,9 +298,9 @@ public abstract class Player {
 		if (!configuration.isDisableSubtitles() && params.sid == null && media != null) {
 			// Check for subtitles again
 			File video = new File(fileName);
-			FileUtil.doesSubtitlesExists(video, media, false);
+			FileUtil.isSubtitlesExists(video, media, false);
 
-			if (configuration.isAutoloadSubtitles()) {
+			if (configuration.isAutoloadExternalSubtitles()) {
 				boolean forcedSubsFound = false;
 				// Priority to external subtitles
 				for (DLNAMediaSubtitle sub : media.getSubtitleTracksList()) {

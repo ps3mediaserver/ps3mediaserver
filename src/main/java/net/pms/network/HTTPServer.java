@@ -38,6 +38,7 @@ import java.util.concurrent.Executors;
 
 public class HTTPServer implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPServer.class);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private final int port;
 	private String hostname;
 	private ServerSocketChannel serverSocketChannel;
@@ -83,9 +84,8 @@ public class HTTPServer implements Runnable {
 	}
 
 	public boolean start() throws IOException {
-		final PmsConfiguration configuration = PMS.getConfiguration();
 		hostname = configuration.getServerHostname();
-		InetSocketAddress address = null;
+		InetSocketAddress address;
 
 		if (StringUtils.isNotBlank(hostname)) {
 			LOGGER.info("Using forced address " + hostname);
@@ -207,6 +207,7 @@ public class HTTPServer implements Runnable {
 	}
 
 	// XXX only used by HTTP Engine V1
+	@Override
 	public void run() {
 		LOGGER.info("Starting DLNA Server on host {} and port {}...", hostname, port);
 
@@ -218,7 +219,7 @@ public class HTTPServer implements Runnable {
 				// basic IP filter: solntcev at gmail dot com
 				boolean ignore = false;
 
-				if (PMS.getConfiguration().getIpFiltering().allowed(inetAddress)) {
+				if (configuration.getIpFiltering().allowed(inetAddress)) {
 					LOGGER.trace("Receiving a request from: " + ip);
 				} else {
 					ignore = true;

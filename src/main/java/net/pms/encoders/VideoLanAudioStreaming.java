@@ -32,8 +32,8 @@ public class VideoLanAudioStreaming extends VideoLanVideoStreaming {
 	}
 
 	@Override
-	public int purpose() {
-		return AUDIO_WEBSTREAM_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.AUDIO_WEB_STREAM_PLAYER;
 	}
 
 	@Override

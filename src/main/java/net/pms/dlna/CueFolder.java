@@ -20,6 +20,7 @@ package net.pms.dlna;
 
 import jwbroek.cuelib.*;
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.Range.Time;
 import net.pms.encoders.MEncoderVideo;
 import net.pms.encoders.MPlayerAudio;
@@ -37,6 +38,7 @@ import java.util.List;
 
 public class CueFolder extends DLNAResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CueFolder.class);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private File playlistfile;
 
 	public File getPlaylistfile() {
@@ -82,7 +84,7 @@ public class CueFolder extends DLNAResource {
 	@Override
 	public void resolve() {
 		if (playlistfile.length() < 10000000) {
-			CueSheet sheet = null;
+			CueSheet sheet;
 			try {
 				sheet = CueParser.parse(playlistfile);
 			} catch (IOException e) {
@@ -139,14 +141,14 @@ public class CueFolder extends DLNAResource {
 									// XXX aren't players supposed to be singletons?
 									// NOTE: needs new signature for getPlayer():
 									// PlayerFactory.getPlayer(MEncoderVideo.class)
-									defaultPlayer = new MEncoderVideo(PMS.getConfiguration());
+									defaultPlayer = new MEncoderVideo(configuration);
 								} else {
 									if (r.getFormat().isAudio()) {
 										// XXX PlayerFactory.getPlayer(MPlayerAudio.class)
-										defaultPlayer = new MPlayerAudio(PMS.getConfiguration());
+										defaultPlayer = new MPlayerAudio(configuration);
 									} else {
 										// XXX PlayerFactory.getPlayer(MEncoderVideo.class)
-										defaultPlayer = new MEncoderVideo(PMS.getConfiguration());
+										defaultPlayer = new MEncoderVideo(configuration);
 									}
 								}
 							}

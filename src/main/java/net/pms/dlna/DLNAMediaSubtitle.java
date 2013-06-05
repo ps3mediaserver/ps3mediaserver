@@ -47,7 +47,7 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 	 * @since 1.51.0
 	 */
 	public boolean isEmbedded() {
-		return (externalFile == null);
+		return (getExternalFile() == null);
 	}
 
 	/**

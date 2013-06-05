@@ -53,7 +53,6 @@ import net.pms.util.FormLayoutUtil;
 import net.pms.util.PlayerUtil;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,8 +86,8 @@ public class VLCVideo extends Player {
 	}
 
 	@Override
-	public int purpose() {
-		return VIDEO_SIMPLEFILE_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.VIDEO_FILE_PLAYER;
 	}
 
 	@Override
@@ -240,7 +239,7 @@ public class VLCVideo extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media, OutputParams params) throws IOException {
+	public ProcessWrapper launchTranscode(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) throws IOException {
 		boolean isWindows = Platform.isWindows();
 
 		// Make sure we can play this
@@ -249,10 +248,11 @@ public class VLCVideo extends Player {
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + codecConfig.container);
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 
-		LOGGER.trace("filename: {}", fileName);
-		LOGGER.trace("dlna: {}", dlna.getName());
-		LOGGER.trace("media: {}", media); // XXX may be null (e.g. for web videos)
-		LOGGER.trace("params: {}", params);
+		final String filename = dlna.getSystemName();
+		LOGGER.trace("filename: " + filename);
+		LOGGER.trace("dlna: " + dlna.getName());
+		LOGGER.trace("media: " + media); // XXX may be null (e.g. for web videos)
+		LOGGER.trace("params: " + params);
 
 		// XXX it can take a long time for Windows to create a named pipe
 		// (and mkfifo can be slow if /tmp isn't memory-mapped), so start this as early as possible
@@ -291,7 +291,7 @@ public class VLCVideo extends Player {
 		}
 
 		// File needs to be given before sout, otherwise vlc complains
-		cmdList.add(fileName);
+		cmdList.add(filename);
 
 		// FIXME not sure what this hack is trying to do, but it results in no audio and no subtitles
 		// Huge fake track id that shouldn't conflict with any real subtitle or audio id. Hopefully.
@@ -355,7 +355,7 @@ public class VLCVideo extends Player {
 		// Pass to process wrapper
 		String[] cmdArray = new String[cmdList.size()];
 		cmdList.toArray(cmdArray);
-		cmdArray = finalizeTranscoderArgs(fileName, dlna, media, params, cmdArray);
+		cmdArray = finalizeTranscoderArgs(filename, dlna, media, params, cmdArray);
 		LOGGER.trace("Finalized args: " + StringUtils.join(cmdArray, " "));
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.attachProcess(pipe_process);

@@ -48,16 +48,14 @@ public class RAWThumbnailer extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(
-		String fileName,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
-	) throws IOException {
+	public ProcessWrapper launchTranscode(DLNAResource dlna, DLNAMediaInfo media,
+										  OutputParams params) throws IOException {
+
 		params.waitbeforestart = 1;
 		params.minBufferSize = 1;
 		params.maxBufferSize = 5;
 		params.hidebuffer = true;
+		final String filename = dlna.getSystemName();
 
 		if (media == null || media.getThumb() == null) {
 			return null;
@@ -65,7 +63,7 @@ public class RAWThumbnailer extends Player {
 
 		if (media.getThumb().length == 0) {
 			try {
-				media.setThumb(getThumbnail(params, fileName));
+				media.setThumb(getThumbnail(params, filename));
 			} catch (Exception e) {
 				LOGGER.error("error extracting thumbnail", e);
 				return null;
@@ -91,8 +89,8 @@ public class RAWThumbnailer extends Player {
 	}
 
 	@Override
-	public int purpose() {
-		return MISC_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.MISC_PLAYER;
 	}
 
 	@Override

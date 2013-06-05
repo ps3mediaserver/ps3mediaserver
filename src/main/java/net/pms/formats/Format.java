@@ -163,6 +163,16 @@ public abstract class Format implements Cloneable {
 		return HTTPResource.getDefaultMimeType(type);
 	}
 
+	private String icon = null;
+
+	public void setIcon(String filename) {
+		icon = filename;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
 	public boolean match(String filename) {
 		boolean match = false;
 		if (filename == null) {
@@ -200,13 +210,11 @@ public abstract class Format implements Cloneable {
 	@Override
 	protected Object clone() {
 		Object o = null;
-
 		try {
 			o = super.clone();
 		} catch (CloneNotSupportedException e) {
 			LOGGER.error(null, e);
 		}
-
 		return o;
 	}
 
@@ -226,7 +234,6 @@ public abstract class Format implements Cloneable {
 		} else {
 			media.parse(file, this, type, false);
 		}
-
 		LOGGER.trace("Parsing results: " + file + " / " + media);
 	}
 
@@ -272,9 +279,9 @@ public abstract class Format implements Cloneable {
 	 * Return the class name for string representation.
 	 * @return The name.
 	 */
+	@Override
 	public String toString() {
 		return getClass().getSimpleName();
-		
 	}
 
 	/**

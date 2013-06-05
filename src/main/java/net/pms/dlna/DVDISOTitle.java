@@ -19,6 +19,7 @@
 package net.pms.dlna;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.formats.FormatFactory;
 import net.pms.formats.v2.SubtitleType;
@@ -26,7 +27,6 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.util.FileUtil;
 import net.pms.util.ProcessUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,22 +37,25 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 public class DVDISOTitle extends DLNAResource {
-	private static final Logger logger = LoggerFactory.getLogger(DVDISOTitle.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DVDISOTitle.class);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private File f;
 	private int title;
 	private long length;
 
 	@Override
 	public void resolve() {
-		String cmd[] = new String[]{PMS.getConfiguration().getMplayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()), "dvd://" + title};
-		OutputParams params = new OutputParams(PMS.getConfiguration());
+		String cmd[] = new String[]{configuration.getMplayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()), "dvd://" + title};
+		OutputParams params = new OutputParams(configuration);
 		params.maxBufferSize = 1;
-		if (PMS.getConfiguration().isDvdIsoThumbnails()) {
+		if (configuration.isDvdIsoThumbnails()) {
 			try {
-				params.workDir = PMS.getConfiguration().getTempFolder();
+				params.workDir = configuration.getTempFolder();
 			} catch (IOException e1) {
-				logger.debug("Caught exception", e1);
+				LOGGER.debug("Caught exception", e1);
 			}
 			cmd[2] = "-frames";
 			cmd[3] = "2";
@@ -66,7 +69,7 @@ public class DVDISOTitle extends DLNAResource {
 		params.log = true;
 		final ProcessWrapperImpl pw = new ProcessWrapperImpl(cmd, params, true, false);
 		Runnable r = new Runnable() {
-
+			@Override
 			public void run() {
 				try {
 					Thread.sleep(10000);
@@ -137,16 +140,15 @@ public class DVDISOTitle extends DLNAResource {
 			}
 		}
 
-		if (PMS.getConfiguration().isDvdIsoThumbnails()) {
+		if (configuration.isDvdIsoThumbnails()) {
 			try {
 				String frameName = "" + this.hashCode();
-				frameName = PMS.getConfiguration().getTempFolder() + "/mplayer_thumbs/" + frameName + "00000001/0000000";
+				frameName = configuration.getTempFolder() + "/mplayer_thumbs/" + frameName + "00000001/0000000";
 				frameName = frameName.replace(',', '_');
 				File jpg = new File(frameName + "2.jpg");
 
 				if (jpg.exists()) {
 					InputStream is = new FileInputStream(jpg);
-
 					try {
 						int sz = is.available();
 
@@ -155,7 +157,9 @@ public class DVDISOTitle extends DLNAResource {
 							is.read(getMedia().getThumb());
 						}
 					} finally {
-						is.close();
+						if (is != null) {
+							is.close();
+						}
 					}
 
 					if (!jpg.delete()) {
@@ -164,7 +168,7 @@ public class DVDISOTitle extends DLNAResource {
 
 					// Try and retry
 					if (!jpg.getParentFile().delete() && !jpg.getParentFile().delete()) {
-						logger.debug("Failed to delete \"" + jpg.getParentFile().getAbsolutePath() + "\"");
+						LOGGER.debug("Failed to delete \"" + jpg.getParentFile().getAbsolutePath() + "\"");
 					}
 				}
 
@@ -180,7 +184,7 @@ public class DVDISOTitle extends DLNAResource {
 					}
 				}
 			} catch (IOException e) {
-				logger.trace("Error in DVD ISO thumbnail retrieval: " + e.getMessage());
+				LOGGER.trace("Error in DVD ISO thumbnail retrieval: " + e.getMessage());
 			}
 		}
 
@@ -206,13 +210,13 @@ public class DVDISOTitle extends DLNAResource {
 		try {
 			getMedia().setWidth(Integer.parseInt(width));
 		} catch (NumberFormatException nfe) {
-			logger.debug("Could not parse width \"" + width + "\"");
+			LOGGER.debug("Could not parse width \"" + width + "\"");
 		}
 
 		try {
 			getMedia().setHeight(Integer.parseInt(height));
 		} catch (NumberFormatException nfe) {
-			logger.debug("Could not parse height \"" + height + "\"");
+			LOGGER.debug("Could not parse height \"" + height + "\"");
 		}
 
 		getMedia().setMediaparsed(true);
@@ -264,6 +268,7 @@ public class DVDISOTitle extends DLNAResource {
 	}
 
 	// Ditlew
+	@Override
 	public long length(RendererConfiguration mediaRenderer) {
 		// WDTV Live at least, needs a realistic size for stop/resume to works proberly. 2030879 = ((15000 + 256) * 1024 / 8 * 1.04) : 1.04 = overhead
 		int cbr_video_bitrate = getDefaultRenderer().getCBRVideoBitrate();
@@ -298,8 +303,9 @@ public class DVDISOTitle extends DLNAResource {
 				break;
 			}
 
-			if (StringUtils.isNotBlank(PMS.getConfiguration().getAlternateThumbFolder())) {
-				thumbFolder = new File(PMS.getConfiguration().getAlternateThumbFolder());
+			if (isNotBlank(configuration.getAlternateThumbFolder())) {
+				thumbFolder = new File(configuration.getAlternateThumbFolder());
+
 				if (!thumbFolder.isDirectory()) {
 					thumbFolder = null;
 					break;
@@ -314,7 +320,7 @@ public class DVDISOTitle extends DLNAResource {
 		} else if (getMedia() != null && getMedia().getThumb() != null) {
 			return getMedia().getThumbnailInputStream();
 		} else {
-			return getResourceInputStream("images/cdrwblank-256.png");
+			return getGenericThumbnailInputStream("images/thumbnail-music.png");
 		}
 	}
 }

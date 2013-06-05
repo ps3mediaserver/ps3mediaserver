@@ -29,10 +29,10 @@ import net.pms.util.PlayerUtil;
 import javax.swing.*;
 import java.io.IOException;
 
-public class TsMuxerAudio extends TSMuxerVideo {
+public class TsMuxeRAudio extends TsMuxeRVideo {
 	public static final String ID = "tsmuxeraudio";
 
-	public TsMuxerAudio(PmsConfiguration configuration) {
+	public TsMuxeRAudio(PmsConfiguration configuration) {
 		super(configuration);
 	}
 
@@ -53,13 +53,12 @@ public class TsMuxerAudio extends TSMuxerVideo {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String fileName,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params) throws IOException {
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params) throws IOException {
 		params.timeend = media.getDurationInSeconds();
 		params.waitbeforestart = 2500;
-		return super.launchTranscode(fileName, dlna, media, params);
+		return super.launchTranscode(dlna, media, params);
 	}
 
 	@Override
@@ -68,8 +67,8 @@ public class TsMuxerAudio extends TSMuxerVideo {
 	}
 
 	@Override
-	public int purpose() {
-		return AUDIO_SIMPLEFILE_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.AUDIO_FILE_PLAYER;
 	}
 
 	@Override

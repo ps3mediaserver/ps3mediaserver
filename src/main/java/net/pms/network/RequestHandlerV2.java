@@ -41,10 +41,12 @@ import java.util.regex.Pattern;
 
 public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestHandlerV2.class);
+
 	private static final Pattern TIMERANGE_PATTERN = Pattern.compile(
 		"timeseekrange\\.dlna\\.org\\W*npt\\W*=\\W*([\\d\\.:]+)?\\-?([\\d\\.:]+)?",
 		Pattern.CASE_INSENSITIVE
 	);
+
 	private volatile HttpRequest nettyRequest;
 	private final ChannelGroup group;
 
@@ -190,7 +192,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 						if (end != null) {
 							request.setTimeRangeEndString(end);
 						}
-					}  else {
+					} else {
 						 // If we made it to here, none of the previous header checks matched.
 						 // Unknown headers make interesting logging info when we cannot recognize
 						 // the media renderer, so keep track of the truly unknown ones.
@@ -206,7 +208,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 
 						if (!isKnown) {
 							// Truly unknown header, therefore interesting. Save for later use.
-							unknownHeaders.append(separator + headerLine);
+							unknownHeaders.append(separator).append(headerLine);
 							separator = ", ";
 						}
 					}
@@ -214,7 +216,6 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			} catch (Exception ee) {
 				LOGGER.error("Error parsing HTTP headers", ee);
 			}
-
 		}
 
 		if (request != null) {
@@ -235,7 +236,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 				}
 			} else {
 				if (userAgentString != null) {
-					LOGGER.trace("HTTP User-Agent: " + userAgentString);
+					LOGGER.debug("HTTP User-Agent: " + userAgentString);
 				}
 
 				LOGGER.trace("Recognized media renderer: " + request.getMediaRenderer().getRendererName());
@@ -261,6 +262,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 	 * Applies the IP filter to the specified internet address. Returns true
 	 * if the address is not allowed and therefore should be filtered out,
 	 * false otherwise.
+	 *
 	 * @param inetAddress The internet address to verify.
 	 * @return True when not allowed, false otherwise.
 	 */
@@ -276,23 +278,19 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			&& !HttpHeaders.Values.KEEP_ALIVE.equalsIgnoreCase(nettyRequest.getHeader(HttpHeaders.Names.CONNECTION));
 
 		// Build the response object.
-		HttpResponse response = null;
+		HttpResponse response;
 		if (request.getLowRange() != 0 || request.getHighRange() != 0) {
 			response = new DefaultHttpResponse(
-				/*request.isHttp10() ? HttpVersion.HTTP_1_0
-				: */HttpVersion.HTTP_1_1,
+				HttpVersion.HTTP_1_1,
 				HttpResponseStatus.PARTIAL_CONTENT);
 		} else {
 			String soapAction = nettyRequest.getHeader("SOAPACTION");
 
 			if (soapAction != null && soapAction.contains("X_GetFeatureList")) {
-				// Unsupported UPnP action
-				response = new DefaultHttpResponse(
-					HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+				LOGGER.debug("Invalid action in SOAPACTION: " + soapAction);
+				response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
 			} else {
-				response = new DefaultHttpResponse(
-				/*request.isHttp10() ? HttpVersion.HTTP_1_0
-				: */HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+				response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 			}
 		}
 		
@@ -349,6 +347,7 @@ public class RequestHandlerV2 extends SimpleChannelUpstreamHandler {
 			group.add(ctx.getChannel());
 		}
 	}
+
 	/* Uncomment to see channel events in the trace logs
 	@Override
 	public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {

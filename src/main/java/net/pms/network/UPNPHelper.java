@@ -38,7 +38,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import net.pms.PMS;
-
+import net.pms.configuration.PmsConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
  * for the specifications.
  */
 public class UPNPHelper {
-	
 	/** Logger instance to write messages to the logs. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(UPNPHelper.class);
 	
@@ -88,11 +87,12 @@ public class UPNPHelper {
 	/** The alive thread. */
 	private static Thread aliveThread;
 
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
+
 	/**
 	 * This utility class is not meant to be instantiated.
 	 */
-	private UPNPHelper() {
-	}
+	private UPNPHelper() { }
 
 	/**
 	 * Send UPnP discovery search message to discover devices of interest on
@@ -221,7 +221,7 @@ public class UPNPHelper {
 			}
 		}
 
-		if (usableAddresses.size() == 0) {
+		if (usableAddresses.isEmpty()) {
 			throw new IOException("No usable addresses found for UPnP multicast");
 		}
 
@@ -312,7 +312,6 @@ public class UPNPHelper {
 		//sleep(rand.nextInt(1800 / 2));
 	}
 
-
 	/**
 	 * Starts up two threads: one to broadcast UPnP ALIVE messages and another
 	 * to listen for responses. 
@@ -321,6 +320,7 @@ public class UPNPHelper {
 	 */
 	public static void listen() throws IOException {
 		Runnable rAlive = new Runnable() {
+			@Override
 			public void run() {
 				int delay = 10000;
 
@@ -347,6 +347,7 @@ public class UPNPHelper {
 		aliveThread.start();
 
 		Runnable r = new Runnable() {
+			@Override
 			public void run() {
 				boolean bindErrorReported = false;
 
@@ -355,10 +356,10 @@ public class UPNPHelper {
 					
 					try {
 						// Use configurable source port as per http://code.google.com/p/ps3mediaserver/issues/detail?id=1166
-						multicastSocket = new MulticastSocket(PMS.getConfiguration().getUpnpPort());
+						multicastSocket = new MulticastSocket(configuration.getUpnpPort());
 
 						if (bindErrorReported) {
-							LOGGER.warn("Finally, acquiring port " + PMS.getConfiguration().getUpnpPort() + " was successful!");
+							LOGGER.warn("Finally, acquiring port " + configuration.getUpnpPort() + " was successful!");
 						}
 
 						NetworkInterface ni = NetworkConfiguration.getInstance().getNetworkInterfaceByServerName();
@@ -395,7 +396,7 @@ public class UPNPHelper {
 								String remoteAddr = address.getHostAddress();
 								int remotePort = receivePacket.getPort();
 
-								if (PMS.getConfiguration().getIpFiltering().allowed(address)) {
+								if (configuration.getIpFiltering().allowed(address)) {
 									LOGGER.trace("Receiving a M-SEARCH from [" + remoteAddr + ":" + remotePort + "]");
 
 									if (StringUtils.indexOf(s, "urn:schemas-upnp-org:service:ContentDirectory:1") > 0) {
@@ -427,7 +428,7 @@ public class UPNPHelper {
 						}
 					} catch (BindException e) {
 						if (!bindErrorReported) {
-							LOGGER.error("Unable to bind to " + PMS.getConfiguration().getUpnpPort()
+							LOGGER.error("Unable to bind to " + configuration.getUpnpPort()
 							+ ", which means that PMS will not automatically appear on your renderer! "
 							+ "This usually means that another program occupies the port. Please "
 							+ "stop the other program and free up the port. "

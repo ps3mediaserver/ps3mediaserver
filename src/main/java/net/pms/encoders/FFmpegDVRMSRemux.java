@@ -47,13 +47,13 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-public class FFMpegDVRMSRemux extends Player {
+public class FFmpegDVRMSRemux extends Player {
 	private JTextField altffpath;
 	public static final String ID = "ffmpegdvrmsremux";
 
 	@Override
-	public int purpose() {
-		return MISC_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.MISC_PLAYER;
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class FFMpegDVRMSRemux extends Player {
 		return false;
 	}
 
-	public FFMpegDVRMSRemux() {
+	public FFmpegDVRMSRemux() {
 	}
 
 	@Override
@@ -117,25 +117,24 @@ public class FFMpegDVRMSRemux extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String filename,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params
 	) throws IOException {
-		return getFFMpegTranscode(filename, dlna, media, params);
+		return getFFmpegTranscode(dlna, media, params);
 	}
 
 	// pointless redirection of launchTranscode
 	@Deprecated
-	protected ProcessWrapperImpl getFFMpegTranscode(
-		String filename,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
+	protected ProcessWrapperImpl getFFmpegTranscode(
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params
 	) throws IOException {
 		PmsConfiguration configuration = PMS.getConfiguration();
 		String ffmpegAlternativePath = configuration.getFfmpegAlternativePath();
 		List<String> cmdList = new ArrayList<String>();
+		final String filename = dlna.getSystemName();
 
 		if (ffmpegAlternativePath != null && ffmpegAlternativePath.length() > 0) {
 			cmdList.add(ffmpegAlternativePath);
@@ -155,7 +154,7 @@ public class FFMpegDVRMSRemux extends Player {
 			cmdList.add(arg);
 		}
 
-		String customSettingsString = configuration.getFfmpegSettings();
+		String customSettingsString = configuration.getMPEG2MainSettingsFFmpeg();
 		if (StringUtils.isNotBlank(customSettingsString)) {
 			String[] customSettingsArray = StringUtils.split(customSettingsString);
 

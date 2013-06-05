@@ -42,8 +42,8 @@ public class MPlayerWebAudio extends MPlayerAudio {
 	}
 
 	@Override
-	public int purpose() {
-		return AUDIO_WEBSTREAM_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.AUDIO_WEB_STREAM_PLAYER;
 	}
 
 	@Override
@@ -52,12 +52,12 @@ public class MPlayerWebAudio extends MPlayerAudio {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media,
-		OutputParams params) throws IOException {
+	public ProcessWrapper launchTranscode(DLNAResource dlna, DLNAMediaInfo media,
+										  OutputParams params) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		params.waitbeforestart = 8000;
-		return super.launchTranscode(fileName, dlna, media, params);
+		return super.launchTranscode(dlna, media, params);
 	}
 
 	@Override

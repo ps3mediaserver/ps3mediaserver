@@ -19,7 +19,7 @@
 package net.pms.formats;
 
 import net.pms.PMS;
-import net.pms.encoders.FFMpegAudio;
+import net.pms.encoders.FFmpegAudio;
 import net.pms.encoders.MPlayerAudio;
 import net.pms.encoders.Player;
 
@@ -45,11 +45,11 @@ public class OGG extends MP3 {
 	public ArrayList<Class<? extends Player>> getProfiles() {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		PMS r = PMS.get();
-		for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
+		for (String engine : PMS.getConfiguration().getEnginesAsList()) {
 			if (engine.equals(MPlayerAudio.ID)) {
 				a.add(MPlayerAudio.class);
-			} else if (engine.equals(FFMpegAudio.ID)) {
-				a.add(FFMpegAudio.class);
+			} else if (engine.equals(FFmpegAudio.ID)) {
+				a.add(FFmpegAudio.class);
 			}
 		}
 		return a;

@@ -3,11 +3,37 @@ Changelog:
 
 1.83.0 - 2013-??-??
 
+    General:
+        - A lot of backports from UMS (thanks, all UMS developers!)
+        - More accurate checks for reference frames count to allow more videos to be remuxed instead of transcoding
+
     Engines:
+        - FFmpeg Video and FFmpeg Web Video:
+            - General improvements of usability and stability
+            - Support for lossless video remuxing if supported by renderer
+            - Support for AC-3 and DTS audio tracks remuxing
+            - Support for external SRT and SSA/ASS subtitles
+            - Support for auto charset detection of non UTF-8 external subtitles
         - tsMuxeR:
             - regression: restore the pre-1.82.0 compatibility logic
         - VLC Web Video:
             - Fix NPE
+
+    Renderers:
+        - Xbox 360: improved quality
+        - Improved Sony Blu-ray Player support (thanks, skeptical)
+        - Added renderer profiles (thanks, UMS developers):
+            - KalemSoft Media Player
+            - Sony Bravia EX620 series TVs
+            - Netgear NeoTV
+            - Onkyo TX-NR717
+            - Sharp Aquos TVs
+            - Showtime 4 PS3 homebrew player
+            - Sony Home Theatre Systems
+            - Telstra T-Box
+            - VideoWeb TV
+            - Vizio Smart TV
+            - Yamaha RX-V3900
 
     Transcode folder:
         - add entries for audio files

@@ -19,23 +19,21 @@
  */
 package net.pms.encoders;
 
-import java.util.List;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
+import com.sun.jna.Platform;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
 import net.pms.io.SystemUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jna.Platform;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * This class handles players. Creating an instance will initialize the list of
@@ -78,7 +76,7 @@ public final class PlayerFactory {
 
 		@Override
 		public int compare(Player player1, Player player2) {
-			List<String> prefs = configuration.getEnginesAsList(PMS.get().getRegistry());
+			List<String> prefs = configuration.getEnginesAsList();
 			Integer index1 = prefs.indexOf(player1.id());
 			Integer index2 = prefs.indexOf(player2.id());
 
@@ -121,31 +119,31 @@ public final class PlayerFactory {
 	private static void registerPlayers(final PmsConfiguration configuration) {
 		// TODO make these constructors consistent: pass configuration to all or to none
 		if (Platform.isWindows()) {
-			registerPlayer(new FFMpegAviSynthVideo());
+			registerPlayer(new FFmpegAviSynthVideo());
 		}
 
-		registerPlayer(new FFMpegAudio(configuration));
+		registerPlayer(new FFmpegAudio(configuration));
 		registerPlayer(new MEncoderVideo(configuration));
 
 		if (Platform.isWindows()) {
 			registerPlayer(new MEncoderAviSynth(configuration));
 		}
 
-		registerPlayer(new FFMpegVideo(configuration));
+		registerPlayer(new FFmpegVideo(configuration));
 		registerPlayer(new VLCVideo(configuration));
 		registerPlayer(new MPlayerAudio(configuration));
-		registerPlayer(new FFMpegWebVideo(configuration));
+		registerPlayer(new FFmpegWebVideo(configuration));
 		registerPlayer(new MEncoderWebVideo(configuration));
 		registerPlayer(new VLCWebVideo(configuration));
 		registerPlayer(new MPlayerWebVideoDump(configuration));
 		registerPlayer(new MPlayerWebAudio(configuration));
-		registerPlayer(new TSMuxerVideo(configuration));
-		registerPlayer(new TsMuxerAudio(configuration));
+		registerPlayer(new TsMuxeRVideo(configuration));
+		registerPlayer(new TsMuxeRAudio(configuration));
 		registerPlayer(new VideoLanAudioStreaming(configuration));
 		registerPlayer(new VideoLanVideoStreaming(configuration));
 
 		if (Platform.isWindows()) {
-			registerPlayer(new FFMpegDVRMSRemux());
+			registerPlayer(new FFmpegDVRMSRemux());
 		}
 
 		registerPlayer(new RAWThumbnailer());
@@ -165,7 +163,7 @@ public final class PlayerFactory {
 		boolean ok = false;
 		allPlayers.add(player);
 
-		if (Player.NATIVE.equals(player.executable())) {
+		if (player.isNative()) {
 			ok = true;
 		} else {
 			if (Platform.isWindows()) {
@@ -274,7 +272,7 @@ public final class PlayerFactory {
 			LOGGER.trace("getting player for {}", dlna.getName());
 		}
 
-		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry());
+		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList();
 
 		for (Player player : players) {
 			boolean enabled = enabledEngines.contains(player.id());
@@ -344,7 +342,7 @@ public final class PlayerFactory {
 			return null;
 		}
 
-		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry());
+		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList();
 		ArrayList<Player> compatiblePlayers = new ArrayList<Player>();
 		
 		for (Player player : players) {

@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-public class FFMpegAudio extends FFMpegVideo {
+public class FFmpegAudio extends FFmpegVideo {
 	public static final String ID = "ffmpegaudio";
 	private final PmsConfiguration configuration;
 
@@ -51,7 +51,7 @@ public class FFMpegAudio extends FFMpegVideo {
 	@Deprecated
 	JCheckBox noresample;
 
-	public FFMpegAudio(PmsConfiguration configuration) {
+	public FFmpegAudio(PmsConfiguration configuration) {
 		super(configuration);
 		this.configuration = configuration;
 	}
@@ -87,8 +87,8 @@ public class FFMpegAudio extends FFMpegVideo {
 	}
 
 	@Override
-	public int purpose() {
-		return AUDIO_SIMPLEFILE_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.AUDIO_FILE_PLAYER;
 	}
 
 	@Override
@@ -130,11 +130,11 @@ public class FFMpegAudio extends FFMpegVideo {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String filename,
-		DLNAResource dlna,
-		DLNAMediaInfo media,
-		OutputParams params
+			DLNAResource dlna,
+			DLNAMediaInfo media,
+			OutputParams params
 	) throws IOException {
+		final String filename = dlna.getSystemName();
 		params.maxBufferSize = configuration.getMaxAudioBuffer();
 		params.waitbeforestart = 2000;
 		params.manageFastStart();

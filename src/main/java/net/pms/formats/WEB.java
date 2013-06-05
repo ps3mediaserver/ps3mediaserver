@@ -21,17 +21,16 @@ package net.pms.formats;
 import java.util.ArrayList;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
-import net.pms.encoders.FFMpegWebVideo;
-import net.pms.encoders.MEncoderWebVideo;
-import net.pms.encoders.MPlayerWebAudio;
-import net.pms.encoders.MPlayerWebVideoDump;
-import net.pms.encoders.Player;
-import net.pms.encoders.VideoLanAudioStreaming;
-import net.pms.encoders.VideoLanVideoStreaming;
+import net.pms.encoders.*;
+
+import java.util.ArrayList;
 
 public class WEB extends Format {
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
+
 	/**
 	 * {@inheritDoc} 
 	 */
@@ -62,7 +61,7 @@ public class WEB extends Format {
 		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
 		if (type == AUDIO) {
 			PMS r = PMS.get();
-			for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
+			for (String engine : configuration.getEnginesAsList()) {
 				if (engine.equals(MPlayerWebAudio.ID)) {
 					a.add(MPlayerWebAudio.class);
 				} else if (engine.equals(VideoLanAudioStreaming.ID)) {
@@ -71,9 +70,9 @@ public class WEB extends Format {
 			}
 		} else {
 			PMS r = PMS.get();
-			for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
-				if (engine.equals(FFMpegWebVideo.ID)) {
-					a.add(FFMpegWebVideo.class);
+			for (String engine : configuration.getEnginesAsList()) {
+				if (engine.equals(FFmpegWebVideo.ID)) {
+					a.add(FFmpegWebVideo.class);
 				} else if (engine.equals(MEncoderWebVideo.ID)) {
 					a.add(MEncoderWebVideo.class);
 				} else if (engine.equals(VideoLanVideoStreaming.ID)) {
@@ -96,9 +95,11 @@ public class WEB extends Format {
 		return new String[] {
 			"file",
 			"http",
+			"https",
 			"mms",
 			"mmsh",
 			"mmst",
+			"rtmp",
 			"rtp",
 			"rtsp",
 			"screen",
