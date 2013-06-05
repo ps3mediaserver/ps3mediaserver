@@ -1996,10 +1996,14 @@ public class PmsConfiguration {
 		this.configuration.setProperty(PmsConfiguration.KEY_HIDE_MEDIA_LIBRARY_FOLDER, value);
 	}
 
+	// TODO (breaking change): rename to e.g. isTranscodeFolderEnabled
+	// (and return true by default)
 	public boolean getHideTranscodeEnabled() {
 		return getBoolean(KEY_HIDE_TRANSCODE_FOLDER, false);
 	}
 
+	// TODO (breaking change): rename to e.g. setTranscodeFolderEnabled
+	// (and negate the value in the caller)
 	public void setHideTranscodeEnabled(boolean value) {
 		configuration.setProperty(KEY_HIDE_TRANSCODE_FOLDER, value);
 	}
