@@ -20,9 +20,6 @@ package net.pms.formats;
 
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
-import net.pms.encoders.*;
-
-import java.util.ArrayList;
 
 public class MPG extends Format {
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
@@ -32,37 +29,6 @@ public class MPG extends Format {
 	@Override
 	public Identifier getIdentifier() {
 		return Identifier.MPG;
-	}
-
-	// XXX unused
-	@Deprecated
-	@Override
-	public ArrayList<Class<? extends Player>> getProfiles() {
-		PMS r = PMS.get();
-		PMS r1 = PMS.get();
-		PMS r2 = PMS.get();
-		if (configuration.getEnginesAsList() == null || configuration.getEnginesAsList().isEmpty() || configuration.getEnginesAsList().contains("none"))
-		{
-			return null;
-		}
-		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
-		PMS r3 = PMS.get();
-		for (String engine : configuration.getEnginesAsList()) {
-			if (engine.equals(VLCVideo.ID)) {
-				a.add(VLCVideo.class);
-			} else if (engine.equals(MEncoderVideo.ID)) {
-				a.add(MEncoderVideo.class);
-			} else if (engine.equals(MEncoderAviSynth.ID) && PMS.get().getRegistry().isAvis()) {
-				a.add(MEncoderAviSynth.class);
-			} else if (engine.equals(FFmpegVideo.ID)) {
-				a.add(FFmpegVideo.class);
-			} else if (engine.equals(FFmpegAviSynthVideo.ID) && PMS.get().getRegistry().isAvis()) {
-				a.add(FFmpegAviSynthVideo.class);
-			} else if (engine.equals(TsMuxeRVideo.ID)/* && PMS.get().isWindows()*/) {
-				a.add(TsMuxeRVideo.class);
-			}
-		}
-		return a;
 	}
 
 	@Override

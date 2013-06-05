@@ -21,12 +21,10 @@ package net.pms.formats;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.InputFile;
-import net.pms.encoders.Player;
 import net.pms.network.HTTPResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
@@ -154,10 +152,6 @@ public abstract class Format implements Cloneable {
 	}
 
 	public abstract boolean transcodable();
-
-	// XXX unused
-	@Deprecated
-	public abstract ArrayList<Class<? extends Player>> getProfiles();
 
 	public String mimeType() {
 		return HTTPResource.getDefaultMimeType(type);

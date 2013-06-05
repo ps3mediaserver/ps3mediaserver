@@ -18,15 +18,10 @@
  */
 package net.pms.formats;
 
-import java.util.ArrayList;
-
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
-import net.pms.encoders.*;
-
-import java.util.ArrayList;
 
 public class WEB extends Format {
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
@@ -52,38 +47,6 @@ public class WEB extends Format {
 	@Override
 	public boolean ps3compatible() {
 		return type == IMAGE;
-	}
-
-	// XXX unused
-	@Deprecated
-	@Override
-	public ArrayList<Class<? extends Player>> getProfiles() {
-		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
-		if (type == AUDIO) {
-			PMS r = PMS.get();
-			for (String engine : configuration.getEnginesAsList()) {
-				if (engine.equals(MPlayerWebAudio.ID)) {
-					a.add(MPlayerWebAudio.class);
-				} else if (engine.equals(VideoLanAudioStreaming.ID)) {
-					a.add(VideoLanAudioStreaming.class);
-				}
-			}
-		} else {
-			PMS r = PMS.get();
-			for (String engine : configuration.getEnginesAsList()) {
-				if (engine.equals(FFmpegWebVideo.ID)) {
-					a.add(FFmpegWebVideo.class);
-				} else if (engine.equals(MEncoderWebVideo.ID)) {
-					a.add(MEncoderWebVideo.class);
-				} else if (engine.equals(VideoLanVideoStreaming.ID)) {
-					a.add(VideoLanVideoStreaming.class);
-				} else if (engine.equals(MPlayerWebVideoDump.ID)) {
-					a.add(MPlayerWebVideoDump.class);
-				}
-			}
-		}
-
-		return a;
 	}
 
 	/**

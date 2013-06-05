@@ -18,10 +18,6 @@
  */
 package net.pms.formats;
 
-import net.pms.encoders.Player;
-
-import java.util.ArrayList;
-
 public class JPG extends Format {
 	/**
 	 * {@inheritDoc} 
@@ -61,13 +57,6 @@ public class JPG extends Format {
 	@Override
 	public boolean ps3compatible() {
 		return true;
-	}
-
-	// XXX unused
-	@Deprecated
-	@Override
-	public ArrayList<Class<? extends Player>> getProfiles() {
-		return null;
 	}
 
 	@Override

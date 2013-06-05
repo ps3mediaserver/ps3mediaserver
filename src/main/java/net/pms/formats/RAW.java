@@ -5,14 +5,12 @@ import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.InputFile;
-import net.pms.encoders.Player;
 import net.pms.encoders.RAWThumbnailer;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapperImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RAW extends JPG {
@@ -87,19 +85,6 @@ public class RAW extends JPG {
 	@Override
 	public boolean ps3compatible() {
 		return false;
-	}
-
-	// XXX unused
-	@Deprecated
-	@Override
-	public ArrayList<Class<? extends Player>> getProfiles() {
-		ArrayList<Class<? extends Player>> profiles = new ArrayList<Class<? extends Player>>();
-		for (String engine : configuration.getEnginesAsList()) {
-			if (engine.equals(RAWThumbnailer.ID)) {
-				profiles.add(RAWThumbnailer.class);
-			}
-		}
-		return profiles;
 	}
 
 	@Override

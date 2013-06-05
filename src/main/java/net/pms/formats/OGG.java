@@ -18,13 +18,6 @@
  */
 package net.pms.formats;
 
-import net.pms.PMS;
-import net.pms.encoders.FFmpegAudio;
-import net.pms.encoders.MPlayerAudio;
-import net.pms.encoders.Player;
-
-import java.util.ArrayList;
-
 public class OGG extends MP3 {
 	/**
 	 * {@inheritDoc} 
@@ -37,22 +30,6 @@ public class OGG extends MP3 {
 	@Override
 	public boolean transcodable() {
 		return true;
-	}
-
-	// XXX unused
-	@Deprecated
-	@Override
-	public ArrayList<Class<? extends Player>> getProfiles() {
-		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
-		PMS r = PMS.get();
-		for (String engine : PMS.getConfiguration().getEnginesAsList()) {
-			if (engine.equals(MPlayerAudio.ID)) {
-				a.add(MPlayerAudio.class);
-			} else if (engine.equals(FFmpegAudio.ID)) {
-				a.add(FFmpegAudio.class);
-			}
-		}
-		return a;
 	}
 
 	/**
