@@ -10,8 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.StringTokenizer;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.*;
 
 public class LibMediaInfoParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LibMediaInfoParser.class);
@@ -455,7 +454,7 @@ public class LibMediaInfoParser {
 		// High@L3.0
 		// High@L4.0
 		// High@L4.1
-		final String avcLevel = StringUtils.substringAfterLast(value, "@l");
+		final String avcLevel = substringAfterLast(lowerCase(value), "@l");
 		if (isNotBlank(avcLevel)) {
 			return avcLevel;
 		} else {

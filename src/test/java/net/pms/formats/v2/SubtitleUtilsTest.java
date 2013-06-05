@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import static net.pms.formats.v2.SubtitleType.ASS;
 import static net.pms.formats.v2.SubtitleType.VOBSUB;
 import static net.pms.formats.v2.SubtitleUtils.TimingFormat.*;
 import static net.pms.formats.v2.SubtitleUtils.getSubCpOptionForMencoder;
@@ -212,7 +213,12 @@ public class SubtitleUtilsTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testShiftSubtitlesTimingWithUtfConversion_withNullSubtitleType() throws IOException {
-		final DLNAMediaSubtitle inputSubtitles = new DLNAMediaSubtitle();
+		final DLNAMediaSubtitle inputSubtitles = new DLNAMediaSubtitle() {
+			@Override
+			public SubtitleType getType() {
+				return null;
+			}
+		};
 		inputSubtitles.setExternalFile(FileUtils.toFile(CLASS.getResource("../../util/russian-utf8-without-bom.srt")));
 		SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(inputSubtitles, 12);
 	}
@@ -227,6 +233,7 @@ public class SubtitleUtilsTest {
 	@Test
 	public void testShiftSubtitlesTimingWithUtfConversion_charsetConversion_withoutTimeShift() throws IOException {
 		final DLNAMediaSubtitle inputSubtitles = new DLNAMediaSubtitle();
+		inputSubtitles.setType(ASS);
 		inputSubtitles.setExternalFile(FileUtils.toFile(CLASS.getResource("../../util/russian-cp1251.srt")));
 		final DLNAMediaSubtitle convertedSubtitles = SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(inputSubtitles, 0);
 		assertThat(convertedSubtitles.isExternalFileUtf8()).isTrue();
@@ -235,6 +242,7 @@ public class SubtitleUtilsTest {
 	@Test
 	public void testShiftSubtitlesTimingWithUtfConversion_doNotConvertUtf8_withoutTimeShift() throws IOException {
 		final DLNAMediaSubtitle inputSubtitles = new DLNAMediaSubtitle();
+		inputSubtitles.setType(ASS);
 		inputSubtitles.setExternalFile(FileUtils.toFile(CLASS.getResource("../../util/russian-utf8-without-bom.srt")));
 		final DLNAMediaSubtitle convertedSubtitles = SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(inputSubtitles, 0);
 		assertThat(convertedSubtitles.getExternalFile()).hasSameContentAs(inputSubtitles.getExternalFile());
