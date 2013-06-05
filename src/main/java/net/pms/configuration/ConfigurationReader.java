@@ -18,20 +18,14 @@
  */
 package net.pms.configuration;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConversionException;
-import org.apache.commons.configuration.FileConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * Helper class that implements common getters for the various types stored in renderer confs and PMS.conf.
