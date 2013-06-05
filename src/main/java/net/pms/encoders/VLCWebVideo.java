@@ -20,7 +20,6 @@ package net.pms.encoders;
 
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAResource;
-import net.pms.formats.Format;
 import net.pms.util.PlayerUtil;
 
 public class VLCWebVideo extends VLCVideo {
@@ -32,8 +31,8 @@ public class VLCWebVideo extends VLCVideo {
 	}
 
 	@Override
-	public int purpose() {
-		return VIDEO_WEBSTREAM_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.VIDEO_WEB_STREAM_PLAYER;
 	}
 
 	@Override
