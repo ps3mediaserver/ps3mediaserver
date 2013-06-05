@@ -173,13 +173,6 @@
 			</snapshots>
 		</repository>
 
-		<!-- JUnRar by Edmund Wagner -->
-		<repository>
-			<id>JUnRar mirror repository</id>
-			<name>JUnRar mirror repository</name>
-			<url>https://junrar-repository.googlecode.com/svn/deploy/</url>
-		</repository>
-
 		<!-- for jai-imageio-core-standalone, which is used by Thumbnailator -->
 		<repository>
 			<releases />
@@ -191,7 +184,7 @@
 			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
 
-    </repositories>
+	</repositories>
 
 	<dependencies>
 		<!-- XXX note: the JNA dependency is declared at the profile level -->
@@ -293,14 +286,6 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.2.2</version>
-		</dependency>
-
-		<!-- originally, hamcrest-all 1.2RC2 for the artifact change, see: https://code.google.com/p/hamcrest/issues/detail?id=12#c54
-			FIXME: verify if needed -->
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-integration</artifactId>
-			<version>1.2.1</version>
 		</dependency>
 
 		<dependency>
@@ -414,12 +399,12 @@
 			<scope>test</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-assert</artifactId>
-            <version>1.4</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.easytesting</groupId>
+			<artifactId>fest-assert</artifactId>
+			<version>1.4</version>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 
@@ -490,14 +475,14 @@
 				<!-- Enable the use of Maven properties -->
 				<filtering>true</filtering>
 			</testResource>
-            <!--*.srt files to test charset detection-->
-            <testResource>
-                <directory>src/test/resources/net/pms/util</directory>
-                <includes>
-                    <include>*.srt</include>
-                </includes>
-                <targetPath>net/pms/util</targetPath>
-            </testResource>
+			<!--*.srt files to test charset detection-->
+			<testResource>
+				<directory>src/test/resources/net/pms/util</directory>
+				<includes>
+					<include>*.srt</include>
+				</includes>
+				<targetPath>net/pms/util</targetPath>
+			</testResource>
 		</testResources>
 
 		<pluginManagement>
@@ -507,7 +492,7 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<configuration>
 						<!--
-						    1) Force language because JUnit tests depend on English language strings
+							1) Force language because JUnit tests depend on English language strings
 
 							2) Use our JNA dependency rather than the system's - fixes
 							the following error on Linux (Ubuntu 12.04 with system
