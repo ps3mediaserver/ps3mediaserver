@@ -154,11 +154,6 @@ public class FFmpegWebVideo extends FFmpegVideo {
 			String hdr = new String(params.header);
 			customOptions.addAll(parseOptions(hdr));
 		}
-		// - attached options
-		String attached = (String) dlna.getAttachment(ID);
-		if (attached != null) {
-			customOptions.addAll(parseOptions(attached));
-		}
 		// - renderer options
 		if (isNotEmpty(renderer.getCustomFFmpegOptions())) {
 			customOptions.addAll(parseOptions(renderer.getCustomFFmpegOptions()));

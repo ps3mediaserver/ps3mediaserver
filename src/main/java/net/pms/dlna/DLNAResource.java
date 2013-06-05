@@ -36,7 +36,6 @@ import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.SizeLimitInputStream;
 import net.pms.network.HTTPResource;
-import net.pms.util.FileUtil;
 import net.pms.util.ImagesUtil;
 import net.pms.util.Iso639;
 import net.pms.util.MpegUtil;
@@ -249,8 +248,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	@Deprecated
 	protected long lastRefreshTime;
-
-	protected Map<String,Object> attachments = null;
 
 	/**
 	 * Returns parent object, usually a folder type of resource. In the DLDI
@@ -2553,16 +2550,5 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	protected void setLastRefreshTime(long lastRefreshTime) {
 		this.lastRefreshTime = lastRefreshTime;
-	}
-
-	public void attach(String key, Object data) {
-		if (attachments == null) {
-			attachments = new HashMap<String, Object>();
-		}
-		attachments.put(key, data);
-	}
-
-	public Object getAttachment(String key) {
-		return attachments == null ? null : attachments.get(key);
 	}
 }

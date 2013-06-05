@@ -22,7 +22,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
+import net.pms.Messages;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
@@ -30,18 +30,16 @@ import net.pms.formats.Format;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
-import net.pms.Messages;
 import net.pms.network.HTTPResource;
-import net.pms.PMS;
 import net.pms.util.PlayerUtil;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
 
 public class FFmpegAudio extends FFmpegVideo {
 	public static final String ID = "ffmpegaudio";
