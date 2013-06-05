@@ -1686,22 +1686,26 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_ENGINES, listToString(enginesAsList));
 	}
 
+	// TODO this should use Player.id() instead of hardwiring the identifiers
+	// TODO rather than loading the players here, this should delegate
+	// to (or solely be implemented in) PlayerFactory
 	public List<String> getEnginesAsList() {
 		final String defaultEngines = join(asList(
 				"mencoder",
 				"avsmencoder",
 				"tsmuxer",
 				"ffmpegvideo",
-				"vlctranscoder",
+				"vlctranscoder", // (VLCVideo) TODO: rename "vlcvideo"
 				"ffmpegaudio",
 				"mplayeraudio",
 				"tsmuxeraudio",
 				"ffmpegwebvideo",
-				"vlcvideo",
+				"vlcwebvideo", // (VLCWebVideo)
+				"vlcvideo", // (VideoLanVideoStreaming) TODO (legacy web video engine): remove
 				"mencoderwebvideo",
 				"mplayervideodump",
 				"mplayerwebaudio",
-				"vlcaudio",
+				"vlcaudio", // (VideoLanAudioStreaming) TODO (legacy web audio engine): remove
 				"ffmpegdvrmsremux",
 				"rawthumbs"), LIST_SEPARATOR);
 
