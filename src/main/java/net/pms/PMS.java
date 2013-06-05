@@ -36,6 +36,7 @@ import net.pms.gui.DummyFrame;
 import net.pms.gui.IFrame;
 import net.pms.io.*;
 import net.pms.logging.LoggingConfigFileLoader;
+import net.pms.logging.FrameAppender;
 import net.pms.network.HTTPServer;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
@@ -75,7 +76,7 @@ public class PMS {
 	private static final String PROFILES = "profiles";
 
 	/**
-	 * @deprecated The version has moved to the resources/project.properties file. Use {@link #getVersion()} instead. 
+	 * @deprecated The version has moved to the resources/project.properties file. Use {@link #getVersion()} instead.
 	 */
 	@Deprecated
 	public static String VERSION;
@@ -98,18 +99,22 @@ public class PMS {
 	 * directory.
 	 */
 	private static String helpPage = "index.html";
-	
-	/**Returns a pointer to the main PMS GUI.
+
+	/**
+	 * Returns a pointer to the PMS GUI's main window.
 	 * @return {@link net.pms.gui.IFrame} Main PMS window.
 	 */
 	public IFrame getFrame() {
 		return frame;
 	}
 
-	/**getRootFolder returns the Root Folder for a given renderer. There could be the case
+	/**
+	 * Returns the root folder for a given renderer. There could be the case
 	 * where a given media renderer needs a different root structure.
-	 * @param renderer {@link net.pms.configuration.RendererConfiguration} is the renderer for which to get the RootFolder structure. If <b>null</b>, then
-	 * the default renderer is used.
+	 *
+	 * @param renderer {@link net.pms.configuration.RendererConfiguration}
+	 * is the renderer for which to get the RootFolder structure. If <code>null</code>,
+	 * then the default renderer is used.
 	 * @return {@link net.pms.dlna.RootFolder} The root folder structure for a given renderer
 	 */
 	public RootFolder getRootFolder(RendererConfiguration renderer) {
@@ -117,6 +122,7 @@ public class PMS {
 		if (renderer == null) {
 			renderer = RendererConfiguration.getDefaultConf();
 		}
+
 		return renderer.getRootFolder();
 	}
 
@@ -126,13 +132,13 @@ public class PMS {
 	private static PMS instance = null;
 
 	/**
-	 * @deprecated This field is not used and will be removed in the future. 
+	 * @deprecated This field is not used and will be removed in the future.
 	 */
 	@Deprecated
 	public final static SimpleDateFormat sdfDate = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
 
 	/**
-	 * @deprecated This field is not used and will be removed in the future. 
+	 * @deprecated This field is not used and will be removed in the future.
 	 */
 	@Deprecated
 	public final static SimpleDateFormat sdfHour = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
@@ -142,14 +148,26 @@ public class PMS {
 	 */
 	private final ArrayList<RendererConfiguration> foundRenderers = new ArrayList<RendererConfiguration>();
 
-	/**Adds a {@link net.pms.configuration.RendererConfiguration} to the list of media renderers found. The list is being used, for
-	 * example, to give the user a graphical representation of the found media renderers.
-	 * @param mediarenderer {@link net.pms.configuration.RendererConfiguration}
+	/**
+	 * @deprecated Use {@link #setRendererFound(RendererConfiguration)} instead.
 	 */
-	public void setRendererfound(RendererConfiguration mediarenderer) {
-		if (!foundRenderers.contains(mediarenderer) && !mediarenderer.isFDSSDP()) {
-			foundRenderers.add(mediarenderer);
-			frame.addRendererIcon(mediarenderer.getRank(), mediarenderer.getRendererName(), mediarenderer.getRendererIcon());
+	@Deprecated
+	public void setRendererfound(RendererConfiguration renderer) {
+		setRendererFound(renderer);
+	}
+
+	/**
+	 * Adds a {@link net.pms.configuration.RendererConfiguration} to the list of media renderers found.
+	 * The list is being used, for example, to give the user a graphical representation of the found
+	 * media renderers.
+	 *
+	 * @param renderer {@link net.pms.configuration.RendererConfiguration}
+	 * @since 1.82.0
+	 */
+	public void setRendererFound(RendererConfiguration renderer) {
+		if (!foundRenderers.contains(renderer) && !renderer.isFDSSDP()) {
+			foundRenderers.add(renderer);
+			frame.addRendererIcon(renderer.getRank(), renderer.getRendererName(), renderer.getRendererIcon());
 			frame.setStatusCode(0, Messages.getString("PMS.18"), "apply-220.png");
 		}
 	}
@@ -164,6 +182,7 @@ public class PMS {
 	 */
 	private String serverName;
 
+	// FIXME unused
 	private ProxyServer proxyServer;
 
 	public ProxyServer getProxy() {
@@ -172,13 +191,12 @@ public class PMS {
 
 	public ArrayList<Process> currentProcesses = new ArrayList<Process>();
 
-	private PMS() {
-	}
+	private PMS() { }
 
 	/**
-	 * {@link net.pms.gui.IFrame} object that represents PMS GUI.
+	 * {@link net.pms.gui.IFrame} object that represents the PMS GUI.
 	 */
-	IFrame frame;
+	private IFrame frame;
 
 	/**
 	 * @see com.sun.jna.Platform#isWindows()
@@ -187,9 +205,8 @@ public class PMS {
 		return Platform.isWindows();
 	}
 
-	private int proxy;
-
-	/**Interface to Windows specific functions, like Windows Registry. registry is set by {@link #init()}.
+	/**
+	 * Interface to Windows-specific functions, like Windows Registry. registry is set by {@link #init()}.
 	 * @see net.pms.io.WinUtils
 	 */
 	private SystemUtils registry;
@@ -201,7 +218,8 @@ public class PMS {
 		return registry;
 	}
 
-	/**Executes a new Process and creates a fork that waits for its results. 
+	/**
+	 * Executes a new Process and creates a fork that waits for its results.
 	 * TODO Extend explanation on where this is being used.
 	 * @param name Symbolic name for the process to be launched, only used in the trace log
 	 * @param error (boolean) Set to true if you want PMS to add error messages to the trace pane
@@ -270,7 +288,8 @@ public class PMS {
 	@SuppressWarnings("unused")
 	private final PrintStream stderr = System.err;
 
-	/**Main resource database that supports search capabilities. Also known as media cache.
+	/**
+	 * Main resource database that supports search capabilities. Also known as media cache.
 	 * @see net.pms.dlna.DLNAMediaDatabase
 	 */
 	private DLNAMediaDatabase database;
@@ -280,7 +299,8 @@ public class PMS {
 		database.init(false);
 	}
 
-	/**Used to get the database. Needed in the case of the Xbox 360, that requires a database.
+	/**
+	 * Used to get the database. Needed in the case of the Xbox 360, that requires a database.
 	 * for its queries.
 	 * @return (DLNAMediaDatabase) a reference to the database instance or <b>null</b> if one isn't defined
 	 * (e.g. if the cache is disabled).
@@ -290,49 +310,14 @@ public class PMS {
 			if (database == null) {
 				initializeDatabase();
 			}
+
 			return database;
 		}
+
 		return null;
 	}
 
-	/**Initialisation procedure for PMS.
-	 * @return true if the server has been initialized correctly. false if the server could
-	 * not be set to listen on the UPnP port.
-	 * @throws Exception
-	 */
-	private boolean init() throws Exception {
-		AutoUpdater autoUpdater = null;
-
-		// Temporary fix for backwards compatibility
-		VERSION = getVersion();
-
-		if (Build.isUpdatable()) {
-			String serverURL = Build.getUpdateServerURL();
-			autoUpdater = new AutoUpdater(serverURL, getVersion());
-		}
-
-		registry = createSystemUtils();
-
-		if (System.getProperty(CONSOLE) == null) {
-			frame = new LooksFrame(autoUpdater, configuration);
-		} else {
-			LOGGER.info("GUI environment not available");
-			LOGGER.info("Switching to console mode");
-			frame = new DummyFrame();
-		}
-		configuration.addConfigurationListener(new ConfigurationListener() {
-			@Override
-			public void configurationChanged(ConfigurationEvent event) {
-				if ((!event.isBeforeUpdate())
-						&& PmsConfiguration.NEED_RELOAD_FLAGS.contains(event.getPropertyName())) {
-					frame.setReloadable(true);
-				}
-			}
-		});
-
-		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-220.png");
-		proxy = -1;
-
+	private void displayBanner() throws IOException {
         LOGGER.info("Starting " + PropertiesUtil.getProjectProperties().get("project.name") + " " + getVersion());
         LOGGER.info("by shagrath / 2008-2013");
         LOGGER.info("http://ps3mediaserver.org");
@@ -359,12 +344,12 @@ public class PMS {
 		File javaTmpdir = new File(System.getProperty("java.io.tmpdir"));
 
 		if (!FileUtil.isDirectoryWritable(javaTmpdir)) {
-			LOGGER.error("The Java temp directory \"" + javaTmpdir.getAbsolutePath() + "\" is not writable for PMS!");
-			LOGGER.error("Please make sure the directory is writable for user \"" + System.getProperty("user.name") + "\"");
+			LOGGER.error("The Java temp directory \"{}\" is not writable for PMS!", javaTmpdir.getAbsolutePath());
+			LOGGER.error("Please make sure the directory is writable for user \"{}\"", System.getProperty("user.name"));
 			throw new IOException("Cannot write to Java temp directory");
 		}
 
-		LOGGER.info("Logging config file: " + LoggingConfigFileLoader.getConfigFilePath());
+		LOGGER.info("Logging config file: {}", LoggingConfigFileLoader.getConfigFilePath());
 
 		HashMap<String, String> lfps = LoggingConfigFileLoader.getLogFilePaths();
 
@@ -385,10 +370,9 @@ public class PMS {
 		}
 
 		LOGGER.info("");
-
-		LOGGER.info("Profile directory: " + configuration.getProfileDirectory());
+		LOGGER.info("Profile directory: {}", configuration.getProfileDirectory());
 		String profilePath = configuration.getProfilePath();
-		LOGGER.info("Profile path: " + profilePath);
+		LOGGER.info("Profile path: {}", profilePath);
 
 		File profileFile = new File(profilePath);
 
@@ -397,21 +381,84 @@ public class PMS {
 				FileUtil.isFileReadable(profileFile) ? "r" : "-",
 				FileUtil.isFileWritable(profileFile) ? "w" : "-"
 			);
-			LOGGER.info("Profile permissions: " + permissions);
+			LOGGER.info("Profile permissions: {}", permissions);
 		} else {
 			LOGGER.info("Profile permissions: no such file");
 		}
 
-		LOGGER.info("Profile name: " + configuration.getProfileName());
+		LOGGER.info("Profile name: {}", configuration.getProfileName());
 		LOGGER.info("");
+	}
 
+	/**
+	 * Initialisation procedure for PMS.
+	 * @return true if the server has been initialized correctly. false if the server could
+	 * not be set to listen on the UPnP port.
+	 * @throws Exception
+	 */
+	private boolean init() throws Exception {
+		// The public VERSION field is deprecated.
+		// This is a temporary fix for backwards compatibility
+		VERSION = getVersion();
+
+		// call this as early as possible
+		displayBanner();
+
+		AutoUpdater autoUpdater = null;
+		if (Build.isUpdatable()) {
+			String serverURL = Build.getUpdateServerURL();
+			autoUpdater = new AutoUpdater(serverURL, getVersion());
+		}
+
+		registry = createSystemUtils();
+
+		if (System.getProperty(CONSOLE) == null) {
+			frame = new LooksFrame(autoUpdater, configuration);
+		} else {
+			LOGGER.info("GUI environment not available");
+			LOGGER.info("Switching to console mode");
+			frame = new DummyFrame();
+		}
+
+		/*
+		 * we're here:
+		 *
+		 *     main() -> createInstance() -> init()
+		 *
+		 * which means we haven't created the instance returned by get()
+		 * yet, so the frame appender can't access the frame in the
+		 * standard way i.e. PMS.get().getFrame(). we solve it by
+		 * inverting control ("don't call us; we'll call you") i.e.
+		 * we notify the appender when the frame is ready rather than
+		 * e.g. making getFrame() static and requiring the frame
+		 * appender to poll it.
+		 *
+		 * XXX an event bus (e.g. MBassador or Guava EventBus
+		 * (if they fix the memory-leak issue)) notification
+		 * would be cleaner and could suport other lifecycle
+		 * notifications (see above).
+		 */
+		FrameAppender.setFrame(frame);
+
+		configuration.addConfigurationListener(new ConfigurationListener() {
+			@Override
+			public void configurationChanged(ConfigurationEvent event) {
+				if ((!event.isBeforeUpdate())
+						&& PmsConfiguration.NEED_RELOAD_FLAGS.contains(event.getPropertyName())) {
+					frame.setReloadable(true);
+				}
+			}
+		});
+
+		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-220.png");
 		RendererConfiguration.loadRendererConfigurations(configuration);
-
 		LOGGER.info("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
+
 		if (isWindows()) {
 			checkProcessExistence("MPlayer", true, configuration.getTempFolder(), configuration.getMplayerPath(), "dummy");
 		}
+
 		LOGGER.info("Done!");
 
 		// check the existence of Vsfilter.dll
@@ -438,7 +485,7 @@ public class PMS {
 			}
 		}
 
-		//check if Kerio is installed
+		// check if Kerio is installed
 		if (registry.isKerioFirewall()) {
 			LOGGER.info("Detected Kerio firewall");
 		}
@@ -482,7 +529,7 @@ public class PMS {
 		// Instantiate listeners that require registered players.
 		ExternalFactory.instantiateLateListeners();
 
-		// Any plugin-defined players are now registered, create the gui view.
+		// Any plugin-defined players are now registered, create the GUI view.
 		frame.addEngines();
 
 		boolean binding = false;
@@ -499,8 +546,8 @@ public class PMS {
 			public void run() {
 				try {
 					Thread.sleep(7000);
-				} catch (InterruptedException e) {
-				}
+				} catch (InterruptedException e) { }
+
 				if (foundRenderers.isEmpty()) {
 					frame.setStatusCode(0, Messages.getString("PMS.0"), "messagebox_critical-220.png");
 				} else {
@@ -511,11 +558,6 @@ public class PMS {
 
 		if (!binding) {
 			return false;
-		}
-
-		if (proxy > 0) {
-			LOGGER.info("Starting HTTP Proxy Server on port: " + proxy);
-			proxyServer = new ProxyServer(proxy);
 		}
 
 		// initialize the cache
@@ -532,7 +574,7 @@ public class PMS {
 
 		frame.serverReady();
 
-		//UPNPHelper.sendByeBye();
+		// UPNPHelper.sendByeBye();
 		Runtime.getRuntime().addShutdownHook(new Thread("PMS Listeners Stopper") {
 			@Override
 			public void run() {
@@ -566,10 +608,11 @@ public class PMS {
 
 		return true;
 	}
-	
+
 	private MediaLibrary mediaLibrary;
 
-	/**Returns the MediaLibrary used by PMS.
+	/**
+	 * Returns the MediaLibrary used by PMS.
 	 * @return (MediaLibrary) Used mediaLibrary, if any. null if none is in use.
 	 */
 	public MediaLibrary getLibrary() {
@@ -592,51 +635,62 @@ public class PMS {
 		}
 	}
 
-	/**Executes the needed commands in order to make PMS a Windows service that starts whenever the machine is started.
+	/**
+	 * Executes the needed commands in order to make PMS a Windows service that starts whenever the machine is started.
 	 * This function is called from the Network tab.
 	 * @return true if PMS could be installed as a Windows service.
 	 * @see net.pms.newgui.GeneralTab#build()
 	 */
 	public boolean installWin32Service() {
 		LOGGER.info(Messages.getString("PMS.41"));
-		String cmdArray[] = new String[]{"win32/service/wrapper.exe", "-r", "wrapper.conf"};
+		String cmdArray[] = new String[]{ "win32/service/wrapper.exe", "-r", "wrapper.conf" };
 		OutputParams output = new OutputParams(configuration);
 		output.noexitcheck = true;
 		ProcessWrapperImpl pwuninstall = new ProcessWrapperImpl(cmdArray, output);
 		pwuninstall.runInSameThread();
-		cmdArray = new String[]{"win32/service/wrapper.exe", "-i", "wrapper.conf"};
-		ProcessWrapperImpl pwinstall = new ProcessWrapperImpl(cmdArray, new OutputParams(configuration));
-		pwinstall.runInSameThread();
-		return pwinstall.isSuccess();
+		cmdArray = new String[]{ "win32/service/wrapper.exe", "-i", "wrapper.conf" };
+		ProcessWrapperImpl pwInstall = new ProcessWrapperImpl(cmdArray, new OutputParams(configuration));
+		pwInstall.runInSameThread();
+		return pwInstall.isSuccess();
 	}
 
-	/**Transforms a comma separated list of directory entries into an array of {@link String}.
+	/**
+	 * @deprecated Use {@link #getFoldersConf()} instead.
+	 */
+	@Deprecated
+	public File[] getFoldersConf(boolean log) {
+		return getFoldersConf();
+	}
+
+	/**
+	 * Transforms a comma-separated list of directory entries into an array of {@link String}.
 	 * Checks that the directory exists and is a valid directory.
-	 * @param log whether to output log information
+	 *
 	 * @return {@link java.io.File}[] Array of directories.
 	 * @throws java.io.IOException
 	 */
-
-	// this is called *way* too often (e.g. a dozen times with 1 renderer and 1 shared folder),
-	// so log it by default so we can fix it.
-	// BUT it's also called when the GUI is initialized (to populate the list of shared folders),
-	// and we don't want this message to appear *before* the PMS banner, so allow that call to suppress logging	
-	public File[] getFoldersConf(boolean log) {
+	public File[] getFoldersConf() {
 		String folders = getConfiguration().getFolders();
+
 		if (folders == null || folders.length() == 0) {
 			return null;
 		}
+
 		ArrayList<File> directories = new ArrayList<File>();
 		String[] foldersArray = folders.split(",");
+
 		for (String folder : foldersArray) {
 			// unescape embedded commas. note: backslashing isn't safe as it conflicts with
 			// Windows path separators:
 			// http://ps3mediaserver.org/forum/viewtopic.php?f=14&t=8883&start=250#p43520
 			folder = folder.replaceAll("&comma;", ",");
-			if (log) {
-				LOGGER.info("Checking shared folder: " + folder);
-			}
+
+			// this is called *way* too often
+			// so log it so we can fix it.
+			LOGGER.info("Checking shared folder: " + folder);
+
 			File file = new File(folder);
+
 			if (file.exists()) {
 				if (!file.isDirectory()) {
 					LOGGER.warn("The file " + folder + " is not a directory! Please remove it from your Shared folders list on the Navigation/Share Settings tab");
@@ -648,16 +702,14 @@ public class PMS {
 			// add the file even if there are problems so that the user can update the shared folders as required.
 			directories.add(file);
 		}
+
 		File f[] = new File[directories.size()];
 		directories.toArray(f);
 		return f;
 	}
 
-	public File[] getFoldersConf() {
-		return getFoldersConf(true);
-	}
-
-	/**Restarts the server. The trigger is either a button on the main PMS window or via
+	/**
+	 * Restarts the server. The trigger is either a button on the main PMS window or via
 	 * an action item.
 	 * @throws java.io.IOException
 	 */
@@ -690,7 +742,7 @@ public class PMS {
 
 	// Cannot remove these methods because of backwards compatibility;
 	// none of the PMS code uses it, but some plugins still do.
-	
+
 	/**
 	 * @deprecated Use the SLF4J logging API instead.
 	 * Adds a message to the debug stream, or {@link System#out} in case the
@@ -728,7 +780,7 @@ public class PMS {
 	 * Adds a message to the error stream. This is usually called by
 	 * statements that are in a try/catch block.
 	 * @param msg {@link String} to be added to the error stream
-	 * @param t {@link Throwable} comes from an {@link Exception} 
+	 * @param t {@link Throwable} comes from an {@link Exception}
 	 */
 	@Deprecated
 	public static void error(String msg, Throwable t) {
@@ -767,7 +819,8 @@ public class PMS {
 		return "uuid:" + uuid;
 	}
 
-	/**Returns the user friendly name of the UPnP server. 
+	/**
+	 * Returns the user friendly name of the UPnP server.
 	 * @return {@link String} with the user friendly name.
 	 */
 	public String getServerName() {
@@ -781,10 +834,12 @@ public class PMS {
 			sb.append(", UPnP/1.0, PMS/" + getVersion());
 			serverName = sb.toString();
 		}
+
 		return serverName;
 	}
 
-	/**Returns the PMS instance.
+	/**
+	 * Returns the PMS instance.
 	 * @return {@link net.pms.PMS}
 	 */
 	public static PMS get() {
@@ -830,6 +885,9 @@ public class PMS {
 		boolean displayProfileChooser = false;
 		boolean headless = true;
 
+		// FIXME (breaking change): use a standard argument
+		// format (and a standard argument processor) e.g.
+		// --console, --scrollbars &c.
 		if (args.length > 0) {
 			for (int a = 0; a < args.length; a++) {
 				if (args[a].equals(CONSOLE)) {
@@ -870,15 +928,18 @@ public class PMS {
 
 		try {
 			setConfiguration(new PmsConfiguration());
-
 			assert getConfiguration() != null;
 
-			// Load the (optional) logback config file. This has to be called after 'new PmsConfiguration'
-			// as the logging starts immediately and some filters need the PmsConfiguration.
+			// Load the (optional) logback config file.
+			// This has to be called after 'new PmsConfiguration'
+			// as the logging starts immediately and some filters
+			// need the PmsConfiguration.
+			// XXX not sure this is (still) true: the only filter
+			// we use is ch.qos.logback.classic.filter.ThresholdFilter
 			LoggingConfigFileLoader.load();
 
 			// create the PMS instance returned by get()
-			createInstance(); 
+			createInstance(); // calls new() then init()
 		} catch (Throwable t) {
 			String errorMessage = String.format(
 				"Configuration error: %s: %s",
@@ -906,7 +967,7 @@ public class PMS {
 	/**
 	 * @deprecated Use {@link net.pms.formats.FormatFactory#getExtensions()} instead.
 	 *
-	 * @return The list of formats. 
+	 * @return The list of formats.
 	 */
 	public ArrayList<Format> getExtensions() {
 		return FormatFactory.getExtensions();
@@ -1005,7 +1066,7 @@ public class PMS {
 	/**
 	 * Sets the relative URL of a context sensitive help page located in the
 	 * documentation directory.
-	 * 
+	 *
 	 * @param page The help page.
 	 */
 	public static void setHelpPage(String page) {

@@ -638,7 +638,7 @@ public class NavigationShareTab {
 		but5.setEnabled(configuration.getUseCache());
 
 		df = new DefaultListModel();
-		File[] folders = PMS.get().getFoldersConf(false);
+		File[] folders = PMS.get().getFoldersConf();
 		if (folders != null && folders.length > 0) {
 			for (File file : folders) {
 				df.addElement(file.getAbsolutePath());

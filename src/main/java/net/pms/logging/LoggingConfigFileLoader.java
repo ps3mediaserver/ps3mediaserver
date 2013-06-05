@@ -41,7 +41,7 @@ import java.util.Iterator;
  */
 public class LoggingConfigFileLoader {
 	private static String filepath = null;
-	private static HashMap<String, String> logFilePaths = new HashMap<String, String>(); // key=appender name, value, log file path
+	private static HashMap<String, String> logFilePaths = new HashMap<String, String>(); // key: appender name, value: log file path
 
 	/**
 	 * Gets the full path of a successfully loaded Logback configuration file.
@@ -76,10 +76,6 @@ public class LoggingConfigFileLoader {
 	 */
 	public static void load() {
 		// Note: Do not use any logging method in this method!
-		// Any logging would cause PMS.get() to be called from the
-		// FrameAppender, which in turn would start the PMS instance, which
-		// would cause further log messages. This will lead to either lost
-		// log messages or Deadlocks!
 		// Any status output needs to go to the console.
 
 		boolean headless = !(System.getProperty("console") == null);
@@ -120,7 +116,6 @@ public class LoggingConfigFileLoader {
 
 			// Save the filepath after loading the file
 			filepath = file.getAbsolutePath();
-
 		} catch (JoranException je) {
 			// StatusPrinter will handle this
 			je.printStackTrace();
@@ -128,8 +123,10 @@ public class LoggingConfigFileLoader {
 
 		for (Logger logger : lc.getLoggerList()) {
 			Iterator<Appender<ILoggingEvent>> it = logger.iteratorForAppenders();
+
 			while (it.hasNext()) {
 				Appender<ILoggingEvent> ap = it.next();
+
 				if (ap instanceof FileAppender) {
 					FileAppender<ILoggingEvent> fa = (FileAppender<ILoggingEvent>) ap;
 					logFilePaths.put(fa.getName(), fa.getFile());

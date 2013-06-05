@@ -634,6 +634,8 @@ public class PmsConfiguration {
 	 * TODO: Is this still used?
 	 * @return The proxy port number.
 	 */
+	// no longer used
+	@Deprecated
 	public int getProxyServerPort() {
 		return getInt(KEY_PROXY_SERVER_PORT, DEFAULT_PROXY_SERVER_PORT);
 	}
