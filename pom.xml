@@ -184,7 +184,7 @@
 			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
 
-    </repositories>
+	</repositories>
 
 	<dependencies>
 		<!-- XXX note: the JNA dependency is declared at the profile level -->
@@ -399,12 +399,12 @@
 			<scope>test</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-assert</artifactId>
-            <version>1.4</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.easytesting</groupId>
+			<artifactId>fest-assert</artifactId>
+			<version>1.4</version>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 
@@ -475,14 +475,14 @@
 				<!-- Enable the use of Maven properties -->
 				<filtering>true</filtering>
 			</testResource>
-            <!--*.srt files to test charset detection-->
-            <testResource>
-                <directory>src/test/resources/net/pms/util</directory>
-                <includes>
-                    <include>*.srt</include>
-                </includes>
-                <targetPath>net/pms/util</targetPath>
-            </testResource>
+			<!--*.srt files to test charset detection-->
+			<testResource>
+				<directory>src/test/resources/net/pms/util</directory>
+				<includes>
+					<include>*.srt</include>
+				</includes>
+				<targetPath>net/pms/util</targetPath>
+			</testResource>
 		</testResources>
 
 		<pluginManagement>
@@ -492,7 +492,7 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<configuration>
 						<!--
-						    1) Force language because JUnit tests depend on English language strings
+							1) Force language because JUnit tests depend on English language strings
 
 							2) Use our JNA dependency rather than the system's - fixes
 							the following error on Linux (Ubuntu 12.04 with system
