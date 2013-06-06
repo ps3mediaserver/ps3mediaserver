@@ -19,6 +19,7 @@ TVs, music players and more.
 ## Links
 
 * [Website](http://www.ps3mediaserver.org/)
+* [Forum](http://www.ps3mediaserver.org/forum/)
 * [Downloads](https://code.google.com/p/ps3mediaserver/downloads/list)
 * [Source code](https://github.com/ps3mediaserver/ps3mediaserver)
 * [Issue tracker](https://code.google.com/p/ps3mediaserver/issues/list)

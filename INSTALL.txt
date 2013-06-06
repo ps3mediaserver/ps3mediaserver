@@ -4,7 +4,7 @@ Installers for Windows and Mac OS X and tarballs for Linux &c. can be found here
 
 Instructions for installing packages for Debian and Ubuntu can be found here:
 
-	http://www.ps3mediaserver.org/forum/viewtopic.php?f=3&t=13046
+    http://www.ps3mediaserver.org/forum/viewtopic.php?f=3&t=13046
 
 To install PMS from the tarball on Linux &c. (these instructions have been tested on Ubuntu 12.04,
 but something similar should work on most Unix distributions), open a terminal and enter the
