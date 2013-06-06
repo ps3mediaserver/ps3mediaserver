@@ -1,7 +1,7 @@
 Changelog:
 ==========
 
-1.83.0 - 2013-??-??
+1.90.0 - 2013-??-??
 
     General:
         - A lot of backports from UMS (thanks, all UMS developers!)
@@ -15,7 +15,7 @@ Changelog:
             - Support for external SRT and SSA/ASS subtitles
             - Support for auto charset detection of non UTF-8 external subtitles
         - tsMuxeR:
-            - regression: restore the pre-1.82.0 compatibility logic
+            - Regression: restore the pre-1.82.0 compatibility logic
         - VLC Web Video:
             - Fix NPE
 
@@ -36,11 +36,14 @@ Changelog:
             - Yamaha RX-V3900
 
     Transcode folder:
-        - add entries for audio files
-        - add missing entries for video files
-        - add entries for web video and web audio files
-        - allow the chapter folder prefix to be localized
-        - hide chapter folders if the duration of the video is less than the chapter length
+        - Add entries for audio files
+        - Add missing entries for video files
+        - Add entries for web video and web audio files
+        - Allow the chapter folder prefix to be localized
+        - Hide chapter folders if the duration of the video is less than the chapter length
+
+    Misc:
+        - Logging improvements
 
 1.82.0 - 2013-06-03
 
