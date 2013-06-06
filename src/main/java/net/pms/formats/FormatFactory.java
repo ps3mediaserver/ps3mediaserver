@@ -37,10 +37,23 @@ public final class FormatFactory {
 	/**
 	 * Initial list of known formats.
 	 */
-	private static final Format[] FORMATS = new Format[] { new WEB(),
-			new MKV(), new M4A(), new MP3(), new ISO(), new MPG(), new WAV(),
-			new JPG(), new OGG(), new PNG(), new GIF(), new TIF(), new FLAC(),
-			new DVRMS(), new RAW() };
+	private static final Format[] FORMATS = new Format[] {
+		new WEB(), // FIXME this must currently be first due to a bug in Format.match()
+		new MKV(),
+		new M4A(),
+		new MP3(),
+		new ISO(),
+		new MPG(),
+		new WAV(),
+		new JPG(),
+		new OGG(),
+		new PNG(),
+		new GIF(),
+		new TIF(),
+		new FLAC(),
+		new DVRMS(),
+		new RAW(),
+	};
 
 	/**
 	 * The list of registered formats.
@@ -50,7 +63,14 @@ public final class FormatFactory {
 	/**
 	 * This class is not meant to be instantiated.
 	 */
-	private FormatFactory() {
+	private FormatFactory() { }
+
+	/**
+	 * @deprecated Use {@link #getAssociatedFormat(String)} instead.
+	 */
+	@Deprecated
+	public static Format getAssociatedExtension(final String filename) {
+		return getAssociatedFormat(filename);
 	}
 
 	/**
@@ -62,8 +82,9 @@ public final class FormatFactory {
 	 * @param filename The filename to match.
 	 * @return The format.
 	 * @see Format#match(String)
+	 * @since 1.90.0
 	 */
-	public static Format getAssociatedExtension(final String filename) {
+	public static Format getAssociatedFormat(final String filename) {
 		for (Format ext : formats) {
 			if (ext.match(filename)) {
 				LOGGER.trace("Matched format " + ext + " to \"" + filename + "\"");

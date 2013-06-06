@@ -56,7 +56,8 @@ public class PlayerUtilTest {
 		context.reset();
 
 		// initialise the fixtures
-		// XXX we need to call isValid to call checktype(), which is needed to initialise the format
+		// XXX we need to call isValid() to call the (protected) resolveFormat()
+		// method, which is needed to initialise the format
 		image = new RealFile(new File("test.jpg"));
 		image.isValid();
 		audio = new RealFile(new File("test.mp3"));

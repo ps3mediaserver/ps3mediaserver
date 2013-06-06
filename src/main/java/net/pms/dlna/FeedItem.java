@@ -96,7 +96,7 @@ public class FeedItem extends DLNAResource {
 
 	@Override
 	public boolean isValid() {
-		checktype();
+		resolveFormat();
 		return getFormat() != null;
 	}
 }
