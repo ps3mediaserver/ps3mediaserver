@@ -158,7 +158,7 @@ public class FFmpegWebVideo extends FFmpegVideo {
 
 		// Build the command line
 		final List<String> cmdList = new ArrayList<String>();
-		cmdList.add(executable().replace("/", "\\\\"));
+		cmdList.add(executable());
 
 		// XXX squashed bug - without this, ffmpeg hangs waiting for a confirmation
 		// that it can write to a file that already exists i.e. the named pipe
