@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -129,18 +130,19 @@ public class RendererConfiguration {
 			LOGGER.info("Loading renderer configurations from " + renderersDir.getAbsolutePath());
 
 			File[] confs = renderersDir.listFiles();
+			Arrays.sort(confs);
 			int rank = 1;
+
 			for (File f : confs) {
 				if (f.getName().endsWith(".conf")) {
 					try {
-						LOGGER.info("Loading configuration file: " + f.getName());
+						LOGGER.info("Loading configuration file: {}", f.getName());
 						RendererConfiguration r = new RendererConfiguration(f);
 						r.rank = rank++;
 						rendererConfs.add(r);
 					} catch (ConfigurationException ce) {
-						LOGGER.info("Error in loading configuration of: " + f.getAbsolutePath());
+						LOGGER.info("Error in loading configuration of: {}", f.getAbsolutePath());
 					}
-
 				}
 			}
 		}
