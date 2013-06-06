@@ -117,9 +117,9 @@ public class FFmpegWebVideo extends FFmpegVideo {
 
 	@Override
 	public synchronized ProcessWrapper launchTranscode(
-			DLNAResource dlna,
-			DLNAMediaInfo media,
-			OutputParams params
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
 	) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;

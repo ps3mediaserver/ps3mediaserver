@@ -505,18 +505,24 @@ public class FFmpegVideo extends Player {
 		return configuration.getFfmpegPath();
 	}
 
+	// FIXME this is a mess: the whole point of the getXOptions methods is to prevent
+	// this turning into another MEncoderVideo, with disorganised kitchen-sink methods
+	// that are over a thousand lines long.
+	//
+	// TODO: move each chunk of functionality into submethods called by a core group of
+	// getXOptions methods
 	@Override
 	public synchronized ProcessWrapper launchTranscode(
-			DLNAResource dlna,
-			DLNAMediaInfo media,
-			OutputParams params
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
 	) throws IOException {
 		int nThreads = configuration.getNumberOfCpuCores();
 		List<String> cmdList = new ArrayList<String>();
 		RendererConfiguration renderer = params.mediaRenderer;
 		final String filename = dlna.getSystemName();
 		setAudioAndSubs(filename, media, params, configuration);
-//		params.waitbeforestart = 1000;
+		// params.waitbeforestart = 1000;
 
 		cmdList.add(executable());
 
@@ -714,6 +720,7 @@ public class FFmpegVideo extends Player {
 					}
 				}
 			}
+
 			String[] customOptions = StringUtils.split(mpeg2Options);
 			cmdList.addAll(new ArrayList<String>(Arrays.asList(customOptions)));
 		}
@@ -877,8 +884,7 @@ public class FFmpegVideo extends Player {
 
 			try {
 				Thread.sleep(50);
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) { }
 
 			pipe.deleteLater();
 			params.input_pipes[0] = pipe;
@@ -889,8 +895,7 @@ public class FFmpegVideo extends Player {
 
 			try {
 				Thread.sleep(50);
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) { }
 
 			ffAudioPipe.deleteLater();
 			pw.attachProcess(ffAudio);

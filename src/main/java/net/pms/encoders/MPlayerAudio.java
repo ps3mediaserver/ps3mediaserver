@@ -79,9 +79,9 @@ public class MPlayerAudio extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-			DLNAResource dlna,
-			DLNAMediaInfo media,
-			OutputParams params
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
 	) throws IOException {
 		if (!(this instanceof MPlayerWebAudio) && !(this instanceof MPlayerWebVideoDump)) {
 			params.waitbeforestart = 2000;

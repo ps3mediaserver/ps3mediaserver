@@ -19,17 +19,6 @@
 package net.pms.configuration;
 
 import com.sun.jna.Platform;
-import net.pms.Messages;
-import net.pms.util.FileUtil;
-import net.pms.util.PropertiesUtil;
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.configuration.event.ConfigurationListener;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +26,23 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
+import net.pms.Messages;
+import net.pms.io.SystemUtils;
+import net.pms.util.FileUtil;
+import net.pms.util.PropertiesUtil;
+
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.event.ConfigurationListener;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static java.util.Arrays.asList;
+
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.apache.commons.lang3.StringUtils.split;
 
@@ -1678,11 +1683,20 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_ENGINES, listToString(enginesAsList));
 	}
 
+	/**
+	 * @deprecated Use {@link #getEnginesAsList()} instead.
+	 */
+	@Deprecated
+	public List<String> getEnginesAsList(SystemUtils registry) {
+		return getEnginesAsList();
+	}
+
 	// TODO this should use Player.id() instead of hardwiring the identifiers
 	// TODO rather than loading the players here, this should delegate
 	// to (or solely be implemented in) PlayerFactory
 	public List<String> getEnginesAsList() {
-		final String defaultEngines = join(asList(
+		final String defaultEngines = join(
+			asList(
 				"mencoder",
 				"avsmencoder",
 				"tsmuxer",
@@ -1699,15 +1713,18 @@ public class PmsConfiguration {
 				"mplayerwebaudio",
 				"vlcaudio", // (VideoLanAudioStreaming) TODO (legacy web audio engine): remove
 				"ffmpegdvrmsremux",
-				"rawthumbs"), LIST_SEPARATOR);
+				"rawthumbs"
+			),
+			LIST_SEPARATOR
+		);
 
 		return stringToList(
-				// possibly blank: an empty string means: disable all engines
-				// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=15416
-				configurationReader.getPossiblyBlankConfigurationString(
-						KEY_ENGINES,
-						defaultEngines
-				)
+			// possibly blank: an empty string means: disable all engines
+			// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=15416
+			configurationReader.getPossiblyBlankConfigurationString(
+				KEY_ENGINES,
+				defaultEngines
+			)
 		);
 	}
 

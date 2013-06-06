@@ -940,6 +940,7 @@ public class PMS {
 			);
 
 			System.err.println(errorMessage);
+			t.printStackTrace();
 
 			if (!isHeadless() && instance != null) {
 				JOptionPane.showMessageDialog(

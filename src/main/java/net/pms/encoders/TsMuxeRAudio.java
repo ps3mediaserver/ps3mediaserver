@@ -53,9 +53,10 @@ public class TsMuxeRAudio extends TsMuxeRVideo {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-			DLNAResource dlna,
-			DLNAMediaInfo media,
-			OutputParams params) throws IOException {
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		params.timeend = media.getDurationInSeconds();
 		params.waitbeforestart = 2500;
 		return super.launchTranscode(dlna, media, params);

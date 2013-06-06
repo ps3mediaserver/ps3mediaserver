@@ -48,9 +48,11 @@ public class RAWThumbnailer extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(DLNAResource dlna, DLNAMediaInfo media,
-										  OutputParams params) throws IOException {
-
+	public ProcessWrapper launchTranscode(
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		params.waitbeforestart = 1;
 		params.minBufferSize = 1;
 		params.maxBufferSize = 5;

@@ -108,9 +108,10 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-			DLNAResource dlna,
-			DLNAMediaInfo media,
-			OutputParams params) throws IOException {
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		boolean isWindows = Platform.isWindows();
 		final String filename = dlna.getSystemName();
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux());

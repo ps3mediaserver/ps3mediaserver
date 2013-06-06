@@ -56,9 +56,10 @@ public class MPlayerWebVideoDump extends MPlayerAudio {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-			DLNAResource dlna, 
-			DLNAMediaInfo media,
-			OutputParams params) throws IOException {
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 		params.waitbeforestart = 6000;

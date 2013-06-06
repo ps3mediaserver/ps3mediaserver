@@ -15,41 +15,41 @@ public class FFmpegOptions extends OptionsHashMap {
 
 	// options that go in the 'global_options' slot
 	public static final List<String> globals = Arrays.asList(
-			// global options:
-			"-loglevel", "-v", "-report", "-max_alloc", "-y", "-n", "-stats",
-			"-bits_per_raw_sample", "-croptop", "-cropbottom", "-cropleft", "-cropright",
-			"-padtop", "-padbottom", "-padleft", "-padright", "-padcolor", "-vol",
-			// Advanced global options:
-			"-cpuflags", "-benchmark", "-benchmark_all", "-progress", "-stdin", "-timelimit",
-			"-dump", "-hex", "-vsync", "-async", "-adrift_threshold", "-copyts", "-copytb",
-			"-dts_delta_threshold", "-dts_error_threshold", "-xerror", "-filter_complex",
-			"-debug_ts", "-intra", "-vdt", "-sameq", "-same_quant", "-deinterlace", "-psnr",
-			"-vstats", "-vstats_file", "-dc", "-qphist", "-vc", "-tvstd", "-isync"
+		// global options:
+		"-loglevel", "-v", "-report", "-max_alloc", "-y", "-n", "-stats",
+		"-bits_per_raw_sample", "-croptop", "-cropbottom", "-cropleft", "-cropright",
+		"-padtop", "-padbottom", "-padleft", "-padright", "-padcolor", "-vol",
+		// Advanced global options:
+		"-cpuflags", "-benchmark", "-benchmark_all", "-progress", "-stdin", "-timelimit",
+		"-dump", "-hex", "-vsync", "-async", "-adrift_threshold", "-copyts", "-copytb",
+		"-dts_delta_threshold", "-dts_error_threshold", "-xerror", "-filter_complex",
+		"-debug_ts", "-intra", "-vdt", "-sameq", "-same_quant", "-deinterlace", "-psnr",
+		"-vstats", "-vstats_file", "-dc", "-qphist", "-vc", "-tvstd", "-isync"
 	);
 
 	// options that go in the 'input_file_options' slot
 	public static final List<String> input_file_options = Arrays.asList(
-			// http options
-			"-seekable", "-chunked_post", "-headers", "-content_type", "-user-agent",
-			"-multiple_requests", "-post_data", "-timeout", "-mime_type", "-cookies",
-			// rtmp_options
-			"-rtmp_app", "-rtmp_playpath",
-			// srtp_options
-			"-srtp_out_suite", "-srtp_out_params", "-srtp_in_suite", "-srtp_in_params",
-			// tcp_options
-			"-listen", "-timeout", "-listen_timeout",
-			// udp_options
-			"-buffer_size", "-localport", "-localaddr", "-pkt_size", "-reuse", "-ttl",
-			"-connect", "-fifo_size", "-overrun_nonfatal", "-timeout",
-			// crypto_options
-			"-key", "-iv",
-			// file_options
-			"-truncate",
-			// bluray_options
-			"-playlist", "-angle", "-chapter",
-			// input-only options
-			"-itsoffset", "-dump_attachment", "-guess_layout_max", "-re", "-loop_input",
-			"-muxdelay", "-muxpreload"
+		// http options
+		"-seekable", "-chunked_post", "-headers", "-content_type", "-user-agent",
+		"-multiple_requests", "-post_data", "-timeout", "-mime_type", "-cookies",
+		// rtmp_options
+		"-rtmp_app", "-rtmp_playpath",
+		// srtp_options
+		"-srtp_out_suite", "-srtp_out_params", "-srtp_in_suite", "-srtp_in_params",
+		// tcp_options
+		"-listen", "-timeout", "-listen_timeout",
+		// udp_options
+		"-buffer_size", "-localport", "-localaddr", "-pkt_size", "-reuse", "-ttl",
+		"-connect", "-fifo_size", "-overrun_nonfatal", "-timeout",
+		// crypto_options
+		"-key", "-iv",
+		// file_options
+		"-truncate",
+		// bluray_options
+		"-playlist", "-angle", "-chapter",
+		// input-only options
+		"-itsoffset", "-dump_attachment", "-guess_layout_max", "-re", "-loop_input",
+		"-muxdelay", "-muxpreload"
 	);
 
 	// Since we're primarily concerned with configuring the output stream
@@ -68,14 +68,14 @@ public class FFmpegOptions extends OptionsHashMap {
 			if (!headers.contains("\r\n")) {
 				// otherwise we try to fix it
 				headers = headers.replace("User-Agent: ", "\r\nUser-Agent: ")
-						.replace("Cookie: ", "\r\nCookie: ")
-						.replace("Referer: ", "\r\nReferer: ")
-						.replace("Accept: ", "\r\nAccept: ")
-						.replace("Range: ", "\r\nRange: ")
-						.replace("Connection: ", "\r\nConnection: ")
-						.replace("Content-Length: ", "\r\nContent-Length: ")
-						.replace("Content-Type: ", "\r\nContent-Type: ")
-						.trim() + "\r\n";
+					.replace("Cookie: ", "\r\nCookie: ")
+					.replace("Referer: ", "\r\nReferer: ")
+					.replace("Accept: ", "\r\nAccept: ")
+					.replace("Range: ", "\r\nRange: ")
+					.replace("Connection: ", "\r\nConnection: ")
+					.replace("Content-Length: ", "\r\nContent-Length: ")
+					.replace("Content-Type: ", "\r\nContent-Type: ")
+					.trim() + "\r\n";
 				put("-headers", headers);
 			}
 		}
@@ -83,13 +83,13 @@ public class FFmpegOptions extends OptionsHashMap {
 		transferAny(input_file_options, list);
 	}
 
-	public FFmpegOptions() {
-	}
+	public FFmpegOptions() { }
 
 	public static List<String> getSupportedProtocols(PmsConfiguration configuration) {
 		ArrayList<String> protocols = new ArrayList<String>();
 		String output = ProcessUtil.run(configuration.getFfmpegPath(), "-protocols");
 		boolean add = false;
+
 		for (String line : output.split("\n")) {
 			if (line.equals("Input:")) {
 				add = true;
@@ -99,6 +99,7 @@ public class FFmpegOptions extends OptionsHashMap {
 				protocols.add(line);
 			}
 		}
+
 		return protocols;
 	}
 }
@@ -111,6 +112,7 @@ class OptionsHashMap extends LinkedHashMap<String, String> {
 	public void addAll(List<String> args) {
 		String opt = null, optarg = null;
 		args.add("-NULL");
+
 		for (String arg : args) {
 			if (arg.startsWith("-")) {
 				// flush
@@ -123,6 +125,7 @@ class OptionsHashMap extends LinkedHashMap<String, String> {
 				optarg = arg;
 			}
 		}
+
 		args.remove("-NULL");
 	}
 

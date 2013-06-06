@@ -763,9 +763,9 @@ public class MEncoderVideo extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-			DLNAResource dlna,
-			DLNAMediaInfo media,
-			OutputParams params
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
 	) throws IOException {
 		params.manageFastStart();
 

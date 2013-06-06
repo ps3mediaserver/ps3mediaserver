@@ -105,9 +105,9 @@ public class TsMuxeRVideo extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-			DLNAResource dlna,
-			DLNAMediaInfo media,
-			OutputParams params
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
 	) throws IOException {
 		final String filename = dlna.getSystemName();
 		setAudioAndSubs(filename, media, params, configuration);

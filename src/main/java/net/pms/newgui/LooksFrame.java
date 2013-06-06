@@ -352,7 +352,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 
 		// Calling applyComponentOrientation() here would be ideal.
 		// Alas it horribly mutilates the layout of several tabs.
-		//panel.applyComponentOrientation(orientation);
+		// panel.applyComponentOrientation(orientation);
 		panel.add(status, BorderLayout.SOUTH);
 
 		return panel;

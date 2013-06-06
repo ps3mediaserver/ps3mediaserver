@@ -239,7 +239,11 @@ public class VLCVideo extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) throws IOException {
+	public ProcessWrapper launchTranscode(
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		boolean isWindows = Platform.isWindows();
 
 		// Make sure we can play this

@@ -307,10 +307,9 @@ public class TranscodingTab {
 	public void addEngines() {
 		ArrayList<Player> disPlayers = new ArrayList<Player>();
 		ArrayList<Player> ordPlayers = new ArrayList<Player>();
-		PMS r = PMS.get();
 
 		for (String id : configuration.getEnginesAsList()) {
-			//boolean matched = false;
+			// boolean matched = false;
 			for (Player p : PlayerFactory.getAllPlayers()) {
 				if (p.id().equals(id)) {
 					ordPlayers.add(p);
@@ -318,7 +317,7 @@ public class TranscodingTab {
 						videoHWacceleration.setEnabled(true);
 						videoHWacceleration.setSelected(configuration.isVideoHardwareAcceleration());
 					}
-					//matched = true;
+					// matched = true;
 				}
 			}
 		}
@@ -331,22 +330,27 @@ public class TranscodingTab {
 		}
 
 		for (Player p : ordPlayers) {
-			TreeNodeSettings en = new TreeNodeSettings(p.name(), p, null);
+			TreeNodeSettings engine = new TreeNodeSettings(p.name(), p, null);
+
 			if (disPlayers.contains(p)) {
-				en.setEnable(false);
+				engine.setEnable(false);
 			}
-			JComponent jc = en.getConfigPanel();
+
+			JComponent jc = engine.getConfigPanel();
+
 			if (jc == null) {
 				jc = buildEmpty();
 			}
+
 			jc.addComponentListener(new ComponentAdapter() {
 				@Override
 				public void componentShown(ComponentEvent e) {
 					handleCardComponentChange(e.getComponent());
 				}
 			});
-			tabbedPanel.add(en.id(), jc);
-			engineTreeNodes.get(p.getPurpose()).add(en);
+
+			tabbedPanel.add(engine.id(), jc);
+			engineTreeNodes.get(p.getPurpose()).add(engine);
 		}
 
 		for (int i = 0; i < tree.getRowCount(); i++) {

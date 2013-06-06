@@ -84,9 +84,10 @@ public class MEncoderWebVideo extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-			DLNAResource dlna,
-			DLNAMediaInfo media,
-			OutputParams params) throws IOException {
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 

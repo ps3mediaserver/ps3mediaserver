@@ -117,9 +117,9 @@ public class FFmpegDVRMSRemux extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-			DLNAResource dlna,
-			DLNAMediaInfo media,
-			OutputParams params
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
 	) throws IOException {
 		return getFFmpegTranscode(dlna, media, params);
 	}
