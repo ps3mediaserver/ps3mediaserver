@@ -64,7 +64,7 @@ public class FFmpegAviSynthVideo extends FFmpegVideo {
 
 	@Override
 	public JComponent config() {
-		return config("FFMpegVideo.0");
+		return config("FFmpegVideo.0");
 	}
 
 	public static File getAVSScript(String filename, DLNAMediaSubtitle subTrack) throws IOException {

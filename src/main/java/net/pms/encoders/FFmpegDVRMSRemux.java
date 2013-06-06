@@ -195,11 +195,11 @@ public class FFmpegDVRMSRemux extends Player {
 
 		CellConstraints cc = new CellConstraints();
 
-		JComponent cmp = builder.addSeparator(Messages.getString("FFMpegDVRMSRemux.1"), cc.xyw(1, 1, 5));
+		JComponent cmp = builder.addSeparator(Messages.getString("FFmpegDVRMSRemux.1"), cc.xyw(1, 1, 5));
 		cmp = (JComponent) cmp.getComponent(0);
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
-		builder.addLabel(Messages.getString("FFMpegDVRMSRemux.0"), cc.xy(1, 3));
+		builder.addLabel(Messages.getString("FFmpegDVRMSRemux.0"), cc.xy(1, 3));
 		altffpath = new JTextField(PMS.getConfiguration().getFfmpegAlternativePath());
 		altffpath.addKeyListener(new KeyAdapter() {
 			@Override
