@@ -18,11 +18,11 @@
  */
 package net.pms.encoders;
 
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
@@ -35,12 +35,14 @@ import net.pms.formats.Format;
 import net.pms.formats.v2.SubtitleUtils;
 import net.pms.io.*;
 import net.pms.network.HTTPResource;
+import net.pms.util.PlayerUtil;
 import net.pms.util.ProcessUtil;
+
 import org.apache.commons.lang3.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -52,6 +54,8 @@ import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.swing.*;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
@@ -959,34 +963,15 @@ public class FFmpegVideo extends Player {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.VIDEO) {
-			return false;
-		}
-/**
-		DLNAMediaSubtitle subtitle = resource.getMediaSubtitle();
-
-		// Check whether the subtitle actually has a language defined,
-		// uninitialized DLNAMediaSubtitle objects have a null language.
-		// For now supports only external subtitles
+	public boolean isCompatible(DLNAResource dlna) {
 		if (
-			subtitle != null && subtitle.getLang() != null &&
-			subtitle.getExternalFile() == null
+			PlayerUtil.isVideo(dlna, Format.Identifier.MKV) ||
+			PlayerUtil.isVideo(dlna, Format.Identifier.MPG)
 		) {
+			return true;
+		} else {
 			return false;
 		}
-*/
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.MKV) || id.equals(Format.Identifier.MPG)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	protected static List<String> parseOptions(String str) {
