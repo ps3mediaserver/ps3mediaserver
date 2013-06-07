@@ -24,7 +24,6 @@ import com.sun.jna.Platform;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
-import net.pms.gui.IFrame;
 import net.pms.io.WindowsNamedPipe;
 import net.pms.newgui.update.AutoUpdateDialog;
 import net.pms.update.AutoUpdater;

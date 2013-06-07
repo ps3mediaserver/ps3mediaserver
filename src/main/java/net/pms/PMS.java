@@ -32,8 +32,8 @@ import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
-import net.pms.gui.DummyFrame;
-import net.pms.gui.IFrame;
+import net.pms.newgui.DummyFrame;
+import net.pms.newgui.IFrame;
 import net.pms.io.*;
 import net.pms.logging.FrameAppender;
 import net.pms.logging.LoggingConfigFileLoader;
@@ -97,7 +97,7 @@ public class PMS {
 
 	/**
 	 * Returns a pointer to the PMS GUI's main window.
-	 * @return {@link net.pms.gui.IFrame} Main PMS window.
+	 * @return {@link net.pms.newgui.IFrame} Main PMS window.
 	 */
 	public IFrame getFrame() {
 		return frame;
@@ -189,7 +189,7 @@ public class PMS {
 	private PMS() { }
 
 	/**
-	 * {@link net.pms.gui.IFrame} object that represents the PMS GUI.
+	 * {@link net.pms.newgui.IFrame} object that represents the PMS GUI.
 	 */
 	private IFrame frame;
 

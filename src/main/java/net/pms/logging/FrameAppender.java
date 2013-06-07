@@ -21,7 +21,7 @@ package net.pms.logging;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.status.ErrorStatus;
-import net.pms.gui.IFrame;
+import net.pms.newgui.IFrame;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
