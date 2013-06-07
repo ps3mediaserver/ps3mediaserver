@@ -1562,33 +1562,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			}
 		}
 
-		String thumbURL = getThumbnailURL();
-		if (!isFolder() && (getFormat() == null || (getFormat() != null && thumbURL != null))) {
-			openTag(sb, "upnp:albumArtURI");
-			addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
-
-			if (getThumbnailContentType().equals(PNG_TYPEMIME) && !mediaRenderer.isForceJPGThumbnails()) {
-				addAttribute(sb, "dlna:profileID", "PNG_TN");
-			} else {
-				addAttribute(sb, "dlna:profileID", "JPEG_TN");
-			}
-			endTag(sb);
-			sb.append(thumbURL);
-			closeTag(sb, "upnp:albumArtURI");
-		}
-
-		if ((isFolder() || mediaRenderer.isForceJPGThumbnails()) && thumbURL != null) {
-			openTag(sb, "res");
-
-			if (getThumbnailContentType().equals(PNG_TYPEMIME) && !mediaRenderer.isForceJPGThumbnails()) {
-				addAttribute(sb, "protocolInfo", "http-get:*:image/png:DLNA.ORG_PN=PNG_TN");
-			} else {
-				addAttribute(sb, "protocolInfo", "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_TN");
-			}
-			endTag(sb);
-			sb.append(thumbURL);
-			closeTag(sb, "res");
-		}
+        appendThumbnail(mediaRenderer, sb);
 
 		if (getLastModified() > 0) {
 			addXMLTagAndAttribute(sb, "dc:date", SDF_DATE.format(new Date(getLastModified())));
@@ -1630,7 +1604,53 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return sb.toString();
 	}
 
-	private String getRequestId(String rendererId) {
+    /**
+     * Generate and append the response for the thumbnail based on the
+     * configuration of the renderer.
+     *
+     * @param mediaRenderer The renderer configuration.
+     * @param sb            The StringBuilder to append the response to.
+     */
+    private void appendThumbnail(RendererConfiguration mediaRenderer, StringBuilder sb) {
+        final String thumbURL = getThumbnailURL();
+        final boolean addThumbnailAsResElement = isFolder() || mediaRenderer.getThumbNailAsResource() || mediaRenderer.isForceJPGThumbnails();
+
+        if (getFormat() == null || (getFormat() != null && thumbURL != null)) {
+            if (addThumbnailAsResElement) {
+                // Samsung 2012 (ES and EH) models do not recognize the "albumArtURI" element. Instead,
+                // the "res" element should be used.
+                // Also use "res" when faking JPEG thumbs.
+                openTag(sb, "res");
+                addAttribute(sb, "resolution", getMedia().getResolution());
+
+                if (getThumbnailContentType().equals(PNG_TYPEMIME) && !mediaRenderer.isForceJPGThumbnails()) {
+                    addAttribute(sb, "protocolInfo", "http-get:*:image/png:DLNA.ORG_PN=PNG_TN");
+                } else {
+                    addAttribute(sb, "protocolInfo", "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_TN");
+                }
+
+                endTag(sb);
+                sb.append(thumbURL);
+                closeTag(sb, "res");
+            } else {
+                // Renderers that can handle the "albumArtURI" element.
+                openTag(sb, "upnp:albumArtURI");
+                addAttribute(sb, "xmlns:dlna", "urn:schemas-dlna-org:metadata-1-0/");
+
+                if (getThumbnailContentType().equals(PNG_TYPEMIME)) {
+                    addAttribute(sb, "dlna:profileID", "PNG_TN");
+                } else {
+                    addAttribute(sb, "dlna:profileID", "JPEG_TN");
+                }
+
+                endTag(sb);
+                sb.append(thumbURL);
+                closeTag(sb, "upnp:albumArtURI");
+            }
+        }
+    }
+
+    private String getRequestId(String rendererId) {
 		return String.format("%s|%x|%s", rendererId, hashCode(), getSystemName());
 	}
 
