@@ -126,10 +126,10 @@ public class DLNAMediaDatabase implements Runnable {
 		try {
            	conn = getConnection();
 		} catch (SQLException se) {
-            final File dbFile = new File(dbDir + File.separator + dbName + ".data.db");
-            final File dbDirectory = new File(dbDir);
+			final File dbFile = new File(dbDir + File.separator + dbName + ".data.db");
+			final File dbDirectory = new File(dbDir);
 			if (dbFile.exists() || (se.getErrorCode() == 90048)) { // Cache is corrupt or wrong version, so delete it
-                FileUtils.deleteQuietly(dbDirectory);
+				FileUtils.deleteQuietly(dbDirectory);
 				if (!dbDirectory.exists()) {
 					LOGGER.debug("The cache has been deleted because it was corrupt or had the wrong version");
 				} else {
