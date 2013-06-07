@@ -1612,7 +1612,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
      * @param mediaRenderer The renderer configuration.
      * @param sb            The StringBuilder to append the response to.
      */
-    private void appendThumbnail(RendererConfiguration mediaRenderer, StringBuilder sb) {
+	private void appendThumbnail(RendererConfiguration mediaRenderer, StringBuilder sb) {
 		final String thumbURL = getThumbnailURL();
 		final boolean addThumbnailAsResElement = isFolder() || mediaRenderer.getThumbNailAsResource() || mediaRenderer.isForceJPGThumbnails();
 
@@ -1648,7 +1648,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				closeTag(sb, "upnp:albumArtURI");
 			}
 		}
-    }
+	}
 
     private String getRequestId(String rendererId) {
 		return String.format("%s|%x|%s", rendererId, hashCode(), getSystemName());
