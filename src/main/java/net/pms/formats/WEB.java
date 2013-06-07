@@ -22,6 +22,7 @@ import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
+import net.pms.util.FileUtil;
 
 public class WEB extends Format {
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
@@ -50,24 +51,23 @@ public class WEB extends Format {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Matches the supplied filename against this format,
+	 * returning true if the filename is a valid URI
+	 * and false otherwise. Protocol-specific matches
+	 * are handled by {@link net.pms.encoders.Player#isCompatible(DLNAResource)}.
+	 *
+	 * @param filename the filename to match against
+	 * @return <code>true</code> if the filename matches, <code>false</code> otherwise.
 	 */
-	@Override
-	// TODO remove screen - it's been tried numerous times (see forum) and it doesn't work
-	public String[] getId() {
-		return new String[] {
-			"file",
-			"http",
-			"https",
-			"mms",
-			"mmsh",
-			"mmst",
-			"rtmp",
-			"rtp",
-			"rtsp",
-			"screen",
-			"udp",
-		};
+	public boolean match(String filename) {
+		String protocol = FileUtil.getProtocol(filename);
+
+		if (protocol == null) {
+			return false;
+		} else {
+			setMatchedExtension(protocol);
+			return true;
+		}
 	}
 
 	@Override

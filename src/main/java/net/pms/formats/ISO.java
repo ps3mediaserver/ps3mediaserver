@@ -57,7 +57,7 @@ public class ISO extends MPG {
 	/**
 	 * {@inheritDoc}
 	 */
-	public String[] getId() {
+	public String[] getSupportedExtensions() {
 		return ISO_EXTENSIONS;
 	}
 }

@@ -31,8 +31,6 @@ import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.util.PlayerUtil;
 
-import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,22 +85,6 @@ public class FFmpegWebVideo extends FFmpegVideo {
 			}
 
 			LOGGER.debug("FFmpeg supported protocols: {}", protocols);
-
-			// Register protocols as a WEB format
-			final String[] ffmpegProtocols = new String[protocols.size()];
-			protocols.toArray(ffmpegProtocols);
-			FormatFactory.getExtensions().add(0, new WEB() {
-				@Override
-				public String[] getId() {
-					return ffmpegProtocols;
-				}
-
-				@Override
-				public String toString() {
-					return "FFMPEG.WEB";
-				}
-			});
-
 			init = true;
 		}
 	}
@@ -267,7 +249,7 @@ public class FFmpegWebVideo extends FFmpegVideo {
 			return false;
 		}
 
-		String uri = dlna.getSystemName();
-		return protocols.contains(StringUtils.substringBefore(uri, ":"));
+		String protocol = dlna.getFormat().getMatchedExtension();
+		return protocols.contains(protocol);
 	}
 }

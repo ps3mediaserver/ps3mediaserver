@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +26,27 @@ public class FileUtil {
 
 	public static File isFileExists(String f, String ext) {
 		return isFileExists(new File(f), ext);
+	}
+
+	/**
+	 * Returns the protocol of the supplied filename if it's a URI,
+	 * or <code>null</code> if it's not.
+	 *
+	 * @param filename the filename whose protocol is to be determined
+	 * @return the filename's protocol if it's a URI, or <code>null</code>
+	 * if it's not.
+	 */
+	public static String getProtocol(String filename) {
+		String protocol = null;
+
+		if (filename != null) {
+			try {
+				URI uri = new URI(filename.toLowerCase());
+				protocol = uri.getScheme();
+			} catch (URISyntaxException use) { }
+		}
+
+		return protocol;
 	}
 
 	/**
