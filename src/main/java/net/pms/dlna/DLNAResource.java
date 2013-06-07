@@ -18,6 +18,8 @@
  */
 package net.pms.dlna;
 
+import com.floreysoft.jmte.Engine;
+
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.FormatConfiguration;
@@ -39,8 +41,10 @@ import net.pms.network.HTTPResource;
 import net.pms.util.ImagesUtil;
 import net.pms.util.Iso639;
 import net.pms.util.MpegUtil;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,13 +73,25 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 public abstract class DLNAResource extends HTTPResource implements Cloneable, Runnable {
 	private final Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
+
 	private static final int STOP_PLAYING_DELAY = 4000;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAResource.class);
 	private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
+	private static final Engine displayNameTemplateEngine = Engine.createCompilingEngine();
+
+	static {
+		displayNameTemplateEngine.setExprStartToken("<");
+		displayNameTemplateEngine.setExprEndToken(">");
+	}
 
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
 	protected static final int MAX_ARCHIVE_SIZE_SEEK = 800000000;
+
+	/**
+	 * The name displayed on the renderer. Cached the first time getDisplayName(RendererConfiguration) is called.
+	 */
+	private String displayName;
 
 	/**
 	 * @deprecated This field will be removed. Use {@link net.pms.configuration.PmsConfiguration#getTranscodeFolderName()} instead.
@@ -936,50 +952,51 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return getDisplayName(getDefaultRenderer());
 	}
 
+	// helper method for getDisplayName
+	private boolean anyStringIsNotBlank(String... strings) {
+		for (String string : strings) {
+			if (isNotBlank(string)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	/**
 	 * Returns the string for this resource that will be displayed on the
-	 * renderer. The name is formatted based on the renderer configuration
-	 * setting "FileNameFormat" to contain the information of the resource.
-	 * This allows the same resource to be displayed with different display
-	 * names on different renderers.
-	 * <p>
-	 * The following formatting options are accepted:
+	 * renderer. The name is formatted based on the PMS.conf settings
+	 * for filename_format_long and filename_format_short, which can
+	 * be overridden or a per-renderer basis by ShortFilenameFormat
+	 * and LongFilenameFormat respectively.
 	 *
-	 * <table>
-	 * <tr><th>Option</th><th>Description</th></tr>
-	 * <tr><td>%A</td><td>Audio language full name</td></tr>
-	 * <tr><td>%a</td><td>Audio language short name</td></tr>
-	 * <tr><td>%b</td><td>Audio flavor</td></tr>
-	 * <tr><td>%c</td><td>Audio codec</td></tr>
-	 * <tr><td>%d</td><td>DVD track duration</td></tr>
-	 * <tr><td>%E</td><td>Engine full name</td></tr>
-	 * <tr><td>%e</td><td>Engine short name</td></tr>
-	 * <tr><td>%F</td><td>File name with extension</td></tr>
-	 * <tr><td>%f</td><td>File name without extension</td></tr>
-	 * <tr><td>%S</td><td>Subtitle language full name</td></tr>
-	 * <tr><td>%s</td><td>Subtitle language short name</td></tr>
-	 * <tr><td>%t</td><td>Subtitle type</td></tr>
-	 * <tr><td>%u</td><td>Subtitle flavor</td></tr>
-	 * <tr><td>%x</td><td>External subtitles</td></tr>
-	 * </table>
+	 * This allows the same resource to be displayed with different
+	 * display names on different renderers.
 	 *
-	 * @param mediaRenderer
+	 * See the "Filename templates" section of PMS.conf for full details.
+	 *
+	 * @param renderer
 	 *            Media Renderer for which to show information.
 	 * @return String representing the item.
 	 */
-	public String getDisplayName(RendererConfiguration mediaRenderer) {
+	public String getDisplayName(RendererConfiguration renderer) {
+		if (displayName != null) { // cached
+			return displayName;
+		}
+
 		// Chapter virtual folder ignores formats and only displays the start time
 		if (getSplitRange().isEndLimitAvailable()) {
-			return ">> " + DLNAMediaInfo.getDurationString(getSplitRange().getStart());
+			displayName = ">> " + DLNAMediaInfo.getDurationString(getSplitRange().getStart());
+			return displayName;
 		}
 
 		// Is this still relevant? The player name already contains "AviSynth"
 		if (isAvisynth()) {
-			return (getPlayer() != null ? ("[" + getPlayer().name()) : "") + " + AviSynth]";
+			displayName = (getPlayer() != null ? ("[" + getPlayer().name()) : "") + " + AviSynth]";
+			return displayName;
 		}
 
-		String result;
-		String format;
+		String template;
 		String audioLangFullName = "";
 		String audioLangShortName = "";
 		String audioFlavor = "";
@@ -1002,25 +1019,22 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		boolean useShortFormat = isNoName();
 
 		// Determine the format
-		if (mediaRenderer != null) {
+		if (renderer != null) {
 			if (useShortFormat) {
-				format = mediaRenderer.getShortFileNameFormat();
+				template = renderer.getShortFilenameFormat();
 			} else {
-				format = mediaRenderer.getLongFileNameFormat();
+				template = renderer.getLongFilenameFormat();
 			}
 		} else {
 			if (useShortFormat) {
-				format = Messages.getString("DLNAResource.3");
+				template = configuration.getShortFilenameFormat();
 			} else {
-				format = Messages.getString("DLNAResource.4");
+				template = configuration.getLongFilenameFormat();
 			}
 		}
 
 		// Handle file name
-		if (isNoName()) {
-			format = smartRemove(format, "%F", true);
-			format = smartRemove(format, "%f", true);
-		} else {
+		if (!isNoName()) {
 			filenameWithExtension = getName();
 			filenameWithoutExtension = FilenameUtils.getBaseName(filenameWithExtension);
 
@@ -1031,38 +1045,34 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		// Handle engine name
-		if (configuration.isHideEngineNames()) {
-			format = smartRemove(format, "%E", true);
-			format = smartRemove(format, "%e", true);
-		} else {
+		// XXX it doesn't make sense to hide the engine names in the #--TRANSCODE--# folder
+		if (isNoName() || !configuration.isHideEngineNames()) {
 			if (getPlayer() != null) {
 				engineFullName = getPlayer().name();
 				engineShortName = abbreviate(engineFullName);
-			} else {
-				if (isNoName()) {
-					engineFullName = Messages.getString("DLNAResource.1");
-					engineShortName = Messages.getString("DLNAResource.2");
-				} else {
-					format = smartRemove(format, "%E", true);
-					format = smartRemove(format, "%e", true);
-				}
+			} else if (isNoName()) {
+				engineFullName = Messages.getString("DLNAResource.1");
+				engineShortName = Messages.getString("DLNAResource.2");
 			}
 		}
 
 		// Handle DVD track duration
-		if (mediaRenderer != null && mediaRenderer.isShowDVDTitleDuration()
-				&& getMedia() != null && getMedia().getDvdtrack() > 0) {
+		if (
+			renderer != null
+			&& renderer.isShowDVDTitleDuration()
+			&& getMedia() != null
+			&& getMedia().getDvdtrack() > 0
+		) {
 			dvdTrackDuration = getMedia().getDurationString();
-		} else {
-			format = smartRemove(format, "%d", false);
 		}
 
 		// Handle external subtitles
-		if (isSrtFile() && (getMediaAudio() == null && getMediaSubtitle() == null)
-				&& (getPlayer() == null || getPlayer().isExternalSubtitlesSupported())) {
+		if (isSrtFile()
+			&& (getMediaAudio() == null
+			&& getMediaSubtitle() == null)
+			&& (getPlayer() == null || getPlayer().isExternalSubtitlesSupported())
+		) {
 			externalSubs = Messages.getString("DLNAResource.0");
-		} else {
-			format = smartRemove(format, "%x", false);
 		}
 
 		// Handle audio
@@ -1071,16 +1081,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			audioLangFullName = getMediaAudio().getLangFullName();
 			audioLangShortName = getMediaAudio().getLang();
 
-			if ((getMediaAudio().getFlavor() != null && mediaRenderer != null && mediaRenderer.isShowAudioMetadata())) {
+			if ((getMediaAudio().getFlavor() != null && renderer != null && renderer.isShowAudioMetadata())) {
 				audioFlavor = getMediaAudio().getFlavor();
-			} else {
-				format = smartRemove(format, "%b", false);
 			}
-		} else {
-			format = smartRemove(format, "%b", false);
-			format = smartRemove(format, "%c", false);
-			format = smartRemove(format, "%A", true);
-			format = smartRemove(format, "%a", true);
 		}
 
 		// Handle subtitle
@@ -1089,84 +1092,42 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			subLangFullName = getMediaSubtitle().getLangFullName();
 			subLangShortName = getMediaSubtitle().getLang();
 
-			if (getMediaSubtitle().getFlavor() != null && mediaRenderer != null && mediaRenderer.isShowSubMetadata()) {
+			if (getMediaSubtitle().getFlavor() != null && renderer != null && renderer.isShowSubMetadata()) {
 				subFlavor = getMediaSubtitle().getFlavor();
-			} else {
-				format = smartRemove(format, "%u", false);
 			}
-		} else {
-			format = smartRemove(format, "%u", false);
-			format = smartRemove(format, "%t", false);
-			format = smartRemove(format, "%S", true);
-			format = smartRemove(format, "%s", true);
 		}
 
-		// Finally, construct the result by replacing all tokens
-		result = format;
-		result = result.replaceAll("%A", audioLangFullName);
-		result = result.replaceAll("%a", audioLangShortName);
-		result = result.replaceAll("%b", audioFlavor);
-		result = result.replaceAll("%c", audioCodec);
-		result = result.replaceAll("%d", dvdTrackDuration);
-		result = result.replaceAll("%E", engineFullName);
-		result = result.replaceAll("%e", engineShortName);
-		// XXX escape $ characters in the filename e.g. "The $10,000 Pyramid" -> "The \$10,000 Pyramid"
-		// otherwise they confuse replaceAll:
-		// http://www.ps3mediaserver.org/forum/viewtopic.php?f=3&t=15734
-		// http://cephas.net/blog/2006/02/09/javalangillegalargumentexception-illegal-group-reference-replaceall-and-dollar-signs/
-		result = result.replaceAll("%F", Matcher.quoteReplacement(filenameWithExtension));
-		result = result.replaceAll("%f", Matcher.quoteReplacement(filenameWithoutExtension));
-		result = result.replaceAll("%S", subLangFullName);
-		result = result.replaceAll("%s", subLangShortName);
-		result = result.replaceAll("%t", subType);
-		result = result.replaceAll("%u", subFlavor);
-		result = result.replaceAll("%x", externalSubs);
-		result = result.trim();
+		Map<String, Object> model = new HashMap<String, Object>();
 
-		return result;
-	}
+		model.put("lt", "\\<");
+		model.put("gt", "\\>");
 
-	/**
-	 * Removes the given token from the format string while trying to be smart
-	 * about it. This means that optional surrounding braces, curly braces,
-	 * brackets are removed as well, as are superfluous whitespace and
-	 * separators. For example, removing "%E" from "%F - %d [%E] {%x}" results
-	 * in "%F - %d {%x}". Removing "%d" from that will return "%F {%x}".
-	 *
-	 * @param format
-	 *            The format string to remove the token from.
-	 * @param token
-	 *            The token to remove.
-	 * @param aggressive
-	 *            Search aggressively for surrounding braces, i.e. also delete
-	 *            them if they are not directly adjacent to the token.
-	 * @return The string with the token removed.
-	 */
-	private String smartRemove(String format, String token, boolean aggressive) {
-		if (token == null) {
-			return format;
-		}
+		model.put("aLabel", Messages.getString("DLNAResource.3"));
+		model.put("sLabel", Messages.getString("DLNAResource.4"));
 
-		String result = format;
+		model.put("aCodec", audioCodec);
+		model.put("aFlavor", audioFlavor);
+		model.put("aFull", audioLangFullName);
+		model.put("aShort", audioLangShortName);
+		model.put("dvdLen", dvdTrackDuration);
+		model.put("eFull", engineFullName);
+		model.put("eShort", engineShortName);
+		model.put("fFull", filenameWithExtension);
+		model.put("fShort", filenameWithoutExtension);
+		model.put("sExt", externalSubs);
+		model.put("sFlavor", subFlavor);
+		model.put("sFull", subLangFullName);
+		model.put("sShort", subLangShortName);
+		model.put("sType", subType);
 
-		if (aggressive) {
-			// Allow other characters between the token and the braces
-			result = result.replaceAll("\\([^\\(]*" + token + "[^\\)]*\\)", "");
-			result = result.replaceAll("\\[[^\\[]*" + token + "[^\\]]*\\]", "");
-			result = result.replaceAll("\\{[^\\{]*" + token + "[^\\}]*\\}", "");
-			result = result.replaceAll("<[^<]*" + token + "[^>]*>", "");
-		} else {
-			// Braces have to be around the token
-			result = result.replaceAll("[\\(\\[<\\{]" + token + "[\\)\\]>\\}]", "");
-		}
-		result = result.replaceAll("[-/,]\\s?" + token, "");
-		result = result.replaceAll(token, "");
+		model.put("extra", anyStringIsNotBlank(dvdTrackDuration, engineFullName, externalSubs, subType));
+		model.put("isFolder", isFolder());
 
-		// Collapse multiple spaces to a single space
-		result = result.replaceAll("\\s+", " ");
-		result = result.trim();
+		displayName = displayNameTemplateEngine.transform(template, model);
+		displayName = displayName.replaceAll("\\s+", " ");
+		displayName = displayName.trim();
 
-		return result;
+		return displayName;
 	}
 
 	/**
@@ -1329,7 +1290,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			addXMLTagAndAttribute(
 				sb,
 				"dc:title",
-				encodeXML(((isFolder() || getPlayer() == null) ? getDisplayName() : mediaRenderer.getUseSameExtension(getDisplayName(mediaRenderer))))
+				encodeXML(((isFolder() || getPlayer() == null) ? getDisplayName(mediaRenderer) : mediaRenderer.getUseSameExtension(getDisplayName(mediaRenderer))))
 			);
 		}
 

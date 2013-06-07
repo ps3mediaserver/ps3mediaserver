@@ -265,6 +265,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 		} else if (getCodecA() != null && getCodecA().equals("mp2")) {
 			return "Mpeg Audio";
 		}
+
 		return getCodecA() != null ? getCodecA() : "-";
 	}
 

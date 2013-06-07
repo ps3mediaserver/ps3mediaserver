@@ -20,6 +20,7 @@ package net.pms.dlna;
 
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
+import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.formats.Format;
 import net.pms.io.OutputParams;
@@ -36,7 +37,22 @@ public class DVDISOFile extends VirtualFolder {
 	@Override
 	public void resolve() {
 		double titles[] = new double[100];
-		String cmd[] = new String[]{configuration.getMplayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()), "dvd://1"};
+		String cmd[] = new String[]{
+			configuration.getMplayerPath(),
+			"-identify",
+			"-endpos",
+			"0",
+			"-v",
+			"-ao",
+			"null",
+			"-vc",
+			"null",
+			"-vo",
+			"null",
+			"-dvd-device",
+			ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()),
+			"dvd://1"
+		};
 		OutputParams params = new OutputParams(configuration);
 		params.maxBufferSize = 1;
 		params.log = true;
@@ -94,7 +110,18 @@ public class DVDISOFile extends VirtualFolder {
 		setLastModified(f.lastModified());
 	}
 
+	// XXX this is a hack to bypass custom name formats
+	// (to ensure the method below continues to see the name
+	// it expects).
 	@Override
+	public String getDisplayName(RendererConfiguration renderer) {
+		return getDisplayName(); // use the default renderer (which can't override any settings)
+	}
+
+	@Override
+	// FIXME the display named should be configured via the
+	// renderer-level or profile-level formats rather than
+	// hardwired here
 	public String getDisplayName() {
 		String s = super.getDisplayName();
 		if (f.getName().toUpperCase().equals("VIDEO_TS")) {

@@ -42,13 +42,12 @@ Changelog:
         - Add entries for web video and web audio files
         - Allow the chapter folder prefix to be localized
         - Hide chapter folders if the duration of the video is less than the chapter length
+        - Don't hide engine names in the #--TRANSCODE--# folder if hide_enginenames is true
 
     Misc:
         - Logging improvements
-
-    Misc:
         - Send thumbnails properly to Samsung 2012 ES and EH models (thanks, dmitche3!)
-
+        - Filename display formats can now be set at the profile level as well as per-renderer
 
 1.82.0 - 2013-06-03
 

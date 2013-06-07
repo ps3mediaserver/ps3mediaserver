@@ -60,9 +60,47 @@ public class PmsConfiguration {
 	/*
 	 * MEncoder has a hardwired maximum of 8 threads for -lavcopts and 16
 	 * for -lavdopts.
+	 */
 	// https://code.google.com/p/ps3mediaserver/issues/detail?id=517
-	*/
 	private static final int MENCODER_MAX_THREADS = 8;
+
+	/*
+	 * aCodec  - Audio codec
+	 * aFlavor - Audio flavor
+	 * aFull   - Audio language full name
+	 * aShort  - Audio language short name
+	 * dvdLen  - DVD track duration
+	 * eFull   - Engine full name
+	 * eShort  - Engine short name
+	 * fFull   - File name with extension
+	 * fShort  - File name without extension
+	 * sExt    - External subtitles
+	 * sFlavor - Subtitle flavor
+	 * sFull   - Subtitle language full name
+	 * sShort  - Subtitle language short name
+	 * sType   - Subtitle type
+	 */
+
+	private static final String FILENAME_FORMAT_SHORT = StringUtils.join(
+		asList(
+			"<[,eFull,]>",
+			"<if aCodec> {<aLabel>: <aCodec>/<aFull>< (,aFlavor,)>} <end>",
+			"<if sType> {<sLabel>: <sType>/<sFull>< (,sFlavor,)>} <end>"
+		),
+		" "
+	);
+
+	private static final String FILENAME_FORMAT_LONG = StringUtils.join(
+		asList(
+			"<fFull>",
+			"<if extra> - <end>",
+			"<dvdLen>",
+			"<[,eFull,]>",
+			"<{,sExt,}>",
+			"<if sType> {<sLabel>: <sType>/<sFull>< (,sFlavor,)>} <end>"
+		),
+		" "
+	);
 
 	private static final String KEY_ALTERNATE_SUBTITLES_FOLDER = "alternate_subtitles_folder";
 	private static final String KEY_ALTERNATE_THUMB_FOLDER = "alternate_thumb_folder";
@@ -93,6 +131,8 @@ public class PmsConfiguration {
 	private static final String KEY_FFMPEG_ALTERNATIVE_PATH = "alternativeffmpegpath"; // TODO deprecated: FFmpegDVRMSRemux will be removed and DVR-MS will be transcoded
 	private static final String KEY_FFMPEG_MULTITHREADING = "ffmpeg_multithreading";
 	private static final String KEY_FFMPEG_MUX_COMPATIBLE = "ffmpeg_mux_compatible";
+	private static final String KEY_FILENAME_FORMAT_LONG = "filename_format_long";
+	private static final String KEY_FILENAME_FORMAT_SHORT = "filename_format_short";
 	private static final String KEY_FIX_25FPS_AV_MISMATCH = "fix_25fps_av_mismatch";
 	private static final String KEY_FONT = "subtitles_font";
 	private static final String KEY_FORCED_SUBTITLE_LANGUAGE = "forced_subtitle_language";
@@ -209,29 +249,29 @@ public class PmsConfiguration {
 	 */
 	public static final Set<String> NEED_RELOAD_FLAGS = new HashSet<String>(
 		asList(
-				KEY_ALTERNATE_THUMB_FOLDER,
-				KEY_NETWORK_INTERFACE,
-				KEY_IP_FILTER,
-				KEY_SORT_METHOD,
-				KEY_HIDE_EMPTY_FOLDERS,
-				KEY_HIDE_TRANSCODE_FOLDER,
-				KEY_HIDE_MEDIA_LIBRARY_FOLDER,
-				KEY_OPEN_ARCHIVES,
-				KEY_USE_CACHE,
-				KEY_HIDE_ENGINENAMES,
-				KEY_SHOW_ITUNES_LIBRARY,
-				KEY_SHOW_IPHOTO_LIBRARY,
-				KEY_SHOW_APERTURE_LIBRARY,
-				KEY_ENGINES,
-				KEY_FOLDERS,
-				KEY_HIDE_VIDEO_SETTINGS,
-				KEY_AUDIO_THUMBNAILS_METHOD,
-				KEY_DISABLE_TRANSCODE_FOR_EXTENSIONS,
-				KEY_FORCE_TRANSCODE_FOR_EXTENSIONS,
-				KEY_SERVER_PORT,
-				KEY_SERVER_HOSTNAME,
-				KEY_CHAPTER_SUPPORT,
-				KEY_HIDE_EXTENSIONS
+			KEY_ALTERNATE_THUMB_FOLDER,
+			KEY_NETWORK_INTERFACE,
+			KEY_IP_FILTER,
+			KEY_SORT_METHOD,
+			KEY_HIDE_EMPTY_FOLDERS,
+			KEY_HIDE_TRANSCODE_FOLDER,
+			KEY_HIDE_MEDIA_LIBRARY_FOLDER,
+			KEY_OPEN_ARCHIVES,
+			KEY_USE_CACHE,
+			KEY_HIDE_ENGINENAMES,
+			KEY_SHOW_ITUNES_LIBRARY,
+			KEY_SHOW_IPHOTO_LIBRARY,
+			KEY_SHOW_APERTURE_LIBRARY,
+			KEY_ENGINES,
+			KEY_FOLDERS,
+			KEY_HIDE_VIDEO_SETTINGS,
+			KEY_AUDIO_THUMBNAILS_METHOD,
+			KEY_DISABLE_TRANSCODE_FOR_EXTENSIONS,
+			KEY_FORCE_TRANSCODE_FOR_EXTENSIONS,
+			KEY_SERVER_PORT,
+			KEY_SERVER_HOSTNAME,
+			KEY_CHAPTER_SUPPORT,
+			KEY_HIDE_EXTENSIONS
 		)
 	);
 
@@ -856,7 +896,7 @@ public class PmsConfiguration {
 	public boolean isMencoderAss() {
 		return getBoolean(KEY_MENCODER_ASS, true);
 	}
-	
+
 	/**
 	 * Returns whether or not subtitles should be disabled for all
 	 * transcoding engines. Default is false, meaning subtitles should not
@@ -920,7 +960,7 @@ public class PmsConfiguration {
 				Messages.getString("MEncoderVideo.126")
 		);
 	}
-	
+
 	/**
 	 * Returns the subtitle language priority as a comma-separated
 	 * string. For example: <code>"loc,eng,fre,jpn,ger,und"</code>, where "und"
@@ -936,7 +976,7 @@ public class PmsConfiguration {
 				Messages.getString("MEncoderVideo.127")
 		);
 	}
-	
+
 	/**
 	 * Returns the ISO 639 language code for the subtitle language that should
 	 * be forced.
@@ -949,7 +989,7 @@ public class PmsConfiguration {
 				getLanguage()
 		);
 	}
-	
+
 	/**
 	 * Returns the tag string that identifies the subtitle language that
 	 * should be forced.
@@ -958,7 +998,7 @@ public class PmsConfiguration {
 	public String getForcedSubtitleTags() {
   		return getString(KEY_FORCED_SUBTITLE_TAGS, "forced");
   	}
-	
+
 	/**
 	 * Returns a string of audio language and subtitle language pairs
 	 * ordered by priority to try to match. Audio language
@@ -1033,7 +1073,7 @@ public class PmsConfiguration {
 	public void setAudioLanguages(String value) {
 		configuration.setProperty(KEY_AUDIO_LANGUAGES, value);
 	}
-	
+
 	/**
 	 * Sets the subtitle language priority as a comma
 	 * separated string. For example: <code>"eng,fre,jpn,ger,und"</code>,
@@ -1043,7 +1083,7 @@ public class PmsConfiguration {
 	public void setSubtitlesLanguages(String value) {
 		configuration.setProperty(KEY_SUBTITLES_LANGUAGES, value);
 	}
-	
+
 	/**
 	 * Sets the ISO 639 language code for the subtitle language that should
 	 * be forced.
@@ -2246,23 +2286,23 @@ public class PmsConfiguration {
 	public String getVlcScale() {
 		return getString(KEY_VLC_SCALE, "1.0");
 	}
-	
+
 	public void setVlcScale(String value) {
 		configuration.setProperty(KEY_VLC_SCALE, value);
 	}
-	
+
 	public boolean getVlcSampleRateOverride() {
 		return getBoolean(KEY_VLC_SAMPLE_RATE_OVERRIDE, false);
 	}
-	
+
 	public void setVlcSampleRateOverride(boolean value) {
 		configuration.setProperty(KEY_VLC_SAMPLE_RATE_OVERRIDE, value);
 	}
-	
+
 	public String getVlcSampleRate() {
 		return getString(KEY_VLC_SAMPLE_RATE, "48000");
 	}
-	
+
 	public void setVlcSampleRate(String value) {
 		configuration.setProperty(KEY_VLC_SAMPLE_RATE, value);
 	}
@@ -2281,5 +2321,13 @@ public class PmsConfiguration {
 	 */
 	public void setVideoHardwareAcceleration(boolean value) {
 		configuration.setProperty(KEY_VIDEO_HW_ACCELERATION, value);
+	}
+
+	public String getLongFilenameFormat() {
+		return getString(KEY_FILENAME_FORMAT_LONG, FILENAME_FORMAT_LONG);
+	}
+
+	public String getShortFilenameFormat() {
+		return getString(KEY_FILENAME_FORMAT_SHORT, FILENAME_FORMAT_SHORT);
 	}
 }

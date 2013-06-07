@@ -220,7 +220,7 @@ public class NetworkConfiguration {
 				// check for interface has at least one IP address.
 				checkNetworkInterface(ni, parentName);
 			} else {
-				LOGGER.trace("child network interface ({},{}) skipped, because skip_network_interfaces='{}'",
+				LOGGER.trace("child network interface ({}, {}) skipped, because skip_network_interfaces='{}'",
 					new Object[] { ni.getName(), ni.getDisplayName(), skipNetworkInterfaces });
 			}
 		}
@@ -264,7 +264,7 @@ public class NetworkConfiguration {
 	 *            The name of the parent interface.
 	 */
 	private void checkNetworkInterface(NetworkInterface networkInterface, String parentName) {
-		LOGGER.trace("checking {}, display name: {}",networkInterface.getName(), networkInterface.getDisplayName());
+		LOGGER.trace("checking {}, display name: {}", networkInterface.getName(), networkInterface.getDisplayName());
 		addAvailableAddresses(networkInterface);
 		checkNetworkInterface(networkInterface.getSubInterfaces(), networkInterface.getName());
 

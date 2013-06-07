@@ -68,7 +68,7 @@ public class RendererConfiguration {
 	private static final String FORCE_JPG_THUMBNAILS = "ForceJPGThumbnails"; // Sony devices require JPG thumbnails
 	private static final String H264_L41_LIMITED = "H264Level41Limited";
 	private static final String IMAGE = "Image";
-	private static final String LONG_FILE_NAME_FORMAT = "LongFileNameFormat";
+	private static final String LONG_FILENAME_FORMAT = "LongFilenameFormat";
 	private static final String KEEP_PAD_VIDEO_WITH_BLACK_BORDERS = "PadVideoWithBlackBordersTo169AR";
 	private static final String MAX_VIDEO_BITRATE = "MaxVideoBitrateMbps";
 	private static final String MAX_VIDEO_HEIGHT = "MaxVideoHeight";
@@ -83,7 +83,7 @@ public class RendererConfiguration {
 	private static final String RENDERER_NAME = "RendererName";
 	private static final String RESCALE_BY_RENDERER = "RescaleByRenderer";
 	private static final String SEEK_BY_TIME = "SeekByTime";
-	private static final String SHORT_FILE_NAME_FORMAT = "ShortFileNameFormat";
+	private static final String SHORT_FILENAME_FORMAT = "ShortFilenameFormat";
 	private static final String SHOW_AUDIO_METADATA = "ShowAudioMetadata";
 	private static final String SHOW_DVD_TITLE_DURATION = "ShowDVDTitleDuration"; // Ditlew
 	private static final String SHOW_SUB_METADATA = "ShowSubMetadata";
@@ -700,27 +700,27 @@ public class RendererConfiguration {
 	}
 
 	/**
-	 * LongFileNameFormat: Determines how media file names are formatted in the
-	 * regular folders. All supported formatting options are described in
-	 * {@link net.pms.dlna.DLNAResource#getDisplayName(RendererConfiguration)
-	 * getDisplayName(RendererConfiguration)}.
+	 * LongFilenameFormat: Determines how media file names are formatted outside the
+	 * #--TRANSCODE--# folder. Supported formatting options are described in
+	 * the PMS.conf entry for filename_format_long.
 	 *
-	 * @return The format for file names in the regular folders.
+	 * @return The format for file names outside the the #--TRANSCODE--# folder,
+	 * or {@link PmsConfiguration#getLongFilenameFormat()} if not set.
 	 */
-	public String getLongFileNameFormat() {
-		return getString(LONG_FILE_NAME_FORMAT, Messages.getString("DLNAResource.4"));
+	public String getLongFilenameFormat() {
+		return getString(LONG_FILENAME_FORMAT, pmsConfiguration.getLongFilenameFormat());
 	}
 
 	/**
-	 * ShortFileNameFormat: Determines how media file names are formatted in the
-	 * transcoding virtual folder. All supported formatting options are described in
-	 * {@link net.pms.dlna.DLNAResource#getDisplayName(RendererConfiguration)
-	 * getDisplayName(RendererConfiguration)}.
+	 * ShortFilenameFormat: Determines how media file names are formatted outside the
+	 * #--TRANSCODE--# folder. Supported formatting options are described in
+	 * the PMS.conf entry for filename_format_short.
 	 *
-	 * @return The format for file names in the transcoding virtual folder.
+	 * @return The format for file names in the the #--TRANSCODE--# folder,
+	 * or {@link PmsConfiguration#getShortFilenameFormat()} if not set.
 	 */
-	public String getShortFileNameFormat() {
-		return getString(SHORT_FILE_NAME_FORMAT, Messages.getString("DLNAResource.3"));
+	public String getShortFilenameFormat() {
+		return getString(SHORT_FILENAME_FORMAT, pmsConfiguration.getShortFilenameFormat());
 	}
 
 	/**
@@ -745,13 +745,13 @@ public class RendererConfiguration {
 		return getString(USER_AGENT_ADDITIONAL_SEARCH, "");
 	}
 
-	public String getUseSameExtension(String file) {
+	public String getUseSameExtension(String displayName) {
 		String s = getString(USE_SAME_EXTENSION, null);
 
 		if (s != null) {
-			s = file + "." + s;
+			s = displayName + "." + s;
 		} else {
-			s = file;
+			s = displayName;
 		}
 
 		return s;
