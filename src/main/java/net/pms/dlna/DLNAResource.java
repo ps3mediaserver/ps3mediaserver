@@ -56,6 +56,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 import static net.pms.util.StringUtil.*;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Represents any item that can be browsed via the UPNP ContentDirectory service.
@@ -1304,7 +1305,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		endTag(sb);
 
 		final DLNAMediaAudio firstAudioTrack = getMedia() != null ? getMedia().getFirstAudioTrack() : null;
-		if (firstAudioTrack != null && StringUtils.isNotBlank(firstAudioTrack.getSongname())) {
+		if (firstAudioTrack != null && isNotBlank(firstAudioTrack.getSongname())) {
 			addXMLTagAndAttribute(
 				sb,
 				"dc:title",
@@ -1320,16 +1321,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		if (firstAudioTrack != null) {
-			if (StringUtils.isNotBlank(firstAudioTrack.getAlbum())) {
+			if (isNotBlank(firstAudioTrack.getAlbum())) {
 				addXMLTagAndAttribute(sb, "upnp:album", encodeXML(firstAudioTrack.getAlbum()));
 			}
 
-			if (StringUtils.isNotBlank(firstAudioTrack.getArtist())) {
+			if (isNotBlank(firstAudioTrack.getArtist())) {
 				addXMLTagAndAttribute(sb, "upnp:artist", encodeXML(firstAudioTrack.getArtist()));
 				addXMLTagAndAttribute(sb, "dc:creator", encodeXML(firstAudioTrack.getArtist()));
 			}
 
-			if (StringUtils.isNotBlank(firstAudioTrack.getGenre())) {
+			if (isNotBlank(firstAudioTrack.getGenre())) {
 				addXMLTagAndAttribute(sb, "upnp:genre", encodeXML(firstAudioTrack.getGenre()));
 			}
 
@@ -1615,7 +1616,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
         final String thumbURL = getThumbnailURL();
         final boolean addThumbnailAsResElement = isFolder() || mediaRenderer.getThumbNailAsResource() || mediaRenderer.isForceJPGThumbnails();
 
-        if (getFormat() == null || (getFormat() != null && thumbURL != null)) {
+        if (isNotBlank(thumbURL)) {
             if (addThumbnailAsResElement) {
                 // Samsung 2012 (ES and EH) models do not recognize the "albumArtURI" element. Instead,
                 // the "res" element should be used.
