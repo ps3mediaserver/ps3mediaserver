@@ -1668,7 +1668,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**
-	 * Plugin implementation. When this item is going to play, it will notify all the StartStopListener objects available.
+	 * Plugin implementation. When this item is going to play, it will notify all
+	 * the StartStopListener objects available.
 	 * @see StartStopListener
 	 */
 	public void startPlaying(final String rendererId) {
@@ -1678,23 +1679,24 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			if (temp == null) {
 				temp = 0;
 			}
+
 			final Integer refCount = temp;
 			requestIdToRefcount.put(requestId, refCount + 1);
+
 			if (refCount == 0) {
 				final DLNAResource self = this;
 				Runnable r = new Runnable() {
 					@Override
 					public void run() {
-						InetAddress rendererIp;
+						InetAddress rendererIpAddress;
 						try {
-							rendererIp = InetAddress.getByName(rendererId);
-							RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(rendererIp);
+							rendererIpAddress = InetAddress.getByName(rendererId);
+							RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(rendererIpAddress);
 							String rendererName = "unknown renderer";
 							try {
 								rendererName = renderer.getRendererName();
 							} catch (NullPointerException e) { }
-							LOGGER.info("Started playing " + getName() + " on your " + rendererName);
-							LOGGER.debug("The full filename of which is: " + getSystemName() + " and the address of the renderer is: " + rendererId);
+							LOGGER.info("Started streaming {} to {} on {}", getSystemName(), rendererName, rendererId);
 						} catch (UnknownHostException ex) {
 							LOGGER.debug("" + ex);
 						}
@@ -1702,6 +1704,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 							if (listener instanceof StartStopListener) {
 								// run these asynchronously for slow handlers (e.g. logging, scrobbling)
+								// TODO use an event bus to fire these
 								Runnable fireStartStopEvent = new Runnable() {
 									@Override
 									public void run() {
@@ -1750,16 +1753,15 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 						@Override
 						public void run() {
 							if (refCount == 1) {
-								InetAddress rendererIp;
+								InetAddress rendererIpAddress;
 								try {
-									rendererIp = InetAddress.getByName(rendererId);
-									RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(rendererIp);
+									rendererIpAddress = InetAddress.getByName(rendererId);
+									RendererConfiguration renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(rendererIpAddress);
 									String rendererName = "unknown renderer";
 									try {
 										rendererName = renderer.getRendererName();
 									} catch (NullPointerException e) { }
-									LOGGER.info("Stopped playing " + getName() + " on your " + rendererName);
-									LOGGER.debug("The full filename of which is: " + getSystemName() + " and the address of the renderer is: " + rendererId);
+									LOGGER.info("Stopped streaming {} to {} on {}", getSystemName(), rendererName, rendererId);
 								} catch (UnknownHostException ex) {
 									LOGGER.debug("" + ex);
 								}
@@ -1769,6 +1771,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								for (final ExternalListener listener : ExternalFactory.getExternalListeners()) {
 									if (listener instanceof StartStopListener) {
 										// run these asynchronously for slow handlers (e.g. logging, scrobbling)
+										// TODO use an event bus to fire these
 										Runnable fireStartStopEvent = new Runnable() {
 											@Override
 											public void run() {
