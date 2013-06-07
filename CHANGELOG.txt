@@ -6,6 +6,7 @@ Changelog:
     General:
         - A lot of backports from UMS (thanks, all UMS developers!)
         - More accurate checks for reference frames count to allow more videos to be remuxed instead of transcoding
+        - Removed obsolete MPlayerAudio, MPlayerWebAudio and MPlayerWebVideoDump engines
 
     Engines:
         - FFmpeg Video and FFmpeg Web Video:
