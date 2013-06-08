@@ -1096,6 +1096,10 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			}
 		}
 
+		// define any extra variables to be exported
+		boolean isFolder = isFolder();
+		boolean extra = anyStringIsNotBlank(dvdTrackDuration, engineShortName, engineFullName, externalSubs, subType);
+
 		Map<String, Object> model = new HashMap<String, Object>();
 
 		model.put("lt", "<");
@@ -1119,8 +1123,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		model.put("sShort", subLangShortName);
 		model.put("sType", subType);
 
-		model.put("extra", anyStringIsNotBlank(dvdTrackDuration, engineShortName, engineFullName, externalSubs, subType));
-		model.put("isFolder", isFolder());
+		model.put("extra", extra);
+		model.put("isFile", !isFolder);
+		model.put("isFolder", isFolder);
 
 		displayName = DISPLAY_NAME_TEMPLATE_ENGINE.transform(template, model);
 		displayName = displayName.replaceAll("\\s+", " ");
