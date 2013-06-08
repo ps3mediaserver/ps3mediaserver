@@ -1045,7 +1045,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		// Handle engine name
-		// XXX it doesn't make sense to hide the engine names in the #--TRANSCODE--# folder
 		if (isNoName() || !configuration.isHideEngineNames()) {
 			if (getPlayer() != null) {
 				engineFullName = getPlayer().name();
