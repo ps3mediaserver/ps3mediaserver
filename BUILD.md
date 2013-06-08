@@ -64,7 +64,7 @@ The result will be built in the "target" directory:
 
 * Windows: `PMS-setup-full.exe`, `PMS-setup-full-x64.exe` and `PMS-setup-without-jre.exe`
 * Linux: `pms-linux-generic-x.xx.x.tar.gz`
-* Mac OS X: `pms-macosx-x.xx.x.dmg`
+* Mac OS X: `pms-setup-macosx-x.xx.x.tar.gz`
 
 # Full instructions
 
@@ -177,7 +177,7 @@ The resulting binaries will be built in the "target" directory:
 
 * Windows: `PMS-setup-full.exe`, `PMS-setup-full-x64.exe` and `PMS-setup-without-jre.exe`
 * Linux:   `pms-linux-generic-x.xx.x.tar.gz`
-* Mac OS X: `pms-macosx-x.xx.x.dmg`
+* Mac OS X: `pms-setup-macosx-x.xx.x.tar.gz`
 
 ## Automatic builds
 
@@ -254,14 +254,10 @@ The Windows installer can now be built with one of the following commands:
 
     mvn package -P linux,-osx
 
-## Building the Mac DMG file
+## Building the Mac OSX installer tarball
 
-Currently, the Mac OS X distribution can only be built on Mac OS X
-e.g. with the default profile:
-
-    mvn package
-
-Or it can be specified explicitly:
+The Mac OSX installer tarball can be built on any platform by specifying
+the "osx" profile explicity:
 
     mvn package -P osx
 

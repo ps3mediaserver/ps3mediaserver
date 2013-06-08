@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+	<dict>
+		<key>CFBundleExecutable</key>
+		<string>pms.sh</string>
+		<key>CFBundleIconFile</key>
+		<string>pms.icns</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleSignature</key>
+		<string>PS3M</string>
+		<key>CFBundleVersion</key>
+		<string>1.90.0</string>
+
+	</dict>
+<!--
+Documentation:
+https://sixohthree.com/1314/shell-scripts-as-applications-in-mac-os-x
+http://developer.apple.com/library/ios/#documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html
+-->
+</plist>
