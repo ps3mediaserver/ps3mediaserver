@@ -704,7 +704,7 @@ public class RendererConfiguration {
 	 * #--TRANSCODE--# folder. Supported formatting options are described in
 	 * the PMS.conf entry for filename_format_long.
 	 *
-	 * @return The format for file names outside the the #--TRANSCODE--# folder,
+	 * @return The format for file names outside the #--TRANSCODE--# folder,
 	 * or {@link PmsConfiguration#getLongFilenameFormat()} if not set.
 	 */
 	public String getLongFilenameFormat() {
@@ -712,11 +712,11 @@ public class RendererConfiguration {
 	}
 
 	/**
-	 * ShortFilenameFormat: Determines how media file names are formatted outside the
+	 * ShortFilenameFormat: Determines how media file names are formatted inside the
 	 * #--TRANSCODE--# folder. Supported formatting options are described in
 	 * the PMS.conf entry for filename_format_short.
 	 *
-	 * @return The format for file names in the the #--TRANSCODE--# folder,
+	 * @return The format for file names in the #--TRANSCODE--# folder,
 	 * or {@link PmsConfiguration#getShortFilenameFormat()} if not set.
 	 */
 	public String getShortFilenameFormat() {
