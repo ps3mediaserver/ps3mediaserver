@@ -1098,8 +1098,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 		Map<String, Object> model = new HashMap<String, Object>();
 
-		model.put("lt", "\\<");
-		model.put("gt", "\\>");
+		model.put("lt", "<");
+		model.put("gt", ">");
 
 		model.put("aLabel", Messages.getString("DLNAResource.3"));
 		model.put("sLabel", Messages.getString("DLNAResource.4"));
