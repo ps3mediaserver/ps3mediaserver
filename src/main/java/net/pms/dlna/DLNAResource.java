@@ -967,7 +967,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * Returns the string for this resource that will be displayed on the
 	 * renderer. The name is formatted based on the PMS.conf settings
 	 * for filename_format_long and filename_format_short, which can
-	 * be overridden or a per-renderer basis by ShortFilenameFormat
+	 * be overridden on a per-renderer basis by ShortFilenameFormat
 	 * and LongFilenameFormat respectively.
 	 *
 	 * This allows the same resource to be displayed with different
@@ -1119,7 +1119,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		model.put("sShort", subLangShortName);
 		model.put("sType", subType);
 
-		model.put("extra", anyStringIsNotBlank(dvdTrackDuration, engineFullName, externalSubs, subType));
+		model.put("extra", anyStringIsNotBlank(dvdTrackDuration, engineShortName, engineFullName, externalSubs, subType));
 		model.put("isFolder", isFolder());
 
 		displayName = displayNameTemplateEngine.transform(template, model);
