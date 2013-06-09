@@ -2,7 +2,7 @@
 
 by shagrath
 
-[![Build Status](http://pms.smoeller.de/buildStatus/icon?job=pms (trunk))](http://pms.smoeller.de/job/pms%20(trunk)/)
+[![Build Status](http://pms.smoeller.de/buildStatus/icon?job=pms+%28trunk%29)](http://pms.smoeller.de/job/pms%20%28trunk%29/)
 
 - [Links](#links)
 - [Thanks](#thanks)
