@@ -78,11 +78,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAResource.class);
 	private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
-	private static final Engine DISPLAY_NAME_TEMPLATE_ENGINE = Engine.createCompilingEngine();
+	private static final Engine displayNameTemplateEngine = Engine.createCompilingEngine();
 
 	static {
-		DISPLAY_NAME_TEMPLATE_ENGINE.setExprStartToken("<");
-		DISPLAY_NAME_TEMPLATE_ENGINE.setExprEndToken(">");
+		displayNameTemplateEngine.setExprStartToken("<");
+		displayNameTemplateEngine.setExprEndToken(">");
 	}
 
 	protected static final int MAX_ARCHIVE_ENTRY_SIZE = 10000000;
@@ -1127,7 +1127,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		model.put("isFile", !isFolder);
 		model.put("isFolder", isFolder);
 
-		displayName = DISPLAY_NAME_TEMPLATE_ENGINE.transform(template, model);
+		displayName = displayNameTemplateEngine.transform(template, model);
 		displayName = displayName.replaceAll("\\s+", " ");
 		displayName = displayName.trim();
 
@@ -1661,7 +1661,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 							try {
 								rendererName = renderer.getRendererName();
 							} catch (NullPointerException e) { }
-							LOGGER.info("Started streaming {} to {} on {}", getSystemName(), rendererName, rendererId);
+							LOGGER.info("Started sending {} to {} on {}", getSystemName(), rendererName, rendererId);
 						} catch (UnknownHostException ex) {
 							LOGGER.debug("" + ex);
 						}
@@ -1726,7 +1726,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 									try {
 										rendererName = renderer.getRendererName();
 									} catch (NullPointerException e) { }
-									LOGGER.info("Stopped streaming {} to {} on {}", getSystemName(), rendererName, rendererId);
+									LOGGER.info("Stopped sending {} to {} on {}", getSystemName(), rendererName, rendererId);
 								} catch (UnknownHostException ex) {
 									LOGGER.debug("" + ex);
 								}
