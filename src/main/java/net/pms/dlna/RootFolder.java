@@ -100,7 +100,8 @@ public class RootFolder extends DLNAResource {
 			addChild(r);
 		}
 
-		File webConf = new File(configuration.getProfileDirectory(), "WEB.conf");
+		String webConfPath = configuration.getWebConfPath();
+		File webConf = new File(webConfPath);
 		if (webConf.exists()) {
 			addWebFolder(webConf);
 		}

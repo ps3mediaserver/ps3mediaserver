@@ -29,6 +29,7 @@ import java.util.*;
 import net.pms.Messages;
 import net.pms.io.SystemUtils;
 import net.pms.util.FileUtil;
+import net.pms.util.FileUtil.FileLocation;
 import net.pms.util.PropertiesUtil;
 
 import org.apache.commons.configuration.Configuration;
@@ -63,44 +64,6 @@ public class PmsConfiguration {
 	 */
 	// https://code.google.com/p/ps3mediaserver/issues/detail?id=517
 	private static final int MENCODER_MAX_THREADS = 8;
-
-	/*
-	 * aCodec  - Audio codec
-	 * aFlavor - Audio flavor
-	 * aFull   - Audio language full name
-	 * aShort  - Audio language short name
-	 * dvdLen  - DVD track duration
-	 * eFull   - Engine full name
-	 * eShort  - Engine short name
-	 * fFull   - File name with extension
-	 * fShort  - File name without extension
-	 * sExt    - External subtitles
-	 * sFlavor - Subtitle flavor
-	 * sFull   - Subtitle language full name
-	 * sShort  - Subtitle language short name
-	 * sType   - Subtitle type
-	 */
-
-	private static final String FILENAME_FORMAT_SHORT = StringUtils.join(
-		asList(
-			"<[,eFull,]>",
-			"<if aCodec> {<aLabel>: <aCodec>/<aFull>< (,aFlavor,)>} <end>",
-			"<if sType> {<sLabel>: <sType>/<sFull>< (,sFlavor,)>} <end>"
-		),
-		" "
-	);
-
-	private static final String FILENAME_FORMAT_LONG = StringUtils.join(
-		asList(
-			"<fFull>",
-			"<if extra> - <end>",
-			"<dvdLen>",
-			"<[,eFull,]>",
-			"<{,sExt,}>",
-			"<if sType> {<sLabel>: <sType>/<sFull>< (,sFlavor,)>} <end>"
-		),
-		" "
-	);
 
 	private static final String KEY_ALTERNATE_SUBTITLES_FOLDER = "alternate_subtitles_folder";
 	private static final String KEY_ALTERNATE_THUMB_FOLDER = "alternate_thumb_folder";
@@ -223,6 +186,7 @@ public class PmsConfiguration {
 	private static final String KEY_VLC_SAMPLE_RATE_OVERRIDE = "vlc_sample_rate_override";
 	private static final String KEY_VLC_SAMPLE_RATE = "vlc_sample_rate";
 	private static final String KEY_VIDEO_HW_ACCELERATION = "video_hardware_acceleration";
+	private static final String KEY_WEB_CONF_PATH = "web_conf";
 
 	// The name of the subdirectory under which PMS config files are stored for this build (default: UMS).
 	// See Build for more details
@@ -244,8 +208,46 @@ public class PmsConfiguration {
 
 	private final IpFilter filter = new IpFilter();
 
+	/*
+	 * aCodec  - Audio codec
+	 * aFlavor - Audio flavor
+	 * aFull   - Audio language full name
+	 * aShort  - Audio language short name
+	 * dvdLen  - DVD track duration
+	 * eFull   - Engine full name
+	 * eShort  - Engine short name
+	 * fFull   - File name with extension
+	 * fShort  - File name without extension
+	 * sExt    - External subtitles
+	 * sFlavor - Subtitle flavor
+	 * sFull   - Subtitle language full name
+	 * sShort  - Subtitle language short name
+	 * sType   - Subtitle type
+	 */
+
+	private static final String FILENAME_FORMAT_SHORT = StringUtils.join(
+		asList(
+			"<[,eFull,]>",
+			"<if aCodec> {<aLabel>: <aCodec>/<aFull>< (,aFlavor,)>} <end>",
+			"<if sType> {<sLabel>: <sType>/<sFull>< (,sFlavor,)>} <end>"
+		),
+		" "
+	);
+
+	private static final String FILENAME_FORMAT_LONG = StringUtils.join(
+		asList(
+			"<fFull>",
+			"<if extra> - <end>",
+			"<dvdLen>",
+			"<[,eFull,]>",
+			"<{,sExt,}>",
+			"<if sType> {<sLabel>: <sType>/<sFull>< (,sFlavor,)>} <end>"
+		),
+		" "
+	);
+
 	/**
-	 * The set of the keys defining when the HTTP server has to restarted due to a configuration change
+	 * The set of keys defining when the HTTP server has to restarted due to a configuration change
 	 */
 	public static final Set<String> NEED_RELOAD_FLAGS = new HashSet<String>(
 		asList(
@@ -279,7 +281,7 @@ public class PmsConfiguration {
 		The following code enables a single setting - PMS_PROFILE - to be used to
 		initialize PROFILE_PATH i.e. the path to the current session's profile (AKA PMS.conf).
 		It also initializes PROFILE_DIRECTORY - i.e. the directory the profile is located in -
-		which is needed for configuration-by-convention detection of WEB.conf (anything else?).
+		which is needed to detect the default WEB.conf location (anything else?).
 
 		While this convention - and therefore PROFILE_DIRECTORY - will remain,
 		adding more configurables - e.g. web_conf = ... - is on the TODO list.
@@ -321,6 +323,7 @@ public class PmsConfiguration {
 	 */
 	private static final String DEFAULT_PROFILE_FILENAME = "PMS.conf";
 	private static final String ENV_PROFILE_PATH = "PMS_PROFILE";
+	private static final String DEFAULT_WEB_CONF_FILENAME = "WEB.conf";
 
 	// Path to directory containing PMS config files
 	private static final String PROFILE_DIRECTORY;
@@ -328,78 +331,76 @@ public class PmsConfiguration {
 	// Absolute path to profile file e.g. /path/to/PMS.conf
 	private static final String PROFILE_PATH;
 
+	// Absolute path to WEB.conf file e.g. /path/to/WEB.conf
+	private static String WEB_CONF_PATH;
+
 	// Absolute path to skel (default) profile file e.g. /etc/skel/.config/ps3mediaserver/PMS.conf
 	// "project.skelprofile.dir" project property
-    private static final String SKEL_PROFILE_PATH;
+	private static final String SKEL_PROFILE_PATH;
 
 	private static final String PROPERTY_PROFILE_PATH = "pms.profile.path";
+	private static final String SYSTEM_PROFILE_DIRECTORY;
 
 	static {
-        // first try the system property, typically set via the profile chooser
-		String profile = System.getProperty(PROPERTY_PROFILE_PATH);
+		// first of all, set up the path to the default system profile directory
+		if (Platform.isWindows()) {
+			String programData = System.getenv("ALLUSERSPROFILE");
+
+			if (programData != null) {
+				SYSTEM_PROFILE_DIRECTORY = String.format("%s\\%s", programData, PROFILE_DIRECTORY_NAME);
+			} else {
+				SYSTEM_PROFILE_DIRECTORY = ""; // i.e. current (working) directory
+			}
+		} else if (Platform.isMac()) {
+			SYSTEM_PROFILE_DIRECTORY = String.format(
+				"%s/%s/%s",
+				System.getProperty("user.home"),
+				"/Library/Application Support",
+				PROFILE_DIRECTORY_NAME
+			);
+		} else {
+			String xdgConfigHome = System.getenv("XDG_CONFIG_HOME");
+
+			if (xdgConfigHome == null) {
+				SYSTEM_PROFILE_DIRECTORY = String.format("%s/.config/%s", System.getProperty("user.home"), PROFILE_DIRECTORY_NAME);
+			} else {
+				SYSTEM_PROFILE_DIRECTORY = String.format("%s/%s", xdgConfigHome, PROFILE_DIRECTORY_NAME);
+			}
+		}
+
+		// now set the profile path. first: check for a custom setting.
+		// try the system property, typically set via the profile chooser
+		String customProfilePath = System.getProperty(PROPERTY_PROFILE_PATH);
 
 		// failing that, try the environment variable
-		if (profile == null) {
-			profile = System.getenv(ENV_PROFILE_PATH);
+		if (StringUtils.isBlank(customProfilePath)) {
+			customProfilePath = System.getenv(ENV_PROFILE_PATH);
 		}
 
-		if (profile != null) {
-			File f = new File(profile);
-
-			// if it exists, we know whether it's a file or directory
-			// otherwise, it must be a file since we don't autovivify directories
-			if (f.isDirectory()) {
-				PROFILE_DIRECTORY = FilenameUtils.normalize(f.getAbsolutePath());
-				PROFILE_PATH = FilenameUtils.normalize(new File(f, DEFAULT_PROFILE_FILENAME).getAbsolutePath());
-			} else { // doesn't exist or is a file (i.e. not a directory)
-				PROFILE_PATH = FilenameUtils.normalize(f.getAbsolutePath());
-				PROFILE_DIRECTORY = FilenameUtils.normalize(f.getParentFile().getAbsolutePath());
-			}
-		} else {
-			String profileDir;
-
-			if (Platform.isWindows()) {
-				String programData = System.getenv("ALLUSERSPROFILE");
-				if (programData != null) {
-					profileDir = String.format("%s\\%s", programData, PROFILE_DIRECTORY_NAME);
-				} else {
-					profileDir = ""; // i.e. current (working) directory
-				}
-			} else if (Platform.isMac()) {
-				profileDir = String.format(
-					"%s/%s/%s",
-					System.getProperty("user.home"),
-					"/Library/Application Support",
-					PROFILE_DIRECTORY_NAME
-				);
-			} else {
-				String xdgConfigHome = System.getenv("XDG_CONFIG_HOME");
-
-				if (xdgConfigHome == null) {
-					profileDir = String.format("%s/.config/%s", System.getProperty("user.home"), PROFILE_DIRECTORY_NAME);
-				} else {
-					profileDir = String.format("%s/%s", xdgConfigHome, PROFILE_DIRECTORY_NAME);
-				}
-			}
-
-			File f = new File(profileDir);
-
-			if ((f.exists() || f.mkdir()) && f.isDirectory()) {
-				PROFILE_DIRECTORY = FilenameUtils.normalize(f.getAbsolutePath());
-			} else {
-				PROFILE_DIRECTORY = FilenameUtils.normalize(new File("").getAbsolutePath());
-			}
-
-			PROFILE_PATH = FilenameUtils.normalize(new File(PROFILE_DIRECTORY, DEFAULT_PROFILE_FILENAME).getAbsolutePath());
-		}
+		// if customProfilePath is still blank, the default profile dir/filename is used
+		FileLocation profileLocation = FileUtil.getFileLocation(
+			customProfilePath,
+			SYSTEM_PROFILE_DIRECTORY,
+			DEFAULT_PROFILE_FILENAME
+		);
+		PROFILE_PATH = profileLocation.getFilePath();
+		PROFILE_DIRECTORY = profileLocation.getDirectoryPath();
 
 		// Set SKEL_PROFILE_PATH for Linux systems
-        String skelDir = PropertiesUtil.getProjectProperties().get("project.skelprofile.dir");
-        if (Platform.isLinux() && StringUtils.isNotBlank(skelDir)) {
-            SKEL_PROFILE_PATH = FilenameUtils.normalize(new File(new File(skelDir, PROFILE_DIRECTORY_NAME).getAbsolutePath(), DEFAULT_PROFILE_FILENAME).getAbsolutePath());
-        } else {
-            SKEL_PROFILE_PATH = null;
-        }
+		String skelDir = PropertiesUtil.getProjectProperties().get("project.skelprofile.dir");
+		if (Platform.isLinux() && StringUtils.isNotBlank(skelDir)) {
+			SKEL_PROFILE_PATH = FilenameUtils.normalize(
+				new File(
+					new File(
+						skelDir,
+						PROFILE_DIRECTORY_NAME
+					).getAbsolutePath(),
+					DEFAULT_PROFILE_FILENAME
+				).getAbsolutePath()
+			);
+		} else {
+			SKEL_PROFILE_PATH = null;
+		}
 	}
 
 	/**
@@ -435,7 +436,7 @@ public class PmsConfiguration {
 					logger.warn("Can't load {}", PROFILE_PATH);
 				}
 			} else if (SKEL_PROFILE_PATH != null) {
-                File pmsSkelConfFile = new File(SKEL_PROFILE_PATH);
+				File pmsSkelConfFile = new File(SKEL_PROFILE_PATH);
 
 				if (pmsSkelConfFile.isFile()) {
 					if (FileUtil.isFileReadable(pmsSkelConfFile)) {
@@ -446,12 +447,12 @@ public class PmsConfiguration {
 						logger.warn("Can't load {}", SKEL_PROFILE_PATH);
 					}
 				}
-            }
+			}
 		}
 
-        configuration.setPath(PROFILE_PATH);
+		configuration.setPath(PROFILE_PATH);
 
-        tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
+		tempFolder = new TempFolder(getString(KEY_TEMP_FOLDER_PATH, null));
 		programPaths = createProgramPathsChain(configuration);
 		Locale.setDefault(new Locale(getLanguage()));
 
@@ -471,9 +472,13 @@ public class PmsConfiguration {
 	 */
 	private static ProgramPathDisabler createProgramPathsChain(Configuration configuration) {
 		return new ProgramPathDisabler(
-			new ConfigurationProgramPaths(configuration,
-			new WindowsRegistryProgramPaths(
-			new PlatformSpecificDefaultPathsFactory().get())));
+			new ConfigurationProgramPaths(
+				configuration,
+				new WindowsRegistryProgramPaths(
+					new PlatformSpecificDefaultPathsFactory().get()
+				)
+			)
+		);
 	}
 
 	/**
@@ -996,8 +1001,8 @@ public class PmsConfiguration {
 	 * @return The tag string.
 	 */
 	public String getForcedSubtitleTags() {
-  		return getString(KEY_FORCED_SUBTITLE_TAGS, "forced");
-  	}
+		return getString(KEY_FORCED_SUBTITLE_TAGS, "forced");
+	}
 
 	/**
 	 * Returns a string of audio language and subtitle language pairs
@@ -2183,6 +2188,29 @@ public class PmsConfiguration {
 		return PROFILE_DIRECTORY;
 	}
 
+	/**
+	 * Returns the absolute path to the WEB.conf file. By default
+	 * this is <pre>PROFILE_DIRECTORY + File.pathSeparator + WEB.conf</pre>,
+	 * but it can be overridden via the <pre>web_conf</pre> profile option.
+	 * The existence of the file is not checked.
+	 *
+	 * @return the path to the WEB.conf file.
+	 */
+	public String getWebConfPath() {
+		// initialise this here rather than in the constructor
+		// or statically so that custom settings are logged
+		// to the debug.log/Logs tab.
+		if (WEB_CONF_PATH == null) {
+			WEB_CONF_PATH = FileUtil.getFileLocation(
+				getString(KEY_WEB_CONF_PATH, null),
+				PROFILE_DIRECTORY,
+				DEFAULT_WEB_CONF_FILENAME
+			).getFilePath();
+		}
+
+		return WEB_CONF_PATH;
+	}
+
 	public String getPluginDirectory() {
 		return getString(KEY_PLUGIN_DIRECTORY, "plugins");
 	}
@@ -2192,7 +2220,7 @@ public class PmsConfiguration {
 	}
 
 	public String getProfileName() {
-		if (HOSTNAME == null) { // calculate this lazily
+		if (HOSTNAME == null) { // initialise this lazily
 			try {
 				HOSTNAME = InetAddress.getLocalHost().getHostName();
 			} catch (UnknownHostException e) {
@@ -2323,10 +2351,24 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_VIDEO_HW_ACCELERATION, value);
 	}
 
+	/**
+	 * Return the long filename format used for files and folders
+	 * outside the <pre>#--TRANSCODE--#</pre> folder. See the
+	 * "Filename templates" section of PMS.conf for more details.
+	 *
+	 * @return the long filename format.
+	 */
 	public String getLongFilenameFormat() {
 		return getString(KEY_FILENAME_FORMAT_LONG, FILENAME_FORMAT_LONG);
 	}
 
+	/**
+	 * Return the short filename format used for files inside
+	 * the <pre>#--TRANSCODE--#</pre> folder. See the
+	 * "Filename templates" section of PMS.conf for more details.
+	 *
+	 * @return the short filename format.
+	 */
 	public String getShortFilenameFormat() {
 		return getString(KEY_FILENAME_FORMAT_SHORT, FILENAME_FORMAT_SHORT);
 	}

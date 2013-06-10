@@ -312,12 +312,38 @@ public class PMS {
 		return null;
 	}
 
+	// helper method for displayBanner: return a file or directory's
+	// permissions in the Unix ls style e.g.: "rw" (read-write),
+	// "r-" (read-only) &c.
+	private String getPathPermissions(String path) {
+		String permissions;
+		File file = new File(path);
+
+		if (file.exists()) {
+			if (file.isFile()) {
+				permissions = String.format("%s%s",
+					FileUtil.isFileReadable(file) ? "r" : "-",
+					FileUtil.isFileWritable(file) ? "w" : "-"
+				);
+			} else {
+				permissions = String.format("%s%s",
+					FileUtil.isDirectoryReadable(file) ? "r" : "-",
+					FileUtil.isDirectoryWritable(file) ? "w" : "-"
+				);
+			}
+		} else {
+			permissions = "file not found";
+		}
+
+		return permissions;
+	}
+
 	private void displayBanner() throws IOException {
-        logger.info("Starting " + PropertiesUtil.getProjectProperties().get("project.name") + " " + getVersion());
-        logger.info("by shagrath / 2008-2013");
-        logger.info("http://ps3mediaserver.org");
-        logger.info("https://github.com/ps3mediaserver/ps3mediaserver");
-        logger.info("");
+		logger.info("Starting " + PropertiesUtil.getProjectProperties().get("project.name") + " " + getVersion());
+		logger.info("by shagrath / 2008-2013");
+		logger.info("http://ps3mediaserver.org");
+		logger.info("https://github.com/ps3mediaserver/ps3mediaserver");
+		logger.info("");
 
 		String commitId = PropertiesUtil.getProjectProperties().get("git.commit.id");
 		String commitTime = PropertiesUtil.getProjectProperties().get("git.commit.time");
@@ -364,24 +390,20 @@ public class PMS {
 			}
 		}
 
-		logger.info("");
-		logger.info("Profile directory: {}", configuration.getProfileDirectory());
 		String profilePath = configuration.getProfilePath();
+		String profileDirectoryPath = configuration.getProfileDirectory();
+		logger.info("");
+		logger.info("Profile directory: {}", profileDirectoryPath);
+		logger.info("Profile directory permissions: {}", getPathPermissions(profileDirectoryPath));
 		logger.info("Profile path: {}", profilePath);
-
-		File profileFile = new File(profilePath);
-
-		if (profileFile.exists()) {
-			String permissions = String.format("%s%s",
-				FileUtil.isFileReadable(profileFile) ? "r" : "-",
-				FileUtil.isFileWritable(profileFile) ? "w" : "-"
-			);
-			logger.info("Profile permissions: {}", permissions);
-		} else {
-			logger.info("Profile permissions: no such file");
-		}
-
+		logger.info("Profile permissions: {}", getPathPermissions(profilePath));
 		logger.info("Profile name: {}", configuration.getProfileName());
+
+		String webConfPath = configuration.getWebConfPath();
+		logger.info("");
+		logger.info("Web conf path: {}", webConfPath);
+		logger.info("Web conf permissions: {}", getPathPermissions(webConfPath));
+
 		logger.info("");
 	}
 
@@ -808,7 +830,7 @@ public class PMS {
 				}
 			}
 
-            logger.info("Using the following UUID configured in PMS.conf: {}", uuid);
+			logger.info("Using the following UUID configured in PMS.conf: {}", uuid);
 		}
 
 		return "uuid:" + uuid;
