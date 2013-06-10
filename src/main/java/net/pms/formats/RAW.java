@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class RAW extends JPG {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RAW.class);
+	private static final Logger logger = LoggerFactory.getLogger(RAW.class);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
 
 	/**
@@ -135,7 +135,7 @@ public class RAW extends JPG {
 			media.finalize(type, file);
 			media.setMediaparsed(true);
 		} catch (Exception e) {
-			LOGGER.debug("Caught exception", e);
+			logger.debug("Caught exception", e);
 		}
 	}
 }

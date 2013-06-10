@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UPNPHelper {
 	/** Logger instance to write messages to the logs. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(UPNPHelper.class);
+	private static final Logger logger = LoggerFactory.getLogger(UPNPHelper.class);
 	
 	/** Carriage return and line feed. */
 	private static final String CRLF = "\r\n";
@@ -148,12 +148,12 @@ public class UPNPHelper {
 			InetAddress inetAddr = InetAddress.getByName(host);
 			DatagramPacket dgmPacket = new DatagramPacket(msg.getBytes(), msg.length(), inetAddr, port);
 
-			LOGGER.trace("Sending this reply [" + host + ":" + port + "]: " + StringUtils.replace(msg, CRLF, "<CRLF>"));
+			logger.trace("Sending this reply [" + host + ":" + port + "]: " + StringUtils.replace(msg, CRLF, "<CRLF>"));
 
 			datagramSocket.send(dgmPacket);
 		} catch (Exception e) {
-			LOGGER.info(e.getMessage());
-			LOGGER.debug("Error sending reply", e);
+			logger.info(e.getMessage());
+			logger.debug("Error sending reply", e);
 		} finally {
 			if (datagramSocket != null) {
 				datagramSocket.close();
@@ -165,7 +165,7 @@ public class UPNPHelper {
 	 * Send alive.
 	 */
 	public static void sendAlive() {
-		LOGGER.debug("Sending ALIVE...");
+		logger.debug("Sending ALIVE...");
 		MulticastSocket multicastSocket = null;
 
 		try {
@@ -179,7 +179,7 @@ public class UPNPHelper {
 			sendMessage(multicastSocket, "urn:schemas-upnp-org:service:ContentDirectory:1", ALIVE);
 			sendMessage(multicastSocket, "urn:schemas-upnp-org:service:ConnectionManager:1", ALIVE);
 		} catch (IOException e) {
-			LOGGER.debug("Error sending ALIVE message", e);
+			logger.debug("Error sending ALIVE message", e);
 		} finally {
 			if (multicastSocket != null) {
 				// Clean up the multicast socket nicely
@@ -229,11 +229,11 @@ public class UPNPHelper {
 		MulticastSocket ssdpSocket = new MulticastSocket(localAddress);
 		ssdpSocket.setReuseAddress(true);
 
-		LOGGER.trace("Sending message from multicast socket on network interface: " + ssdpSocket.getNetworkInterface());
-		LOGGER.trace("Multicast socket is on interface: " + ssdpSocket.getInterface());
+		logger.trace("Sending message from multicast socket on network interface: " + ssdpSocket.getNetworkInterface());
+		logger.trace("Multicast socket is on interface: " + ssdpSocket.getInterface());
 		ssdpSocket.setTimeToLive(32);
-		LOGGER.trace("Socket Timeout: " + ssdpSocket.getSoTimeout());
-		LOGGER.trace("Socket TTL: " + ssdpSocket.getTimeToLive());
+		logger.trace("Socket Timeout: " + ssdpSocket.getSoTimeout());
+		logger.trace("Socket TTL: " + ssdpSocket.getTimeToLive());
 		return ssdpSocket;
 	}
 
@@ -241,7 +241,7 @@ public class UPNPHelper {
 	 * Send the UPnP BYEBYE message.
 	 */
 	public static void sendByeBye() {
-		LOGGER.info("Sending BYEBYE...");
+		logger.info("Sending BYEBYE...");
 
 		MulticastSocket multicastSocket = null;
 
@@ -255,7 +255,7 @@ public class UPNPHelper {
 			sendMessage(multicastSocket, "urn:schemas-upnp-org:service:ContentDirectory:1", BYEBYE);
 			sendMessage(multicastSocket, "urn:schemas-upnp-org:service:ConnectionManager:1", BYEBYE);
 		} catch (IOException e) {
-			LOGGER.debug("Error sending BYEBYE message", e);
+			logger.debug("Error sending BYEBYE message", e);
 		} finally {
 			if (multicastSocket != null) {
 				// Clean up the multicast socket nicely
@@ -296,7 +296,7 @@ public class UPNPHelper {
 		String msg = buildMsg(nt, message);
 		//Random rand = new Random();
 
-		// LOGGER.trace( "Sending this SSDP packet: " + CRLF + StringUtils.replace(msg, CRLF, "<CRLF>")));
+		// logger.trace( "Sending this SSDP packet: " + CRLF + StringUtils.replace(msg, CRLF, "<CRLF>")));
 
 		InetAddress upnpAddress = getUPNPAddress();
 		DatagramPacket ssdpPacket = new DatagramPacket(msg.getBytes(), msg.length(), upnpAddress, UPNP_PORT);
@@ -359,7 +359,7 @@ public class UPNPHelper {
 						multicastSocket = new MulticastSocket(configuration.getUpnpPort());
 
 						if (bindErrorReported) {
-							LOGGER.warn("Finally, acquiring port " + configuration.getUpnpPort() + " was successful!");
+							logger.warn("Finally, acquiring port " + configuration.getUpnpPort() + " was successful!");
 						}
 
 						NetworkInterface ni = NetworkConfiguration.getInstance().getNetworkInterfaceByServerName();
@@ -372,7 +372,7 @@ public class UPNPHelper {
 									multicastSocket.setNetworkInterface(ni);
 							} else if (PMS.get().getServer().getNetworkInterface() != null) {
 									multicastSocket.setNetworkInterface(PMS.get().getServer().getNetworkInterface());
-									LOGGER.trace("Setting multicast network interface: " + PMS.get().getServer().getNetworkInterface());
+									logger.trace("Setting multicast network interface: " + PMS.get().getServer().getNetworkInterface());
 							}
 						} catch (SocketException e) {
 							// Not setting the network interface will work just fine on Mac OSX.
@@ -397,7 +397,7 @@ public class UPNPHelper {
 								int remotePort = receivePacket.getPort();
 
 								if (configuration.getIpFiltering().allowed(address)) {
-									LOGGER.trace("Receiving a M-SEARCH from [" + remoteAddr + ":" + remotePort + "]");
+									logger.trace("Receiving a M-SEARCH from [" + remoteAddr + ":" + remotePort + "]");
 
 									if (StringUtils.indexOf(s, "urn:schemas-upnp-org:service:ContentDirectory:1") > 0) {
 										sendDiscover(remoteAddr, remotePort, "urn:schemas-upnp-org:service:ContentDirectory:1");
@@ -423,12 +423,12 @@ public class UPNPHelper {
 								String remoteAddr = address.getHostAddress();
 								int remotePort = receivePacket.getPort();
 
-								LOGGER.trace("Receiving a NOTIFY from [" + remoteAddr + ":" + remotePort + "]");
+								logger.trace("Receiving a NOTIFY from [" + remoteAddr + ":" + remotePort + "]");
 							}
 						}
 					} catch (BindException e) {
 						if (!bindErrorReported) {
-							LOGGER.error("Unable to bind to " + configuration.getUpnpPort()
+							logger.error("Unable to bind to " + configuration.getUpnpPort()
 							+ ", which means that PMS will not automatically appear on your renderer! "
 							+ "This usually means that another program occupies the port. Please "
 							+ "stop the other program and free up the port. "
@@ -438,7 +438,7 @@ public class UPNPHelper {
 						bindErrorReported = true;
 						sleep(5000);
 					} catch (IOException e) {
-						LOGGER.error("UPNP network exception", e);
+						logger.error("UPNP network exception", e);
 						sleep(1000);
 					} finally {
 						if (multicastSocket != null) {

@@ -21,7 +21,7 @@ import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.mozilla.universalchardet.Constants.*;
 
 public class FileUtil {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 	private static Map<File, File[]> cache;
 
 	public static File isFileExists(String f, String ext) {
@@ -306,7 +306,7 @@ public class FileUtil {
 				try {
 					subFolder = subFolder.getCanonicalFile();
 				} catch (IOException e) {
-					LOGGER.debug("Caught exception", e);
+					logger.debug("Caught exception", e);
 				}
 			}
 
@@ -369,7 +369,7 @@ public class FileUtil {
 										try {
 											sub.setExternalFile(f);
 										} catch (FileNotFoundException ex) {
-											LOGGER.warn("Exception during external subtitles scan.", ex);
+											logger.warn("Exception during external subtitles scan.", ex);
 										}
 
 										exists = true;
@@ -402,7 +402,7 @@ public class FileUtil {
 								try {
 									sub.setExternalFile(f);
 								} catch (FileNotFoundException ex) {
-									LOGGER.warn("Exception during external subtitles scan.", ex);
+									logger.warn("Exception during external subtitles scan.", ex);
 								}
 
 								found = true;
@@ -443,9 +443,9 @@ public class FileUtil {
 		String encoding = universalDetector.getDetectedCharset();
 
 		if (encoding != null) {
-			LOGGER.debug("Detected encoding for {} is {}.", file.getAbsolutePath(), encoding);
+			logger.debug("Detected encoding for {} is {}.", file.getAbsolutePath(), encoding);
 		} else {
-			LOGGER.debug("No encoding detected for {}.", file.getAbsolutePath());
+			logger.debug("No encoding detected for {}.", file.getAbsolutePath());
 		}
 
 		universalDetector.reset();
@@ -517,7 +517,7 @@ public class FileUtil {
 		try {
 			charset = getFileCharset(inputFile);
 		} catch (IOException ex) {
-			LOGGER.debug("Exception during charset detection.", ex);
+			logger.debug("Exception during charset detection.", ex);
 			throw new IllegalArgumentException("Can't confirm inputFile is UTF-16.");
 		}
 
@@ -532,7 +532,7 @@ public class FileUtil {
 						reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF-16BE"));
 					}
 				} catch (UnsupportedEncodingException ex) {
-					LOGGER.warn("Unsupported exception.", ex);
+					logger.warn("Unsupported exception.", ex);
 					throw ex;
 				}
 
@@ -609,10 +609,10 @@ public class FileUtil {
 					if (!fileAlreadyExists) { // a new file has been "touch"ed; try to remove it
 						try {
 							if (!file.delete()) {
-								LOGGER.warn("Can't delete temporary test file: {}", file.getAbsolutePath());
+								logger.warn("Can't delete temporary test file: {}", file.getAbsolutePath());
 							}
 						} catch (SecurityException se) {
-							LOGGER.error("Error deleting temporary test file: " + file.getAbsolutePath(), se);
+							logger.error("Error deleting temporary test file: " + file.getAbsolutePath(), se);
 						}
 					}
 				} catch (IOException ioe) {
@@ -702,7 +702,7 @@ public class FileUtil {
 						}
 
 						if (!file.delete()) {
-							LOGGER.warn("Can't delete temporary test file: {}", file.getAbsolutePath());
+							logger.warn("Can't delete temporary test file: {}", file.getAbsolutePath());
 						}
 					}
 				} catch (IOException ioe) {

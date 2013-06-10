@@ -43,7 +43,7 @@ import javax.swing.*;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class FFmpegWebVideo extends FFmpegVideo {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FFmpegWebVideo.class);
+	private static final Logger logger = LoggerFactory.getLogger(FFmpegWebVideo.class);
 	private static List<String> protocols;
 	private static boolean init = false;
 	private boolean convertMmsToMmsh = false;
@@ -84,7 +84,7 @@ public class FFmpegWebVideo extends FFmpegVideo {
 				protocols.add("mms");
 			}
 
-			LOGGER.debug("FFmpeg supported protocols: {}", protocols);
+			logger.debug("FFmpeg supported protocols: {}", protocols);
 			init = true;
 		}
 	}
@@ -148,7 +148,7 @@ public class FFmpegWebVideo extends FFmpegVideo {
 
 		cmdList.add("-loglevel");
 
-		if (LOGGER.isTraceEnabled()) { // Set -loglevel in accordance with LOGGER setting
+		if (logger.isTraceEnabled()) { // Set -loglevel in accordance with logger setting
 			cmdList.add("info"); // Could be changed to "verbose" or "debug" if "info" level is not enough
 		} else {
 			cmdList.add("warning");
@@ -213,7 +213,7 @@ public class FFmpegWebVideo extends FFmpegVideo {
 		try {
 			Thread.sleep(300);
 		} catch (InterruptedException e) {
-			LOGGER.error("Thread interrupted while waiting for named pipe to be created", e);
+			logger.error("Thread interrupted while waiting for named pipe to be created", e);
 		}
 
 		// Launch the transcode command...
@@ -222,7 +222,7 @@ public class FFmpegWebVideo extends FFmpegVideo {
 		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {
-			LOGGER.error("Thread interrupted while waiting for transcode to start", e);
+			logger.error("Thread interrupted while waiting for transcode to start", e);
 		}
 
 		return pw;

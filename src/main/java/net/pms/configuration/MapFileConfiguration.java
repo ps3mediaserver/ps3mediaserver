@@ -22,7 +22,7 @@ import java.util.List;
  * @author mfranco
  */
 public class MapFileConfiguration {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MapFileConfiguration.class);
+	private static final Logger logger = LoggerFactory.getLogger(MapFileConfiguration.class);
 	private String name;
 	private String thumbnailIcon;
 	private List<MapFileConfiguration> children;
@@ -73,7 +73,7 @@ public class MapFileConfiguration {
 					return null;
 				}
 			} else {
-				LOGGER.warn("Can't read file: {}", file.getAbsolutePath());
+				logger.warn("Can't read file: {}", file.getAbsolutePath());
 			}
 		}
 
@@ -91,7 +91,7 @@ public class MapFileConfiguration {
 }
 
 class FileSerializer implements JsonSerializer<File>, JsonDeserializer<File> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileSerializer.class);
+	private static final Logger logger = LoggerFactory.getLogger(FileSerializer.class);
 
 	public JsonElement serialize(File src, Type typeOfSrc, JsonSerializationContext context) {
 		return new JsonPrimitive(src.getAbsolutePath());
@@ -101,7 +101,7 @@ class FileSerializer implements JsonSerializer<File>, JsonDeserializer<File> {
 		File file = new File(json.getAsJsonPrimitive().getAsString());
 
 		if (!FileUtil.isDirectoryReadable(file)) {
-			LOGGER.warn("Can't read directory: {}", file.getAbsolutePath());
+			logger.warn("Can't read directory: {}", file.getAbsolutePath());
 			return null;
 		} else {
 			return file;

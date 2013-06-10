@@ -26,7 +26,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 public class RendererConfiguration {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RendererConfiguration.class);
+	private static final Logger logger = LoggerFactory.getLogger(RendererConfiguration.class);
 	private static ArrayList<RendererConfiguration> rendererConfs;
 	private static PmsConfiguration pmsConfiguration;
 	private static RendererConfiguration defaultConf;
@@ -122,13 +122,13 @@ public class RendererConfiguration {
 		try {
 			defaultConf = new RendererConfiguration();
 		} catch (ConfigurationException e) {
-			LOGGER.debug("Caught exception", e);
+			logger.debug("Caught exception", e);
 		}
 
 		File renderersDir = getRenderersDir();
 
 		if (renderersDir != null) {
-			LOGGER.info("Loading renderer configurations from " + renderersDir.getAbsolutePath());
+			logger.info("Loading renderer configurations from " + renderersDir.getAbsolutePath());
 
 			File[] confs = renderersDir.listFiles();
 			Arrays.sort(confs);
@@ -137,12 +137,12 @@ public class RendererConfiguration {
 			for (File f : confs) {
 				if (f.getName().endsWith(".conf")) {
 					try {
-						LOGGER.info("Loading configuration file: {}", f.getName());
+						logger.info("Loading configuration file: {}", f.getName());
 						RendererConfiguration r = new RendererConfiguration(f);
 						r.rank = rank++;
 						rendererConfs.add(r);
 					} catch (ConfigurationException ce) {
-						LOGGER.info("Error in loading configuration of: {}", f.getAbsolutePath());
+						logger.info("Error in loading configuration of: {}", f.getAbsolutePath());
 					}
 				}
 			}
@@ -208,7 +208,7 @@ public class RendererConfiguration {
 					if (file.canRead()) {
 						return file;
 					} else {
-						LOGGER.warn("Can't read directory: {}", file.getAbsolutePath());
+						logger.warn("Can't read directory: {}", file.getAbsolutePath());
 					}
 				}
 			}
@@ -263,7 +263,7 @@ public class RendererConfiguration {
 	public static RendererConfiguration getRendererConfigurationByUA(String userAgentString) {
 		if (pmsConfiguration.isRendererForceDefault()) {
 			// Force default renderer
-			LOGGER.trace("Forcing renderer match to \"" + defaultConf.getRendererName() + "\"");
+			logger.trace("Forcing renderer match to \"" + defaultConf.getRendererName() + "\"");
 			return manageRendererMatch(defaultConf);
 		} else {
 			// Try to find a match
@@ -285,7 +285,7 @@ public class RendererConfiguration {
 			// all other requests from the same IP address will be recognized based on
 			// that association. Headers will be ignored and unfortunately they happen
 			// to be the only way to get here.
-			LOGGER.info("Another renderer like " + r.getRendererName() + " was found!");
+			logger.info("Another renderer like " + r.getRendererName() + " was found!");
 		}
 
 		return r;
@@ -305,7 +305,7 @@ public class RendererConfiguration {
 	public static RendererConfiguration getRendererConfigurationByUAAHH(String header) {
 		if (pmsConfiguration.isRendererForceDefault()) {
 			// Force default renderer
-			LOGGER.trace("Forcing renderer match to \"" + defaultConf.getRendererName() + "\"");
+			logger.trace("Forcing renderer match to \"" + defaultConf.getRendererName() + "\"");
 			return manageRendererMatch(defaultConf);
 		} else {
 			// Try to find a match
@@ -429,7 +429,7 @@ public class RendererConfiguration {
 		String DLNAPNchanges = getString(DLNA_PN_CHANGES, null);
 
 		if (DLNAPNchanges != null) {
-			LOGGER.trace("Config DLNAPNchanges: " + DLNAPNchanges);
+			logger.trace("Config DLNAPNchanges: " + DLNAPNchanges);
 		}
 
 		if (StringUtils.isNotBlank(DLNAPNchanges)) {

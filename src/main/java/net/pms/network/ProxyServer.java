@@ -26,7 +26,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ProxyServer extends Thread {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProxyServer.class);
+	private static final Logger logger = LoggerFactory.getLogger(ProxyServer.class);
 	private int port;
 
 	public ProxyServer(int port) {
@@ -52,7 +52,7 @@ public class ProxyServer extends Thread {
 				s.close();
 			}
 		} catch (IOException e1) {
-			LOGGER.debug("Caught exception", e1);
+			logger.debug("Caught exception", e1);
 		}
 	}
 }

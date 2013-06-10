@@ -32,7 +32,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ZippedEntry extends DLNAResource implements IPushOutput {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ZippedEntry.class);
+	private static final Logger logger = LoggerFactory.getLogger(ZippedEntry.class);
 	private File file;
 	private String zeName;
 	private long length;
@@ -117,7 +117,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 					in.close();
 					in = null;
 				} catch (Exception e) {
-					LOGGER.error("Unpack error. Possibly harmless.", e);
+					logger.error("Unpack error. Possibly harmless.", e);
 				} finally {
 					try {
 						if (in != null) {
@@ -126,7 +126,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 						zipFile.close();
 						out.close();
 					} catch (IOException e) {
-						LOGGER.debug("Caught exception", e);
+						logger.debug("Caught exception", e);
 					}
 				}
 			}

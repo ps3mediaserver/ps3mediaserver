@@ -42,7 +42,7 @@ public class ExternalFactory {
 	/**
 	 * For logging messages.
 	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(ExternalFactory.class);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
 
 	/**
@@ -97,20 +97,20 @@ public class ExternalFactory {
 	 */
 	public static void lookup() {
 		File pluginDirectory = new File(configuration.getPluginDirectory());
-		LOGGER.info("Searching for plugins in " + pluginDirectory.getAbsolutePath());
+		logger.info("Searching for plugins in " + pluginDirectory.getAbsolutePath());
 
 		if (!pluginDirectory.exists()) {
-			LOGGER.warn("Plugin directory doesn't exist: " + pluginDirectory);
+			logger.warn("Plugin directory doesn't exist: " + pluginDirectory);
 			return;
 		}
 
 		if (!pluginDirectory.isDirectory()) {
-			LOGGER.warn("Plugin directory is not a directory: " + pluginDirectory);
+			logger.warn("Plugin directory is not a directory: " + pluginDirectory);
 			return;
 		}
 
 		if (!pluginDirectory.canRead()) {
-			LOGGER.warn("Plugin directory is not readable: " + pluginDirectory);
+			logger.warn("Plugin directory is not readable: " + pluginDirectory);
 			return;
 		}
 
@@ -126,7 +126,7 @@ public class ExternalFactory {
 		int nJars = (jarFiles == null) ? 0 : jarFiles.length;
 
 		if (nJars == 0) {
-			LOGGER.info("No plugins found");
+			logger.info("No plugins found");
 			return;
 		}
 
@@ -137,7 +137,7 @@ public class ExternalFactory {
 			try {
 				jarURLList.add(jarFiles[i].toURI().toURL());
 			} catch (MalformedURLException e) {
-				LOGGER.error("Can't convert file path " + jarFiles[i] + " to URL", e);
+				logger.error("Can't convert file path " + jarFiles[i] + " to URL", e);
 			}
 		}
 
@@ -154,7 +154,7 @@ public class ExternalFactory {
 			// which should contain the name of the main plugin class.
 			resources = classLoader.getResources("plugin");
 		} catch (IOException e) {
-			LOGGER.error("Can't load plugin resources", e);
+			logger.error("Can't load plugin resources", e);
 			return;
 		}
 
@@ -170,15 +170,15 @@ public class ExternalFactory {
 				in.close();
 				String pluginMainClassName = new String(name).trim();
 
-				LOGGER.info("Found plugin: " + pluginMainClassName);
+				logger.info("Found plugin: " + pluginMainClassName);
 
 				// Try to load the class based on the main class name
 				Class<?> clazz = classLoader.loadClass(pluginMainClassName);
 				registerListenerClass(clazz);
 			} catch (Exception e) {
-				LOGGER.error("Error loading plugin", e);
+				logger.error("Error loading plugin", e);
 			} catch (NoClassDefFoundError e) {
-				LOGGER.error("Error loading plugin", e);
+				logger.error("Error loading plugin", e);
 			}
 		}
 
@@ -208,9 +208,9 @@ public class ExternalFactory {
 					ExternalListener instance = (ExternalListener) clazz.newInstance();
 					registerListener(instance);
 				} catch (InstantiationException e) {
-					LOGGER.error("Error instantiating plugin", e);
+					logger.error("Error instantiating plugin", e);
 				} catch (IllegalAccessException e) {
-					LOGGER.error("Error instantiating plugin", e);
+					logger.error("Error instantiating plugin", e);
 				}
 			}
 		}
@@ -232,9 +232,9 @@ public class ExternalFactory {
 					ExternalListener instance = (ExternalListener) clazz.newInstance();
 					registerListener(instance);
 				} catch (InstantiationException e) {
-					LOGGER.error("Error instantiating plugin", e);
+					logger.error("Error instantiating plugin", e);
 				} catch (IllegalAccessException e) {
-					LOGGER.error("Error instantiating plugin", e);
+					logger.error("Error instantiating plugin", e);
 				}
 			}
 		}

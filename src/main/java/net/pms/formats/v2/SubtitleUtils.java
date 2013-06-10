@@ -39,7 +39,7 @@ import static org.apache.commons.lang3.StringUtils.*;
 import static org.mozilla.universalchardet.Constants.*;
 
 public class SubtitleUtils {
-	private final static Logger LOGGER = LoggerFactory.getLogger(SubtitleUtils.class);
+	private final static Logger logger = LoggerFactory.getLogger(SubtitleUtils.class);
 	private static PmsConfiguration configuration = PMS.getConfiguration();
 	private final static Map<String, String> fileCharsetToMencoderSubcpOptionMap = new HashMap<String, String>() {
 		{
@@ -275,7 +275,7 @@ public class SubtitleUtils {
 				return h * 3600 - m * 60 - s;
 			}
 		} catch (NumberFormatException nfe) {
-			LOGGER.debug("Failed to convert timing string \"" + timingString + "\".");
+			logger.debug("Failed to convert timing string \"" + timingString + "\".");
 			throw nfe;
 		}
 	}

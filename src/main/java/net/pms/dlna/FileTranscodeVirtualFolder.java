@@ -37,7 +37,7 @@ import java.util.List;
  * This class populates the file-specific transcode folder with content.
  */
 public class FileTranscodeVirtualFolder extends VirtualFolder {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileTranscodeVirtualFolder.class);
+	private static final Logger logger = LoggerFactory.getLogger(FileTranscodeVirtualFolder.class);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private boolean resolved;
 
@@ -207,7 +207,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 				)
 			) {
 				if (renderer != null) {
-					LOGGER.trace(
+					logger.trace(
 						"Duplicating {} for direct streaming to renderer: {}",
 						child.getName(),
 						renderer.getRendererName()
@@ -299,7 +299,7 @@ public class FileTranscodeVirtualFolder extends VirtualFolder {
 
 			// Now add the sorted list of combinations to the folder
 			for (DLNAResource dlna : copies) {
-				LOGGER.trace(
+				logger.trace(
 					"Adding {}: audio: {}, subtitle: {}, player: {}",
 					new Object[] {
 						dlna.getName(),

@@ -34,7 +34,7 @@ import java.util.List;
  *  A version of OutputTextConsumer that a) logs all output to the debug.log and b) doesn't store the output
  */
 public class OutputTextLogger extends OutputConsumer {
-	private static final Logger LOGGER = LoggerFactory.getLogger(OutputTextLogger.class);
+	private static final Logger logger = LoggerFactory.getLogger(OutputTextLogger.class);
 
 	public OutputTextLogger(InputStream inputStream) {
 		super(inputStream);
@@ -48,12 +48,12 @@ public class OutputTextLogger extends OutputConsumer {
 
 			while (it.hasNext()) {
 				String line = it.nextLine();
-				LOGGER.debug(line);
+				logger.debug(line);
 			}
 		} catch (IOException ioe) {
-			LOGGER.debug("Error consuming input stream: {}", ioe.getMessage());
+			logger.debug("Error consuming input stream: {}", ioe.getMessage());
 		} catch (IllegalStateException ise) {
-			LOGGER.debug("Error reading from closed input stream: {}", ise.getMessage());
+			logger.debug("Error reading from closed input stream: {}", ise.getMessage());
 		} finally {
 			LineIterator.closeQuietly(it); // clean up all associated resources
 		}

@@ -46,7 +46,7 @@ public final class NaturalComparator {
      * <p>A string comparator that does case insensitive comparisons and handles embedded numbers correctly.</p>
      * <p><b>Do not use</b> if your app might ever run on any locale that uses more than 7-bit ascii characters.</p>
      */
-    private static final Comparator<String> IGNORE_CASE_NATURAL_COMPARATOR_ASCII = new Comparator<String>() {
+    private static final Comparator<String> NATURAL_COMPARATOR_ASCII_IGNORE_CASE = new Comparator<String>() {
         public int compare(String o1, String o2) {
             return compareNaturalIgnoreCaseAscii(o1, o2);
         }
@@ -120,7 +120,7 @@ public final class NaturalComparator {
      * @see #getNaturalComparator(java.text.Collator)
      */
     public static Comparator<String> getNaturalComparatorIgnoreCaseAscii() {
-        return IGNORE_CASE_NATURAL_COMPARATOR_ASCII;
+        return NATURAL_COMPARATOR_ASCII_IGNORE_CASE;
     }
 
     /**

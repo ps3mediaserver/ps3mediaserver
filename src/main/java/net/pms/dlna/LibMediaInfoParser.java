@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
 import static org.apache.commons.lang3.StringUtils.*;
 
 public class LibMediaInfoParser {
-	private static final Logger LOGGER = LoggerFactory.getLogger(LibMediaInfoParser.class);
+	private static final Logger logger = LoggerFactory.getLogger(LibMediaInfoParser.class);
 	private static MediaInfo MI;
 	private static Base64 base64;
 
@@ -34,7 +34,7 @@ public class LibMediaInfoParser {
 		try {
 			MI.finalize();
 		} catch (Throwable e) {
-			LOGGER.debug("Caught exception", e);
+			logger.debug("Caught exception", e);
 		}
 	}
 
@@ -183,25 +183,25 @@ public class LibMediaInfoParser {
 									String recordedDate = value.replaceAll("[^\\d]{4}", "");
 									currentAudioTrack.setYear(Integer.parseInt(recordedDate));
 								} catch (NumberFormatException nfe) {
-									LOGGER.debug("Could not parse year \"" + value + "\"");
+									logger.debug("Could not parse year \"" + value + "\"");
 								}
 							} else if (key.equals("Track/Position") && streamType == MediaInfo.StreamType.General) {
 								try {
 									currentAudioTrack.setTrack(Integer.parseInt(value));
 								} catch (NumberFormatException nfe) {
-									LOGGER.debug("Could not parse track \"" + value + "\"");
+									logger.debug("Could not parse track \"" + value + "\"");
 								}
 							} else if (key.equals("BitDepth") && streamType == MediaInfo.StreamType.Audio) {
 								try {
 									currentAudioTrack.setBitsperSample(Integer.parseInt(value));
 								} catch (NumberFormatException nfe) {
-									LOGGER.debug("Could not parse bits per sample \"" + value + "\"");
+									logger.debug("Could not parse bits per sample \"" + value + "\"");
 								}
 							} else if (key.equals("Video_Delay") && streamType == MediaInfo.StreamType.Audio) {
 								try {
 									currentAudioTrack.getAudioProperties().setAudioDelay(value);
 								} catch (NumberFormatException nfe) {
-									LOGGER.debug("Could not parse delay \"" + value + "\"");
+									logger.debug("Could not parse delay \"" + value + "\"");
 								}
 							}
 						}
@@ -244,7 +244,7 @@ public class LibMediaInfoParser {
 
 				media.finalize(type, inputFile);
 			} catch (Exception e) {
-				LOGGER.error("Error in MediaInfo parsing:", e);
+				logger.error("Error in MediaInfo parsing:", e);
 			} finally {
 				MI.Close();
 				if (media.getContainer() == null) {
@@ -439,8 +439,8 @@ public class LibMediaInfoParser {
 			return Byte.parseByte(StringUtils.substringBefore(value, " "));
 		} catch (NumberFormatException ex) {
 			// Not parsed
-			LOGGER.warn("Could not parse ReferenceFrameCount value {}." , value);
-			LOGGER.warn("Exception: ", ex);
+			logger.warn("Could not parse ReferenceFrameCount value {}." , value);
+			logger.warn("Exception: ", ex);
 			return -1;
 		}
 	}
@@ -458,7 +458,7 @@ public class LibMediaInfoParser {
 		if (isNotBlank(avcLevel)) {
 			return avcLevel;
 		} else {
-			LOGGER.warn("Could not parse AvcLevel value {}." , value);
+			logger.warn("Could not parse AvcLevel value {}." , value);
 			return null;
 		}
 	}
@@ -470,8 +470,8 @@ public class LibMediaInfoParser {
         try {
             return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
-			LOGGER.trace("Could not parse bitrate from: " + value);
-			LOGGER.trace("The full error was: " + e);
+			logger.trace("Could not parse bitrate from: " + value);
+			logger.trace("The full error was: " + e);
 
             return 0;
         }
@@ -563,7 +563,7 @@ public class LibMediaInfoParser {
 				return base64.decode(based64Value.getBytes());
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error in decoding thumbnail data", e);
+			logger.error("Error in decoding thumbnail data", e);
 		}
 		return null;
 	}

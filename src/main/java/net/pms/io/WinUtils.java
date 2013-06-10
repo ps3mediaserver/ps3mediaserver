@@ -38,7 +38,7 @@ import java.util.prefs.Preferences;
  *
  */
 public class WinUtils extends BasicSystemUtils implements SystemUtils {
-	private static final Logger LOGGER = LoggerFactory.getLogger(WinUtils.class);
+	private static final Logger logger = LoggerFactory.getLogger(WinUtils.class);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
 
 	public interface Kernel32 extends Library {
@@ -79,7 +79,7 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	public void disableGoToSleep() {
 		// Disable go to sleep (every 40s)
 		if (configuration.isPreventsSleep() && System.currentTimeMillis() - lastDontSleepCall > 40000) {
-			LOGGER.trace("Calling SetThreadExecutionState ES_SYSTEM_REQUIRED");
+			logger.trace("Calling SetThreadExecutionState ES_SYSTEM_REQUIRED");
 			Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_SYSTEM_REQUIRED | Kernel32.ES_CONTINUOUS);
 			lastDontSleepCall = System.currentTimeMillis();
 		}
@@ -92,7 +92,7 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	public void reenableGoToSleep() {
 		// Reenable go to sleep
 		if (configuration.isPreventsSleep() && System.currentTimeMillis() - lastGoToSleepCall > 40000) {
-			LOGGER.trace("Calling SetThreadExecutionState ES_CONTINUOUS");
+			logger.trace("Calling SetThreadExecutionState ES_CONTINUOUS");
 			Kernel32.INSTANCE.SetThreadExecutionState(Kernel32.ES_CONTINUOUS);
 			lastGoToSleepCall = System.currentTimeMillis();
 		}
@@ -134,10 +134,10 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 				char test[] = new char[2 + pathname.length() * 2];
 				int r = Kernel32.INSTANCE.GetShortPathNameW(pathname, test, test.length);
 				if (r > 0) {
-					LOGGER.debug("Forcing short path name on " + pathname);
+					logger.debug("Forcing short path name on " + pathname);
 					return Native.toString(test);
 				} else {
-					LOGGER.info("File does not exist? " + pathname);
+					logger.info("File does not exist? " + pathname);
 					return null;
 				}
 
@@ -272,7 +272,7 @@ public class WinUtils extends BasicSystemUtils implements SystemUtils {
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.debug("Caught exception", e);
+			logger.debug("Caught exception", e);
 		}
 	}
 

@@ -34,7 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  */
 public class TaskRunner {
-	final static Logger LOGGER = LoggerFactory.getLogger(TaskRunner.class);
+	final static Logger logger = LoggerFactory.getLogger(TaskRunner.class);
 	
 	private static TaskRunner instance;
 	
@@ -93,17 +93,17 @@ public class TaskRunner {
 					if (singletonTask) {
 						if (getLock(name).tryLock()) {
 							locked = true;
-							LOGGER.debug("singleton task " + name + " started");
+							logger.debug("singleton task " + name + " started");
 						} else {
 							locked = false;
-							LOGGER.debug("singleton task '" + name + "' already running, exiting");
+							logger.debug("singleton task '" + name + "' already running, exiting");
 							return;
 						}
 					}
 					Thread.currentThread().setName(prevName + '-' + name + '(' + getAndIncr(name) + ')');
-					LOGGER.debug("task started");
+					logger.debug("task started");
 					runnable.run();
-					LOGGER.debug("task ended");
+					logger.debug("task ended");
 				} finally {
 					if (locked) {
 						getLock(name).unlock();

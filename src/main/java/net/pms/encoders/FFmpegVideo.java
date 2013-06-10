@@ -84,7 +84,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *     )
  */
 public class FFmpegVideo extends Player {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FFmpegVideo.class);
+	private static final Logger logger = LoggerFactory.getLogger(FFmpegVideo.class);
 	private static final String DEFAULT_QSCALE = "3";
 	private static final String SUB_DIR = "subs";
 	protected static PmsConfiguration configuration;
@@ -346,7 +346,7 @@ public class FFmpegVideo extends Player {
 			try {
 				iMaxVideoBitrate = Integer.parseInt(sMaxVideoBitrate);
 			} catch (NumberFormatException nfe) {
-				LOGGER.error("Can't parse max video bitrate", nfe); // XXX this should be handled in RendererConfiguration
+				logger.error("Can't parse max video bitrate", nfe); // XXX this should be handled in RendererConfiguration
 			}
 		}
 
@@ -535,7 +535,7 @@ public class FFmpegVideo extends Player {
 
 		cmdList.add("-loglevel");
 
-		if (LOGGER.isTraceEnabled()) { // Set -loglevel in accordance with LOGGER setting
+		if (logger.isTraceEnabled()) { // Set -loglevel in accordance with logger setting
 			cmdList.add("info"); // Could be changed to "verbose" or "debug" if "info" level is not enough
 		} else {
 			cmdList.add("fatal");
@@ -1030,7 +1030,7 @@ public class FFmpegVideo extends Player {
 			try {
 				tempSubs = SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(params.sid, params.timeseek);
 			} catch (IOException e) {
-				LOGGER.debug("Applying times shift caused an error: " + e);
+				logger.debug("Applying times shift caused an error: " + e);
 				tempSubs = null;
 			}
 		}
@@ -1053,7 +1053,7 @@ public class FFmpegVideo extends Player {
 		cmdList.add("-y");
 		cmdList.add("-loglevel");
 
-		if (LOGGER.isTraceEnabled()) { // Set -loglevel in accordance with LOGGER setting
+		if (logger.isTraceEnabled()) { // Set -loglevel in accordance with logger setting
 			cmdList.add("info"); // Could be changed to "verbose" or "debug" if "info" level is not enough
 		} else {
 			cmdList.add("fatal");
@@ -1122,7 +1122,7 @@ public class FFmpegVideo extends Player {
 		try {
 			pw.join(); // Wait until the conversion is finished
 		} catch (InterruptedException e) {
-			LOGGER.debug("Subtitles conversion finished wih error: " + e);
+			logger.debug("Subtitles conversion finished wih error: " + e);
 			return null;
 		}
 

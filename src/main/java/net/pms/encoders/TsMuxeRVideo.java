@@ -48,7 +48,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.startsWith;
 
 public class TsMuxeRVideo extends Player {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TsMuxeRVideo.class);
+	private static final Logger logger = LoggerFactory.getLogger(TsMuxeRVideo.class);
 	private static final String COL_SPEC = "left:pref, 0:grow";
 	private static final String ROW_SPEC = "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, 0:grow";
 
@@ -258,7 +258,7 @@ public class TsMuxeRVideo extends Player {
 						|| !params.mediaRenderer.isH264Level41Limited());
 
 				if (!compat && params.mediaRenderer.isPS3()) {
-					LOGGER.info("The video will not play or will show a black screen on the PS3...");
+					logger.info("The video will not play or will show a black screen on the PS3...");
 				}
 
 				if (media.getH264AnnexB() != null && media.getH264AnnexB().length > 0) {
@@ -737,7 +737,7 @@ public class TsMuxeRVideo extends Player {
 		try {
 			outputFileName = configuration.getTempFolder() + "/" + outputFileName;
 		} catch (IOException e) {
-			LOGGER.warn("Failure to determine temporary folder.", e);
+			logger.warn("Failure to determine temporary folder.", e);
 		}
 
 		File outputFile = new File(outputFileName);
@@ -759,13 +759,13 @@ public class TsMuxeRVideo extends Player {
 					outputStream.write(buffer, 0, byteCount);
 				}
 			} catch (final IOException e) {
-				LOGGER.error("Failure on saving the embedded resource " + resourceName + " to the file " + outputFile.getAbsolutePath(), e);
+				logger.error("Failure on saving the embedded resource " + resourceName + " to the file " + outputFile.getAbsolutePath(), e);
 			} finally {
 				if (inputStream != null) {
 					try {
 						inputStream.close();
 					} catch (final IOException e) {
-						LOGGER.warn("Problem closing an input stream while reading data from the embedded resource " + resourceName, e);
+						logger.warn("Problem closing an input stream while reading data from the embedded resource " + resourceName, e);
 					}
 				}
 
@@ -774,7 +774,7 @@ public class TsMuxeRVideo extends Player {
 						outputStream.flush();
 						outputStream.close();
 					} catch (final IOException e) {
-						LOGGER.warn("Problem closing the output stream while writing the file " + outputFile.getAbsolutePath(), e);
+						logger.warn("Problem closing the output stream while writing the file " + outputFile.getAbsolutePath(), e);
 					}
 				}
 			}

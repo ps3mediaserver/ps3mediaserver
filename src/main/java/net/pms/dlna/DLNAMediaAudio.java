@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * removed.
  */
 public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAMediaAudio.class);
+	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaAudio.class);
 	private AudioProperties audioProperties = new AudioProperties();
 
 	/**
@@ -135,7 +135,7 @@ public class DLNAMediaAudio extends DLNAMediaLang implements Cloneable {
 			try {
 				sr = Integer.parseInt(getSampleFrequency());
 			} catch (NumberFormatException e) {
-				LOGGER.debug("Could not parse sample rate from \"" + getSampleFrequency() + "\"");
+				logger.debug("Could not parse sample rate from \"" + getSampleFrequency() + "\"");
 			}
 		}
 		return sr;

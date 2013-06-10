@@ -32,7 +32,7 @@ import java.util.*;
  */
 // this class and all its methods are package private
 class ConfigurationReader {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationReader.class);
+	private static final Logger logger = LoggerFactory.getLogger(ConfigurationReader.class);
 	private Map<String, Object> logMap = new HashMap<String, Object>();
 	private final Configuration configuration;
 	private final boolean logOverrides;
@@ -79,9 +79,9 @@ class ConfigurationReader {
 			logMap.put(key, value);
 
 			if (initialised) {
-				LOGGER.debug("Reading {}: default: {}, current: {}", key, quote(oldValue), quote(value));
+				logger.debug("Reading {}: default: {}, current: {}", key, quote(oldValue), quote(value));
 			} else {
-				LOGGER.debug("Reading {}: default: {}, previous: {}, current: {}", key, quote(def), quote(oldValue), quote(value));
+				logger.debug("Reading {}: default: {}, previous: {}, current: {}", key, quote(def), quote(oldValue), quote(value));
 			}
 		}
 	}

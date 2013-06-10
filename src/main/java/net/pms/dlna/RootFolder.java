@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 public class RootFolder extends DLNAResource {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RootFolder.class);
+	private static final Logger logger = LoggerFactory.getLogger(RootFolder.class);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private boolean running;
 
@@ -206,7 +206,7 @@ public class RootFolder extends DLNAResource {
 					}
 
 					if (trace != null) {
-						LOGGER.debug(trace);
+						logger.debug(trace);
 						PMS.get().getFrame().setStatusLine(trace);
 					}
 
@@ -319,16 +319,16 @@ public class RootFolder extends DLNAResource {
 							}
 						} catch (ArrayIndexOutOfBoundsException e) {
 							// catch exception here and go with parsing
-							LOGGER.info("Error at line " + br.getLineNumber() + " of WEB.conf: " + e.getMessage());
-							LOGGER.debug(null, e);
+							logger.info("Error at line " + br.getLineNumber() + " of WEB.conf: " + e.getMessage());
+							logger.debug(null, e);
 						}
 					}
 				}
 
 				br.close();
 			} catch (IOException e) {
-				LOGGER.info("Unexpected error in WEB.conf" + e.getMessage());
-				LOGGER.debug(null, e);
+				logger.info("Unexpected error in WEB.conf" + e.getMessage());
+				logger.debug(null, e);
 			}
 		}
 	}
@@ -384,7 +384,7 @@ public class RootFolder extends DLNAResource {
 		VirtualFolder iPhotoVirtualFolder = null;
 
 		if (Platform.isMac()) {
-			LOGGER.debug("Adding iPhoto folder");
+			logger.debug("Adding iPhoto folder");
 			InputStream inputStream = null;
 
 			try {
@@ -392,7 +392,7 @@ public class RootFolder extends DLNAResource {
 				Process process = Runtime.getRuntime().exec("defaults read com.apple.iApps iPhotoRecentDatabases");
 				inputStream = process.getInputStream();
 				List<String> lines = IOUtils.readLines(inputStream);
-				LOGGER.debug("iPhotoRecentDatabases: {}", lines);
+				logger.debug("iPhotoRecentDatabases: {}", lines);
 
 				if (lines.size() >= 2) {
 					// we want the 2nd line
@@ -407,7 +407,7 @@ public class RootFolder extends DLNAResource {
 					URI uri = new URI(line);
 					URL url = uri.toURL();
 					File file = FileUtils.toFile(url);
-					LOGGER.debug("Resolved URL to file: {} -> {}", url, file.getAbsolutePath());
+					logger.debug("Resolved URL to file: {} -> {}", url, file.getAbsolutePath());
 
 					// Load the properties XML file.
 					Map<String, Object> iPhotoLib = Plist.load(file);
@@ -446,14 +446,14 @@ public class RootFolder extends DLNAResource {
 						}
 					}
 				} else {
-					LOGGER.info("iPhoto folder not found");
+					logger.info("iPhoto folder not found");
 				}
 			} catch (XmlParseException e) {
-				LOGGER.error("Something went wrong with the iPhoto Library scan: ", e);
+				logger.error("Something went wrong with the iPhoto Library scan: ", e);
 			} catch (URISyntaxException e) {
-				LOGGER.error("Something went wrong with the iPhoto Library scan: ", e);
+				logger.error("Something went wrong with the iPhoto Library scan: ", e);
 			} catch (IOException e) {
-				LOGGER.error("Something went wrong with the iPhoto Library scan: ", e);
+				logger.error("Something went wrong with the iPhoto Library scan: ", e);
 			} finally {
 				IOUtils.closeQuietly(inputStream);
 			}
@@ -496,7 +496,7 @@ public class RootFolder extends DLNAResource {
 
 				in.close();
 			} catch (Exception e) {
-				LOGGER.error("Something went wrong with the aperture library scan: ", e);
+				logger.error("Something went wrong with the aperture library scan: ", e);
 			} finally {
 				// Avoid zombie processes, or open stream failures
 				if (process != null) {
@@ -506,25 +506,25 @@ public class RootFolder extends DLNAResource {
 						process.waitFor();
 					} catch (InterruptedException e) {
 						// Can this thread be interrupted? Don't think so, or, and even when, what will happen?
-						LOGGER.warn("Interrupted while waiting for stream for process" + e.getMessage());
+						logger.warn("Interrupted while waiting for stream for process" + e.getMessage());
 					}
 
 					try {
 						process.getErrorStream().close();
 					} catch (Exception e) {
-						LOGGER.warn("Could not close stream for output process", e);
+						logger.warn("Could not close stream for output process", e);
 					}
 
 					try {
 						process.getInputStream().close();
 					} catch (Exception e) {
-						LOGGER.warn("Could not close stream for output process", e);
+						logger.warn("Could not close stream for output process", e);
 					}
 
 					try {
 						process.getOutputStream().close();
 					} catch (Exception e) {
-						LOGGER.warn("Could not close stream for output process", e);
+						logger.warn("Could not close stream for output process", e);
 					}
 				}
 			}
@@ -561,7 +561,7 @@ public class RootFolder extends DLNAResource {
 				mediaName = "unknown library";
 			}
 
-			LOGGER.info("Going to parse aperture library: " + mediaName);
+			logger.info("Going to parse aperture library: " + mediaName);
 			res = new VirtualFolder(mediaName, null);
 			listOfAlbums = (List<?>) iPhotoLib.get("List of Albums"); // the list of events (rolls)
 
@@ -574,7 +574,7 @@ public class RootFolder extends DLNAResource {
 				}
 			}
 		} else {
-			LOGGER.info("No Aperture library found.");
+			logger.info("No Aperture library found.");
 		}
 		return res;
 	}
@@ -680,7 +680,7 @@ public class RootFolder extends DLNAResource {
 				location = location + "\\iTunes\\iTunes Music Library.xml";
 				iTunesFile = location;
 			} else {
-				LOGGER.info("Could not find the My Music folder");
+				logger.info("Could not find the My Music folder");
 			}
 		}
 
@@ -881,10 +881,10 @@ public class RootFolder extends DLNAResource {
 						}
 					}
 				} else {
-					LOGGER.info("Could not find the iTunes file");
+					logger.info("Could not find the iTunes file");
 				}
 			} catch (Exception e) {
-				LOGGER.error("Something went wrong with the iTunes Library scan: ", e);
+				logger.error("Something went wrong with the iTunes Library scan: ", e);
 			}
 		}
 
@@ -982,7 +982,7 @@ public class RootFolder extends DLNAResource {
 					try {
 						configuration.save();
 					} catch (ConfigurationException e) {
-						LOGGER.debug("Caught exception", e);
+						logger.debug("Caught exception", e);
 					}
 					return true;
 				}
@@ -1014,7 +1014,7 @@ public class RootFolder extends DLNAResource {
 				try {
 					res.add(afar.getChild());
 				} catch (Throwable t) {
-					LOGGER.error(String.format("Failed to append AdditionalFolderAtRoot with name=%s, class=%s", afar.name(), afar.getClass()), t);
+					logger.error(String.format("Failed to append AdditionalFolderAtRoot with name=%s, class=%s", afar.name(), afar.getClass()), t);
 				}
 			} else if (listener instanceof AdditionalFoldersAtRoot) {
 				java.util.Iterator<DLNAResource> folders = ((AdditionalFoldersAtRoot) listener).getChildren();
@@ -1025,7 +1025,7 @@ public class RootFolder extends DLNAResource {
 					try {
 						res.add(resource);
 					} catch (Throwable t) {
-						LOGGER.error(String.format("Failed to append AdditionalFolderAtRoots with class=%s for DLNAResource=%s", listener.getClass(), resource.getClass()), t);
+						logger.error(String.format("Failed to append AdditionalFolderAtRoots with class=%s for DLNAResource=%s", listener.getClass(), resource.getClass()), t);
 					}
 				}
 			}

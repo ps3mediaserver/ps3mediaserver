@@ -34,7 +34,7 @@ import static net.pms.formats.v2.SubtitleType.*;
  * This class keeps track of the subtitle information for media.
  */
 public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DLNAMediaSubtitle.class);
+	private static final Logger logger = LoggerFactory.getLogger(DLNAMediaSubtitle.class);
 	private SubtitleType type = UNKNOWN;
 	private String flavor; // subtrack title / language ?
 	private File externalFile;
@@ -152,7 +152,7 @@ public class DLNAMediaSubtitle extends DLNAMediaLang implements Cloneable {
 				externalFileCharacterSet = FileUtil.getFileCharset(externalFile);
 			} catch (IOException ex) {
 				externalFileCharacterSet = null;
-				LOGGER.warn("Exception during external file charset detection.", ex);
+				logger.warn("Exception during external file charset detection.", ex);
 			}
 		}
 	}

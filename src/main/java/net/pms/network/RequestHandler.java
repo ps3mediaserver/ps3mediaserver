@@ -34,7 +34,7 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 
 public class RequestHandler implements Runnable {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RequestHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 	public final static int SOCKET_BUF_SIZE = 32768;
 	private Socket socket;
 	private OutputStream output;
@@ -85,11 +85,11 @@ public class RequestHandler implements Runnable {
 				throw new IOException("Access denied for address " + ia + " based on IP filter");
 			}
 
-			LOGGER.trace("Opened request handler on socket " + socket);
+			logger.trace("Opened request handler on socket " + socket);
 			PMS.get().getRegistry().disableGoToSleep();
 
 			while (headerLine != null && headerLine.length() > 0) {
-				LOGGER.trace("Received on socket: " + headerLine);
+				logger.trace("Received on socket: " + headerLine);
 
 				// The request object is created inside the while loop.
 				if (request != null && request.getMediaRenderer() == null) {
@@ -104,7 +104,7 @@ public class RequestHandler implements Runnable {
 					if (renderer != null) {
 						PMS.get().setRendererFound(renderer);
 						request.setMediaRenderer(renderer);
-						LOGGER.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on address " + ia);
+						logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on address " + ia);
 					}
 				}
 
@@ -120,7 +120,7 @@ public class RequestHandler implements Runnable {
 						PMS.get().setRendererFound(renderer);
 						request.setMediaRenderer(renderer);
 						renderer.associateIP(ia);	// Associate IP address for later requests
-						LOGGER.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
+						logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
 					}
 				}
 				if (renderer == null && headerLine != null && request != null) {
@@ -131,7 +131,7 @@ public class RequestHandler implements Runnable {
 						PMS.get().setRendererFound(renderer);
 						request.setMediaRenderer(renderer);
 						renderer.associateIP(ia);	// Associate IP address for later requests
-						LOGGER.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
+						logger.trace("Matched media renderer \"" + renderer.getRendererName() + "\" based on header \"" + headerLine + "\"");
 					}
 				}
 				try {
@@ -202,7 +202,7 @@ public class RequestHandler implements Runnable {
 						}
 					}
 				} catch (Exception e) {
-					LOGGER.error("Error in parsing HTTP headers", e);
+					logger.error("Error in parsing HTTP headers", e);
 				}
 
 				headerLine = br.readLine();
@@ -215,19 +215,19 @@ public class RequestHandler implements Runnable {
 					// the renderer have failed. The only option left is to assume the
 					// default renderer.
 					request.setMediaRenderer(RendererConfiguration.getDefaultConf());
-					LOGGER.trace("Using default media renderer: " + request.getMediaRenderer().getRendererName());
+					logger.trace("Using default media renderer: " + request.getMediaRenderer().getRendererName());
 
 					if (userAgentString != null && !userAgentString.equals("FDSSDP")) {
 						// We have found an unknown renderer
-						LOGGER.info("Media renderer was not recognized. Possible identifying HTTP headers: User-Agent: "	+ userAgentString
+						logger.info("Media renderer was not recognized. Possible identifying HTTP headers: User-Agent: "	+ userAgentString
 								+ ("".equals(unknownHeaders.toString()) ? "" : ", " + unknownHeaders.toString()));
 						PMS.get().setRendererFound(request.getMediaRenderer());
 					}
 				} else {
 					if (userAgentString != null) {
-						LOGGER.debug("HTTP User-Agent: " + userAgentString);
+						logger.debug("HTTP User-Agent: " + userAgentString);
 					}
-					LOGGER.trace("Recognized media renderer: " + request.getMediaRenderer().getRendererName());
+					logger.trace("Recognized media renderer: " + request.getMediaRenderer().getRendererName());
 				}
 			}
 
@@ -240,7 +240,7 @@ public class RequestHandler implements Runnable {
 			}
 
 			if (request != null) {
-				LOGGER.trace("HTTP: " + request.getArgument() + " / " + request.getLowRange() + "-" + request.getHighRange());
+				logger.trace("HTTP: " + request.getArgument() + " / " + request.getLowRange() + "-" + request.getHighRange());
 			}
 
 			if (request != null) {
@@ -251,13 +251,13 @@ public class RequestHandler implements Runnable {
 				request.getInputStream().close();
 			}
 		} catch (IOException e) {
-			LOGGER.trace("Unexpected IO error: " + e.getClass().getName() + ": " + e.getMessage());
+			logger.trace("Unexpected IO error: " + e.getClass().getName() + ": " + e.getMessage());
 			if (request != null && request.getInputStream() != null) {
 				try {
-					LOGGER.trace("Closing input stream: " + request.getInputStream());
+					logger.trace("Closing input stream: " + request.getInputStream());
 					request.getInputStream().close();
 				} catch (IOException e1) {
-					LOGGER.error("Error closing input stream", e1);
+					logger.error("Error closing input stream", e1);
 				}
 			}
 		} finally {
@@ -267,11 +267,11 @@ public class RequestHandler implements Runnable {
 				br.close();
 				socket.close();
 			} catch (IOException e) {
-				LOGGER.error("Error closing connection: ", e);
+				logger.error("Error closing connection: ", e);
 			}
 
 			startStopListenerDelegate.stop();
-			LOGGER.trace("Close connection");
+			logger.trace("Close connection");
 		}
 	}
 

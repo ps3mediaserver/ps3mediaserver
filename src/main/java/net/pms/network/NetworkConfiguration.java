@@ -114,7 +114,7 @@ public class NetworkConfiguration {
 	/**
 	 * The logger.
 	 */
-	private final static Logger LOGGER = LoggerFactory.getLogger(NetworkConfiguration.class);
+	private final static Logger logger = LoggerFactory.getLogger(NetworkConfiguration.class);
 
 	/**
 	 * Singleton instance of this class.
@@ -163,7 +163,7 @@ public class NetworkConfiguration {
 	 */
 	private Set<InetAddress> addAvailableAddresses(NetworkInterface networkInterface) {
 		Set<InetAddress> addrSet = new HashSet<InetAddress>();
-		LOGGER.trace("available addresses for {} is: {}", networkInterface.getName(), Collections.list(networkInterface.getInetAddresses()));
+		logger.trace("available addresses for {} is: {}", networkInterface.getName(), Collections.list(networkInterface.getInetAddresses()));
 
 		// networkInterface.getInterfaceAddresses() returns 'null' on some adapters if 
 		// the parameter 'java.net.preferIPv4Stack=true' is passed to the JVM
@@ -176,7 +176,7 @@ public class NetworkConfiguration {
 			}
 		}
 
-		LOGGER.trace("non loopback/ipv4 addresses: {}", addrSet);
+		logger.trace("non loopback/ipv4 addresses: {}", addrSet);
 
 		// Store the addresses
 		addressMap.put(networkInterface.getName(), addrSet);
@@ -211,7 +211,7 @@ public class NetworkConfiguration {
 			return;
 		}
 
-		LOGGER.trace("checkNetworkInterface(parent = {}, child interfaces = {})", parentName, networkInterfaces);
+		logger.trace("checkNetworkInterface(parent = {}, child interfaces = {})", parentName, networkInterfaces);
 
 		while (networkInterfaces.hasMoreElements()) {
 			NetworkInterface ni = networkInterfaces.nextElement();
@@ -220,12 +220,12 @@ public class NetworkConfiguration {
 				// check for interface has at least one IP address.
 				checkNetworkInterface(ni, parentName);
 			} else {
-				LOGGER.trace("child network interface ({}, {}) skipped, because skip_network_interfaces='{}'",
+				logger.trace("child network interface ({}, {}) skipped, because skip_network_interfaces='{}'",
 					new Object[] { ni.getName(), ni.getDisplayName(), skipNetworkInterfaces });
 			}
 		}
 
-		LOGGER.trace("checkNetworkInterface(parent = {}) finished", parentName);
+		logger.trace("checkNetworkInterface(parent = {}) finished", parentName);
 	}
 
 	/**
@@ -264,13 +264,13 @@ public class NetworkConfiguration {
 	 *            The name of the parent interface.
 	 */
 	private void checkNetworkInterface(NetworkInterface networkInterface, String parentName) {
-		LOGGER.trace("checking {}, display name: {}", networkInterface.getName(), networkInterface.getDisplayName());
+		logger.trace("checking {}, display name: {}", networkInterface.getName(), networkInterface.getDisplayName());
 		addAvailableAddresses(networkInterface);
 		checkNetworkInterface(networkInterface.getSubInterfaces(), networkInterface.getName());
 
 		// Create address / iface pairs which are not IP address of the child iface too
 		Set<InetAddress> subAddress = getAllAvailableAddresses(networkInterface.getSubInterfaces());
-		LOGGER.trace("sub address for {} is {}", networkInterface.getName(), subAddress);
+		logger.trace("sub address for {} is {}", networkInterface.getName(), subAddress);
 		boolean foundAddress = false;
 
 		// networkInterface.getInterfaceAddresses() returns 'null' on some adapters if 
@@ -278,19 +278,19 @@ public class NetworkConfiguration {
 		// Use networkInterface.getInetAddresses() instead
 		for (InetAddress address : Collections.list(networkInterface.getInetAddresses())) {
 			if (address != null) {
-				LOGGER.trace("checking {} on {}", new Object[] { address, networkInterface.getName() });
+				logger.trace("checking {} on {}", new Object[] { address, networkInterface.getName() });
 
 				if (isRelevantAddress(address)) {
 					// Avoid adding duplicates
 					if (!subAddress.contains(address)) {
-						LOGGER.trace("found {} -> {}", networkInterface.getName(), address.getHostAddress());
+						logger.trace("found {} -> {}", networkInterface.getName(), address.getHostAddress());
 						final InterfaceAssociation ia = new InterfaceAssociation(address, networkInterface, parentName);
 						interfaces.add(ia);
 						mainAddress.put(networkInterface.getName(), ia);
 						foundAddress = true;
 					}
 				} else {
-					LOGGER.trace("has {}, which is skipped, because loopback={}, ipv6={}", new Object[] {
+					logger.trace("has {}, which is skipped, because loopback={}, ipv6={}", new Object[] {
 						address, address.isLoopbackAddress(), (address instanceof Inet6Address)} );
 				}
 			}
@@ -298,7 +298,7 @@ public class NetworkConfiguration {
 
 		if (!foundAddress) {
 			interfaces.add(new InterfaceAssociation(null, networkInterface, parentName));
-			LOGGER.trace("found {}, without valid address", networkInterface.getName());
+			logger.trace("found {}, without valid address", networkInterface.getName());
 		}
 	}
 
@@ -342,16 +342,16 @@ public class NetworkConfiguration {
 	 * @return The address.
 	 */
 	public InterfaceAssociation getDefaultNetworkInterfaceAddress() {
-		LOGGER.trace("default network interface address from {}", interfaces);
+		logger.trace("default network interface address from {}", interfaces);
 		InterfaceAssociation association = getFirstInterfaceWithAddress();
 
 		if (association != null) {
 			if (association.getParentName() != null) {
 				InterfaceAssociation ia = getAddressForNetworkInterfaceName(association.getParentName());
-				LOGGER.trace("first association has parent: {} -> {}", association, ia);
+				logger.trace("first association has parent: {} -> {}", association, ia);
 				return ia;
 			} else {
-				LOGGER.trace("first network interface: {}", association);
+				logger.trace("first network interface: {}", association);
 				return association;
 			}
 		}
@@ -431,7 +431,7 @@ public class NetworkConfiguration {
 		String hostname = PMS.getConfiguration().getServerHostname();
 
 		if (hostname != null) {
-			LOGGER.trace("Searching network interface for " + hostname);
+			logger.trace("Searching network interface for " + hostname);
 			return NetworkInterface.getByInetAddress(InetAddress.getByName(hostname));
 		}
 
@@ -449,7 +449,7 @@ public class NetworkConfiguration {
 			try {
 				config = new NetworkConfiguration(NetworkInterface.getNetworkInterfaces());
 			} catch (SocketException e) {
-				LOGGER.error("Inspecting the network failed: " + e.getMessage(), e);
+				logger.error("Inspecting the network failed: " + e.getMessage(), e);
 			}
 		}
 

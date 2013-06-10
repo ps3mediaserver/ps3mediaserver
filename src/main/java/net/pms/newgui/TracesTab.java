@@ -41,7 +41,7 @@ import java.util.Locale;
 import javax.swing.text.DefaultCaret;
 
 public class TracesTab {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TracesTab.class);
+	private static final Logger logger = LoggerFactory.getLogger(TracesTab.class);
 	private PmsConfiguration configuration;
 	private JTextArea jList;
 	protected JScrollPane jListPane;
@@ -149,9 +149,9 @@ public class TracesTab {
 					try {
 						java.awt.Desktop.getDesktop().open(logfile);
 					} catch (IOException ioe) {
-						LOGGER.error(String.format("Failed to open file %s in default editor", logfile), ioe);
+						logger.error(String.format("Failed to open file %s in default editor", logfile), ioe);
 					} catch (UnsupportedOperationException usoe) {
-						LOGGER.error(String.format("Failed to open file %s in default editor", logfile), usoe);
+						logger.error(String.format("Failed to open file %s in default editor", logfile), usoe);
 					}
 				}
 			});

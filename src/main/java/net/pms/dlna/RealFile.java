@@ -32,7 +32,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class RealFile extends MapFile {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RealFile.class);
+	private static final Logger logger = LoggerFactory.getLogger(RealFile.class);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
 
 	public RealFile(File file) {
@@ -71,9 +71,9 @@ public class RealFile extends MapFile {
 			if (getType() != Format.UNKNOWN && getMedia() != null && (getMedia().isEncrypted() || getMedia().getContainer() == null || getMedia().getContainer().equals(DLNAMediaLang.UND))) {
 				valid = false;
 				if (getMedia().isEncrypted()) {
-					LOGGER.info("The file {} is encrypted. It will be hidden", file.getAbsolutePath());
+					logger.info("The file {} is encrypted. It will be hidden", file.getAbsolutePath());
 				} else {
-					LOGGER.info("The file {} could not be parsed. It will be hidden", file.getAbsolutePath());
+					logger.info("The file {} could not be parsed. It will be hidden", file.getAbsolutePath());
 				}
 			}
 
@@ -91,7 +91,7 @@ public class RealFile extends MapFile {
 		try {
 			return new FileInputStream(getFile());
 		} catch (FileNotFoundException e) {
-			LOGGER.debug("File not found: {}", getFile().getAbsolutePath());
+			logger.debug("File not found: {}", getFile().getAbsolutePath());
 		}
 
 		return null;

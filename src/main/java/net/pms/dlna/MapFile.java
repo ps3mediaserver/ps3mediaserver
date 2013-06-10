@@ -43,7 +43,7 @@ import java.util.*;
  * removed.
  */
 public class MapFile extends DLNAResource {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MapFile.class);
+	private static final Logger logger = LoggerFactory.getLogger(MapFile.class);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private List<File> discoverable;
 
@@ -95,7 +95,7 @@ public class MapFile extends DLNAResource {
 			// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=15135
 			// http://stackoverflow.com/questions/3228147/retrieving-the-underlying-error-when-file-listfiles-return-null
 			if (children == null) {
-				LOGGER.warn("Can't list files in non-readable directory: {}", f.getAbsolutePath());
+				logger.warn("Can't list files in non-readable directory: {}", f.getAbsolutePath());
 			} else {
 				for (File child : children) {
 					if (child.isFile()) {
@@ -133,7 +133,7 @@ public class MapFile extends DLNAResource {
 				} else {
 					/* Optionally ignore empty directories */
 					if (f.isDirectory() && configuration.isHideEmptyFolders() && !isFolderRelevant(f)) {
-						LOGGER.debug("Ignoring empty/non-relevant directory: " + f.getName());
+						logger.debug("Ignoring empty/non-relevant directory: " + f.getName());
 					} else { // Otherwise add the file
 						addChild(new RealFile(f));
 					}
@@ -158,12 +158,12 @@ public class MapFile extends DLNAResource {
 					File[] files = file.listFiles();
 
 					if (files == null) {
-						LOGGER.warn("Can't read files from directory: {}", file.getAbsolutePath());
+						logger.warn("Can't read files from directory: {}", file.getAbsolutePath());
 					} else {
 						out.addAll(Arrays.asList(files));
 					}
 				} else {
-					LOGGER.warn("Can't read directory: {}", file.getAbsolutePath());
+					logger.warn("Can't read directory: {}", file.getAbsolutePath());
 				}
 			}
 		}
@@ -296,11 +296,11 @@ public class MapFile extends DLNAResource {
 		}
 
 		for (DLNAResource f : removedFiles) {
-			LOGGER.debug("File automatically removed: " + f.getName());
+			logger.debug("File automatically removed: " + f.getName());
 		}
 
 		for (File f : addedFiles) {
-			LOGGER.debug("File automatically added: " + f.getName());
+			logger.debug("File automatically added: " + f.getName());
 		}
 
 		// false: don't create the folder if it doesn't exist i.e. find the folder

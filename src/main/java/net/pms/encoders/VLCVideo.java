@@ -71,7 +71,7 @@ import com.sun.jna.Platform;
  * @author Leon Blakey <lord.quackstar@gmail.com>
  */
 public class VLCVideo extends Player {
-	private static final Logger LOGGER = LoggerFactory.getLogger(VLCVideo.class);
+	private static final Logger logger = LoggerFactory.getLogger(VLCVideo.class);
 	protected final PmsConfiguration pmsconfig;
 	public static final String ID = "vlctranscoder";
 	protected JTextField scale;
@@ -148,7 +148,7 @@ public class VLCVideo extends Player {
 		CodecConfig codecConfig = new CodecConfig();
 		if (renderer.isTranscodeToWMV()) {
 			// Assume WMV = XBox = all media renderers with this flag
-			LOGGER.debug("Using XBox WMV codecs");
+			logger.debug("Using XBox WMV codecs");
 			codecConfig.videoCodec = "wmv2";
 			codecConfig.audioCodec = "wma";
 			codecConfig.container = "asf";
@@ -162,15 +162,15 @@ public class VLCVideo extends Player {
 			codecConfig.audioCodec = "mp2a";
 
 			if (renderer.isTranscodeToMPEGTSAC3()) {
-				LOGGER.debug("Using standard DLNA codecs with an MPEG-PS container");
+				logger.debug("Using standard DLNA codecs with an MPEG-PS container");
 				codecConfig.container = "ts";
 			} else {
-				LOGGER.debug("Using standard DLNA codecs with an MPEG-TS (default) container");
+				logger.debug("Using standard DLNA codecs with an MPEG-TS (default) container");
 				codecConfig.container = "ps";
 			}
 		}
 
-		LOGGER.trace("Using " + codecConfig.videoCodec + ", " + codecConfig.audioCodec + ", " + codecConfig.container);
+		logger.trace("Using " + codecConfig.videoCodec + ", " + codecConfig.audioCodec + ", " + codecConfig.container);
 
 		// Audio sample rate handling
 		if (sampleRateOverride.isSelected()) {
@@ -273,7 +273,7 @@ public class VLCVideo extends Player {
 		// earlier), so, if not enabled, it needs to be explicitly
 		// disabled
 		if (pmsconfig.isVideoHardwareAcceleration()) {
-			LOGGER.warn("VLC hardware acceleration support is an experimental feature. Please disable it before reporting issues.");
+			logger.warn("VLC hardware acceleration support is an experimental feature. Please disable it before reporting issues.");
 			cmdList.add("--ffmpeg-hw");
 		} else {
 			cmdList.add("--no-ffmpeg-hw");
@@ -355,7 +355,7 @@ public class VLCVideo extends Player {
 		String[] cmdArray = new String[cmdList.size()];
 		cmdList.toArray(cmdArray);
 		cmdArray = finalizeTranscoderArgs(filename, dlna, media, params, cmdArray);
-		LOGGER.trace("Finalized args: " + StringUtils.join(cmdArray, " "));
+		logger.trace("Finalized args: " + StringUtils.join(cmdArray, " "));
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.attachProcess(pipe_process);
 

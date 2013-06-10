@@ -54,7 +54,7 @@ import static org.apache.commons.lang3.StringUtils.split;
  * file.
  */
 public class PmsConfiguration {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PmsConfiguration.class);
+	private static final Logger logger = LoggerFactory.getLogger(PmsConfiguration.class);
 	private static final int DEFAULT_SERVER_PORT = 5001;
 
 	/*
@@ -432,7 +432,7 @@ public class PmsConfiguration {
 				if (FileUtil.isFileReadable(pmsConfFile)) {
 					configuration.load(PROFILE_PATH);
 				} else {
-					LOGGER.warn("Can't load {}", PROFILE_PATH);
+					logger.warn("Can't load {}", PROFILE_PATH);
 				}
 			} else if (SKEL_PROFILE_PATH != null) {
                 File pmsSkelConfFile = new File(SKEL_PROFILE_PATH);
@@ -441,9 +441,9 @@ public class PmsConfiguration {
 					if (FileUtil.isFileReadable(pmsSkelConfFile)) {
 						// Load defaults from skel file, save them later to PROFILE_PATH
 						configuration.load(pmsSkelConfFile);
-						LOGGER.info("Default configuration loaded from " + SKEL_PROFILE_PATH);
+						logger.info("Default configuration loaded from " + SKEL_PROFILE_PATH);
 					} else {
-						LOGGER.warn("Can't load {}", SKEL_PROFILE_PATH);
+						logger.warn("Can't load {}", SKEL_PROFILE_PATH);
 					}
 				}
             }
@@ -1775,7 +1775,7 @@ public class PmsConfiguration {
 
 	public void save() throws ConfigurationException {
 		configuration.save();
-		LOGGER.info("Configuration saved to: " + PROFILE_PATH);
+		logger.info("Configuration saved to: " + PROFILE_PATH);
 	}
 
 	public String getFolders() {
@@ -2196,7 +2196,7 @@ public class PmsConfiguration {
 			try {
 				HOSTNAME = InetAddress.getLocalHost().getHostName();
 			} catch (UnknownHostException e) {
-				LOGGER.info("Can't determine hostname");
+				logger.info("Can't determine hostname");
 				HOSTNAME = "unknown host";
 			}
 		}

@@ -50,7 +50,7 @@ import java.util.Map;
 import static net.pms.encoders.PlayerPurpose.*;
 
 public class TranscodingTab {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TranscodingTab.class);
+	private static final Logger logger = LoggerFactory.getLogger(TranscodingTab.class);
 	private static final String COMMON_COL_SPEC = "left:pref, 3dlu, pref:grow";
 	private static final String COMMON_ROW_SPEC = "4*(pref, 3dlu), pref, 9dlu, pref, 9dlu:grow, pref";
 	private static final String EMPTY_COL_SPEC = "left:pref, 3dlu, pref:grow";
@@ -411,7 +411,7 @@ public class TranscodingTab {
 					int ab = Integer.parseInt(maxbuffer.getText());
 					configuration.setMaxMemoryBufferSize(ab);
 				} catch (NumberFormatException nfe) {
-					LOGGER.debug("Could not parse max memory buffer size from \"" + maxbuffer.getText() + "\"");
+					logger.debug("Could not parse max memory buffer size from \"" + maxbuffer.getText() + "\"");
 				}
 			}
 		});
@@ -461,7 +461,7 @@ public class TranscodingTab {
 					int ab = Integer.parseInt(chapter_interval.getText());
 					configuration.setChapterInterval(ab);
 				} catch (NumberFormatException nfe) {
-					LOGGER.debug("Could not parse chapter interval from \"" + chapter_interval.getText() + "\"");
+					logger.debug("Could not parse chapter interval from \"" + chapter_interval.getText() + "\"");
 				}
 			}
 		});
@@ -649,7 +649,7 @@ public class TranscodingTab {
 					int ab = Integer.parseInt(abitrate.getText());
 					configuration.setAudioBitrate(ab);
 				} catch (NumberFormatException nfe) {
-					LOGGER.debug("Could not parse audio bitrate from \"" + abitrate.getText() + "\"");
+					logger.debug("Could not parse audio bitrate from \"" + abitrate.getText() + "\"");
 				}
 			}
 		});

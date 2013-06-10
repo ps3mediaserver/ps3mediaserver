@@ -32,7 +32,7 @@ import java.util.StringTokenizer;
  * Abstract class to store known information about a given format.
  */
 public abstract class Format implements Cloneable {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Format.class);
+	private static final Logger logger = LoggerFactory.getLogger(Format.class);
 	private String icon = null;
 	protected int type = UNKNOWN;
 	protected Format secondaryFormat;
@@ -247,7 +247,7 @@ public abstract class Format implements Cloneable {
 		try {
 			o = super.clone();
 		} catch (CloneNotSupportedException e) {
-			LOGGER.error(null, e);
+			logger.error(null, e);
 		}
 		return o;
 	}
@@ -269,7 +269,7 @@ public abstract class Format implements Cloneable {
 			media.parse(file, this, type, false);
 		}
 
-		LOGGER.trace("Parsing results: " + file + " / " + media);
+		logger.trace("Parsing results: " + file + " / " + media);
 	}
 
 	/**

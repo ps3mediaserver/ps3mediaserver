@@ -29,7 +29,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 
 public class CoverUtil extends HTTPResource {
-	private static final Logger LOGGER = LoggerFactory.getLogger(CoverUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(CoverUtil.class);
 
 	/**
 	 * Use www.discogs.com as backend for cover lookups.
@@ -131,7 +131,7 @@ public class CoverUtil extends HTTPResource {
 							}
 						}
 					} catch (IOException e) {
-						LOGGER.error("Error while retrieving cover for " + artist + album, e);
+						logger.error("Error while retrieving cover for " + artist + album, e);
 					}
 				}
 			} else if (backend == AUDIO_AMAZON) {
@@ -158,7 +158,7 @@ public class CoverUtil extends HTTPResource {
 							return data;
 						}
 					} catch (IOException e) {
-						LOGGER.error("Error while retrieving cover for " + artist + album, e);
+						logger.error("Error while retrieving cover for " + artist + album, e);
 					}
 				}
 			}

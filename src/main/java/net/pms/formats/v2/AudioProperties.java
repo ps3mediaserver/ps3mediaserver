@@ -36,7 +36,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * @since 1.60.0
  */
 public class AudioProperties {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AudioProperties.class);
+	private static final Logger logger = LoggerFactory.getLogger(AudioProperties.class);
 
 	private static final Pattern intPattern = Pattern.compile("([\\+-]?\\d+)([eE][\\+-]?\\d+)?");
 	private static final Pattern floatPattern = Pattern.compile("([\\+-]?\\d(\\.\\d*)?|\\.\\d+)([eE][\\+-]?(\\d(\\.\\d*)?|\\.\\d+))?");
@@ -140,7 +140,7 @@ public class AudioProperties {
 
 	public static int getChannelsNumberFromLibMediaInfo(String mediaInfoValue) {
 		if (isEmpty(mediaInfoValue)) {
-			LOGGER.warn("Empty value passed in. Returning default number 2.");
+			logger.warn("Empty value passed in. Returning default number 2.");
 			return 2;
 		}
 
@@ -159,12 +159,12 @@ public class AudioProperties {
 					result = currentResult;
 				}
 			} catch (NumberFormatException ex) {
-				LOGGER.warn("NumberFormatException during parsing substring {} from value {}", matchResult, mediaInfoValue);
+				logger.warn("NumberFormatException during parsing substring {} from value {}", matchResult, mediaInfoValue);
 			}
 		}
 
 		if (result <= 0) {
-			LOGGER.warn("Can't parse value {}. Returning default number 2.", mediaInfoValue);
+			logger.warn("Can't parse value {}. Returning default number 2.", mediaInfoValue);
 			return 2;
 		} else {
 			return result;
@@ -174,7 +174,7 @@ public class AudioProperties {
 
 	public static int getAudioDelayFromLibMediaInfo(String mediaInfoValue) {
 		if (isEmpty(mediaInfoValue)) {
-			LOGGER.warn("Empty value passed in. Returning default number 0.");
+			logger.warn("Empty value passed in. Returning default number 0.");
 			return 0;
 		}
 
@@ -188,7 +188,7 @@ public class AudioProperties {
 			try {
 				result = Integer.parseInt(matchResult);
 			} catch (NumberFormatException ex) {
-				LOGGER.warn("NumberFormatException during parsing substring {} from value {}", matchResult, mediaInfoValue);
+				logger.warn("NumberFormatException during parsing substring {} from value {}", matchResult, mediaInfoValue);
 			}
 		}
 		return result;
@@ -196,7 +196,7 @@ public class AudioProperties {
 
 	public static int getSampleFrequencyFromLibMediaInfo(String mediaInfoValue) {
 		if (isEmpty(mediaInfoValue)) {
-			LOGGER.warn("Empty value passed in. Returning default number 48000 Hz.");
+			logger.warn("Empty value passed in. Returning default number 48000 Hz.");
 			return 48000;
 		}
 
@@ -214,12 +214,12 @@ public class AudioProperties {
 					result = currentResult;
 				}
 			} catch (NumberFormatException ex) {
-				LOGGER.warn("NumberFormatException during parsing substring {} from value {}", matchResult, mediaInfoValue);
+				logger.warn("NumberFormatException during parsing substring {} from value {}", matchResult, mediaInfoValue);
 			}
 		}
 
 		if (result < 1) {
-			LOGGER.warn("Can't parse value {}. Returning default number 48000 Hz.", mediaInfoValue);
+			logger.warn("Can't parse value {}. Returning default number 48000 Hz.", mediaInfoValue);
 			return 48000;
 		} else {
 			return result;

@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessWrapperImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(ProcessWrapperImpl.class);
 
 	/** FONTCONFIG_PATH environment variable name */
 	private static final String FONTCONFIG_PATH = "FONTCONFIG_PATH";
@@ -128,7 +128,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 		ProcessBuilder pb = new ProcessBuilder(cmdArray);
 
 		try {
-			LOGGER.debug("Starting " + cmdLine);
+			logger.debug("Starting " + cmdLine);
 
 			if (params.workDir != null && params.workDir.isDirectory()) {
 				pb.directory(params.workDir);
@@ -169,7 +169,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				if (!environment.containsKey(FONTCONFIG_PATH)) {
 					String pmsWorkingDirectory = new File("").getAbsolutePath();
 					String fontconfigFontsPath = pmsWorkingDirectory + "/fonts";
-					LOGGER.trace("Setting FONTCONFIG_PATH to \"" + fontconfigFontsPath + "\"");
+					logger.trace("Setting FONTCONFIG_PATH to \"" + fontconfigFontsPath + "\"");
 					environment.put(FONTCONFIG_PATH, fontconfigFontsPath);
 				}
 			}
@@ -190,7 +190,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			stdoutConsumer = null;
 
 			if (params.input_pipes[0] != null) {
-				LOGGER.debug("Reading pipe: " + params.input_pipes[0].getInputPipe());
+				logger.debug("Reading pipe: " + params.input_pipes[0].getInputPipe());
 				bo = params.input_pipes[0].getDirectBuffer();
 
 				if (bo == null || params.losslessaudio || params.lossyaudio || params.no_videoencode) {
@@ -227,7 +227,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			Integer pid = ProcessUtil.getProcessID(process);
 
 			if (pid != null) {
-				LOGGER.debug("Unix process ID ({}): {}", cmdArray[0], pid);
+				logger.debug("Unix process ID ({}): {}", cmdArray[0], pid);
 			}
 
 			ProcessUtil.waitFor(process);
@@ -246,7 +246,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				}
 			} catch (InterruptedException e) { }
 		} catch (Exception e) {
-			LOGGER.error("Error initializing process: ", e);
+			logger.error("Error initializing process: ", e);
 			stopProcess();
 		} finally {
 			try {
@@ -254,18 +254,18 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 					bo.close();
 				}
 			} catch (IOException ioe) {
-				LOGGER.debug("Error closing buffered output file", ioe.getMessage());
+				logger.debug("Error closing buffered output file", ioe.getMessage());
 			}
 
 			if (!destroyed && !params.noexitcheck) {
 				try {
 					success = true;
 					if (process != null && process.exitValue() != 0) {
-						LOGGER.info("Process {} has a return code of {}! Maybe an error occurred... check the log file", cmdArray[0], process.exitValue());
+						logger.info("Process {} has a return code of {}! Maybe an error occurred... check the log file", cmdArray[0], process.exitValue());
 						success = false;
 					}
 				} catch (IllegalThreadStateException itse) {
-					LOGGER.error("Error reading process exit value", itse);
+					logger.error("Error reading process exit value", itse);
 				}
 			}
 
@@ -336,9 +336,9 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				Integer pid = ProcessUtil.getProcessID(process);
 
 				if (pid != null) {
-					LOGGER.debug("Stopping Unix process " + pid + ": " + this);
+					logger.debug("Stopping Unix process " + pid + ": " + this);
 				} else {
-					LOGGER.debug("Stopping process: " + this);
+					logger.debug("Stopping process: " + this);
 				}
 
 				ProcessUtil.destroy(process);
@@ -368,7 +368,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 
 	public void setReadyToStop(boolean nullable) {
 		if (nullable != this.nullable) {
-			LOGGER.trace("Ready to Stop: " + nullable);
+			logger.trace("Ready to Stop: " + nullable);
 		}
 
 		this.nullable = nullable;

@@ -30,7 +30,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 public class ZippedFile extends DLNAResource {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ZippedFile.class);
+	private static final Logger logger = LoggerFactory.getLogger(ZippedFile.class);
 	private File file;
 	private ZipFile zip;
 
@@ -49,9 +49,9 @@ public class ZippedFile extends DLNAResource {
 
 			zip.close();
 		} catch (ZipException e) {
-			LOGGER.error("Error reading zip file", e);
+			logger.error("Error reading zip file", e);
 		} catch (IOException e) {
-			LOGGER.error("Error reading zip file", e);
+			logger.error("Error reading zip file", e);
 		}
 	}
 

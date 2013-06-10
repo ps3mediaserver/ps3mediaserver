@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class RAWThumbnailer extends Player {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RAWThumbnailer.class);
+	private static final Logger logger = LoggerFactory.getLogger(RAWThumbnailer.class);
 	public final static String ID = "rawthumbs";
 
 	protected String[] getDefaultArgs() {
@@ -67,7 +67,7 @@ public class RAWThumbnailer extends Player {
 			try {
 				media.setThumb(getThumbnail(params, filename));
 			} catch (Exception e) {
-				LOGGER.error("error extracting thumbnail", e);
+				logger.error("error extracting thumbnail", e);
 				return null;
 			}
 		}

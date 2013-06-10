@@ -79,7 +79,7 @@ public class PMS {
 	public static final String AVS_SEPARATOR = "\1";
 
 	// (innot): The logger used for all logging.
-	private static final Logger LOGGER = LoggerFactory.getLogger(PMS.class);
+	private static final Logger logger = LoggerFactory.getLogger(PMS.class);
 
 	// TODO(tcox):  This shouldn't be static
 	private static PmsConfiguration configuration;
@@ -224,7 +224,7 @@ public class PMS {
 	 * @throws Exception TODO: Check which exceptions to use
 	 */
 	private boolean checkProcessExistence(String name, boolean error, File workDir, String... params) throws Exception {
-		LOGGER.debug("launching: " + params[0]);
+		logger.debug("launching: " + params[0]);
 
 		try {
 			ProcessBuilder pb = new ProcessBuilder(params);
@@ -264,14 +264,14 @@ public class PMS {
 			int exit = process.exitValue();
 			if (exit != 0) {
 				if (error) {
-					LOGGER.info("[" + exit + "] Cannot launch " + name + " / Check the presence of " + params[0] + " ...");
+					logger.info("[" + exit + "] Cannot launch " + name + " / Check the presence of " + params[0] + " ...");
 				}
 				return false;
 			}
 			return true;
 		} catch (Exception e) {
 			if (error) {
-				LOGGER.error("Cannot launch " + name + " / Check the presence of " + params[0] + " ...", e);
+				logger.error("Cannot launch " + name + " / Check the presence of " + params[0] + " ...", e);
 			}
 			return false;
 		}
@@ -313,25 +313,25 @@ public class PMS {
 	}
 
 	private void displayBanner() throws IOException {
-        LOGGER.info("Starting " + PropertiesUtil.getProjectProperties().get("project.name") + " " + getVersion());
-        LOGGER.info("by shagrath / 2008-2013");
-        LOGGER.info("http://ps3mediaserver.org");
-        LOGGER.info("https://github.com/ps3mediaserver/ps3mediaserver");
-        LOGGER.info("");
+        logger.info("Starting " + PropertiesUtil.getProjectProperties().get("project.name") + " " + getVersion());
+        logger.info("by shagrath / 2008-2013");
+        logger.info("http://ps3mediaserver.org");
+        logger.info("https://github.com/ps3mediaserver/ps3mediaserver");
+        logger.info("");
 
 		String commitId = PropertiesUtil.getProjectProperties().get("git.commit.id");
 		String commitTime = PropertiesUtil.getProjectProperties().get("git.commit.time");
 		String shortCommitId = commitId.substring(0,  9);
 
-		LOGGER.info("Build: " + shortCommitId + " (" + commitTime + ")");
+		logger.info("Build: " + shortCommitId + " (" + commitTime + ")");
 
 		// Log system properties
 		logSystemInfo();
 
 		String cwd = new File("").getAbsolutePath();
-		LOGGER.info("Working directory: " + cwd);
+		logger.info("Working directory: " + cwd);
 
-		LOGGER.info("Temp directory: " + configuration.getTempFolder());
+		logger.info("Temp directory: " + configuration.getTempFolder());
 
 		// Verify the java.io.tmpdir is writable; JNA requires it.
 		// Note: the configured tempFolder has already been checked, but it
@@ -339,12 +339,12 @@ public class PMS {
 		File javaTmpdir = new File(System.getProperty("java.io.tmpdir"));
 
 		if (!FileUtil.isDirectoryWritable(javaTmpdir)) {
-			LOGGER.error("The Java temp directory \"{}\" is not writable for PMS!", javaTmpdir.getAbsolutePath());
-			LOGGER.error("Please make sure the directory is writable for user \"{}\"", System.getProperty("user.name"));
+			logger.error("The Java temp directory \"{}\" is not writable for PMS!", javaTmpdir.getAbsolutePath());
+			logger.error("Please make sure the directory is writable for user \"{}\"", System.getProperty("user.name"));
 			throw new IOException("Cannot write to Java temp directory");
 		}
 
-		LOGGER.info("Logging config file: {}", LoggingConfigFileLoader.getConfigFilePath());
+		logger.info("Logging config file: {}", LoggingConfigFileLoader.getConfigFilePath());
 
 		HashMap<String, String> lfps = LoggingConfigFileLoader.getLogFilePaths();
 
@@ -352,22 +352,22 @@ public class PMS {
 		if (lfps != null && lfps.size() > 0) {
 			if (lfps.size() == 1) {
 				Entry<String, String> entry = lfps.entrySet().iterator().next();
-				LOGGER.info(String.format("%s: %s", entry.getKey(), entry.getValue()));
+				logger.info(String.format("%s: %s", entry.getKey(), entry.getValue()));
 			} else {
-				LOGGER.info("Logging to multiple files:");
+				logger.info("Logging to multiple files:");
 				Iterator<Entry<String, String>> logsIterator = lfps.entrySet().iterator();
 				Entry<String, String> entry;
 				while (logsIterator.hasNext()) {
 					entry = logsIterator.next();
-					LOGGER.info(String.format("%s: %s", entry.getKey(), entry.getValue()));
+					logger.info(String.format("%s: %s", entry.getKey(), entry.getValue()));
 				}
 			}
 		}
 
-		LOGGER.info("");
-		LOGGER.info("Profile directory: {}", configuration.getProfileDirectory());
+		logger.info("");
+		logger.info("Profile directory: {}", configuration.getProfileDirectory());
 		String profilePath = configuration.getProfilePath();
-		LOGGER.info("Profile path: {}", profilePath);
+		logger.info("Profile path: {}", profilePath);
 
 		File profileFile = new File(profilePath);
 
@@ -376,13 +376,13 @@ public class PMS {
 				FileUtil.isFileReadable(profileFile) ? "r" : "-",
 				FileUtil.isFileWritable(profileFile) ? "w" : "-"
 			);
-			LOGGER.info("Profile permissions: {}", permissions);
+			logger.info("Profile permissions: {}", permissions);
 		} else {
-			LOGGER.info("Profile permissions: no such file");
+			logger.info("Profile permissions: no such file");
 		}
 
-		LOGGER.info("Profile name: {}", configuration.getProfileName());
-		LOGGER.info("");
+		logger.info("Profile name: {}", configuration.getProfileName());
+		logger.info("");
 	}
 
 	/**
@@ -410,8 +410,8 @@ public class PMS {
 		if (System.getProperty(CONSOLE) == null) {
 			frame = new LooksFrame(autoUpdater, configuration);
 		} else {
-			LOGGER.info("GUI environment not available");
-			LOGGER.info("Switching to console mode");
+			logger.info("GUI environment not available");
+			logger.info("Switching to console mode");
 			frame = new DummyFrame();
 		}
 
@@ -447,21 +447,21 @@ public class PMS {
 
 		frame.setStatusCode(0, Messages.getString("PMS.130"), "connect_no-220.png");
 		RendererConfiguration.loadRendererConfigurations(configuration);
-		LOGGER.info("Checking MPlayer font cache. It can take a minute or so.");
+		logger.info("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
 
 		if (isWindows()) {
 			checkProcessExistence("MPlayer", true, configuration.getTempFolder(), configuration.getMplayerPath(), "dummy");
 		}
 
-		LOGGER.info("Done!");
+		logger.info("Done!");
 
 		// check the existence of Vsfilter.dll
 		if (registry.isAvis() && registry.getAvsPluginsDir() != null) {
-			LOGGER.info("Found AviSynth plugins dir: " + registry.getAvsPluginsDir().getAbsolutePath());
+			logger.info("Found AviSynth plugins dir: " + registry.getAvsPluginsDir().getAbsolutePath());
 			File vsFilterdll = new File(registry.getAvsPluginsDir(), "VSFilter.dll");
 			if (!vsFilterdll.exists()) {
-				LOGGER.info("VSFilter.dll is not in the AviSynth plugins directory. This can cause problems when trying to play subtitled videos with AviSynth");
+				logger.info("VSFilter.dll is not in the AviSynth plugins directory. This can cause problems when trying to play subtitled videos with AviSynth");
 			}
 		}
 
@@ -470,19 +470,19 @@ public class PMS {
 		String vlcPath = registry.getVlcPath();
 
 		if (vlcVersion != null && vlcPath != null) {
-			LOGGER.info("Found VLC version " + vlcVersion + " at: " + vlcPath);
+			logger.info("Found VLC version " + vlcVersion + " at: " + vlcPath);
 
 			Version vlc = new Version(vlcVersion);
 			Version requiredVersion = new Version("2.0.2");
 
 			if (vlc.compareTo(requiredVersion) <= 0) {
-				LOGGER.error("Only VLC versions 2.0.2 and above are supported");
+				logger.error("Only VLC versions 2.0.2 and above are supported");
 			}
 		}
 
 		// check if Kerio is installed
 		if (registry.isKerioFirewall()) {
-			LOGGER.info("Detected Kerio firewall");
+			logger.info("Detected Kerio firewall");
 		}
 
 		// force use of specific dvr ms muxer when it's installed in the right place
@@ -510,7 +510,7 @@ public class PMS {
 		try {
 			ExternalFactory.lookup();
 		} catch (Exception e) {
-			LOGGER.error("Error loading plugins", e);
+			logger.error("Error loading plugins", e);
 		}
 
 		// a static block in Player doesn't work (i.e. is called too late).
@@ -532,8 +532,8 @@ public class PMS {
 		try {
 			binding = server.start();
 		} catch (BindException b) {
-			LOGGER.info("FATAL ERROR: Unable to bind on port: " + configuration.getServerPort() + ", because: " + b.getMessage());
-			LOGGER.info("Maybe another process is running or the hostname is wrong.");
+			logger.info("FATAL ERROR: Unable to bind on port: " + configuration.getServerPort() + ", because: " + b.getMessage());
+			logger.info("Maybe another process is running or the hostname is wrong.");
 		}
 
 		new Thread("Connection Checker") {
@@ -559,7 +559,7 @@ public class PMS {
 		if (configuration.getUseCache()) {
 			initializeDatabase(); // XXX: this must be done *before* new MediaLibrary -> new MediaLibraryFolder
 			mediaLibrary = new MediaLibrary();
-			LOGGER.info("A tiny cache admin interface is available at: http://" + server.getHost() + ":" + server.getPort() + "/console/home");
+			logger.info("A tiny cache admin interface is available at: http://" + server.getHost() + ":" + server.getPort() + "/console/home");
 		}
 
 		// XXX: this must be called:
@@ -579,25 +579,25 @@ public class PMS {
 					}
 					UPNPHelper.shutDownListener();
 					UPNPHelper.sendByeBye();
-					LOGGER.debug("Forcing shutdown of all active processes");
+					logger.debug("Forcing shutdown of all active processes");
 					for (Process p : currentProcesses) {
 						try {
 							p.exitValue();
 						} catch (IllegalThreadStateException ise) {
-							LOGGER.trace("Forcing shutdown of process: " + p);
+							logger.trace("Forcing shutdown of process: " + p);
 							ProcessUtil.destroy(p);
 						}
 					}
 					get().getServer().stop();
 					Thread.sleep(500);
 				} catch (InterruptedException e) {
-					LOGGER.debug("Caught exception", e);
+					logger.debug("Caught exception", e);
 				}
 			}
 		});
 
 		UPNPHelper.sendAlive();
-		LOGGER.trace("Waiting 250 milliseconds...");
+		logger.trace("Waiting 250 milliseconds...");
 		Thread.sleep(250);
 		UPNPHelper.listen();
 
@@ -637,7 +637,7 @@ public class PMS {
 	 * @see net.pms.newgui.GeneralTab#build()
 	 */
 	public boolean installWin32Service() {
-		LOGGER.info(Messages.getString("PMS.41"));
+		logger.info(Messages.getString("PMS.41"));
 		String cmdArray[] = new String[]{ "win32/service/wrapper.exe", "-r", "wrapper.conf" };
 		OutputParams output = new OutputParams(configuration);
 		output.noexitcheck = true;
@@ -682,16 +682,16 @@ public class PMS {
 
 			// this is called *way* too often
 			// so log it so we can fix it.
-			LOGGER.info("Checking shared folder: " + folder);
+			logger.info("Checking shared folder: " + folder);
 
 			File file = new File(folder);
 
 			if (file.exists()) {
 				if (!file.isDirectory()) {
-					LOGGER.warn("The file " + folder + " is not a directory! Please remove it from your Shared folders list on the Navigation/Share Settings tab");
+					logger.warn("The file " + folder + " is not a directory! Please remove it from your Shared folders list on the Navigation/Share Settings tab");
 				}
 			} else {
-				LOGGER.warn("The directory " + folder + " does not exist. Please remove it from your Shared folders list on the Navigation/Share Settings tab");
+				logger.warn("The directory " + folder + " does not exist. Please remove it from your Shared folders list on the Navigation/Share Settings tab");
 			}
 
 			// add the file even if there are problems so that the user can update the shared folders as required.
@@ -714,7 +714,7 @@ public class PMS {
 		TaskRunner.getInstance().submitNamed("restart", true, new Runnable() {
 			public void run() {
 				try {
-					LOGGER.trace("Waiting 1 second...");
+					logger.trace("Waiting 1 second...");
 					UPNPHelper.sendByeBye();
 					server.stop();
 					server = null;
@@ -722,14 +722,14 @@ public class PMS {
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
-						LOGGER.trace("Caught exception", e);
+						logger.trace("Caught exception", e);
 					}
 					server = new HTTPServer(configuration.getServerPort());
 					server.start();
 					UPNPHelper.sendAlive();
 					frame.setReloadable(false);
 				} catch (IOException e) {
-					LOGGER.error("error during restart :" +e.getMessage(), e);
+					logger.error("error during restart :" +e.getMessage(), e);
 				}
 			}
 		});
@@ -746,7 +746,7 @@ public class PMS {
 	 */
 	@Deprecated
 	public static void debug(String msg) {
-		LOGGER.trace(msg);
+		logger.trace(msg);
 	}
 
 	/**
@@ -756,7 +756,7 @@ public class PMS {
 	 */
 	@Deprecated
 	public static void info(String msg) {
-		LOGGER.debug(msg);
+		logger.debug(msg);
 	}
 
 	/**
@@ -767,7 +767,7 @@ public class PMS {
 	 */
 	@Deprecated
 	public static void minimal(String msg) {
-		LOGGER.info(msg);
+		logger.info(msg);
 	}
 
 	/**
@@ -779,7 +779,7 @@ public class PMS {
 	 */
 	@Deprecated
 	public static void error(String msg, Throwable t) {
-		LOGGER.error(msg, t);
+		logger.error(msg, t);
 	}
 
 	/**
@@ -796,7 +796,7 @@ public class PMS {
 
 			if (uuid == null) {
 				uuid = UUID.randomUUID().toString();
-				LOGGER.info("Generated new random UUID: {}", uuid);
+				logger.info("Generated new random UUID: {}", uuid);
 
 				// save the newly-generated UUID
 				getConfiguration().setUuid(uuid);
@@ -804,11 +804,11 @@ public class PMS {
 				try {
 					getConfiguration().save();
 				} catch (ConfigurationException e) {
-					LOGGER.error("Failed to save configuration with new UUID", e);
+					logger.error("Failed to save configuration with new UUID", e);
 				}
 			}
 
-            LOGGER.info("Using the following UUID configured in PMS.conf: {}", uuid);
+            logger.info("Using the following UUID configured in PMS.conf: {}", uuid);
 		}
 
 		return "uuid:" + uuid;
@@ -855,12 +855,12 @@ public class PMS {
 
 		try {
 			if (instance.init()) {
-				LOGGER.info("The server should now appear on your renderer");
+				logger.info("The server should now appear on your renderer");
 			} else {
-				LOGGER.error("A serious error occurred during PMS init");
+				logger.error("A serious error occurred during PMS init");
 			}
 		} catch (Exception e) {
-			LOGGER.error("A serious error occurred during PMS init", e);
+			logger.error("A serious error occurred during PMS init", e);
 		}
 	}
 
@@ -961,7 +961,7 @@ public class PMS {
 		try {
 			configuration.save();
 		} catch (ConfigurationException e) {
-			LOGGER.error("Could not save configuration", e);
+			logger.error("Could not save configuration", e);
 		}
 	}
 
@@ -1011,11 +1011,11 @@ public class PMS {
 	private void logSystemInfo() {
 		long memoryInMB = Runtime.getRuntime().maxMemory() / 1048576;
 
-		LOGGER.info("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor"));
-		LOGGER.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
-		LOGGER.info("Encoding: " + System.getProperty("file.encoding"));
-		LOGGER.info("Memory: " + memoryInMB + " " + Messages.getString("StatusTab.12"));
-		LOGGER.info("");
+		logger.info("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor"));
+		logger.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
+		logger.info("Encoding: " + System.getProperty("file.encoding"));
+		logger.info("Memory: " + memoryInMB + " " + Messages.getString("StatusTab.12"));
+		logger.info("");
 
 		if (Platform.isMac()) {
 			// The binaries shipped with the Mac OS X version of PMS are being
@@ -1031,17 +1031,17 @@ public class PMS {
 					int osVersionMinor = Integer.parseInt(versionNumbers[1]);
 
 					if (osVersionMinor < 6) {
-						LOGGER.warn("-----------------------------------------------------------------");
-						LOGGER.warn("WARNING!");
-						LOGGER.warn("PMS ships with binaries compiled for Mac OS X 10.6 or higher.");
-						LOGGER.warn("You are running an older version of Mac OS X so PMS may not work!");
-						LOGGER.warn("More information in the FAQ:");
-						LOGGER.warn("http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=3507&p=66371#p66371");
-						LOGGER.warn("-----------------------------------------------------------------");
-						LOGGER.warn("");
+						logger.warn("-----------------------------------------------------------------");
+						logger.warn("WARNING!");
+						logger.warn("PMS ships with binaries compiled for Mac OS X 10.6 or higher.");
+						logger.warn("You are running an older version of Mac OS X so PMS may not work!");
+						logger.warn("More information in the FAQ:");
+						logger.warn("http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=3507&p=66371#p66371");
+						logger.warn("-----------------------------------------------------------------");
+						logger.warn("");
 					}
 				} catch (NumberFormatException e) {
-					LOGGER.debug("Cannot parse minor os.version number");
+					logger.debug("Cannot parse minor os.version number");
 				}
 			}
 		}

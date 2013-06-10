@@ -36,7 +36,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class AboutTab {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AboutTab.class);
+	private static final Logger logger = LoggerFactory.getLogger(AboutTab.class);
 
 	private ImagePanel imagePanel;
 	private JLabel jl;
@@ -145,7 +145,7 @@ public class AboutTab {
 			try {
 				PMS.get().getRegistry().browseURI(link);
 			} catch (Exception e1) {
-				LOGGER.debug("Caught exception", e1);
+				logger.debug("Caught exception", e1);
 			}
 		}
 
@@ -171,7 +171,7 @@ public class AboutTab {
 		try {
 			bi = ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/logo.png"));
 		} catch (IOException e) {
-			LOGGER.debug("Caught exception", e);
+			logger.debug("Caught exception", e);
 		}
 		return new ImagePanel(bi);
 	}

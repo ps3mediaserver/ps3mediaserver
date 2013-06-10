@@ -67,7 +67,7 @@ import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.StringUtils.*;
 
 public class MEncoderVideo extends Player {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MEncoderVideo.class);
+	private static final Logger logger = LoggerFactory.getLogger(MEncoderVideo.class);
 	private static final String COL_SPEC = "left:pref, 3dlu, p:grow, 3dlu, right:p:grow, 3dlu, p:grow, 3dlu, right:p:grow,3dlu, p:grow, 3dlu, right:p:grow,3dlu, pref:grow";
 	private static final String ROW_SPEC = "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p";
 	private static final String REMOVE_OPTION = "---REMOVE-ME---"; // use an out-of-band option that can't be confused with a real option
@@ -354,7 +354,7 @@ public class MEncoderVideo extends Player {
 				try {
 					configuration.setMencoderScaleX(Integer.parseInt(scaleX.getText()));
 				} catch (NumberFormatException nfe) {
-					LOGGER.debug("Could not parse scaleX from \"" + scaleX.getText() + "\"");
+					logger.debug("Could not parse scaleX from \"" + scaleX.getText() + "\"");
 				}
 			}
 		});
@@ -368,7 +368,7 @@ public class MEncoderVideo extends Player {
 				try {
 					configuration.setMencoderScaleY(Integer.parseInt(scaleY.getText()));
 				} catch (NumberFormatException nfe) {
-					LOGGER.debug("Could not parse scaleY from \"" + scaleY.getText() + "\"");
+					logger.debug("Could not parse scaleY from \"" + scaleY.getText() + "\"");
 				}
 			}
 		});
@@ -612,7 +612,7 @@ public class MEncoderVideo extends Player {
 					   value = "";
 					}
 
-					LOGGER.warn(
+					logger.warn(
 						"Ignoring custom MEncoder option: {}{}; the following options cannot be changed: " + INVALID_CUSTOM_OPTIONS_LIST,
 						name,
 						value
@@ -808,13 +808,13 @@ public class MEncoderVideo extends Player {
 		try {
 			intOCW = Integer.parseInt(configuration.getMencoderOverscanCompensationWidth());
 		} catch (NumberFormatException e) {
-			LOGGER.error("Cannot parse configured MEncoder overscan compensation width: \"{}\"", configuration.getMencoderOverscanCompensationWidth());
+			logger.error("Cannot parse configured MEncoder overscan compensation width: \"{}\"", configuration.getMencoderOverscanCompensationWidth());
 		}
 
 		try {
 			intOCH = Integer.parseInt(configuration.getMencoderOverscanCompensationHeight());
 		} catch (NumberFormatException e) {
-			LOGGER.error("Cannot parse configured MEncoder overscan compensation height: \"{}\"", configuration.getMencoderOverscanCompensationHeight());
+			logger.error("Cannot parse configured MEncoder overscan compensation height: \"{}\"", configuration.getMencoderOverscanCompensationHeight());
 		}
 
 		if (params.sid == null && dvd && configuration.isMencoderRemuxMPEG2() && params.mediaRenderer.isMpeg2Supported()) {
@@ -928,7 +928,7 @@ public class MEncoderVideo extends Player {
 			channels = configuration.getAudioChannelCount(); // 5.1 max for ac3 encoding
 		}
 
-		LOGGER.trace("channels=" + channels);
+		logger.trace("channels=" + channels);
 
 		String add = "";
 		String rendererMencoderOptions = params.mediaRenderer.getCustomMencoderOptions(); // default: empty string
@@ -951,7 +951,7 @@ public class MEncoderVideo extends Player {
 			// XXX we should weed out the unused/unwanted settings and keep the rest
 			// (see sanitizeArgs()) rather than ignoring the options entirely
 			if (dvd && rendererMencoderOptions.contains("expand=")) {
-				LOGGER.warn("renderer MEncoder options are incompatible with DVD streaming; ignoring: " + rendererMencoderOptions);
+				logger.warn("renderer MEncoder options are incompatible with DVD streaming; ignoring: " + rendererMencoderOptions);
 				rendererMencoderOptions = null;
 			}
 		}
@@ -1160,7 +1160,7 @@ public class MEncoderVideo extends Player {
 					try {
 						userMargin = Integer.parseInt(configuration.getAssMargin());
 					} catch (NumberFormatException n) {
-						LOGGER.debug("Could not parse SSA margin from \"" + configuration.getAssMargin() + "\"");
+						logger.debug("Could not parse SSA margin from \"" + configuration.getAssMargin() + "\"");
 					}
 
 					subtitleMargin = subtitleMargin + userMargin;
@@ -1209,7 +1209,7 @@ public class MEncoderVideo extends Player {
 				try {
 					userMargin = Integer.parseInt(configuration.getMencoderNoAssSubPos());
 				} catch (NumberFormatException n) {
-					LOGGER.debug("Could not parse subpos from \"" + configuration.getMencoderNoAssSubPos() + "\"");
+					logger.debug("Could not parse subpos from \"" + configuration.getMencoderNoAssSubPos() + "\"");
 				}
 
 				subtitleMargin = subtitleMargin + userMargin;
@@ -1508,7 +1508,7 @@ public class MEncoderVideo extends Player {
 					}
 				}
 
-				LOGGER.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", your Video Scaler setting");
+				logger.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", your Video Scaler setting");
 
 				vfValueVS.append("scale=").append(scaleWidth).append(":").append(scaleHeight);
 
@@ -1560,7 +1560,7 @@ public class MEncoderVideo extends Player {
 					}
 				}
 
-				LOGGER.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", the maximum your renderer supports");
+				logger.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", the maximum your renderer supports");
 
 				vfValueVS.append("scale=").append(scaleWidth).append(":").append(scaleHeight);
 			}
@@ -1568,7 +1568,7 @@ public class MEncoderVideo extends Player {
 			// Put the string together taking into account overscan compensation and video scaler
 			if (intOCW > 0 || intOCH > 0) {
 				vfValueComplete.append(vfValueOverscanPrepend).append(vfValueOverscanMiddle).append(",harddup");
-				LOGGER.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", to fit your overscan compensation");
+				logger.info("Setting video resolution to: " + scaleWidth + "x" + scaleHeight + ", to fit your overscan compensation");
 			} else {
 				vfValueComplete.append(vfValueVS);
 			}
@@ -2184,7 +2184,7 @@ public class MEncoderVideo extends Player {
 					interpreter.set("framerate", Double.parseDouble(framerate));
 				}
 			} catch (NumberFormatException e) {
-				LOGGER.debug("Could not parse framerate from \"" + framerate + "\"");
+				logger.debug("Could not parse framerate from \"" + framerate + "\"");
 			}
 
 			interpreter.set("duration", media.getDurationInSeconds());
@@ -2222,7 +2222,7 @@ public class MEncoderVideo extends Player {
 								}
 							}
 						} catch (Throwable e) {
-							LOGGER.debug("Error while executing: " + key + " : " + e.getMessage());
+							logger.debug("Error while executing: " + key + " : " + e.getMessage());
 
 							if (verifyOnly) {
 								return new String[]{"@@Error while parsing: " + e.getMessage()};
@@ -2234,7 +2234,7 @@ public class MEncoderVideo extends Player {
 				}
 			}
 		} catch (EvalError e) {
-			LOGGER.debug("BeanShell error: " + e.getMessage());
+			logger.debug("BeanShell error: " + e.getMessage());
 		}
 
 		String completeLine = sb.toString();

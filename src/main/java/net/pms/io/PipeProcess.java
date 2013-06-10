@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 
 public class PipeProcess {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PipeProcess.class);
+	private static final Logger logger = LoggerFactory.getLogger(PipeProcess.class);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
 
 	private String linuxPipeName;
@@ -65,7 +65,7 @@ public class PipeProcess {
 		try {
 			return configuration.getTempFolder() + "/" + pipeName;
 		} catch (IOException e) {
-			LOGGER.error("Pipe may not be in temporary directory", e);
+			logger.error("Pipe may not be in temporary directory", e);
 			return pipeName;
 		}
 	}
@@ -121,7 +121,7 @@ public class PipeProcess {
 
 	public InputStream getInputStream() throws IOException {
 		if (!PMS.get().isWindows()) {
-			LOGGER.trace("Opening file " + linuxPipeName + " for reading...");
+			logger.trace("Opening file " + linuxPipeName + " for reading...");
 			RandomAccessFile raf = new RandomAccessFile(linuxPipeName, "r");
 
 			return new FileInputStream(raf.getFD());
@@ -132,7 +132,7 @@ public class PipeProcess {
 
 	public OutputStream getOutputStream() throws IOException {
 		if (!PMS.get().isWindows()) {
-			LOGGER.trace("Opening file " + linuxPipeName + " for writing...");
+			logger.trace("Opening file " + linuxPipeName + " for writing...");
 			RandomAccessFile raf = new RandomAccessFile(linuxPipeName, "rw");
 
 			return new FileOutputStream(raf.getFD());

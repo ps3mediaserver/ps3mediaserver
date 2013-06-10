@@ -12,7 +12,7 @@ public class H264AnnexBInputStream extends InputStream {
 	private int nextTarget;
 	private boolean firstHeader;
 	private byte header[];
-	//private int remaining;
+	// private int remaining;
 
 	public H264AnnexBInputStream(InputStream source, byte header[]) {
 		this.source = source;
@@ -69,14 +69,14 @@ public class H264AnnexBInputStream extends InputStream {
 				System.arraycopy(defHeader, 0, b, off, (len - off));
 				off = len;
 			}
-			//logger.info("header inserted / nextTarget: " + nextTarget);
+			// logger.info("header inserted / nextTarget: " + nextTarget);
 			firstHeader = false;
 		}
 
 		if (h != null) {
 			System.arraycopy(h, 0, b, off, 3);
 			off += 3;
-			//logger.info("frame start inserted");
+			// logger.info("frame start inserted");
 		}
 
 		if (nextTarget < (len - off)) {
@@ -86,7 +86,7 @@ public class H264AnnexBInputStream extends InputStream {
 				return -1;
 			}
 			System.arraycopy(h, 0, b, off, nextTarget);
-			//logger.info("Frame copied: " + nextTarget);
+			// logger.info("Frame copied: " + nextTarget);
 			off += nextTarget;
 
 			nextTarget = -1;
@@ -98,7 +98,7 @@ public class H264AnnexBInputStream extends InputStream {
 				return -1;
 			}
 			System.arraycopy(h, 0, b, off, (len - off));
-			//logger.info("Frame copied: " + (len - off));
+			// logger.info("Frame copied: " + (len - off));
 			nextTarget = nextTarget - (len - off);
 			off = len;
 

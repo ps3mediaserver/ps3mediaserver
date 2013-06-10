@@ -33,7 +33,7 @@ public final class FormatFactory {
 	/**
 	 * Logger used for all logging.
 	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(FormatFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(FormatFactory.class);
 
 	/**
 	 * Initial list of known formats.
@@ -88,14 +88,14 @@ public final class FormatFactory {
 	public static Format getAssociatedFormat(final String filename) {
 		for (Format format : formats) {
 			if (format.match(filename)) {
-				LOGGER.trace("Matched format {} to \"{}\"", format, filename);
+				logger.trace("Matched format {} to \"{}\"", format, filename);
 
 				// Return a fresh instance
 				return format.duplicate();
 			}
 		}
 
-		LOGGER.trace("Could not match any format to \"{}\"", filename);
+		logger.trace("Could not match any format to \"{}\"", filename);
 		return null;
 	}
 

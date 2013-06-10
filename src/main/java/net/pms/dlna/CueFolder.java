@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CueFolder extends DLNAResource {
-	private static final Logger LOGGER = LoggerFactory.getLogger(CueFolder.class);
+	private static final Logger logger = LoggerFactory.getLogger(CueFolder.class);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private File playlistfile;
 
@@ -89,7 +89,7 @@ public class CueFolder extends DLNAResource {
 			try {
 				sheet = CueParser.parse(playlistfile);
 			} catch (IOException e) {
-				LOGGER.info("Error in parsing cue: " + e.getMessage());
+				logger.info("Error in parsing cue: " + e.getMessage());
 				return;
 			}
 
@@ -124,7 +124,7 @@ public class CueFolder extends DLNAResource {
 
 							prec.getSplitRange().setEnd(end);
 							prec.getMedia().setDuration(prec.getSplitRange().getDuration());
-							LOGGER.debug("Track #" + i + " split range: " + prec.getSplitRange().getStartOrZero() + " - " + prec.getSplitRange().getDuration());
+							logger.debug("Track #" + i + " split range: " + prec.getSplitRange().getStartOrZero() + " - " + prec.getSplitRange().getDuration());
 						}
 
 						Position start = track.getIndices().get(0).getPosition();
@@ -160,7 +160,7 @@ public class CueFolder extends DLNAResource {
 										defaultPlayer = PlayerFactory.getPlayer(realFile);
 								*/
 								if (realFile.getFormat() == null) {
-									LOGGER.error("No file format known for file \"{}\", assuming it is a video for now.", realFile.getName());
+									logger.error("No file format known for file \"{}\", assuming it is a video for now.", realFile.getName());
 									/*
 										TODO (see above):
 
@@ -184,7 +184,7 @@ public class CueFolder extends DLNAResource {
 							try {
 								realFile.setMedia((DLNAMediaInfo) originalMedia.clone());
 							} catch (CloneNotSupportedException e) {
-								LOGGER.info("Error in cloning media info: " + e.getMessage());
+								logger.info("Error in cloning media info: " + e.getMessage());
 							}
 
 							if (realFile.getMedia() != null && realFile.getMedia().getFirstAudioTrack() != null) {
@@ -220,7 +220,7 @@ public class CueFolder extends DLNAResource {
 						if (lastTrackSplitRange != null && lastTrackMedia != null) {
 							lastTrackSplitRange.setEnd(lastTrackMedia.getDurationInSeconds());
 							lastTrackMedia.setDuration(lastTrackSplitRange.getDuration());
-							LOGGER.debug("Track #" + childrenNumber() + " split range: " + lastTrackSplitRange.getStartOrZero() + " - " + lastTrackSplitRange.getDuration());
+							logger.debug("Track #" + childrenNumber() + " split range: " + lastTrackSplitRange.getStartOrZero() + " - " + lastTrackSplitRange.getDuration());
 						}
 					}
 

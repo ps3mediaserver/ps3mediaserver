@@ -45,7 +45,7 @@ public final class PlayerFactory {
 	/**
 	 * Logger used for all logging.
 	 */
-	private static final Logger LOGGER = LoggerFactory
+	private static final Logger logger = LoggerFactory
 			.getLogger(FormatFactory.class);
 
 	/**
@@ -165,7 +165,7 @@ public final class PlayerFactory {
 		} else {
 			if (Platform.isWindows()) {
 				if (player.executable() == null) {
-					LOGGER.info("Executable of transcoder profile " + player
+					logger.info("Executable of transcoder profile " + player
 							+ " not defined");
 					return;
 				}
@@ -176,7 +176,7 @@ public final class PlayerFactory {
 				if (executable.exists() || executable2.exists()) {
 					ok = true;
 				} else {
-					LOGGER.info("Executable of transcoder profile " + player
+					logger.info("Executable of transcoder profile " + player
 							+ " not found");
 					return;
 				}
@@ -187,7 +187,7 @@ public final class PlayerFactory {
 					if (utils.isAvis()) {
 						ok = true;
 					} else {
-						LOGGER.info("Transcoder profile " + player
+						logger.info("Transcoder profile " + player
 								+ " will not be used because AviSynth was not found");
 					}
 				}
@@ -197,7 +197,7 @@ public final class PlayerFactory {
 		}
 
 		if (ok) {
-			LOGGER.info("Registering transcoding engine: " + player);
+			logger.info("Registering transcoding engine: " + player);
 			players.add(player);
 		}
 	}
@@ -263,10 +263,10 @@ public final class PlayerFactory {
 	 */
 	public static Player getPlayer(final DLNAResource dlna) {
 		if (dlna == null) {
-			LOGGER.warn("invalid resource (null): no player found");
+			logger.warn("invalid resource (null): no player found");
 			return null;
 		} else {
-			LOGGER.trace("getting player for {}", dlna.getName());
+			logger.trace("getting player for {}", dlna.getName());
 		}
 
 		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList();
@@ -277,18 +277,18 @@ public final class PlayerFactory {
 			if (enabled) {
 				boolean compatible = player.isCompatible(dlna);
 
-				LOGGER.trace("dlna: {}, player: {}, enabled: {}, compatible: {}", new Object[] { dlna.getName(), player.name(), enabled, compatible });
+				logger.trace("dlna: {}, player: {}, enabled: {}, compatible: {}", new Object[] { dlna.getName(), player.name(), enabled, compatible });
 
 				if (compatible) {
 					// Player is enabled and compatible
 					return player;
 				}
 			} else {
-				LOGGER.trace("dlna: {},  player: {}, enabled: {}", new Object[] { dlna.getName(), player.name(), false });
+				logger.trace("dlna: {},  player: {}, enabled: {}", new Object[] { dlna.getName(), player.name(), false });
 			}
 		}
 
-		LOGGER.trace("no player found for {}", dlna.getName());
+		logger.trace("no player found for {}", dlna.getName());
 
 		return null;
 	}
@@ -345,7 +345,7 @@ public final class PlayerFactory {
 		for (Player player : players) {
 			if (enabledEngines.contains(player.id()) && player.isCompatible(resource)) {
 				// Player is enabled and compatible
-				LOGGER.trace("Player " + player.name() + " is compatible with resource " + resource.getName());
+				logger.trace("Player " + player.name() + " is compatible with resource " + resource.getName());
 				compatiblePlayers.add(player);
 			}
 		}
