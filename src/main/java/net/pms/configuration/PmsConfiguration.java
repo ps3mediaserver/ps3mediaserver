@@ -209,20 +209,22 @@ public class PmsConfiguration {
 	private final IpFilter filter = new IpFilter();
 
 	/*
-	 * aCodec  - Audio codec
-	 * aFlavor - Audio flavor
-	 * aFull   - Audio language full name
-	 * aShort  - Audio language short name
+	 * aCodec  - audio codec
+	 * aFlavor - audio flavor
+	 * aFull   - audio language full name
+	 * aShort  - audio language short name
 	 * dvdLen  - DVD track duration
-	 * eFull   - Engine full name
-	 * eShort  - Engine short name
-	 * fFull   - File name with extension
-	 * fShort  - File name without extension
-	 * sExt    - External subtitles
-	 * sFlavor - Subtitle flavor
-	 * sFull   - Subtitle language full name
-	 * sShort  - Subtitle language short name
-	 * sType   - Subtitle type
+	 * eFull   - engine full name
+	 * eShort  - engine short name
+	 * fFull   - file name with extension
+	 * fShort  - file name without extension
+	 * isVTS   - true if the resource is a DVD VIDEO_TS folder
+	 * sExt    - external subtitles
+	 * sFlavor - subtitle flavor
+	 * sFull   - subtitle language full name
+	 * sShort  - subtitle language short name
+	 * sType   - subtitle type
+	 * vtsDVD  - the name of the parent folder of the VIDEO_TS folder
 	 */
 
 	private static final String FILENAME_FORMAT_SHORT = StringUtils.join(
@@ -237,6 +239,7 @@ public class PmsConfiguration {
 	private static final String FILENAME_FORMAT_LONG = StringUtils.join(
 		asList(
 			"<fFull>",
+			"<if isVTS>< {,vtsDVD,}><end>",
 			"<if extra> - <end>",
 			"<dvdLen>",
 			"<[,eFull,]>",

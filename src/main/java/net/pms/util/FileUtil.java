@@ -61,12 +61,12 @@ public class FileUtil {
 	 * This determines the directory and file path of a file according to the rules
 	 * outlined here: http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&amp;t=3507&amp;p=49895#p49895
 	 *
+	 * @since 1.90.0
 	 * @param customPath an optional user-defined path for the resource
 	 * @param defaultDirectory a default directory path used if no custom path is provided
 	 * @param defaultBasename a default filename used if a) no custom path is provided
 	 * or b) the custom path is a directory
 	 * @return a {@link FileLocation} object providing access to the file's directory and file paths
-	 * @since 1.90.0
 	 */
 	// this is called from a static initialiser, where errors aren't clearly reported,
 	// so do everything possible to return a valid reponse, even if the parameters
@@ -643,7 +643,7 @@ public class FileUtil {
 
 	/**
 	 * Determine whether a file is readable by trying to read it. This works around JDK bugs which
-	 * return the wrong results for {@link java.io.File#canRead()} on Windows, and in some cases, on Unix.
+	 * return the wrong results for {@link java.io.File#canRead()} on Windows and, in some cases, on Unix.
 	 * <p>
 	 * Note: since this method accesses the filesystem, it should not be used in contexts in which performance is critical.
 	 * Note: this method changes the file access time.

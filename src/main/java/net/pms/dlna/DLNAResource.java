@@ -938,12 +938,11 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * or hierarchy traversal. This can be a costly operation, so when the method is
 	 * finished the property <code>resolved</code> is set to <code>true</code>.
 	 */
-	public void resolve() {
-	}
+	public void resolve() { }
 
 	// Ditlew
 	/**
-	 * Returns the DisplayName for the default renderer.
+	 * Returns the display name for the default renderer.
 	 *
 	 * @return The display name.
 	 * @see #getDisplayName(RendererConfiguration)
@@ -962,6 +961,16 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 		return false;
 	}
+
+	/**
+	 * This hook allows subclasses to add resource-specific variables
+	 * to the String -&gt; Object map exported to the display name
+	 * template in {@link #getDisplayName(RendererConfiguration)}.
+	 *
+	 * @since 1.90.0
+	 * @param vars the current map of variables to export to the template
+	 */
+	protected void finalizeDisplayNameVars(Map<String, Object> vars) { }
 
 	/**
 	 * Returns the string for this resource that will be displayed on the
@@ -1100,34 +1109,38 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		boolean isFolder = isFolder();
 		boolean extra = anyStringIsNotBlank(dvdTrackDuration, engineShortName, engineFullName, externalSubs, subType);
 
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> vars = new HashMap<String, Object>();
 
-		model.put("lt", "<");
-		model.put("gt", ">");
+		vars.put("lt", "<");
+		vars.put("gt", ">");
 
-		model.put("aLabel", Messages.getString("DLNAResource.3"));
-		model.put("sLabel", Messages.getString("DLNAResource.4"));
+		vars.put("aLabel", Messages.getString("DLNAResource.3"));
+		vars.put("sLabel", Messages.getString("DLNAResource.4"));
 
-		model.put("aCodec", audioCodec);
-		model.put("aFlavor", audioFlavor);
-		model.put("aFull", audioLangFullName);
-		model.put("aShort", audioLangShortName);
-		model.put("dvdLen", dvdTrackDuration);
-		model.put("eFull", engineFullName);
-		model.put("eShort", engineShortName);
-		model.put("fFull", filenameWithExtension);
-		model.put("fShort", filenameWithoutExtension);
-		model.put("sExt", externalSubs);
-		model.put("sFlavor", subFlavor);
-		model.put("sFull", subLangFullName);
-		model.put("sShort", subLangShortName);
-		model.put("sType", subType);
+		vars.put("aCodec", audioCodec);
+		vars.put("aFlavor", audioFlavor);
+		vars.put("aFull", audioLangFullName);
+		vars.put("aShort", audioLangShortName);
+		vars.put("dvdLen", dvdTrackDuration);
+		vars.put("eFull", engineFullName);
+		vars.put("eShort", engineShortName);
+		vars.put("fFull", filenameWithExtension);
+		vars.put("fShort", filenameWithoutExtension);
+		vars.put("sExt", externalSubs);
+		vars.put("sFlavor", subFlavor);
+		vars.put("sFull", subLangFullName);
+		vars.put("sShort", subLangShortName);
+		vars.put("sType", subType);
 
-		model.put("extra", extra);
-		model.put("isFile", !isFolder);
-		model.put("isFolder", isFolder);
+		vars.put("extra", extra);
+		vars.put("isFile", !isFolder);
+		vars.put("isFolder", isFolder);
 
-		displayName = displayNameTemplateEngine.transform(template, model);
+		// allow subclasses to add resource-specific vars
+		// currently only used by DVDISOFile
+		finalizeDisplayNameVars(vars);
+
+		displayName = displayNameTemplateEngine.transform(template, vars);
 		displayName = displayName.replaceAll("\\s+", " ");
 		displayName = displayName.trim();
 
@@ -1583,13 +1596,13 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		return sb.toString();
 	}
 
-    /**
-     * Generate and append the response for the thumbnail based on the
-     * configuration of the renderer.
-     *
-     * @param mediaRenderer The renderer configuration.
-     * @param sb            The StringBuilder to append the response to.
-     */
+	/**
+	 * Generate and append the response for the thumbnail based on the
+	 * configuration of the renderer.
+	 *
+	 * @param mediaRenderer The renderer configuration.
+	 * @param sb            The StringBuilder to append the response to.
+	 */
 	private void appendThumbnail(RendererConfiguration mediaRenderer, StringBuilder sb) {
 		final String thumbURL = getThumbnailURL();
 		final boolean addThumbnailAsResElement = isFolder() || mediaRenderer.getThumbNailAsResource() || mediaRenderer.isForceJPGThumbnails();
@@ -1628,7 +1641,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 	}
 
-    private String getRequestId(String rendererId) {
+	private String getRequestId(String rendererId) {
 		return String.format("%s|%x|%s", rendererId, hashCode(), getSystemName());
 	}
 
