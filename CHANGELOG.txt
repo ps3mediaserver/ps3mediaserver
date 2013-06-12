@@ -44,6 +44,9 @@ Changelog:
         - Hide chapter folders if the duration of the video is less than the chapter length
         - Don't hide engine names in the #--TRANSCODE--# folder if hide_enginenames is true
 
+    Language updates:
+        - Updated Dutch translation (thanks, leroy)
+
     Misc:
         - Logging improvements
         - Send thumbnails properly to Samsung 2012 ES and EH models (thanks, dmitche3!)
