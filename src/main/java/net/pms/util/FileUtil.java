@@ -59,7 +59,7 @@ public class FileUtil {
 	 * and file paths of the specified file as normalised, absolute paths.
 	 *
 	 * This determines the directory and file path of a file according to the rules
-	 * outlined here: http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&amp;t=3507&amp;p=49895#p49895
+	 * outlined here: http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&amp;t=3507&amp;p=49895#pms-faq-custom-profiles-environment-variable
 	 *
 	 * @since 1.90.0
 	 * @param customPath an optional user-defined path for the resource
