@@ -73,6 +73,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 public abstract class DLNAResource extends HTTPResource implements Cloneable, Runnable {
 	private final Map<String, Integer> requestIdToRefcount = new HashMap<String, Integer>();
+	private boolean resolved;
 
 	private static final int STOP_PLAYING_DELAY = 4000;
 	private static final Logger logger = LoggerFactory.getLogger(DLNAResource.class);
@@ -720,30 +721,32 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 */
 	public synchronized List<DLNAResource> getDLNAResources(String objectId, boolean returnChildren, int start, int count, RendererConfiguration renderer) throws IOException {
 		ArrayList<DLNAResource> resources = new ArrayList<DLNAResource>();
-		DLNAResource resource = search(objectId, count, renderer);
+		DLNAResource dlna = search(objectId, count, renderer);
 
-		if (resource != null) {
-			resource.setDefaultRenderer(renderer);
+		if (dlna != null) {
+			String systemName = dlna.getSystemName();
+			dlna.setDefaultRenderer(renderer);
 
 			if (!returnChildren) {
-				resources.add(resource);
-				resource.refreshChildrenIfNeeded();
+				resources.add(dlna);
+				dlna.refreshChildrenIfNeeded();
 			} else {
-				resource.discoverWithRenderer(renderer, count, true);
+				dlna.discoverWithRenderer(renderer, count, true);
 
 				if (count == 0) {
-					count = resource.getChildren().size();
+					count = dlna.getChildren().size();
 				}
 
 				if (count > 0) {
 					ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(count);
 
-					int parallel_thread_number = 3;
-					if (resource instanceof DVDISOFile) {
-						parallel_thread_number = 1; // Some DVD drives die wih 3 parallel threads
+					int nParallelThreads = 3;
+					if (dlna instanceof DVDISOFile) {
+						nParallelThreads = 1; // Some DVD drives die wih 3 parallel threads
 					}
+
 					ThreadPoolExecutor tpe = new ThreadPoolExecutor(
-						Math.min(count, parallel_thread_number),
+						Math.min(count, nParallelThreads),
 						count,
 						20,
 						TimeUnit.SECONDS,
@@ -751,20 +754,26 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					);
 
 					for (int i = start; i < start + count; i++) {
-						if (i < resource.getChildren().size()) {
-							final DLNAResource child = resource.getChildren().get(i);
+						if (i < dlna.getChildren().size()) {
+							final DLNAResource child = dlna.getChildren().get(i);
+
 							if (child != null) {
 								tpe.execute(child);
 								resources.add(child);
+							} else {
+								logger.warn("null child at index {} in {}", i, systemName);
 							}
 						}
 					}
+
 					try {
 						tpe.shutdown();
 						tpe.awaitTermination(20, TimeUnit.SECONDS);
-					} catch (InterruptedException e) { }
+					} catch (InterruptedException e) {
+						logger.error("error while shutting down thread pool executor for " + systemName, e);
+					}
 
-					logger.trace("End of analysis");
+					logger.trace("End of analysis for {}", systemName);
 				}
 			}
 		}
@@ -867,8 +876,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	/**
 	 * TODO: (botijo) What is the intention of this function? Looks like a prototype to be overloaded.
 	 */
-	public void discoverChildren() {
-	}
+	public void discoverChildren() { }
 
 	/**
 	 * TODO: (botijo) What is the intention of this function? Looks like a prototype to be overloaded.
@@ -882,8 +890,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	/**
 	 * Reload the list of children.
 	 */
-	public void doRefreshChildren() {
-	}
+	public void doRefreshChildren() { }
 
 	/**
 	 * @return true, if the container is changed, so refresh is needed.
@@ -934,11 +941,41 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	}
 
 	/**
-	 * Determine all properties for this DLNAResource that are relevant for playback
-	 * or hierarchy traversal. This can be a costly operation, so when the method is
-	 * finished the property <code>resolved</code> is set to <code>true</code>.
+	 * Hook to lazily initialise immutable resources e.g. ISOs, zip files &amp;c.
+	 *
+	 * @since 1.90.0
+	 * @see #resolve()
 	 */
-	public void resolve() { }
+	protected void resolveOnce() { }
+
+	/**
+	 * Resolve events are hooks that allow DLNA resources to perform various forms
+	 * of initialisation i.e. they function like lazy constructor calls.
+	 *
+	 * This method is called by request handlers for a) requests for a stream
+	 * or b) content directory browsing i.e. for potentially every request for a file or
+	 * folder the renderer hasn't cached. Many resource types are immutable (e.g. playlists,
+	 * zip files, DVD ISOs &amp;c.) and only need to respond to this event once.
+	 * Most resource types don't "subscribe" to this event at all. This default implementation
+	 * provides hooks for immutable resources and handles the event for resource types that
+	 * don't care about it. The rest override this method and handle it accordingly. Currently,
+	 * the only resource type that overrides it is {@link RealFile}.
+	 *
+	 * Note: resolving a resource once (only) doesn't prevent children being added to or
+	 * removed from it (if supported). There are other mechanisms for that e.g.
+	 * {@link #doRefreshChildren()} (see {@link Feed} for an example).
+	 */
+	public synchronized void resolve() {
+		if (resolved) {
+			return;
+		} else {
+			resolveOnce();
+			// if resolve() isn't overridden, this file/folder is immutable
+			// (or doesn't respond to resolve events, which amounts to the
+			// same thing), so don't spam it with this event again.
+			resolved = true;
+		}
+	}
 
 	// Ditlew
 	/**
@@ -1246,6 +1283,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			o.setId(null);
 			// clear the cached display name
 			o.displayName = null;
+			// make sure clones (typically #--TRANSCODE--# folder files)
+			// have the option to respond to resolve events
+			o.resolved = false;
 		} catch (CloneNotSupportedException e) {
 			logger.error(null, e);
 		}

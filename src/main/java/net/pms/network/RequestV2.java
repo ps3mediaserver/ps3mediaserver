@@ -276,7 +276,7 @@ public class RequestV2 extends HTTPResource {
 			// Some clients escape the separators in their request: unescape them.
 			id = id.replace("%24", "$");
 
-			// Retrieve the DLNAresource itself.
+			// Retrieve the DLNA resource itself.
 			List<DLNAResource> files = PMS.get().getRootFolder(mediaRenderer).getDLNAResources(id, false, 0, 0, mediaRenderer);
 
 			if (transferMode != null) {
@@ -695,8 +695,7 @@ public class RequestV2 extends HTTPResource {
 					// invalidated and hidden if format is broken or encrypted, etc.).
 					// let's send a fake total size to force the renderer to ask following items
 					int totalCount = startingIndex + requestCount + 1; // returns 11 when 10 asked
-					if (filessize - minus <= 0) // if no more elements, send the startingIndex
-					{
+					if (filessize - minus <= 0) { // if no more elements, send the startingIndex
 						totalCount = startingIndex;
 					}
 					response.append("<TotalMatches>").append(totalCount).append("</TotalMatches>");

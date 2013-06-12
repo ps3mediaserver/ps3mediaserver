@@ -155,6 +155,7 @@ public class RealFile extends MapFile {
 	@Override
 	public void resolve() {
 		File file = getFile();
+
 		if (file.isFile() && (getMedia() == null || !getMedia().isMediaparsed())) {
 			boolean found = false;
 			InputFile input = new InputFile();
@@ -201,7 +202,6 @@ public class RealFile extends MapFile {
 				}
 			}
 		}
-		super.resolve();
 	}
 
 	@Override

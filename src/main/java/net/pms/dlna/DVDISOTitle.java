@@ -47,8 +47,24 @@ public class DVDISOTitle extends DLNAResource {
 	private long length;
 
 	@Override
-	public void resolve() {
-		String cmd[] = new String[]{configuration.getMplayerPath(), "-identify", "-endpos", "0", "-v", "-ao", "null", "-vc", "null", "-vo", "null", "-dvd-device", ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()), "dvd://" + title};
+	protected void resolveOnce() {
+		String cmd[] = new String[]{
+			configuration.getMplayerPath(),
+			"-identify",
+			"-endpos",
+			"0",
+			"-v",
+			"-ao",
+			"null",
+			"-vc",
+			"null",
+			"-vo",
+			"null",
+			"-dvd-device",
+			ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()),
+			"dvd://" + title
+		};
+
 		OutputParams params = new OutputParams(configuration);
 		params.maxBufferSize = 1;
 		if (configuration.isDvdIsoThumbnails()) {
@@ -66,8 +82,10 @@ public class DVDISOTitle extends DLNAResource {
 			frameName = frameName.replace(',', '_');
 			cmd[10] = "jpeg:outdir=" + frameName;
 		}
+
 		params.log = true;
 		final ProcessWrapperImpl pw = new ProcessWrapperImpl(cmd, params, true, false);
+
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
@@ -78,6 +96,7 @@ public class DVDISOTitle extends DLNAResource {
 				pw.stopProcess();
 			}
 		};
+
 		Thread failsafe = new Thread(r, "DVD ISO Title Failsafe");
 		failsafe.start();
 		pw.runInSameThread();
@@ -91,6 +110,7 @@ public class DVDISOTitle extends DLNAResource {
 		String height = null;
 		ArrayList<DLNAMediaAudio> audio = new ArrayList<DLNAMediaAudio>();
 		ArrayList<DLNAMediaSubtitle> subs = new ArrayList<DLNAMediaSubtitle>();
+
 		if (lines != null) {
 			for (String line : lines) {
 				if (line.startsWith("DVD start=")) {
@@ -201,6 +221,7 @@ public class DVDISOTitle extends DLNAResource {
 		if (duration != null) {
 			getMedia().setDuration(d);
 		}
+
 		getMedia().setFrameRate(fps);
 		getMedia().setAspect(aspect);
 		getMedia().setDvdtrack(title);
@@ -220,8 +241,6 @@ public class DVDISOTitle extends DLNAResource {
 		}
 
 		getMedia().setMediaparsed(true);
-
-		super.resolve();
 	}
 
 	public long getLength() {
