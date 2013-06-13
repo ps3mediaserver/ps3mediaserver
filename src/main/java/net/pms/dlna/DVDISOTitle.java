@@ -18,6 +18,7 @@
  */
 package net.pms.dlna;
 
+import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
@@ -42,9 +43,15 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class DVDISOTitle extends DLNAResource {
 	private static final Logger logger = LoggerFactory.getLogger(DVDISOTitle.class);
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
-	private File f;
+	private File file;
 	private int title;
 	private long length;
+
+	public DVDISOTitle(File file, int title) {
+		this.file = file;
+		this.title = title;
+		setLastModified(file.lastModified());
+	}
 
 	@Override
 	protected void resolveOnce() {
@@ -61,18 +68,20 @@ public class DVDISOTitle extends DLNAResource {
 			"-vo",
 			"null",
 			"-dvd-device",
-			ProcessUtil.getShortFileNameIfWideChars(f.getAbsolutePath()),
+			ProcessUtil.getShortFileNameIfWideChars(file.getAbsolutePath()),
 			"dvd://" + title
 		};
 
 		OutputParams params = new OutputParams(configuration);
 		params.maxBufferSize = 1;
+
 		if (configuration.isDvdIsoThumbnails()) {
 			try {
 				params.workDir = configuration.getTempFolder();
 			} catch (IOException e1) {
 				logger.debug("Caught exception", e1);
 			}
+
 			cmd[2] = "-frames";
 			cmd[3] = "2";
 			cmd[7] = "-quiet";
@@ -116,44 +125,57 @@ public class DVDISOTitle extends DLNAResource {
 				if (line.startsWith("DVD start=")) {
 					nbsectors = Integer.parseInt(line.substring(line.lastIndexOf("=") + 1).trim());
 				}
+
 				if (line.startsWith("audio stream:")) {
 					DLNAMediaAudio lang = new DLNAMediaAudio();
 					lang.setId(Integer.parseInt(line.substring(line.indexOf("aid: ") + 5, line.lastIndexOf(".")).trim()));
 					lang.setLang(line.substring(line.indexOf("language: ") + 10, line.lastIndexOf(" aid")).trim());
 					int end = line.lastIndexOf(" langu");
+
 					if (line.lastIndexOf("(") < end && line.lastIndexOf("(") > line.indexOf("format: ")) {
 						end = line.lastIndexOf("(");
 					}
+
 					lang.setCodecA(line.substring(line.indexOf("format: ") + 8, end).trim());
+
 					if (line.contains("(stereo)")) {
 						lang.getAudioProperties().setNumberOfChannels(2);
 					} else {
 						lang.getAudioProperties().setNumberOfChannels(6);
 					}
+
 					audio.add(lang);
 				}
+
 				if (line.startsWith("subtitle")) {
 					DLNAMediaSubtitle lang = new DLNAMediaSubtitle();
 					lang.setId(Integer.parseInt(line.substring(line.indexOf("): ") + 3, line.lastIndexOf("language")).trim()));
 					lang.setLang(line.substring(line.indexOf("language: ") + 10).trim());
+
 					if (lang.getLang().equals("unknown")) {
 						lang.setLang(DLNAMediaLang.UND);
 					}
+
 					lang.setType(SubtitleType.UNKNOWN);
 					subs.add(lang);
 				}
+
 				if (line.startsWith("ID_VIDEO_WIDTH=")) {
 					width = line.substring(line.indexOf("ID_VIDEO_WIDTH=") + 15).trim();
 				}
+
 				if (line.startsWith("ID_VIDEO_HEIGHT=")) {
 					height = line.substring(line.indexOf("ID_VIDEO_HEIGHT=") + 16).trim();
 				}
+
 				if (line.startsWith("ID_VIDEO_FPS=")) {
 					fps = line.substring(line.indexOf("ID_VIDEO_FPS=") + 13).trim();
 				}
+
 				if (line.startsWith("ID_LENGTH=")) {
 					duration = line.substring(line.indexOf("ID_LENGTH=") + 10).trim();
 				}
+
 				if (line.startsWith("ID_VIDEO_ASPECT=")) {
 					aspect = line.substring(line.indexOf("ID_VIDEO_ASPECT=") + 16).trim();
 				}
@@ -247,12 +269,6 @@ public class DVDISOTitle extends DLNAResource {
 		return length;
 	}
 
-	public DVDISOTitle(File f, int title) {
-		this.f = f;
-		this.title = title;
-		setLastModified(f.lastModified());
-	}
-
 	@Override
 	public InputStream getInputStream() throws IOException {
 		return null;
@@ -260,12 +276,12 @@ public class DVDISOTitle extends DLNAResource {
 
 	@Override
 	public String getName() {
-		return "Title " + title;
+		return String.format(Messages.getString("DVDISOTitle.1"), title);
 	}
 
 	@Override
 	public String getSystemName() {
-		return f.getAbsolutePath();
+		return file.getAbsolutePath();
 	}
 
 	@Override
@@ -299,23 +315,24 @@ public class DVDISOTitle extends DLNAResource {
 		File cachedThumbnail = null;
 		File thumbFolder = null;
 		boolean alternativeCheck = false;
+
 		while (cachedThumbnail == null) {
 			if (thumbFolder == null) {
-				thumbFolder = f.getParentFile();
+				thumbFolder = file.getParentFile();
 			}
 
-			cachedThumbnail = FileUtil.getFileNameWithNewExtension(thumbFolder, f, "jpg");
+			cachedThumbnail = FileUtil.getFileNameWithNewExtension(thumbFolder, file, "jpg");
 
 			if (cachedThumbnail == null) {
-				cachedThumbnail = FileUtil.getFileNameWithNewExtension(thumbFolder, f, "png");
-			}
-
-			if (cachedThumbnail == null) {
-				cachedThumbnail = FileUtil.getFileNameWithAddedExtension(thumbFolder, f, ".cover.jpg");
+				cachedThumbnail = FileUtil.getFileNameWithNewExtension(thumbFolder, file, "png");
 			}
 
 			if (cachedThumbnail == null) {
-				cachedThumbnail = FileUtil.getFileNameWithAddedExtension(thumbFolder, f, ".cover.png");
+				cachedThumbnail = FileUtil.getFileNameWithAddedExtension(thumbFolder, file, ".cover.jpg");
+			}
+
+			if (cachedThumbnail == null) {
+				cachedThumbnail = FileUtil.getFileNameWithAddedExtension(thumbFolder, file, ".cover.png");
 			}
 
 			if (alternativeCheck) {

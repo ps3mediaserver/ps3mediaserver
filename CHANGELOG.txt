@@ -49,7 +49,7 @@ Changelog:
         - More accurate checks for reference frame counts to allow more videos to be remuxed rather than transcoded
         - Removed obsolete MPlayerAudio, MPlayerWebAudio and MPlayerWebVideoDump engines
         - Filename display formats can now be set at the profile level as well as per-renderer
-        - Improved logging to simplify issue reporting
+        - More detailed logging to improve diagnostics and simplify issue reporting
 
 1.82.0 - 2013-06-03
 

@@ -950,7 +950,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 	/**
 	 * Resolve events are hooks that allow DLNA resources to perform various forms
-	 * of initialisation i.e. they function like lazy constructor calls.
+	 * of initialisation when navigated to or streamed i.e. they function as lazy
+	 * constructors.
 	 *
 	 * This method is called by request handlers for a) requests for a stream
 	 * or b) content directory browsing i.e. for potentially every request for a file or
@@ -966,9 +967,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 * {@link #doRefreshChildren()} (see {@link Feed} for an example).
 	 */
 	public synchronized void resolve() {
-		if (resolved) {
-			return;
-		} else {
+		if (!resolved) {
 			resolveOnce();
 			// if resolve() isn't overridden, this file/folder is immutable
 			// (or doesn't respond to resolve events, which amounts to the
@@ -1012,7 +1011,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	/**
 	 * Returns the string for this resource that will be displayed on the
 	 * renderer. The name is formatted based on the PMS.conf settings
-	 * for filename_format_long and filename_format_short, which can
+	 * for filename_format_short and filename_format_long, which can
 	 * be overridden on a per-renderer basis by ShortFilenameFormat
 	 * and LongFilenameFormat respectively.
 	 *
@@ -1021,9 +1020,8 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 	 *
 	 * See the "Filename templates" section of PMS.conf for full details.
 	 *
-	 * @param renderer
-	 *            Media Renderer for which to show information.
-	 * @return String representing the item.
+	 * @param renderer the renderer the resource will be displayed on.
+	 * @return the resource's display name.
 	 */
 	public String getDisplayName(RendererConfiguration renderer) {
 		if (displayName != null) { // cached
