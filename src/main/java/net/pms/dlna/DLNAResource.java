@@ -1575,9 +1575,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								if (na > 2) { // No 5.1 dump in MPlayer
 									na = 2;
 								}
-								int finalsize = (int) (getMedia().getDurationInSeconds() * defaultFrequency * 2 * na);
-								logger.debug("Calculated size: " + finalsize);
-								addAttribute(sb, "size", finalsize);
+								int finalSize = (int) (getMedia().getDurationInSeconds() * defaultFrequency * 2 * na);
+								logger.trace("Calculated size for {}: {}", getSystemName(), finalSize);
+								addAttribute(sb, "size", finalSize);
 							}
 						}
 					} else {

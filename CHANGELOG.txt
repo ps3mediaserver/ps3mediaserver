@@ -68,7 +68,7 @@ Changelog:
             - Fix bug that disabled tsMuxeR for compatible files
         - VLC:
             - Fix looping playback
-            - Add multi-threading support (GC1234: thanks, ccampora)
+            - Add multi-threading support (GC1624: thanks, ccampora)
         - Misc:
             - New engine: VLCWebVideo ("vlcwebvideo")
             - Clean up engine names
