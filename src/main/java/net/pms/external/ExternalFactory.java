@@ -207,10 +207,8 @@ public class ExternalFactory {
 					// Create a new instance of the plugin class and store it
 					ExternalListener instance = (ExternalListener) clazz.newInstance();
 					registerListener(instance);
-				} catch (InstantiationException e) {
-					logger.error("Error instantiating plugin", e);
-				} catch (IllegalAccessException e) {
-					logger.error("Error instantiating plugin", e);
+				} catch (Throwable t) {
+					logger.error("Error instantiating plugin", t);
 				}
 			}
 		}
@@ -231,10 +229,8 @@ public class ExternalFactory {
 					// Create a new instance of the plugin class and store it
 					ExternalListener instance = (ExternalListener) clazz.newInstance();
 					registerListener(instance);
-				} catch (InstantiationException e) {
-					logger.error("Error instantiating plugin", e);
-				} catch (IllegalAccessException e) {
-					logger.error("Error instantiating plugin", e);
+				} catch (Throwable t) {
+					logger.error("Error instantiating plugin", t);
 				}
 			}
 		}
