@@ -886,7 +886,8 @@
 			</activation>
 
 			<pluginRepositories>
-				<pluginRepository>
+                <!-- nsis-maven-plugin needs this -->
+                <pluginRepository>
 					<id>Codehaus Snapshots</id>
 					<url>http://nexus.codehaus.org/snapshots/</url>
 					<snapshots>
