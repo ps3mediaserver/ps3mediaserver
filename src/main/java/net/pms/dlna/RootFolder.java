@@ -44,8 +44,12 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.text.Collator;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 
 public class RootFolder extends DLNAResource {
 	private static final Logger logger = LoggerFactory.getLogger(RootFolder.class);
@@ -688,6 +692,13 @@ public class RootFolder extends DLNAResource {
 		return iTunesFile;
 	}
 
+    private static boolean areNamesEqual(String aThis, String aThat) {
+        Collator collator = Collator.getInstance(Locale.getDefault());
+        collator.setStrength(Collator.PRIMARY);
+        int comparison = collator.compare(aThis, aThat);
+        return (comparison == 0);
+    }
+    
 	/**
 	 * Returns iTunes folder. Used by manageRoot, so it is usually used as a
 	 * folder at the root folder. Only works on Mac OS X or Windows.
@@ -702,6 +713,8 @@ public class RootFolder extends DLNAResource {
 	 */
 	private DLNAResource getiTunesFolder() {
 		DLNAResource res = null;
+
+		logger.info("getiTunesFolder() START");
 
 		if (Platform.isMac() || Platform.isWindows()) {
 			Map<String, Object> iTunesLib;
@@ -720,164 +733,243 @@ public class RootFolder extends DLNAResource {
 					Playlists = (List<?>) iTunesLib.get("Playlists"); // the list of Playlists
 					res = new VirtualFolder("iTunes Library", null);
 
+					VirtualFolder playlistsFolder = null;
+
 					for (Object item : Playlists) {
 						Playlist = (Map<?, ?>) item;
 
-						if (!"Library".equals(Playlist.get("Name").toString())
-								&& !"Movies".equals(Playlist.get("Name").toString())
-								&& !"TV Shows".equals(Playlist.get("Name").toString())
-								&& !"Genius".equals(Playlist.get("Name").toString())) {
-							if ("Music".equals(Playlist.get("Name").toString())) {
-								// Create virtual folders for artists, albums and genres
+						if (Playlist.containsKey("Visible") && Playlist.get("Visible").equals(Boolean.FALSE))
+							continue;
 
-								VirtualFolder virtualFolderArtists = new VirtualFolder("Browse by Artist", null);
-								VirtualFolder virtualFolderAlbums = new VirtualFolder("Browse by Albums", null);
-								VirtualFolder virtualFolderGenres = new VirtualFolder("Browse by Genre", null);
-								PlaylistTracks = (List<?>) Playlist.get("Playlist Items"); // list of tracks in a playlist
+						/*
+						if ( (Playlist.containsKey("Master") && Playlist.get("Master").equals(Boolean.TRUE))
+							|| (Playlist.containsKey("Movies") && Playlist.get("Movies").equals(Boolean.TRUE))
+							|| (Playlist.containsKey("TV Shows") && Playlist.get("TV Shows").equals(Boolean.TRUE))
+							|| (Playlist.containsKey("Genius") && Playlist.get("Genius").equals(Boolean.TRUE)) )
+							continue;
+							*/
 
-								String artistName;
-								String albumName;
-								String genreName;
-								if (PlaylistTracks != null) {
-									for (Object t : PlaylistTracks) {
-										Map<?, ?> td = (Map<?, ?>) t;
-										track = (Map<?, ?>) Tracks.get(td.get("Track ID").toString());
+						if (Playlist.containsKey("Music") && Playlist.get("Music").equals(Boolean.TRUE)) {
+							// Create virtual folders for artists, albums and genres
 
-										if (track != null) {
-											artistName = (String) track.get("Artist");
-											albumName = (String) track.get("Album");
-											genreName = (String) track.get("Genre");
+							VirtualFolder musicFolder = new VirtualFolder(Playlist.get("Name").toString(), null);
+							res.addChild(musicFolder);
 
-											if (artistName == null) {
-												artistName = "Unknown Artist";
-											}
+							VirtualFolder virtualFolderArtists = new VirtualFolder(Messages.getString("PMS.13"), null);
+							VirtualFolder virtualFolderAlbums = new VirtualFolder(Messages.getString("PMS.16"), null);
+							VirtualFolder virtualFolderGenres = new VirtualFolder(Messages.getString("PMS.19"), null);
+							VirtualFolder virtualFolderAllTracks = new VirtualFolder(Messages.getString("PMS.11"), null);
 
-											if (albumName == null) {
-												albumName = "Unknown Album";
-											}
+							PlaylistTracks = (List<?>) Playlist.get("Playlist Items"); // list of tracks in a playlist
 
-											if (genreName == null) {
-												genreName = "Unknown Genre";
-											} else if ("".equals(genreName.replaceAll("[^a-zA-Z]", ""))) {
-												// This prevents us from adding blank or numerical genres
-												genreName = "Unknown Genre";
-											}
+							String artistName;
+							String albumName;
+							String genreName;
+							if (PlaylistTracks != null) {
+								for (Object t : PlaylistTracks) {
+									Map<?, ?> td = (Map<?, ?>) t;
+									track = (Map<?, ?>) Tracks.get(td.get("Track ID").toString());
+                                    
+									if (track != null && track.get("Location") != null && track.get("Location").toString().startsWith("file://")) {
+                                        
+                                        String name = Normalizer.normalize((String)track.get("Name"), Normalizer.Form.NFC);
+                                        // remove dots from name to prevent media renderer from triming
+                                        name = name.replace('.', '-');
+                                        
+                                        if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
+                                            name = "[protected] " + name;
+                                        
+                                        boolean isCompilation = (track.containsKey("Compilation") && track.get("Compilation").equals(Boolean.TRUE));
+                                        
+										artistName = (String) (isCompilation ? "Compilation" :
+                                                               track.containsKey("Album Artist") ? track.get("Album Artist") : track.get("Artist"));
+										albumName = (String) track.get("Album");
+										genreName = (String) track.get("Genre");
 
-											// Replace &nbsp with space and then trim
-											artistName = artistName.replace('\u0160', ' ').trim();
-											albumName = albumName.replace('\u0160', ' ').trim();
-											genreName = genreName.replace('\u0160', ' ').trim();
-											if (track.get("Location") != null
-													&& track.get("Location").toString().startsWith("file://")) {
-												{
-													URI tURI2 = new URI(track.get("Location").toString());
-													RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
-													VirtualFolder individualArtistFolder = null;
-													for (DLNAResource artist : virtualFolderArtists.getChildren()) {
-														if (artist.getName().equals(artistName)) {
-															individualArtistFolder = (VirtualFolder) artist;
-															break;
-														}
-													}
-													if (individualArtistFolder == null) {
-														individualArtistFolder = new VirtualFolder(artistName, null);
-														virtualFolderArtists.addChild(individualArtistFolder);
-													}
-													individualArtistFolder.addChild(file);
-												}
+										if (artistName == null) {
+											artistName = "Unknown Artist";
+										} else {
+                                            artistName = Normalizer.normalize(artistName, Normalizer.Form.NFC);
+                                        }
 
-												{
-													URI tURI2 = new URI(track.get("Location").toString());
-													RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
-													VirtualFolder individualAlbumFolder = null;
-													for (DLNAResource album : virtualFolderAlbums.getChildren()) {
-														if (album.getName().equals(albumName)) {
-															individualAlbumFolder = (VirtualFolder) album;
-															break;
-														}
-													}
-													if (individualAlbumFolder == null) {
-														individualAlbumFolder = new VirtualFolder(albumName, null);
-														virtualFolderAlbums.addChild(individualAlbumFolder);
-													}
-													individualAlbumFolder.addChild(file);
-												}
+										if (albumName == null) {
+											albumName = "Unknown Album";
+										} else {
+                                            albumName = Normalizer.normalize(albumName, Normalizer.Form.NFC);
+                                        }
 
-												{
-													URI tURI2 = new URI(track.get("Location").toString());
-													RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
-													VirtualFolder individualGenreFolder = null;
-													for (DLNAResource genre : virtualFolderGenres.getChildren()) {
-														if (genre.getName().equals(genreName)) {
-															individualGenreFolder = (VirtualFolder) genre;
-															break;
-														}
-													}
-													if (individualGenreFolder == null) {
-														individualGenreFolder = new VirtualFolder(genreName, null);
-														virtualFolderGenres.addChild(individualGenreFolder);
-													}
-													individualGenreFolder.addChild(file);
-												}
-											}
-										}
+										if (genreName == null) {
+											genreName = "Unknown Genre";
+										} else if ("".equals(genreName.replaceAll("[^a-zA-Z]", ""))) {
+											// This prevents us from adding blank or numerical genres
+											genreName = "Unknown Genre";
+										} else {
+                                            genreName = Normalizer.normalize(genreName, Normalizer.Form.NFC);
+                                        }
+
+										// Replace &nbsp with space and then trim
+										artistName = artistName.replace('\u0160', ' ').trim();
+										albumName = albumName.replace('\u0160', ' ').trim();
+										genreName = genreName.replace('\u0160', ' ').trim();
+
+                                        URI tURI2 = new URI(track.get("Location").toString());
+                                        File refFile = new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8"));
+                                        RealFile file = new RealFile(refFile, name);
+
+                                        // ARTISTS FOLDER - Put the track into the artist's album folder and the artist's "All tracks" folder
+                                        {
+                                            VirtualFolder individualArtistFolder = null;
+                                            VirtualFolder individualArtistAllTracksFolder = null;
+                                            VirtualFolder individualArtistAlbumFolder = null;
+
+                                            for (DLNAResource artist : virtualFolderArtists.getChildren()) {
+                                                if (areNamesEqual(artist.getName(), artistName)) {
+                                                    individualArtistFolder = (VirtualFolder) artist;
+                                                    for (DLNAResource album : individualArtistFolder.getChildren()) {
+                                                        if (areNamesEqual(album.getName(), albumName)) {
+                                                            individualArtistAlbumFolder = (VirtualFolder) album;
+                                                        }
+                                                    }
+                                                    break;
+                                                }
+                                            }
+
+                                            if (individualArtistFolder == null) {
+                                                individualArtistFolder = new VirtualFolder(artistName, null);
+                                                individualArtistFolder.isArtistFolder = true;
+                                                virtualFolderArtists.addChild(individualArtistFolder);
+                                                individualArtistAllTracksFolder = new VirtualFolder(Messages.getString("PMS.11"), null);
+                                                individualArtistFolder.addChild(individualArtistAllTracksFolder);
+                                            } else {
+                                                individualArtistAllTracksFolder = (VirtualFolder)individualArtistFolder.getChildren().get(0);
+                                            }
+
+                                            if (individualArtistAlbumFolder == null) {
+                                                individualArtistAlbumFolder = new VirtualFolder(albumName, null);
+                                                individualArtistAlbumFolder.isAlbumFolder = true;
+                                                individualArtistFolder.addChild(individualArtistAlbumFolder);
+                                            }
+
+                                            individualArtistAlbumFolder.addChild(file.clone());
+                                            individualArtistAllTracksFolder.addChild(file);
+                                        }
+
+                                        // ALBUMS FOLDER - Put the track into its album folder
+                                        {
+                                            if (!isCompilation)
+                                                albumName += " – " + artistName;
+
+                                            VirtualFolder individualAlbumFolder = null;
+                                            for (DLNAResource album : virtualFolderAlbums.getChildren()) {
+                                                if (areNamesEqual(album.getName(), albumName)) {
+                                                    individualAlbumFolder = (VirtualFolder) album;
+                                                    break;
+                                                }
+                                            }
+                                            if (individualAlbumFolder == null) {
+                                                individualAlbumFolder = new VirtualFolder(albumName, null);
+                                                individualAlbumFolder.isAlbumFolder = true;
+                                                virtualFolderAlbums.addChild(individualAlbumFolder);
+                                            }
+                                            individualAlbumFolder.addChild(file.clone());
+                                        }
+
+                                        // GENRES FOLDER - Put the track into its genre folder
+                                        {
+                                            VirtualFolder individualGenreFolder = null;
+                                            for (DLNAResource genre : virtualFolderGenres.getChildren()) {
+                                                if (areNamesEqual(genre.getName(), genreName)) {
+                                                    individualGenreFolder = (VirtualFolder) genre;
+                                                    break;
+                                                }
+                                            }
+                                            if (individualGenreFolder == null) {
+                                                individualGenreFolder = new VirtualFolder(genreName, null);
+                                                virtualFolderGenres.addChild(individualGenreFolder);
+                                            }
+                                            individualGenreFolder.addChild(file.clone());
+                                        }
+
+                                        // ALL TRACKS - Put the track into the global "All tracks" folder
+                                        virtualFolderAllTracks.addChild(file.clone());											
 									}
 								}
+							}
 
-								res.addChild(virtualFolderArtists);
-								res.addChild(virtualFolderAlbums);
-								res.addChild(virtualFolderGenres);
+							musicFolder.addChild(virtualFolderArtists);
+							musicFolder.addChild(virtualFolderAlbums);
+							musicFolder.addChild(virtualFolderGenres);
+							musicFolder.addChild(virtualFolderAllTracks);
 
-								// Sort the virtual folders alphabetically
-								java.util.Collections.sort(virtualFolderArtists.getChildren(), new java.util.Comparator() {
-									@Override
-									public int compare(Object o1, Object o2) {
-										VirtualFolder a = (VirtualFolder) o1;
-										VirtualFolder b = (VirtualFolder) o2;
-										return a.getName().compareToIgnoreCase(b.getName());
-									}
-								});
 
-								java.util.Collections.sort(virtualFolderAlbums.getChildren(), new java.util.Comparator() {
-									@Override
-									public int compare(Object o1, Object o2) {
-										VirtualFolder a = (VirtualFolder) o1;
-										VirtualFolder b = (VirtualFolder) o2;
-										return a.getName().compareToIgnoreCase(b.getName());
-									}
-								});
+							// Sort the virtual folders alphabetically
+							java.util.Collections.sort(virtualFolderArtists.getChildren(), new java.util.Comparator() {
+								@Override
+								public int compare(Object o1, Object o2) {
+									VirtualFolder a = (VirtualFolder) o1;
+									VirtualFolder b = (VirtualFolder) o2;
+									return a.getName().compareToIgnoreCase(b.getName());
+								}
+							});
 
-								java.util.Collections.sort(virtualFolderGenres.getChildren(), new java.util.Comparator() {
-									@Override
-									public int compare(Object o1, Object o2) {
-										VirtualFolder a = (VirtualFolder) o1;
-										VirtualFolder b = (VirtualFolder) o2;
-										return a.getName().compareToIgnoreCase(b.getName());
-									}
-								});
-							} else {
-								// Add all playlists
-								VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(), null);
-								PlaylistTracks = (List<?>) Playlist.get("Playlist Items"); // list of tracks in a playlist
+							java.util.Collections.sort(virtualFolderAlbums.getChildren(), new java.util.Comparator() {
+								@Override
+								public int compare(Object o1, Object o2) {
+									VirtualFolder a = (VirtualFolder) o1;
+									VirtualFolder b = (VirtualFolder) o2;
+									return a.getName().compareToIgnoreCase(b.getName());
+								}
+							});
 
-								if (PlaylistTracks != null) {
-									for (Object t : PlaylistTracks) {
-										Map<?, ?> td = (Map<?, ?>) t;
-										track = (Map<?, ?>) Tracks.get(td.get("Track ID").toString());
+							java.util.Collections.sort(virtualFolderGenres.getChildren(), new java.util.Comparator() {
+								@Override
+								public int compare(Object o1, Object o2) {
+									VirtualFolder a = (VirtualFolder) o1;
+									VirtualFolder b = (VirtualFolder) o2;
+									return a.getName().compareToIgnoreCase(b.getName());
+								}
+							});
 
-										if (
-												track != null
-														&& track.get("Location") != null
-														&& track.get("Location").toString().startsWith("file://")
-												) {
-											URI tURI2 = new URI(track.get("Location").toString());
-											RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")));
-											pf.addChild(file);
-										}
+						} else {
+							// Add all playlists
+							VirtualFolder pf = new VirtualFolder(Playlist.get("Name").toString(), null);
+							PlaylistTracks = (List<?>) Playlist.get("Playlist Items"); // list of tracks in a playlist
+
+							if (PlaylistTracks != null) {
+								for (Object t : PlaylistTracks) {
+									Map<?, ?> td = (Map<?, ?>) t;
+									track = (Map<?, ?>) Tracks.get(td.get("Track ID").toString());
+
+									String name = Normalizer.normalize(track.get("Name").toString(), Normalizer.Form.NFC);
+									// remove dots from name to prevent media renderer from triming
+									name = name.replace('.', '-');
+									if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
+										name = "[protected] " + name;
+
+									if (
+											track != null
+													&& track.get("Location") != null
+													&& track.get("Location").toString().startsWith("file://")
+											) {
+										URI tURI2 = new URI(track.get("Location").toString());
+										RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")), name);
+										pf.addChild(file);
 									}
 								}
+							}
 
+							int kind = Playlist.containsKey("Distinguished Kind") ? ((Number)Playlist.get("Distinguished Kind")).intValue() : -1;
+							if (kind >= 0 && kind != 17 && kind != 19 && kind != 20) {
+								// System folder, but not voice memos (17) and purchased items (19 & 20)
 								res.addChild(pf);
+
+							} else {
+								// User playlist or playlist folder
+								if (playlistsFolder == null) {
+									playlistsFolder = new VirtualFolder("Playlists", null);
+									res.addChild(playlistsFolder);
+								}
+								playlistsFolder.addChild(pf);
 							}
 						}
 					}
@@ -888,6 +980,8 @@ public class RootFolder extends DLNAResource {
 				logger.error("Something went wrong with the iTunes Library scan: ", e);
 			}
 		}
+
+		logger.info("getiTunesFolder() END");
 
 		return res;
 	}
