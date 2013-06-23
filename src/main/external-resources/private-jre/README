@@ -1,1 +1,1 @@
-Maven will download private JRE archives here during process-resources phase.
+Maven will download private JRE archives here during generate-resources phase.
