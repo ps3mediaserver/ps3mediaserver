@@ -714,7 +714,7 @@ public class RootFolder extends DLNAResource {
 	private DLNAResource getiTunesFolder() {
 		DLNAResource res = null;
 
-		logger.info("getiTunesFolder() START");
+		logger.info("Start building iTunes folder...");
 
 		if (Platform.isMac() || Platform.isWindows()) {
 			Map<String, Object> iTunesLib;
@@ -740,14 +740,6 @@ public class RootFolder extends DLNAResource {
 
 						if (Playlist.containsKey("Visible") && Playlist.get("Visible").equals(Boolean.FALSE))
 							continue;
-
-						/*
-						if ( (Playlist.containsKey("Master") && Playlist.get("Master").equals(Boolean.TRUE))
-							|| (Playlist.containsKey("Movies") && Playlist.get("Movies").equals(Boolean.TRUE))
-							|| (Playlist.containsKey("TV Shows") && Playlist.get("TV Shows").equals(Boolean.TRUE))
-							|| (Playlist.containsKey("Genius") && Playlist.get("Genius").equals(Boolean.TRUE)) )
-							continue;
-							*/
 
 						if (Playlist.containsKey("Music") && Playlist.get("Music").equals(Boolean.TRUE)) {
 							// Create virtual folders for artists, albums and genres
@@ -836,7 +828,6 @@ public class RootFolder extends DLNAResource {
 
                                             if (individualArtistFolder == null) {
                                                 individualArtistFolder = new VirtualFolder(artistName, null);
-                                                individualArtistFolder.isArtistFolder = true;
                                                 virtualFolderArtists.addChild(individualArtistFolder);
                                                 individualArtistAllTracksFolder = new VirtualFolder(Messages.getString("PMS.11"), null);
                                                 individualArtistFolder.addChild(individualArtistAllTracksFolder);
@@ -846,7 +837,6 @@ public class RootFolder extends DLNAResource {
 
                                             if (individualArtistAlbumFolder == null) {
                                                 individualArtistAlbumFolder = new VirtualFolder(albumName, null);
-                                                individualArtistAlbumFolder.isAlbumFolder = true;
                                                 individualArtistFolder.addChild(individualArtistAlbumFolder);
                                             }
 
@@ -868,7 +858,6 @@ public class RootFolder extends DLNAResource {
                                             }
                                             if (individualAlbumFolder == null) {
                                                 individualAlbumFolder = new VirtualFolder(albumName, null);
-                                                individualAlbumFolder.isAlbumFolder = true;
                                                 virtualFolderAlbums.addChild(individualAlbumFolder);
                                             }
                                             individualAlbumFolder.addChild(file.clone());
@@ -940,17 +929,19 @@ public class RootFolder extends DLNAResource {
 									Map<?, ?> td = (Map<?, ?>) t;
 									track = (Map<?, ?>) Tracks.get(td.get("Track ID").toString());
 
-									String name = Normalizer.normalize(track.get("Name").toString(), Normalizer.Form.NFC);
-									// remove dots from name to prevent media renderer from triming
-									name = name.replace('.', '-');
-									if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
-										name = "[protected] " + name;
-
 									if (
-											track != null
+                                            track != null
 													&& track.get("Location") != null
 													&& track.get("Location").toString().startsWith("file://")
 											) {
+                                        
+                                        String name = Normalizer.normalize(track.get("Name").toString(), Normalizer.Form.NFC);
+                                        // remove dots from name to prevent media renderer from triming
+                                        name = name.replace('.', '-');
+                                        
+                                        if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
+                                            name = "[protected] " + name;
+                                        
 										URI tURI2 = new URI(track.get("Location").toString());
 										RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")), name);
 										pf.addChild(file);
@@ -981,7 +972,7 @@ public class RootFolder extends DLNAResource {
 			}
 		}
 
-		logger.info("getiTunesFolder() END");
+		logger.info("Building iTunes folder done.");
 
 		return res;
 	}
