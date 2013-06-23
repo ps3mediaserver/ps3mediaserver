@@ -16,7 +16,7 @@
     <files>
         <!-- Include pms-X.YY.Z-SNAPSHOT-jar-with-dependencies as pms.jar-->
         <file>
-            <source>${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar</source>
+            <source>${project.build.directory}/${project.artifactId}-${project.version}-jar-with-dependencies.jar</source>
             <outputDirectory>.</outputDirectory>
             <destName>pms.jar</destName>
             <fileMode>0644</fileMode>
@@ -25,7 +25,7 @@
 
         <!-- Include the tsMuxeR binary -->
         <file>
-            <source>${project.binaries}/tsMuxeR</source>
+            <source>${project.build.transcode-tools.linux.directory}/tsMuxeR</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>0755</fileMode>
             <lineEnding>keep</lineEnding>

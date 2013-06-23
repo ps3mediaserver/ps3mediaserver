@@ -17,36 +17,24 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 
 	<fileSets>
-		<!-- Include the unzipped binaries -->
+		<!-- Include downloaded binaries. -->
 		<fileSet>
-			<directory>${project.binaries}/osx</directory>
+			<directory>${project.build.transcode-tools.linux.directory}</directory>
 			<outputDirectory>${project.name}.app/Contents/Resources/Java/osx</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<fileMode>0755</fileMode>
 			<includes>
 				<include>*</include>
 			</includes>
-			<excludes>
-				<exclude>pms.icns</exclude>
-			</excludes>
 		</fileSet>
 
-		<!-- Include unzipped libmediainfo.dylib -->
-		<fileSet>
-			<directory>${project.binaries}</directory>
-			<outputDirectory>${project.name}.app/Contents/Resources/Java</outputDirectory>
-			<fileMode>0644</fileMode>
-			<includes>
-				<include>libmediainfo.dylib</include>
-			</includes>
-		</fileSet>
-
-		<!-- Include documentation -->
+		<!-- Include documentation and libmediainfo.dylib. -->
 		<fileSet>
 			<directory>${project.basedir}</directory>
 			<outputDirectory>${project.name}.app/Contents/Resources/Java</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
+				<include>libmediainfo.dylib</include>
 				<include>README.md</include>
 				<include>CHANGELOG.txt</include>
 				<include>LICENSE.txt</include>
