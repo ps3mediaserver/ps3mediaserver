@@ -769,7 +769,7 @@ public class RootFolder extends DLNAResource {
 										name = name.replace('.', '-');
 										
 										if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
-											name = "[protected] " + name;
+											name = "[" + Messages.getString("DLNAResource.5") + "] " + name;
 										
 										boolean isCompilation = (track.containsKey("Compilation") && track.get("Compilation").equals(Boolean.TRUE));
 										
@@ -938,7 +938,7 @@ public class RootFolder extends DLNAResource {
 										name = name.replace('.', '-');
 										
 										if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
-											name = "[protected] " + name;
+											name = "[" + Messages.getString("DLNAResource.5") + "] " + name;
 										
 										URI tURI2 = new URI(track.get("Location").toString());
 										RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")), name);
