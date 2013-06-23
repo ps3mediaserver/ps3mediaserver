@@ -692,13 +692,13 @@ public class RootFolder extends DLNAResource {
 		return iTunesFile;
 	}
 
-    private static boolean areNamesEqual(String aThis, String aThat) {
-        Collator collator = Collator.getInstance(Locale.getDefault());
-        collator.setStrength(Collator.PRIMARY);
-        int comparison = collator.compare(aThis, aThat);
-        return (comparison == 0);
-    }
-    
+	private static boolean areNamesEqual(String aThis, String aThat) {
+		Collator collator = Collator.getInstance(Locale.getDefault());
+		collator.setStrength(Collator.PRIMARY);
+		int comparison = collator.compare(aThis, aThat);
+		return (comparison == 0);
+	}
+
 	/**
 	 * Returns iTunes folder. Used by manageRoot, so it is usually used as a
 	 * folder at the root folder. Only works on Mac OS X or Windows.
@@ -761,34 +761,34 @@ public class RootFolder extends DLNAResource {
 								for (Object t : PlaylistTracks) {
 									Map<?, ?> td = (Map<?, ?>) t;
 									track = (Map<?, ?>) Tracks.get(td.get("Track ID").toString());
-                                    
+
 									if (track != null && track.get("Location") != null && track.get("Location").toString().startsWith("file://")) {
-                                        
-                                        String name = Normalizer.normalize((String)track.get("Name"), Normalizer.Form.NFC);
-                                        // remove dots from name to prevent media renderer from triming
-                                        name = name.replace('.', '-');
-                                        
-                                        if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
-                                            name = "[protected] " + name;
-                                        
-                                        boolean isCompilation = (track.containsKey("Compilation") && track.get("Compilation").equals(Boolean.TRUE));
-                                        
+
+										String name = Normalizer.normalize((String)track.get("Name"), Normalizer.Form.NFC);
+										// remove dots from name to prevent media renderer from triming
+										name = name.replace('.', '-');
+										
+										if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
+											name = "[protected] " + name;
+										
+										boolean isCompilation = (track.containsKey("Compilation") && track.get("Compilation").equals(Boolean.TRUE));
+										
 										artistName = (String) (isCompilation ? "Compilation" :
-                                                               track.containsKey("Album Artist") ? track.get("Album Artist") : track.get("Artist"));
+															   track.containsKey("Album Artist") ? track.get("Album Artist") : track.get("Artist"));
 										albumName = (String) track.get("Album");
 										genreName = (String) track.get("Genre");
 
 										if (artistName == null) {
 											artistName = "Unknown Artist";
 										} else {
-                                            artistName = Normalizer.normalize(artistName, Normalizer.Form.NFC);
-                                        }
+											artistName = Normalizer.normalize(artistName, Normalizer.Form.NFC);
+										}
 
 										if (albumName == null) {
 											albumName = "Unknown Album";
 										} else {
-                                            albumName = Normalizer.normalize(albumName, Normalizer.Form.NFC);
-                                        }
+											albumName = Normalizer.normalize(albumName, Normalizer.Form.NFC);
+										}
 
 										if (genreName == null) {
 											genreName = "Unknown Genre";
@@ -796,91 +796,91 @@ public class RootFolder extends DLNAResource {
 											// This prevents us from adding blank or numerical genres
 											genreName = "Unknown Genre";
 										} else {
-                                            genreName = Normalizer.normalize(genreName, Normalizer.Form.NFC);
-                                        }
+											genreName = Normalizer.normalize(genreName, Normalizer.Form.NFC);
+										}
 
 										// Replace &nbsp with space and then trim
 										artistName = artistName.replace('\u0160', ' ').trim();
 										albumName = albumName.replace('\u0160', ' ').trim();
 										genreName = genreName.replace('\u0160', ' ').trim();
 
-                                        URI tURI2 = new URI(track.get("Location").toString());
-                                        File refFile = new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8"));
-                                        RealFile file = new RealFile(refFile, name);
+										URI tURI2 = new URI(track.get("Location").toString());
+										File refFile = new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8"));
+										RealFile file = new RealFile(refFile, name);
 
-                                        // ARTISTS FOLDER - Put the track into the artist's album folder and the artist's "All tracks" folder
-                                        {
-                                            VirtualFolder individualArtistFolder = null;
-                                            VirtualFolder individualArtistAllTracksFolder = null;
-                                            VirtualFolder individualArtistAlbumFolder = null;
+										// ARTISTS FOLDER - Put the track into the artist's album folder and the artist's "All tracks" folder
+										{
+											VirtualFolder individualArtistFolder = null;
+											VirtualFolder individualArtistAllTracksFolder = null;
+											VirtualFolder individualArtistAlbumFolder = null;
 
-                                            for (DLNAResource artist : virtualFolderArtists.getChildren()) {
-                                                if (areNamesEqual(artist.getName(), artistName)) {
-                                                    individualArtistFolder = (VirtualFolder) artist;
-                                                    for (DLNAResource album : individualArtistFolder.getChildren()) {
-                                                        if (areNamesEqual(album.getName(), albumName)) {
-                                                            individualArtistAlbumFolder = (VirtualFolder) album;
-                                                        }
-                                                    }
-                                                    break;
-                                                }
-                                            }
+											for (DLNAResource artist : virtualFolderArtists.getChildren()) {
+												if (areNamesEqual(artist.getName(), artistName)) {
+													individualArtistFolder = (VirtualFolder) artist;
+													for (DLNAResource album : individualArtistFolder.getChildren()) {
+														if (areNamesEqual(album.getName(), albumName)) {
+															individualArtistAlbumFolder = (VirtualFolder) album;
+														}
+													}
+													break;
+												}
+											}
 
-                                            if (individualArtistFolder == null) {
-                                                individualArtistFolder = new VirtualFolder(artistName, null);
-                                                virtualFolderArtists.addChild(individualArtistFolder);
-                                                individualArtistAllTracksFolder = new VirtualFolder(Messages.getString("PMS.11"), null);
-                                                individualArtistFolder.addChild(individualArtistAllTracksFolder);
-                                            } else {
-                                                individualArtistAllTracksFolder = (VirtualFolder)individualArtistFolder.getChildren().get(0);
-                                            }
+											if (individualArtistFolder == null) {
+												individualArtistFolder = new VirtualFolder(artistName, null);
+												virtualFolderArtists.addChild(individualArtistFolder);
+												individualArtistAllTracksFolder = new VirtualFolder(Messages.getString("PMS.11"), null);
+												individualArtistFolder.addChild(individualArtistAllTracksFolder);
+											} else {
+												individualArtistAllTracksFolder = (VirtualFolder)individualArtistFolder.getChildren().get(0);
+											}
 
-                                            if (individualArtistAlbumFolder == null) {
-                                                individualArtistAlbumFolder = new VirtualFolder(albumName, null);
-                                                individualArtistFolder.addChild(individualArtistAlbumFolder);
-                                            }
+											if (individualArtistAlbumFolder == null) {
+												individualArtistAlbumFolder = new VirtualFolder(albumName, null);
+												individualArtistFolder.addChild(individualArtistAlbumFolder);
+											}
 
-                                            individualArtistAlbumFolder.addChild(file.clone());
-                                            individualArtistAllTracksFolder.addChild(file);
-                                        }
+											individualArtistAlbumFolder.addChild(file.clone());
+											individualArtistAllTracksFolder.addChild(file);
+										}
 
-                                        // ALBUMS FOLDER - Put the track into its album folder
-                                        {
-                                            if (!isCompilation)
-                                                albumName += " – " + artistName;
+										// ALBUMS FOLDER - Put the track into its album folder
+										{
+											if (!isCompilation)
+												albumName += " – " + artistName;
 
-                                            VirtualFolder individualAlbumFolder = null;
-                                            for (DLNAResource album : virtualFolderAlbums.getChildren()) {
-                                                if (areNamesEqual(album.getName(), albumName)) {
-                                                    individualAlbumFolder = (VirtualFolder) album;
-                                                    break;
-                                                }
-                                            }
-                                            if (individualAlbumFolder == null) {
-                                                individualAlbumFolder = new VirtualFolder(albumName, null);
-                                                virtualFolderAlbums.addChild(individualAlbumFolder);
-                                            }
-                                            individualAlbumFolder.addChild(file.clone());
-                                        }
+											VirtualFolder individualAlbumFolder = null;
+											for (DLNAResource album : virtualFolderAlbums.getChildren()) {
+												if (areNamesEqual(album.getName(), albumName)) {
+													individualAlbumFolder = (VirtualFolder) album;
+													break;
+												}
+											}
+											if (individualAlbumFolder == null) {
+												individualAlbumFolder = new VirtualFolder(albumName, null);
+												virtualFolderAlbums.addChild(individualAlbumFolder);
+											}
+											individualAlbumFolder.addChild(file.clone());
+										}
 
-                                        // GENRES FOLDER - Put the track into its genre folder
-                                        {
-                                            VirtualFolder individualGenreFolder = null;
-                                            for (DLNAResource genre : virtualFolderGenres.getChildren()) {
-                                                if (areNamesEqual(genre.getName(), genreName)) {
-                                                    individualGenreFolder = (VirtualFolder) genre;
-                                                    break;
-                                                }
-                                            }
-                                            if (individualGenreFolder == null) {
-                                                individualGenreFolder = new VirtualFolder(genreName, null);
-                                                virtualFolderGenres.addChild(individualGenreFolder);
-                                            }
-                                            individualGenreFolder.addChild(file.clone());
-                                        }
+										// GENRES FOLDER - Put the track into its genre folder
+										{
+											VirtualFolder individualGenreFolder = null;
+											for (DLNAResource genre : virtualFolderGenres.getChildren()) {
+												if (areNamesEqual(genre.getName(), genreName)) {
+													individualGenreFolder = (VirtualFolder) genre;
+													break;
+												}
+											}
+											if (individualGenreFolder == null) {
+												individualGenreFolder = new VirtualFolder(genreName, null);
+												virtualFolderGenres.addChild(individualGenreFolder);
+											}
+											individualGenreFolder.addChild(file.clone());
+										}
 
-                                        // ALL TRACKS - Put the track into the global "All tracks" folder
-                                        virtualFolderAllTracks.addChild(file.clone());											
+										// ALL TRACKS - Put the track into the global "All tracks" folder
+										virtualFolderAllTracks.addChild(file.clone());											
 									}
 								}
 							}
@@ -929,19 +929,17 @@ public class RootFolder extends DLNAResource {
 									Map<?, ?> td = (Map<?, ?>) t;
 									track = (Map<?, ?>) Tracks.get(td.get("Track ID").toString());
 
-									if (
-                                            track != null
-													&& track.get("Location") != null
-													&& track.get("Location").toString().startsWith("file://")
+									if (track != null
+												&& track.get("Location") != null
+												&& track.get("Location").toString().startsWith("file://")
 											) {
-                                        
-                                        String name = Normalizer.normalize(track.get("Name").toString(), Normalizer.Form.NFC);
-                                        // remove dots from name to prevent media renderer from triming
-                                        name = name.replace('.', '-');
-                                        
-                                        if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
-                                            name = "[protected] " + name;
-                                        
+										String name = Normalizer.normalize(track.get("Name").toString(), Normalizer.Form.NFC);
+										// remove dots from name to prevent media renderer from triming
+										name = name.replace('.', '-');
+										
+										if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
+											name = "[protected] " + name;
+										
 										URI tURI2 = new URI(track.get("Location").toString());
 										RealFile file = new RealFile(new File(URLDecoder.decode(tURI2.toURL().getFile(), "UTF-8")), name);
 										pf.addChild(file);
