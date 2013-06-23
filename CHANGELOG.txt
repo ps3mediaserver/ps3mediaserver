@@ -47,12 +47,18 @@ Changelog:
 
     Misc:
         - A lot of backports from UMS (thanks, all UMS developers!)
+        - Windows: system-wide Java installation is not needed anymore, now we bundle private JRE with installer
         - Fix duplicate entries in DVD/playlist/feed folders: GC566, GC636, GC1483, GH13
         - More accurate checks for reference frame counts to allow more videos to be remuxed rather than transcoded
         - Removed obsolete MPlayerAudio, MPlayerWebAudio and MPlayerWebVideoDump engines
         - Filename display formats can now be set at the profile level as well as per-renderer
         - More detailed logging to improve diagnostics and simplify issue reporting
         - Fix generation of music subfolders in iTunes Library (thanks, gui17aume)
+        - Build Windows installer with bundled JRE for 32-bit systems (PMS-setup-full.exe)
+        - Build Windows installer with bundled JRE for 64-bit systems (PMS-setup-full-x64.exe)
+        - Build Windows installer without bundled JRE (PMS-setup-without-jre.exe)
+        - Removed silent JRE download and installation within PMS.exe wrapper if no private or public JREs are found. Prompt user to run PMS-setup-full.exe instead
+        - Show user GPL licence during Windows installation
 
 1.82.0 - 2013-06-03
 
