@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.text.Collator;
 import java.text.Normalizer;
-import java.text.Normalizer.Form;
+
 
 public class RootFolder extends DLNAResource {
 	private static final Logger logger = LoggerFactory.getLogger(RootFolder.class);
@@ -892,27 +892,27 @@ public class RootFolder extends DLNAResource {
 
 
 							// Sort the virtual folders alphabetically
-							java.util.Collections.sort(virtualFolderArtists.getChildren(), new java.util.Comparator() {
+							java.util.Collections.sort(virtualFolderArtists.getChildren(), new java.util.Comparator<DLNAResource>() {
 								@Override
-								public int compare(Object o1, Object o2) {
+								public int compare(DLNAResource o1, DLNAResource o2) {
 									VirtualFolder a = (VirtualFolder) o1;
 									VirtualFolder b = (VirtualFolder) o2;
 									return a.getName().compareToIgnoreCase(b.getName());
 								}
 							});
 
-							java.util.Collections.sort(virtualFolderAlbums.getChildren(), new java.util.Comparator() {
+							java.util.Collections.sort(virtualFolderAlbums.getChildren(), new java.util.Comparator<DLNAResource>() {
 								@Override
-								public int compare(Object o1, Object o2) {
+								public int compare(DLNAResource o1, DLNAResource o2) {
 									VirtualFolder a = (VirtualFolder) o1;
 									VirtualFolder b = (VirtualFolder) o2;
 									return a.getName().compareToIgnoreCase(b.getName());
 								}
 							});
 
-							java.util.Collections.sort(virtualFolderGenres.getChildren(), new java.util.Comparator() {
+							java.util.Collections.sort(virtualFolderGenres.getChildren(), new java.util.Comparator<DLNAResource>() {
 								@Override
-								public int compare(Object o1, Object o2) {
+								public int compare(DLNAResource o1, DLNAResource o2) {
 									VirtualFolder a = (VirtualFolder) o1;
 									VirtualFolder b = (VirtualFolder) o2;
 									return a.getName().compareToIgnoreCase(b.getName());
