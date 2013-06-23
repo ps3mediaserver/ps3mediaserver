@@ -21,11 +21,12 @@ Changelog:
         - Send thumbnails properly to Samsung 2012 ES and EH models (thanks, dmitche3!)
         - Added renderer profiles (thanks, UMS developers):
             - KalemSoft Media Player
-            - Sony Bravia EX620 series TVs
             - Netgear NeoTV
             - Onkyo TX-NR717
             - Sharp Aquos TVs
             - Showtime 4 PS3 homebrew player
+            - Sony Bravia EX620 series TVs
+            - Sony Bravia W6/W8/W9 (thanks, gui17aume)
             - Sony Home Theatre Systems
             - Telstra T-Box
             - VideoWeb TV
