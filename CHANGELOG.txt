@@ -21,11 +21,12 @@ Changelog:
         - Send thumbnails properly to Samsung 2012 ES and EH models (thanks, dmitche3!)
         - Added renderer profiles (thanks, UMS developers):
             - KalemSoft Media Player
-            - Sony Bravia EX620 series TVs
             - Netgear NeoTV
             - Onkyo TX-NR717
             - Sharp Aquos TVs
             - Showtime 4 PS3 homebrew player
+            - Sony Bravia EX620 series TVs
+            - Sony Bravia W6/W8/W9 (thanks, gui17aume)
             - Sony Home Theatre Systems
             - Telstra T-Box
             - VideoWeb TV
@@ -42,14 +43,16 @@ Changelog:
 
     Language updates:
         - Updated Dutch translation (thanks, leroy)
+        - Updated French translation (thanks, gui17aume)
 
     Misc:
         - A lot of backports from UMS (thanks, all UMS developers!)
-        - Fix duplicate entries in DVD/playlist/feed folders: GC566, GC636, GC1483
+        - Fix duplicate entries in DVD/playlist/feed folders: GC566, GC636, GC1483, GH13
         - More accurate checks for reference frame counts to allow more videos to be remuxed rather than transcoded
         - Removed obsolete MPlayerAudio, MPlayerWebAudio and MPlayerWebVideoDump engines
         - Filename display formats can now be set at the profile level as well as per-renderer
         - More detailed logging to improve diagnostics and simplify issue reporting
+        - Fix generation of music subfolders in iTunes Library (thanks, gui17aume)
 
 1.82.0 - 2013-06-03
 
