@@ -62,7 +62,7 @@ download the latest sources and build PMS:
 
 The result will be built in the "target" directory:
 
-* Windows: `PMS-setup.exe`
+* Windows: `PMS-setup-full.exe`, `PMS-setup-full-x64.exe` and `PMS-setup-without-jre.exe`
 * Linux: `pms-linux-generic-x.xx.x.tar.gz`
 * Mac OS X: `pms-macosx-x.xx.x.dmg`
 
@@ -175,7 +175,7 @@ PMS is now ready to be built.
 
 The resulting binaries will be built in the "target" directory:
 
-* Windows: `PMS-setup.exe`
+* Windows: `PMS-setup-full.exe`, `PMS-setup-full-x64.exe` and `PMS-setup-without-jre.exe`
 * Linux:   `pms-linux-generic-x.xx.x.tar.gz`
 * Mac OS X: `pms-macosx-x.xx.x.dmg`
 
@@ -200,13 +200,13 @@ These last two commands can easily be automated using a script e.g.:
 # Cross-compilation
 
 By default, `mvn package` builds an installer or distibution file for the
-platform it is being compiled on e.g. `PMS-setup.exe` on Windows and a tarball on Linux.
+platform it is being compiled on e.g. `PMS-setup-full.exe` on Windows and a tarball on Linux.
 
 As an optional step, releases for other platforms can be built.
 
 ## Building the Windows binaries
 
-The Windows installer (`PMS-setup.exe`) and Windows executable
+The Windows installers (`PMS-setup-full.exe`, `PMS-setup-full-x64.exe` and `PMS-setup-without-jre.exe`) and Windows executable
 (`PMS.exe`) can be built on non-Windows platforms.
 
 First of all, you'll need to have the `makensis` binary installed. On Debian/Ubuntu,
