@@ -149,9 +149,9 @@ public class RootFolder extends DLNAResource {
 		}
 
 		if (!configuration.getHideVideoSettings()) {
-			DLNAResource videoSettingsRes = getVideoSettingssFolder();
-			if (videoSettingsRes != null) {
-				addChild(videoSettingsRes);
+			DLNAResource videoSettingsFolder = getVideoSettingsFolder();
+			if (videoSettingsFolder != null) {
+				addChild(videoSettingsFolder);
 			}
 		}
 
@@ -771,7 +771,7 @@ public class RootFolder extends DLNAResource {
 									if (track != null && track.get("Location") != null && track.get("Location").toString().startsWith("file://")) {
 
 										String name = Normalizer.normalize((String)track.get("Name"), Normalizer.Form.NFC);
-										// remove dots from name to prevent media renderer from triming
+										// remove dots from name to prevent media renderer from trimming
 										name = name.replace('.', '-');
 
 										if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
@@ -939,7 +939,7 @@ public class RootFolder extends DLNAResource {
 												&& track.get("Location").toString().startsWith("file://")
 											) {
 										String name = Normalizer.normalize(track.get("Name").toString(), Normalizer.Form.NFC);
-										// remove dots from name to prevent media renderer from triming
+										// remove dots from name to prevent media renderer from trimming
 										name = name.replace('.', '-');
 
 										if (track.containsKey("Protected") && track.get("Protected").equals(Boolean.TRUE))
@@ -985,7 +985,7 @@ public class RootFolder extends DLNAResource {
 	 * used as a folder at the root folder. Child objects are created when
 	 * this folder is created.
 	 */
-	private DLNAResource getVideoSettingssFolder() {
+	private DLNAResource getVideoSettingsFolder() {
 		DLNAResource res = null;
 
 		if (!configuration.getHideVideoSettings()) {
