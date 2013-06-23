@@ -7,10 +7,11 @@
 .settings
 MediaInfo.dll
 MediaInfo64.dll
-contrib/ffmpeg/build
-database
+contrib/ffmpeg/build/
+database/
 debug.log
 libmediainfo.dylib
 maven-eclipse.xml
 pms.iml
-target
+target/
+src/main/external-resources/private-jre/*.zip
