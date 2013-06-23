@@ -50,6 +50,8 @@ import java.text.Collator;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -895,7 +897,7 @@ public class RootFolder extends DLNAResource {
 							musicFolder.addChild(virtualFolderAllTracks);
 
 							// Sort the virtual folders alphabetically
-							Collections.sort(virtualFolderArtists.getChildren(), new java.util.Comparator<DLNAResource>() {
+							Collections.sort(virtualFolderArtists.getChildren(), new Comparator<DLNAResource>() {
 								@Override
 								public int compare(DLNAResource o1, DLNAResource o2) {
 									VirtualFolder a = (VirtualFolder) o1;
@@ -904,7 +906,7 @@ public class RootFolder extends DLNAResource {
 								}
 							});
 
-							Collections.sort(virtualFolderAlbums.getChildren(), new java.util.Comparator<DLNAResource>() {
+							Collections.sort(virtualFolderAlbums.getChildren(), new Comparator<DLNAResource>() {
 								@Override
 								public int compare(DLNAResource o1, DLNAResource o2) {
 									VirtualFolder a = (VirtualFolder) o1;
@@ -913,7 +915,7 @@ public class RootFolder extends DLNAResource {
 								}
 							});
 
-							Collections.sort(virtualFolderGenres.getChildren(), new java.util.Comparator<DLNAResource>() {
+							Collections.sort(virtualFolderGenres.getChildren(), new Comparator<DLNAResource>() {
 								@Override
 								public int compare(DLNAResource o1, DLNAResource o2) {
 									VirtualFolder a = (VirtualFolder) o1;
@@ -1104,7 +1106,7 @@ public class RootFolder extends DLNAResource {
 					logger.error(String.format("Failed to append AdditionalFolderAtRoot with name=%s, class=%s", afar.name(), afar.getClass()), t);
 				}
 			} else if (listener instanceof AdditionalFoldersAtRoot) {
-				java.util.Iterator<DLNAResource> folders = ((AdditionalFoldersAtRoot) listener).getChildren();
+				Iterator<DLNAResource> folders = ((AdditionalFoldersAtRoot) listener).getChildren();
 
 				while (folders.hasNext()) {
 					DLNAResource resource = folders.next();
