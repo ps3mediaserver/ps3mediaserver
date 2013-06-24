@@ -65,30 +65,30 @@ public class PmsConfiguration {
 	// https://code.google.com/p/ps3mediaserver/issues/detail?id=517
 	private static final int MENCODER_MAX_THREADS = 8;
 
-	private static final String KEY_ALTERNATE_SUBTITLES_FOLDER = "alternate_subtitles_folder";
+	private static final String KEY_ALTERNATE_SUBTITLE_FOLDER = "alternate_subtitle_folder";
 	private static final String KEY_ALTERNATE_THUMB_FOLDER = "alternate_thumb_folder";
 	private static final String KEY_SHOW_APERTURE_LIBRARY = "show_aperture_library";
 	private static final String KEY_AUDIO_BITRATE = "audio_bitrate";
 	private static final String KEY_AUDIO_CHANNEL_COUNT = "audio_channels";
 	private static final String KEY_AUDIO_LANGUAGES = "audio_languages";
 	private static final String KEY_AUDIO_RESAMPLE = "audio_resample";
-	private static final String KEY_AUDIO_SUB_LANGS = "audio_subtitles_languages";
-	private static final String KEY_AUDIO_THUMBNAILS_METHOD = "audio_thumbnails_method";
+	private static final String KEY_AUDIO_SUB_LANGS = "audio_subtitle_languages";
+	private static final String KEY_AUDIO_THUMBNAIL_METHOD = "audio_thumbnail_method";
 	private static final String KEY_AUTO_UPDATE = "auto_update";
 	private static final String KEY_AUTOLOAD_SUBTITLES = "autoload_external_subtitles";
 	private static final String KEY_AVISYNTH_CONVERT_FPS = "avisynth_convert_fps";
 	private static final String KEY_AVISYNTH_SCRIPT = "avisynth_script";
-	private static final String KEY_ASS_MARGIN = "subtitles_ass_margin";
-	private static final String KEY_ASS_OUTLINE = "subtitles_ass_outline";
-	private static final String KEY_ASS_SCALE = "subtitles_ass_scale";
-	private static final String KEY_ASS_SHADOW = "subtitles_ass_shadow";
+	private static final String KEY_ASS_MARGIN = "subtitle_ass_margin";
+	private static final String KEY_ASS_OUTLINE = "subtitle_ass_outline";
+	private static final String KEY_ASS_SCALE = "subtitle_ass_scale";
+	private static final String KEY_ASS_SHADOW = "subtitle_ass_shadow";
 	private static final String KEY_BUFFER_MAX = "buffer_max";
 	private static final String KEY_CHAPTER_INTERVAL = "chapter_interval";
 	private static final String KEY_CHAPTER_SUPPORT = "chapter_support";
 	private static final String KEY_MENCODER_CODEC_SPECIFIC_SCRIPT = "mencoder_codec_specific_script";
 	private static final String KEY_DISABLE_FAKESIZE = "disable_fakesize";
-	public static final String KEY_DISABLE_SUBTITLES = "disable_subtitles";
-	private static final String KEY_DVDISO_THUMBNAILS = "dvd_isos_thumbnails";
+	public static final String KEY_DISABLE_SUBTITLES = "disable_subtitles"; // used by MEncoderVideo
+	private static final String KEY_DVD_ISO_THUMBNAILS = "dvd_iso_thumbnails";
 	private static final String KEY_AUDIO_EMBED_DTS_IN_PCM = "audio_embed_dts_in_pcm";
 	private static final String KEY_ENGINES = "engines";
 	private static final String KEY_FFMPEG_ALTERNATIVE_PATH = "alternativeffmpegpath"; // TODO deprecated: FFmpegDVRMSRemux will be removed and DVR-MS will be transcoded
@@ -97,12 +97,12 @@ public class PmsConfiguration {
 	private static final String KEY_FILENAME_FORMAT_LONG = "filename_format_long";
 	private static final String KEY_FILENAME_FORMAT_SHORT = "filename_format_short";
 	private static final String KEY_FIX_25FPS_AV_MISMATCH = "fix_25fps_av_mismatch";
-	private static final String KEY_FONT = "subtitles_font";
+	private static final String KEY_FONT = "subtitle_font";
 	private static final String KEY_FORCED_SUBTITLE_LANGUAGE = "forced_subtitle_language";
 	private static final String KEY_FORCED_SUBTITLE_TAGS = "forced_subtitle_tags";
 	private static final String KEY_FORCE_TRANSCODE_FOR_EXTENSIONS = "force_transcode_for_extensions";
 	private static final String KEY_HIDE_EMPTY_FOLDERS = "hide_empty_folders";
-	private static final String KEY_HIDE_ENGINENAMES = "hide_enginenames";
+	private static final String KEY_HIDE_ENGINENAMES = "hide_engine_names";
 	private static final String KEY_HIDE_EXTENSIONS = "hide_extensions";
 	private static final String KEY_HIDE_MEDIA_LIBRARY_FOLDER = "hide_media_library_folder";
 	private static final String KEY_HIDE_TRANSCODE_FOLDER = "hide_transcode_folder";
@@ -129,7 +129,7 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_NOASS_OUTLINE = "mencoder_noass_outline";
 	private static final String KEY_MENCODER_NOASS_SCALE = "mencoder_noass_scale";
 	private static final String KEY_MENCODER_NOASS_SUBPOS = "mencoder_noass_subpos";
-	private static final String KEY_MENCODER_NO_OUT_OF_SYNC = "mencoder_nooutofsync";
+	private static final String KEY_MENCODER_NO_OUT_OF_SYNC = "mencoder_no_out_of_sync";
 	private static final String KEY_MENCODER_OVERSCAN_COMPENSATION_HEIGHT = "mencoder_overscan_compensation_height";
 	private static final String KEY_MENCODER_OVERSCAN_COMPENSATION_WIDTH = "mencoder_overscan_compensation_width";
 	private static final String KEY_AUDIO_REMUX_AC3 = "audio_remux_ac3";
@@ -137,7 +137,7 @@ public class PmsConfiguration {
 	private static final String KEY_MENCODER_SCALER = "mencoder_scaler";
 	private static final String KEY_MENCODER_SCALEX = "mencoder_scalex";
 	private static final String KEY_MENCODER_SCALEY = "mencoder_scaley";
-	private static final String KEY_MENCODER_SUB_FRIBIDI = "mencoder_subfribidi";
+	private static final String KEY_MENCODER_SUB_FRIBIDI = "mencoder_sub_fribidi";
 	private static final String KEY_MENCODER_USE_PCM_FOR_HQ_AUDIO_ONLY = "mencoder_usepcm_for_hq_audio_only";
 	private static final String KEY_MENCODER_VOBSUB_SUBTITLE_QUALITY = "mencoder_vobsub_subtitle_quality";
 	private static final String KEY_MENCODER_YADIF = "mencoder_yadif";
@@ -162,9 +162,9 @@ public class PmsConfiguration {
 	private static final String KEY_SKIP_LOOP_FILTER_ENABLED = "mencoder_skip_loop_filter";
 	private static final String KEY_SKIP_NETWORK_INTERFACES = "skip_network_interfaces";
 	private static final String KEY_SORT_METHOD = "sort_method";
-	private static final String KEY_SUBS_COLOR = "subtitles_color";
-	private static final String KEY_SUBTITLES_CODEPAGE = "subtitles_codepage";
-	private static final String KEY_SUBTITLES_LANGUAGES = "subtitles_languages";
+	private static final String KEY_SUBS_COLOR = "subtitle_color";
+	private static final String KEY_SUBTITLE_CODEPAGE = "subtitle_codepage";
+	private static final String KEY_SUBTITLE_LANGUAGES = "subtitle_languages";
 	private static final String KEY_TEMP_FOLDER_PATH = "temp_directory";
 	private static final String KEY_THUMBNAIL_GENERATION_ENABLED = "generate_thumbnails";
 	private static final String KEY_THUMBNAIL_SEEK_POS = "thumbnail_seek_position";
@@ -270,7 +270,7 @@ public class PmsConfiguration {
 			KEY_ENGINES,
 			KEY_FOLDERS,
 			KEY_HIDE_VIDEO_SETTINGS,
-			KEY_AUDIO_THUMBNAILS_METHOD,
+			KEY_AUDIO_THUMBNAIL_METHOD,
 			KEY_DISABLE_TRANSCODE_FOR_EXTENSIONS,
 			KEY_FORCE_TRANSCODE_FOR_EXTENSIONS,
 			KEY_SERVER_PORT,
@@ -285,9 +285,6 @@ public class PmsConfiguration {
 		initialize PROFILE_PATH i.e. the path to the current session's profile (AKA PMS.conf).
 		It also initializes PROFILE_DIRECTORY - i.e. the directory the profile is located in -
 		which is needed to detect the default WEB.conf location (anything else?).
-
-		While this convention - and therefore PROFILE_DIRECTORY - will remain,
-		adding more configurables - e.g. web_conf = ... - is on the TODO list.
 
 		PMS_PROFILE is read (in this order) from the property pms.profile.path or the
 		environment variable PMS_PROFILE. If PMS is launched with the command-line option
@@ -980,7 +977,7 @@ public class PmsConfiguration {
 	 */
 	public String getSubtitlesLanguages() {
 		return configurationReader.getPossiblyBlankConfigurationString(
-				KEY_SUBTITLES_LANGUAGES,
+				KEY_SUBTITLE_LANGUAGES,
 				Messages.getString("MEncoderVideo.127")
 		);
 	}
@@ -1041,7 +1038,7 @@ public class PmsConfiguration {
 	 * @return The character encoding.
 	 */
 	public String getSubtitlesCodepage() {
-		return getString(KEY_SUBTITLES_CODEPAGE, "");
+		return getString(KEY_SUBTITLE_CODEPAGE, "");
 	}
 
 	/**
@@ -1089,7 +1086,7 @@ public class PmsConfiguration {
 	 * @param value The subtitle language priority string.
 	 */
 	public void setSubtitlesLanguages(String value) {
-		configuration.setProperty(KEY_SUBTITLES_LANGUAGES, value);
+		configuration.setProperty(KEY_SUBTITLE_LANGUAGES, value);
 	}
 
 	/**
@@ -1145,7 +1142,7 @@ public class PmsConfiguration {
 	 * @param value The character encoding.
 	 */
 	public void setSubtitlesCodepage(String value) {
-		configuration.setProperty(KEY_SUBTITLES_CODEPAGE, value);
+		configuration.setProperty(KEY_SUBTITLE_CODEPAGE, value);
 	}
 
 	/**
@@ -1925,11 +1922,11 @@ public class PmsConfiguration {
 	}
 
 	public int getAudioThumbnailMethod() {
-		return getInt(KEY_AUDIO_THUMBNAILS_METHOD, 0);
+		return getInt(KEY_AUDIO_THUMBNAIL_METHOD, 0);
 	}
 
 	public void setAudioThumbnailMethod(int value) {
-		configuration.setProperty(KEY_AUDIO_THUMBNAILS_METHOD, value);
+		configuration.setProperty(KEY_AUDIO_THUMBNAIL_METHOD, value);
 	}
 
 	public String getAlternateThumbFolder() {
@@ -1941,11 +1938,11 @@ public class PmsConfiguration {
 	}
 
 	public String getAlternateSubtitlesFolder() {
-		return getString(KEY_ALTERNATE_SUBTITLES_FOLDER, "");
+		return getString(KEY_ALTERNATE_SUBTITLE_FOLDER, "");
 	}
 
 	public void setAlternateSubtitlesFolder(String value) {
-		configuration.setProperty(KEY_ALTERNATE_SUBTITLES_FOLDER, value);
+		configuration.setProperty(KEY_ALTERNATE_SUBTITLE_FOLDER, value);
 	}
 
 	public void setAudioEmbedDtsInPcm(boolean value) {
@@ -2062,11 +2059,11 @@ public class PmsConfiguration {
 	}
 
 	public boolean isDvdIsoThumbnails() {
-		return getBoolean(KEY_DVDISO_THUMBNAILS, false);
+		return getBoolean(KEY_DVD_ISO_THUMBNAILS, false);
 	}
 
 	public void setDvdIsoThumbnails(boolean value) {
-		configuration.setProperty(KEY_DVDISO_THUMBNAILS, value);
+		configuration.setProperty(KEY_DVD_ISO_THUMBNAILS, value);
 	}
 
 	public Object getCustomProperty(String property) {
