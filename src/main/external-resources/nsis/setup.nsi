@@ -20,7 +20,8 @@ SetCompressor /SOLID lzma
 SetCompressorDictSize 32
 
 !define MUI_ABORTWARNING
-!define MUI_FINISHPAGE_RUN "$INSTDIR\PMS.exe"
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_FUNCTION RunPS3MS
 !define MUI_WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\win.bmp"
 
 !define MUI_FINISHPAGE_SHOWREADME ""
@@ -42,6 +43,12 @@ ShowUninstDetails show
 Function .onInit
   ;Check OS for 64-bit installer.
   !insertmacro checkSystemOS
+FunctionEnd
+
+;Run program through explorer.exe to de-evaluate user from admin to regular one.
+;http://mdb-blog.blogspot.ru/2013/01/nsis-lunch-program-as-user-from-uac.html
+Function RunPS3MS
+  Exec '"$WINDIR\explorer.exe" "$INSTDIR\PMS.exe"'
 FunctionEnd
 
 Function CreateDesktopShortcut
