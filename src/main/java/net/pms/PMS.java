@@ -32,14 +32,14 @@ import net.pms.external.ExternalFactory;
 import net.pms.external.ExternalListener;
 import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
-import net.pms.newgui.DummyFrame;
-import net.pms.newgui.IFrame;
 import net.pms.io.*;
 import net.pms.logging.FrameAppender;
 import net.pms.logging.LoggingConfigFileLoader;
 import net.pms.network.HTTPServer;
 import net.pms.network.ProxyServer;
 import net.pms.network.UPNPHelper;
+import net.pms.newgui.DummyFrame;
+import net.pms.newgui.IFrame;
 import net.pms.newgui.LooksFrame;
 import net.pms.newgui.ProfileChooser;
 import net.pms.update.AutoUpdater;
@@ -1033,7 +1033,7 @@ public class PMS {
 	private void logSystemInfo() {
 		long memoryInMB = Runtime.getRuntime().maxMemory() / 1048576;
 
-		logger.info("Java: " + System.getProperty("java.version") + "-" + System.getProperty("java.vendor"));
+		logger.info("Java: " + System.getProperty("java.vm.name") + " " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor"));
 		logger.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
 		logger.info("Encoding: " + System.getProperty("file.encoding"));
 		logger.info("Memory: " + memoryInMB + " " + Messages.getString("StatusTab.12"));
