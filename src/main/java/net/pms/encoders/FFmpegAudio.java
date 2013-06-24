@@ -41,9 +41,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FFmpegAudio extends FFmpegVideo {
 	public static final String ID = "ffmpegaudio";
 	private final PmsConfiguration configuration;
+	private Logger logger = LoggerFactory.getLogger(FFmpegAudio.class);
 
 	// should be private
 	@Deprecated
@@ -94,10 +98,9 @@ public class FFmpegAudio extends FFmpegVideo {
 		return ID;
 	}
 
-	// FIXME why is this false if launchTranscode supports it (-ss)?
 	@Override
 	public boolean isTimeSeekable() {
-		return false;
+		return true;
 	}
 
 	public boolean avisynth() {
@@ -126,6 +129,51 @@ public class FFmpegAudio extends FFmpegVideo {
 		return HTTPResource.AUDIO_TRANSCODE;
 	}
 
+	/**
+	 * Returns a list of <code>String</code>s representing ffmpeg output
+	 * options (i.e. options that define the output file's format,
+	 * bitrate and sample rate) compatible with the renderer's
+	 * <code>TranscodeAudio</code> profile.
+	 *
+	 * @param dlna The DLNA resource representing the file being transcoded.
+	 * @param media the media metadata for the file being streamed. May contain
+	 *     unset/null values (e.g. for web streams).
+	 * @param params The {@link net.pms.io.OutputParams} context object used to
+	 *     store miscellaneous parameters for this request.
+	 * @return a {@link List} of <code>String</code>s representing the
+	 *     FFmpeg output parameters for the renderer according
+	 *     to its <code>TranscodeAudio</code> profile.
+	 * @since 1.90.0
+	 */
+	protected List<String> getAudioTranscodeOptions(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) {
+		List<String> options = new ArrayList<String>();
+
+		if (params.mediaRenderer.isTranscodeToMP3()) {
+			options.add("-f");
+			options.add("mp3");
+			options.add("-ab");
+			options.add("320000");
+		} else if (params.mediaRenderer.isTranscodeToWAV()) {
+			options.add("-f");
+			options.add("wav");
+		} else { // default: LPCM
+			options.add("-f");
+			options.add("s16be"); // same as -f wav, but without a WAV header
+		}
+
+		if (configuration.isAudioResample()) {
+			if (params.mediaRenderer.isTranscodeAudioTo441()) {
+				options.add("-ar");
+				options.add("44100");
+			} else {
+				options.add("-ar");
+				options.add("48000");
+			}
+		}
+
+		return options;
+	}
+
 	@Override
 	public ProcessWrapper launchTranscode(
 		DLNAResource dlna,
@@ -141,9 +189,7 @@ public class FFmpegAudio extends FFmpegVideo {
 		List<String> cmdList = new ArrayList<String>();
 
 		cmdList.add(executable());
-
-		cmdList.add("-loglevel");
-		cmdList.add("warning"); // XXX this should probably be configurable, for debugging
+		cmdList.addAll(getGlobalOptions(logger));
 
 		if (params.timeseek > 0) {
 			cmdList.add("-ss");
@@ -166,29 +212,8 @@ public class FFmpegAudio extends FFmpegVideo {
 			cmdList.add("" + params.timeend);
 		}
 
-		if (params.mediaRenderer.isTranscodeToMP3()) {
-			cmdList.add("-f");
-			cmdList.add("mp3");
-			cmdList.add("-ab");
-			cmdList.add("320000");
-		} else if (params.mediaRenderer.isTranscodeToWAV()) {
-			cmdList.add("-f");
-			cmdList.add("wav");
-		} else { // default: LPCM
-			cmdList.add("-f");
-			cmdList.add("s16be"); // same as -f wav, but without a WAV header
-		}
-
-		if (configuration.isAudioResample()) {
-			if (params.mediaRenderer.isTranscodeAudioTo441()) {
-				cmdList.add("-ar");
-				cmdList.add("44100");
-			} else {
-				cmdList.add("-ar");
-				cmdList.add("48000");
-			}
-		}
-
+		// Add the output options (-f, -ab, -ar)
+		cmdList.addAll(getAudioTranscodeOptions(dlna, media, params));
 		cmdList.add("pipe:");
 
 		String[] cmdArray = new String[ cmdList.size() ];
@@ -208,9 +233,6 @@ public class FFmpegAudio extends FFmpegVideo {
 		return pw;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
 		return PlayerUtil.isAudio(resource, Format.Identifier.FLAC)

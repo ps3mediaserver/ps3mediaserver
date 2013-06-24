@@ -47,9 +47,19 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-public class FFmpegDVRMSRemux extends Player {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class FFmpegDVRMSRemux extends FFmpegBase {
+	private final Logger logger = LoggerFactory.getLogger(FFmpegDVRMSRemux.class);
+	private final PmsConfiguration configuration;
 	private JTextField altffpath;
 	public static final String ID = "ffmpegdvrmsremux";
+
+	public FFmpegDVRMSRemux(PmsConfiguration configuration) {
+		super(configuration);
+		this.configuration = configuration;
+	}
 
 	@Override
 	public PlayerPurpose getPurpose() {
@@ -64,14 +74,6 @@ public class FFmpegDVRMSRemux extends Player {
 	@Override
 	public boolean isTimeSeekable() {
 		return true;
-	}
-
-	@Override
-	public boolean avisynth() {
-		return false;
-	}
-
-	public FFmpegDVRMSRemux() {
 	}
 
 	@Override
@@ -111,30 +113,15 @@ public class FFmpegDVRMSRemux extends Player {
 	}
 
 	@Override
-	public String executable() {
-		return PMS.getConfiguration().getFfmpegPath();
-	}
-
-	@Override
 	public ProcessWrapper launchTranscode(
 		DLNAResource dlna,
 		DLNAMediaInfo media,
 		OutputParams params
 	) throws IOException {
-		return getFFmpegTranscode(dlna, media, params);
-	}
-
-	// pointless redirection of launchTranscode
-	@Deprecated
-	protected ProcessWrapperImpl getFFmpegTranscode(
-			DLNAResource dlna,
-			DLNAMediaInfo media,
-			OutputParams params
-	) throws IOException {
-		PmsConfiguration configuration = PMS.getConfiguration();
 		String ffmpegAlternativePath = configuration.getFfmpegAlternativePath();
 		List<String> cmdList = new ArrayList<String>();
 		final String filename = dlna.getSystemName();
+		cmdList.addAll(getGlobalOptions(logger));
 
 		if (ffmpegAlternativePath != null && ffmpegAlternativePath.length() > 0) {
 			cmdList.add(ffmpegAlternativePath);
@@ -200,11 +187,11 @@ public class FFmpegDVRMSRemux extends Player {
 		cmp.setFont(cmp.getFont().deriveFont(Font.BOLD));
 
 		builder.addLabel(Messages.getString("FFmpegDVRMSRemux.0"), cc.xy(1, 3));
-		altffpath = new JTextField(PMS.getConfiguration().getFfmpegAlternativePath());
+		altffpath = new JTextField(configuration.getFfmpegAlternativePath());
 		altffpath.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				PMS.getConfiguration().setFfmpegAlternativePath(altffpath.getText());
+				configuration.setFfmpegAlternativePath(altffpath.getText());
 			}
 		});
 		builder.add(altffpath, cc.xyw(3, 3, 3));
@@ -217,9 +204,6 @@ public class FFmpegDVRMSRemux extends Player {
 		return mediaRenderer.isTranscodeToMPEGPSAC3();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
 		return PlayerUtil.isVideo(resource, Format.Identifier.DVRMS);

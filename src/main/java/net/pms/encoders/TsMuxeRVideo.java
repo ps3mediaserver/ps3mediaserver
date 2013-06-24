@@ -300,11 +300,11 @@ public class TsMuxeRVideo extends Player {
 					 Commented out until we can find a way to detect when a video has an audio track that switches from 2 to 6 channels
 					 because MEncoder can't handle those files, which are very common these days.
 					*/
-                    // final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && params.aid.getAudioProperties().getNumberOfChannels() == 2)
+					// final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && params.aid.getAudioProperties().getNumberOfChannels() == 2)
 					//	&& (params.aid.getBitRate() > 370000 && params.aid.getBitRate() < 400000);
 					final boolean ps3_and_stereo_and_384_kbits = false;
 					ac3Remux = (params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isAudioRemuxAC3());
-                    dtsRemux = configuration.isAudioEmbedDtsInPcm() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
+					dtsRemux = configuration.isAudioEmbedDtsInPcm() && params.aid.isDTS() && params.mediaRenderer.isDTSPlayable();
 
 					pcm = configuration.isAudioUsePCM() &&
 						!mp4_with_non_h264 &&
@@ -419,7 +419,7 @@ public class TsMuxeRVideo extends Player {
 						// final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && audio.getAudioProperties().getNumberOfChannels() == 2)
 						//	&& (audio.getBitRate() > 370000 && audio.getBitRate() < 400000);
 						final boolean ps3_and_stereo_and_384_kbits = false;
-                        ac3Remux = audio.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isAudioRemuxAC3();
+						ac3Remux = audio.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isAudioRemuxAC3();
 						dtsRemux = configuration.isAudioEmbedDtsInPcm() && audio.isDTS() && params.mediaRenderer.isDTSPlayable();
 
 						pcm = configuration.isAudioUsePCM() &&
@@ -608,10 +608,10 @@ public class TsMuxeRVideo extends Player {
 			  	 Commented out until we can find a way to detect when a video has an audio track that switches from 2 to 6 channels
 			  	 because MEncoder can't handle those files, which are very common these days.
 			 	*/
-                // final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && lang.getAudioProperties().getNumberOfChannels() == 2)
+				// final boolean ps3_and_stereo_and_384_kbits = (params.mediaRenderer.isPS3() && lang.getAudioProperties().getNumberOfChannels() == 2)
 				//	&& (lang.getBitRate() > 370000 && lang.getBitRate() < 400000);
 				final boolean ps3_and_stereo_and_384_kbits = false;
-                ac3Remux = lang.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isAudioRemuxAC3();
+				ac3Remux = lang.isAC3() && !ps3_and_stereo_and_384_kbits && configuration.isAudioRemuxAC3();
 				dtsRemux = configuration.isAudioEmbedDtsInPcm() && lang.isDTS() && params.mediaRenderer.isDTSPlayable();
 				pcm = configuration.isAudioUsePCM() &&
 					!mp4_with_non_h264 &&

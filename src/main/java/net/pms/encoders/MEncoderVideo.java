@@ -553,11 +553,6 @@ public class MEncoderVideo extends Player {
 	}
 
 	@Override
-	public boolean avisynth() {
-		return false;
-	}
-
-	@Override
 	public boolean isTimeSeekable() {
 		return true;
 	}
@@ -863,7 +858,7 @@ public class MEncoderVideo extends Player {
 
 		final boolean isTSMuxerVideoEngineEnabled = PMS.getConfiguration().getEnginesAsList().contains(TsMuxeRVideo.ID);
 		final boolean mencoderAC3RemuxAudioDelayBug = (params.aid != null) && (params.aid.getAudioProperties().getAudioDelay() != 0) && (params.timeseek == 0);
-        if (!mencoderAC3RemuxAudioDelayBug && configuration.isAudioRemuxAC3() && params.aid != null && params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
+		if (!mencoderAC3RemuxAudioDelayBug && configuration.isAudioRemuxAC3() && params.aid != null && params.aid.isAC3() && !ps3_and_stereo_and_384_kbits && !avisynth() && params.mediaRenderer.isTranscodeToAC3()) {
 			// AC3 remux takes priority
 			ac3Remux = true;
 		} else {

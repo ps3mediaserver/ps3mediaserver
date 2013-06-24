@@ -4,7 +4,8 @@ Changelog:
 1.90.0 - 2013-??-??
 
     Engines:
-        - FFmpeg Video and FFmpeg Web Video:
+        - FFmpeg Video, FFmpeg Web Audio and FFmpeg Web Video:
+            - Add FFmpeg Web Audio engine
             - General improvements of usability and stability
             - Support for lossless video remuxing if supported by renderer
             - Support for AC-3 and DTS audio tracks remuxing

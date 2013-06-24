@@ -101,11 +101,6 @@ public class VLCVideo extends Player {
 	}
 
 	@Override
-	public boolean avisynth() {
-		return false;
-	}
-
-	@Override
 	public String[] args() {
 		return new String[]{};
 	}

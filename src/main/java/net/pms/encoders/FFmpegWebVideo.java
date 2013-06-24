@@ -44,13 +44,18 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class FFmpegWebVideo extends FFmpegVideo {
 	private static final Logger logger = LoggerFactory.getLogger(FFmpegWebVideo.class);
-	private static List<String> protocols;
-	private static boolean init = false;
-	private boolean convertMmsToMmsh = false;
+	private final PmsConfiguration configuration;
+	private final FFmpegProtocols protocols;
 
 	// FIXME we have an id() accessor for this; no need for the field to be public
 	@Deprecated
 	public static final String ID = "ffmpegwebvideo";
+
+	public FFmpegWebVideo(PmsConfiguration configuration, FFmpegProtocols protocols) {
+		super(configuration);
+		this.configuration = configuration;
+		this.protocols = protocols;
+	}
 
 	@Override
 	public JComponent config() {
@@ -72,23 +77,6 @@ public class FFmpegWebVideo extends FFmpegVideo {
 		return false;
 	}
 
-	public FFmpegWebVideo(PmsConfiguration configuration) {
-		super(configuration);
-
-		if (!init) {
-			protocols = FFmpegOptions.getSupportedProtocols(configuration);
-
-			// XXX see workaround below
-			if (!protocols.contains("mms") && protocols.contains("mmsh")) {
-				convertMmsToMmsh = true;
-				protocols.add("mms");
-			}
-
-			logger.debug("FFmpeg supported protocols: {}", protocols);
-			init = true;
-		}
-	}
-
 	@Override
 	public synchronized ProcessWrapper launchTranscode(
 		DLNAResource dlna,
@@ -97,16 +85,10 @@ public class FFmpegWebVideo extends FFmpegVideo {
 	) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
+		params.waitbeforestart = 6000;
+
 		RendererConfiguration renderer = params.mediaRenderer;
-		String filename = dlna.getSystemName();
-
-		// XXX work around an ffmpeg bug: http://ffmpeg.org/trac/ffmpeg/ticket/998
-		if (convertMmsToMmsh) {
-			if (filename.startsWith("mms:")) {
-				filename = "mmsh:" + filename.substring(4);
-			}
-		}
-
+		String filename = protocols.getFilename(dlna.getSystemName());
 		FFmpegOptions customOptions = new FFmpegOptions();
 
 		// (HTTP) header options
@@ -121,7 +103,7 @@ public class FFmpegWebVideo extends FFmpegVideo {
 		}
 
 		// basename of the named pipe:
-		// ffmpeg -loglevel warning -threads nThreads -i URL -threads nThreads -transcode-video-options /path/to/fifoName
+		// ffmpeg -global-options -input-options -i URL -output-options /path/to/fifoName
 		String fifoName = String.format(
 			"ffmpegwebvideo_%d_%d",
 			Thread.currentThread().getId(),
@@ -141,18 +123,7 @@ public class FFmpegWebVideo extends FFmpegVideo {
 		// Build the command line
 		final List<String> cmdList = new ArrayList<String>();
 		cmdList.add(executable());
-
-		// XXX squashed bug - without this, ffmpeg hangs waiting for a confirmation
-		// that it can write to a file that already exists i.e. the named pipe
-		cmdList.add("-y");
-
-		cmdList.add("-loglevel");
-
-		if (logger.isTraceEnabled()) { // Set -loglevel in accordance with logger setting
-			cmdList.add("info"); // Could be changed to "verbose" or "debug" if "info" level is not enough
-		} else {
-			cmdList.add("warning");
-		}
+		cmdList.addAll(getGlobalOptions(logger));
 
 		int nThreads = configuration.getNumberOfCpuCores();
 
@@ -240,9 +211,6 @@ public class FFmpegWebVideo extends FFmpegVideo {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isCompatible(DLNAResource dlna) {
 		if (!PlayerUtil.isWebVideo(dlna)) {
@@ -250,6 +218,6 @@ public class FFmpegWebVideo extends FFmpegVideo {
 		}
 
 		String protocol = dlna.getFormat().getMatchedExtension();
-		return protocols.contains(protocol);
+		return protocols.isSupportedProtocol(protocol);
 	}
 }

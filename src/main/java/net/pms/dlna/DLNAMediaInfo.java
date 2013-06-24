@@ -1198,17 +1198,17 @@ public class DLNAMediaInfo implements Cloneable {
 						maxref = (int) Math.floor(8388608 / (getWidth() * getHeight()));
 					}
 					if (getReferenceFrameCount() > maxref) {
-						logger.info("H.264 file: {} is not compatible with this renderer because it can only take {} reference frames at this resolution while this file has {} reference frames.", f.getFilename(), maxref, getReferenceFrameCount());
+						logger.info("H.264 file ({}) is not compatible with this renderer because it can only take {} reference frames at this resolution while this file has {} reference frames.", f.getFilename(), maxref, getReferenceFrameCount());
 						return false;
 					}
 				}
 				return true;
 			} else {
-				logger.warn("H.264 file: {} Unparsed reference frame count. We will try remuxing on our own risk.", f.getFilename());
+				logger.warn("H.264 file ({}): Unparsed reference frame count. Remuxing may not work.", f.getFilename());
 				return true;
 			}
 		} else {
-			logger.debug("Non H.264 file: {} Do not check ref limmits.", f.getFilename());
+			logger.debug("Non-H.264 file ({}): Do not check ref limits.", f.getFilename());
 			return true;
 		}
 	}

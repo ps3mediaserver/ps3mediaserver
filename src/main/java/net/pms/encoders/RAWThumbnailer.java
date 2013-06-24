@@ -1,6 +1,7 @@
 package net.pms.encoders;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
@@ -21,7 +22,12 @@ import java.io.InputStream;
 
 public class RAWThumbnailer extends Player {
 	private static final Logger logger = LoggerFactory.getLogger(RAWThumbnailer.class);
+	private final PmsConfiguration configuration;
 	public final static String ID = "rawthumbs";
+
+	public RAWThumbnailer(PmsConfiguration configuration) {
+		this.configuration = configuration;
+	}
 
 	protected String[] getDefaultArgs() {
 		return new String[]{ "-e", "-c" };
@@ -39,7 +45,7 @@ public class RAWThumbnailer extends Player {
 
 	@Override
 	public String executable() {
-		return PMS.getConfiguration().getDCRawPath();
+		return configuration.getDCRawPath();
 	}
 
 	@Override
@@ -100,7 +106,7 @@ public class RAWThumbnailer extends Player {
 		return Format.IMAGE;
 	}
 
-	// called from net.pms.formats.RAW.parse XXX even if the engine is disabled
+	// called from net.pms.formats.RAW.parse XXX even if the engine is disabled.
 	// may also be called from launchTranscode
 	public static byte[] getThumbnail(OutputParams params, String fileName) throws Exception {
 		params.log = false;

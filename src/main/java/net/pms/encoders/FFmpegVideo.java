@@ -83,11 +83,11 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *         OutputParams params
  *     )
  */
-public class FFmpegVideo extends Player {
+public class FFmpegVideo extends FFmpegBase {
 	private static final Logger logger = LoggerFactory.getLogger(FFmpegVideo.class);
 	private static final String DEFAULT_QSCALE = "3";
 	private static final String SUB_DIR = "subs";
-	protected static PmsConfiguration configuration;
+	private static PmsConfiguration configuration;
 
 	private boolean dtsRemux;
 	private boolean ac3Remux;
@@ -102,7 +102,8 @@ public class FFmpegVideo extends Player {
 	}
 	
 	public FFmpegVideo(PmsConfiguration configuration) {
-		FFmpegVideo.configuration = configuration;
+		super(configuration);
+		this.configuration = configuration;
 	}
 
 	// FIXME we have an id() accessor for this; no need for the field to be public
@@ -115,14 +116,14 @@ public class FFmpegVideo extends Player {
 	 * If the renderer has no size limits, or there's no media metadata, or the video is within the renderer's
 	 * size limits, an empty list is returned.
 	 *
-	 * @param dlna
-	 * @param media metadata for the DLNA resource which is being transcoded
-	 * @param params
+	 * @param dlna The DLNA resource representing the file being transcoded.
+	 * @param media the media metadata for the video being streamed. May contain unset/null values (e.g. for web videos).
+	 * @param params The {@link net.pms.io.OutputParams} context object used to store miscellaneous parameters for this request.
 	 * @return a {@link List} of <code>String</code>s representing the rescale options for this video,
 	 * or an empty list if the video doesn't need to be resized.
 	 */
 	public List<String> getVideoFilterOptions(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) throws IOException {
-		List<String> videoFilterOptions = new ArrayList<String>();
+		List<String> options = new ArrayList<String>();
 		String subsOption = null;
 		String padding = null;
 		final RendererConfiguration renderer = params.mediaRenderer;
@@ -190,7 +191,7 @@ public class FFmpegVideo extends Player {
 		String overrideVF = renderer.getFFmpegVideoFilterOverride();
 
 		if (rescaleSpec != null || padding != null || overrideVF != null || subsOption != null) {
-			videoFilterOptions.add("-vf");
+			options.add("-vf");
 			StringBuilder filterParams = new StringBuilder();
 
 			if (overrideVF != null) {
@@ -218,10 +219,10 @@ public class FFmpegVideo extends Player {
 				filterParams.append(subsOption);
 			}
 
-			videoFilterOptions.add(filterParams.toString());
+			options.add(filterParams.toString());
 		}
 
-		return videoFilterOptions;
+		return options;
 	}
 
 	/**
@@ -230,39 +231,39 @@ public class FFmpegVideo extends Player {
 	 * audio codec and container) compatible with the renderer's
 	 * <code>TranscodeVideo</code> profile.
 	 *
-	 * @param dlna
+	 * @param dlna The DLNA resource representing the file being transcoded.
 	 * @param media the media metadata for the video being streamed. May contain unset/null values (e.g. for web videos).
-	 * @param params output parameters
+	 * @param params The {@link net.pms.io.OutputParams} context object used to store miscellaneous parameters for this request.
 	 * @return a {@link List} of <code>String</code>s representing the FFmpeg output parameters for the renderer according
 	 * to its <code>TranscodeVideo</code> profile.
 	 */
 	public synchronized List<String> getVideoTranscodeOptions(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) {
-		List<String> transcodeOptions = new ArrayList<String>();
+		List<String> options = new ArrayList<String>();
 		final String filename = dlna.getSystemName();
 		final RendererConfiguration renderer = params.mediaRenderer;
 
 		if (renderer.isTranscodeToWMV() && !renderer.isXBOX()) { // WMV
-			transcodeOptions.add("-c:v");
-			transcodeOptions.add("wmv2");
+			options.add("-c:v");
+			options.add("wmv2");
 
-			transcodeOptions.add("-c:a");
-			transcodeOptions.add("wmav2");
+			options.add("-c:a");
+			options.add("wmav2");
 
-			transcodeOptions.add("-f");
-			transcodeOptions.add("asf");
+			options.add("-f");
+			options.add("asf");
 		} else { // MPEGPSAC3, MPEGTSAC3 or H264TSAC3
 			if (isAc3Remux()) {
 				// AC-3 remux
-				transcodeOptions.add("-c:a");
-				transcodeOptions.add("copy");
+				options.add("-c:a");
+				options.add("copy");
 			} else if (isDtsRemux()) {
 				// Audio is added in a separate process later
-				transcodeOptions.add("-an");
+				options.add("-an");
 			} else if (type() == Format.AUDIO) {
 				// Skip
 			} else {
-				transcodeOptions.add("-c:a");
-				transcodeOptions.add("ac3");
+				options.add("-c:a");
+				options.add("ac3");
 			}
 
 			InputFile newInput = null;
@@ -281,64 +282,64 @@ public class FFmpegVideo extends Player {
 					&& configuration.isFFmpegMuxWhenCompatible()
 					&& params.mediaRenderer.isMuxH264MpegTS()) {
 
-				transcodeOptions.add("-c:v");
-				transcodeOptions.add("copy");
-				transcodeOptions.add("-bsf");
-				transcodeOptions.add("h264_mp4toannexb");
-				transcodeOptions.add("-fflags");
-				transcodeOptions.add("+genpts");
-				// Set correct container Aspect Ratio if remuxed video track has different AR
+				options.add("-c:v");
+				options.add("copy");
+				options.add("-bsf");
+				options.add("h264_mp4toannexb");
+				options.add("-fflags");
+				options.add("+genpts");
+				// Set correct container aspect ratio if remuxed video track has different AR
 				// TODO does not work with ffmpeg 1.2
 				// https://ffmpeg.org/trac/ffmpeg/ticket/2046
 				// possible solution http://forum.doom9.org/showthread.php?t=152419
 				//
 				// if (media.isAspectRatioMismatch()) {
-				//	transcodeOptions.add("-aspect");
-				//	transcodeOptions.add(media.getAspectRatioContainer());
+				//	options.add("-aspect");
+				//	options.add(media.getAspectRatioContainer());
 				// }
 
 				setVideoRemux(true);
 			} else if (renderer.isTranscodeToH264TSAC3()) {
-				transcodeOptions.add("-c:v");
-				transcodeOptions.add("libx264");
-				transcodeOptions.add("-crf");
-				transcodeOptions.add("20");
-				transcodeOptions.add("-preset");
-				transcodeOptions.add("superfast");
+				options.add("-c:v");
+				options.add("libx264");
+				options.add("-crf");
+				options.add("20");
+				options.add("-preset");
+				options.add("superfast");
 			} else if (!isDtsRemux()) {
-				transcodeOptions.add("-c:v");
-				transcodeOptions.add("mpeg2video");
+				options.add("-c:v");
+				options.add("mpeg2video");
 			}
 
 			// Output file format
-			transcodeOptions.add("-f");
+			options.add("-f");
 			if (isDtsRemux()) {
 				if (isVideoRemux()) {
-					transcodeOptions.add("rawvideo");
+					options.add("rawvideo");
 				} else {
-					transcodeOptions.add("mpeg2video");
+					options.add("mpeg2video");
 				}
 			} else if (renderer.isTranscodeToMPEGTSAC3() || renderer.isTranscodeToH264TSAC3() || isVideoRemux()) { // MPEGTSAC3
-				transcodeOptions.add("mpegts");
+				options.add("mpegts");
 			} else { // default: MPEGPSAC3
-				transcodeOptions.add("vob");
+				options.add("vob");
 			}
 		}
 
-		return transcodeOptions;
+		return options;
 	}
 
 	/**
 	 * Returns the video bitrate spec for the current transcode according
 	 * to the limits/requirements of the renderer.
 	 *
-	 * @param dlna
+	 * @param dlna The DLNA resource representing the file being transcoded.
 	 * @param media the media metadata for the video being streamed. May contain unset/null values (e.g. for web videos).
-	 * @param params
+	 * @param params The {@link net.pms.io.OutputParams} context object used to store miscellaneous parameters for this request.
 	 * @return a {@link List} of <code>String</code>s representing the video bitrate options for this transcode
 	 */
 	public List<String> getVideoBitrateOptions(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) { // media is currently unused
-		List<String> videoBitrateOptions = new ArrayList<String>();
+		List<String> options = new ArrayList<String>();
 		String sMaxVideoBitrate = params.mediaRenderer.getMaxVideoBitrate(); // currently Mbit/s
 		int iMaxVideoBitrate = 0;
 
@@ -351,35 +352,35 @@ public class FFmpegVideo extends Player {
 		}
 
 		if (iMaxVideoBitrate == 0) { // unlimited: try to preserve the bitrate
-			videoBitrateOptions.add("-q:v"); // video qscale
-			videoBitrateOptions.add(DEFAULT_QSCALE);
+			options.add("-q:v"); // video qscale
+			options.add(DEFAULT_QSCALE);
 		} else { // limit the bitrate FIXME untested
 			// convert megabits-per-second (as per the current option name: MaxVideoBitrateMbps) to bps
 			// FIXME rather than dealing with megabit vs mebibit issues here, this should be left up to the client i.e.
 			// the renderer.conf unit should be bits-per-second (and the option should be renamed: MaxVideoBitrateMbps -> MaxVideoBitrate)
-			videoBitrateOptions.add("-maxrate");
-			videoBitrateOptions.add("" + iMaxVideoBitrate * 1000 * 1000);
+			options.add("-maxrate");
+			options.add("" + iMaxVideoBitrate * 1000 * 1000);
 		}
 
-		return videoBitrateOptions;
+		return options;
 	}
 
 	/**
 	 * Returns the audio bitrate spec for the current transcode according
 	 * to the limits/requirements of the renderer.
 	 *
-	 * @param dlna
+	 * @param dlna The DLNA resource representing the file being transcoded.
 	 * @param media the media metadata for the video being streamed. May contain unset/null values (e.g. for web videos).
-	 * @param params
+	 * @param params The {@link net.pms.io.OutputParams} context object used to store miscellaneous parameters for this request.
 	 * @return a {@link List} of <code>String</code>s representing the audio bitrate options for this transcode
 	 */
 	public List<String> getAudioBitrateOptions(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) {
-		List<String> audioBitrateOptions = new ArrayList<String>();
+		List<String> options = new ArrayList<String>();
 
-		audioBitrateOptions.add("-q:a");
-		audioBitrateOptions.add(DEFAULT_QSCALE);
+		options.add("-q:a");
+		options.add(DEFAULT_QSCALE);
 
-		return audioBitrateOptions;
+		return options;
 	}
 
 	/**
@@ -393,7 +394,7 @@ public class FFmpegVideo extends Player {
 	 */
 
 	public List<String> getAudioChannelOptions(DLNAResource dlna, DLNAMediaInfo media, OutputParams params) {
-		List<String> audioChannelOptions = new ArrayList<String>();
+		List<String> options = new ArrayList<String>();
 		int ac = -1; // -1: don't change the number of audio channels
 		int nChannels = params.aid == null ? -1 : params.aid.getAudioProperties().getNumberOfChannels();
 
@@ -412,11 +413,11 @@ public class FFmpegVideo extends Player {
 		}
 
 		if (ac != -1) {
-			audioChannelOptions.add("-ac");
-			audioChannelOptions.add("" + ac);
+			options.add("-ac");
+			options.add("" + ac);
 		}
 
-		return audioChannelOptions;
+		return options;
 	}
 
 	@Override
@@ -433,12 +434,6 @@ public class FFmpegVideo extends Player {
 	@Override
 	public boolean isTimeSeekable() {
 		return true;
-	}
-
-	@Override
-	@Deprecated
-	public boolean avisynth() {
-		return false;
 	}
 
 	public String initialString() {
@@ -504,11 +499,6 @@ public class FFmpegVideo extends Player {
 		return HTTPResource.VIDEO_TRANSCODE;
 	}
 
-	@Override
-	public String executable() {
-		return configuration.getFfmpegPath();
-	}
-
 	// FIXME this is a mess: the whole point of the getXOptions methods is to prevent
 	// this turning into another MEncoderVideo, with disorganised kitchen-sink methods
 	// that are over a thousand lines long.
@@ -529,17 +519,7 @@ public class FFmpegVideo extends Player {
 		// params.waitbeforestart = 1000;
 
 		cmdList.add(executable());
-
-		// Prevent FFmpeg timeout
-		cmdList.add("-y");
-
-		cmdList.add("-loglevel");
-
-		if (logger.isTraceEnabled()) { // Set -loglevel in accordance with logger setting
-			cmdList.add("info"); // Could be changed to "verbose" or "debug" if "info" level is not enough
-		} else {
-			cmdList.add("fatal");
-		}
+		cmdList.addAll(getGlobalOptions(logger));
 
 		if (params.timeseek > 0) {
 			cmdList.add("-ss");
@@ -959,9 +939,6 @@ public class FFmpegVideo extends Player {
 		return builder.getPanel();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isCompatible(DLNAResource dlna) {
 		if (
@@ -1010,7 +987,7 @@ public class FFmpegVideo extends Player {
 	/**
 	 * Shift timing of external subtitles in SSA/ASS or SRT format and converts charset to UTF8 if necessary
 	 *
-	 * @param params Output parameters
+	 * @param params The {@link net.pms.io.OutputParams} context object used to store miscellaneous parameters for this request.
 	 * @return Converted subtitle file
 	 * @throws IOException
 	 */
@@ -1021,16 +998,16 @@ public class FFmpegVideo extends Player {
 			return null;
 		}
 
-		final File subtitlesDirectory = new File(configuration.getTempFolder(), SUB_DIR + File.separator);
-		if (!subtitlesDirectory.exists()) {
-			subtitlesDirectory.mkdirs();
+		final File subtitleDirectory = new File(configuration.getTempFolder(), SUB_DIR + File.separator);
+		if (!subtitleDirectory.exists()) {
+			subtitleDirectory.mkdirs();
 		}
 
 		if (params.sid.isExternal() && SubtitleUtils.isSupportsTimeShifting(params.sid.getType())) {
 			try {
 				tempSubs = SubtitleUtils.shiftSubtitlesTimingWithUtfConversion(params.sid, params.timeseek);
 			} catch (IOException e) {
-				logger.debug("Applying times shift caused an error: " + e);
+				logger.debug("Applying timeshift caused an error: " + e);
 				tempSubs = null;
 			}
 		}
@@ -1041,23 +1018,18 @@ public class FFmpegVideo extends Player {
 	/**
 	 * Converts external subtitles file in SRT format or extract embedded subs to default SSA/ASS format.
 	 *
-	 * @param fileName Subtitles file in SRT format or video file with embedded subs
-	 * @param media
-	 * @param params output parameters
-	 * @return Converted subtitles file in SSA/ASS format
+	 * @param filename Subtitle file in SRT format or video file with embedded subs
+	 * @param media the media metadata for the video being streamed. May contain unset/null values (e.g. for web videos).
+	 * @param params The {@link net.pms.io.OutputParams} context object used to store miscellaneous parameters for this request.
+	 * @return Converted subtitle file in SSA/ASS format
 	 */
-	private File extractEmbeddedSubtitlesTrack(String fileName, DLNAMediaInfo media, OutputParams params) throws IOException {
+	// FIXME this is unused
+	private File extractEmbeddedSubtitleTrack(String filename, DLNAMediaInfo media, OutputParams params) throws IOException {
 		final List<String> cmdList = new ArrayList<String>();
 		File tempSubsFile;
 		cmdList.add(configuration.getFfmpegPath());
-		cmdList.add("-y");
-		cmdList.add("-loglevel");
+		cmdList.addAll(getGlobalOptions(logger));
 
-		if (logger.isTraceEnabled()) { // Set -loglevel in accordance with logger setting
-			cmdList.add("info"); // Could be changed to "verbose" or "debug" if "info" level is not enough
-		} else {
-			cmdList.add("fatal");
-		}
 		/* TODO Use it when external subs should be converted by ffmpeg
 		if (
 			isNotBlank(configuration.getSubtitlesCodepage()) &&
@@ -1070,7 +1042,7 @@ public class FFmpegVideo extends Player {
 		}
 		*/
 		cmdList.add("-i");
-		cmdList.add(fileName);
+		cmdList.add(filename);
 
 		if (params.sid.isEmbedded()) {
 			cmdList.add("-map");
@@ -1096,19 +1068,19 @@ public class FFmpegVideo extends Player {
 			cmdList.add("0:" + (params.sid.getId() + media.getAudioTracksList().size() + 1));
 		}
 
-		final File subtitlesDirectory = new File(configuration.getTempFolder(), SUB_DIR + File.separator);
-		if (!subtitlesDirectory.exists()) {
-			subtitlesDirectory.mkdirs();
+		final File subtitleDirectory = new File(configuration.getTempFolder(), SUB_DIR + File.separator);
+		if (!subtitleDirectory.exists()) {
+			subtitleDirectory.mkdirs();
 		}
 
 		if (params.sid.isEmbedded()) {
-			tempSubsFile = new File(subtitlesDirectory.getAbsolutePath() + File.separator +
-					getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" +
-					new File(fileName).length() + "_EMB_ID" + params.sid.getId() + ".ass");
+			tempSubsFile = new File(subtitleDirectory.getAbsolutePath() + File.separator +
+					getBaseName(new File(filename).getName()).replaceAll("\\W", "_") + "_" +
+					new File(filename).length() + "_EMB_ID" + params.sid.getId() + ".ass");
 		} else {
-			tempSubsFile = new File(subtitlesDirectory.getAbsolutePath() + File.separator +
-					getBaseName(new File(fileName).getName()).replaceAll("\\W", "_") + "_" +
-					new File(fileName).length() + "_EXT." + getExtension(new File(fileName).getName()));
+			tempSubsFile = new File(subtitleDirectory.getAbsolutePath() + File.separator +
+					getBaseName(new File(filename).getName()).replaceAll("\\W", "_") + "_" +
+					new File(filename).length() + "_EXT." + getExtension(new File(filename).getName()));
 		}
 
 		cmdList.add(tempSubsFile.getAbsolutePath());
@@ -1122,7 +1094,7 @@ public class FFmpegVideo extends Player {
 		try {
 			pw.join(); // Wait until the conversion is finished
 		} catch (InterruptedException e) {
-			logger.debug("Subtitles conversion finished wih error: " + e);
+			logger.debug("Subtitle conversion finished wih error: " + e);
 			return null;
 		}
 

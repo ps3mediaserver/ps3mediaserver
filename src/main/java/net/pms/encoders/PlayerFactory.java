@@ -45,8 +45,7 @@ public final class PlayerFactory {
 	/**
 	 * Logger used for all logging.
 	 */
-	private static final Logger logger = LoggerFactory
-			.getLogger(FormatFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(FormatFactory.class);
 
 	/**
 	 * List of registered and approved {@link Player} objects.
@@ -117,9 +116,10 @@ public final class PlayerFactory {
 	 *            PMS configuration settings.
 	 */
 	private static void registerPlayers(final PmsConfiguration configuration) {
-		// TODO make these constructors consistent: pass configuration to all or to none
+		FFmpegProtocols ffmpegProtocols = new FFmpegProtocols(configuration);
+
 		if (Platform.isWindows()) {
-			registerPlayer(new FFmpegAviSynthVideo());
+			registerPlayer(new FFmpegAviSynthVideo(configuration));
 		}
 
 		registerPlayer(new FFmpegAudio(configuration));
@@ -131,7 +131,8 @@ public final class PlayerFactory {
 
 		registerPlayer(new FFmpegVideo(configuration));
 		registerPlayer(new VLCVideo(configuration));
-		registerPlayer(new FFmpegWebVideo(configuration));
+		registerPlayer(new FFmpegWebVideo(configuration, ffmpegProtocols));
+		registerPlayer(new FFmpegWebAudio(configuration, ffmpegProtocols));
 		registerPlayer(new MEncoderWebVideo(configuration));
 		registerPlayer(new VLCWebVideo(configuration));
 		registerPlayer(new TsMuxeRVideo(configuration));
@@ -140,10 +141,10 @@ public final class PlayerFactory {
 		registerPlayer(new VideoLanVideoStreaming(configuration));
 
 		if (Platform.isWindows()) {
-			registerPlayer(new FFmpegDVRMSRemux());
+			registerPlayer(new FFmpegDVRMSRemux(configuration));
 		}
 
-		registerPlayer(new RAWThumbnailer());
+		registerPlayer(new RAWThumbnailer(configuration));
 
 		// Sort the players according to the configuration settings
 		Collections.sort(allPlayers, new PlayerSort(configuration));

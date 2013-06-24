@@ -19,16 +19,14 @@
 package net.pms.encoders;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.formats.v2.SubtitleType;
 import net.pms.util.PlayerUtil;
 import net.pms.util.ProcessUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,15 +34,22 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import javax.swing.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class handles the Windows specific AviSynth/FFmpeg player combination. 
  */
 public class FFmpegAviSynthVideo extends FFmpegVideo {
 	private static final Logger logger = LoggerFactory.getLogger(FFmpegAviSynthVideo.class);
-	public static final String ID      = "avsffmpeg";
+	private final PmsConfiguration configuration;
+	public static final String ID = "avsffmpeg";
 
-	public FFmpegAviSynthVideo() {
-		super(PMS.getConfiguration());
+	public FFmpegAviSynthVideo(PmsConfiguration configuration) {
+		super(configuration);
+		this.configuration = configuration;
 	}
 
 	@Override
@@ -105,10 +110,11 @@ public class FFmpegAviSynthVideo extends FFmpegVideo {
 		StringTokenizer st = new StringTokenizer(script, PMS.AVS_SEPARATOR);
 		while (st.hasMoreTokens()) {
 			String line = st.nextToken();
-			if (line.contains("<movie") || line.contains("<sub"))
-			{
+
+			if (line.contains("<movie") || line.contains("<sub")) {
 				fullyManaged = true;
 			}
+
 			lines.add(line);
 		}
 
@@ -135,9 +141,6 @@ public class FFmpegAviSynthVideo extends FFmpegVideo {
 		return file;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
 		return PlayerUtil.isVideo(resource, Format.Identifier.MKV)

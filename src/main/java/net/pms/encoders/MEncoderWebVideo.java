@@ -136,11 +136,6 @@ public class MEncoderWebVideo extends Player {
 	}
 
 	@Override
-	public boolean avisynth() {
-		return false;
-	}
-
-	@Override
 	public String name() {
 		return "MEncoder Web Video";
 	}

@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+// FIXME this is a hack
+// TODO provide separate options for global, input and output args
 public class FFmpegOptions extends OptionsHashMap {
 	// ffmpeg [global_options] {[input_file_options] -i ‘input_file’} ... {[output_file_options] ‘output_file’} ...
 
@@ -84,24 +86,6 @@ public class FFmpegOptions extends OptionsHashMap {
 	}
 
 	public FFmpegOptions() { }
-
-	public static List<String> getSupportedProtocols(PmsConfiguration configuration) {
-		ArrayList<String> protocols = new ArrayList<String>();
-		String output = ProcessUtil.run(configuration.getFfmpegPath(), "-protocols");
-		boolean add = false;
-
-		for (String line : output.split("\n")) {
-			if (line.equals("Input:")) {
-				add = true;
-			} else if (line.equals("Output:")) {
-				break;
-			} else if (add) {
-				protocols.add(line);
-			}
-		}
-
-		return protocols;
-	}
 }
 
 // A HashMap of options and args (if any)

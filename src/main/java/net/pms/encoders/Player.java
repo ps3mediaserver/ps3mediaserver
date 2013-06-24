@@ -75,6 +75,7 @@ public abstract class Player {
 		}
 	}
 
+	@Deprecated
 	public boolean avisynth() {
 		return false;
 	}

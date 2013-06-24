@@ -1753,6 +1753,7 @@ public class PmsConfiguration {
 				"vlcwebvideo", // (VLCWebVideo)
 				"vlcvideo", // (VideoLanVideoStreaming) TODO (legacy web video engine): remove
 				"mencoderwebvideo",
+				"ffmpegwebaudio",
 				"vlcaudio", // (VideoLanAudioStreaming) TODO (legacy web audio engine): remove
 				"ffmpegdvrmsremux",
 				"rawthumbs"
