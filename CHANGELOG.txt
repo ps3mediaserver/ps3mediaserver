@@ -60,6 +60,7 @@ Changelog:
         - Removed silent JRE download and installation within PMS.exe wrapper if no private or public JREs are found. Prompt user to run PMS-setup-full.exe instead
         - Show user GPL licence during Windows installation
         - Windows installer now runs PS3 Media Server with normal user rights after installation is complete
+        - Windows installer localization.
 
 1.82.0 - 2013-06-03
 
