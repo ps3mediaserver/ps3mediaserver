@@ -135,13 +135,10 @@ public class SubtitleUtils {
 
 		final boolean isSubtitlesCodepageForcedInConfigurationAndSupportedByJVM = isNotBlank(configuration.getSubtitlesCodepage()) && Charset.isSupported(configuration.getSubtitlesCodepage());
 		final boolean isSubtitlesCodepageAutoDetectedAndSupportedByJVM = isNotBlank(inputSubtitles.getExternalFileCharacterSet()) && Charset.isSupported(inputSubtitles.getExternalFileCharacterSet());
-		if (!inputSubtitles.isExternalFileUtf()
-				&& (isSubtitlesCodepageForcedInConfigurationAndSupportedByJVM || isSubtitlesCodepageAutoDetectedAndSupportedByJVM)) {
-			if (isSubtitlesCodepageForcedInConfigurationAndSupportedByJVM) {
-				input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles.getExternalFile()), Charset.forName(configuration.getSubtitlesCodepage())));
-			} else {
-				input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles.getExternalFile()), Charset.forName(inputSubtitles.getExternalFileCharacterSet())));
-			}
+		if (isSubtitlesCodepageForcedInConfigurationAndSupportedByJVM) {
+			input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles.getExternalFile()), Charset.forName(configuration.getSubtitlesCodepage())));
+		} else if (isSubtitlesCodepageAutoDetectedAndSupportedByJVM) {
+			input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles.getExternalFile()), Charset.forName(inputSubtitles.getExternalFileCharacterSet())));
 		} else {
 			input = new BufferedReader(new InputStreamReader(new FileInputStream(inputSubtitles.getExternalFile())));
 		}
