@@ -74,6 +74,7 @@
 
 	<properties>
 		<!-- NSIS needs a version without "-SNAPSHOT" or "-b1" -->
+		<!-- FIXME project is reserved for use by Maven: we shouldn't be using it for custom properties -->
 		<project.version.short>1.90.0</project.version.short>
 
 		<!--
