@@ -15,6 +15,7 @@ maven-eclipse.xml
 pms.iml
 target/
 src/main/external-resources/private-jre/*.zip
+src/main/external-resources/private-jre/*.tar.gz
 src/main/external-resources/transcode-tools/linux/*
 src/main/external-resources/transcode-tools/osx/*
 src/main/external-resources/transcode-tools/win32/*
