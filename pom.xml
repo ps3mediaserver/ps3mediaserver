@@ -105,10 +105,13 @@
 		<project.build.transcode-tools.linux.directory>${project.build.directory}/bin/linux</project.build.transcode-tools.linux.directory>
 
 		<project.external-resources.private-jre.directory>${project.external-resources}/private-jre</project.external-resources.private-jre.directory>
-		<private-jre.windows.x86.filename>jre-7u25-windows-i586.zip</private-jre.windows.x86.filename>
-		<private-jre.windows.x86.download-url>http://copy.com/M3vVG2RFOG6B/${private-jre.windows.x86.filename}</private-jre.windows.x86.download-url>
-		<private-jre.windows.x64.filename>jre-7u25-windows-x64.zip</private-jre.windows.x64.filename>
-		<private-jre.windows.x64.download-url>http://copy.com/yXQXVJLS41ni/${private-jre.windows.x64.filename}</private-jre.windows.x64.download-url>
+		<!-- JRE archives direct download links: http://stackoverflow.com/a/12266049 -->
+		<private-jre.windows.x86.filename>jre-7u25-windows-i586.tar.gz</private-jre.windows.x86.filename>
+		<private-jre.windows.x86.archive-directory-name>jre1.7.0_25</private-jre.windows.x86.archive-directory-name>
+		<private-jre.windows.x86.download-url>http://javadl.sun.com/webapps/download/AutoDL?BundleId=79064</private-jre.windows.x86.download-url>
+		<private-jre.windows.x64.filename>jre-7u25-windows-x64.tar.gz</private-jre.windows.x64.filename>
+		<private-jre.windows.x64.archive-directory-name>jre1.7.0_25</private-jre.windows.x64.archive-directory-name>
+		<private-jre.windows.x64.download-url>http://javadl.sun.com/webapps/download/AutoDL?BundleId=79066</private-jre.windows.x64.download-url>
 		<project.build.private-jre.x86.directory>${project.build.directory}/jre</project.build.private-jre.x86.directory>
 		<project.build.private-jre.x64.directory>${project.build.directory}/jre64</project.build.private-jre.x64.directory>
 
@@ -1121,9 +1124,53 @@
 
 										<!-- Unpack private JRE archives. -->
 										<mkdir dir="${project.build.private-jre.x86.directory}" />
-										<unzip src="${project.external-resources.private-jre.directory}/${private-jre.windows.x86.filename}" dest="${project.build.private-jre.x86.directory}" overwrite="true" failOnEmptyArchive="true" />
+										<untar src="${project.external-resources.private-jre.directory}/${private-jre.windows.x86.filename}"
+											   dest="${project.build.private-jre.x86.directory}"
+											   compression="gzip"
+											   stripAbsolutePathSpec="true"
+											   overwrite="true"
+											   failOnEmptyArchive="true">
+											<patternset>
+												<exclude name="${private-jre.windows.x86.archive-directory-name}/bin/dtplugin/*"/>
+												<exclude name="${private-jre.windows.x86.archive-directory-name}/bin/plugin2/*"/>
+												<exclude name="${private-jre.windows.x86.archive-directory-name}/lib/plugin.jar"/>
+												<exclude name="${private-jre.windows.x86.archive-directory-name}/bin/javaws.exe"/>
+												<exclude name="${private-jre.windows.x86.archive-directory-name}/lib/deploy/*"/>
+												<exclude name="${private-jre.windows.x86.archive-directory-name}/lib/deploy.jar"/>
+												<exclude name="${private-jre.windows.x86.archive-directory-name}/lib/javaws.jar"/>
+												<exclude name="${private-jre.windows.x86.archive-directory-name}/bin/fx*.dll"/>
+												<exclude name="${private-jre.windows.x86.archive-directory-name}/bin/jfx*.dll"/>
+												<exclude name="${private-jre.windows.x86.archive-directory-name}/bin/javafx*.dll"/>
+												<exclude name="${private-jre.windows.x86.archive-directory-name}/lib/jfxrt.jar"/>
+											</patternset>
+											<mapper>
+												<globmapper from="${private-jre.windows.x86.archive-directory-name}/*" to="*"/>
+											</mapper>
+										</untar>
 										<mkdir dir="${project.build.private-jre.x64.directory}" />
-										<unzip src="${project.external-resources.private-jre.directory}/${private-jre.windows.x64.filename}" dest="${project.build.private-jre.x64.directory}" overwrite="true" failOnEmptyArchive="true" />
+										<untar src="${project.external-resources.private-jre.directory}/${private-jre.windows.x64.filename}"
+											   dest="${project.build.private-jre.x64.directory}"
+											   compression="gzip"
+											   stripAbsolutePathSpec="true"
+											   overwrite="true"
+											   failOnEmptyArchive="true">
+											<patternset>
+												<exclude name="${private-jre.windows.x64.archive-directory-name}/bin/dtplugin/*"/>
+												<exclude name="${private-jre.windows.x64.archive-directory-name}/bin/plugin2/*"/>
+												<exclude name="${private-jre.windows.x64.archive-directory-name}/lib/plugin.jar"/>
+												<exclude name="${private-jre.windows.x64.archive-directory-name}/bin/javaws.exe"/>
+												<exclude name="${private-jre.windows.x64.archive-directory-name}/lib/deploy/*"/>
+												<exclude name="${private-jre.windows.x64.archive-directory-name}/lib/deploy.jar"/>
+												<exclude name="${private-jre.windows.x64.archive-directory-name}/lib/javaws.jar"/>
+												<exclude name="${private-jre.windows.x64.archive-directory-name}/bin/fx*.dll"/>
+												<exclude name="${private-jre.windows.x64.archive-directory-name}/bin/jfx*.dll"/>
+												<exclude name="${private-jre.windows.x64.archive-directory-name}/bin/javafx*.dll"/>
+												<exclude name="${private-jre.windows.x64.archive-directory-name}/lib/jfxrt.jar"/>
+											</patternset>
+											<mapper>
+												<globmapper from="${private-jre.windows.x64.archive-directory-name}/*" to="*"/>
+											</mapper>
+										</untar>
 									</target>
 								</configuration>
 							</execution>
