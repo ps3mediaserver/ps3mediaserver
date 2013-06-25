@@ -23,37 +23,50 @@ import ch.qos.logback.core.PropertyDefinerBase;
 import java.io.File;
 import java.io.IOException;
 
+import com.sun.jna.Platform;
+import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.util.FileUtil;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Logback PropertyDefiner to set the path for the <code>debug.log</code> file.
- * <p>
- * If the current working directory is writable, it returns its absolute path. If
- * not, then the path to the system temp directory is returned.
- * </p>
- * <p>
- * This is equivalent to the old behavior of PMS.
- * </p>
- * 
- * @see System#getProperty(String)
  * @author thomas@innot.de
- * 
  */
 public class DebugLogPathDefiner extends PropertyDefinerBase {
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see ch.qos.logback.core.spi.PropertyDefiner#getPropertyValue()
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
+
+	/**
+	 * @return first writable folder in the following order:
+	 * <p>
+	 *     1. (On Linux only) path to {@code /var/log/ps3mediaserver/%USERNAME%/}.
+	 * </p>
+	 * <p>
+	 *     2. Path to user-defined temp folder specified by {@code temp_directory} param in PMS.conf.
+	 * </p>
+	 * <p>
+	 *     3. Path to system temp folder.
+	 * </p>
 	 */
 	@Override
 	public String getPropertyValue() {
-		File currentDirectory = new File("");
+		if (Platform.isLinux()) {
+			final String username = System.getProperty("user.name");
+			final File logDirectory = new File("/var/log/ps3mediaserver/" + username + "/");
+			try {
+				FileUtils.forceMkdir(logDirectory);
+				if (FileUtil.isDirectoryWritable(logDirectory)) {
+					return logDirectory.getAbsolutePath();
+				}
+			} catch (IOException ex) {
+				// Could not create directory, possible permissions problems.
+			}
+		}
 
-		// Check if current directory is writable.
-		if (FileUtil.isDirectoryWritable(currentDirectory)) {
-			return currentDirectory.getAbsolutePath();
-		} else {
-			// Return path to temp folder, which should be writable
+		// Try user-defined temp folder or fallback to system temp folder, which should be writable.
+		try {
+			return configuration.getTempFolder().getAbsolutePath();
+		} catch (IOException ex) {
 			return System.getProperty("java.io.tmpdir");
 		}
 	}
