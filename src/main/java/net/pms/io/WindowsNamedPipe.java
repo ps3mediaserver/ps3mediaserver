@@ -18,10 +18,7 @@
  */
 package net.pms.io;
 
-import com.sun.jna.Memory;
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
+import com.sun.jna.*;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
 import net.pms.PMS;
@@ -163,7 +160,7 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 		logger.debug("Creating pipe " + this.path);
 
 		try {
-			if (PMS.get().isWindows()) {
+			if (Platform.isWindows()) {
 				handle1 = Kernel32.INSTANCE.CreateNamedPipeA(
 					this.path,
 					3,

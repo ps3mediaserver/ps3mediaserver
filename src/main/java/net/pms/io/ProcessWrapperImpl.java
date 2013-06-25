@@ -142,7 +142,7 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 			// might use it?
 			if (params.env != null && !params.env.isEmpty()) {
 				// actual name of system path var is case-sensitive
-				String sysPathKey = PMS.get().isWindows() ? "Path" : "PATH";
+				String sysPathKey = Platform.isWindows() ? "Path" : "PATH";
 				// as is Map
 				String PATH = params.env.containsKey("PATH") ? params.env.get("PATH") :
 					params.env.containsKey("path") ? params.env.get("path") :

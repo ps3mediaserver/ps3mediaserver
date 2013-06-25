@@ -194,13 +194,6 @@ public class PMS {
 	private IFrame frame;
 
 	/**
-	 * @see com.sun.jna.Platform#isWindows()
-	 */
-	public boolean isWindows() {
-		return Platform.isWindows();
-	}
-
-	/**
 	 * Interface to Windows-specific functions, like Windows Registry. registry is set by {@link #init()}.
 	 * @see net.pms.io.WinUtils
 	 */
@@ -472,7 +465,7 @@ public class PMS {
 		logger.info("Checking MPlayer font cache. It can take a minute or so.");
 		checkProcessExistence("MPlayer", true, null, configuration.getMplayerPath(), "dummy");
 
-		if (isWindows()) {
+		if (Platform.isWindows()) {
 			checkProcessExistence("MPlayer", true, configuration.getTempFolder(), configuration.getMplayerPath(), "dummy");
 		}
 

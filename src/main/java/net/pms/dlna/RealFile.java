@@ -18,6 +18,7 @@
  */
 package net.pms.dlna;
 
+import com.sun.jna.Platform;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.formats.Format;
@@ -122,7 +123,7 @@ public class RealFile extends MapFile {
 			String name = null;
 			File file = getFile();
 			if (file.getName().trim().isEmpty()) {
-				if (PMS.get().isWindows()) {
+				if (Platform.isWindows()) {
 					name = PMS.get().getRegistry().getDiskLabel(file);
 				}
 				if (name != null && name.length() > 0) {
