@@ -123,7 +123,7 @@ Section "Program Files"
   SetOutPath "$INSTDIR"
   SetOverwrite on
   nsSCM::Stop "${PROJECT_NAME}"
-  File /r /x "*.conf" /x "*.zip" /x "*.dll" /x "third-party" "${PROJECT_BASEDIR}\src\main\external-resources\plugins"
+  File /r /x "*.conf" /x "*.zip" /x "*.dll" /x "README.md" /x "third-party" "${PROJECT_BASEDIR}\src\main\external-resources\plugins"
   File /r "${PROJECT_BASEDIR}\src\main\external-resources\documentation"
   File /r "${PROJECT_BASEDIR}\src\main\external-resources\renderers"
   File /r "${PROJECT_BASEDIR}\target\bin\win32"
