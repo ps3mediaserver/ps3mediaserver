@@ -8,7 +8,7 @@ echo If private JRE bundle in "..\jre" subfolder not found this script will use 
 echo ------------------------------------------------
 pause
 
-SET JVM_ARGS=-server -Xmx768M -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 -classpath update.jar;pms.jar net.pms.PMS
+SET JVM_ARGS=-Xmx768M -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 -classpath update.jar;pms.jar net.pms.PMS
 
 IF EXIST "%~dp0jre\bin\javaw.exe" (
    start "" "%~dp0jre\bin\javaw.exe" %JVM_ARGS%

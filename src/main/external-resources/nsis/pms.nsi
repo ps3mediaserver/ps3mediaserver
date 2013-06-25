@@ -43,13 +43,18 @@ ShowInstDetails nevershow
 !include "x64.nsh"
  
 Section ""
+  Var /GLOBAL SERVER_JRE_FOUND
   Call GetJRE
   Pop $R0
  
   ; change for your purpose (-jar etc.)
   ${GetParameters} $1
-  StrCpy $0 '"$R0" -classpath update.jar;pms.jar -server -Xmx768M -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 ${CLASS} $1'
- 
+  ${If} $SERVER_JRE_FOUND == 'yes'
+    StrCpy $0 '"$R0" -classpath update.jar;pms.jar -server -Xmx768M -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 ${CLASS} $1'
+  ${Else}
+    StrCpy $0 '"$R0" -classpath update.jar;pms.jar -Xmx768M -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 ${CLASS} $1'
+  ${EndIf}
+
   SetOutPath $EXEDIR
   ExecWait $0
 SectionEnd
@@ -69,9 +74,11 @@ Function GetJRE
   CheckLocal:
     ClearErrors
     ${If} ${RunningX64}
+    StrCpy $SERVER_JRE_FOUND "yes"
     StrCpy $R0 "$EXEDIR\jre64\bin\${JAVAEXE}"
     IfFileExists $R0 JreFound
     ${EndIf}
+    StrCpy $SERVER_JRE_FOUND "no"
     StrCpy $R0 "$EXEDIR\jre\bin\${JAVAEXE}"
     IfFileExists $R0 JreFound
  
