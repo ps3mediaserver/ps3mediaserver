@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FFmpegWebAudio extends FFmpegAudio {
-	private static final Logger logger = LoggerFactory.getLogger(FFmpegAudio.class);
+	private static final Logger logger = LoggerFactory.getLogger(FFmpegWebAudio.class);
 	private final PmsConfiguration configuration;
 	private final FFmpegProtocols protocols;
 	public static final String ID = "ffmpegwebaudio";

@@ -45,7 +45,7 @@ public final class PlayerFactory {
 	/**
 	 * Logger used for all logging.
 	 */
-	private static final Logger logger = LoggerFactory.getLogger(FormatFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(PlayerFactory.class);
 
 	/**
 	 * List of registered and approved {@link Player} objects.
