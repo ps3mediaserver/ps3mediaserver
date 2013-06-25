@@ -19,7 +19,7 @@
 	<fileSets>
 		<!-- Include downloaded binaries. -->
 		<fileSet>
-			<directory>${project.build.transcode-tools.linux.directory}</directory>
+			<directory>${target.transcode-tools.osx.directory}</directory>
 			<outputDirectory>${project.name}.app/Contents/Resources/Java/osx</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<fileMode>0755</fileMode>
@@ -43,7 +43,7 @@
 
 		<!-- Include JavaApplicationStub.setenv -->
 		<fileSet>
-			<directory>${project.external-resources}/osx</directory>
+			<directory>${external-resources.directory}/osx</directory>
 			<outputDirectory>${project.name}.app/Contents/MacOS</outputDirectory>
 			<fileMode>0755</fileMode>
 			<includes>
@@ -53,7 +53,7 @@
 
 		<!-- Include fontconfig files -->
 		<fileSet>
-			<directory>${project.external-resources}/osx/fonts</directory>
+			<directory>${external-resources.directory}/osx/fonts</directory>
 			<outputDirectory>${project.name}.app/Contents/Resources/Java/fonts</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
@@ -63,8 +63,8 @@
 
 		<!-- Include configuration files -->
 		<fileSet>
-			<directory>${project.external-resources}</directory>
-			<outputDirectory>${project.name}.app/Contents/Resources/Java</outputDirectory>
+			<directory>${external-resources.directory}</directory>
+			<outputDirectory>${	project.name}.app/Contents/Resources/Java</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
 				<include>PMS.conf</include>
