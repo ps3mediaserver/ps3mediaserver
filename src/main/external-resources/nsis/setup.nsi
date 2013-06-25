@@ -127,10 +127,9 @@ Section "Program Files"
   File /r "${PROJECT_BASEDIR}\src\main\external-resources\documentation"
   File /r "${PROJECT_BASEDIR}\src\main\external-resources\renderers"
   File /r "${PROJECT_BASEDIR}\target\bin\win32"
-  ;Include private JRE folder if needed.
-  !insertmacro privateJRE
+  ;Install private JRE folder if needed.
+  !insertmacro installPrivateJRE
   File "${PROJECT_BUILD_DIR}\PMS.exe"
-  File "${PROJECT_BASEDIR}\src\main\external-resources\PMS.bat"
   File "${PROJECT_BUILD_DIR}\pms.jar"
   File "${PROJECT_BASEDIR}\MediaInfo.dll"
   File "${PROJECT_BASEDIR}\MediaInfo64.dll"
@@ -188,10 +187,9 @@ Section "Uninstall"
   RMDir /R /REBOOTOK "$INSTDIR\renderers"
   RMDir /R /REBOOTOK "$INSTDIR\documentation"
   RMDir /R /REBOOTOK "$INSTDIR\win32"
-  RMDir /R /REBOOTOK "$INSTDIR\jre"
-  RMDir /R /REBOOTOK "$INSTDIR\jre64"
+  ;Uninstall private JRE folder if needed.
+  !insertmacro uninstallPrivateJRE
   Delete /REBOOTOK "$INSTDIR\PMS.exe"
-  Delete /REBOOTOK "$INSTDIR\PMS.bat"
   Delete /REBOOTOK "$INSTDIR\pms.jar"
   Delete /REBOOTOK "$INSTDIR\MediaInfo.dll"
   Delete /REBOOTOK "$INSTDIR\MediaInfo64.dll"

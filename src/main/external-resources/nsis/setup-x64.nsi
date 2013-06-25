@@ -7,8 +7,14 @@
   ${EndIf}
 !macroend
 
-!macro privateJRE
+!macro installPrivateJRE
   File /r "${PROJECT_BASEDIR}\target\jre64"
+  File "${PROJECT_BASEDIR}\src\main\external-resources\PMS-x64.bat"
+!macroend
+
+!macro uninstallPrivateJRE
+  RMDir /R /REBOOTOK "$INSTDIR\jre64"
+  Delete /REBOOTOK "$INSTDIR\PMS-x64.bat"
 !macroend
 
 !include setup.nsi
