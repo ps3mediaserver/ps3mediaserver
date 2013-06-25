@@ -116,6 +116,11 @@
 		<project.build.private-jre.x86.directory>${project.build.directory}/jre</project.build.private-jre.x86.directory>
 		<project.build.private-jre.x64.directory>${project.build.directory}/jre64</project.build.private-jre.x64.directory>
 
+		<!-- Windows Service wrapper. -->
+		<windows-service-wrapper.x86.filename>wrapper-windows-x86-32-3.5.17.zip</windows-service-wrapper.x86.filename>
+		<windows-service-wrapper.x86.archive-directory-name>wrapper-windows-x86-32-3.5.17</windows-service-wrapper.x86.archive-directory-name>
+		<windows-service-wrapper.x86.download-url>http://wrapper.tanukisoftware.com/download/3.5.17/wrapper-windows-x86-32-3.5.17.zip</windows-service-wrapper.x86.download-url>
+
 		<maven-javadoc-plugin-version>2.9</maven-javadoc-plugin-version>
 		<git-commit-id-plugin-version>2.1.4</git-commit-id-plugin-version>
 
@@ -994,6 +999,7 @@
 						<excludes>
 							<exclude>MediaInfo.dll</exclude>
 							<exclude>MediaInfo64.dll</exclude>
+							<exclude>${windows-service-wrapper.x86.filename}</exclude>
 						</excludes>
 						<!-- Avoid inadvertently filtering binaries -->
 						<filtering>false</filtering>
@@ -1109,11 +1115,10 @@
 										<get src="${transcode-tools.download.url}/win32/mplayer/config" dest="${project.external-resources.transcode-tools.windows.directory}/mplayer/config" usetimestamp="true" />
 										<get src="${transcode-tools.download.url}/win32/mplayer/input.conf" dest="${project.external-resources.transcode-tools.windows.directory}/mplayer/input.conf" usetimestamp="true" />
 										<get src="${transcode-tools.download.url}/win32/mplayer/subfont.ttf" dest="${project.external-resources.transcode-tools.windows.directory}/mplayer/subfont.ttf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/service/wrapper-community-license-1.1.txt" dest="${project.external-resources.transcode-tools.windows.directory}/service/wrapper-community-license-1.1.txt" usetimestamp="true" />
 										<get src="${transcode-tools.download.url}/win32/service/wrapper.conf" dest="${project.external-resources.transcode-tools.windows.directory}/service/wrapper.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/service/wrapper.dll" dest="${project.external-resources.transcode-tools.windows.directory}/service/wrapper.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/service/wrapper.exe" dest="${project.external-resources.transcode-tools.windows.directory}/service/wrapper.exe" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/service/wrapper.jar" dest="${project.external-resources.transcode-tools.windows.directory}/service/wrapper.jar" usetimestamp="true" />
+
+										<!-- Download windows service wrapper. -->
+										<get src="${windows-service-wrapper.x86.download-url}" dest="${project.external-resources.transcode-tools.windows.directory}/${windows-service-wrapper.x86.filename}" skipexisting="true" />
 
 										<!-- Download private JRE archives. -->
 										<get src="${private-jre.windows.x86.download-url}" dest="${project.external-resources.private-jre.directory}/${private-jre.windows.x86.filename}" skipexisting="true" />
@@ -1135,6 +1140,25 @@
 											  todir="${project.basedir}" overwrite="true" verbose="true" />
 										<copy file="${project.external-resources.transcode-tools.windows.directory}/MediaInfo64.dll"
 											  todir="${project.basedir}" overwrite="true" verbose="true" />
+
+										<!-- Unpack winodws service wrapper. -->
+										<unzip src="${project.external-resources.transcode-tools.windows.directory}/${windows-service-wrapper.x86.filename}"
+											   dest="${project.build.transcode-tools.windows.directory}"
+											   stripAbsolutePathSpec="true"
+											   overwrite="true"
+											   failOnEmptyArchive="true">
+											<patternset>
+												<include name="${windows-service-wrapper.x86.archive-directory-name}/bin/wrapper.exe"/>
+												<include name="${windows-service-wrapper.x86.archive-directory-name}/doc/wrapper-community-license-1.1.txt"/>
+												<include name="${windows-service-wrapper.x86.archive-directory-name}/lib/wrapper.dll"/>
+												<include name="${windows-service-wrapper.x86.archive-directory-name}/lib/wrapper.jar"/>
+											</patternset>
+											<mapper>
+												<globmapper from="${windows-service-wrapper.x86.archive-directory-name}/bin/*" to="service/*"/>
+												<globmapper from="${windows-service-wrapper.x86.archive-directory-name}/doc/*" to="service/*"/>
+												<globmapper from="${windows-service-wrapper.x86.archive-directory-name}/lib/*" to="service/*"/>
+											</mapper>
+										</unzip>
 
 										<!-- Unpack private JRE archives. -->
 										<mkdir dir="${project.build.private-jre.x86.directory}" />
