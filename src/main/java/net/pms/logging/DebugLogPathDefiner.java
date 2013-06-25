@@ -19,15 +19,14 @@
 package net.pms.logging;
 
 import ch.qos.logback.core.PropertyDefinerBase;
-
-import java.io.File;
-import java.io.IOException;
-
 import com.sun.jna.Platform;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.util.FileUtil;
 import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Logback PropertyDefiner to set the path for the <code>debug.log</code> file.
@@ -42,10 +41,14 @@ public class DebugLogPathDefiner extends PropertyDefinerBase {
 	 *     1. (On Linux only) path to {@code /var/log/ps3mediaserver/%USERNAME%/}.
 	 * </p>
 	 * <p>
-	 *     2. Path to user-defined temp folder specified by {@code temp_directory} param in PMS.conf.
+	 *     2. Path to profile folder ({@code ~/.config/PMS/} on Linux, {@code %ALLUSERSPROFILE%\PMS} on Windows and
+	 *     {@code ~/Library/Application Support/PMS/} on Mac).
 	 * </p>
 	 * <p>
-	 *     3. Path to system temp folder.
+	 *     3. Path to user-defined temp folder specified by {@code temp_directory} param in PMS.conf.
+	 * </p>
+	 * <p>
+	 *     4. Path to system temp folder.
 	 * </p>
 	 */
 	@Override
@@ -61,6 +64,12 @@ public class DebugLogPathDefiner extends PropertyDefinerBase {
 			} catch (IOException ex) {
 				// Could not create directory, possible permissions problems.
 			}
+		}
+
+		// Check if profile directory is writable.
+		final File logDirectory = new File(configuration.getProfileDirectory());
+		if (FileUtil.isDirectoryWritable(logDirectory)) {
+			return logDirectory.getAbsolutePath();
 		}
 
 		// Try user-defined temp folder or fallback to system temp folder, which should be writable.
