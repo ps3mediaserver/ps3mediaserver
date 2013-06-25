@@ -10,6 +10,7 @@
 !macro installPrivateJRE
   File /r "${PROJECT_BASEDIR}\target\jre64"
   File "${PROJECT_BASEDIR}\src\main\external-resources\PMS-x64.bat"
+  File /oname=win32\service\wrapper.conf "${PROJECT_BASEDIR}\src\main\external-resources\windows-service-wrapper\wrapper-x64.conf"
 !macroend
 
 !macro uninstallPrivateJRE
