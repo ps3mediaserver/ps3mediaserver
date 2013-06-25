@@ -422,7 +422,7 @@ public class PMS {
 
 		registry = createSystemUtils();
 
-		if (System.getProperty(CONSOLE) == null) {
+		if (!isHeadless()) {
 			frame = new LooksFrame(autoUpdater, configuration);
 		} else {
 			logger.info("GUI environment not available");
@@ -1069,12 +1069,16 @@ public class PMS {
 	 */
 	public static synchronized boolean isHeadless() {
 		if (isHeadless == null) {
-			try {
-				javax.swing.JDialog d = new javax.swing.JDialog();
-				d.dispose();
-				isHeadless = false;
-			} catch (Throwable throwable) {
+			if (System.getProperty(CONSOLE) != null) {
 				isHeadless = true;
+			} else {
+				try {
+					javax.swing.JDialog d = new javax.swing.JDialog();
+					d.dispose();
+					isHeadless = false;
+				} catch (Throwable throwable) {
+					isHeadless = true;
+				}
 			}
 		}
 

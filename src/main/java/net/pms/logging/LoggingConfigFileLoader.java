@@ -26,6 +26,7 @@ import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
+import net.pms.PMS;
 import net.pms.util.PropertiesUtil;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,7 @@ public class LoggingConfigFileLoader {
 		// Note: Do not use any logging method in this method!
 		// Any status output needs to go to the console.
 
-		boolean headless = !(System.getProperty("console") == null);
+		boolean headless = PMS.isHeadless();
 
 		File file = null;
 
