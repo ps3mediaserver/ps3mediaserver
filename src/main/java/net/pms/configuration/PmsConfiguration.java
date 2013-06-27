@@ -2233,10 +2233,6 @@ public class PmsConfiguration {
 		configuration.setProperty(KEY_AUTO_UPDATE, value);
 	}
 
-	public String getIMConvertPath() {
-		return programPaths.getIMConvertPath();
-	}
-
 	public int getUpnpPort() {
 		return getInt(KEY_UPNP_PORT, 1900);
 	}

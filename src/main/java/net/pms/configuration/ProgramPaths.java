@@ -8,5 +8,4 @@ interface ProgramPaths {
 	String getTsmuxerPath();
 	String getFlacPath();
 	String getDCRaw();
-	String getIMConvertPath();
 }

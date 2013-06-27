@@ -1045,10 +1045,8 @@
 										<!-- Download all necessary precompiled Windows binaries. Keep the same structure because NSIS expects it that way. -->
 										<get src="${transcode-tools.download.url}/MediaInfo.dll" dest="${external-resources.transcode-tools.windows.directory}/MediaInfo.dll"  usetimestamp="true" />
 										<get src="${transcode-tools.download.url}/MediaInfo64.dll" dest="${external-resources.transcode-tools.windows.directory}/MediaInfo64.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/Convert_License.txt" dest="${external-resources.transcode-tools.windows.directory}/Convert_License.txt"  usetimestamp="true" />
 										<get src="${transcode-tools.download.url}/win32/LICENSE.txt" dest="${external-resources.transcode-tools.windows.directory}/LICENSE.txt" usetimestamp="true" />
 										<get src="${transcode-tools.download.url}/win32/builds.txt" dest="${external-resources.transcode-tools.windows.directory}/builds.txt" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/convert.exe" dest="${external-resources.transcode-tools.windows.directory}/convert.exe" usetimestamp="true" />
 										<get src="${transcode-tools.download.url}/win32/dcrawMS.exe" dest="${external-resources.transcode-tools.windows.directory}/dcrawMS.exe" usetimestamp="true" />
 										<get src="${transcode-tools.download.url}/win32/ffmpeg.exe" dest="${external-resources.transcode-tools.windows.directory}/ffmpeg.exe" usetimestamp="true" />
 										<get src="${transcode-tools.download.url}/win32/flac.exe" dest="${external-resources.transcode-tools.windows.directory}/flac.exe" usetimestamp="true" />

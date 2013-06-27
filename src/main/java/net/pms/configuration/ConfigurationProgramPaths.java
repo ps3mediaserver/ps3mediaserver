@@ -70,9 +70,5 @@ class ConfigurationProgramPaths implements ProgramPaths {
 	public String getDCRaw() {
 		return getString(KEY_DCRAW, defaults.getDCRaw());
 	}
-	
-	@Override
-	public String getIMConvertPath() {
-		return getString(KEY_IMCONVERT_PATH, defaults.getIMConvertPath());
-	}
+
 }

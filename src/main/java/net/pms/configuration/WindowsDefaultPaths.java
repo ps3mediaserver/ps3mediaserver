@@ -40,11 +40,6 @@ class WindowsDefaultPaths implements ProgramPaths {
 	public String getDCRaw() {
 		return getBinariesPath() + "win32/dcrawMS.exe";
 	}
-	
-	@Override
-	public String getIMConvertPath() {
-		return getBinariesPath() + "win32/convert.exe";
-	}
 
 	/**
 	 * Returns the path where binaries can be found. This path differs between

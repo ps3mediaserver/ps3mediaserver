@@ -43,11 +43,6 @@ class LinuxDefaultPaths implements ProgramPaths {
 	public String getDCRaw() {
 		return getBinaryPath("dcraw");
 	}
-	
-	@Override
-	public String getIMConvertPath() {
-		return getBinaryPath("convert");
-	}
 
 	/**
 	 * Returns the path where binaries can be found. This path differs between

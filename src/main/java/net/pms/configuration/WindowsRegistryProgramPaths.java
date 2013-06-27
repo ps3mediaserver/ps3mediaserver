@@ -61,9 +61,5 @@ class WindowsRegistryProgramPaths implements ProgramPaths {
 	public String getDCRaw() {
 		return defaults.getDCRaw();
 	}
-	
-	@Override
-	public String getIMConvertPath() {
-		return defaults.getIMConvertPath();
-	}
+
 }

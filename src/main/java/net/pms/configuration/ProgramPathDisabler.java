@@ -63,9 +63,4 @@ class ProgramPathDisabler implements ProgramPaths {
 	public String getDCRaw() {
 		return disableDCraw ? null : ifEnabled.getDCRaw();
 	}
-	
-	@Override
-	public String getIMConvertPath() {
-		return disableIMConvert ? null : ifEnabled.getIMConvertPath();
-	}
 }
