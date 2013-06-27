@@ -16,11 +16,6 @@ class WindowsRegistryProgramPaths implements ProgramPaths {
 	}
 
 	@Override
-	public String getEac3toPath() {
-		return defaults.getEac3toPath();
-	}
-
-	@Override
 	public String getFfmpegPath() {
 		return defaults.getFfmpegPath();
 	}

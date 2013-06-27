@@ -19,6 +19,19 @@
 package net.pms.configuration;
 
 import com.sun.jna.Platform;
+import net.pms.Messages;
+import net.pms.io.SystemUtils;
+import net.pms.util.FileUtil;
+import net.pms.util.FileUtil.FileLocation;
+import net.pms.util.PropertiesUtil;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.event.ConfigurationListener;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,24 +39,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
-import net.pms.Messages;
-import net.pms.io.SystemUtils;
-import net.pms.util.FileUtil;
-import net.pms.util.FileUtil.FileLocation;
-import net.pms.util.PropertiesUtil;
-
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.configuration.event.ConfigurationListener;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static java.util.Arrays.asList;
-
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.apache.commons.lang3.StringUtils.split;
 
@@ -551,10 +547,6 @@ public class PmsConfiguration {
 
 	public void disableVlc() {
 		programPaths.disableVlc();
-	}
-
-	public String getEac3toPath() {
-		return programPaths.getEac3toPath();
 	}
 
 	public String getMencoderPath() {

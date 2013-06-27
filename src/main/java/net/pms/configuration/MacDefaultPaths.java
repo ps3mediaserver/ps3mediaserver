@@ -5,10 +5,6 @@ import net.pms.util.PropertiesUtil;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 class MacDefaultPaths implements ProgramPaths {
-	@Override
-	public String getEac3toPath() {
-		return null;
-	}
 
 	@Override
 	public String getFfmpegPath() {

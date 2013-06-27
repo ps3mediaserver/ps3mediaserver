@@ -24,11 +24,6 @@ class ConfigurationProgramPaths implements ProgramPaths {
 	}
 
 	@Override
-	public String getEac3toPath() {
-		return getString(KEY_EAC3TO_PATH, defaults.getEac3toPath());
-	}
-
-	@Override
 	public String getFfmpegPath() {
 		return getString(KEY_FFMPEG_PATH, defaults.getFfmpegPath());
 	}
