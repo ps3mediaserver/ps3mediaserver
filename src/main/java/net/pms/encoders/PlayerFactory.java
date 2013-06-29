@@ -256,7 +256,7 @@ public final class PlayerFactory {
 	 * format. Each of the available players is passed the provided information
 	 * and the first that reports it is compatible will be returned.
 	 * 
-	 * @param resource
+	 * @param dlna
 	 *            The {@link DLNAResource} to match
 	 * @return The player if a match could be found, <code>null</code>
 	 *         otherwise.

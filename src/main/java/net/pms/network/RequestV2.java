@@ -939,7 +939,7 @@ public class RequestV2 extends HTTPResource {
 	/**
 	 * Parse as double, or if it's not just one number, handles {hour}:{minute}:{seconds}
 	 * @param time
-	 * @return
+	 * @return The time
 	 */
 	private double convertTime(String time) {
 		try {
