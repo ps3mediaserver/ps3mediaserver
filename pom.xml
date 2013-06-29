@@ -1557,6 +1557,9 @@
 										<mkdir dir="${izpack.installer.app}/Contents" />
 										<mkdir dir="${izpack.installer.app}/Contents/MacOs" />
 										<mkdir dir="${izpack.installer.app}/Contents/PlugIns" />
+
+										<!-- All dependencies are in the lib directory, no need to also use the jar-with-dependencies -->
+										<copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar" tofile="${izpack.staging}/lib/pms.jar" overwrite="true" />
 		
 										<untar src="${private-jre.macosx.directory}/${private-jre.macosx.filename}"
 											   dest="${izpack.installer.app}/Contents/PlugIns/${private-jre.macosx.archive-directory-name}"

@@ -93,7 +93,7 @@
             	<os family="mac" />
             </fileset>
 
-			<file src="${project.build.directory}/pms.jar" targetdir="$INSTALL_PATH/Contents/Resources/Java">
+			<file src="lib/pms.jar" targetdir="$INSTALL_PATH/Contents/Resources/Java">
             	<os family="mac" />
 			</file>
 

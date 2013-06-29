@@ -20,7 +20,7 @@ cd "$JAVA_HOME"
 # Execute the JVM
 "$JAVA_HOME/bin/java" $JAVA_OPTS \
 	-Xdock:icon="$APPLICATION_DIR/Contents/Resources/package.icns" \
-	-classpath "$JAR_DIR"/*.jar \
+	-classpath "$JAR_DIR/*" \
 	com.izforge.izpack.installer.bootstrap.Installer
 
 
