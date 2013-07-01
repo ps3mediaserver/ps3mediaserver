@@ -673,6 +673,10 @@
 									  tofile="${project.build.directory}/pms.jar"
 									  overwrite="true"
 									  verbose="true" />
+
+								<mkdir dir="${izpack.staging}" />
+								<!-- All dependencies are in the lib directory, no need to also use the jar-with-dependencies -->
+								<copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar" tofile="${izpack.staging}/lib/pms.jar" overwrite="true" />
 							</target>
 						</configuration>
 					</execution>
@@ -745,7 +749,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.1</version>
+				<version>2.4</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -755,6 +759,15 @@
 						</manifest>
 					</archive>
 				</configuration>
+				<executions>
+					<execution>
+						<id>create-jar-without-dependencies</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
@@ -1518,7 +1531,6 @@
 										<!-- Make sure the download folder exists. -->
 										<mkdir dir="${external-resources.transcode-tools.osx.directory}" />
 										<mkdir dir="${external-resources.transcode-tools.osx.directory}/bin" />
-										<mkdir dir="${izpack.staging}" />
 										<mkdir dir="${izpack.staging}/osx" />
 										<mkdir dir="${private-jre.macosx.directory}" />
 
@@ -1560,8 +1572,6 @@
 										<mkdir dir="${izpack.installer.app}/Contents/MacOs" />
 										<mkdir dir="${izpack.installer.app}/Contents/PlugIns" />
 
-										<!-- All dependencies are in the lib directory, no need to also use the jar-with-dependencies -->
-										<copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar" tofile="${izpack.staging}/lib/pms.jar" overwrite="true" />
 		
 										<untar src="${private-jre.macosx.directory}/${private-jre.macosx.filename}"
 											   dest="${izpack.installer.app}/Contents/PlugIns/${private-jre.macosx.archive-directory-name}"
