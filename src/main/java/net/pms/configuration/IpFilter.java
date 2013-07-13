@@ -248,6 +248,23 @@ public class IpFilter {
 		return b.toString();
 	}
 
+	/**
+	 * Decides whether or not the IP address matches this filter. If the filter
+	 * is empty, false is returned.
+	 *
+	 * @param addr The address to match.
+	 * @return True if the address matches, false otherwise.
+	 */
+	public boolean isMatch(InetAddress addr) {
+		for (Predicate predicate : matchers) {
+			if (predicate.match(addr)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
 	public boolean allowed(InetAddress addr) {
 		boolean log = isFirstDecision(addr);
 		if (matchers.size() == 0) {

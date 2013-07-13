@@ -246,8 +246,45 @@ public class RendererConfiguration {
 		SpeedStats.getInstance().getSpeedInMBits(sa, getRendererName());
 	}
 
-	public static RendererConfiguration getRendererConfigurationBySocketAddress(InetAddress sa) {
-		return addressAssociation.get(sa);
+	/**
+	 * Tries to find a matching renderer based on the configuration setting
+	 * for forced IP address and renderer combinations. If there is no
+	 * match, the address is looked up in the address association map which
+	 * contains a mapping of previously encountered IP addresses and their
+	 * renderers.
+	 *
+	 * @param inetAddress The IP address to look up.
+	 * @return A renderer configuration or null if none can be found.
+	 */
+	public static RendererConfiguration getRendererConfigurationBySocketAddress(InetAddress inetAddress) {
+		// First see if a renderer is forced for this address.
+		String forced = pmsConfiguration.getRendererForceIp();
+		
+		if (forced != null && !"".equals(forced)) {
+			for (String tuple : forced.split(",")) {
+				if (tuple.indexOf("@") > -1) {
+					String name = tuple.split("@")[0];
+					String ip = tuple.split("@")[1];
+
+					// Sanity checks on the strings
+					if (!"".equals(name) && !"".equals(ip)) {
+						IpFilter filter = new IpFilter(ip);
+	
+						if (filter.isMatch(inetAddress)) {
+							RendererConfiguration renderer = getRendererConfigurationByName(name);
+							
+							if (renderer != null) {
+								logger.trace("Forcing renderer match to \"" + renderer.getRendererName() + "\" based on forced IP address configuration");
+								addressAssociation.put(inetAddress, renderer);
+								return renderer;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return addressAssociation.get(inetAddress);
 	}
 
 	/**
@@ -1123,5 +1160,12 @@ public class RendererConfiguration {
 
 	public String getFFmpegVideoFilterOverride() {
 		return getString(OVERRIDE_VF, null);
+	}
+
+	/**
+	 * Reset gathered information on IP address associations with renderers.
+	 */
+	protected static void resetAddressAssociation() {
+		addressAssociation = new HashMap<InetAddress, RendererConfiguration>();
 	}
 }

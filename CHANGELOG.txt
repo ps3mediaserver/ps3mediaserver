@@ -62,7 +62,8 @@ Changelog:
         - Show user GPL licence during Windows installation
         - Windows installer now runs PS3 Media Server with normal user rights after installation is complete
         - Windows installer localization.
-	- New Mac OSX installer with bundled JRE (pms-setup-macosx.tar.gz)
+        - New Mac OSX installer with bundled JRE (pms-setup-macosx.tar.gz)
+        - Added configuration option for forcing renderer per IP address (#115)
 
 1.82.0 - 2013-06-03
 

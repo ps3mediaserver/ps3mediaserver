@@ -152,6 +152,7 @@ public class PmsConfiguration {
 	private static final String KEY_PROFILE_NAME = "name";
 	private static final String KEY_RENDERER_DEFAULT = "renderer_default";
 	private static final String KEY_RENDERER_FORCE_DEFAULT = "renderer_force_default";
+	private static final String KEY_RENDERER_FORCE_IP = "renderer_force_ip";
 	private static final String KEY_SERVER_HOSTNAME = "hostname";
 	private static final String KEY_SERVER_PORT = "port";
 	private static final String KEY_SHARES = "shares";
@@ -2149,6 +2150,42 @@ public class PmsConfiguration {
 	 */
 	public void setRendererForceDefault(boolean value) {
 		configuration.setProperty(KEY_RENDERER_FORCE_DEFAULT, value);
+	}
+
+	/**
+	 * Returns a string containing a list of IP addresses and the renderer
+	 * profiles that should be forced to match them. Can be empty if no profile
+	 * should be forced on any IP address.
+	 *
+	 * @return The string containing the list.
+	 * @see #setRendererForceIp(String)
+	 */
+	public String getRendererForceIp() {
+		return getString(KEY_RENDERER_FORCE_IP, "");
+	}
+
+	/**
+	 * Set the string that contains a list of IP adresses and the renderer
+	 * profiles that should be forced to match for them. The comma separated
+	 * list contains pairs of a renderer name followed by "@" and an IP
+	 * address. The renderer name should match the value of the RendererName
+	 * property in a .conf file. The IP address can be specified as a range.
+	 * If there are multiple matches, the first that is found will be forced.
+	 * <p>
+	 * Example: "Sony Bravia HX@192.168.1.34,Sony Bravia EX@192.168.0-1.*" will
+ 	 * use regular detection for a renderer connecting from "192.168.2.1" (as
+	 * there is no match), will force "Sony Bravia EX" for a renderer connecting
+	 * from "192.168.1.2" (match with the range) and will force "Sony Bravia HX"
+	 * for a renderer connecting from "192.168.1.34" (matches both entries, but
+	 * the HX was found first).
+	 * <p>
+	 * Default: "", which means PMS will not force anything and use regular
+	 * detection.
+	 *
+	 * @param value The string containing the list.
+	 */
+	public void setRendererForceIp(String value) {
+		configuration.setProperty(KEY_RENDERER_FORCE_IP, value);
 	}
 
 	public String getVirtualFolders() {

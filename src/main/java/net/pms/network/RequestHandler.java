@@ -98,7 +98,7 @@ public class RequestHandler implements Runnable {
 					// header matches are attempted and if those fail as well we're stuck with the
 					// default renderer.
 
-					// Attempt 1: try to recognize the renderer by its socket address from previous requests
+					// Attempt 1: try to recognize the renderer by its socket address
 					renderer = RendererConfiguration.getRendererConfigurationBySocketAddress(ia);
 
 					if (renderer != null) {
