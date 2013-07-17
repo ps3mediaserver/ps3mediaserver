@@ -142,7 +142,7 @@
 				<os family="mac" />
 			</executable>
 
-			<file src="osx/libmediainfo.dylib" targetdir="$INSTALL_PATH/Contents/Resources/Java">
+			<file src="${target.transcode-tools.directory}/osx/libmediainfo.dylib" targetdir="$INSTALL_PATH/Contents/Resources/Java">
             	<os family="mac" />
 			</file>
 		</pack>
@@ -151,7 +151,7 @@
             <description>Third party binaries necessary for PMS to function properly.</description>
 
 			<!-- Mac OSX binaries -->
-            <fileset dir="osx" targetdir="$INSTALL_PATH/Contents/Resources/Java/osx">
+            <fileset dir="${target.transcode-tools.directory}/osx" targetdir="$INSTALL_PATH/Contents/Resources/Java/osx">
             	<include name="dcraw" />
             	<include name="ffmpeg" />
             	<include name="flac" />
