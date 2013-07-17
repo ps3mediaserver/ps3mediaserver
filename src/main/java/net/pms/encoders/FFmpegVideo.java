@@ -516,7 +516,7 @@ public class FFmpegVideo extends FFmpegBase {
 		RendererConfiguration renderer = params.mediaRenderer;
 		final String filename = dlna.getSystemName();
 		setAudioAndSubs(filename, media, params, configuration);
-		// params.waitbeforestart = 1000;
+		params.waitbeforestart = 2500;
 
 		cmdList.add(executable());
 		cmdList.addAll(getGlobalOptions(logger));
