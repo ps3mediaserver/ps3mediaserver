@@ -221,6 +221,19 @@
 			<name>myGrid Repository</name>
 			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
+
+		<!-- Repository where the izpack-maven-plugin and such live -->
+		<repository>
+			<id>codehaus-releases</id>
+			<url>https://nexus.codehaus.org/content/repositories/releases</url>
+		</repository>
+
+		<!-- XXX: This can be removed once IzPack 5 is released -->
+		<repository>
+			<id>codehaus-snapshots</id>
+			<url>https://nexus.codehaus.org/content/repositories/snapshots</url>
+		</repository>
+
 	</repositories>
 
 	<dependencies>
