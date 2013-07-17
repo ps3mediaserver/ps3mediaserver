@@ -1636,7 +1636,8 @@
 		
 										<chmod dir="${izpack.installer.app}/Contents/MacOs/" perm="a+x" includes="*" />
 		
-										<tar destfile="${project.build.directory}/${project.artifactId}-setup-macosx-${project.version}.tar">
+										<tar destfile="${project.build.directory}/${project.artifactId}-setup-macosx-${project.version}.tar.gz"
+											compression="gzip">
 											<tarfileset dir="${izpack.installer.app}"
 												prefix="${project.name} Setup.app"
 												excludes="**/java,**/installer.sh" />
@@ -1647,9 +1648,6 @@
 												includes="**/java,**/installer.sh"
 												filemode="755" />
 										</tar>
-		  								<gzip destfile="${project.build.directory}/${project.artifactId}-setup-macosx-${project.version}.tar.gz"
-		  									src="${project.build.directory}/${project.artifactId}-setup-macosx-${project.version}.tar"/>
-		
 									</tasks>
 								</configuration>
 							</execution>
