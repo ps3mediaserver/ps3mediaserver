@@ -96,15 +96,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<external-resources.directory>${project.basedir}/src/main/external-resources</external-resources.directory>
-		<external-resources.transcode-tools.windows.directory>${external-resources.directory}/transcode-tools/win32</external-resources.transcode-tools.windows.directory>
-		<external-resources.transcode-tools.linux.directory>${external-resources.directory}/transcode-tools/linux</external-resources.transcode-tools.linux.directory>
-		<external-resources.transcode-tools.osx.directory>${external-resources.directory}/transcode-tools/osx</external-resources.transcode-tools.osx.directory>
+		<external-resources.transcode-tools.directory>${external-resources.directory}/transcode-tools</external-resources.transcode-tools.directory>
 		<!-- Snapshots should get their binaries from the trunk, releases from a tag -->
 		<!-- <transcode-tools.download.url>http://ps3mediaserver.googlecode.com/svn/tags/${project.version}/ps3mediaserver</transcode-tools.download.url> -->
 		<transcode-tools.download.url>http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver</transcode-tools.download.url>
-		<target.transcode-tools.windows.directory>${project.build.directory}/bin/win32</target.transcode-tools.windows.directory>
-		<target.transcode-tools.linux.directory>${project.build.directory}/bin/linux</target.transcode-tools.linux.directory>
-		<target.transcode-tools.osx.directory>${project.build.directory}/bin/osx</target.transcode-tools.osx.directory>
+		<target.transcode-tools.directory>${project.build.directory}/bin</target.transcode-tools.directory>
 
 		<external-resources.private-jre.directory>${external-resources.directory}/private-jre</external-resources.private-jre.directory>
 		<!-- JRE archives direct download links: http://stackoverflow.com/a/12266049 -->
@@ -125,7 +121,7 @@
 		<private-jre.macosx.download-url>http://javadl.sun.com/webapps/download/AutoDL?BundleId=78699</private-jre.macosx.download-url>
 		<target.private-jre.x86.directory>${project.build.directory}/jre</target.private-jre.x86.directory>
 		<target.private-jre.x64.directory>${project.build.directory}/jre64</target.private-jre.x64.directory>
-		<private-jre.macosx.directory>${external-resources.transcode-tools.osx.directory}/jre-macosx</private-jre.macosx.directory>
+		<private-jre.macosx.directory>${external-resources.transcode-tools.directory}/osx/jre-macosx</private-jre.macosx.directory>
 
 		<!-- Windows Service wrapper. -->
 		<windows-service-wrapper.x86.filename>wrapper-windows-x86-32-3.5.17.zip</windows-service-wrapper.x86.filename>
@@ -1096,8 +1092,8 @@
 				<resources>
 					<!-- Copy precompiled Windows binaries. -->
 					<resource>
-						<directory>${external-resources.transcode-tools.windows.directory}</directory>
-						<targetPath>${target.transcode-tools.windows.directory}</targetPath>
+						<directory>${external-resources.transcode-tools.directory}/win32</directory>
+						<targetPath>${target.transcode-tools.directory}/win32</targetPath>
 						<excludes>
 							<exclude>MediaInfo.dll</exclude>
 							<exclude>MediaInfo64.dll</exclude>
@@ -1134,89 +1130,89 @@
 								<configuration>
 									<target>
 										<!-- Make sure the download folders exist. -->
-										<mkdir dir="${external-resources.transcode-tools.windows.directory}/codecs" />
-										<mkdir dir="${external-resources.transcode-tools.windows.directory}/dvrms" />
-										<mkdir dir="${external-resources.transcode-tools.windows.directory}/fonts" />
-										<mkdir dir="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail" />
-										<mkdir dir="${external-resources.transcode-tools.windows.directory}/fonts/conf.d" />
-										<mkdir dir="${external-resources.transcode-tools.windows.directory}/fonts" />
-										<mkdir dir="${external-resources.transcode-tools.windows.directory}/mplayer" />
+										<mkdir dir="${external-resources.transcode-tools.directory}/win32/codecs" />
+										<mkdir dir="${external-resources.transcode-tools.directory}/win32/dvrms" />
+										<mkdir dir="${external-resources.transcode-tools.directory}/win32/fonts" />
+										<mkdir dir="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail" />
+										<mkdir dir="${external-resources.transcode-tools.directory}/win32/fonts/conf.d" />
+										<mkdir dir="${external-resources.transcode-tools.directory}/win32/fonts" />
+										<mkdir dir="${external-resources.transcode-tools.directory}/win32/mplayer" />
 										<mkdir dir="${external-resources.private-jre.directory}" />
 
 										<!-- Download all necessary precompiled Windows binaries. Keep the same structure because NSIS expects it that way. -->
-										<get src="${transcode-tools.download.url}/MediaInfo.dll" dest="${external-resources.transcode-tools.windows.directory}/MediaInfo.dll"  usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/MediaInfo64.dll" dest="${external-resources.transcode-tools.windows.directory}/MediaInfo64.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/LICENSE.txt" dest="${external-resources.transcode-tools.windows.directory}/LICENSE.txt" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/builds.txt" dest="${external-resources.transcode-tools.windows.directory}/builds.txt" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/dcrawMS.exe" dest="${external-resources.transcode-tools.windows.directory}/dcrawMS.exe" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/ffmpeg.exe" dest="${external-resources.transcode-tools.windows.directory}/ffmpeg.exe" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/flac.exe" dest="${external-resources.transcode-tools.windows.directory}/flac.exe" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/mencoder.exe" dest="${external-resources.transcode-tools.windows.directory}/mencoder.exe" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/mplayer.exe" dest="${external-resources.transcode-tools.windows.directory}/mplayer.exe"  usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/pthreadGC2.dll" dest="${external-resources.transcode-tools.windows.directory}/pthreadGC2.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/tsMuxeR.exe" dest="${external-resources.transcode-tools.windows.directory}/tsMuxeR.exe" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/vcomp100.dll" dest="${external-resources.transcode-tools.windows.directory}/vcomp100.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/codecs/drv33260.dll" dest="${external-resources.transcode-tools.windows.directory}/codecs/drv33260.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/codecs/drv43260.dll" dest="${external-resources.transcode-tools.windows.directory}/codecs/drv43260.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/codecs/pncrt.dll" dest="${external-resources.transcode-tools.windows.directory}/codecs/pncrt.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/codecs/sipr3260.dll" dest="${external-resources.transcode-tools.windows.directory}/codecs/sipr3260.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/codecs/tokr3260.dll" dest="${external-resources.transcode-tools.windows.directory}/codecs/tokr3260.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/codecs/wma9dmod.dll" dest="${external-resources.transcode-tools.windows.directory}/codecs/wma9dmod.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/codecs/wmv9dmod.dll" dest="${external-resources.transcode-tools.windows.directory}/codecs/wmv9dmod.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/codecs/wmvdmod.dll" dest="${external-resources.transcode-tools.windows.directory}/codecs/wmvdmod.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/dvrms/ffmpeg_MPGMUX.exe" dest="${external-resources.transcode-tools.windows.directory}/dvrms/ffmpeg_MPGMUX.exe" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/dvrms/pthreadGC2.dll" dest="${external-resources.transcode-tools.windows.directory}/dvrms/pthreadGC2.dll" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/fonts.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/fonts.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/fonts.dtd" dest="${external-resources.transcode-tools.windows.directory}/fonts/fonts.dtd" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-autohint.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/10-autohint.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-no-sub-pixel.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/10-no-sub-pixel.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-sub-pixel-bgr.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/10-sub-pixel-bgr.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-sub-pixel-rgb.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/10-sub-pixel-rgb.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-sub-pixel-vbgr.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/10-sub-pixel-vbgr.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-sub-pixel-vrgb.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/10-sub-pixel-vrgb.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-unhinted.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/10-unhinted.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/11-lcdfilter-default.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/11-lcdfilter-default.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/11-lcdfilter-legacy.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/11-lcdfilter-legacy.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/11-lcdfilter-light.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/11-lcdfilter-light.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/20-unhint-small-vera.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/20-unhint-small-vera.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/25-unhint-nonlatin.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/25-unhint-nonlatin.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/30-metric-aliases.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/30-metric-aliases.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/30-urw-aliases.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/30-urw-aliases.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/40-nonlatin.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/40-nonlatin.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/45-latin.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/45-latin.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/49-sansserif.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/49-sansserif.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/50-user.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/50-user.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/51-local.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/51-local.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/60-latin.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/60-latin.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/65-fonts-persian.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/65-fonts-persian.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/65-khmer.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/65-khmer.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/65-nonlatin.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/65-nonlatin.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/69-unifont.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/69-unifont.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/70-no-bitmaps.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/70-no-bitmaps.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/70-yes-bitmaps.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/70-yes-bitmaps.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/80-delicious.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/80-delicious.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/90-synthetic.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.avail/90-synthetic.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/20-unhint-small-vera.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/20-unhint-small-vera.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/30-metric-aliases.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/30-metric-aliases.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/30-urw-aliases.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/30-urw-aliases.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/40-nonlatin.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/40-nonlatin.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/45-latin.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/45-latin.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/49-sansserif.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/49-sansserif.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/50-user.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/50-user.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/51-local.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/51-local.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/60-latin.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/60-latin.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/65-fonts-persian.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/65-fonts-persian.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/65-nonlatin.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/65-nonlatin.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/69-unifont.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/69-unifont.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/80-delicious.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/80-delicious.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/90-synthetic.conf" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/90-synthetic.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/README" dest="${external-resources.transcode-tools.windows.directory}/fonts/conf.d/README" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/mplayer/config" dest="${external-resources.transcode-tools.windows.directory}/mplayer/config" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/mplayer/input.conf" dest="${external-resources.transcode-tools.windows.directory}/mplayer/input.conf" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/win32/mplayer/subfont.ttf" dest="${external-resources.transcode-tools.windows.directory}/mplayer/subfont.ttf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/MediaInfo.dll" dest="${external-resources.transcode-tools.directory}/win32/MediaInfo.dll"  usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/MediaInfo64.dll" dest="${external-resources.transcode-tools.directory}/win32/MediaInfo64.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/LICENSE.txt" dest="${external-resources.transcode-tools.directory}/win32/LICENSE.txt" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/builds.txt" dest="${external-resources.transcode-tools.directory}/win32/builds.txt" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/dcrawMS.exe" dest="${external-resources.transcode-tools.directory}/win32/dcrawMS.exe" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/ffmpeg.exe" dest="${external-resources.transcode-tools.directory}/win32/ffmpeg.exe" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/flac.exe" dest="${external-resources.transcode-tools.directory}/win32/flac.exe" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/mencoder.exe" dest="${external-resources.transcode-tools.directory}/win32/mencoder.exe" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/mplayer.exe" dest="${external-resources.transcode-tools.directory}/win32/mplayer.exe"  usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/pthreadGC2.dll" dest="${external-resources.transcode-tools.directory}/win32/pthreadGC2.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/tsMuxeR.exe" dest="${external-resources.transcode-tools.directory}/win32/tsMuxeR.exe" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/vcomp100.dll" dest="${external-resources.transcode-tools.directory}/win32/vcomp100.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/codecs/drv33260.dll" dest="${external-resources.transcode-tools.directory}/win32/codecs/drv33260.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/codecs/drv43260.dll" dest="${external-resources.transcode-tools.directory}/win32/codecs/drv43260.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/codecs/pncrt.dll" dest="${external-resources.transcode-tools.directory}/win32/codecs/pncrt.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/codecs/sipr3260.dll" dest="${external-resources.transcode-tools.directory}/win32/codecs/sipr3260.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/codecs/tokr3260.dll" dest="${external-resources.transcode-tools.directory}/win32/codecs/tokr3260.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/codecs/wma9dmod.dll" dest="${external-resources.transcode-tools.directory}/win32/codecs/wma9dmod.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/codecs/wmv9dmod.dll" dest="${external-resources.transcode-tools.directory}/win32/codecs/wmv9dmod.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/codecs/wmvdmod.dll" dest="${external-resources.transcode-tools.directory}/win32/codecs/wmvdmod.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/dvrms/ffmpeg_MPGMUX.exe" dest="${external-resources.transcode-tools.directory}/win32/dvrms/ffmpeg_MPGMUX.exe" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/dvrms/pthreadGC2.dll" dest="${external-resources.transcode-tools.directory}/win32/dvrms/pthreadGC2.dll" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/fonts.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/fonts.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/fonts.dtd" dest="${external-resources.transcode-tools.directory}/win32/fonts/fonts.dtd" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-autohint.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/10-autohint.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-no-sub-pixel.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/10-no-sub-pixel.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-sub-pixel-bgr.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/10-sub-pixel-bgr.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-sub-pixel-rgb.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/10-sub-pixel-rgb.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-sub-pixel-vbgr.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/10-sub-pixel-vbgr.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-sub-pixel-vrgb.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/10-sub-pixel-vrgb.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/10-unhinted.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/10-unhinted.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/11-lcdfilter-default.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/11-lcdfilter-default.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/11-lcdfilter-legacy.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/11-lcdfilter-legacy.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/11-lcdfilter-light.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/11-lcdfilter-light.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/20-unhint-small-vera.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/20-unhint-small-vera.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/25-unhint-nonlatin.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/25-unhint-nonlatin.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/30-metric-aliases.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/30-metric-aliases.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/30-urw-aliases.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/30-urw-aliases.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/40-nonlatin.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/40-nonlatin.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/45-latin.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/45-latin.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/49-sansserif.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/49-sansserif.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/50-user.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/50-user.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/51-local.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/51-local.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/60-latin.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/60-latin.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/65-fonts-persian.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/65-fonts-persian.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/65-khmer.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/65-khmer.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/65-nonlatin.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/65-nonlatin.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/69-unifont.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/69-unifont.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/70-no-bitmaps.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/70-no-bitmaps.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/70-yes-bitmaps.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/70-yes-bitmaps.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/80-delicious.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/80-delicious.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.avail/90-synthetic.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.avail/90-synthetic.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/20-unhint-small-vera.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/20-unhint-small-vera.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/30-metric-aliases.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/30-metric-aliases.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/30-urw-aliases.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/30-urw-aliases.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/40-nonlatin.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/40-nonlatin.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/45-latin.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/45-latin.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/49-sansserif.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/49-sansserif.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/50-user.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/50-user.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/51-local.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/51-local.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/60-latin.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/60-latin.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/65-fonts-persian.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/65-fonts-persian.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/65-nonlatin.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/65-nonlatin.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/69-unifont.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/69-unifont.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/80-delicious.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/80-delicious.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/90-synthetic.conf" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/90-synthetic.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/fonts/conf.d/README" dest="${external-resources.transcode-tools.directory}/win32/fonts/conf.d/README" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/mplayer/config" dest="${external-resources.transcode-tools.directory}/win32/mplayer/config" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/mplayer/input.conf" dest="${external-resources.transcode-tools.directory}/win32/mplayer/input.conf" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/win32/mplayer/subfont.ttf" dest="${external-resources.transcode-tools.directory}/win32/mplayer/subfont.ttf" usetimestamp="true" />
 
 										<!-- Download windows service wrapper. -->
-										<get src="${windows-service-wrapper.x86.download-url}" dest="${external-resources.transcode-tools.windows.directory}/${windows-service-wrapper.x86.filename}" skipexisting="true" />
+										<get src="${windows-service-wrapper.x86.download-url}" dest="${external-resources.transcode-tools.directory}/win32/${windows-service-wrapper.x86.filename}" skipexisting="true" />
 
 										<!-- Download private JRE archives. -->
 										<get src="${private-jre.windows.x86.download-url}" dest="${external-resources.private-jre.directory}/${private-jre.windows.x86.filename}" skipexisting="true" />
@@ -1234,14 +1230,14 @@
 								<configuration>
 									<target>
 										<!-- MediaInfo library needs to be in the standard library path to be found -->
-										<copy file="${external-resources.transcode-tools.windows.directory}/MediaInfo.dll"
+										<copy file="${external-resources.transcode-tools.directory}/win32/MediaInfo.dll"
 											  todir="${project.basedir}" overwrite="true" verbose="true" />
-										<copy file="${external-resources.transcode-tools.windows.directory}/MediaInfo64.dll"
+										<copy file="${external-resources.transcode-tools.directory}/win32/MediaInfo64.dll"
 											  todir="${project.basedir}" overwrite="true" verbose="true" />
 
 										<!-- Unpack winodws service wrapper. -->
-										<unzip src="${external-resources.transcode-tools.windows.directory}/${windows-service-wrapper.x86.filename}"
-											   dest="${target.transcode-tools.windows.directory}"
+										<unzip src="${external-resources.transcode-tools.directory}/win32/${windows-service-wrapper.x86.filename}"
+											   dest="${target.transcode-tools.directory}/win32"
 											   stripAbsolutePathSpec="true"
 											   overwrite="true"
 											   failOnEmptyArchive="true">
@@ -1410,8 +1406,8 @@
 				<resources>
 					<!-- Copy precompiled Linux binaries. -->
 					<resource>
-						<directory>${external-resources.transcode-tools.linux.directory}</directory>
-						<targetPath>${target.transcode-tools.linux.directory}</targetPath>
+						<directory>${external-resources.transcode-tools.directory}/linux</directory>
+						<targetPath>${target.transcode-tools.directory}/linux</targetPath>
 						<!-- Avoid inadvertently filtering binaries -->
 						<filtering>false</filtering>
 					</resource>
@@ -1457,13 +1453,13 @@
 								<configuration>
 									<target>
 										<!-- Make sure the download folder exists. -->
-										<mkdir dir="${external-resources.transcode-tools.linux.directory}" />
+										<mkdir dir="${external-resources.transcode-tools.directory}/linux" />
 
 										<!-- Download binaries. -->
-										<get src="${transcode-tools.download.url}/linux/tsMuxeR" dest="${external-resources.transcode-tools.linux.directory}/tsMuxeR" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/linux/tsMuxeR" dest="${external-resources.transcode-tools.directory}/linux/tsMuxeR" usetimestamp="true" />
 
 										<!-- Make all downloaded binaries executable. -->
-										<chmod dir="${external-resources.transcode-tools.linux.directory}" perm="a+x" includes="*" />
+										<chmod dir="${external-resources.transcode-tools.directory}/linux" perm="a+x" includes="*" />
 									</target>
 								</configuration>
 							</execution>
@@ -1497,14 +1493,29 @@
 				<resources>
 					<!-- Copy precompiled OSX binaries. -->
 					<resource>
-						<directory>${external-resources.transcode-tools.osx.directory}/bin</directory>
-						<targetPath>${izpack.staging}/osx/bin</targetPath>
+						<directory>${external-resources.transcode-tools.directory}/osx/bin</directory>
+						<targetPath>${izpack.staging}/osx</targetPath>
 						<!-- Avoid inadvertently filtering binaries -->
 						<filtering>false</filtering>
 					</resource>
 					<resource>
-						<directory>${external-resources.transcode-tools.osx.directory}</directory>
+						<directory>${external-resources.transcode-tools.directory}/osx</directory>
 						<targetPath>${izpack.staging}/osx</targetPath>
+						<includes>
+							<include>libmediainfo.dylib</include>
+						</includes>
+						<!-- Avoid inadvertently filtering binaries -->
+						<filtering>false</filtering>
+					</resource>
+					<resource>
+						<directory>${external-resources.transcode-tools.directory}/osx</directory>
+						<targetPath>${target.transcode-tools.directory}/osx</targetPath>
+						<!-- Avoid inadvertently filtering binaries -->
+						<filtering>false</filtering>
+					</resource>
+					<resource>
+						<directory>${external-resources.transcode-tools.directory}/osx</directory>
+						<targetPath>${project.build.directory}</targetPath>
 						<includes>
 							<include>libmediainfo.dylib</include>
 						</includes>
@@ -1529,24 +1540,23 @@
 								<configuration>
 									<target>
 										<!-- Make sure the download folder exists. -->
-										<mkdir dir="${external-resources.transcode-tools.osx.directory}" />
-										<mkdir dir="${external-resources.transcode-tools.osx.directory}/bin" />
+										<mkdir dir="${external-resources.transcode-tools.directory}/osx" />
 										<mkdir dir="${izpack.staging}/osx" />
 										<mkdir dir="${private-jre.macosx.directory}" />
 
 										<!-- Download binaries -->
-										<get src="${transcode-tools.download.url}/osx/dcraw" dest="${external-resources.transcode-tools.osx.directory}/bin/dcraw" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/osx/ffmpeg" dest="${external-resources.transcode-tools.osx.directory}/bin/ffmpeg" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/osx/flac" dest="${external-resources.transcode-tools.osx.directory}/bin/flac" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/osx/libmediainfo.dylib" dest="${external-resources.transcode-tools.osx.directory}/libmediainfo.dylib" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/osx/mencoder" dest="${external-resources.transcode-tools.osx.directory}/bin/mencoder" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/osx/mplayer" dest="${external-resources.transcode-tools.osx.directory}/bin/mplayer" usetimestamp="true" />
-										<get src="${transcode-tools.download.url}/osx/tsMuxeR" dest="${external-resources.transcode-tools.osx.directory}/bin/tsMuxeR" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/osx/dcraw" dest="${external-resources.transcode-tools.directory}/osx/dcraw" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/osx/ffmpeg" dest="${external-resources.transcode-tools.directory}/osx/ffmpeg" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/osx/flac" dest="${external-resources.transcode-tools.directory}/osx/flac" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/osx/libmediainfo.dylib" dest="${external-resources.transcode-tools.directory}/osx/libmediainfo.dylib" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/osx/mencoder" dest="${external-resources.transcode-tools.directory}/osx/mencoder" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/osx/mplayer" dest="${external-resources.transcode-tools.directory}/osx/mplayer" usetimestamp="true" />
+										<get src="${transcode-tools.download.url}/osx/tsMuxeR" dest="${external-resources.transcode-tools.directory}/osx/tsMuxeR" usetimestamp="true" />
 		
 										<get src="${private-jre.macosx.download-url}" dest="${private-jre.macosx.directory}/${private-jre.macosx.filename}" skipexisting="true" />
 		
 										<!-- Make all downloaded binaries executable -->
-										<chmod dir="${external-resources.transcode-tools.osx.directory}/bin" perm="a+x" includes="*" />
+										<chmod dir="${external-resources.transcode-tools.directory}/osx" perm="a+x" includes="*" excludes="libmediainfo.dylib" />
 		
 										<copy file="src/main/izpack/logo.png" todir="${izpack.staging}" overwrite="true" />
 										<copy file="${external-resources.directory}/osx/Info.plist-template-pms" tofile="${izpack.staging}/osx/Info.plist" overwrite="true" />

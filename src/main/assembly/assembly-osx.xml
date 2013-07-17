@@ -19,7 +19,7 @@
 	<fileSets>
 		<!-- Include downloaded binaries. -->
 		<fileSet>
-			<directory>${target.transcode-tools.osx.directory}</directory>
+			<directory>${target.transcode-tools.directory}/osx</directory>
 			<outputDirectory>${project.name}.app/Contents/Resources/Java/osx</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<fileMode>0755</fileMode>

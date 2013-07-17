@@ -151,8 +151,13 @@
             <description>Third party binaries necessary for PMS to function properly.</description>
 
 			<!-- Mac OSX binaries -->
-            <fileset dir="osx/bin" targetdir="$INSTALL_PATH/Contents/Resources/Java/osx">
-            	<include name="*"/>
+            <fileset dir="osx" targetdir="$INSTALL_PATH/Contents/Resources/Java/osx">
+            	<include name="dcraw" />
+            	<include name="ffmpeg" />
+            	<include name="flac" />
+            	<include name="mencoder" />
+            	<include name="mplayer" />
+            	<include name="tsMuxeR" />
             	<os family="mac" />
             </fileset>
 
