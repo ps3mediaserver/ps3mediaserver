@@ -49,7 +49,7 @@ EXTERNALPROJECT_ADD(
 
 EXTERNALPROJECT_ADD(
     celt
-    URL http://downloads.xiph.org/releases/celt/celt-0.11.1.tar.gz
+    URL http://downloads.xiph.org/releases/celt/celt-0.11.3.tar.gz
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --enable-static
     BUILD_IN_SOURCE 1
 )
@@ -72,7 +72,7 @@ EXTERNALPROJECT_ADD(
 EXTERNALPROJECT_ADD(
     fontconfig
     DEPENDS expat freetype
-    URL http://www.freedesktop.org/software/fontconfig/release/fontconfig-2.10.1.tar.gz
+    URL http://www.freedesktop.org/software/fontconfig/release/fontconfig-2.10.93.tar.gz
     CONFIGURE_COMMAND PKG_CONFIG_PATH=${CMAKE_BINARY_DIR}/lib/pkgconfig ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --enable-static --disable-docs
     BUILD_IN_SOURCE 1
 )
@@ -86,14 +86,14 @@ EXTERNALPROJECT_ADD(
 
 EXTERNALPROJECT_ADD(
     fribidi
-    URL http://fribidi.org/download/fribidi-0.19.4.tar.bz2
+    URL http://fribidi.org/download/fribidi-0.19.5.tar.bz2
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --enable-static
     BUILD_IN_SOURCE 1
 )
 
 EXTERNALPROJECT_ADD(
     gmp
-    URL ftp://ftp.gmplib.org/pub/gmp/gmp-5.1.1.tar.bz2
+    URL ftp://ftp.gmplib.org/pub/gmp/gmp-5.1.2.tar.bz2
     # XXX can be built for 32-bit or 64-bit by appending ABI=32 or ABI=64 to the configure command
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --enable-static
     BUILD_IN_SOURCE 1
@@ -117,6 +117,8 @@ EXTERNALPROJECT_ADD(
     # (the 2.12.x series is still being maintained/updated: http://www.gnutls.org/security.html)
     # http://public.kitware.com/Bug/view.php?id=13515
     URL ftp://ftp.gnutls.org/gcrypt/gnutls/v2.12/gnutls-2.12.23.tar.bz2
+    # XXX linking against nettle breaks with "duplicate symbol _memxor" on Mac OSX
+    PATCH_COMMAND patch -p1 < ${CMAKE_SOURCE_DIR}/vendor/gnutls-memxor.patch
     # XXX linking against nettle/hogweed breaks unless -lgmp is added
     # XXX and it can't find the lib dir from --prefix, so that needs to be added as well
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --enable-static --without-p11-kit --disable-cxx LDFLAGS=-L${CMAKE_BINARY_DIR}/lib LIBS=-lgmp
@@ -135,7 +137,7 @@ EXTERNALPROJECT_ADD(
 
 EXTERNALPROJECT_ADD(
     iconv
-    URL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.13.1.tar.gz
+    URL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared
     BUILD_IN_SOURCE 1
 )
@@ -167,7 +169,7 @@ EXTERNALPROJECT_ADD(
 
 EXTERNALPROJECT_ADD(
     ogg
-    URL http://downloads.xiph.org/releases/ogg/libogg-1.3.0.tar.gz
+    URL http://downloads.xiph.org/releases/ogg/libogg-1.3.1.tar.gz
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared
     BUILD_IN_SOURCE 1
 )
@@ -198,7 +200,7 @@ ENDIF()
 
 EXTERNALPROJECT_ADD(
     openssl
-    URL http://www.openssl.org/source/openssl-1.0.1c.tar.gz
+    URL http://www.openssl.org/source/openssl-1.0.1e.tar.gz
     CONFIGURE_COMMAND ${CONFIGURE_COMMAND_OPENSSL}
     BUILD_COMMAND ${BUILD_COMMAND_OPENSSL}
     BUILD_IN_SOURCE 1
@@ -206,7 +208,7 @@ EXTERNALPROJECT_ADD(
 
 EXTERNALPROJECT_ADD(
     orc
-    URL http://code.entropywave.com/download/orc/orc-0.4.16.tar.gz
+    URL http://code.entropywave.com/download/orc/orc-0.4.17.tar.gz
     CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared
     BUILD_COMMAND make SUBDIRS=orc
     BUILD_IN_SOURCE 1
@@ -288,7 +290,7 @@ EXTERNALPROJECT_ADD(
 EXTERNALPROJECT_ADD(
     vorbis
     DEPENDS ogg
-    URL http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.2.tar.gz
+    URL http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.3.tar.gz
     CONFIGURE_COMMAND PKG_CONFIG_PATH=${CMAKE_BINARY_DIR}/lib/pkgconfig ./configure --prefix=${CMAKE_BINARY_DIR} --disable-shared --disable-oggtest
     BUILD_IN_SOURCE 1
 )
@@ -451,7 +453,7 @@ SET(FFMPEG_CONFIGURE_COMMAND
 EXTERNALPROJECT_ADD(
     ffmpeg
     DEPENDS ${FFMPEG_DEPENDENCIES}
-    URL http://ffmpeg.org/releases/ffmpeg-1.2.tar.gz
+    URL http://ffmpeg.org/releases/ffmpeg-2.0.tar.gz
     PATCH_COMMAND patch -p1 < ${CMAKE_SOURCE_DIR}/vendor/ffmpeg-banner.patch
     CONFIGURE_COMMAND ${FFMPEG_CONFIGURE_COMMAND}
     BUILD_IN_SOURCE 1

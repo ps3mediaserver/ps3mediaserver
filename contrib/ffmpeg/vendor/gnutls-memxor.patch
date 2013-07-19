@@ -1,0 +1,13 @@
+--- gnutls/libextra/gl/memxor.c	2013-07-19 13:25:36.000000000 +0200
++++ gnutls/libextra/gl/memxor.c	2013-07-19 13:27:21.000000000 +0200
+@@ -21,8 +21,9 @@
+ 
+ #include "memxor.h"
+ 
++/* Avoiding duplicate symbol _memxor when linking against nettle */
+ void *
+-memxor (void *restrict dest, const void *restrict src, size_t n)
++gl_memxor (void *restrict dest, const void *restrict src, size_t n)
+ {
+   char const *s = src;
+   char *d = dest;
