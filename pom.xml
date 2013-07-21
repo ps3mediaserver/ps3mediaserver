@@ -1339,6 +1339,10 @@
 			 -->
 			<activation>
 				<activeByDefault>true</activeByDefault>
+				<os>
+					<family>unix</family>
+					<name>Linux</name>
+				</os>
 			</activation>
 
 			<dependencies>
