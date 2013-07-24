@@ -26,6 +26,7 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.util.PlayerUtil;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -45,8 +46,8 @@ public class MEncoderWebVideo extends Player {
 	}
 
 	@Override
-	public int purpose() {
-		return VIDEO_WEBSTREAM_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.VIDEO_WEB_STREAM_PLAYER;
 	}
 
 	@Override
@@ -83,10 +84,10 @@ public class MEncoderWebVideo extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String fileName,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
-		OutputParams params) throws IOException {
+		OutputParams params
+	) throws IOException {
 		params.minBufferSize = params.minFileSize;
 		params.secondread_minsize = 100000;
 
@@ -95,7 +96,8 @@ public class MEncoderWebVideo extends Player {
 
 		String cmdArray[] = new String[args().length + 4];
 		cmdArray[0] = executable();
-		cmdArray[1] = fileName;
+		final String filename = dlna.getSystemName();
+		cmdArray[1] = filename;
 
 		for (int i = 0; i < args().length; i++) {
 			cmdArray[i + 2] = args()[i];
@@ -107,7 +109,7 @@ public class MEncoderWebVideo extends Player {
 		ProcessWrapper mkfifo_process = pipe.getPipeProcess();
 
 		cmdArray = finalizeTranscoderArgs(
-			fileName,
+			filename,
 			dlna,
 			media,
 			params,
@@ -134,13 +136,8 @@ public class MEncoderWebVideo extends Player {
 	}
 
 	@Override
-	public boolean avisynth() {
-		return false;
-	}
-
-	@Override
 	public String name() {
-		return "MEncoder Web";
+		return "MEncoder Web Video";
 	}
 
 	@Override
@@ -163,20 +160,6 @@ public class MEncoderWebVideo extends Player {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.VIDEO) {
-			return false;
-		}
-
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.WEB)) {
-				return true;
-			}
-		}
-
-		return false;
+		return PlayerUtil.isWebVideo(resource);
 	}
 }

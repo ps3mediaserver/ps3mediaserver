@@ -16,7 +16,7 @@
     <files>
         <!-- Include pms-X.YY.Z-SNAPSHOT-jar-with-dependencies as pms.jar-->
         <file>
-            <source>${project.basedir}/target/${project.artifactId}-${project.version}-jar-with-dependencies.jar</source>
+            <source>${project.build.directory}/${project.artifactId}-${project.version}-jar-with-dependencies.jar</source>
             <outputDirectory>.</outputDirectory>
             <destName>pms.jar</destName>
             <fileMode>0644</fileMode>
@@ -25,7 +25,7 @@
 
         <!-- Include the tsMuxeR binary -->
         <file>
-            <source>${project.binaries}/tsMuxeR</source>
+            <source>${target.transcode-tools.directory}/linux/tsMuxeR</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>0755</fileMode>
             <lineEnding>keep</lineEnding>
@@ -33,7 +33,7 @@
 
         <!-- Include executable script PMS.sh -->
         <file>
-            <source>${project.external-resources}/PMS.sh</source>
+            <source>${external-resources.directory}/PMS.sh</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>0755</fileMode>
             <lineEnding>unix</lineEnding>
@@ -50,13 +50,14 @@
 			<includes>
 				<include>README.md</include>
 				<include>CHANGELOG.txt</include>
+				<include>INSTALL.txt</include>
 				<include>LICENSE.txt</include>
 			</includes>
 		</fileSet>
 
 		<!-- Include configuration files -->
 		<fileSet>
-			<directory>${project.external-resources}</directory>
+			<directory>${external-resources.directory}</directory>
 			<outputDirectory>.</outputDirectory>
 			<fileMode>0644</fileMode>
 			<lineEnding>unix</lineEnding>

@@ -18,48 +18,28 @@
  */
 package net.pms.newgui;
 
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.util.Locale;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.sun.jna.Platform;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaDatabase;
 import net.pms.util.FormLayoutUtil;
 import net.pms.util.KeyedComboBoxModel;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.sun.jna.Platform;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.util.Locale;
 
 public class NavigationShareTab {
-	private static final Logger LOGGER = LoggerFactory.getLogger(NavigationShareTab.class);
+	private static final Logger logger = LoggerFactory.getLogger(NavigationShareTab.class);
 	public static final String ALL_DRIVES = Messages.getString("FoldTab.0");
 
 	private static final String PANEL_COL_SPEC = "left:pref, 50dlu, pref, 150dlu, pref, 25dlu, pref, 25dlu, pref, default:grow";
@@ -219,7 +199,7 @@ public class NavigationShareTab {
 					int ab = Integer.parseInt(seekpos.getText());
 					configuration.setThumbnailSeekPos(ab);
 				} catch (NumberFormatException nfe) {
-					LOGGER.debug("Could not parse thumbnail seek position from \"" + seekpos.getText() + "\"");
+					logger.debug("Could not parse thumbnail seek position from \"" + seekpos.getText() + "\"");
 				}
 
 			}
@@ -275,7 +255,7 @@ public class NavigationShareTab {
 					try {
 						configuration.setAudioThumbnailMethod(Integer.parseInt((String) thumbKCBM.getSelectedKey()));
 					} catch (NumberFormatException nfe) {
-						LOGGER.debug("Could not parse audio thumbnail method from \"" + thumbKCBM.getSelectedKey() + "\"");
+						logger.debug("Could not parse audio thumbnail method from \"" + thumbKCBM.getSelectedKey() + "\"");
 					}
 
 				}
@@ -427,7 +407,7 @@ public class NavigationShareTab {
 		// ItunesEnabled
 		itunes = new JCheckBox(Messages.getString("FoldTab.30"));
 		itunes.setContentAreaFilled(false);
-		if (configuration.getItunesEnabled()) {
+		if (configuration.isShowItunesLibrary()) {
 			itunes.setSelected(true);
 		}
 		if (!(Platform.isMac() || Platform.isWindows())) {
@@ -435,14 +415,14 @@ public class NavigationShareTab {
 		}
 		itunes.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				configuration.setItunesEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setShowItunesLibrary((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 
 		// IphotoEnabled
 		iphoto = new JCheckBox(Messages.getString("FoldTab.29"));
 		iphoto.setContentAreaFilled(false);
-		if (configuration.getIphotoEnabled()) {
+		if (configuration.isShowIphotoLibrary()) {
 			iphoto.setSelected(true);
 		}
 		if (!Platform.isMac()) {
@@ -450,14 +430,14 @@ public class NavigationShareTab {
 		}
 		iphoto.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				configuration.setIphotoEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setShowIphotoLibrary((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 
 		// ApertureEnabled
 		aperture = new JCheckBox(Messages.getString("FoldTab.34"));
 		aperture.setContentAreaFilled(false);
-		if (configuration.getApertureEnabled()) {
+		if (configuration.isShowApertureLibrary()) {
 			aperture.setSelected(true);
 		}
 		if (!Platform.isMac()) {
@@ -465,7 +445,7 @@ public class NavigationShareTab {
 		}
 		aperture.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				configuration.setApertureEnabled((e.getStateChange() == ItemEvent.SELECTED));
+				configuration.setShowApertureLibrary((e.getStateChange() == ItemEvent.SELECTED));
 			}
 		});
 
@@ -497,7 +477,7 @@ public class NavigationShareTab {
 					try {
 						configuration.setSortMethod(Integer.parseInt((String) kcbm.getSelectedKey()));
 					} catch (NumberFormatException nfe) {
-						LOGGER.debug("Could not parse sort method from \"" + kcbm.getSelectedKey() + "\"");
+						logger.debug("Could not parse sort method from \"" + kcbm.getSelectedKey() + "\"");
 					}
 
 				}
@@ -638,7 +618,7 @@ public class NavigationShareTab {
 		but5.setEnabled(configuration.getUseCache());
 
 		df = new DefaultListModel();
-		File[] folders = PMS.get().getFoldersConf(false);
+		File[] folders = PMS.get().getFoldersConf();
 		if (folders != null && folders.length > 0) {
 			for (File file : folders) {
 				df.addElement(file.getAbsolutePath());

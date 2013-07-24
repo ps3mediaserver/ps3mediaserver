@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * and some methods to verify which language matches which ISO code.
  */
 public class Iso639 {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Iso639.class);
+	private static final Logger logger = LoggerFactory.getLogger(Iso639.class);
 
 	/**
 	 * ISO code alias for the language set in the preferences

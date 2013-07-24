@@ -36,7 +36,7 @@ import java.lang.reflect.Method;
 import static java.util.Collections.singletonMap;
 
 public class MediaInfo {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MediaInfo.class);
+	private static final Logger logger = LoggerFactory.getLogger(MediaInfo.class);
 	static String libraryName;
 
 	static {
@@ -53,11 +53,14 @@ public class MediaInfo {
 				// If we do not, the system will look for dependencies, but only in the library path.
 				NativeLibrary.getInstance("zen");
 			} catch (LinkageError e) {
-				LOGGER.warn("Error loading libzen: " + e.getMessage());
+				logger.warn("Error loading libzen: " + e.getMessage());
 			}
 		}
 	}
 
+	// XXX Note: none of JNA's 3 calling conventions
+	// (ALT_CONVENTION, C_CONVENTION, STDCALL_CONVENTION)
+	// work with MediaInfo.dll when JNA > 3.2.5.
 	// Internal stuff
 	interface MediaInfoDLL_Internal extends Library {
 		MediaInfoDLL_Internal INSTANCE = (MediaInfoDLL_Internal) Native.loadLibrary(
@@ -85,11 +88,11 @@ public class MediaInfo {
 		// Info
 		WString Inform(Pointer Handle);
 
-		WString Get(Pointer Handle, int StreamKind, int StreamNumber, WString parameter, int infoKind, int searchKind);
+		WString Get(Pointer Handle, int streamType, int streamNumber, WString parameter, int infoType, int searchType);
 
-		WString GetI(Pointer Handle, int StreamKind, int StreamNumber, int parameterIndex, int infoKind);
+		WString GetI(Pointer Handle, int streamType, int streamNumber, int parameterIndex, int infoType);
 
-		int Count_Get(Pointer Handle, int StreamKind, int StreamNumber);
+		int Count_Get(Pointer Handle, int streamType, int streamNumber);
 
 		// Options
 		WString Option(Pointer Handle, WString option, WString value);
@@ -97,8 +100,17 @@ public class MediaInfo {
 	private Pointer Handle;
 
 	@Deprecated
-	// FIXME rename StreamType
 	public enum StreamKind {
+		General,
+		Video,
+		Audio,
+		Text,
+		Chapters,
+		Image,
+		Menu;
+	}
+
+	public enum StreamType {
 		General,
 		Video,
 		Audio,
@@ -110,8 +122,44 @@ public class MediaInfo {
 
 	// Enums
 	@Deprecated
-	// FIXME rename InfoType
 	public enum InfoKind {
+		/**
+		 * Unique name of parameter.
+		 */
+		Name,
+		/**
+		 * Value of parameter.
+		 */
+		Text,
+		/**
+		 * Unique name of measure unit of parameter.
+		 */
+		Measure,
+		Options,
+		/**
+		 * Translated name of parameter.
+		 */
+		Name_Text,
+		/**
+		 * Translated name of measure unit.
+		 */
+		Measure_Text,
+		/**
+		 * More information about the parameter.
+		 */
+		Info,
+		/**
+		 * How this parameter is supported, could be N (No), B (Beta), R (Read only), W
+		 * (Read/Write).
+		 */
+		HowTo,
+		/**
+		 * Domain of this piece of information.
+		 */
+		Domain;
+	}
+
+	public enum InfoType {
 		/**
 		 * Unique name of parameter.
 		 */
@@ -151,19 +199,17 @@ public class MediaInfo {
 	// Constructor/Destructor
 	public MediaInfo() {
 		try {
-			LOGGER.info("Loading MediaInfo library");
+			logger.info("Loading MediaInfo library");
 			Handle = MediaInfoDLL_Internal.INSTANCE.New();
-			LOGGER.info("Loaded " + Option_Static("Info_Version"));
+			logger.info("Loaded " + Option_Static("Info_Version"));
 		} catch (Throwable e) {
 			if (e != null) {
-				LOGGER.info("Error loading MediaInfo library: " + e.getMessage());
+				logger.info("Error loading MediaInfo library: " + e.getMessage());
 			}
-
 			if (!Platform.isWindows() && !Platform.isMac()) {
-				LOGGER.info("Make sure you have libmediainfo and libzen installed");
+				logger.info("Make sure you have libmediainfo and libzen installed");
 			}
-
-			LOGGER.info("The server will now use the less accurate ffmpeg parsing method");
+			logger.info("The server will now use the less accurate FFmpeg parsing method");
 		}
 	}
 
@@ -191,11 +237,11 @@ public class MediaInfo {
 	/**
 	 * Open a file and collect information about it (technical information and tags).
 	 *
-	 * @param File_Name full name of the file to open
+	 * @param fileName full name of the file to open
 	 * @return 1 if file was opened, 0 if file was not not opened
 	 */
-	public int Open(String File_Name) {
-		return MediaInfoDLL_Internal.INSTANCE.Open(Handle, new WString(File_Name));
+	public int Open(String fileName) {
+		return MediaInfoDLL_Internal.INSTANCE.Open(Handle, new WString(fileName));
 	}
 
 	/**
@@ -219,154 +265,154 @@ public class MediaInfo {
 	/**
 	 * Get a piece of information about a file (parameter is a string).
 	 *
-	 * @param StreamKind Kind of Stream (general, video, audio...)
-	 * @param StreamNumber Stream number in Kind of Stream (first, second...)
+	 * @param streamType Type of Stream (general, video, audio...)
+	 * @param streamNumber Stream number in Type of Stream (first, second...)
 	 * @param parameter Parameter you are looking for in the Stream (Codec, width, bitrate...),
 	 *            in string format ("Codec", "Width"...)
 	 * @return a string about information you search, an empty string if there is a problem
 	 */
-	public String Get(StreamKind StreamKind, int StreamNumber, String parameter) {
-		return Get(StreamKind, StreamNumber, parameter, InfoKind.Text, InfoKind.Name);
+	public String Get(StreamType streamType, int streamNumber, String parameter) {
+		return Get(streamType, streamNumber, parameter, InfoType.Text, InfoType.Name);
 	}
 
 	/**
 	 * Get a piece of information about a file (parameter is a string).
 	 *
-	 * @param StreamKind Kind of Stream (general, video, audio...)
-	 * @param StreamNumber Stream number in Kind of Stream (first, second...)
+	 * @param streamType Type of Stream (general, video, audio...)
+	 * @param streamNumber Stream number in Type of Stream (first, second...)
 	 * @param parameter Parameter you are looking for in the Stream (Codec, width, bitrate...),
 	 *            in string format ("Codec", "Width"...)
-	 * @param infoKind Kind of information you want about the parameter (the text, the measure,
+	 * @param infoType Type of information you want about the parameter (the text, the measure,
 	 *            the help...)
 	 */
-	public String Get(StreamKind StreamKind, int StreamNumber, String parameter, InfoKind infoKind) {
-		return Get(StreamKind, StreamNumber, parameter, infoKind, InfoKind.Name);
+	public String Get(StreamType streamType, int streamNumber, String parameter, InfoType infoType) {
+		return Get(streamType, streamNumber, parameter, infoType, InfoType.Name);
 	}
 
 	/**
 	 * Get a piece of information about a file (parameter is a string).
 	 *
-	 * @param StreamKind Kind of Stream (general, video, audio...)
-	 * @param StreamNumber Stream number in Kind of Stream (first, second...)
+	 * @param streamType Type of Stream (general, video, audio...)
+	 * @param streamNumber Stream number in Type of Stream (first, second...)
 	 * @param parameter Parameter you are looking for in the Stream (Codec, width, bitrate...),
 	 *            in string format ("Codec", "Width"...)
-	 * @param infoKind Kind of information you want about the parameter (the text, the measure,
+	 * @param infoType Type of information you want about the parameter (the text, the measure,
 	 *            the help...)
-	 * @param searchKind Where to look for the parameter
+	 * @param searchType Where to look for the parameter
 	 * @return a string about information you search, an empty string if there is a problem
 	 */
-	public String Get(StreamKind StreamKind, int StreamNumber, String parameter, InfoKind infoKind, InfoKind searchKind) {
+	public String Get(StreamType streamType, int streamNumber, String parameter, InfoType infoType, InfoType searchType) {
 		return MediaInfoDLL_Internal.INSTANCE.Get(
 			Handle,
-			StreamKind.ordinal(),
-			StreamNumber,
+			streamType.ordinal(),
+			streamNumber,
 			new WString(parameter),
-			infoKind.ordinal(),
-			searchKind.ordinal()).toString();
+			infoType.ordinal(),
+			searchType.ordinal()).toString();
 	}
 
 	/**
 	 * Get a piece of information about a file (parameter is an integer).
 	 *
-	 * @param StreamKind Kind of Stream (general, video, audio...)
-	 * @param StreamNumber Stream number in Kind of Stream (first, second...)
+	 * @param streamType Type of Stream (general, video, audio...)
+	 * @param streamNumber Stream number in Type of Stream (first, second...)
 	 * @param parameterIndex Parameter you are looking for in the Stream (Codec, width, bitrate...),
 	 *            in integer format (first parameter, second parameter...)
 	 * @return a string about information you search, an empty string if there is a problem
 	 */
-	public String get(StreamKind StreamKind, int StreamNumber, int parameterIndex) {
-		return Get(StreamKind, StreamNumber, parameterIndex, InfoKind.Text);
+	public String get(StreamType streamType, int streamNumber, int parameterIndex) {
+		return Get(streamType, streamNumber, parameterIndex, InfoType.Text);
 	}
 
 	/**
 	 * Get a piece of information about a file (parameter is an integer).
 	 *
-	 * @param StreamKind Kind of Stream (general, video, audio...)
-	 * @param StreamNumber Stream number in Kind of Stream (first, second...)
+	 * @param streamType Type of Stream (general, video, audio...)
+	 * @param streamNumber Stream number in Type of Stream (first, second...)
 	 * @param parameterIndex Parameter you are looking for in the Stream (Codec, width, bitrate...),
 	 *            in integer format (first parameter, second parameter...)
-	 * @param infoKind Kind of information you want about the parameter (the text, the measure,
+	 * @param infoType Type of information you want about the parameter (the text, the measure,
 	 *            the help...)
 	 * @return a string about information you search, an empty string if there is a problem
 	 */
-	public String Get(StreamKind StreamKind, int StreamNumber, int parameterIndex, InfoKind infoKind) {
+	public String Get(StreamType streamType, int streamNumber, int parameterIndex, InfoType infoType) {
 		return MediaInfoDLL_Internal.INSTANCE.GetI(
 			Handle,
-			StreamKind.ordinal(),
-			StreamNumber,
+			streamType.ordinal(),
+			streamNumber,
 			parameterIndex,
-			infoKind.ordinal()).toString();
+			infoType.ordinal()).toString();
 	}
 
 	/**
 	 * Count of Streams of a Stream kind (StreamNumber not filled), or count of piece of
 	 * information in this Stream.
 	 *
-	 * @param StreamKind Kind of Stream (general, video, audio...)
+	 * @param streamType Type of Stream (general, video, audio...)
 	 * @return number of Streams of the given Stream kind
 	 */
-	public int Count_Get(StreamKind StreamKind) {
-		return MediaInfoDLL_Internal.INSTANCE.Count_Get(Handle, StreamKind.ordinal(), -1);
+	public int Count_Get(StreamType streamType) {
+		return MediaInfoDLL_Internal.INSTANCE.Count_Get(Handle, streamType.ordinal(), -1);
 	}
 
 	/**
 	 * Count of Streams of a Stream kind (StreamNumber not filled), or count of piece of
 	 * information in this Stream.
 	 *
-	 * @param StreamKind Kind of Stream (general, video, audio...)
-	 * @param StreamNumber Stream number in this kind of Stream (first, second...)
+	 * @param streamType Type of Stream (general, video, audio...)
+	 * @param streamNumber Stream number in this kind of Stream (first, second...)
 	 * @return number of Streams of the given Stream kind
 	 */
-	public int Count_Get(StreamKind StreamKind, int StreamNumber) {
-		return MediaInfoDLL_Internal.INSTANCE.Count_Get(Handle, StreamKind.ordinal(), StreamNumber);
+	public int Count_Get(StreamType streamType, int streamNumber) {
+		return MediaInfoDLL_Internal.INSTANCE.Count_Get(Handle, streamType.ordinal(), streamNumber);
 	}
 
 	// Options
 	/**
 	 * Configure or get information about MediaInfo.
 	 *
-	 * @param Option The name of option
+	 * @param option The name of option
 	 * @return Depends on the option: by default "" (nothing) means No, other means Yes
 	 */
-	public String Option(String Option) {
-		return MediaInfoDLL_Internal.INSTANCE.Option(Handle, new WString(Option), new WString("")).toString();
+	public String Option(String option) {
+		return MediaInfoDLL_Internal.INSTANCE.Option(Handle, new WString(option), new WString("")).toString();
 	}
 
 	/**
 	 * Configure or get information about MediaInfo.
 	 *
-	 * @param Option The name of option
-	 * @param Value The value of option
+	 * @param option The name of option
+	 * @param value The value of option
 	 * @return Depends on the option: by default "" (nothing) means No, other means Yes
 	 */
-	public String Option(String Option, String Value) {
-		return MediaInfoDLL_Internal.INSTANCE.Option(Handle, new WString(Option), new WString(Value)).toString();
+	public String Option(String option, String value) {
+		return MediaInfoDLL_Internal.INSTANCE.Option(Handle, new WString(option), new WString(value)).toString();
 	}
 
 	/**
 	 * Configure or get information about MediaInfo (Static version).
 	 *
-	 * @param Option The name of option
+	 * @param option The name of option
 	 * @return Depends on the option: by default "" (nothing) means No, other means Yes
 	 */
-	public static String Option_Static(String Option) {
+	public static String Option_Static(String option) {
 		return MediaInfoDLL_Internal.INSTANCE.Option(
 			MediaInfoDLL_Internal.INSTANCE.New(),
-			new WString(Option),
+			new WString(option),
 			new WString("")).toString();
 	}
 
 	/**
 	 * Configure or get information about MediaInfo (Static version).
 	 *
-	 * @param Option The name of option
-	 * @param Value The value of option
+	 * @param option The name of option
+	 * @param value The value of option
 	 * @return Depends on the option: by default "" (nothing) means No, other means Yes
 	 */
-	public static String Option_Static(String Option, String Value) {
+	public static String Option_Static(String option, String value) {
 		return MediaInfoDLL_Internal.INSTANCE.Option(
 			MediaInfoDLL_Internal.INSTANCE.New(),
-			new WString(Option),
-			new WString(Value)).toString();
+			new WString(option),
+			new WString(value)).toString();
 	}
 }

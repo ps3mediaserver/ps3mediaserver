@@ -7,7 +7,5 @@ interface ProgramPaths {
 	String getMencoderPath();
 	String getTsmuxerPath();
 	String getFlacPath();
-	String getEac3toPath(); 
-	String getDCRaw(); 
-	String getIMConvertPath();
+	String getDCRaw();
 }

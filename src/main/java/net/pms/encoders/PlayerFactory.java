@@ -19,23 +19,21 @@
  */
 package net.pms.encoders;
 
-import java.util.List;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
+import com.sun.jna.Platform;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
 import net.pms.formats.FormatFactory;
 import net.pms.io.SystemUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jna.Platform;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * This class handles players. Creating an instance will initialize the list of
@@ -47,8 +45,7 @@ public final class PlayerFactory {
 	/**
 	 * Logger used for all logging.
 	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(FormatFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(PlayerFactory.class);
 
 	/**
 	 * List of registered and approved {@link Player} objects.
@@ -78,7 +75,7 @@ public final class PlayerFactory {
 
 		@Override
 		public int compare(Player player1, Player player2) {
-			List<String> prefs = configuration.getEnginesAsList(PMS.get().getRegistry());
+			List<String> prefs = configuration.getEnginesAsList();
 			Integer index1 = prefs.indexOf(player1.id());
 			Integer index2 = prefs.indexOf(player2.id());
 
@@ -119,35 +116,35 @@ public final class PlayerFactory {
 	 *            PMS configuration settings.
 	 */
 	private static void registerPlayers(final PmsConfiguration configuration) {
-		// TODO make these constructors consistent: pass configuration to all or to none
+		FFmpegProtocols ffmpegProtocols = new FFmpegProtocols(configuration);
+
 		if (Platform.isWindows()) {
-			registerPlayer(new FFMpegAviSynthVideo());
+			registerPlayer(new FFmpegAviSynthVideo(configuration));
 		}
 
-		registerPlayer(new FFMpegAudio(configuration));
+		registerPlayer(new FFmpegAudio(configuration));
 		registerPlayer(new MEncoderVideo(configuration));
 
 		if (Platform.isWindows()) {
 			registerPlayer(new MEncoderAviSynth(configuration));
 		}
 
-		registerPlayer(new FFMpegVideo(configuration));
+		registerPlayer(new FFmpegVideo(configuration));
 		registerPlayer(new VLCVideo(configuration));
-		registerPlayer(new MPlayerAudio(configuration));
-		registerPlayer(new FFMpegWebVideo(configuration));
+		registerPlayer(new FFmpegWebVideo(configuration, ffmpegProtocols));
+		registerPlayer(new FFmpegWebAudio(configuration, ffmpegProtocols));
 		registerPlayer(new MEncoderWebVideo(configuration));
-		registerPlayer(new MPlayerWebVideoDump(configuration));
-		registerPlayer(new MPlayerWebAudio(configuration));
-		registerPlayer(new TSMuxerVideo(configuration));
-		registerPlayer(new TsMuxerAudio(configuration));
+		registerPlayer(new VLCWebVideo(configuration));
+		registerPlayer(new TsMuxeRVideo(configuration));
+		registerPlayer(new TsMuxeRAudio(configuration));
 		registerPlayer(new VideoLanAudioStreaming(configuration));
 		registerPlayer(new VideoLanVideoStreaming(configuration));
 
 		if (Platform.isWindows()) {
-			registerPlayer(new FFMpegDVRMSRemux());
+			registerPlayer(new FFmpegDVRMSRemux(configuration));
 		}
 
-		registerPlayer(new RAWThumbnailer());
+		registerPlayer(new RAWThumbnailer(configuration));
 
 		// Sort the players according to the configuration settings
 		Collections.sort(allPlayers, new PlayerSort(configuration));
@@ -164,12 +161,12 @@ public final class PlayerFactory {
 		boolean ok = false;
 		allPlayers.add(player);
 
-		if (Player.NATIVE.equals(player.executable())) {
+		if (player.isNative()) {
 			ok = true;
 		} else {
 			if (Platform.isWindows()) {
 				if (player.executable() == null) {
-					LOGGER.info("Executable of transcoder profile " + player
+					logger.info("Executable of transcoder profile " + player
 							+ " not defined");
 					return;
 				}
@@ -180,7 +177,7 @@ public final class PlayerFactory {
 				if (executable.exists() || executable2.exists()) {
 					ok = true;
 				} else {
-					LOGGER.info("Executable of transcoder profile " + player
+					logger.info("Executable of transcoder profile " + player
 							+ " not found");
 					return;
 				}
@@ -191,7 +188,7 @@ public final class PlayerFactory {
 					if (utils.isAvis()) {
 						ok = true;
 					} else {
-						LOGGER.info("Transcoder profile " + player
+						logger.info("Transcoder profile " + player
 								+ " will not be used because AviSynth was not found");
 					}
 				}
@@ -201,7 +198,7 @@ public final class PlayerFactory {
 		}
 
 		if (ok) {
-			LOGGER.info("Registering transcoding engine: " + player);
+			logger.info("Registering transcoding engine: " + player);
 			players.add(player);
 		}
 	}
@@ -212,6 +209,7 @@ public final class PlayerFactory {
 	 * 
 	 * @return The list of players.
 	 */
+	// TODO (breaking change): return List<Player>
 	public static ArrayList<Player> getAllPlayers() {
 		return allPlayers;
 	}
@@ -221,6 +219,7 @@ public final class PlayerFactory {
 	 * 
 	 * @return The list of players.
 	 */
+	// TODO (breaking change): return List<Player>
 	public static ArrayList<Player> getPlayers() {
 		return players;
 	}
@@ -257,26 +256,40 @@ public final class PlayerFactory {
 	 * format. Each of the available players is passed the provided information
 	 * and the first that reports it is compatible will be returned.
 	 * 
-	 * @param resource
+	 * @param dlna
 	 *            The {@link DLNAResource} to match
 	 * @return The player if a match could be found, <code>null</code>
 	 *         otherwise.
 	 * @since 1.60.0
 	 */
-	public static Player getPlayer(final DLNAResource resource) {
-		if (resource == null) {
+	public static Player getPlayer(final DLNAResource dlna) {
+		if (dlna == null) {
+			logger.warn("invalid resource (null): no player found");
 			return null;
+		} else {
+			logger.trace("getting player for {}", dlna.getName());
 		}
 
-		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry());
+		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList();
 
 		for (Player player : players) {
-			if (enabledEngines.contains(player.id()) && player.isCompatible(resource)) {
-				// Player is enabled and compatible
-				LOGGER.trace("Selecting player " + player.name() + " for resource " + resource.getName());
-				return player;
-			} 
+			boolean enabled = enabledEngines.contains(player.id());
+
+			if (enabled) {
+				boolean compatible = player.isCompatible(dlna);
+
+				logger.trace("dlna: {}, player: {}, enabled: {}, compatible: {}", new Object[] { dlna.getName(), player.name(), enabled, compatible });
+
+				if (compatible) {
+					// Player is enabled and compatible
+					return player;
+				}
+			} else {
+				logger.trace("dlna: {},  player: {}, enabled: {}", new Object[] { dlna.getName(), player.name(), false });
+			}
 		}
+
+		logger.trace("no player found for {}", dlna.getName());
 
 		return null;
 	}
@@ -321,18 +334,19 @@ public final class PlayerFactory {
 	 *				<code>null</code> otherwise.
 	 * @since 1.60.0
 	 */
+	// TODO (breaking change): return List<Player>
 	public static ArrayList<Player> getPlayers(final DLNAResource resource) {
 		if (resource == null) {
 			return null;
 		}
 
-		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList(PMS.get().getRegistry());
+		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList();
 		ArrayList<Player> compatiblePlayers = new ArrayList<Player>();
 		
 		for (Player player : players) {
 			if (enabledEngines.contains(player.id()) && player.isCompatible(resource)) {
 				// Player is enabled and compatible
-				LOGGER.trace("Player " + player.name() + " is compatible with resource " + resource.getName());
+				logger.trace("Player " + player.name() + " is compatible with resource " + resource.getName());
 				compatiblePlayers.add(player);
 			}
 		}

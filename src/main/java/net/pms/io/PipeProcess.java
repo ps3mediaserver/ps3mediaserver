@@ -20,6 +20,7 @@ package net.pms.io;
 
 import com.sun.jna.Platform;
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,8 @@ import java.io.*;
 
 public class PipeProcess {
 	private static final Logger logger = LoggerFactory.getLogger(PipeProcess.class);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
+
 	private String linuxPipeName;
 	private WindowsNamedPipe mk;
 	private boolean forcereconnect;
@@ -47,7 +50,7 @@ public class PipeProcess {
 			}
 		}
 
-		if (PMS.get().isWindows()) {
+		if (Platform.isWindows()) {
 			mk = new WindowsNamedPipe(pipeName, forcereconnect, in, params);
 		} else {
 			linuxPipeName = getPipeName(pipeName);
@@ -60,7 +63,7 @@ public class PipeProcess {
 
 	private static String getPipeName(String pipeName) {
 		try {
-			return PMS.getConfiguration().getTempFolder() + "/" + pipeName;
+			return configuration.getTempFolder() + "/" + pipeName;
 		} catch (IOException e) {
 			logger.error("Pipe may not be in temporary directory", e);
 			return pipeName;
@@ -68,22 +71,22 @@ public class PipeProcess {
 	}
 
 	public String getInputPipe() {
-		if (!PMS.get().isWindows()) {
+		if (!Platform.isWindows()) {
 			return linuxPipeName;
 		}
 		return mk.getPipeName();
 	}
 
 	public String getOutputPipe() {
-		if (!PMS.get().isWindows()) {
+		if (!Platform.isWindows()) {
 			return linuxPipeName;
 		}
 		return mk.getPipeName();
 	}
 
 	public ProcessWrapper getPipeProcess() {
-		if (!PMS.get().isWindows()) {
-			OutputParams mkfifo_vid_params = new OutputParams(PMS.getConfiguration());
+		if (!Platform.isWindows()) {
+			OutputParams mkfifo_vid_params = new OutputParams(configuration);
 			mkfifo_vid_params.maxBufferSize = 0.1;
 			mkfifo_vid_params.log = true;
 			String cmdArray[];
@@ -97,39 +100,44 @@ public class PipeProcess {
 			ProcessWrapperImpl mkfifo_vid_process = new ProcessWrapperImpl(cmdArray, mkfifo_vid_params);
 			return mkfifo_vid_process;
 		}
+
 		return mk;
 	}
 
 	public void deleteLater() {
-		if (!PMS.get().isWindows()) {
+		if (!Platform.isWindows()) {
 			File f = new File(linuxPipeName);
 			f.deleteOnExit();
 		}
 	}
 
 	public BufferedOutputFile getDirectBuffer() throws IOException {
-		if (!PMS.get().isWindows()) {
+		if (!Platform.isWindows()) {
 			return null;
 		}
+
 		return mk.getDirectBuffer();
 	}
 
 	public InputStream getInputStream() throws IOException {
-		if (!PMS.get().isWindows()) {
+		if (!Platform.isWindows()) {
 			logger.trace("Opening file " + linuxPipeName + " for reading...");
 			RandomAccessFile raf = new RandomAccessFile(linuxPipeName, "r");
+
 			return new FileInputStream(raf.getFD());
 		}
+
 		return mk.getReadable();
 	}
 
 	public OutputStream getOutputStream() throws IOException {
-		if (!PMS.get().isWindows()) {
+		if (!Platform.isWindows()) {
 			logger.trace("Opening file " + linuxPipeName + " for writing...");
 			RandomAccessFile raf = new RandomAccessFile(linuxPipeName, "rw");
-			FileOutputStream fout = new FileOutputStream(raf.getFD());
-			return fout;
+
+			return new FileOutputStream(raf.getFD());
 		}
+
 		return mk.getWritable();
 	}
 }

@@ -41,8 +41,10 @@ import java.util.Locale;
 import javax.swing.text.DefaultCaret;
 
 public class TracesTab {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TracesTab.class);
+	private static final Logger logger = LoggerFactory.getLogger(TracesTab.class);
 	private PmsConfiguration configuration;
+	private JTextArea jList;
+	protected JScrollPane jListPane;
 
 	class PopupTriggerMouseListener extends MouseAdapter {
 		private JPopupMenu popup;
@@ -71,8 +73,6 @@ public class TracesTab {
 			showMenuIfPopupTrigger(e);
 		}
 	}
-	private JTextArea jList;
-	protected JScrollPane jListPane;
 
 	TracesTab(PmsConfiguration configuration) {
 		this.configuration = configuration;
@@ -87,12 +87,13 @@ public class TracesTab {
 		final JScrollBar vbar = jListPane.getVerticalScrollBar();
 		// if scroll bar already was at the bottom we schedule
 		// a new scroll event to again scroll to the bottom
-		if (vbar.getMaximum() == vbar.getValue() + vbar.getVisibleAmount())
-			EventQueue.invokeLater (new Runnable() {
+		if (vbar.getMaximum() == vbar.getValue() + vbar.getVisibleAmount()) {
+			EventQueue.invokeLater(new Runnable() {
 				public void run () {
 					vbar.setValue (vbar.getMaximum ());
 				}
 			});
+		}
 	}
 
 	public JComponent build() {
@@ -105,12 +106,12 @@ public class TracesTab {
 			colSpec,
 			"fill:10:grow, p");
 		PanelBuilder builder = new PanelBuilder(layout);
-		//  builder.setBorder(Borders.DLU14_BORDER);
+		// builder.setBorder(Borders.DLU14_BORDER);
 		builder.setOpaque(true);
 
 		CellConstraints cc = new CellConstraints();
 
-		//create trace text box
+		// create trace text box
 		jList = new JTextArea();
 		jList.setEditable(false);
 		jList.setBackground(Color.WHITE);
@@ -148,9 +149,9 @@ public class TracesTab {
 					try {
 						java.awt.Desktop.getDesktop().open(logfile);
 					} catch (IOException ioe) {
-						LOGGER.error(String.format("Failed to open file %s in default editor", logfile), ioe);
+						logger.error(String.format("Failed to open file %s in default editor", logfile), ioe);
 					} catch (UnsupportedOperationException usoe) {
-						LOGGER.error(String.format("Failed to open file %s in default editor", logfile), usoe);
+						logger.error(String.format("Failed to open file %s in default editor", logfile), usoe);
 					}
 				}
 			});

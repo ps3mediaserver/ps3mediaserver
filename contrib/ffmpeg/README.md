@@ -72,7 +72,7 @@ To make a specific target:
 	cd build
 	make <target> # eg make nettle
 
-`--enable-static` and `--disable-shared` work with most configure scripts. If `--enable-shared` is not supported,
+`--enable-static` and `--disable-shared` work with most configure scripts. If `--disable-shared` is not supported,
 it's usually ignored (and reported as a warning at the end of the config.log).
 
 Type `./configure --help` to see the configuration options. Removing unused features such as documentation and binaries
@@ -90,4 +90,4 @@ The helper and this documentation are based on [sffmpeg](https://github.com/pyke
 
 ## Version <a name="Version"></a>
 
-PMS4
+PMS6

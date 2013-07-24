@@ -28,7 +28,7 @@ import java.io.InputStream;
 import java.util.List;
 
 public abstract class OutputConsumer extends Thread {
-	private static final Logger LOGGER = LoggerFactory.getLogger(OutputConsumer.class);
+	private static final Logger logger = LoggerFactory.getLogger(OutputConsumer.class);
 	protected InputStream inputStream;
 
 	public OutputConsumer(InputStream inputStream) {

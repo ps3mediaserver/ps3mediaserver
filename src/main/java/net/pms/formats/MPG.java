@@ -19,46 +19,16 @@
 package net.pms.formats;
 
 import net.pms.PMS;
-import net.pms.encoders.*;
-
-import java.util.ArrayList;
+import net.pms.configuration.PmsConfiguration;
 
 public class MPG extends Format {
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	/**
 	 * {@inheritDoc} 
 	 */
 	@Override
 	public Identifier getIdentifier() {
 		return Identifier.MPG;
-	}
-
-	@Override
-	public ArrayList<Class<? extends Player>> getProfiles() {
-		PMS r = PMS.get();
-		PMS r1 = PMS.get();
-		PMS r2 = PMS.get();
-		if (PMS.getConfiguration().getEnginesAsList(r.getRegistry()) == null || PMS.getConfiguration().getEnginesAsList(r1.getRegistry()).isEmpty() || PMS.getConfiguration().getEnginesAsList(r2.getRegistry()).contains("none"))
-		{
-			return null;
-		}
-		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
-		PMS r3 = PMS.get();
-		for (String engine : PMS.getConfiguration().getEnginesAsList(r3.getRegistry())) {
-			if (engine.equals(VLCVideo.ID)) {
-				a.add(VLCVideo.class);
-			} else if (engine.equals(MEncoderVideo.ID)) {
-				a.add(MEncoderVideo.class);
-			} else if (engine.equals(MEncoderAviSynth.ID) && PMS.get().getRegistry().isAvis()) {
-				a.add(MEncoderAviSynth.class);
-			} else if (engine.equals(FFMpegVideo.ID)) {
-				a.add(FFMpegVideo.class);
-			} else if (engine.equals(FFMpegAviSynthVideo.ID) && PMS.get().getRegistry().isAvis()) {
-				a.add(FFMpegAviSynthVideo.class);
-			} else if (engine.equals(TSMuxerVideo.ID)/* && PMS.get().isWindows()*/) {
-				a.add(TSMuxerVideo.class);
-			}
-		}
-		return a;
 	}
 
 	@Override
@@ -74,10 +44,32 @@ public class MPG extends Format {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String[] getId() {
-		return new String[] { "mpg", "mpeg", "mpe", "mod", "tivo", "ty", "tmf",
-				"ts", "tp", "m2t", "m2ts", "m2p", "mts", "mp4", "m4v", "avi",
-				"wmv", "wm", "vob", "divx", "div", "vdr" };
+	public String[] getSupportedExtensions() {
+		return new String[] {
+			"avi",
+			"div",
+			"divx",
+			"m2p",
+			"m2t",
+			"m2ts",
+			"m4v",
+			"mod",
+			"mp4",
+			"mpe",
+			"mpeg",
+			"mpg",
+			"mts",
+			"tivo",
+			"tmf",
+			"tp",
+			"ts",
+			"ty",
+			"vdr",
+			"vob",
+			"wm",
+			"wmv",
+			"wtv"
+		};
 	}
 
 	/**

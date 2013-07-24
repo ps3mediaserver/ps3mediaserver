@@ -20,7 +20,7 @@ package net.pms.network;
 
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
@@ -37,7 +37,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.Executors;
 
 public class HTTPServer implements Runnable {
-	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPServer.class);
+	private static final Logger logger = LoggerFactory.getLogger(HTTPServer.class);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private final int port;
 	private String hostname;
 	private ServerSocketChannel serverSocketChannel;
@@ -83,12 +84,11 @@ public class HTTPServer implements Runnable {
 	}
 
 	public boolean start() throws IOException {
-		final PmsConfiguration configuration = PMS.getConfiguration();
 		hostname = configuration.getServerHostname();
-		InetSocketAddress address = null;
+		InetSocketAddress address;
 
 		if (StringUtils.isNotBlank(hostname)) {
-			LOGGER.info("Using forced address " + hostname);
+			logger.info("Using forced address " + hostname);
 			InetAddress tempIA = InetAddress.getByName(hostname);
 
 			if (tempIA != null && networkInterface != null && networkInterface.equals(NetworkInterface.getByInetAddress(tempIA))) {
@@ -97,14 +97,14 @@ public class HTTPServer implements Runnable {
 				address = new InetSocketAddress(hostname, port);
 			}
 		} else if (isAddressFromInterfaceFound(configuration.getNetworkInterface())) { // XXX sets iafinal and networkInterface
-			LOGGER.info("Using address {} found on network interface: {}", iafinal, networkInterface.toString().trim().replace('\n', ' '));
+			logger.info("Using address {} found on network interface: {}", iafinal, networkInterface.toString().trim().replace('\n', ' '));
 			address = new InetSocketAddress(iafinal, port);
 		} else {
-			LOGGER.info("Using localhost address");
+			logger.info("Using localhost address");
 			address = new InetSocketAddress(port);
 		}
 
-		LOGGER.info("Created socket: " + address);
+		logger.info("Created socket: " + address);
 
 		if (configuration.isHTTPEngineV2()) { // HTTP Engine V2
 			group = new DefaultChannelGroup("myServer");
@@ -178,7 +178,7 @@ public class HTTPServer implements Runnable {
 	// NOTE: there's little in the way of cleanup to do here as PMS.reset() discards the old
 	// server and creates a new one
 	public void stop() {
-		LOGGER.info("Stopping server on host {} and port {}...", hostname, port);
+		logger.info("Stopping server on host {} and port {}...", hostname, port);
 
 		if (runnable != null) { // HTTP Engine V1
 			runnable.interrupt();
@@ -189,7 +189,7 @@ public class HTTPServer implements Runnable {
 				serverSocket.close();
 				serverSocketChannel.close();
 			} catch (IOException e) {
-				LOGGER.debug("Caught exception", e);
+				logger.debug("Caught exception", e);
 			}
 		}
 
@@ -207,8 +207,9 @@ public class HTTPServer implements Runnable {
 	}
 
 	// XXX only used by HTTP Engine V1
+	@Override
 	public void run() {
-		LOGGER.info("Starting DLNA Server on host {} and port {}...", hostname, port);
+		logger.info("Starting DLNA Server on host {} and port {}...", hostname, port);
 
 		while (!stop) {
 			try {
@@ -218,12 +219,12 @@ public class HTTPServer implements Runnable {
 				// basic IP filter: solntcev at gmail dot com
 				boolean ignore = false;
 
-				if (PMS.getConfiguration().getIpFiltering().allowed(inetAddress)) {
-					LOGGER.trace("Receiving a request from: " + ip);
+				if (configuration.getIpFiltering().allowed(inetAddress)) {
+					logger.trace("Receiving a request from: " + ip);
 				} else {
 					ignore = true;
 					socket.close();
-					LOGGER.trace("Ignoring request from: " + ip);
+					logger.trace("Ignoring request from: " + ip);
 				}
 
 				if (!ignore) {
@@ -234,7 +235,7 @@ public class HTTPServer implements Runnable {
 			} catch (ClosedByInterruptException e) {
 				stop = true;
 			} catch (IOException e) {
-				LOGGER.debug("Caught exception", e);
+				logger.debug("Caught exception", e);
 			} finally {
 				try {
 					if (stop && serverSocket != null) {
@@ -245,7 +246,7 @@ public class HTTPServer implements Runnable {
 						serverSocketChannel.close();
 					}
 				} catch (IOException e) {
-					LOGGER.debug("Caught exception", e);
+					logger.debug("Caught exception", e);
 				}
 			}
 		}

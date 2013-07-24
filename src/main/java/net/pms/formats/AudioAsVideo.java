@@ -18,12 +18,6 @@
  */
 package net.pms.formats;
 
-import net.pms.PMS;
-import net.pms.encoders.Player;
-import net.pms.encoders.TsMuxerAudio;
-
-import java.util.ArrayList;
-
 public class AudioAsVideo extends MKV {
 	/**
 	 * {@inheritDoc} 
@@ -33,15 +27,4 @@ public class AudioAsVideo extends MKV {
 		return Identifier.AUDIO_AS_VIDEO;
 	}
 
-	@Override
-	public ArrayList<Class<? extends Player>> getProfiles() {
-		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
-		PMS r = PMS.get();
-		for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
-			if (engine.equals(TsMuxerAudio.ID)) {
-				a.add(TsMuxerAudio.class);
-			}
-		}
-		return a;
-	}
 }

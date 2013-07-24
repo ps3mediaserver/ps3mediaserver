@@ -20,6 +20,7 @@ package net.pms.dlna;
 
 import net.pms.formats.Format;
 
+// FIXME (breaking change): rename VideoFeed
 public class VideosFeed extends Feed {
 	@Override
 	protected void manageItem() {

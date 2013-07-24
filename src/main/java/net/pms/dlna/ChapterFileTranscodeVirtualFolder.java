@@ -25,11 +25,11 @@ import net.pms.dlna.virtual.VirtualFolder;
  * examines the media to be transcoded and creates several virtual children. This
  * is done by taking the full length of the media and creating virtual chapters
  * by means of a specified interval length. These virtual chapters are presented
- * to the user in the "#Transcode#" folder when the option "Chapter #Transcode#
- * folder support" is activated in the settings.
+ * to the user in the #--TRANSCODE--# folder when the
+ * <code>Chapter -&gt; Transcode folder support</code>
+ * option is enabled in the settings.
  */
 public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
-	private boolean resolved;
 	private final int interval;
 
 	/**
@@ -51,17 +51,15 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 	 * @see net.pms.dlna.DLNAResource#resolve()
 	 */
 	@Override
-	public void resolve() {
-		super.resolve();
-
-		if (!resolved && getChildren().size() == 1) { //OK
+	protected void resolveOnce() {
+		if (getChildren().size() == 1) { // OK
 			DLNAResource child = getChildren().get(0);
 			child.resolve();
 			int nbMinutes = (int) (child.getMedia().getDurationInSeconds() / 60);
 			int nbIntervals = nbMinutes / interval;
 
 			for (int i = 1; i <= nbIntervals; i++) {
-				// TODO: Remove clone(), instead create a new object from scratch to avoid unwanted cross references.
+				// FIXME clone is evil
 				DLNAResource newChildNoSub = child.clone();
 				newChildNoSub.setPlayer(child.getPlayer());
 				newChildNoSub.setMedia(child.getMedia());
@@ -73,7 +71,5 @@ public class ChapterFileTranscodeVirtualFolder extends VirtualFolder {
 				addChildInternal(newChildNoSub);
 			}
 		}
-		resolved = true;
 	}
-
 }

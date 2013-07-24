@@ -1,6 +1,7 @@
 package net.pms.encoders;
 
 import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
 import net.pms.dlna.DLNAResource;
 import net.pms.formats.Format;
@@ -8,6 +9,10 @@ import net.pms.io.InternalJavaProcessImpl;
 import net.pms.io.OutputParams;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.util.PlayerUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.ByteArrayInputStream;
@@ -16,16 +21,21 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class RAWThumbnailer extends Player {
+	private static final Logger logger = LoggerFactory.getLogger(RAWThumbnailer.class);
+	private final PmsConfiguration configuration;
 	public final static String ID = "rawthumbs";
 
+	public RAWThumbnailer(PmsConfiguration configuration) {
+		this.configuration = configuration;
+	}
+
 	protected String[] getDefaultArgs() {
-		return new String[]{"-e", "-c"};
+		return new String[]{ "-e", "-c" };
 	}
 
 	@Override
 	public String[] args() {
 		return getDefaultArgs();
-
 	}
 
 	@Override
@@ -35,7 +45,7 @@ public class RAWThumbnailer extends Player {
 
 	@Override
 	public String executable() {
-		return PMS.getConfiguration().getDCRawPath();
+		return configuration.getDCRawPath();
 	}
 
 	@Override
@@ -44,13 +54,16 @@ public class RAWThumbnailer extends Player {
 	}
 
 	@Override
-	public ProcessWrapper launchTranscode(String fileName, DLNAResource dlna, DLNAMediaInfo media,
-		OutputParams params) throws IOException {
-
+	public ProcessWrapper launchTranscode(
+		DLNAResource dlna,
+		DLNAMediaInfo media,
+		OutputParams params
+	) throws IOException {
 		params.waitbeforestart = 1;
 		params.minBufferSize = 1;
 		params.maxBufferSize = 5;
 		params.hidebuffer = true;
+		final String filename = dlna.getSystemName();
 
 		if (media == null || media.getThumb() == null) {
 			return null;
@@ -58,8 +71,9 @@ public class RAWThumbnailer extends Player {
 
 		if (media.getThumb().length == 0) {
 			try {
-				media.setThumb(getThumbnail(params, fileName));
+				media.setThumb(getThumbnail(params, filename));
 			} catch (Exception e) {
+				logger.error("error extracting thumbnail", e);
 				return null;
 			}
 		}
@@ -83,8 +97,8 @@ public class RAWThumbnailer extends Player {
 	}
 
 	@Override
-	public int purpose() {
-		return MISC_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.MISC_PLAYER;
 	}
 
 	@Override
@@ -92,6 +106,8 @@ public class RAWThumbnailer extends Player {
 		return Format.IMAGE;
 	}
 
+	// called from net.pms.formats.RAW.parse XXX even if the engine is disabled.
+	// may also be called from launchTranscode
 	public static byte[] getThumbnail(OutputParams params, String fileName) throws Exception {
 		params.log = false;
 
@@ -102,7 +118,6 @@ public class RAWThumbnailer extends Player {
 		cmdArray[3] = fileName;
 		ProcessWrapperImpl pw = new ProcessWrapperImpl(cmdArray, params);
 		pw.runInSameThread();
-
 
 		InputStream is = pw.getInputStream(0);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -122,25 +137,6 @@ public class RAWThumbnailer extends Player {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.AUDIO) {
-			return false;
-		}
-
-		if (resource.getMediaSubtitle() != null) {
-			// PMS does not support FFmpeg subtitles at the moment.
-			return false;
-		}
-
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.RAW)) {
-				return true;
-			}
-		}
-
-		return false;
+		return PlayerUtil.isImage(resource, Format.Identifier.RAW);
 	}
 }

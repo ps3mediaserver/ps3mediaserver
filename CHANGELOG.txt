@@ -1,7 +1,104 @@
 Changelog:
 ==========
 
-1.81.0 - 2013-??-??
+1.90.0 - 2013-??-??
+
+    Engines:
+        - FFmpeg Video, FFmpeg Web Audio and FFmpeg Web Video:
+            - Add FFmpeg Web Audio engine
+            - General improvements of usability and stability
+            - Support for lossless video remuxing if supported by renderer
+            - Support for AC-3 and DTS audio tracks remuxing
+            - Support for external SRT and SSA/ASS subtitles
+            - Support for auto charset detection of non UTF-8 external subtitles
+        - tsMuxeR:
+            - Regression: restore the pre-1.82.0 compatibility logic
+        - VLC Web Video:
+            - Fix NPE
+
+    Renderers:
+        - Xbox 360: improved quality
+        - Improved Sony Blu-ray Player support (thanks, skeptical)
+        - Send thumbnails properly to Samsung 2012 ES and EH models (thanks, dmitche3!)
+        - Added renderer profiles (thanks, UMS developers):
+            - KalemSoft Media Player
+            - Netgear NeoTV
+            - Onkyo TX-NR717
+            - Sharp Aquos TVs
+            - Showtime 4 PS3 homebrew player
+            - Sony Bravia EX620 series TVs
+            - Sony Bravia W6/W8/W9 (thanks, gui17aume)
+            - Sony Home Theatre Systems
+            - Telstra T-Box
+            - VideoWeb TV
+            - Vizio Smart TV
+            - Yamaha RX-V3900
+
+    Transcode folder:
+        - Add entries for audio files
+        - Add missing entries for video files
+        - Add entries for web video and web audio files
+        - Allow the chapter folder prefix to be localized
+        - Hide chapter folders if the duration of the video is less than the chapter length
+        - Don't hide engine names in the #--TRANSCODE--# folder if hide_enginenames is true
+
+    Language updates:
+        - Updated Dutch translation (thanks, leroy)
+        - Updated French translation (thanks, gui17aume)
+
+    Misc:
+        - A lot of backports from UMS (thanks, all UMS developers!)
+        - Windows: system-wide Java installation is not needed anymore, now we bundle private JRE with installer
+        - Fix duplicate entries in DVD/playlist/feed folders: GC566, GC636, GC1483, GH13
+        - More accurate checks for reference frame counts to allow more videos to be remuxed rather than transcoded
+        - Removed obsolete MPlayerAudio, MPlayerWebAudio and MPlayerWebVideoDump engines
+        - Filename display formats can now be set at the profile level as well as per-renderer
+        - More detailed logging to improve diagnostics and simplify issue reporting
+        - Fix generation of music subfolders in iTunes Library (thanks, gui17aume)
+        - Build Windows installer with bundled JRE for 32-bit systems (PMS-setup-full.exe)
+        - Build Windows installer with bundled JRE for 64-bit systems (PMS-setup-full-x64.exe)
+        - Build Windows installer without bundled JRE (PMS-setup-without-jre.exe)
+        - Removed silent JRE download and installation within PMS.exe wrapper if no private or public JREs are found. Prompt user to run PMS-setup-full.exe instead
+        - Show user GPL licence during Windows installation
+        - Windows installer now runs PS3 Media Server with normal user rights after installation is complete
+        - Windows installer localization.
+        - New Mac OSX installer with bundled JRE (pms-setup-macosx.tar.gz)
+        - Added configuration option for forcing renderer per IP address (#115)
+
+1.82.0 - 2013-06-03
+
+    Engines:
+        - dcraw Thumbnailer:
+            - Fix image transcoding
+            - Add support for more extensions
+        - FFmpeg:
+            - Fix bug that disabled FFmpeg for compatible files
+            - Fix audio channel selection (thanks, valib)
+        - MEncoder Video:
+            - Fixed bug that caused embedded subtitles to be displayed instead of external (thanks, SubJunk)
+            - Fixed handling of per-renderer aspect-ratio settings (thanks, ExSport)
+        - tsMuxeR:
+            - Fixed 24-bit FLAC support with tsMuxeR (thanks, SubJunk)
+            - Fix bug that disabled tsMuxeR for compatible files
+        - VLC:
+            - Fix looping playback
+            - Add multi-threading support (GC1624: thanks, ccampora)
+        - Misc:
+            - New engine: VLCWebVideo ("vlcwebvideo")
+            - Clean up engine names
+
+    Renderers:
+        - PS3: TV series with sound problems after "previously on" block should now play normally with the "Keep AC-3 track" option enabled (thanks, SubJunk)
+
+    Language updates:
+        - Updated Dutch translation (thanks, leroy)
+
+    Misc:
+        - Fix issue with VirtualBox and PMS launchers (thanks, thepadawan42)
+        - Added support for M4A files encoded with Fraunhofer AAC
+        - Upgrade Thumbnailator to 0.4.4 to fix out-of-memory errors (thanks, coobird)
+
+1.81.0 - 2013-04-21
 
     Engines:
         FFmpeg:
@@ -14,6 +111,7 @@ Changelog:
 
     Misc:
         - Media Parser v1: fix audio channel parsing
+        - Fix for "Can't assign requested address" bug after update to Java 1.6.0_45 on Mac OSX
 
 1.80.0 - 2013-04-06
 

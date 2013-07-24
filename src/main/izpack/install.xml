@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+<izpack:installation version="5.0"
+                     xmlns:izpack="http://izpack.org/schema/installation"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="http://izpack.org/schema/installation http://izpack.org/schema/5.0/izpack-installation-5.0.xsd">
+
+	<!--
+		IzPack installer descriptor file for PS3 Media Server.
+	 	See http://izpack.org/ for documentation.
+	 	This resource is filtered by Maven, so pom variables can be used.
+	-->
+
+	<info>
+		<appname>${project.name}</appname>
+		<appversion>${project.version}</appversion>
+		<url>${project.url}</url>
+		<uninstaller name="remove.task" path="${INSTALL_PATH}/Uninstall" write="yes" />
+		<javaversion>1.7</javaversion>
+		<requiresjdk>no</requiresjdk>
+	</info>
+
+	<variables>
+	    <variable name="TargetPanel.dir.mac" value="/Applications/${project.name}.app" />
+	</variables>
+
+	<guiprefs width="600" height="480" resizable="no">
+		<modifier key="useButtonIcons" value="yes" />
+		<modifier key="useLabelIcons" value="no" />
+		<modifier key="labelGap" value="2" />
+		<modifier key="layoutAnchor" value="NORTHWEST" />
+		<modifier key="useHeadingPanel" value="yes" />
+		<modifier key="headingImageOnLeft" value="yes" />
+		<modifier key="headingLineCount" value="1" />
+		<modifier key="headingFontSize" value="1.5" />
+		<modifier key="headingPanelCounter" value="text" />
+		<modifier key="headingPanelCounterPos" value="inHeading" />
+ 		<laf name="kunststoff">
+			<os family="unix" />
+		</laf>
+	</guiprefs>
+
+    <!-- We include every langpack -->
+    <locale>
+        <langpack iso3="cat"/>
+        <langpack iso3="ces"/>
+        <langpack iso3="chn"/>
+        <langpack iso3="dan"/>
+        <langpack iso3="deu"/>
+        <langpack iso3="ell"/>
+        <langpack iso3="eng"/>
+        <langpack iso3="fin"/>
+        <langpack iso3="fra"/>
+        <langpack iso3="hun"/>
+        <langpack iso3="ita"/>
+        <langpack iso3="jpn"/>
+        <langpack iso3="kor"/>
+        <langpack iso3="msa"/>
+        <langpack iso3="nld"/>
+        <langpack iso3="nor"/>
+        <langpack iso3="pol"/>
+        <langpack iso3="prt"/>
+        <langpack iso3="ron"/>
+        <langpack iso3="rus"/>
+        <langpack iso3="slk"/>
+        <langpack iso3="spa"/>
+        <langpack iso3="srp"/>
+        <langpack iso3="swe"/>
+        <langpack iso3="ukr"/>
+    </locale>
+
+	<resources>
+		<res id="InfoPanel.info" src="${project.basedir}/CHANGELOG.txt" />
+		<res id="Installer.image" src="logo.png" />
+	</resources>
+
+	<panels>
+		<panel classname="HelloPanel" />
+		<panel classname="InfoPanel" />
+		<panel classname="DefaultTargetPanel" />
+		<panel classname="PacksPanel" />
+		<panel classname="SummaryPanel" />
+		<panel classname="InstallPanel" />
+	</panels>
+
+    <packs>
+        <pack name="Core" required="yes">
+            <description>The PMS application including required libraries.</description>
+			<!-- Constructing Mac OSX application bundle structure for now -->
+
+            <fileset dir="" targetdir="$INSTALL_PATH/Contents/Resources/Java">
+            	<include name="lib/*" />
+            	<exclude name="lib/pms.jar" />
+            	<os family="mac" />
+            </fileset>
+
+			<file src="lib/pms.jar" targetdir="$INSTALL_PATH/Contents/Resources/Java">
+            	<os family="mac" />
+			</file>
+
+            <fileset dir="${project.basedir}" targetdir="$INSTALL_PATH/Contents/Resources/Java">
+				<include name="*.md" />
+				<include name="*.txt" />
+            	<os family="mac" />
+            </fileset>
+
+            <fileset dir="${external-resources.directory}/osx" targetdir="$INSTALL_PATH/Contents/Resources/Java">
+				<include name="fonts/**" />
+            	<os family="mac" />
+            </fileset>
+
+            <fileset dir="${external-resources.directory}" targetdir="$INSTALL_PATH/Contents/Resources/Java">
+				<include name="documentation/**" />
+				<include name="logback.xml" />
+				<include name="plugins/**" />
+				<include name="renderers/**" />
+				<include name="WEB.conf" />
+            	<os family="mac" />
+            </fileset>
+
+			<file src="osx/Info.plist" targetdir="$INSTALL_PATH/Contents">
+            	<os family="mac" />
+			</file>
+
+			<file src="osx/pms.icns" targetdir="$INSTALL_PATH/Contents/Resources">
+            	<os family="mac" />
+			</file>
+
+            <fileset dir="osx" targetdir="$INSTALL_PATH/Contents/MacOS">
+				<include name="copy-installer-jre.sh" />
+				<include name="pms.sh" />
+            	<os family="mac" />
+			</fileset>
+
+			<executable targetfile="$INSTALL_PATH/Contents/MacOS/pms.sh" stage="never">
+				<os family="mac" />
+			</executable>
+
+			<executable targetfile="$INSTALL_PATH/Contents/MacOS/copy-installer-jre.sh" stage="postinstall" keep="false">
+				<args>
+					<arg value="$JAVA_HOME" />
+				</args>
+				<os family="mac" />
+			</executable>
+
+			<file src="${target.transcode-tools.directory}/osx/libmediainfo.dylib" targetdir="$INSTALL_PATH/Contents/Resources/Java">
+            	<os family="mac" />
+			</file>
+		</pack>
+
+        <pack name="Binaries" required="yes">
+            <description>Third party binaries necessary for PMS to function properly.</description>
+
+			<!-- Mac OSX binaries -->
+            <fileset dir="${target.transcode-tools.directory}/osx" targetdir="$INSTALL_PATH/Contents/Resources/Java/osx">
+            	<include name="dcraw" />
+            	<include name="ffmpeg" />
+            	<include name="flac" />
+            	<include name="mencoder" />
+            	<include name="mplayer" />
+            	<include name="tsMuxeR" />
+            	<os family="mac" />
+            </fileset>
+
+			<executable targetfile="$INSTALL_PATH/Contents/Resources/Java/osx/dcraw" stage="never">
+				<os family="mac" />
+			</executable>
+
+			<executable targetfile="$INSTALL_PATH/Contents/Resources/Java/osx/ffmpeg" stage="never">
+				<os family="mac" />
+			</executable>
+
+			<executable targetfile="$INSTALL_PATH/Contents/Resources/Java/osx/flac" stage="never">
+				<os family="mac" />
+			</executable>
+
+			<executable targetfile="$INSTALL_PATH/Contents/Resources/Java/osx/mencoder" stage="never">
+				<os family="mac" />
+			</executable>
+
+			<executable targetfile="$INSTALL_PATH/Contents/Resources/Java/osx/mplayer" stage="never">
+				<os family="mac" />
+			</executable>
+
+			<executable targetfile="$INSTALL_PATH/Contents/Resources/Java/osx/tsMuxeR" stage="never">
+				<os family="mac" />
+			</executable>
+        </pack>
+
+         <pack name="Configuration" required="no">
+            <description>Standard configuration files for PMS.</description>
+
+			<file src="${external-resources.directory}/PMS.conf" targetdir="$INSTALL_PATH/Contents/Resources/Java">
+            	<os family="mac" />
+			</file>
+		</pack>
+     </packs>
+
+	<!-- The native libraries to add. This is required for creating shortcuts on Windows -->
+	<!-- <native type="izpack" name="ShellLink.dll" /> -->
+
+	<!--
+		OSX Application bundle info:
+
+		http://developer.apple.com/library/ios/#documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html
+		http://lists.apple.com/archives/java-dev/2012/Dec/msg00033.html
+		http://stackoverflow.com/questions/14806709/application-is-using-java-6-from-apple-instead-of-java-7-from-oracle-on-mac-os-x
+	-->
+</izpack:installation>
+

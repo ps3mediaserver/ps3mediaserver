@@ -53,14 +53,16 @@ public class PlaylistFolder extends DLNAResource {
 	}
 
 	@Override
-	public synchronized void resolve() {
+	protected void resolveOnce() {
 		if (playlistfile.length() < 10000000) {
 			ArrayList<Entry> entries = new ArrayList<Entry>();
 			boolean m3u = false;
 			boolean pls = false;
+
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(playlistfile));
 				String line;
+
 				while (!m3u && !pls && (line = br.readLine()) != null) {
 					line = line.trim();
 					if (line.startsWith("#EXTM3U")) {
@@ -71,10 +73,13 @@ public class PlaylistFolder extends DLNAResource {
 						logger.debug("Reading PLS playlist: " + playlistfile.getName());
 					}
 				}
+
 				String fileName = null;
 				String title = null;
+
 				while ((line = br.readLine()) != null) {
 					line = line.trim();
+
 					if (pls) {
 						if (line.length() > 0 && !line.startsWith("#")) {
 							int eq = line.indexOf("=");
@@ -128,21 +133,28 @@ public class PlaylistFolder extends DLNAResource {
 						}
 					}
 				}
-				br.close();
+
+				if (br != null) {
+					br.close();
+				}
 			} catch (NumberFormatException e) {
 				logger.error(null, e);
 			} catch (IOException e) {
 				logger.error(null, e);
 			}
+
 			for (Entry entry : entries) {
 				if (entry == null) {
 					continue;
 				}
+
 				String fileName = entry.fileName;
 				logger.debug("Adding " + (pls ? "PLS " : (m3u ? "M3U " : "")) + "entry: " + entry);
+
 				if (!fileName.toLowerCase().startsWith("http://") && !fileName.toLowerCase().startsWith("mms://")) {
 					File en1 = new File(playlistfile.getParentFile(), fileName);
 					File en2 = new File(fileName);
+
 					if (en1.exists()) {
 						addChild(new RealFile(en1, entry.title));
 						valid = true;
@@ -154,7 +166,9 @@ public class PlaylistFolder extends DLNAResource {
 					}
 				}
 			}
+
 			PMS.get().storeFileInCache(playlistfile, Format.PLAYLIST);
+
 			for (DLNAResource r : getChildren()) {
 				r.resolve();
 			}

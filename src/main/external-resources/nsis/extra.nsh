@@ -5,4 +5,3 @@
 ; the nsis-maven-plugin.
 
 !define PROJECT_VERSION_SHORT "${project.version.short}"
-!define PROJECT_BINARIES "${project.binaries}"

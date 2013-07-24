@@ -1,22 +1,30 @@
-PS3 Media Server
-================
+# PS3 Media Server
 
 by shagrath
+
+[![Build Status](http://pms.smoeller.de/buildStatus/icon?job=pms+%28trunk%29)](http://pms.smoeller.de/job/pms%20%28trunk%29/)
+
+- [Links](#links)
+- [Thanks](#thanks)
+- [Installation](#installation)
+- [Building](#building)
+- [Development](#development)
+- [License](#license)
 
 PS3 Media Server is a cross-platform DLNA-compliant UPnP Media Server.
 Originally written to support the PlayStation 3, PS3 Media Server has been
 expanded to support a range of other media renderers, including smartphones,
-televisions, music players and more.
+TVs, music players and more.
 
-Links
------
+## Links
 
-* Website:       http://www.ps3mediaserver.org/
-* Source code:   https://github.com/ps3mediaserver/ps3mediaserver
-* Issue tracker: https://code.google.com/p/ps3mediaserver/issues/list
+* [Website](http://www.ps3mediaserver.org/)
+* [Forum](http://www.ps3mediaserver.org/forum/)
+* [Downloads](https://code.google.com/p/ps3mediaserver/downloads/list)
+* [Source code](https://github.com/ps3mediaserver/ps3mediaserver)
+* [Issue tracker](https://code.google.com/p/ps3mediaserver/issues/list)
 
-Thanks
-------
+## Thanks
 
 Thanks to:
 
@@ -25,6 +33,7 @@ Thanks to:
 * SubJunk
 * taconaut
 * tomeko
+* lightglitch
 * chocolateboy
 * ditlew
 * Raptor399
@@ -44,10 +53,20 @@ for documentation and contributions to the community.
 * sarraken, bleuecinephile, bd.azerty, fabounnet for the support and feedback
 * smo for the Jenkins server
 
-See the `CHANGELOG` for more thanks.
+See the [CHANGELOG](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/CHANGELOG.txt) for more thanks.
 
-Building
-------------
+## Installation
+
+The [download site](https://code.google.com/p/ps3mediaserver/downloads/list)
+has the latest releases of PS3 Media Server for Windows and Mac OS X as well as tarballs for Linux/Unix
+and debs for manual installation on Debian/Ubuntu.
+
+For Debian and Ubuntu packages, see [here](http://www.ps3mediaserver.org/forum/viewtopic.php?f=3&t=13046).
+
+For instructions on installing and running PMS from a tarball, see
+[INSTALL.txt](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/INSTALL.txt).
+
+## Building
 
 PMS can be built using the following commands:
 
@@ -57,10 +76,10 @@ PMS can be built using the following commands:
     mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external
     mvn package
 
-See [BUILD.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/BUILD.md) for more extensive documentation.
+See [BUILD.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/BUILD.md) for detailed information
+on setting up a PMS build environment.
 
-Development
------------
+## Development
 
 If you plan to commit source code, be sure to configure git to deal properly with
 cross platform line endings.
@@ -75,6 +94,13 @@ On Windows:
 
 For more information, see http://help.github.com/line-endings/
 
-See [BUILD.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/BUILD.md) for instructions on how to set up your local development
-environment.
+See [DEVELOP.md](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/DEVELOP.md)
+for detailed information on setting up a PMS development environment.
 
+## License
+
+Copyright 2009-2013 shagrath.
+
+PS3 Media Server is free software: you can redistribute it and/or modify it under the terms of the
+[GNU General Public License](https://github.com/ps3mediaserver/ps3mediaserver/blob/master/LICENSE.txt)
+as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.

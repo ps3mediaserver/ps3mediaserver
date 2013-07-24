@@ -132,6 +132,5 @@ public class VirtualFolder extends DLNAResource {
 		} else {
 			thumbnailContentType = HTTPResource.JPEG_TYPEMIME;
 		}
-		
 	}
 }

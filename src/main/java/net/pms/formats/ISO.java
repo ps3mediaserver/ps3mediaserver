@@ -18,13 +18,19 @@
  */
 package net.pms.formats;
 
-import net.pms.encoders.MEncoderVideo;
-import net.pms.encoders.Player;
-
-import java.util.ArrayList;
-
 public class ISO extends MPG {
-	public static final String[] ISO_EXTENSIONS = new String[] { "iso", "img", /*"bin", "mdf", "nrg", "bwt", "cif","ccd", "vcd", "fcd"*/ };
+	public static final String[] ISO_EXTENSIONS = new String[] {
+		// "bin",
+		// "bwt",
+		// "ccd",
+		// "cif",
+		// "fcd",
+		"img",
+		"iso",
+		// "mdf",
+		// "nrg",
+		// "vcd",
+	};
 
 	/**
 	 * {@inheritDoc} 
@@ -32,14 +38,6 @@ public class ISO extends MPG {
 	@Override
 	public Identifier getIdentifier() {
 		return Identifier.ISO;
-	}
-
-
-	@Override
-	public ArrayList<Class<? extends Player>> getProfiles() {
-		ArrayList<Class<? extends Player>> list = new ArrayList<Class<? extends Player>>();
-		list.add(MEncoderVideo.class);
-		return list;
 	}
 
 	/**
@@ -59,7 +57,7 @@ public class ISO extends MPG {
 	/**
 	 * {@inheritDoc}
 	 */
-	public String[] getId() {
+	public String[] getSupportedExtensions() {
 		return ISO_EXTENSIONS;
 	}
 }

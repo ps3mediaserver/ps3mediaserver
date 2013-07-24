@@ -39,7 +39,7 @@ import static net.pms.util.StringUtil.convertURLToFileName;
  * @see DLNAResource
  */
 public class HTTPResource {
-	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPResource.class);
+	private static final Logger logger = LoggerFactory.getLogger(HTTPResource.class);
 	public static final String UNKNOWN_VIDEO_TYPEMIME = "video/mpeg";
 	public static final String UNKNOWN_IMAGE_TYPEMIME = "image/jpeg";
 	public static final String UNKNOWN_AUDIO_TYPEMIME = "audio/mpeg";
@@ -126,7 +126,7 @@ public class HTTPResource {
 
 			if (!hostDir.isDirectory()) {
 				if (!hostDir.mkdir()) {
-					LOGGER.debug("Cannot create directory: {}", hostDir.getAbsolutePath());
+					logger.debug("Cannot create directory: {}", hostDir.getAbsolutePath());
 				}
 			}
 
@@ -167,7 +167,7 @@ public class HTTPResource {
 		Authenticator.setDefault(new HTTPResourceAuthenticator());
 		HTTPResourceAuthenticator.addURL(url);
 		
-		LOGGER.debug("Retrieving " + url.toString());
+		logger.debug("Retrieving " + url.toString());
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		URLConnection conn = url.openConnection();
 		// GameTrailers blocks user-agents that identify themselves as "Java"

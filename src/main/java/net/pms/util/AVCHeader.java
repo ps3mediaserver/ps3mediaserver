@@ -24,9 +24,12 @@ import org.slf4j.LoggerFactory;
 /**
  * @author shagrath
  * Derived from the mpeg4ip project and the ToNMT tool
+ *
+ * @deprecated now we are using {@link net.pms.dlna.LibMediaInfoParser} for extracting AVC stream info.
  */
+@Deprecated
 public class AVCHeader {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AVCHeader.class);
+	private static final Logger logger = LoggerFactory.getLogger(AVCHeader.class);
 
 	private byte[] buffer;
 	private int currentBit;
@@ -118,7 +121,7 @@ public class AVCHeader {
 			return (buffer[pos] & (1 << (7 - modulo))) >> (7 - modulo);
 		} else {
 			if (!parseFailed) {
-				LOGGER.error("Cannot parse AVC header, buffer length is " + buffer.length);
+				logger.error("Cannot parse AVC header, buffer length is " + buffer.length);
 
 				// Do not log consecutive errors.
 				parseFailed = true;

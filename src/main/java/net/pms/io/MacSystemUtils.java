@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MacSystemUtils extends BasicSystemUtils {
-	private final static Logger LOGGER = LoggerFactory.getLogger(MacSystemUtils.class);
+	private final static Logger logger = LoggerFactory.getLogger(MacSystemUtils.class);
 
 	public MacSystemUtils() { }
 
@@ -25,7 +25,7 @@ public class MacSystemUtils extends BasicSystemUtils {
 			// This will open HTTP URLs in the default browser.
 			Runtime.getRuntime().exec(new String[] { "open", uri });
 		} catch (IOException e) {
-			LOGGER.trace("Unable to open the given URI: {}", uri);
+			logger.trace("Unable to open the given URI: {}", uri);
 		}
 	}
 
@@ -75,7 +75,7 @@ public class MacSystemUtils extends BasicSystemUtils {
 				}
 			}
 		} catch (IOException e) {
-			LOGGER.warn("Failed to execute ifconfig", e);
+			logger.warn("Failed to execute ifconfig", e);
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 		}

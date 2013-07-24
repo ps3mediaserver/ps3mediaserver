@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.util.List;
 
 public class OutputBufferConsumer extends OutputConsumer {
-	private static final Logger LOGGER = LoggerFactory.getLogger(OutputBufferConsumer.class);
+	private static final Logger logger = LoggerFactory.getLogger(OutputBufferConsumer.class);
 	private BufferedOutputFile outputBuffer;
 	
 	/**
@@ -49,23 +49,23 @@ public class OutputBufferConsumer extends OutputConsumer {
 
 	public void run() {
 		try {
-			// LOGGER.trace("Starting read from pipe");
+			// logger.trace("Starting read from pipe");
 			byte buf[] = new byte[PIPE_BUFFER_SIZE];
 			int n = 0;
 			while ((n = inputStream.read(buf)) > 0) {
-				// LOGGER.trace("Fetched " + n + " from pipe");
+				// logger.trace("Fetched " + n + " from pipe");
 				outputBuffer.write(buf, 0, n);
 			}
-			// LOGGER.debug("Finished to read");
+			// logger.debug("Finished to read");
 		} catch (IOException ioe) {
-			LOGGER.debug("Error consuming stream of spawned process: " + ioe.getMessage());
+			logger.debug("Error consuming stream of spawned process: " + ioe.getMessage());
 		} finally {
-			// LOGGER.trace("Closing read from pipe");
+			// logger.trace("Closing read from pipe");
 			if (inputStream != null) {
 				try {
 					inputStream.close();
 				} catch (IOException e) {
-					LOGGER.debug("Caught exception", e);
+					logger.debug("Caught exception", e);
 				}
 			}
 		}

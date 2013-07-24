@@ -26,6 +26,8 @@ import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
+import net.pms.PMS;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.util.PropertiesUtil;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.replace;
+
 /**
  * Simple loader for logback configuration files.
  * 
@@ -41,7 +46,8 @@ import java.util.Iterator;
  */
 public class LoggingConfigFileLoader {
 	private static String filepath = null;
-	private static HashMap<String, String> logFilePaths = new HashMap<String, String>(); // key=appender name, value, log file path
+	private static HashMap<String, String> logFilePaths = new HashMap<String, String>(); // key: appender name, value: log file path
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 
 	/**
 	 * Gets the full path of a successfully loaded Logback configuration file.
@@ -61,40 +67,57 @@ public class LoggingConfigFileLoader {
 
 	/**
 	 * Loads the (optional) Logback configuration file.
-	 * 
-	 * It loads the file defined in the <code>project.logback</code> property from the current
-	 * directory and (re-)initializes Logback with this file. If running
-	 * headless (<code>System.Property("console")</code> set), then the
-	 * alternative config file defined in <code>project.logback.headless</code> is tried first.
-	 * 
-	 * If no config file can be found in the CWD, then nothing is loaded and
-	 * Logback will use the logback.xml file on the classpath as a default. If
+	 *
+	 * <p>
+	 * It loads the file defined in the {@code project.logback} property
+	 * (use {@code [PROFILE_DIR]} to specify profile folder) and (re-)initializes Logback with this file.
+	 * </p>
+	 *
+	 * <p>
+	 * If failed (file not found or unreadable) it tries to load {@code logback.xml} from the current directory.
+	 * </p>
+	 *
+	 * <p>
+	 * If running headless, then the alternative config file defined in {@code project.logback.headless} is tried.
+	 * </p>
+	 *
+	 * <p>
+	 * If no config file worked, then nothing is loaded and
+	 * Logback will use the {@code logback.xml} file on the classpath as a default. If
 	 * this doesn't exist then a basic console appender is used as fallback.
-	 * 
+	 * </p>
+	 *
 	 * <strong>Note:</strong> Any error messages generated while parsing the
-	 * config file are dumped only to <code>stdout</code>.
+	 * config file are dumped only to {@code stdout}.
 	 */
 	public static void load() {
 		// Note: Do not use any logging method in this method!
-		// Any logging would cause PMS.get() to be called from the
-		// FrameAppender, which in turn would start the PMS instance, which
-		// would cause further log messages. This will lead to either lost
-		// log messages or Deadlocks!
 		// Any status output needs to go to the console.
 
-		boolean headless = !(System.getProperty("console") == null);
+		File logFile = null;
 
-		File file = null;
-
-		if (headless) {
-			file = new File(PropertiesUtil.getProjectProperties().get("project.logback.headless"));
+		if (PMS.isHeadless()) {
+			final String logFilePath = replace(PropertiesUtil.getProjectProperties().get("project.logback.headless"), "[PROFILE_DIR]", configuration.getProfileDirectory());
+			if (isNotBlank(logFilePath)) {
+				logFile = new File(logFilePath);
+			}
+		} else {
+			final String logFilePath = replace(PropertiesUtil.getProjectProperties().get("project.logback"), "[PROFILE_DIR]", configuration.getProfileDirectory());
+			if (isNotBlank(logFilePath)) {
+				logFile = new File(logFilePath);
+			}
 		}
 
-		if (file == null || !file.exists()) {
-			file = new File(PropertiesUtil.getProjectProperties().get("project.logback"));
+		if (logFile == null || !logFile.canRead()) {
+			// Now try configs from the app folder.
+			if (PMS.isHeadless()) {
+				logFile = new File("logback.headless.xml");
+			} else {
+				logFile = new File("logback.xml");
+			}
 		}
 
-		if (!file.exists()) {
+		if (!logFile.canRead()) {
 			// No problem, the internal logback.xml is used.
 			return;
 		}
@@ -116,11 +139,10 @@ public class LoggingConfigFileLoader {
 			// the context was probably already configured by
 			// default configuration rules
 			lc.reset();
-			configurator.doConfigure(file);
+			configurator.doConfigure(logFile);
 
 			// Save the filepath after loading the file
-			filepath = file.getAbsolutePath();
-
+			filepath = logFile.getAbsolutePath();
 		} catch (JoranException je) {
 			// StatusPrinter will handle this
 			je.printStackTrace();
@@ -128,8 +150,10 @@ public class LoggingConfigFileLoader {
 
 		for (Logger logger : lc.getLoggerList()) {
 			Iterator<Appender<ILoggingEvent>> it = logger.iteratorForAppenders();
+
 			while (it.hasNext()) {
 				Appender<ILoggingEvent> ap = it.next();
+
 				if (ap instanceof FileAppender) {
 					FileAppender<ILoggingEvent> fa = (FileAppender<ILoggingEvent>) ap;
 					logFilePaths.put(fa.getName(), fa.getFile());

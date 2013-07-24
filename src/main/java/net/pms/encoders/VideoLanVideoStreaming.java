@@ -27,12 +27,14 @@ import net.pms.io.OutputParams;
 import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
+import net.pms.util.PlayerUtil;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/* XXX this is the old/obsolete VLC web video streaming engine */
 public class VideoLanVideoStreaming extends Player {
 	private final PmsConfiguration configuration;
 	public static final String ID = "vlcvideo";
@@ -42,8 +44,8 @@ public class VideoLanVideoStreaming extends Player {
 	}
 
 	@Override
-	public int purpose() {
-		return VIDEO_WEBSTREAM_PLAYER;
+	public PlayerPurpose getPurpose() {
+		return PlayerPurpose.VIDEO_WEB_STREAM_PLAYER;
 	}
 
 	@Override
@@ -58,7 +60,7 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public String name() {
-		return "VLC Video Streaming";
+		return "VLC Web Video (Legacy)";
 	}
 
 	@Override
@@ -106,11 +108,12 @@ public class VideoLanVideoStreaming extends Player {
 
 	@Override
 	public ProcessWrapper launchTranscode(
-		String fileName,
 		DLNAResource dlna,
 		DLNAMediaInfo media,
-		OutputParams params) throws IOException {
+		OutputParams params
+	) throws IOException {
 		boolean isWindows = Platform.isWindows();
+		final String filename = dlna.getSystemName();
 		PipeProcess tsPipe = new PipeProcess("VLC" + System.currentTimeMillis() + "." + getMux());
 		ProcessWrapper pipe_process = tsPipe.getPipeProcess();
 
@@ -166,14 +169,14 @@ public class VideoLanVideoStreaming extends Player {
 			cmdList.add("");
 		}
 
-		cmdList.add(fileName);
+		cmdList.add(filename);
 		cmdList.add("vlc://quit");
 
 		String[] cmdArray = new String[cmdList.size()];
 		cmdList.toArray(cmdArray);
 
 		cmdArray = finalizeTranscoderArgs(
-			fileName,
+			filename,
 			dlna,
 			media,
 			params,
@@ -200,20 +203,6 @@ public class VideoLanVideoStreaming extends Player {
 	 */
 	@Override
 	public boolean isCompatible(DLNAResource resource) {
-		if (resource == null || resource.getFormat().getType() != Format.VIDEO) {
-			return false;
-		}
-
-		Format format = resource.getFormat();
-
-		if (format != null) {
-			Format.Identifier id = format.getIdentifier();
-
-			if (id.equals(Format.Identifier.WEB)) {
-				return true;
-			}
-		}
-
-		return false;
+		return PlayerUtil.isWebVideo(resource);
 	}
 }

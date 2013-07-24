@@ -20,6 +20,7 @@ package net.pms.dlna;
 
 import net.pms.formats.Format;
 import net.pms.util.FileUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ZippedEntry extends DLNAResource implements IPushOutput {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ZippedEntry.class);
+	private static final Logger logger = LoggerFactory.getLogger(ZippedEntry.class);
 	private File file;
 	private String zeName;
 	private long length;
@@ -81,13 +82,13 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 
 	@Override
 	public String getSystemName() {
-		return FileUtil.getFileNameWithoutExtension(file.getAbsolutePath()) + "." + FileUtil.getExtension(zeName);
+		return FilenameUtils.getBaseName(file.getAbsolutePath()) + "." + FilenameUtils.getExtension(zeName);
 	}
 
 	@Override
 	public boolean isValid() {
-		checktype();
-		setSrtFile(FileUtil.doesSubtitlesExists(file, null));
+		resolveFormat();
+		setSrtFile(FileUtil.isSubtitlesExists(file, null));
 		return getFormat() != null;
 	}
 
@@ -116,7 +117,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 					in.close();
 					in = null;
 				} catch (Exception e) {
-					LOGGER.error("Unpack error. Possibly harmless.", e);
+					logger.error("Unpack error. Possibly harmless.", e);
 				} finally {
 					try {
 						if (in != null) {
@@ -125,7 +126,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 						zipFile.close();
 						out.close();
 					} catch (IOException e) {
-						LOGGER.debug("Caught exception", e);
+						logger.debug("Caught exception", e);
 					}
 				}
 			}
@@ -135,7 +136,7 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 	}
 
 	@Override
-	public void resolve() {
+	protected void resolveOnce() {
 		if (getFormat() == null || !getFormat().isVideo()) {
 			return;
 		}
@@ -156,8 +157,6 @@ public class ZippedEntry extends DLNAResource implements IPushOutput {
 				getFormat().parse(getMedia(), input, getType());
 			}
 		}
-
-		super.resolve();
 	}
 
 	@Override

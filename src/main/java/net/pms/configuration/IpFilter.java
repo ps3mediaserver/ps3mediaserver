@@ -41,7 +41,7 @@ public class IpFilter {
 
 	private final static String IP_FILTER_RULE_CHAR = "0123456789-.* ";
 	private final static Pattern PATTERN = Pattern.compile("(([0-9]*)(-([0-9]*))?)");
-	private static final Logger LOGGER = LoggerFactory.getLogger(IpFilter.class);
+	private static final Logger logger = LoggerFactory.getLogger(IpFilter.class);
 
 	interface Predicate {
 		boolean match(InetAddress addr);
@@ -248,24 +248,41 @@ public class IpFilter {
 		return b.toString();
 	}
 
+	/**
+	 * Decides whether or not the IP address matches this filter. If the filter
+	 * is empty, false is returned.
+	 *
+	 * @param addr The address to match.
+	 * @return True if the address matches, false otherwise.
+	 */
+	public boolean isMatch(InetAddress addr) {
+		for (Predicate predicate : matchers) {
+			if (predicate.match(addr)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
 	public boolean allowed(InetAddress addr) {
 		boolean log = isFirstDecision(addr);
 		if (matchers.size() == 0) {
 			if (log) {
-				LOGGER.info("No IP filter specified, access granted to " + addr);
+				logger.info("No IP filter specified, access granted to " + addr);
 			}
 			return true;
 		}
 		for (Predicate p : matchers) {
 			if (p.match(addr)) {
 				if (log) {
-					LOGGER.info("Access granted to " + addr + " by rule: " + p);
+					logger.info("Access granted to " + addr + " by rule: " + p);
 				}
 				return true;
 			}
 		}
 		if (log) {
-			LOGGER.info("Access denied to " + addr);
+			logger.info("Access denied to " + addr);
 		}
 		return false;
 	}
@@ -295,7 +312,7 @@ public class IpFilter {
 
 	private static void eq(String name, Object obj, Object obj2) {
 		if (obj != null && obj.equals(obj2)) {
-			LOGGER.debug("EQ: " + name + '=' + obj);
+			logger.debug("EQ: " + name + '=' + obj);
 		} else {
 			throw new RuntimeException(name + " expected : '" + obj + "' <> actual : '" + obj2 + "'");
 		}

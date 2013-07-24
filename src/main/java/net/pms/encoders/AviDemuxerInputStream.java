@@ -18,20 +18,19 @@
  */
 package net.pms.encoders;
 
-import java.io.*;
-import java.util.ArrayList;
-
-import net.pms.io.*;
 import net.pms.PMS;
+import net.pms.io.*;
 import net.pms.util.H264AnnexBInputStream;
 import net.pms.util.PCMAudioOutputStream;
 import net.pms.util.ProcessUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
+import java.util.ArrayList;
+
 public class AviDemuxerInputStream extends InputStream {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AviDemuxerInputStream.class);
+	private static final Logger logger = LoggerFactory.getLogger(AviDemuxerInputStream.class);
 	private Process process;
 	private InputStream stream;
 	private ArrayList<ProcessWrapper> attachedProcesses;
@@ -58,7 +57,7 @@ public class AviDemuxerInputStream extends InputStream {
 
 	public AviDemuxerInputStream(InputStream fin, final OutputParams params, ArrayList<ProcessWrapper> at) throws IOException {
 		stream = fin;
-		LOGGER.trace("Opening AVI Stream");
+		logger.trace("Opening AVI Stream");
 		this.attachedProcesses = at;
 		this.params = params;
 
@@ -77,11 +76,12 @@ public class AviDemuxerInputStream extends InputStream {
 							out.write(b, 0, n);
 						}
 					} catch (Exception e) {
-						LOGGER.error(null, e);
+						logger.error(null, e);
 					}
 				}
 			};
 
+			pin.close();
 			vOut = pout;
 			new Thread(r, "Avi Demuxer").start();
 		} else {
@@ -92,7 +92,7 @@ public class AviDemuxerInputStream extends InputStream {
 			public void run() {
 				try {
 					// TODO(tcox): Is this used anymore?
-					TSMuxerVideo ts = new TSMuxerVideo(PMS.getConfiguration());
+					TsMuxeRVideo ts = new TsMuxeRVideo(PMS.getConfiguration());
 					File f = new File(PMS.getConfiguration().getTempFolder(), "pms-tsmuxer.meta");
 					PrintWriter pw = new PrintWriter(f);
 					pw.println("MUXOPT --no-pcr-on-video-pid --no-asyncio --new-audio-pes --vbr --vbv-len=500");
@@ -137,9 +137,9 @@ public class AviDemuxerInputStream extends InputStream {
 
 					realIS = tsPipe.getInputStream();
 					ProcessUtil.waitFor(process);
-					LOGGER.trace("tsMuxeR muxing finished");
+					logger.trace("tsMuxeR muxing finished");
 				} catch (IOException e) {
-					LOGGER.error(null, e);
+					logger.error(null, e);
 				}
 			}
 		};
@@ -150,19 +150,19 @@ public class AviDemuxerInputStream extends InputStream {
 					//Thread.sleep(500);
 					parseHeader();
 				} catch (IOException e) {
-					LOGGER.debug("Parsing error", e);
+					logger.debug("Parsing error", e);
 				}
 			}
 		};
 
-		LOGGER.trace("Launching tsMuxeR muxing");
+		logger.trace("Launching tsMuxeR muxing");
 		new Thread(r, "Avi Demuxer tsMuxeR").start();
 		parsing = new Thread(r2, "Avi Demuxer Header Parser");
-		LOGGER.trace("Ready to mux");
+		logger.trace("Ready to mux");
 	}
 
 	private void parseHeader() throws IOException {
-		LOGGER.trace("Parsing AVI stream");
+		logger.trace("Parsing AVI stream");
 		String id = getString(stream, 4);
 		getBytes(stream, 4);
 		String type = getString(stream, 4);
@@ -279,7 +279,7 @@ public class AviDemuxerInputStream extends InputStream {
 			i += size + 8;
 		}
 
-		LOGGER.trace("Found " + streamNumber + " stream(s)");
+		logger.trace("Found " + streamNumber + " stream(s)");
 		boolean init = false;
 
 		while (true) {
@@ -288,7 +288,7 @@ public class AviDemuxerInputStream extends InputStream {
 			try {
 				command = getString(stream, 4);
 			} catch (Exception e) {
-				LOGGER.trace("Error reading stream: " + e.getMessage());
+				logger.trace("Error reading stream: " + e.getMessage());
 				break;
 			}
 
@@ -353,7 +353,7 @@ public class AviDemuxerInputStream extends InputStream {
 			}
 		}
 
-		LOGGER.trace("output pipes closed");
+		logger.trace("output pipes closed");
 		aOut.close();
 		vOut.close();
 	}
@@ -457,7 +457,7 @@ public class AviDemuxerInputStream extends InputStream {
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
-				LOGGER.trace("Sleep interrupted", e);
+				logger.trace("Sleep interrupted", e);
 			}
 
 			c++;
@@ -484,7 +484,7 @@ public class AviDemuxerInputStream extends InputStream {
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
-				LOGGER.trace("Sleep interrupted", e);
+				logger.trace("Sleep interrupted", e);
 			}
 
 			c++;

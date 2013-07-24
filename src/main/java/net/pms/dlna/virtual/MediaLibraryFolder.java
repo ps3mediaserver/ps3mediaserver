@@ -73,13 +73,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 		}
 	}
 
-	@Override
-	public void resolve() {
-		super.resolve();
-	}
-
 	private String transformSQL(String sql) {
-
 		sql = sql.replace("${0}", transformName(getName()));
 		if (getParent() != null) {
 			sql = sql.replace("${1}", transformName(getParent().getName()));
@@ -114,6 +108,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 		ArrayList<File> list = null;
 		ArrayList<String> strings = null;
 		int expectedOutput = 0;
+
 		if (sqls.length > 0) {
 			String sql = sqls[0];
 			expectedOutput = expectedOutputs[0];
@@ -126,33 +121,48 @@ public class MediaLibraryFolder extends VirtualFolder {
 				}
 			}
 		}
+
 		ArrayList<File> addedFiles = new ArrayList<File>();
 		ArrayList<String> addedString = new ArrayList<String>();
 		ArrayList<DLNAResource> removedFiles = new ArrayList<DLNAResource>();
 		ArrayList<DLNAResource> removedString = new ArrayList<DLNAResource>();
 		int i = 0;
+
 		if (list != null) {
-			for (File f : list) {
+			for (File file : list) {
 				boolean present = false;
-				for (DLNAResource d : getChildren()) {
-					if (i == 0 && (!(d instanceof VirtualFolder) || (d instanceof MediaLibraryFolder))) {
-						removedFiles.add(d);
+
+				for (DLNAResource dlna : getChildren()) {
+					if (i == 0 && (!(dlna instanceof VirtualFolder) || (dlna instanceof MediaLibraryFolder))) {
+						removedFiles.add(dlna);
 					}
-					String name = d.getName();
-					long lm = d.getLastModified();
-					boolean video_ts_hack = (d instanceof DVDISOFile) && d.getName().startsWith(DVDISOFile.PREFIX) && d.getName().substring(DVDISOFile.PREFIX.length()).equals(f.getName());
-					if ((f.getName().equals(name) || video_ts_hack) && f.lastModified() == lm) {
-						removedFiles.remove(d);
+
+					String name = dlna.getName();
+					long lm = dlna.getLastModified();
+					boolean videoTSHack = false;
+
+					if (dlna instanceof DVDISOFile) {
+						DVDISOFile dvdISOFile = (DVDISOFile) dlna;
+						// XXX DVDISOFile has inconsistent ideas of what constitutes a VIDEO_TS folder
+						videoTSHack = dvdISOFile.getFilename().equals(file.getName());
+					}
+
+					if ((file.getName().equals(name) || videoTSHack) && file.lastModified() == lm) {
+						removedFiles.remove(dlna);
 						present = true;
 					}
 				}
+
 				i++;
+
 				if (!present) {
-					addedFiles.add(f);
+					addedFiles.add(file);
 				}
 			}
 		}
+
 		i = 0;
+
 		if (strings != null) {
 			for (String f : strings) {
 				boolean present = false;
@@ -176,9 +186,11 @@ public class MediaLibraryFolder extends VirtualFolder {
 		for (DLNAResource f : removedFiles) {
 			getChildren().remove(f);
 		}
+
 		for (DLNAResource s : removedString) {
 			getChildren().remove(s);
 		}
+
 		for (File f : addedFiles) {
 			if (expectedOutput == FILES) {
 				addChild(new RealFile(f));
@@ -188,6 +200,7 @@ public class MediaLibraryFolder extends VirtualFolder {
 				addChild(new DVDISOFile(f));
 			}
 		}
+
 		for (String f : addedString) {
 			if (expectedOutput == TEXTS) {
 				String sqls2[] = new String[sqls.length - 1];
@@ -198,6 +211,6 @@ public class MediaLibraryFolder extends VirtualFolder {
 			}
 		}
 
-		//return removedFiles.size() != 0 || addedFiles.size() != 0 || removedString.size() != 0 || addedString.size() != 0;
+		// return removedFiles.size() != 0 || addedFiles.size() != 0 || removedString.size() != 0 || addedString.size() != 0;
 	}
 }

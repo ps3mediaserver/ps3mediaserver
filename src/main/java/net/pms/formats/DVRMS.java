@@ -18,12 +18,6 @@
  */
 package net.pms.formats;
 
-import net.pms.PMS;
-import net.pms.encoders.FFMpegDVRMSRemux;
-import net.pms.encoders.Player;
-
-import java.util.ArrayList;
-
 public class DVRMS extends Format {
 	/**
 	 * {@inheritDoc} 
@@ -31,20 +25,6 @@ public class DVRMS extends Format {
 	@Override
 	public Identifier getIdentifier() {
 		return Identifier.DVRMS;
-	}
-
-	@Override
-	public ArrayList<Class<? extends Player>> getProfiles() {
-		ArrayList<Class<? extends Player>> a = new ArrayList<Class<? extends Player>>();
-		PMS r = PMS.get();
-		for (String engine : PMS.getConfiguration().getEnginesAsList(r.getRegistry())) {
-			/*if (engine.equals(MEncoderVideo.ID))
-			a.add(MEncoderVideo.class);*/
-			if (engine.equals(FFMpegDVRMSRemux.ID)) {
-				a.add(FFMpegDVRMSRemux.class);
-			}
-		}
-		return a;
 	}
 
 	@Override
@@ -60,8 +40,11 @@ public class DVRMS extends Format {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String[] getId() {
-		return new String[] { "dvr-ms", "dvr" };
+	public String[] getSupportedExtensions() {
+		return new String[] {
+			"dvr",
+			"dvr-ms",
+		};
 	}
 
 	/**

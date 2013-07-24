@@ -39,7 +39,7 @@ import java.text.DecimalFormat;
 import java.util.Locale;
 
 public class StatusTab {
-	private static final Logger LOGGER = LoggerFactory.getLogger(StatusTab.class);
+	private static final Logger logger = LoggerFactory.getLogger(StatusTab.class);
 
 	private static final int MAX_RENDERERS = 10;
 	private ImagePanel imagePanel;
@@ -154,7 +154,7 @@ public class StatusTab {
 			try {
 				bi = ImageIO.read(LooksFrame.class.getResourceAsStream(url));
 			} catch (IOException e) {
-				LOGGER.debug("Caught exception", e);
+				logger.debug("Caught exception", e);
 			}
 		}
 		return new ImagePanel(bi);
@@ -204,7 +204,7 @@ public class StatusTab {
 					bi = ImageIO.read(is);
 				}
 			} catch (IOException e) {
-				LOGGER.debug("Caught exception", e);
+				logger.debug("Caught exception", e);
 			}
 		}
 

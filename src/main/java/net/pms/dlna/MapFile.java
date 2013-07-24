@@ -20,6 +20,7 @@ package net.pms.dlna;
 
 import net.pms.PMS;
 import net.pms.configuration.MapFileConfiguration;
+import net.pms.configuration.PmsConfiguration;
 import net.pms.dlna.virtual.TranscodeVirtualFolder;
 import net.pms.dlna.virtual.VirtualFolder;
 import net.pms.formats.FormatFactory;
@@ -42,7 +43,8 @@ import java.util.*;
  * removed.
  */
 public class MapFile extends DLNAResource {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MapFile.class);
+	private static final Logger logger = LoggerFactory.getLogger(MapFile.class);
+	private static final PmsConfiguration configuration = PMS.getConfiguration();
 	private List<File> discoverable;
 
 	/**
@@ -76,7 +78,7 @@ public class MapFile extends DLNAResource {
 
 	private boolean isFileRelevant(File f) {
 		String fileName = f.getName().toLowerCase();
-		return (PMS.getConfiguration().isArchiveBrowsing() && (fileName.endsWith(".zip") || fileName.endsWith(".cbz")
+		return (configuration.isArchiveBrowsing() && (fileName.endsWith(".zip") || fileName.endsWith(".cbz")
 			|| fileName.endsWith(".rar") || fileName.endsWith(".cbr")))
 			|| fileName.endsWith(".iso") || fileName.endsWith(".img")
 			|| fileName.endsWith(".m3u") || fileName.endsWith(".m3u8") || fileName.endsWith(".pls") || fileName.endsWith(".cue");
@@ -85,7 +87,7 @@ public class MapFile extends DLNAResource {
 	private boolean isFolderRelevant(File f) {
 		boolean isRelevant = false;
 
-		if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders()) {
+		if (f.isDirectory() && configuration.isHideEmptyFolders()) {
 			File[] children = f.listFiles();
 
 			// listFiles() returns null if "this abstract pathname does not denote a directory, or if an I/O error occurs".
@@ -93,11 +95,11 @@ public class MapFile extends DLNAResource {
 			// http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=15135
 			// http://stackoverflow.com/questions/3228147/retrieving-the-underlying-error-when-file-listfiles-return-null
 			if (children == null) {
-				LOGGER.warn("Can't list files in non-readable directory: {}", f.getAbsolutePath());
+				logger.warn("Can't list files in non-readable directory: {}", f.getAbsolutePath());
 			} else {
 				for (File child : children) {
 					if (child.isFile()) {
-						if (FormatFactory.getAssociatedExtension(child.getName()) != null || isFileRelevant(child)) {
+						if (FormatFactory.getAssociatedFormat(child.getName()) != null || isFileRelevant(child)) {
 							isRelevant = true;
 							break;
 						}
@@ -110,7 +112,6 @@ public class MapFile extends DLNAResource {
 				}
 			}
 		}
-
 		return isRelevant;
 	}
 
@@ -119,9 +120,9 @@ public class MapFile extends DLNAResource {
 			String lcFilename = f.getName().toLowerCase();
 
 			if (!f.isHidden()) {
-				if (PMS.getConfiguration().isArchiveBrowsing() && (lcFilename.endsWith(".zip") || lcFilename.endsWith(".cbz"))) {
+				if (configuration.isArchiveBrowsing() && (lcFilename.endsWith(".zip") || lcFilename.endsWith(".cbz"))) {
 					addChild(new ZippedFile(f));
-				} else if (PMS.getConfiguration().isArchiveBrowsing() && (lcFilename.endsWith(".rar") || lcFilename.endsWith(".cbr"))) {
+				} else if (configuration.isArchiveBrowsing() && (lcFilename.endsWith(".rar") || lcFilename.endsWith(".cbr"))) {
 					addChild(new RarredFile(f));
 				} else if ((lcFilename.endsWith(".iso") || lcFilename.endsWith(".img")) || (f.isDirectory() && f.getName().toUpperCase().equals("VIDEO_TS"))) {
 					addChild(new DVDISOFile(f));
@@ -131,8 +132,8 @@ public class MapFile extends DLNAResource {
 					addChild(new CueFolder(f));
 				} else {
 					/* Optionally ignore empty directories */
-					if (f.isDirectory() && PMS.getConfiguration().isHideEmptyFolders() && !isFolderRelevant(f)) {
-						LOGGER.debug("Ignoring empty/non-relevant directory: " + f.getName());
+					if (f.isDirectory() && configuration.isHideEmptyFolders() && !isFolderRelevant(f)) {
+						logger.debug("Ignoring empty/non-relevant directory: " + f.getName());
 					} else { // Otherwise add the file
 						addChild(new RealFile(f));
 					}
@@ -157,12 +158,12 @@ public class MapFile extends DLNAResource {
 					File[] files = file.listFiles();
 
 					if (files == null) {
-						LOGGER.warn("Can't read files from directory: {}", file.getAbsolutePath());
+						logger.warn("Can't read files from directory: {}", file.getAbsolutePath());
 					} else {
 						out.addAll(Arrays.asList(files));
 					}
 				} else {
-					LOGGER.warn("Can't read directory: {}", file.getAbsolutePath());
+					logger.warn("Can't read directory: {}", file.getAbsolutePath());
 				}
 			}
 		}
@@ -179,7 +180,6 @@ public class MapFile extends DLNAResource {
 	public boolean analyzeChildren(int count) {
 		int currentChildrenCount = getChildren().size();
 		int vfolder = 0;
-
 		while (((getChildren().size() - currentChildrenCount) < count) || (count == -1)) {
 			if (vfolder < getConf().getChildren().size()) {
 				addChild(new MapFile(getConf().getChildren().get(vfolder)));
@@ -192,7 +192,6 @@ public class MapFile extends DLNAResource {
 				manageFile(discoverable.remove(0));
 			}
 		}
-
 		return discoverable.isEmpty();
 	}
 
@@ -208,9 +207,10 @@ public class MapFile extends DLNAResource {
 
 		List<File> files = getFileList();
 
-		switch (PMS.getConfiguration().getSortMethod()) {
+		switch (configuration.getSortMethod()) {
 			case 4: // Locale-sensitive natural sort
 				Collections.sort(files, new Comparator<File>() {
+					@Override
 					public int compare(File f1, File f2) {
 						return NaturalComparator.compareNatural(collator, f1.getName(), f2.getName());
 					}
@@ -226,7 +226,7 @@ public class MapFile extends DLNAResource {
 				break;
 			case 2: // Sort by modified date, oldest first
 				Collections.sort(files, new Comparator<File>() {
-
+					@Override
 					public int compare(File f1, File f2) {
 						return Long.valueOf(f1.lastModified()).compareTo(Long.valueOf(f2.lastModified()));
 					}
@@ -234,7 +234,7 @@ public class MapFile extends DLNAResource {
 				break;
 			case 1: // Sort by modified date, newest first
 				Collections.sort(files, new Comparator<File>() {
-
+					@Override
 					public int compare(File f1, File f2) {
 						return Long.valueOf(f2.lastModified()).compareTo(Long.valueOf(f1.lastModified()));
 					}
@@ -290,29 +290,29 @@ public class MapFile extends DLNAResource {
 		}
 
 		for (File f : files) {
-			if (!f.isHidden() && (f.isDirectory() || FormatFactory.getAssociatedExtension(f.getName()) != null)) {
+			if (!f.isHidden() && (f.isDirectory() || FormatFactory.getAssociatedFormat(f.getName()) != null)) {
 				addedFiles.add(f);
 			}
 		}
 
 		for (DLNAResource f : removedFiles) {
-			LOGGER.debug("File automatically removed: " + f.getName());
+			logger.debug("File automatically removed: " + f.getName());
 		}
 
 		for (File f : addedFiles) {
-			LOGGER.debug("File automatically added: " + f.getName());
+			logger.debug("File automatically added: " + f.getName());
 		}
 
 		// false: don't create the folder if it doesn't exist i.e. find the folder
-		TranscodeVirtualFolder vf = getTranscodeFolder(false);
+		TranscodeVirtualFolder transcodeFolder = getTranscodeFolder(false);
 
 		for (DLNAResource f : removedFiles) {
 			getChildren().remove(f);
 
-			if (vf != null) {
-				for (int j = vf.getChildren().size() - 1; j >= 0; j--) {
-					if (vf.getChildren().get(j).getName().equals(f.getName())) {
-						vf.getChildren().remove(j);
+			if (transcodeFolder != null) {
+				for (int j = transcodeFolder.getChildren().size() - 1; j >= 0; j--) {
+					if (transcodeFolder.getChildren().get(j).getName().equals(f.getName())) {
+						transcodeFolder.getChildren().remove(j);
 					}
 				}
 			}
@@ -327,32 +327,35 @@ public class MapFile extends DLNAResource {
 		}
 	}
 
-	private boolean foundInList(List<File> files, DLNAResource d) {
-		for (File f: files) {
-			if (!f.isHidden() && isNameMatch(f, d) && (isRealFolder(d) || isSameLastModified(f, d))) {
-				files.remove(f);
+	private boolean foundInList(List<File> files, DLNAResource dlna) {
+		for (File file: files) {
+			if (!file.isHidden() && isNameMatch(dlna, file) && (isRealFolder(dlna) || isSameLastModified(dlna, file))) {
+				files.remove(file);
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private boolean isSameLastModified(File f, DLNAResource d) {
-		return d.getLastModified() == f.lastModified();
+	private boolean isSameLastModified(DLNAResource dlna, File file) {
+		return dlna.getLastModified() == file.lastModified();
 	}
 
-	private boolean isRealFolder(DLNAResource d) {
-		return d instanceof RealFile && d.isFolder();
+	private boolean isRealFolder(DLNAResource dlna) {
+		return dlna instanceof RealFile && dlna.isFolder();
 	}
 
-	private boolean isNameMatch(File file, DLNAResource resource) {
-		return (resource.getName().equals(file.getName()) || isDVDIsoMatch(file, resource));
+	private boolean isNameMatch(DLNAResource dlna, File file) {
+		return (dlna.getName().equals(file.getName()) || isDVDIsoMatch(dlna, file));
 	}
 
-	private boolean isDVDIsoMatch(File file, DLNAResource resource) {
-		return (resource instanceof DVDISOFile) &&
-			resource.getName().startsWith(DVDISOFile.PREFIX) &&
-			resource.getName().substring(DVDISOFile.PREFIX.length()).equals(file.getName());
+	private boolean isDVDIsoMatch(DLNAResource dlna, File file) {
+		if (dlna instanceof DVDISOFile) {
+			DVDISOFile dvdISOFile = (DVDISOFile) dlna;
+			return dvdISOFile.getFilename().equals(file.getName());
+		} else {
+			return false;
+		}
 	}
 
 	@Override

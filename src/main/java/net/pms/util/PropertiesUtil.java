@@ -27,7 +27,7 @@ public class PropertiesUtil {
 	/**
 	 * Logs messages to all different channels.
 	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(PropertiesUtil.class);
 
 	/**
 	 * General properties for the PMS project.
@@ -39,7 +39,7 @@ public class PropertiesUtil {
 			// Read project properties resource file.
 			projectProperties.loadFromResourceFile("/resources/project.properties");
 		} catch (IOException e) {
-			LOGGER.error("Could not load project.properties");
+			logger.error("Could not load project.properties");
 		}
 	}
 

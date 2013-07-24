@@ -24,7 +24,6 @@ import com.sun.jna.Platform;
 import net.pms.Messages;
 import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
-import net.pms.gui.IFrame;
 import net.pms.io.WindowsNamedPipe;
 import net.pms.newgui.update.AutoUpdateDialog;
 import net.pms.update.AutoUpdater;
@@ -51,14 +50,14 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class LooksFrame extends JFrame implements IFrame, Observer {
-	private static final Logger LOGGER = LoggerFactory.getLogger(LooksFrame.class);
+	private static final Logger logger = LoggerFactory.getLogger(LooksFrame.class);
 	private final AutoUpdater autoUpdater;
 	private final PmsConfiguration configuration;
 	public static final String START_SERVICE = "start.service";
 	private static final long serialVersionUID = 8723727186288427690L;
-	protected static final Dimension PREFERRED_SIZE = new Dimension(1000, 750);
+	protected static final Dimension preferredSize = new Dimension(1000, 750);
 	// https://code.google.com/p/ps3mediaserver/issues/detail?id=949
-	protected static final Dimension MINIMUM_SIZE = new Dimension(800, 480);
+	protected static final Dimension minimumSize = new Dimension(800, 480);
 
 	/**
 	 * List of context sensitive help pages URLs. These URLs should be relative
@@ -122,14 +121,14 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 						systemClassName = gtkLAF;
 					}
 				} catch (ClassNotFoundException ce) {
-					LOGGER.error("Error loading GTK look and feel: ", ce);
+					logger.error("Error loading GTK look and feel: ", ce);
 				}
 
-				LOGGER.trace("Choosing Java look and feel: " + systemClassName);
+				logger.trace("Choosing Java look and feel: " + systemClassName);
 				UIManager.setLookAndFeel(systemClassName);
 			} catch (Exception e1) {
 				selectedLaf = new PlasticLookAndFeel();
-				LOGGER.error("Error while setting native look and feel: ", e1);
+				logger.error("Error while setting native look and feel: ", e1);
 			}
 		}
 
@@ -151,7 +150,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			try {
 				UIManager.setLookAndFeel(selectedLaf);
 			} catch (UnsupportedLookAndFeelException e) {
-				LOGGER.warn("Can't change look and feel", e);
+				logger.warn("Can't change look and feel", e);
 			}
 		}
 
@@ -275,16 +274,16 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		Dimension screenSize = getToolkit().getScreenSize();
 
-		if (screenSize.width < MINIMUM_SIZE.width || screenSize.height < MINIMUM_SIZE.height) {
+		if (screenSize.width < minimumSize.width || screenSize.height < minimumSize.height) {
 			setMinimumSize(screenSize);
 		} else {
-			setMinimumSize(MINIMUM_SIZE);
+			setMinimumSize(minimumSize);
 		}
 
-		if (screenSize.width < PREFERRED_SIZE.width || screenSize.height < PREFERRED_SIZE.height) {
+		if (screenSize.width < preferredSize.width || screenSize.height < preferredSize.height) {
 			setSize(screenSize);
 		} else {
-			setSize(PREFERRED_SIZE);
+			setSize(preferredSize);
 		}
 
 		setResizable(true);
@@ -352,7 +351,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 
 		// Calling applyComponentOrientation() here would be ideal.
 		// Alas it horribly mutilates the layout of several tabs.
-		//panel.applyComponentOrientation(orientation);
+		// panel.applyComponentOrientation(orientation);
 		panel.add(status, BorderLayout.SOUTH);
 
 		return panel;
@@ -415,7 +414,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
-			LOGGER.error(null, e);
+			logger.error(null, e);
 		}
 
 		System.exit(0);
@@ -438,7 +437,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 		try {
 			st.getImagePanel().set(ImageIO.read(LooksFrame.class.getResourceAsStream("/resources/images/" + icon)));
 		} catch (IOException e) {
-			LOGGER.error(null, e);
+			logger.error(null, e);
 		}
 	}
 
@@ -486,7 +485,7 @@ public class LooksFrame extends JFrame implements IFrame, Observer {
 			try {
 				AutoUpdateDialog.showIfNecessary(this, autoUpdater);
 			} catch (NoClassDefFoundError ncdfe) {
-				LOGGER.error("Error displaying AutoUpdateDialog", ncdfe);
+				logger.error("Error displaying AutoUpdateDialog", ncdfe);
 			}
 		}
 	}

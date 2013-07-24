@@ -1,30 +1,41 @@
 package net.pms.dlna;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.lowerCase;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
+
+import java.io.File;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import net.pms.configuration.FormatConfiguration;
 import net.pms.formats.v2.SubtitleType;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.StringTokenizer;
-
 public class LibMediaInfoParser {
-	private static final Logger LOGGER = LoggerFactory.getLogger(LibMediaInfoParser.class);
+	private static final Logger logger = LoggerFactory.getLogger(LibMediaInfoParser.class);
+
+	/** Regular expression to parse a 4 digit year number from a string */
+	private static final String YEAR_REGEX = ".*([\\d]{4}).*";
+
+	/** Pattern to parse the year from a string */
+	private static final Pattern yearPattern = Pattern.compile(YEAR_REGEX);
+	
 	private static MediaInfo MI;
 	private static Base64 base64;
 
 	static {
 		MI = new MediaInfo();
-
 		if (MI.isValid()) {
 			MI.Option("Complete", "1");
 			MI.Option("Language", "raw");
 		}
-
 		base64 = new Base64();
 	}
 
@@ -36,7 +47,7 @@ public class LibMediaInfoParser {
 		try {
 			MI.finalize();
 		} catch (Throwable e) {
-			LOGGER.debug("Caught exception", e);
+			logger.debug("Caught exception", e);
 		}
 	}
 
@@ -46,7 +57,7 @@ public class LibMediaInfoParser {
 		if (!media.isMediaparsed() && file != null && MI.isValid() && MI.Open(file.getAbsolutePath()) > 0) {
 			try {
 				String info = MI.Inform();
-				MediaInfo.StreamKind streamType = MediaInfo.StreamKind.General;
+				MediaInfo.StreamType streamType = MediaInfo.StreamType.General;
 				DLNAMediaAudio currentAudioTrack = new DLNAMediaAudio();
 				boolean audioPrepped = false;
 				DLNAMediaSubtitle currentSubTrack = new DLNAMediaSubtitle();
@@ -55,71 +66,71 @@ public class LibMediaInfoParser {
 				if (StringUtils.isNotBlank(info)) {
 					media.setSize(file.length());
 					StringTokenizer st = new StringTokenizer(info, "\n\r");
-
 					while (st.hasMoreTokens()) {
 						String line = st.nextToken().trim();
 
+						// Define the type of media
 						if (line.equals("Video") || line.startsWith("Video #")) {
-							streamType = MediaInfo.StreamKind.Video;
+							streamType = MediaInfo.StreamType.Video;
 						} else if (line.equals("Audio") || line.startsWith("Audio #")) {
 							if (audioPrepped) {
 								addAudio(currentAudioTrack, media);
 								currentAudioTrack = new DLNAMediaAudio();
 							}
 							audioPrepped = true;
-							streamType = MediaInfo.StreamKind.Audio;
+							streamType = MediaInfo.StreamType.Audio;
 						} else if (line.equals("Text") || line.startsWith("Text #")) {
 							if (subPrepped) {
 								addSub(currentSubTrack, media);
 								currentSubTrack = new DLNAMediaSubtitle();
 							}
 							subPrepped = true;
-							streamType = MediaInfo.StreamKind.Text;
+							streamType = MediaInfo.StreamType.Text;
 						} else if (line.equals("Menu") || line.startsWith("Menu #")) {
-							streamType = MediaInfo.StreamKind.Menu;
+							streamType = MediaInfo.StreamType.Menu;
 						} else if (line.equals("Chapters")) {
-							streamType = MediaInfo.StreamKind.Chapters;
+							streamType = MediaInfo.StreamType.Chapters;
 						}
 
 						int point = line.indexOf(":");
-
 						if (point > -1) {
 							String key = line.substring(0, point).trim();
 							String ovalue = line.substring(point + 1).trim();
 							String value = ovalue.toLowerCase();
-
 							if (key.equals("Format") || key.startsWith("Format_Version") || key.startsWith("Format_Profile")) {
-								if (streamType == MediaInfo.StreamKind.Text) {
-									// first attempt to detect subtitle track format
+								if (streamType == MediaInfo.StreamType.Text) {
+									// First attempt to detect subtitle track format
 									currentSubTrack.setType(SubtitleType.valueOfLibMediaInfoCodec(value));
 								} else {
 									getFormat(streamType, media, currentAudioTrack, value, file);
 								}
-							} else if (key.equals("Duration/String1") && streamType == MediaInfo.StreamKind.General) {
+							} else if (key.equals("Duration/String1") && streamType == MediaInfo.StreamType.General) {
 								media.setDuration(getDuration(value));
-							} else if (key.equals("Codec_Settings_QPel") && streamType == MediaInfo.StreamKind.Video) {
+							} else if (key.equals("Format_Settings_RefFrames/String") && streamType == MediaInfo.StreamType.Video) {
+								media.setReferenceFrameCount(getReferenceFrameCount(value));
+							} else if (key.equals("Format_Settings_QPel") && streamType == MediaInfo.StreamType.Video) {
 								media.putExtra(FormatConfiguration.MI_QPEL, value);
-							} else if (key.equals("Codec_Settings_GMC") && streamType == MediaInfo.StreamKind.Video) {
+							} else if (key.equals("Format_Settings_GMC") && streamType == MediaInfo.StreamType.Video) {
 								media.putExtra(FormatConfiguration.MI_GMC, value);
-							} else if (key.equals("MuxingMode") && streamType == MediaInfo.StreamKind.Video) {
+							} else if (key.equals("MuxingMode") && streamType == MediaInfo.StreamType.Video) {
 								media.setMuxingMode(ovalue);
 							} else if (key.equals("CodecID")) {
-								if (streamType == MediaInfo.StreamKind.Text) {
-									// second attempt to detect subtitle track format (CodecID usually is more accurate)
+								if (streamType == MediaInfo.StreamType.Text) {
+									// Second attempt to detect subtitle track format (CodecID usually is more accurate)
 									currentSubTrack.setType(SubtitleType.valueOfLibMediaInfoCodec(value));
 								} else {
 									getFormat(streamType, media, currentAudioTrack, value, file);
 								}
 							} else if (key.equals("Language/String")) {
-								if (streamType == MediaInfo.StreamKind.Audio) {
+								if (streamType == MediaInfo.StreamType.Audio) {
 									currentAudioTrack.setLang(getLang(value));
-								} else if (streamType == MediaInfo.StreamKind.Text) {
+								} else if (streamType == MediaInfo.StreamType.Text) {
 									currentSubTrack.setLang(getLang(value));
 								}
 							} else if (key.equals("Title")) {
-								if (streamType == MediaInfo.StreamKind.Audio) {
+								if (streamType == MediaInfo.StreamType.Audio) {
 									currentAudioTrack.setFlavor(getFlavor(value));
-								} else if (streamType == MediaInfo.StreamKind.Text) {
+								} else if (streamType == MediaInfo.StreamType.Text) {
 									currentSubTrack.setFlavor(getFlavor(value));
 								}
 							} else if (key.equals("Width")) {
@@ -128,74 +139,85 @@ public class LibMediaInfoParser {
 								media.setEncrypted("encrypted".equals(value));
 							} else if (key.equals("Height")) {
 								media.setHeight(getPixelValue(value));
+							} else if (key.equals("DisplayAspectRatio/String")) {
+								media.setAspectRatioContainer(value);
+							} else if (key.equals("DisplayAspectRatio_Original/Stri")) {
+								media.setAspectRatioVideoTrack(value);
 							} else if (key.equals("FrameRate")) {
 								media.setFrameRate(getFPSValue(value));
 							} else if (key.equals("FrameRateMode")) {
 								media.setFrameRateMode(getFrameRateModeValue(value));
 							} else if (key.equals("OverallBitRate")) {
-								if (streamType == MediaInfo.StreamKind.General) {
+								if (streamType == MediaInfo.StreamType.General) {
 									media.setBitrate(getBitrate(value));
 								}
 							} else if (key.equals("Channel(s)")) {
-								if (streamType == MediaInfo.StreamKind.Audio) {
+								if (streamType == MediaInfo.StreamType.Audio) {
 									currentAudioTrack.getAudioProperties().setNumberOfChannels(value);
 								}
                             } else if (key.equals("BitRate")) {
-                                if (streamType == MediaInfo.StreamKind.Audio) {
+                                if (streamType == MediaInfo.StreamType.Audio) {
                                     currentAudioTrack.setBitRate(getBitrate(value));
                                 }
 							} else if (key.equals("SamplingRate")) {
-								if (streamType == MediaInfo.StreamKind.Audio) {
+								if (streamType == MediaInfo.StreamType.Audio) {
 									currentAudioTrack.setSampleFrequency(getSampleFrequency(value));
 								}
 							} else if (key.equals("ID/String")) {
 								// Special check for OGM: MediaInfo reports specific Audio/Subs IDs (0xn) while mencoder does not
 								if (value.contains("(0x") && !FormatConfiguration.OGG.equals(media.getContainer())) {
-									if (streamType == MediaInfo.StreamKind.Audio) {
+									if (streamType == MediaInfo.StreamType.Audio) {
 										currentAudioTrack.setId(getSpecificID(value));
-									} else if (streamType == MediaInfo.StreamKind.Text) {
+									} else if (streamType == MediaInfo.StreamType.Text) {
 										currentSubTrack.setId(getSpecificID(value));
 									}
 								} else {
-									if (streamType == MediaInfo.StreamKind.Audio) {
+									if (streamType == MediaInfo.StreamType.Audio) {
 										currentAudioTrack.setId(media.getAudioTracksList().size());
-									} else if (streamType == MediaInfo.StreamKind.Text) {
+									} else if (streamType == MediaInfo.StreamType.Text) {
+										// TODO questionable approach. What if audio and sub tracks are mixed?
+										// definitely would not work with ffmpeg
 										currentSubTrack.setId(media.getSubtitleTracksList().size());
 									}
 								}
-							} else if (key.equals("Cover_Data") && streamType == MediaInfo.StreamKind.General) {
+							} else if (key.equals("Cover_Data") && streamType == MediaInfo.StreamType.General) {
 								media.setThumb(getCover(ovalue));
-							} else if (key.equals("Track") && streamType == MediaInfo.StreamKind.General) {
+							} else if (key.equals("Track") && streamType == MediaInfo.StreamType.General) {
 								currentAudioTrack.setSongname(ovalue);
-							} else if (key.equals("Album") && streamType == MediaInfo.StreamKind.General) {
+							} else if (key.equals("Album") && streamType == MediaInfo.StreamType.General) {
 								currentAudioTrack.setAlbum(ovalue);
-							} else if (key.equals("Performer") && streamType == MediaInfo.StreamKind.General) {
+							} else if (key.equals("Performer") && streamType == MediaInfo.StreamType.General) {
 								currentAudioTrack.setArtist(ovalue);
-							} else if (key.equals("Genre") && streamType == MediaInfo.StreamKind.General) {
+							} else if (key.equals("Genre") && streamType == MediaInfo.StreamType.General) {
 								currentAudioTrack.setGenre(ovalue);
-							} else if (key.equals("Recorded_Date") && streamType == MediaInfo.StreamKind.General) {
-								try {
-									currentAudioTrack.setYear(Integer.parseInt(value));
-								} catch (NumberFormatException nfe) {
-									LOGGER.debug("Could not parse year \"" + value + "\"");
+							} else if (key.equals("Recorded_Date") && streamType == MediaInfo.StreamType.General) {
+								// Try to parse the year from the stored date
+								Matcher matcher = yearPattern.matcher(value);
+
+								if (matcher.matches()) {
+									try {
+										currentAudioTrack.setYear(Integer.parseInt(matcher.group(1)));
+									} catch (NumberFormatException nfe) {
+										logger.debug("Could not parse year from recorded date \"" + value + "\"");
+									}
 								}
-							} else if (key.equals("Track/Position") && streamType == MediaInfo.StreamKind.General) {
+							} else if (key.equals("Track/Position") && streamType == MediaInfo.StreamType.General) {
 								try {
 									currentAudioTrack.setTrack(Integer.parseInt(value));
 								} catch (NumberFormatException nfe) {
-									LOGGER.debug("Could not parse track \"" + value + "\"");
+									logger.debug("Could not parse track \"" + value + "\"");
 								}
-							} else if (key.equals("Resolution") && streamType == MediaInfo.StreamKind.Audio) {
+							} else if (key.equals("BitDepth") && streamType == MediaInfo.StreamType.Audio) {
 								try {
 									currentAudioTrack.setBitsperSample(Integer.parseInt(value));
 								} catch (NumberFormatException nfe) {
-									LOGGER.debug("Could not parse bits per sample \"" + value + "\"");
+									logger.debug("Could not parse bits per sample \"" + value + "\"");
 								}
-							} else if (key.equals("Video_Delay") && streamType == MediaInfo.StreamKind.Audio) {
+							} else if (key.equals("Video_Delay") && streamType == MediaInfo.StreamType.Audio) {
 								try {
 									currentAudioTrack.getAudioProperties().setAudioDelay(value);
 								} catch (NumberFormatException nfe) {
-									LOGGER.debug("Could not parse delay \"" + value + "\"");
+									logger.debug("Could not parse delay \"" + value + "\"");
 								}
 							}
 						}
@@ -210,9 +232,35 @@ public class LibMediaInfoParser {
 					addSub(currentSubTrack, media);
 				}
 
+				/*
+				 Native M4A/AAC streaming bug: http://www.ps3mediaserver.org/forum/viewtopic.php?f=6&t=16691
+				 Some M4A files have generic codec id "mp42" instead of "M4A". For example:
+
+				 General
+				 Format                                   : MPEG-4
+				 Format profile                           : Apple audio with iTunes info
+				 Codec ID                                 : M4A
+
+				 vs
+
+				 General
+				 Format                                   : MPEG-4
+				 Format profile                           : Base Media / Version 2
+				 Codec ID                                 : mp42
+
+				 As workaround set container type to AAC for MP4 files with single AAC audio track and no video.
+				*/
+				if (FormatConfiguration.MP4.equals(media.getContainer())
+						&& isBlank(media.getCodecV())
+						&& media.getAudioTracksList() != null
+						&& media.getAudioTracksList().size() == 1
+						&& FormatConfiguration.AAC.equals(media.getAudioTracksList().get(0).getCodecA())) {
+					media.setContainer(FormatConfiguration.AAC);
+				}
+
 				media.finalize(type, inputFile);
 			} catch (Exception e) {
-				LOGGER.error("Error in MediaInfo parsing:", e);
+				logger.error("Error in MediaInfo parsing:", e);
 			} finally {
 				MI.Close();
 				if (media.getContainer() == null) {
@@ -232,11 +280,9 @@ public class LibMediaInfoParser {
 		if (currentAudioTrack.getLang() == null) {
 			currentAudioTrack.setLang(DLNAMediaLang.UND);
 		}
-
 		if (currentAudioTrack.getCodecA() == null) {
 			currentAudioTrack.setCodecA(DLNAMediaLang.UND);
 		}
-
 		media.getAudioTracksList().add(currentAudioTrack);
 	}
 
@@ -244,21 +290,19 @@ public class LibMediaInfoParser {
 		if (currentSubTrack.getType() == SubtitleType.UNSUPPORTED) {
 			return;
 		}
-
 		if (currentSubTrack.getLang() == null) {
 			currentSubTrack.setLang(DLNAMediaLang.UND);
 		}
-
 		media.getSubtitleTracksList().add(currentSubTrack);
 	}
 
 	@Deprecated
 	// FIXME this is obsolete (replaced by the private method below) and isn't called from anywhere outside this class
-	public static void getFormat(MediaInfo.StreamKind streamType, DLNAMediaInfo media, DLNAMediaAudio audio, String value) {
+	public static void getFormat(MediaInfo.StreamType streamType, DLNAMediaInfo media, DLNAMediaAudio audio, String value) {
 		getFormat(streamType, media, audio, value, null);
 	}
 
-	private static void getFormat(MediaInfo.StreamKind streamType, DLNAMediaInfo media, DLNAMediaAudio audio, String value, File file) {
+	private static void getFormat(MediaInfo.StreamType streamType, DLNAMediaInfo media, DLNAMediaAudio audio, String value, File file) {
 		String format = null;
 
 		if (value.equals("matroska")) {
@@ -371,14 +415,16 @@ public class LibMediaInfoParser {
 			format = FormatConfiguration.BMP;
 		} else if (value.equals("tiff")) {
 			format = FormatConfiguration.TIFF;
+		} else if (StringUtils.contains(value, "@l") && streamType == MediaInfo.StreamType.Video) {
+			media.setAvcLevel(getAvcLevel(value));
 		}
 
 		if (format != null) {
-			if (streamType == MediaInfo.StreamKind.General) {
+			if (streamType == MediaInfo.StreamType.General) {
 				media.setContainer(format);
-			} else if (streamType == MediaInfo.StreamKind.Video) {
+			} else if (streamType == MediaInfo.StreamType.Video) {
 				media.setCodecV(format);
-			} else if (streamType == MediaInfo.StreamKind.Audio) {
+			} else if (streamType == MediaInfo.StreamType.Audio) {
 				audio.setCodecA(format);
 			}
 		}
@@ -388,7 +434,6 @@ public class LibMediaInfoParser {
 		if (value.indexOf("pixel") > -1) {
 			value = value.substring(0, value.indexOf("pixel"));
 		}
-
 		value = value.trim();
 
 		// Value can look like "512 / 512" at this point
@@ -400,15 +445,50 @@ public class LibMediaInfoParser {
 		return pixels;
 	}
 
+	/**
+	 * @param value {@code Format_Settings_RefFrames/String} value to parse.
+	 * @return reference frame count or {@code -1} if could not parse.
+	 */
+	public static byte getReferenceFrameCount(String value) {
+		try {
+			// Values like "16 frame3"
+			return Byte.parseByte(StringUtils.substringBefore(value, " "));
+		} catch (NumberFormatException ex) {
+			// Not parsed
+			logger.warn("Could not parse ReferenceFrameCount value {}." , value);
+			logger.warn("Exception: ", ex);
+			return -1;
+		}
+	}
+
+	/**
+	 * @param value {@code Format_Profile} value to parse.
+	 * @return AVC level or {@code null} if could not parse.
+	 */
+	public static String getAvcLevel(String value) {
+		// Example values:
+		// High@L3.0
+		// High@L4.0
+		// High@L4.1
+		final String avcLevel = substringAfterLast(lowerCase(value), "@l");
+		if (isNotBlank(avcLevel)) {
+			return avcLevel;
+		} else {
+			logger.warn("Could not parse AvcLevel value {}." , value);
+			return null;
+		}
+	}
+
 	public static int getBitrate(String value) {
 		if (value.contains("/")) {
 			value = value.substring(0, value.indexOf("/")).trim();
 		}
-
         try {
             return Integer.parseInt(value);
-        } catch (NumberFormatException ex) {
-            LOGGER.info("Unknown bitrate detected. Returning 0.");
+		} catch (NumberFormatException e) {
+			logger.trace("Could not parse bitrate from: " + value);
+			logger.trace("The full error was: " + e);
+
             return 0;
         }
 	}
@@ -417,23 +497,20 @@ public class LibMediaInfoParser {
 		if (value.indexOf("(0x") > -1) {
 			value = value.substring(0, value.indexOf("(0x"));
 		}
-
 		value = value.trim();
 		int id = Integer.parseInt(value);
 		return id;
 	}
 
 	public static String getSampleFrequency(String value) {
-		// some tracks show several values like "48000 / 48000 / 24000" for HE-AAC
-		// store only the first value
+		// Some tracks show several values like "48000 / 48000 / 24000" for HE-AAC
+		// We store only the first value
 		if (value.indexOf("/") > -1) {
 			value = value.substring(0, value.indexOf("/"));
 		}
-
 		if (value.indexOf("khz") > -1) {
 			value = value.substring(0, value.indexOf("khz"));
 		}
-
 		value = value.trim();
 		return value;
 	}
@@ -442,7 +519,6 @@ public class LibMediaInfoParser {
 		if (value.indexOf("fps") > -1) {
 			value = value.substring(0, value.indexOf("fps"));
 		}
-
 		value = value.trim();
 		return value;
 	}
@@ -460,11 +536,9 @@ public class LibMediaInfoParser {
 		if (value.indexOf("(") > -1) {
 			value = value.substring(0, value.indexOf("("));
 		}
-
 		if (value.indexOf("/") > -1) {
 			value = value.substring(0, value.indexOf("/"));
 		}
-
 		value = value.trim();
 		return value;
 	}
@@ -477,33 +551,25 @@ public class LibMediaInfoParser {
 	private static double getDuration(String value) {
 		int h = 0, m = 0, s = 0;
 		StringTokenizer st = new StringTokenizer(value, " ");
-
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken();
 			int hl = token.indexOf("h");
-
 			if (hl > -1) {
 				h = Integer.parseInt(token.substring(0, hl).trim());
 			}
-
 			int mnl = token.indexOf("mn");
-
 			if (mnl > -1) {
 				m = Integer.parseInt(token.substring(0, mnl).trim());
 			}
-
 			int msl = token.indexOf("ms");
-
 			if (msl == -1) {
 				// Only check if ms was not found
 				int sl = token.indexOf("s");
-
 				if (sl > -1) {
 					s = Integer.parseInt(token.substring(0, sl).trim());
 				}
 			}
 		}
-
 		return (h * 3600) + (m * 60) + s;
 	}
 
@@ -513,9 +579,8 @@ public class LibMediaInfoParser {
 				return base64.decode(based64Value.getBytes());
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error in decoding thumbnail data", e);
+			logger.error("Error in decoding thumbnail data", e);
 		}
-
 		return null;
 	}
 }

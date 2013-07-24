@@ -18,10 +18,7 @@
  */
 package net.pms.io;
 
-import com.sun.jna.Memory;
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
+import com.sun.jna.*;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
 import net.pms.PMS;
@@ -32,7 +29,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class WindowsNamedPipe extends Thread implements ProcessWrapper {
-	private static final Logger LOGGER = LoggerFactory.getLogger(WindowsNamedPipe.class);
+	private static final Logger logger = LoggerFactory.getLogger(WindowsNamedPipe.class);
 	private String path;
 	private boolean in;
 	private boolean forceReconnect;
@@ -160,10 +157,10 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 		this.path = "\\\\.\\pipe\\" + basename;
 		this.in = in;
 		this.forceReconnect = forceReconnect;
-		LOGGER.debug("Creating pipe " + this.path);
+		logger.debug("Creating pipe " + this.path);
 
 		try {
-			if (PMS.get().isWindows()) {
+			if (Platform.isWindows()) {
 				handle1 = Kernel32.INSTANCE.CreateNamedPipeA(
 					this.path,
 					3,
@@ -211,12 +208,12 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 				}
 			}
 		} catch (Exception e1) {
-			LOGGER.debug("Caught exception", e1);
+			logger.debug("Caught exception", e1);
 		}
 	}
 
 	public void run() {
-		LOGGER.debug("Waiting for pipe connection " + this.path);
+		logger.debug("Waiting for pipe connection " + this.path);
 		boolean b1 = Kernel32.INSTANCE.ConnectNamedPipe(handle1, null);
 
 		if (forceReconnect) {
@@ -226,11 +223,11 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 				} catch (InterruptedException e) { }
 			}
 
-			LOGGER.debug("Forced reconnection of " + path + " with result : " + b2);
+			logger.debug("Forced reconnection of " + path + " with result : " + b2);
 			handle1 = handle2;
 		}
 
-		LOGGER.debug("Result of " + this.path + " : " + b1);
+		logger.debug("Result of " + this.path + " : " + b1);
 
 		try {
 			if (b1) {
@@ -340,11 +337,11 @@ public class WindowsNamedPipe extends Thread implements ProcessWrapper {
 				}
 			}
 		} catch (IOException e) {
-			LOGGER.debug("Error: " + e.getMessage());
+			logger.debug("Error: " + e.getMessage());
 		}
 
 		if (!in) {
-			LOGGER.debug("Disconnected pipe: " + path);
+			logger.debug("Disconnected pipe: " + path);
 			Kernel32.INSTANCE.FlushFileBuffers(handle1);
 			Kernel32.INSTANCE.DisconnectNamedPipe(handle1);
 		} else {

@@ -27,7 +27,6 @@ public class MKV extends MPG {
 		return Identifier.MKV;
 	}
 
-
 	/**
 	 * @deprecated Use {@link #isCompatible(DLNAMediaInfo, RendererConfiguration)} instead.
 	 * <p>
@@ -45,11 +44,27 @@ public class MKV extends MPG {
 	/**
 	 * {@inheritDoc}
 	 */
-	public String[] getId() {
+	public String[] getSupportedExtensions() {
 		return new String[] {
-			"mkv", "dv", "ty", "mov", "ogm", "ogv", "hdmov",
-			"hdm", "rmv", "rmvb", "rm", "asf", "evo", "asx", "flv", "m2v",
-			"3gp", "3g2", "webm"
+			"3g2",
+			"3gp",
+			"asf",
+			"asx",
+			"dv",
+			"evo",
+			"flv",
+			"hdmov",
+			"hdm",
+			"m2v",
+			"mkv",
+			"mov",
+			"ogm",
+			"ogv",
+			"rmv",
+			"rmvb",
+			"rm",
+			"ty",
+			"webm",
 		};
 	}
 }

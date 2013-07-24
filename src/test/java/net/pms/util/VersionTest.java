@@ -1,6 +1,6 @@
 /*
  * PS3 Media Server, for streaming media to your PS3.
- * Copyright (C) 2012 chocolateboy
+ * Copyright (C) 2008-2013 A. Brochard.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,13 +18,10 @@
  */
 package net.pms.util;
 
-import net.pms.util.Version;
-
-import static org.hamcrest.CoreMatchers.*;
-
 import org.junit.Test;
+
+import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class VersionTest {
@@ -49,10 +46,10 @@ public class VersionTest {
 		assertFalse(v1.equals(null));
 		assertFalse(v2.equals(null));
 
-		assertThat(v1.hashCode(), is(v1.hashCode()));
-		assertThat(v2.hashCode(), is(v2.hashCode()));
-		assertThat(v1.hashCode(), is(v2.hashCode()));
-		assertThat(v2.hashCode(), is(v1.hashCode()));
+		assertThat(v1.hashCode()).isEqualTo(v1.hashCode());
+		assertThat(v2.hashCode()).isEqualTo(v2.hashCode());
+		assertThat(v1.hashCode()).isEqualTo(v2.hashCode());
+		assertThat(v2.hashCode()).isEqualTo(v1.hashCode());
 
 		assertFalse(v1.isGreaterThan(v1));
 		assertFalse(v2.isGreaterThan(v2));
@@ -91,8 +88,8 @@ public class VersionTest {
 		assertFalse(v1.equals(v2));
 		assertFalse(v2.equals(v1));
 
-		assertThat(v1.hashCode(), not(v2.hashCode()));
-		assertThat(v2.hashCode(), not(v1.hashCode()));
+		assertThat(v1.hashCode()).isNotEqualTo(v2.hashCode());
+		assertThat(v2.hashCode()).isNotEqualTo(v1.hashCode());
 	}
 
 	private void assertIsPmsUpdatable(Version v1, Version v2) {
@@ -107,7 +104,7 @@ public class VersionTest {
 	}
 
 	private void assertVersionToStringEquals(Version v, String s) {
-		assertThat(v.toString(), is(s));
+		assertThat(v.toString()).isEqualTo(s);
 	}
 
 	@Test
@@ -243,54 +240,54 @@ public class VersionTest {
 
 	@Test
 	public void testMajor() {
-		assertThat(v("0").getMajor(), is(0));
-		assertThat(v("0.1").getMajor(), is(0));
-		assertThat(v("0.1.2").getMajor(), is(0));
-		assertThat(v("0.1.2.3").getMajor(), is(0));
+		assertThat(v("0").getMajor()).isEqualTo(0);
+		assertThat(v("0.1").getMajor()).isEqualTo(0);
+		assertThat(v("0.1.2").getMajor()).isEqualTo(0);
+		assertThat(v("0.1.2.3").getMajor()).isEqualTo(0);
 
-		assertThat(v("1").getMajor(), is(1));
-		assertThat(v("1.2").getMajor(), is(1));
-		assertThat(v("1.2.3").getMajor(), is(1));
-		assertThat(v("1.2.3.4").getMajor(), is(1));
+		assertThat(v("1").getMajor()).isEqualTo(1);
+		assertThat(v("1.2").getMajor()).isEqualTo(1);
+		assertThat(v("1.2.3").getMajor()).isEqualTo(1);
+		assertThat(v("1.2.3.4").getMajor()).isEqualTo(1);
 	}
 
 	@Test
 	public void testMinor() {
-		assertThat(v("0").getMinor(), is(0));
-		assertThat(v("0.1").getMinor(), is(1));
-		assertThat(v("0.1.2").getMinor(), is(1));
-		assertThat(v("0.1.2.3").getMinor(), is(1));
+		assertThat(v("0").getMinor()).isEqualTo(0);
+		assertThat(v("0.1").getMinor()).isEqualTo(1);
+		assertThat(v("0.1.2").getMinor()).isEqualTo(1);
+		assertThat(v("0.1.2.3").getMinor()).isEqualTo(1);
 
-		assertThat(v("1").getMinor(), is(0));
-		assertThat(v("1.2").getMinor(), is(2));
-		assertThat(v("1.2.3").getMinor(), is(2));
-		assertThat(v("1.2.3.4").getMinor(), is(2));
+		assertThat(v("1").getMinor()).isEqualTo(0);
+		assertThat(v("1.2").getMinor()).isEqualTo(2);
+		assertThat(v("1.2.3").getMinor()).isEqualTo(2);
+		assertThat(v("1.2.3.4").getMinor()).isEqualTo(2);
 	}
 
 	@Test
 	public void testRevision() {
-		assertThat(v("0").getRevision(), is(0));
-		assertThat(v("0.1").getRevision(), is(0));
-		assertThat(v("0.1.2").getRevision(), is(2));
-		assertThat(v("0.1.2.3").getRevision(), is(2));
+		assertThat(v("0").getRevision()).isEqualTo(0);
+		assertThat(v("0.1").getRevision()).isEqualTo(0);
+		assertThat(v("0.1.2").getRevision()).isEqualTo(2);
+		assertThat(v("0.1.2.3").getRevision()).isEqualTo(2);
 
-		assertThat(v("1").getRevision(), is(0));
-		assertThat(v("1.2").getRevision(), is(0));
-		assertThat(v("1.2.3").getRevision(), is(3));
-		assertThat(v("1.2.3.4").getRevision(), is(3));
+		assertThat(v("1").getRevision()).isEqualTo(0);
+		assertThat(v("1.2").getRevision()).isEqualTo(0);
+		assertThat(v("1.2.3").getRevision()).isEqualTo(3);
+		assertThat(v("1.2.3.4").getRevision()).isEqualTo(3);
 	}
 
 	@Test
 	public void testBuild() {
-		assertThat(v("0").getBuild(), is(0));
-		assertThat(v("0.1").getBuild(), is(0));
-		assertThat(v("0.1.2").getBuild(), is(0));
-		assertThat(v("0.1.2.3").getBuild(), is(3));
+		assertThat(v("0").getBuild()).isEqualTo(0);
+		assertThat(v("0.1").getBuild()).isEqualTo(0);
+		assertThat(v("0.1.2").getBuild()).isEqualTo(0);
+		assertThat(v("0.1.2.3").getBuild()).isEqualTo(3);
 
-		assertThat(v("1").getBuild(), is(0));
-		assertThat(v("1.2").getBuild(), is(0));
-		assertThat(v("1.2.3").getBuild(), is(0));
-		assertThat(v("1.2.3.4").getBuild(), is(4));
+		assertThat(v("1").getBuild()).isEqualTo(0);
+		assertThat(v("1.2").getBuild()).isEqualTo(0);
+		assertThat(v("1.2.3").getBuild()).isEqualTo(0);
+		assertThat(v("1.2.3.4").getBuild()).isEqualTo(4);
 	}
 
 	@Test

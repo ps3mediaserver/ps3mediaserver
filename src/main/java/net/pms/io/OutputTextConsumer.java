@@ -35,7 +35,7 @@ import java.util.List;
  *  An input stream consumer that stores the consumed lines in a list and optionally logs each line.
  */
 public class OutputTextConsumer extends OutputConsumer {
-	private static final Logger LOGGER = LoggerFactory.getLogger(OutputTextConsumer.class);
+	private static final Logger logger = LoggerFactory.getLogger(OutputTextConsumer.class);
 	private List<String> lines = new ArrayList<String>();
 	private Object linesLock = new Object();
 	private boolean log;
@@ -60,13 +60,13 @@ public class OutputTextConsumer extends OutputConsumer {
 				}
 
 				if (log) {
-					LOGGER.debug(line);
+					logger.debug(line);
 				}
 			}
 		} catch (IOException ioe) {
-			LOGGER.debug("Error consuming input stream: {}", ioe.getMessage());
+			logger.debug("Error consuming input stream: {}", ioe.getMessage());
 		} catch (IllegalStateException ise) {
-			LOGGER.debug("Error reading from closed input stream: {}", ise.getMessage());
+			logger.debug("Error reading from closed input stream: {}", ise.getMessage());
 		} finally {
 			LineIterator.closeQuietly(it); // clean up all associated resources
 		}
