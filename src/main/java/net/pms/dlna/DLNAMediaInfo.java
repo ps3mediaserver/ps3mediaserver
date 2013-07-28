@@ -19,6 +19,7 @@
 package net.pms.dlna;
 
 import com.sun.jna.Platform;
+
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.Thumbnails.Builder;
 import net.coobird.thumbnailator.tasks.UnsupportedFormatException;
@@ -35,6 +36,7 @@ import net.pms.util.CoverUtil;
 import net.pms.util.FileUtil;
 import net.pms.util.MpegUtil;
 import net.pms.util.ProcessUtil;
+
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.IImageMetadata;
@@ -51,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -74,8 +77,15 @@ public class DLNAMediaInfo implements Cloneable {
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
 
 	public static final long ENDFILE_POS = 99999475712L;
-	public static final long TRANS_SIZE = 100000000000L;
 
+	/**
+	 * Maximum size of a stream, taking into account that some renderers (like
+	 * the PS3) will convert this <code>long</code> to <code>int</code>.
+	 * Truncating this value will still return the maximum value that an
+	 * <code>int</code> can contain.
+	 */
+	public static final long TRANS_SIZE = Long.MAX_VALUE - Integer.MAX_VALUE - 1;
+	
 	// Stored in database
 	private Double durationSec;
 
