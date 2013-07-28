@@ -76,6 +76,14 @@ public class DLNAMediaInfo implements Cloneable {
 	private static final String THUMBNAIL_DIRECTORY_NAME = "thumbs";
 	private static final PmsConfiguration configuration = PMS.getConfiguration();
 
+	/**
+	 * XXX: Not sure why this magical number is relevant. It is only used in
+	 * constructs like <code>lowRange != DLNAMediaInfo.ENDFILE_POS</code>, but
+	 * dig deeper and you will find that <code>lowRange</code> is never set to
+	 * that specific value. So unless there is a (particular?) renderer that
+	 * uses this exact value when it does not want to receive any bytes, we
+	 * might be better off deleting this.
+	 */
 	public static final long ENDFILE_POS = 99999475712L;
 
 	/**
