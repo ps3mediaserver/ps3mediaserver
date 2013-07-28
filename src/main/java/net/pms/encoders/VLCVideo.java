@@ -297,10 +297,10 @@ public class VLCVideo extends Player {
 
 		// Handle audio language
 		if (params.aid != null) { // User specified language at the client, acknowledge it
-			if (params.aid.getLang() == null || params.aid.getLang().equals("und")) { // VLC doesn't understand und, but does understand a non existant track
-				cmdList.add("--audio-" + disableSuffix);
-			} else { // Load by ID (better)
+			if (params.aid.getLang() == null || params.aid.getLang().equals("und")) { // VLC doesn't understand und, so try to get audio track by ID
 				cmdList.add("--audio-track=" + params.aid.getId());
+			} else {
+				cmdList.add("--audio-language=" + params.aid.getLang());
 			}
 		} else { // Not specified, use language from GUI
 			cmdList.add("--audio-language=" + configuration.getAudioLanguages());
