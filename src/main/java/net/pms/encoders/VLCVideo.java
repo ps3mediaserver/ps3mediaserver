@@ -23,6 +23,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +51,9 @@ import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
 import net.pms.util.FormLayoutUtil;
+import net.pms.util.FileUtil;
 import net.pms.util.PlayerUtil;
+import net.pms.util.ProcessUtil;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -309,10 +312,32 @@ public class VLCVideo extends Player {
 
 		// Handle subtitle language
 		if (params.sid != null) { // User specified language at the client, acknowledge it
-			if (params.sid.getLang() == null || params.sid.getLang().equals("und")) { // VLC doesn't understand und, but does understand a non existant track
-				cmdList.add("--sub-" + disableSuffix);
-			} else { // Load by ID (better)
+			if (params.sid.isExternal()) {
+				String externalSubtitlesFileName = null;
+				
+				// External subtitle file
+				if (params.sid.isExternalFileUtf16()) {
+					try {
+						// Convert UTF-16 -> UTF-8
+						File convertedSubtitles = new File(pmsconfig.getTempFolder(), "utf8_" + params.sid.getExternalFile().getName());
+						FileUtil.convertFileFromUtf16ToUtf8(params.sid.getExternalFile(), convertedSubtitles);
+						externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(convertedSubtitles.getAbsolutePath());
+					} catch (IOException e) {
+						LOGGER.debug("Error converting file from UTF-16 to UTF-8", e);
+						externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(params.sid.getExternalFile().getAbsolutePath());
+					}
+				} else {
+					externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(params.sid.getExternalFile().getAbsolutePath());
+				}
+				
+				if(externalSubtitlesFileName != null) {
+					cmdList.add("--sub-file=" + externalSubtitlesFileName);
+				}
+			}
+			else if (params.sid.getLang() != null && !params.sid.getLang().equals("und")) { // Load by ID (better)
 				cmdList.add("--sub-track=" + params.sid.getId());
+			} else { // VLC doesn't understand und, but does understand a non existant track
+				cmdList.add("--sub-" + disableSuffix);
 			}
 		} else if (!pmsconfig.isDisableSubtitles()){ // Not specified, use language from GUI if enabled
 			// FIXME: VLC does not understand "loc" or "und".
