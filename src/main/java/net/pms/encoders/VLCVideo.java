@@ -23,6 +23,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,8 +50,10 @@ import net.pms.io.PipeProcess;
 import net.pms.io.ProcessWrapper;
 import net.pms.io.ProcessWrapperImpl;
 import net.pms.network.HTTPResource;
+import net.pms.util.FileUtil;
 import net.pms.util.FormLayoutUtil;
 import net.pms.util.PlayerUtil;
+import net.pms.util.ProcessUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -215,14 +218,14 @@ public class VLCVideo extends Player {
 		args.put("keyint", 16);
 
 		// Recommended on VLC DVD encoding page
-		args.put("strict-rc", "");
+		args.put("strict-rc", null);
 
 		// Stream subtitles to client
 		// args.add("scodec=dvbs");
 		// args.add("senc=dvbsub");
 
 		// Hardcode subtitles into video
-		args.put("soverlay", "");
+		args.put("soverlay", null);
 
 		// enable multi-threading
 		args.put("threads", "" + configuration.getNumberOfCpuCores());
@@ -268,11 +271,15 @@ public class VLCVideo extends Player {
 		// Note: it's enabled by default in 2.0.5 (and possibly
 		// earlier), so, if not enabled, it needs to be explicitly
 		// disabled
-		if (configuration.isVideoHardwareAcceleration()) {
-			logger.warn("VLC hardware acceleration support is an experimental feature. Please disable it before reporting issues.");
-			cmdList.add("--ffmpeg-hw");
-		} else {
-			cmdList.add("--no-ffmpeg-hw");
+
+		// These options do not exist in VLC 2.0.7 on Mac OSX
+		if (!Platform.isMac()) {
+			if (configuration.isVideoHardwareAcceleration()) {
+				logger.warn("VLC hardware acceleration support is an experimental feature. Please disable it before reporting issues.");
+				cmdList.add("--ffmpeg-hw");
+			} else {
+				cmdList.add("--no-ffmpeg-hw");
+			}
 		}
 
 		// Useful for the more esoteric codecs people use
@@ -293,22 +300,49 @@ public class VLCVideo extends Player {
 		String disableSuffix = "track=214748361";
 
 		// Handle audio language
-		if (params.aid != null) { // User specified language at the client, acknowledge it
-			if (params.aid.getLang() == null || params.aid.getLang().equals("und")) { // VLC doesn't understand und, but does understand a non existant track
-				cmdList.add("--audio-" + disableSuffix);
-			} else { // Load by ID (better)
+		if (params.aid != null) {
+			// User specified language at the client, acknowledge it
+			if (params.aid.getLang() == null || params.aid.getLang().equals("und")) {
+				// VLC doesn't understand "und", so try to get audio track by ID
 				cmdList.add("--audio-track=" + params.aid.getId());
+			} else {
+				cmdList.add("--audio-language=" + params.aid.getLang());
 			}
-		} else { // Not specified, use language from GUI
+		} else {
+			// Not specified, use language from GUI
+			// FIXME: VLC does not understand "loc" or "und".
 			cmdList.add("--audio-language=" + configuration.getAudioLanguages());
 		}
 
 		// Handle subtitle language
 		if (params.sid != null) { // User specified language at the client, acknowledge it
-			if (params.sid.getLang() == null || params.sid.getLang().equals("und")) { // VLC doesn't understand und, but does understand a non existant track
-				cmdList.add("--sub-" + disableSuffix);
-			} else { // Load by ID (better)
+			if (params.sid.isExternal()) {
+				String externalSubtitlesFileName = null;
+
+				// External subtitle file
+				if (params.sid.isExternalFileUtf16()) {
+					try {
+						// Convert UTF-16 -> UTF-8
+						File convertedSubtitles = new File(configuration.getTempFolder(), "utf8_" + params.sid.getExternalFile().getName());
+						FileUtil.convertFileFromUtf16ToUtf8(params.sid.getExternalFile(), convertedSubtitles);
+						externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(convertedSubtitles.getAbsolutePath());
+					} catch (IOException e) {
+						logger.debug("Error converting file from UTF-16 to UTF-8", e);
+						externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(params.sid.getExternalFile().getAbsolutePath());
+					}
+				} else {
+					externalSubtitlesFileName = ProcessUtil.getShortFileNameIfWideChars(params.sid.getExternalFile().getAbsolutePath());
+				}
+
+				if (externalSubtitlesFileName != null) {
+					cmdList.add("--sub-file");
+					cmdList.add(externalSubtitlesFileName);
+				}
+			}
+			else if (params.sid.getLang() != null && !params.sid.getLang().equals("und")) { // Load by ID (better)
 				cmdList.add("--sub-track=" + params.sid.getId());
+			} else { // VLC doesn't understand "und", but does understand a nonexistent track
+				cmdList.add("--sub-" + disableSuffix);
 			}
 		} else if (!configuration.isDisableSubtitles()) { // Not specified, use language from GUI if enabled
 			// FIXME: VLC does not understand "loc" or "und".
@@ -317,21 +351,31 @@ public class VLCVideo extends Player {
 			cmdList.add("--sub-" + disableSuffix);
 		}
 
-		// Skip forward if nessesary
+		// Skip forward if necessary
 		if (params.timeseek != 0) {
 			cmdList.add("--start-time");
 			cmdList.add(String.valueOf(params.timeseek));
 		}
 
 		// Generate encoding args
+		String separator = "";
 		StringBuilder encodingArgsBuilder = new StringBuilder();
+
 		for (Map.Entry<String, Object> curEntry : getEncodingArgs(codecConfig).entrySet()) {
-			encodingArgsBuilder.append(curEntry.getKey()).append("=").append(curEntry.getValue()).append(",");
+			encodingArgsBuilder.append(separator);
+			encodingArgsBuilder.append(curEntry.getKey());
+
+			if (curEntry.getValue() != null) {
+				encodingArgsBuilder.append("=");
+				encodingArgsBuilder.append(curEntry.getValue());
+			}
+
+			separator = ",";
 		}
 
 		// Add our transcode options
 		String transcodeSpec = String.format(
-				"#transcode{%s}:std{access=file,mux=%s,dst=\"%s%s\"}",
+				"#transcode{%s}:standard{access=file,mux=%s,dst='%s%s'}",
 				encodingArgsBuilder.toString(),
 				codecConfig.container,
 				(isWindows ? "\\\\" : ""),
