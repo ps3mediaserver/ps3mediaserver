@@ -710,9 +710,12 @@
 							<overWriteSnapshots>true</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
 
+							<!-- This is a izpack dependency that collides with jmte's "asm" dependency -->
+							<excludeArtifactIds>asm-all</excludeArtifactIds>
+
 							<!-- Exclude tools.jar etc. -->
 							<!-- excludeScope>system</excludeScope -->
-		
+
 							<!-- Exclude the IzPack dependencies -->
 							<excludeGroupIds>org.codehaus.izpack</excludeGroupIds>
 						</configuration>
