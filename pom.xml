@@ -1274,7 +1274,7 @@
 								<id>build-pms-exe-java-wrapper-windows</id>
 								<configuration>
 									<makensisBin>${makensis-bin}</makensisBin>
-									<outputFile>${project.build.directory}/PMS.exe</outputFile>
+									<outputFile>${project.build.directory}/pms.exe</outputFile>
 									<setupScript>${external-resources.directory}/nsis/pms.nsi</setupScript>
 								</configuration>
 								<phase>package</phase>
@@ -1288,7 +1288,7 @@
 								<id>build-pms-setup-full-exe-windows</id>
 								<configuration>
 									<makensisBin>${makensis-bin}</makensisBin>
-									<outputFile>${project.build.directory}/PMS-setup-full.exe</outputFile>
+									<outputFile>${project.build.directory}/pms-${project.version}-setup-full.exe</outputFile>
 									<setupScript>${external-resources.directory}/nsis/setup-x86.nsi</setupScript>
 								</configuration>
 								<phase>package</phase>
@@ -1302,7 +1302,7 @@
 								<id>build-pms-setup-full-x64-exe-windows</id>
 								<configuration>
 									<makensisBin>${makensis-bin}</makensisBin>
-									<outputFile>${project.build.directory}/PMS-setup-full-x64.exe</outputFile>
+									<outputFile>${project.build.directory}/pms-${project.version}-setup-full-x64.exe</outputFile>
 									<setupScript>${external-resources.directory}/nsis/setup-x64.nsi</setupScript>
 								</configuration>
 								<phase>package</phase>
@@ -1316,7 +1316,7 @@
 								<id>build-pms-setup-without-jre-exe-windows</id>
 								<configuration>
 									<makensisBin>${makensis-bin}</makensisBin>
-									<outputFile>${project.build.directory}/PMS-setup-without-jre.exe</outputFile>
+									<outputFile>${project.build.directory}/pms-${project.version}-setup-without-jre.exe</outputFile>
 									<setupScript>${external-resources.directory}/nsis/setup-without-jre.nsi</setupScript>
 								</configuration>
 								<phase>package</phase>
