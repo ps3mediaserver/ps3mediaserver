@@ -7,7 +7,7 @@
 		This file takes care of assembling the Linux distribution file.
 	-->
 
-	<id>distribution</id>
+	<id>generic-linux-unix</id>
 	<formats>
 		<format>tar.gz</format>
 	</formats>

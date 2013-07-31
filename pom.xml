@@ -1594,7 +1594,7 @@
 		
 										<chmod dir="${izpack.installer.app}/Contents/MacOs/" perm="a+x" includes="*" />
 		
-										<tar destfile="${project.build.directory}/${project.artifactId}-setup-macosx-${project.version}.tar.gz"
+										<tar destfile="${project.build.directory}/${project.artifactId}-${project.version}-setup-macosx.tar.gz"
 											compression="gzip"
 											longfile="gnu">
 											<tarfileset dir="${izpack.installer.app}"
