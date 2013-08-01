@@ -20,7 +20,7 @@ TVs, music players and more.
 
 * [Website](http://www.ps3mediaserver.org/)
 * [Forum](http://www.ps3mediaserver.org/forum/)
-* [Downloads](https://code.google.com/p/ps3mediaserver/downloads/list)
+* [Downloads](http://sourceforge.net/projects/ps3mediaserver/files/)
 * [Source code](https://github.com/ps3mediaserver/ps3mediaserver)
 * [Issue tracker](https://code.google.com/p/ps3mediaserver/issues/list)
 
@@ -57,7 +57,7 @@ See the [CHANGELOG](https://github.com/ps3mediaserver/ps3mediaserver/blob/master
 
 ## Installation
 
-The [download site](https://code.google.com/p/ps3mediaserver/downloads/list)
+The [download site](http://sourceforge.net/projects/ps3mediaserver/files/)
 has the latest releases of PS3 Media Server for Windows and Mac OS X as well as tarballs for Linux/Unix
 and debs for manual installation on Debian/Ubuntu.
 
