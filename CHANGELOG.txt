@@ -3,6 +3,8 @@ Changelog:
 
 1.90.1 - 2013-??-??
 
+    Misc:
+        - Restored Java support for file names with special characters on Mac OSX.
 
 1.90.0 - 2013-07-31
 
