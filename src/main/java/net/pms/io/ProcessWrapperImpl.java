@@ -159,10 +159,10 @@ public class ProcessWrapperImpl extends Thread implements ProcessWrapper {
 				}
 			}
 
-			// Fontconfig on Mac OSX may have problems locating fonts. As a result
+			// Fontconfig on Mac OS X may have problems locating fonts. As a result
 			// subtitles may be rendered invisible. Force feed fontconfig the
 			// FONTCONFIG_PATH environment variable to the prepackaged fontconfig
-			// configuration directory that comes with PMS on Mac OSX to make
+			// configuration directory that comes with PMS on Mac OS X to make
 			// sure it has sensible defaults.
 			if (Platform.isMac()) {
 				// Do not overwrite the variable if it already exists.

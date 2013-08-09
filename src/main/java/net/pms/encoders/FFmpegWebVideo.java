@@ -51,10 +51,16 @@ public class FFmpegWebVideo extends FFmpegVideo {
 	@Deprecated
 	public static final String ID = "ffmpegwebvideo";
 
-	public FFmpegWebVideo(PmsConfiguration configuration, FFmpegProtocols protocols) {
+	public FFmpegWebVideo(PmsConfiguration configuration) {
 		super(configuration);
 		this.configuration = configuration;
-		this.protocols = protocols;
+		this.protocols = getProtocols(); // fetch/create the FFmpegProtocols singleton
+	}
+
+	// use FFmpegWebVideo(PmsConfiguration)
+	@Deprecated
+	public FFmpegWebVideo(PmsConfiguration configuration, FFmpegProtocols protocols) {
+		this(configuration);
 	}
 
 	@Override

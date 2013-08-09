@@ -41,10 +41,16 @@ public class FFmpegWebAudio extends FFmpegAudio {
 	private final FFmpegProtocols protocols;
 	public static final String ID = "ffmpegwebaudio";
 
-	public FFmpegWebAudio(PmsConfiguration configuration, FFmpegProtocols protocols) {
+	public FFmpegWebAudio(PmsConfiguration configuration) {
 		super(configuration);
 		this.configuration = configuration;
-		this.protocols = protocols;
+		this.protocols = getProtocols();
+	}
+
+	// use FFmpegWebAudio(PmsConfiguration)
+	@Deprecated
+	public FFmpegWebAudio(PmsConfiguration configuration, FFmpegProtocols protocols) {
+		this(configuration);
 	}
 
 	@Override

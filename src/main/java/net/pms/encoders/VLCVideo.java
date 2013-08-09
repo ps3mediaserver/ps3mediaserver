@@ -272,7 +272,7 @@ public class VLCVideo extends Player {
 		// earlier), so, if not enabled, it needs to be explicitly
 		// disabled
 
-		// These options do not exist in VLC 2.0.7 on Mac OSX
+		// These options do not exist in VLC 2.0.7 on Mac OS X
 		if (!Platform.isMac()) {
 			if (configuration.isVideoHardwareAcceleration()) {
 				logger.warn("VLC hardware acceleration support is an experimental feature. Please disable it before reporting issues.");

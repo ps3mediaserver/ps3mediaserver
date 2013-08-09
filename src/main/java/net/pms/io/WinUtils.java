@@ -33,9 +33,8 @@ import java.nio.CharBuffer;
 import java.util.prefs.Preferences;
 
 /**
- * Contains the Windows specific native functionality. Do not try to instantiate on Linux/MacOSX !
+ * Contains the Windows specific native functionality. Do not try to instantiate on Linux/Mac OS X!
  * @author zsombor
- *
  */
 public class WinUtils extends BasicSystemUtils implements SystemUtils {
 	private static final Logger logger = LoggerFactory.getLogger(WinUtils.class);

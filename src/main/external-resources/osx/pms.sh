@@ -6,7 +6,7 @@
 
 DIRNAME=`dirname "$0"`
 
-# By default Mac OSX LC_ALL is set to "C", which means files with special characters will not be found.
+# By default Mac OS X LC_ALL is set to "C", which means files with special characters will not be found.
 # http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4733494
 # http://stackoverflow.com/questions/7165108/in-osx-lion-lang-is-not-set-to-utf8-how-fix
 export LC_ALL="en_US.UTF-8"

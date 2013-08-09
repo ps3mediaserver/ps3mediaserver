@@ -31,13 +31,13 @@ import org.slf4j.LoggerFactory;
 /**
  * A helper class that provides access to the list of protocols supported by FFmpeg.
  */
-// this class and its methods are package private
-final class FFmpegProtocols {
+public final class FFmpegProtocols {
 	private final Logger logger = LoggerFactory.getLogger(FFmpegProtocols.class);
 	private final List<String> protocols = new ArrayList<String>();
 	private final PmsConfiguration configuration;
 	private boolean convertMmsToMmsh = false;
 
+	// package-private constructor
 	FFmpegProtocols(PmsConfiguration configuration) {
 		this.configuration = configuration;
 
@@ -51,11 +51,11 @@ final class FFmpegProtocols {
 		logger.debug("FFmpeg supported protocols: {}", protocols);
 	}
 
-	boolean isSupportedProtocol(String protocol) {
+	public boolean isSupportedProtocol(String protocol) {
 		return protocols.contains(protocol);
 	}
 
-	String getFilename(String filename) {
+	public String getFilename(String filename) {
 		// XXX work around an ffmpeg bug: http://ffmpeg.org/trac/ffmpeg/ticket/998
 		if (convertMmsToMmsh) {
 			if (filename.startsWith("mms:")) {

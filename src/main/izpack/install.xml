@@ -85,7 +85,7 @@
     <packs>
         <pack name="Core" required="yes">
             <description>The PMS application including required libraries.</description>
-			<!-- Constructing Mac OSX application bundle structure for now -->
+			<!-- Constructing Mac OS X application bundle structure for now -->
 
             <fileset dir="" targetdir="$INSTALL_PATH/Contents/Resources/Java">
             	<include name="lib/*" />
@@ -150,7 +150,7 @@
         <pack name="Binaries" required="yes">
             <description>Third party binaries necessary for PMS to function properly.</description>
 
-			<!-- Mac OSX binaries -->
+			<!-- Mac OS X binaries -->
             <fileset dir="${target.transcode-tools.directory}/osx" targetdir="$INSTALL_PATH/Contents/Resources/Java/osx">
             	<include name="dcraw" />
             	<include name="ffmpeg" />
@@ -199,7 +199,7 @@
 	<!-- <native type="izpack" name="ShellLink.dll" /> -->
 
 	<!--
-		OSX Application bundle info:
+		OS X Application bundle info:
 
 		http://developer.apple.com/library/ios/#documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html
 		http://lists.apple.com/archives/java-dev/2012/Dec/msg00033.html

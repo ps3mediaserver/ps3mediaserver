@@ -35,9 +35,25 @@ import org.slf4j.Logger;
  */
 public abstract class FFmpegBase extends Player {
 	private final PmsConfiguration configuration;
+	private static FFmpegProtocols protocols;
 
 	public FFmpegBase(PmsConfiguration configuration) {
 		this.configuration = configuration;
+	}
+
+	/**
+	 * Returns an instance of the {@link FFmpegProtocols} class used by
+	 * FFmpeg web engines for protocol compatibility tests and substitutions
+	 *
+	 * @return the singleton instance of FFmpegProtocol
+	 * @since 1.90.1
+	 */
+	protected synchronized FFmpegProtocols getProtocols() {
+		if (protocols == null) {
+			protocols = new FFmpegProtocols(configuration);
+		}
+
+		return protocols;
 	}
 
 	@Override

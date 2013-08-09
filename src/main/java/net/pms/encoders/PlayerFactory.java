@@ -116,8 +116,6 @@ public final class PlayerFactory {
 	 *            PMS configuration settings.
 	 */
 	private static void registerPlayers(final PmsConfiguration configuration) {
-		FFmpegProtocols ffmpegProtocols = new FFmpegProtocols(configuration);
-
 		if (Platform.isWindows()) {
 			registerPlayer(new FFmpegAviSynthVideo(configuration));
 		}
@@ -131,8 +129,8 @@ public final class PlayerFactory {
 
 		registerPlayer(new FFmpegVideo(configuration));
 		registerPlayer(new VLCVideo(configuration));
-		registerPlayer(new FFmpegWebVideo(configuration, ffmpegProtocols));
-		registerPlayer(new FFmpegWebAudio(configuration, ffmpegProtocols));
+		registerPlayer(new FFmpegWebVideo(configuration));
+		registerPlayer(new FFmpegWebAudio(configuration));
 		registerPlayer(new MEncoderWebVideo(configuration));
 		registerPlayer(new VLCWebVideo(configuration));
 		registerPlayer(new TsMuxeRVideo(configuration));
