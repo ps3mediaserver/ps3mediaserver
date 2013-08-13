@@ -1188,6 +1188,14 @@ public class DLNAMediaInfo implements Cloneable {
 		if ("h264".equals(getCodecV())) {
 			if (getReferenceFrameCount() > -1) {
 				logger.debug("H.264 file: {} level {} / ref frames {}", f.getFilename(), defaultString(getAvcLevel(), "N/A"), getReferenceFrameCount());
+				
+				// shagrath : for tsmuxer to work natively with h264, we still need to retrieve some AVC header informations to emulate the h264_mp4toannexb filter in mencoder (via the H264InputStream class)
+				// I would love for mencoder to support it natively but I don't think it will ever happens
+				byte headers[][] = getAnnexBFrameHeader(f);
+				if (ffmpeg_annexb_failure) {
+					logger.info("Error parsing information from the file: " + f.getFilename());
+				} else
+					setH264AnnexB(headers[1]);
 
 				if (("4.1".equals(getAvcLevel())
 						|| "4.2".equals(getAvcLevel())

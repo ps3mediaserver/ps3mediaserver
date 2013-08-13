@@ -10,6 +10,7 @@ Changelog:
             - Fix for spaces in font names breaking playback 
 
     Misc:
+    	- Fixed regression with tsMuxer and H264 support
         - Restored Java support for file names with special characters on Mac OS X.
 
 1.90.0 - 2013-07-31
