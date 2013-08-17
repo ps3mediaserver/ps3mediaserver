@@ -4,8 +4,9 @@ Changelog:
 1.90.1 - 2013-??-??
 
     Engines:
-        - FFMpeg Web Video and FFmpeg Web Audio:
+        - FFmpeg Video, FFMpeg Web Video and FFmpeg Web Audio:
             - Fix issue that prevented plugins extending FFmpegWebAudio and FFmpegWebVideo safely
+            - Updated FFmpeg for Windows
         - MEncoder Video:
             - Fix for spaces in font names breaking playback 
 
