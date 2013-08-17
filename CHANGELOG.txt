@@ -1,7 +1,7 @@
 Changelog:
 ==========
 
-1.90.1 - 2013-??-??
+1.90.1 - 2013-08-17
 
     Engines:
         - FFmpeg Video, FFMpeg Web Video and FFmpeg Web Audio:
