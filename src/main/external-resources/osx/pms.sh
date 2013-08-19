@@ -4,6 +4,9 @@
 # Environment that is provided in the PlugIns directory.
 #
 
+# Set this to true if you want to hide the dock icon by default
+hide_dock_icon=false
+
 DIRNAME=`dirname "$0"`
 
 # By default Mac OS X LC_ALL is set to "C", which means files with special characters will not be found.
@@ -43,6 +46,7 @@ cd "$PMS_HOME"
 "$JAVA_HOME/bin/java" $JAVA_OPTS \
 	-Xmx768M -Xss1024k -Dfile.encoding=UTF-8 -Djava.net.preferIPv4Stack=true \
 	-Xdock:icon="$APPLICATION_DIR/Contents/Resources/pms.icns" \
+	-Dapple.awt.UIElement="$hide_dock_icon" \
 	-classpath "$PMS_JARS" \
 	net.pms.PMS
 
