@@ -119,4 +119,4 @@ Thanks to the following developers and companies for providing tools used in PMS
 * [DocToc](https://github.com/thlorenz/doctoc) - a tool used to generate TOCs for some of our Markdown documents
 * ej-technologies for [JProfiler](http://www.ej-technologies.com/products/jprofiler/overview.html) - Java Profiler [Open Source License](http://www.ej-technologies.com/buy/jprofiler/openSource/enter)
 * JetBrains for [IntelliJ IDEA](https://www.jetbrains.com/idea/) - Java IDE [Open Source Project Development License](https://www.jetbrains.com/idea/opensource/license.html)
-* [IzPack](http://izpack.org/) - used to package the Mac OSX application
+* [IzPack](http://izpack.org/) - used to package the Mac OS X application

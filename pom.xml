@@ -1434,7 +1434,7 @@
 		</profile>
 
 		<!--
-			Mac OSX profile: takes care of building the final package for Mac OS X.
+			Mac OS X profile: takes care of building the final package for Mac OS X.
 		-->
 		<profile>
 			<id>osx</id>
@@ -1455,7 +1455,7 @@
 
 			<build>
 				<resources>
-					<!-- Copy precompiled OSX binaries. -->
+					<!-- Copy precompiled OS X binaries. -->
 					<resource>
 						<directory>${external-resources.transcode-tools.directory}/osx/bin</directory>
 						<targetPath>${izpack.staging}/osx</targetPath>

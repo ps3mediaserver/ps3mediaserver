@@ -3,7 +3,6 @@ Changelog:
 
 1.90.2 - 2013-??-??
 
-
 1.90.1 - 2013-08-17
 
     Engines:
@@ -11,11 +10,11 @@ Changelog:
             - Fix issue that prevented plugins extending FFmpegWebAudio and FFmpegWebVideo safely
             - Updated FFmpeg for Windows
         - MEncoder Video:
-            - Fix for spaces in font names breaking playback 
+            - Fix for spaces in font names breaking playback
 
     Misc:
-    	- Fixed regression with tsMuxer and H264 support
-        - Restored Java support for file names with special characters on Mac OS X.
+        - Fixed regression with tsMuxeR and H.264 support
+        - Restored Java support for file names with special characters on Mac OS X
 
 1.90.0 - 2013-07-31
 

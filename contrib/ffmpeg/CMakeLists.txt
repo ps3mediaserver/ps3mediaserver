@@ -117,7 +117,7 @@ EXTERNALPROJECT_ADD(
     # (the 2.12.x series is still being maintained/updated: http://www.gnutls.org/security.html)
     # http://public.kitware.com/Bug/view.php?id=13515
     URL ftp://ftp.gnutls.org/gcrypt/gnutls/v2.12/gnutls-2.12.23.tar.bz2
-    # XXX linking against nettle breaks with "duplicate symbol _memxor" on Mac OSX
+    # XXX linking against nettle breaks with "duplicate symbol _memxor" on Mac OS X
     PATCH_COMMAND patch -p1 < ${CMAKE_SOURCE_DIR}/vendor/gnutls-memxor.patch
     # XXX linking against nettle/hogweed breaks unless -lgmp is added
     # XXX and it can't find the lib dir from --prefix, so that needs to be added as well
@@ -190,7 +190,7 @@ EXTERNALPROJECT_ADD(
 )
 
 IF (APPLE)
-    # Mac OSX build needs to force the correct architecture.
+    # Mac OS X build needs to force the correct architecture.
     SET(CONFIGURE_COMMAND_OPENSSL ./configure darwin64-x86_64-cc no-shared no-idea no-mdc2 no-rc5 --prefix=${CMAKE_BINARY_DIR})
     SET(BUILD_COMMAND_OPENSSL make depend MAKEDEPPROG=${CMAKE_C_COMPILER} && make)
 ELSE()
@@ -315,7 +315,7 @@ ENDIF()
 
 EXTERNALPROJECT_ADD(
     xavs
-    SVN_REPOSITORY https://xavs.svn.sourceforge.net/svnroot/xavs/trunk/
+    SVN_REPOSITORY https://svn.code.sf.net/p/xavs/code/trunk
     SVN_REVISION -r55 # 2011-08-21
     # Avoid "Server certificate verification failed: issuer is not trusted" error
     SVN_TRUST_CERT 1

@@ -254,9 +254,9 @@ The Windows installer can now be built with one of the following commands:
 
     mvn package -P linux,-osx
 
-## Building the Mac OSX installer tarball
+## Building the Mac OS X installer tarball
 
-The Mac OSX installer tarball can be built on any platform by specifying
+The Mac OS X installer tarball can be built on any platform by specifying
 the "osx" profile explicity:
 
     mvn package -P osx
