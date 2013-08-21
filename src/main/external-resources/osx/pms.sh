@@ -47,6 +47,7 @@ cd "$PMS_HOME"
 	-Xmx768M -Xss1024k -Dfile.encoding=UTF-8 -Djava.net.preferIPv4Stack=true \
 	-Xdock:icon="$APPLICATION_DIR/Contents/Resources/pms.icns" \
 	-Dapple.awt.UIElement="$hide_dock_icon" \
+	-Djava.library.path="." \
 	-classpath "$PMS_JARS" \
 	net.pms.PMS
 
