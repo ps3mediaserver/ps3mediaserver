@@ -3,6 +3,9 @@ Changelog:
 
 1.90.2 - 2013-??-??
 
+    Misc:
+        - Fixed possible race condition causing broken playback 
+
 1.90.1 - 2013-08-17
 
     Engines:
