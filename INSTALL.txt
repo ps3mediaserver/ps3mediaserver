@@ -8,23 +8,18 @@ Instructions for installing packages for Debian and Ubuntu can be found here:
 
 To install PMS from the tarball on Linux etc. (these instructions have been tested on Ubuntu 12.04,
 but something similar should work on most Unix distributions), open a terminal and enter the
-following commands (replace <version> with the version you're downloading/using e.g. 1.80.0):
+following commands (replace <version> with the version you're downloading/using e.g. 1.90.0):
 
 1) Install the dependencies (this only needs to be done once):
 
     sudo apt-get install ffmpeg mediainfo mencoder openjdk-7-jre
     # you can also optionally install dcraw and vlc: sudo apt-get install dcraw vlc
 
-2) Download the tarball e.g.:
-
-    # if wget isn't installed, run: sudo apt-get install wget
-    wget https://ps3mediaserver.googlecode.com/files/pms-generic-linux-unix-<version>.tgz
-
-3) Extract the tarball into a pms-<version> directory:
+2) Extract the tarball into a pms-<version> directory:
 
     tar xzvf pms-<version>-generic-linux-unix.tar.gz
 
-4) Run (note: PMS should NOT be run as root):
+3) Run (note: PMS should NOT be run as root):
 
     cd pms-<version>
     ./PMS.sh
