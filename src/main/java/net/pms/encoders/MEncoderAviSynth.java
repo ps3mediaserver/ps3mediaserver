@@ -19,7 +19,6 @@
 package net.pms.encoders;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import net.pms.Messages;
@@ -51,8 +50,6 @@ public class MEncoderAviSynth extends MEncoderVideo {
 			"left:pref, 0:grow",
 			"p, 3dlu, p, 3dlu, p, 3dlu,  0:grow");
 		PanelBuilder builder = new PanelBuilder(layout);
-		builder.setBorder(Borders.EMPTY_BORDER);
-		builder.setOpaque(false);
 
 		CellConstraints cc = new CellConstraints();
 

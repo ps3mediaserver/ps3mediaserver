@@ -81,8 +81,7 @@ public class StatusTab {
 			"pref, 9dlu, pref, 3dlu, pref, 15dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 5dlu, p");
 
 		PanelBuilder builder = new PanelBuilder(layout);
-		builder.setDefaultDialogBorder();
-		builder.setOpaque(true);
+		builder.opaque(true);
 		CellConstraints cc = new CellConstraints();
 
 		JComponent cmp = builder.addSeparator(Messages.getString("StatusTab.2"), FormLayoutUtil.flip(cc.xy(2, 1), colSpec, orientation));
@@ -113,7 +112,7 @@ public class StatusTab {
 			"0:grow, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 0:grow",
 			"pref, 3dlu, pref");
 		PanelBuilder rendererBuilder = new PanelBuilder(layoutRenderer);
-		rendererBuilder.setOpaque(true);
+		rendererBuilder.opaque(true);
 		for (int i = 0; i < MAX_RENDERERS; i++) {
 			renderers[i] = buildImagePanel(null);
 			rendererBuilder.add(renderers[i], cc.xy(2 + i, 1));

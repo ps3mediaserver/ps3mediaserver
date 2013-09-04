@@ -29,7 +29,6 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 import net.pms.Messages;
-import net.pms.PMS;
 import net.pms.configuration.PmsConfiguration;
 import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaInfo;
@@ -43,7 +42,6 @@ import net.pms.util.PlayerUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -177,8 +175,6 @@ public class FFmpegDVRMSRemux extends FFmpegBase {
 			"p, 3dlu, p, 3dlu, 0:grow"
 		);
 		PanelBuilder builder = new PanelBuilder(layout);
-		builder.setBorder(Borders.EMPTY_BORDER);
-		builder.setOpaque(false);
 
 		CellConstraints cc = new CellConstraints();
 

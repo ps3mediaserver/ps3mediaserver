@@ -106,8 +106,7 @@ public class TracesTab {
 			colSpec,
 			"fill:10:grow, p");
 		PanelBuilder builder = new PanelBuilder(layout);
-		// builder.setBorder(Borders.DLU14_BORDER);
-		builder.setOpaque(true);
+		builder.opaque(true);
 
 		CellConstraints cc = new CellConstraints();
 

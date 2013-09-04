@@ -101,8 +101,6 @@ public class TreeNodeSettings extends DefaultMutableTreeNode {
 				"pref, 3dlu, pref, 12dlu, pref, 3dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p");
 
 			PanelBuilder builder = new PanelBuilder(layout);
-			builder.setDefaultDialogBorder();
-			builder.setOpaque(false);
 			CellConstraints cc = new CellConstraints();
 
 			JLabel jl = new JLabel(Messages.getString("TreeNodeSettings.4"));
