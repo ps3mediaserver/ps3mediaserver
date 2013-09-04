@@ -99,6 +99,7 @@ public class HelpTab {
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		pane.setPreferredSize(new Dimension(500, 400));
+		pane.setBorder(BorderFactory.createEmptyBorder());
 		builder.add(pane, cc.xy(2, 2));
 
 		return builder.getPanel();

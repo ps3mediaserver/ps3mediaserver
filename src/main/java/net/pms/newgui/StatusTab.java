@@ -19,6 +19,7 @@
 package net.pms.newgui;
 
 import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import net.pms.Messages;
@@ -81,6 +82,7 @@ public class StatusTab {
 			"pref, 9dlu, pref, 3dlu, pref, 15dlu, pref, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 5dlu, p");
 
 		PanelBuilder builder = new PanelBuilder(layout);
+		builder.border(Borders.DLU9);
 		builder.opaque(true);
 		CellConstraints cc = new CellConstraints();
 
@@ -131,6 +133,7 @@ public class StatusTab {
 			panel,
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		return scrollPane;
 	}
 

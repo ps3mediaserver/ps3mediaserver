@@ -174,6 +174,7 @@ public class NavigationShareTab {
 			panel,
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		return scrollPane;
 	}
 

@@ -38,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
-import javax.swing.text.DefaultCaret;
 
 public class TracesTab {
 	private static final Logger logger = LoggerFactory.getLogger(TracesTab.class);
@@ -131,6 +130,7 @@ public class TracesTab {
 			jList));
 
 		jListPane = new JScrollPane(jList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		jListPane.setBorder(BorderFactory.createEmptyBorder());
 		builder.add(jListPane, cc.xyw(1, 1, 2));
 
 		// Add buttons to open logfiles (there may be more than one)
