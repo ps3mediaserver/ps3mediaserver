@@ -667,7 +667,7 @@ public class RequestV2 extends HTTPResource {
 							uf.setFakeParentId(containerID);
 						}
 						if (uf.isCompatible(mediaRenderer) && (uf.getPlayer() == null || uf.getPlayer().isPlayerCompatible(mediaRenderer))) {
-							response.append(uf.toString(mediaRenderer));
+							response.append(uf.getDidlString(mediaRenderer));
 						} else {
 							minus++;
 						}
@@ -721,7 +721,7 @@ public class RequestV2 extends HTTPResource {
 				response.append(CRLF);
 				response.append(HTTPXMLHelper.SOAP_ENCODING_FOOTER);
 				response.append(CRLF);
-				// logger.trace(response.toString());
+				logger.trace(response.toString());
 			}
 		} else if (method.equals("SUBSCRIBE")) {
 			output.setHeader("SID", PMS.get().usn());

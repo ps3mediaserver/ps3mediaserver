@@ -254,18 +254,18 @@ public final class PlayerFactory {
 	 * format. Each of the available players is passed the provided information
 	 * and the first that reports it is compatible will be returned.
 	 * 
-	 * @param dlna
+	 * @param resource
 	 *            The {@link DLNAResource} to match
 	 * @return The player if a match could be found, <code>null</code>
 	 *         otherwise.
 	 * @since 1.60.0
 	 */
-	public static Player getPlayer(final DLNAResource dlna) {
-		if (dlna == null) {
-			logger.warn("invalid resource (null): no player found");
+	public static Player getPlayer(final DLNAResource resource) {
+		if (resource == null) {
+			logger.warn("Invalid resource (null): no player found");
 			return null;
 		} else {
-			logger.trace("getting player for {}", dlna.getName());
+			logger.trace("Getting player for resource \"{}\"", resource.getName());
 		}
 
 		List<String> enabledEngines = PMS.getConfiguration().getEnginesAsList();
@@ -274,20 +274,21 @@ public final class PlayerFactory {
 			boolean enabled = enabledEngines.contains(player.id());
 
 			if (enabled) {
-				boolean compatible = player.isCompatible(dlna);
-
-				logger.trace("dlna: {}, player: {}, enabled: {}, compatible: {}", new Object[] { dlna.getName(), player.name(), enabled, compatible });
+				boolean compatible = player.isCompatible(resource);
 
 				if (compatible) {
 					// Player is enabled and compatible
+					logger.trace("Returning compatible player \"{}\"", player.name());
 					return player;
+				} else {
+					logger.trace("Player \"{}\" is incompatible", player.name());
 				}
 			} else {
-				logger.trace("dlna: {},  player: {}, enabled: {}", new Object[] { dlna.getName(), player.name(), false });
+				logger.trace("Player \"{}\" is disabled", player.name());
 			}
 		}
 
-		logger.trace("no player found for {}", dlna.getName());
+		logger.trace("No player found for {}", resource.getName());
 
 		return null;
 	}
