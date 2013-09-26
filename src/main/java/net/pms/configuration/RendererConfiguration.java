@@ -636,7 +636,9 @@ public class RendererConfiguration {
 			}
 		}
 
-		if (matchedMimeType == null) {
+		if (matchedMimeType != null) {
+			return matchedMimeType;
+		} else {
 			// No match found, try without media parser v2
 			if (HTTPResource.VIDEO_TRANSCODE.equals(mimeType)) {
 				if (isTranscodeToWMV()) {
