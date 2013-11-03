@@ -104,22 +104,24 @@
 		<transcode-tools.windows.x86.filename>transcode-tools-win32-20130817.tar.gz</transcode-tools.windows.x86.filename>
 
 		<external-resources.private-jre.directory>${external-resources.directory}/private-jre</external-resources.private-jre.directory>
+
 		<!-- JRE archives direct download links: http://stackoverflow.com/a/12266049 -->
-		<private-jre.windows.x86.filename>jre-7u25-windows-i586.tar.gz</private-jre.windows.x86.filename>
-		<private-jre.windows.x86.archive-directory-name>jre1.7.0_25</private-jre.windows.x86.archive-directory-name>
-		<private-jre.windows.x86.download-url>http://javadl.sun.com/webapps/download/AutoDL?BundleId=79064</private-jre.windows.x86.download-url>
-		<private-jre.windows.x64.filename>jre-7u25-windows-x64.tar.gz</private-jre.windows.x64.filename>
-		<private-jre.windows.x64.archive-directory-name>jre1.7.0_25</private-jre.windows.x64.archive-directory-name>
-		<private-jre.windows.x64.download-url>http://javadl.sun.com/webapps/download/AutoDL?BundleId=79066</private-jre.windows.x64.download-url>
-		<private-jre.macosx.filename>jre-7u25-macosx.x64.tar.gz</private-jre.macosx.filename>
-		<private-jre.macosx.archive-directory-name>jre1.7.0_25.jre</private-jre.macosx.archive-directory-name>
+		<private-jre.windows.x86.filename>jre-7u45-windows-i586.tar.gz</private-jre.windows.x86.filename>
+		<private-jre.windows.x86.archive-directory-name>jre1.7.0_45</private-jre.windows.x86.archive-directory-name>
+		<private-jre.windows.x86.download-url>http://javadl.sun.com/webapps/download/AutoDL?BundleId=81820</private-jre.windows.x86.download-url>
+		<private-jre.windows.x64.filename>jre-7u45-windows-x64.tar.gz</private-jre.windows.x64.filename>
+		<private-jre.windows.x64.archive-directory-name>jre1.7.0_45</private-jre.windows.x64.archive-directory-name>
+		<private-jre.windows.x64.download-url>http://javadl.sun.com/webapps/download/AutoDL?BundleId=81822</private-jre.windows.x64.download-url>
+		<private-jre.macosx.filename>jre-7u45-macosx-x64.gz</private-jre.macosx.filename>
+		<private-jre.macosx.archive-directory-name>jre1.7.0_45.jre</private-jre.macosx.archive-directory-name>
+
 		<!--
 			The BundleId for the jre-7uXX-macosx-x64.tar.gz is a bit tricky to obtain. Go to
 			http://www.java.com/en/download/manual.jsp, inspect the link for the .dmg and add 1
 			to the number contained in its BundleId. Then open the link with the new BundleId
 			and verify whether the correct file downloads.
 		-->
-		<private-jre.macosx.download-url>http://javadl.sun.com/webapps/download/AutoDL?BundleId=78699</private-jre.macosx.download-url>
+		<private-jre.macosx.download-url>http://javadl.sun.com/webapps/download/AutoDL?BundleId=81814</private-jre.macosx.download-url>
 		<target.private-jre.x86.directory>${project.build.directory}/jre</target.private-jre.x86.directory>
 		<target.private-jre.x64.directory>${project.build.directory}/jre64</target.private-jre.x64.directory>
 		<private-jre.macosx.directory>${external-resources.transcode-tools.directory}/osx/jre-macosx</private-jre.macosx.directory>
