@@ -18,7 +18,7 @@ APPLICATION_DIR=`cd "$DIRNAME"/../..; pwd`
 JAR_DIR="$APPLICATION_DIR/Contents/Resources/Java"
 
 # Determine the name of the JRE directory
-JRE_DIR=`ls "$APPLICATION_DIR/Contents/PlugIns"*`
+JRE_DIR=`ls "$APPLICATION_DIR/Contents/PlugIns"* | tail -1`
 JAVA_HOME="$APPLICATION_DIR/Contents/PlugIns/$JRE_DIR/Contents/Home"
 export JAVA_HOME
 
