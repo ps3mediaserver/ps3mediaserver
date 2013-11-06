@@ -100,8 +100,8 @@
 		<transcode-tools.download.url>http://downloads.sourceforge.net/project/ps3mediaserver/transcode-tools</transcode-tools.download.url>
 		<target.transcode-tools.directory>${project.build.directory}/bin</target.transcode-tools.directory>
 		<transcode-tools.linux.filename>transcode-tools-linux-20130701.tar.gz</transcode-tools.linux.filename>
-		<transcode-tools.macosx.filename>transcode-tools-osx-20130719.tar.gz</transcode-tools.macosx.filename>
-		<transcode-tools.windows.x86.filename>transcode-tools-win32-20130817.tar.gz</transcode-tools.windows.x86.filename>
+		<transcode-tools.macosx.filename>transcode-tools-osx-20131106.tar.gz</transcode-tools.macosx.filename>
+		<transcode-tools.windows.x86.filename>transcode-tools-win32-20131106.tar.gz</transcode-tools.windows.x86.filename>
 
 		<external-resources.private-jre.directory>${external-resources.directory}/private-jre</external-resources.private-jre.directory>
 
