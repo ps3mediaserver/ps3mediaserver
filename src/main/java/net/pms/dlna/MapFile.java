@@ -256,6 +256,11 @@ public class MapFile extends DLNAResource {
 			}
 		}
 
+		// We only randomize file entries, directories are still sorted alphabetically
+		if (configuration.getSortMethod() == 5) {
+			Collections.shuffle(files);
+		}
+
 		for (File f : files) {
 			if (f.isFile()) {
 				discoverable.add(f); // manageFile(f);
