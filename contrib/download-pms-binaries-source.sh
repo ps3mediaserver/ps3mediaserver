@@ -338,8 +338,8 @@ download_fribidi() {
     start_download fribidi
     cd $SRC
 
-    if [ ! -f fribidi-${VERSION_FRIBIDI}.tar.gz ]; then
-        download http://fribidi.org/download/fribidi-${VERSION_FRIBIDI}.tar.gz
+    if [ ! -f fribidi-${VERSION_FRIBIDI}.tar.bz2 ]; then
+        download http://fribidi.org/download/fribidi-${VERSION_FRIBIDI}.tar.bz2
         exit_on_error
     fi
 }
@@ -354,7 +354,7 @@ download_giflib() {
     cd $SRC
 
     if [ ! -f giflib-${VERSION_GIFLIB}.tar.bz2 ]; then
-        download http://downloads.sourceforge.net/project/giflib/giflib-4.x/giflib-${VERSION_GIFLIB}/giflib-${VERSION_GIFLIB}.tar.bz2
+        download http://downloads.sourceforge.net/project/giflib/giflib-5.x/giflib-${VERSION_GIFLIB}.tar.bz2
         exit_on_error
     fi
 }
@@ -524,9 +524,7 @@ download_libpng() {
     cd $SRC
 
     if [ ! -f libpng-${VERSION_LIBPNG}.tar.gz ]; then
-        # One of these two, depending on whether we use the latest release
-        download http://downloads.sourceforge.net/project/libpng/libpng15/older-releases/${VERSION_LIBPNG}/libpng-${VERSION_LIBPNG}.tar.gz
-        #download http://downloads.sourceforge.net/project/libpng/libpng15/${VERSION_LIBPNG}/libpng-${VERSION_LIBPNG}.tar.gz
+        download ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng16/libpng-${VERSION_LIBPNG}.tar.gz
         exit_on_error
     fi
 }
@@ -575,6 +573,31 @@ download_libtheora() {
         exit_on_error
     fi
 }
+
+##########################################
+# LIBXML2
+# http://xmlsoft.org/
+#
+download_libxml2() {
+    start_download libxml2
+    cd $SRC
+
+    if [ -d libxml2 ]; then
+        rm -rf libxml2
+    fi
+
+    $GIT clone git://git.gnome.org/libxml2 libxml2
+    exit_on_error
+    cd libxml2
+
+    if [ "$FIXED_REVISIONS" == "yes" ]; then
+        $GIT checkout ${VERSION_LIBXML2}
+        exit_on_error
+    fi
+
+    rm -rf ./.git
+}
+
 
 
 ##########################################
@@ -831,6 +854,7 @@ download_libbluray
 download_libdca
 download_libdv
 download_libmad
+download_libxml2
 download_libzen
 download_libmediainfo
 download_libpng

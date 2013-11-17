@@ -523,11 +523,12 @@ initialize() {
 set_flags() {
     CFLAGS=""
     CXXFLAGS=""
+    CPPFLAGS=""
     LDFLAGS=""
 
     if is_osx; then
         # Minimum OSX version as target
-        OSX_VERSION=10.7
+        OSX_VERSION=10.8
 
         if [ -d /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs ]; then
             # Xcode 4.3+
@@ -585,6 +586,7 @@ EOM
     # Paths of the build environment
     CFLAGS="$CFLAGS -I$TARGET/include"
     CXXFLAGS="$CXXFLAGS -I$TARGET/include"
+    CPPFLAGS="$CPPFLAGS -I$TARGET/include"
     
     if is_osx; then
         LDFLAGS="$LDFLAGS -L$TARGET/lib -Wl,-search_paths_first"
@@ -592,7 +594,8 @@ EOM
         LDFLAGS="$LDFLAGS -L$TARGET/lib -Wl,-rpath -Wl,$TARGET/lib"
     fi
     
-    export CFLAGS CXXFLAGS LDFLAGS
+    export CFLAGS CXXFLAGS CPPFLAGS LDFLAGS
+    export LD_LIBRARY_PATH=$TARGET/lib
 }
 
 
@@ -895,6 +898,12 @@ build_freetype() {
     $MAKE -j$THREADS
     exit_on_error
     $MAKE install
+
+    if is_osx; then
+        # Avoid "ERROR: freetype2 not found" message when compiling ffmpeg
+        $SED -i -e "s/-lfreetype/-lfreetype -lpng16/" $TARGET/lib/pkgconfig/freetype2.pc
+    fi
+
     cd $WORKDIR
 }
 
@@ -908,7 +917,7 @@ build_fribidi() {
     cd $BUILD
 
     if [ ! -d fribidi-$VERSION_FRIBIDI ]; then
-        $TAR zxf $SRC/fribidi-$VERSION_FRIBIDI.tar.gz
+        $TAR jxf $SRC/fribidi-$VERSION_FRIBIDI.tar.bz2
         exit_on_error
     fi
 
@@ -1292,6 +1301,27 @@ build_libtheora() {
     set_flags
     ./configure --disable-shared --disable-dependency-tracking --with-ogg=$TARGET \
         --with-vorbis=$TARGET --prefix=$TARGET
+    $MAKE -j$THREADS
+    exit_on_error
+    $MAKE install
+    cd $WORKDIR
+}
+
+
+##########################################
+# LIBXML2
+# http://xmlsoft.org/
+#
+build_libxml2() {
+    start_build libxml2
+    cd $BUILD
+
+    cp -a $SRC/libxml2 ./
+    exit_on_error
+    cd libxml2
+    exit_on_error
+
+    ./autogen.sh --disable-shared --disable-dependency-tracking --prefix=$TARGET
     $MAKE -j$THREADS
     exit_on_error
     $MAKE install
@@ -1714,6 +1744,7 @@ build_zlib
 build_bzip2
 build_expat
 build_faad2
+build_libpng
 build_freetype
 build_iconv
 # Note: fontconfig requires freetype and iconv to build
@@ -1721,14 +1752,15 @@ build_fontconfig
 build_fribidi
 build_enca
 build_giflib
-# build_harfbuzz # we do not need harfbuzz right now (also build errors)
+# build_harfbuzz # We do not need harfbuzz right now (also build errors)
 build_jpeg
-build_libpng
 build_libass
-build_ncurses
+#build_ncurses # Build error!
+build_libxml2
+# Note: lame needs libxml2 to build
 build_lame
 build_libbluray
-build_libdca
+#build_libdca # Build error!
 build_libdv
 build_libmad
 build_libzen
@@ -1736,7 +1768,7 @@ build_libzen
 build_libmediainfo
 build_libogg
 build_libvorbis
-build_libtheora
+#build_libtheora # Build error!
 build_lzo
 build_x264
 build_xvid

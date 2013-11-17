@@ -453,7 +453,7 @@ SET(FFMPEG_CONFIGURE_COMMAND
 EXTERNALPROJECT_ADD(
     ffmpeg
     DEPENDS ${FFMPEG_DEPENDENCIES}
-    URL http://ffmpeg.org/releases/ffmpeg-2.0.tar.gz
+    URL http://ffmpeg.org/releases/ffmpeg-2.1.tar.gz
     PATCH_COMMAND patch -p1 < ${CMAKE_SOURCE_DIR}/vendor/ffmpeg-banner.patch
     CONFIGURE_COMMAND ${FFMPEG_CONFIGURE_COMMAND}
     BUILD_IN_SOURCE 1
