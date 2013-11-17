@@ -18,13 +18,46 @@
  */
 package net.pms.encoders;
 
-import bsh.EvalError;
-import bsh.Interpreter;
+import static net.pms.formats.v2.AudioUtils.getLPCMChannelMappingForMencoder;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.startsWith;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.sun.jna.Platform;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import net.pms.Messages;
 import net.pms.PMS;
@@ -38,7 +71,12 @@ import net.pms.dlna.InputFile;
 import net.pms.formats.Format;
 import net.pms.formats.v2.SubtitleType;
 import net.pms.formats.v2.SubtitleUtils;
-import net.pms.io.*;
+import net.pms.io.OutputParams;
+import net.pms.io.PipeIPCProcess;
+import net.pms.io.PipeProcess;
+import net.pms.io.ProcessWrapper;
+import net.pms.io.ProcessWrapperImpl;
+import net.pms.io.StreamModifier;
 import net.pms.network.HTTPResource;
 import net.pms.util.CodecUtil;
 import net.pms.util.FileUtil;
@@ -48,22 +86,16 @@ import net.pms.util.ProcessUtil;
 
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
-import java.util.List;
+import bsh.EvalError;
+import bsh.Interpreter;
 
-import static net.pms.formats.v2.AudioUtils.getLPCMChannelMappingForMencoder;
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
-import static org.apache.commons.lang3.StringUtils.*;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.sun.jna.Platform;
 
 public class MEncoderVideo extends Player {
 	private static final Logger logger = LoggerFactory.getLogger(MEncoderVideo.class);
@@ -595,11 +627,13 @@ public class MEncoderVideo extends Player {
 	 * @return The string, optionally in quotes. 
 	 */
 	private String quoteArg(String arg) {
-		if (arg != null && arg.indexOf(" ") > -1) {
-			return "\"" + arg + "\"";
+		if (arg == null || arg.indexOf(" ") == -1) {
+			return arg;
 		}
 
-		return arg;
+		StringBuilder result = new StringBuilder();
+		result.append("\"").append(arg).append("\"");
+		return result.toString();
 	}
 
 	private String[] sanitizeArgs(String[] args) {
@@ -1102,7 +1136,8 @@ public class MEncoderVideo extends Player {
 			}
 		}
 
-		StringBuilder sb = new StringBuilder();
+		ArrayList<String> subtitleArgs = new ArrayList<String>();
+
 		// Set subtitles options
 		if (!configuration.isDisableSubtitles() && !avisynth() && params.sid != null) {
 			int subtitleMargin = 0;
@@ -1116,7 +1151,7 @@ public class MEncoderVideo extends Player {
 					!dvd;
 
 			if (apply_ass_styling) {
-				sb.append("-ass ");
+				subtitleArgs.add("-ass");
 
 				// GUI: Override ASS subtitles style if requested (always for SRT and TX3G subtitles)
 				boolean override_ass_style = !configuration.isMencoderAssDefaultStyle() ||
@@ -1125,6 +1160,7 @@ public class MEncoderVideo extends Player {
 
 				if (override_ass_style) {
 					String assSubColor = "ffffff00";
+
 					if (configuration.getSubsColor() != 0) {
 						assSubColor = Integer.toHexString(configuration.getSubsColor());
 						if (assSubColor.length() > 2) {
@@ -1132,14 +1168,21 @@ public class MEncoderVideo extends Player {
 						}
 					}
 
-					sb.append("-ass-color ").append(assSubColor).append(" -ass-border-color 00000000 -ass-font-scale ").append(configuration.getAssScale());
+					subtitleArgs.add("-ass-color");
+					subtitleArgs.add(assSubColor);
+					subtitleArgs.add("-ass-border-color");
+					subtitleArgs.add("00000000");
+					subtitleArgs.add("-ass-font-scale");
+					subtitleArgs.add(configuration.getAssScale());
+					StringBuilder assForceStyle = new StringBuilder();
 
 					// set subtitles font
 					if (configuration.getFont() != null && configuration.getFont().length() > 0) {
 						// set font with -font option, workaround for
 						// https://github.com/Happy-Neko/ps3mediaserver/commit/52e62203ea12c40628de1869882994ce1065446a#commitcomment-990156 bug
-						sb.append(" -font ").append(quoteArg(configuration.getFont())).append(" ");
-						sb.append(" -ass-force-style FontName=").append(quoteArg(configuration.getFont())).append(",");
+						subtitleArgs.add("-font");
+						subtitleArgs.add(configuration.getFont());
+						assForceStyle.append("FontName=").append(quoteArg(configuration.getFont())).append(",");
 					} else {
 						String font = CodecUtil.getDefaultFontPath();
 						if (isNotBlank(font)) {
@@ -1148,11 +1191,13 @@ public class MEncoderVideo extends Player {
 							// the font path is ignored (Outline, Shadow and MarginV are
 							// used, though) and the "-font" definition is used instead.
 							// See: https://github.com/ps3mediaserver/ps3mediaserver/pull/14
-							sb.append(" -font ").append(quoteArg(font)).append(" ");
-							sb.append(" -ass-force-style FontName=").append(quoteArg(font)).append(",");
+							subtitleArgs.add("-font");
+							subtitleArgs.add(font);
+							assForceStyle.append("FontName=").append(quoteArg(font)).append(",");
 						} else {
-							sb.append(" -font Arial ");
-							sb.append(" -ass-force-style FontName=Arial,");
+							subtitleArgs.add("-font");
+							subtitleArgs.add("Arial");
+							assForceStyle.append("FontName=Arial,");
 						}
 					}
 
@@ -1162,7 +1207,8 @@ public class MEncoderVideo extends Player {
 						subtitleMargin = (media.getHeight() / 100) * intOCH;
 					}
 
-					sb.append("Outline=").append(configuration.getAssOutline()).append(",Shadow=").append(configuration.getAssShadow());
+					assForceStyle.append("Outline=").append(configuration.getAssOutline());
+					assForceStyle.append(",Shadow=").append(configuration.getAssShadow());
 
 					try {
 						userMargin = Integer.parseInt(configuration.getAssMargin());
@@ -1171,41 +1217,50 @@ public class MEncoderVideo extends Player {
 					}
 
 					subtitleMargin = subtitleMargin + userMargin;
-
-					sb.append(",MarginV=").append(subtitleMargin).append(" ");
+					assForceStyle.append(",MarginV=").append(subtitleMargin);
+					subtitleArgs.add("-ass-force-style");
+					subtitleArgs.add(assForceStyle.toString());
 				} else if (intOCH > 0) {
-					sb.append("-ass-force-style MarginV=").append(subtitleMargin).append(" ");
+					subtitleArgs.add("-ass-force-style");
+					subtitleArgs.add("MarginV=" + subtitleMargin);
 				}
 
 				// MEncoder is not compiled with fontconfig on Mac OS X, therefore
 				// use of the "-ass" option also requires the "-font" option.
-				if (Platform.isMac() && sb.toString().indexOf(" -font ") < 0) {
+				if (Platform.isMac() && !subtitleArgs.contains("-font")) {
 					String font = CodecUtil.getDefaultFontPath();
 
 					if (isNotBlank(font)) {
-						sb.append("-font ").append(quoteArg(font)).append(" ");
+						subtitleArgs.add("-font");
+						subtitleArgs.add(font);
 					}
 				}
 
 				// Workaround for MPlayer #2041, remove when that bug is fixed
 				if (!params.sid.isEmbedded()) {
-					sb.append("-noflip-hebrew ");
+					subtitleArgs.add("-noflip-hebrew");
 				}
 			// use PLAINTEXT formating
 			} else {
 				// set subtitles font
 				if (configuration.getFont() != null && configuration.getFont().length() > 0) {
-					sb.append(" -font ").append(quoteArg(configuration.getFont())).append(" ");
+					subtitleArgs.add("-font");
+					subtitleArgs.add(configuration.getFont());
 				} else {
 					String font = CodecUtil.getDefaultFontPath();
+
 					if (isNotBlank(font)) {
-						sb.append(" -font ").append(quoteArg(font)).append(" ");
+						subtitleArgs.add("-font");
+						subtitleArgs.add(font);
 					}
 				}
 
-				sb.append(" -subfont-text-scale ").append(configuration.getMencoderNoAssScale());
-				sb.append(" -subfont-outline ").append(configuration.getMencoderNoAssOutline());
-				sb.append(" -subfont-blur ").append(configuration.getMencoderNoAssBlur());
+				subtitleArgs.add("-subfont-text-scale");
+				subtitleArgs.add(configuration.getMencoderNoAssScale());
+				subtitleArgs.add("-subfont-outline");
+				subtitleArgs.add(configuration.getMencoderNoAssOutline());
+				subtitleArgs.add("-subfont-blur");
+				subtitleArgs.add(configuration.getMencoderNoAssBlur());
 
 				// Add to the subtitle margin if overscan compensation is being used
 				// This keeps the subtitle text inside the frame instead of in the border
@@ -1221,7 +1276,8 @@ public class MEncoderVideo extends Player {
 
 				subtitleMargin = subtitleMargin + userMargin;
 
-				sb.append(" -subpos ").append(100 - subtitleMargin).append(" ");
+				subtitleArgs.add("-subpos");
+				subtitleArgs.add(String.valueOf(100 - subtitleMargin));
 			}
 
 			// Common subtitle options
@@ -1230,13 +1286,19 @@ public class MEncoderVideo extends Player {
 			// Appending the flag will break execution, so skip it on Mac OS X.
 			if (!Platform.isMac()) {
 				// Use fontconfig if enabled
-				sb.append("-").append(configuration.isMencoderFontConfig() ? "" : "no").append("fontconfig ");
+				if (configuration.isMencoderFontConfig()) {
+					subtitleArgs.add("-fontconfig");
+				} else {
+					subtitleArgs.add("-nofontconfig");
+				}
 			}
+
 			// Apply DVD/VOBSUB subtitle quality
 			if (params.sid.getType() == SubtitleType.VOBSUB && configuration.getMencoderVobsubSubtitleQuality() != null) {
 				String subtitleQuality = configuration.getMencoderVobsubSubtitleQuality();
 
-				sb.append("-spuaa ").append(subtitleQuality).append(" ");
+				subtitleArgs.add("-spuaa");
+				subtitleArgs.add(subtitleQuality);
 			}
 
 			// external subtitles file
@@ -1254,37 +1316,24 @@ public class MEncoderVideo extends Player {
 					}
 
 					if (isNotBlank(subcp)) {
-						sb.append("-subcp ").append(subcp).append(" ");
+						subtitleArgs.add("-subcp");
+						subtitleArgs.add(subcp);
+
 						if (configuration.isMencoderSubFribidi()) {
-							sb.append("-fribidi-charset ").append(subcp).append(" ");
+							subtitleArgs.add("-fribidi-charset");
+							subtitleArgs.add(subcp);
 						}
 					}
 				}
 			}
 		}
 
-		st = new StringTokenizer(sb.toString(), " ");
+		int index = overriddenMainArgs.length;
+		overriddenMainArgs = Arrays.copyOf(overriddenMainArgs, overriddenMainArgs.length + subtitleArgs.size());
 
-		{
-			int i = overriddenMainArgs.length; // old length
-			overriddenMainArgs = Arrays.copyOf(overriddenMainArgs, overriddenMainArgs.length + st.countTokens());
-			boolean handleToken = false;
-
-			while (st.hasMoreTokens()) {
-				String s = st.nextToken();
-
-				if (handleToken) {
-					s = "-quiet";
-					handleToken = false;
-				}
-
-				if ((!configuration.isMencoderAss() || dvd) && s.contains("-ass")) {
-					s = "-quiet";
-					handleToken = true;
-				}
-
-				overriddenMainArgs[i++] = s;
-			}
+		for (String subtitleArg : subtitleArgs) {
+			overriddenMainArgs[index] = subtitleArg;
+			index++;
 		}
 
 		List<String> cmdList = new ArrayList<String>();

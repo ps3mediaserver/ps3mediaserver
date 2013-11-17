@@ -131,7 +131,11 @@ public class CodecUtil {
 			return font;
 		} else if (Platform.isMac()) {
 			// get default osx font
-			font = getFont("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/fonts/", "LucidaSansRegular.ttf");
+			font = getFont("/Library/Fonts/", "Arial Unicode.ttf");
+
+			if (font == null) {
+				font = getFont("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/fonts/", "LucidaSansRegular.ttf");
+			}
 			return font;
 		}
 		return null;
