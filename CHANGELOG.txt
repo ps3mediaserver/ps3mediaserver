@@ -4,13 +4,14 @@ Changelog:
 1.90.2 - 2013-??-?? 
 
     Language updates:
-        - Updated Bulgarian translation (thanks, jordito)
+        - Updated Bulgarian translation (thanks, jordito!)
+        - Updated Spanish translation (thanks, ugo-h!)
 
     Misc:
         - Fixed possible race condition causing broken playback
         - Added random sorting option for files (thanks, etrunko)
         - Updated MPlayer for Windows to MPlayer-SB53
-        - Updated FFmpeg for Windows to Latest Zeranoe FFmpeg Build
+        - Updated FFmpeg for Windows to latest Zeranoe FFmpeg build
 
 1.90.1 - 2013-08-17
 
