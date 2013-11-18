@@ -246,6 +246,8 @@ public class FormatConfiguration {
 						matched = miExtras.get(MI_GMC).matcher(value).matches();
 					}
 				}
+			} else {
+				matched = true;
 			}
 
 			if (matched) {
