@@ -191,49 +191,49 @@ public class FormatConfiguration {
 			int videoHeight,
 			Map<String, String> extras
 		) {
-			boolean matched = false;
+			boolean matched = true;
 
 			if (format != null && !(matched = pFormat.matcher(format).matches())) {
 				logger.trace("Format \"{}\" failed to match support line {}", format, supportLine);
 				return false;
 			}
 
-			if (matched && videoCodec != null && pVideoCodec != null && !(matched = pVideoCodec.matcher(videoCodec).matches())) {
+			if (videoCodec != null && pVideoCodec != null && !(matched = pVideoCodec.matcher(videoCodec).matches())) {
 				logger.trace("Video codec \"{}\" failed to match support line {}", videoCodec, supportLine);
 				return false;
 			}
 
-			if (matched && audioCodec != null && pAudioCodec != null && !(matched = pAudioCodec.matcher(audioCodec).matches())) {
+			if (audioCodec != null && pAudioCodec != null && !(matched = pAudioCodec.matcher(audioCodec).matches())) {
 				logger.trace("Audio codec \"{}\" failed to match support line {}", audioCodec, supportLine);
 				return false;
 			}
 
-			if (matched && nbAudioChannels > 0 && iMaxNbChannels > 0 && nbAudioChannels > iMaxNbChannels) {
+			if (nbAudioChannels > 0 && iMaxNbChannels > 0 && nbAudioChannels > iMaxNbChannels) {
 				logger.trace("Number of channels \"{}\" failed to match support line {}", nbAudioChannels, supportLine);
 				return false;
 			}
 
-			if (matched && frequency > 0 && iMaxFrequency > 0 && frequency > iMaxFrequency) {
+			if (frequency > 0 && iMaxFrequency > 0 && frequency > iMaxFrequency) {
 				logger.trace("Frequency \"{}\" failed to match support line {}", frequency, supportLine);
 				return false;
 			}
 
-			if (matched && bitrate > 0 && iMaxBitrate > 0 && bitrate > iMaxBitrate) {
+			if (bitrate > 0 && iMaxBitrate > 0 && bitrate > iMaxBitrate) {
 				logger.trace("Bit rate \"{}\" failed to match support line {}", bitrate, supportLine);
 				return false;
 			}
 
-			if (matched && videoWidth > 0 && iMaxVideoWidth > 0 && videoWidth > iMaxVideoWidth) {
+			if (videoWidth > 0 && iMaxVideoWidth > 0 && videoWidth > iMaxVideoWidth) {
 				logger.trace("Video width \"{}\" failed to match support line {}", videoWidth, supportLine);
 				return false;
 			}
 
-			if (matched && videoHeight > 0 && iMaxVideoHeight > 0 && videoHeight > iMaxVideoHeight) {
+			if (videoHeight > 0 && iMaxVideoHeight > 0 && videoHeight > iMaxVideoHeight) {
 				logger.trace("Video height \"{}\" failed to match support line {}", videoHeight, supportLine);
 				return false;
 			}
 
-			if (matched && extras != null && miExtras != null) {
+			if (extras != null && miExtras != null) {
 				Iterator<String> keyIt = extras.keySet().iterator();
 
 				while (keyIt.hasNext()) {
