@@ -12,6 +12,7 @@ Changelog:
         - Added random sorting option for files (thanks, etrunko)
         - Updated MPlayer for Windows to MPlayer-SB53
         - Updated FFmpeg for Windows to latest Zeranoe FFmpeg build
+        - Improved matching algorithm to avoid unneccesary transcoding (thanks, Liboicl!)
 
 1.90.1 - 2013-08-17
 
