@@ -190,7 +190,7 @@ public class PmsConfiguration {
 	private static final String PROFILE_DIRECTORY_NAME = Build.getProfileDirectoryName();
 
 	// The default profile name displayed on the renderer
-	private static String HOSTNAME;
+	private static String hostName;
 
 	private static String DEFAULT_AVI_SYNTH_SCRIPT;
 	private static final int MAX_MAX_MEMORY_DEFAULT_SIZE = 400;
@@ -2234,16 +2234,23 @@ public class PmsConfiguration {
 	}
 
 	public String getProfileName() {
-		if (HOSTNAME == null) { // initialise this lazily
-			try {
-				HOSTNAME = InetAddress.getLocalHost().getHostName();
-			} catch (UnknownHostException e) {
-				logger.info("Can't determine hostname");
-				HOSTNAME = "unknown host";
+		String defaultValue = "defaultValue";
+		String profileName = getString(KEY_PROFILE_NAME, defaultValue);
+		
+		if(profileName.equals(defaultValue)) {
+			if (hostName == null) { // initialise this lazily
+				try {
+					hostName = InetAddress.getLocalHost().getHostName();
+				} catch (UnknownHostException e) {
+					logger.info("Can't determine hostname");
+					hostName = "unknown host";
+				}
 			}
+			
+			profileName = hostName;
 		}
 
-		return getString(KEY_PROFILE_NAME, HOSTNAME);
+		return profileName;
 	}
 
 	public boolean isAutoUpdate() {
