@@ -63,13 +63,11 @@ public class PlaylistFolder extends DLNAResource {
 
 			try {
 				BufferedReader br;
-				if ( playlistfile.getName().toLowerCase().endsWith(".m3u8") )
-				{
-					br = new BufferedReader(new InputStreamReader(new FileInputStream(playlistfile),"UTF-8"));
+
+				if (playlistfile.getName().toLowerCase().endsWith(".m3u8")) {
+					br = new BufferedReader(new InputStreamReader(new FileInputStream(playlistfile), "UTF-8"));
 					br.read(); // Skip byte order mark.
-				}
-				else
-				{
+				} else {
 					br = new BufferedReader(new FileReader(playlistfile));
 				}
 				

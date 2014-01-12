@@ -13,6 +13,7 @@ Changelog:
         - Updated MPlayer for Windows to MPlayer-SB53
         - Updated FFmpeg for Windows to latest Zeranoe FFmpeg build
         - Improved matching algorithm to avoid unneccesary transcoding (thanks, Liboicl!)
+        - Fixed UTF-8 .m3u8 playlist playback (#1317, thanks, mindwarper!)
 
 1.90.1 - 2013-08-17
 
