@@ -14,6 +14,7 @@ Changelog:
         - Updated FFmpeg for Windows to latest Zeranoe FFmpeg build
         - Improved matching algorithm to avoid unneccesary transcoding (thanks, Liboicl!)
         - Fixed UTF-8 .m3u8 playlist playback (#1317, thanks, mindwarper!)
+        - Auto update now listens to the configured auto_update setting (#1654)
 
 1.90.1 - 2013-08-17
 

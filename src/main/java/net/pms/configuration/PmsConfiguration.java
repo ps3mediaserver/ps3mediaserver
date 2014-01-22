@@ -2253,8 +2253,14 @@ public class PmsConfiguration {
 		return profileName;
 	}
 
+	/**
+	 * Returns whether or not to automatically download software updates.
+	 * Defaults to "true" when updating is possible, unless configured otherwise.
+	 *
+	 * @return Whether or not to auto update.
+	 */
 	public boolean isAutoUpdate() {
-		return Build.isUpdatable() && getBoolean(KEY_AUTO_UPDATE, false);
+		return Build.isUpdatable() && getBoolean(KEY_AUTO_UPDATE, true);
 	}
 
 	public void setAutoUpdate(boolean value) {
