@@ -14,13 +14,14 @@
 		<appname>${project.name}</appname>
 		<appversion>${project.version}</appversion>
 		<url>${project.url}</url>
-		<uninstaller name="remove.task" path="${INSTALL_PATH}/${project.name}.app/Uninstall" write="yes" />
-		<javaversion>1.7</javaversion>
+		<uninstaller name="remove.task" path="${INSTALL_PATH}/${project.name}.app/Uninstall" write="no" />
+		<javaversion>1.6</javaversion>
 		<requiresjdk>no</requiresjdk>
 	</info>
 
 	<variables>
 	    <variable name="TargetPanel.dir.mac" value="/Applications" />
+	    <variable name="ShowCreateDirectoryMessage" value="false" />
 	</variables>
 
 	<guiprefs width="600" height="480" resizable="no">
@@ -80,6 +81,7 @@
 		<panel classname="PacksPanel" />
 		<panel classname="SummaryPanel" />
 		<panel classname="InstallPanel" />
+		<panel classname="SimpleFinishPanel" />
 	</panels>
 
     <packs>

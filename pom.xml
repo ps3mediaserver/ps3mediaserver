@@ -145,7 +145,7 @@
 			FIXME: IzPack 5 snapshot availability can be unreliable, causing PMS build errors.
 			Change to stable version as soon as it becomes available.
 		-->
-		<izpack.version>5.0.0-rc1-SNAPSHOT</izpack.version>
+		<izpack.version>5.0.0-rc2-SNAPSHOT</izpack.version>
 		<izpack.staging>${project.build.directory}/staging</izpack.staging>
 		<izpack.installer.app>${project.build.directory}/${project.name} Setup.app</izpack.installer.app>
 
