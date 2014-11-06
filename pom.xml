@@ -131,7 +131,7 @@
 		<windows-service-wrapper.x86.archive-directory-name>wrapper-windows-x86-32-3.5.17</windows-service-wrapper.x86.archive-directory-name>
 		<windows-service-wrapper.x86.download-url>http://wrapper.tanukisoftware.com/download/3.5.17/wrapper-windows-x86-32-3.5.17.zip</windows-service-wrapper.x86.download-url>
 
-		<maven-javadoc-plugin-version>2.9</maven-javadoc-plugin-version>
+		<maven-javadoc-plugin-version>2.10.1</maven-javadoc-plugin-version>
 		<git-commit-id-plugin-version>2.1.4</git-commit-id-plugin-version>
 
 		<!--
@@ -141,11 +141,7 @@
 		 -->
 		<makensis-bin>${external-resources.directory}/third-party/nsis/makensis.exe</makensis-bin>
 
-		<!--
-			FIXME: IzPack 5 snapshot availability can be unreliable, causing PMS build errors.
-			Change to stable version as soon as it becomes available.
-		-->
-		<izpack.version>5.0.0-rc2-SNAPSHOT</izpack.version>
+		<izpack.version>5.0.0-rc4</izpack.version>
 		<izpack.staging>${project.build.directory}/staging</izpack.staging>
 		<izpack.installer.app>${project.build.directory}/${project.name} Setup.app</izpack.installer.app>
 
@@ -153,22 +149,22 @@
 
 	<pluginRepositories>
 		<pluginRepository>
+			<id>central</id>
+			<name>Maven Plugin Repository</name>
+			<url>http://repo1.maven.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+		</pluginRepository>
+		<pluginRepository>
 			<id>ossrh</id>
 			<name>Sonatype OSS Repository</name>
 			<url>http://oss.sonatype.org/content/groups/public</url>
 			<layout>default</layout>
-		</pluginRepository>
-
-		<!-- Repository where the izpack-maven-plugin and such live -->
-		<pluginRepository>
-			<id>codehaus-releases</id>
-			<url>https://nexus.codehaus.org/content/repositories/releases</url>
-		</pluginRepository>
-
-		<!-- XXX: This can be removed once IzPack 5 is released -->
-		<pluginRepository>
-			<id>codehaus-snapshots</id>
-			<url>https://nexus.codehaus.org/content/repositories/snapshots</url>
 		</pluginRepository>
 	</pluginRepositories>
 
@@ -234,13 +230,6 @@
 			<id>codehaus-releases</id>
 			<url>https://nexus.codehaus.org/content/repositories/releases</url>
 		</repository>
-
-		<!-- XXX: This can be removed once IzPack 5 is released -->
-		<repository>
-			<id>codehaus-snapshots</id>
-			<url>https://nexus.codehaus.org/content/repositories/snapshots</url>
-		</repository>
-
 	</repositories>
 
 	<dependencies>
@@ -604,7 +593,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore/>
 									</action>
 								</pluginExecution>
 
@@ -624,10 +613,53 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore/>
 									</action>
 								</pluginExecution>
 
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											com.savage7.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-external-dependency-plugin
+										</artifactId>
+										<versionRange>
+											[0.5,)
+										</versionRange>
+										<goals>
+											<goal>
+												resolve-external
+											</goal>
+											<goal>
+												install-external
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-jar-plugin
+										</artifactId>
+										<versionRange>
+											[2.4,)
+										</versionRange>
+										<goals>
+											<goal>jar</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -701,6 +733,7 @@
 			<!-- Copy all application jars to the IzPack staging lib directory -->
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.9</version>
 				<executions>
 					<execution>
 						<id>copy-pms-dependencies</id>
@@ -895,7 +928,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.4</version>
 				<dependencies>
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
@@ -1416,7 +1449,7 @@
 										<mkdir dir="${external-resources.transcode-tools.directory}/linux" />
 
 										<!-- Download and unpack binaries. -->
- 										<get src="${transcode-tools.download.url}/linux/${transcode-tools.linux.filename}"
+										<get src="${transcode-tools.download.url}/linux/${transcode-tools.linux.filename}"
 												dest="${external-resources.transcode-tools.directory}/${transcode-tools.linux.filename}"
 												usetimestamp="true" />
 
@@ -1529,7 +1562,7 @@
 
 										<!-- Download JRE -->
 										<get src="${private-jre.macosx.download-url}" dest="${private-jre.macosx.directory}/${private-jre.macosx.filename}" skipexisting="true" />
-		
+
 										<!-- Make all downloaded binaries executable -->
 										<chmod dir="${external-resources.transcode-tools.directory}/osx" perm="a+x" includes="*" excludes="libmediainfo.dylib" />
 
@@ -1550,7 +1583,7 @@
 								<goals>
 									<goal>run</goal>
 								</goals>
-		
+
 								<configuration>
 									<tasks>
 										<mkdir dir="${izpack.installer.app}" />
@@ -1590,16 +1623,16 @@
 												<globmapper from="${private-jre.macosx.archive-directory-name}/*" to="*"/>
 											</mapper>
 										</untar>
-		
+
 										<chmod dir="${izpack.installer.app}/Contents/PlugIns/${private-jre.macosx.archive-directory-name}/Contents/Home/bin" perm="a+x" includes="*" />
-		
+
 										<copy file="${external-resources.directory}/osx/package.icns" todir="${izpack.installer.app}/Contents/Resources" overwrite="true" />
 										<copy file="${external-resources.directory}/osx/Info.plist-template-installer" tofile="${izpack.installer.app}/Contents/Info.plist" overwrite="true" />
 										<copy file="${external-resources.directory}/osx/installer.sh" todir="${izpack.installer.app}/Contents/MacOs/" overwrite="true" />
 										<copy file="${project.build.directory}/${project.artifactId}-setup-${project.version}.jar" todir="${izpack.installer.app}/Contents/Resources/Java" overwrite="true" />
-		
+
 										<chmod dir="${izpack.installer.app}/Contents/MacOs/" perm="a+x" includes="*" />
-		
+
 										<tar destfile="${project.build.directory}/${project.artifactId}-${project.version}-setup-macosx.tar.gz"
 											compression="gzip"
 											longfile="gnu">
@@ -1625,7 +1658,7 @@
 						<groupId>org.codehaus.izpack</groupId>
 						<artifactId>izpack-maven-plugin</artifactId>
 						<version>${izpack.version}</version>
-		
+
 						<executions>
 							<execution>
 								<phase>prepare-package</phase>
