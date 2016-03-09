@@ -27,7 +27,7 @@ Eclipse (other IDEs should require similar configuration).
    on the main page of your repository. It should be something like this
    (replace YOURNAME with your actual GitHub name):
 
-        git clone git@github.com:YOURNAME/ps3mediaserver.git YOURNAME
+        git clone git@github.com/YOURNAME/ps3mediaserver.git YOURNAME
 
 You now have the new repository on your local machine. It is time to set up an
 integrated development environment to work with it. The steps below explain how
