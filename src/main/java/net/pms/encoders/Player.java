@@ -272,8 +272,12 @@ public abstract class Player {
 						for (DLNAMediaSubtitle present_sub : media.getSubtitleTracksList()) {
 							if (present_sub.matchCode(sub) || sub.equals("*")) {
 								matchedSub = present_sub;
-								logger.trace("Found a match: " + matchedSub);
-								break;
+								if (present_sub.getFlavor() == null) {
+									logger.trace("Found a match: " + matchedSub);
+								} else {
+									logger.trace("Found a flavored match: " + matchedSub);
+									break;
+								}
 							}
 						}
 					}
