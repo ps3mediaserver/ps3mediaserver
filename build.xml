@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ====================================================================== -->
+<!-- Ant build file (http://ant.apache.org/) for Ant 1.6.2 or above.        -->
+<!-- ====================================================================== -->
+
+<project name="pms" default="jar" basedir=".">
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="/usr/share/java/ant-contrib.jar"/>
+    </classpath>
+  </taskdef>
+
+  <property file="pms-build.properties"/>
+
+  <!-- ====================================================================== -->
+  <!-- Import maven-build.xml into the current project                        -->
+  <!-- ====================================================================== -->
+
+  <import file="maven-build.xml"/>
+
+  <propertyregex property="jgoodies-common-version-underscore" input="${jgoodies-common-version}" regexp="\." replace="_" global="true" />
+  <propertyregex property="jgoodies-forms-version-underscore" input="${jgoodies-forms-version}" regexp="\." replace="_" global="true" />
+  <propertyregex property="jgoodies-looks-version-underscore" input="${jgoodies-looks-version}" regexp="\." replace="_" global="true" />
+
+  <path id="compile.classpath">
+    <fileset id="compile.fileset" dir="${maven.repo.local}" casesensitive="yes">
+      <include name="org/beanshell/bsh-core/2.0b4/bsh-core-2.0b4.jar"/>
+      <include name="commons-codec/commons-codec/1.6/commons-codec-1.6.jar"/>
+      <include name="commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
+      <include name="commons-configuration/commons-configuration/1.7/commons-configuration-1.7.jar"/>
+      <include name="commons-digester/commons-digester/1.8.1/commons-digester-1.8.1.jar"/>
+      <include name="commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar"/>
+      <include name="commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar"/>
+      <include name="commons-io/commons-io/1.4/commons-io-1.4.jar"/>
+      <include name="commons-lang/commons-lang/2.6/commons-lang-2.6.jar"/>
+      <include name="com/h2database/h2/1.1.105/h2-1.1.105.jar"/>
+      <include name="ch/qos/logback/logback-classic/1.0.0/logback-classic-1.0.0.jar"/>
+      <include name="ch/qos/logback/logback-core/1.0.0/logback-core-1.0.0.jar"/>
+      <include name="org/apache/sanselan/sanselan/0.97-incubator/sanselan-0.97-incubator.jar"/>
+      <include name="org/slf4j/slf4j-api/1.6.4/slf4j-api-1.6.4.jar"/>
+      <include name="org/slf4j/jcl-over-slf4j/1.6.4/jcl-over-slf4j-1.6.4.jar"/>
+      <include name="com/google/code/gson/gson/1.7.1/gson-1.7.1.jar"/>
+      <include name="org/hamcrest/hamcrest-integration/1.2/hamcrest-integration-1.2.jar"/>
+      <include name="org/hamcrest/hamcrest-library/1.2/hamcrest-library-1.2.jar"/>
+      <include name="org/hamcrest/hamcrest-core/1.2/hamcrest-core-1.2.jar"/>
+      <include name="org/jboss/netty/netty/3.2.4.Final/netty-3.2.4.Final.jar"/>
+      <include name="maven/maven-nsis-plugin/2.1/maven-nsis-plugin-2.1.jar"/>
+      <include name="net/java/dev/rome/rome/1.0.0/rome-1.0.0.jar"/>
+      <include name="jdom/jdom/1.0/jdom-1.0.jar"/>
+      <include name="org/jvnet/winp/winp/1.14/winp-1.14.jar"/>
+      <include name="org/jaudiotagger/2.0.3/jaudiotagger-2.0.3.jar"/>
+      <include name="net/java/dev/jna/jna/3.2.5/jna-3.2.5.jar"/>
+      <include name="com/jgoodies/common/${jgoodies-common-version}/jgoodies-common-${jgoodies-common-version}.jar"/>
+      <include name="com/jgoodies/forms/${jgoodies-forms-version}/jgoodies-forms-${jgoodies-forms-version}.jar"/>
+      <include name="com/jgoodies/looks/${jgoodies-looks-version}/jgoodies-looks-${jgoodies-looks-version}.jar"/>
+      <include name="de/innosystec/java-unrar/${junrar-version}/java-unrar-${junrar-version}.jar"/>
+      <include name="jwbroek/cuelib/cuelib/${cuelib-version}/cuelib-${cuelib-version}.jar"/>
+      <include name="mediautil/mediautil/${mediautil-version}/mediautil-${mediautil-version}.jar"/>
+    </fileset>
+  </path>
+
+  
+  <!-- ====================================================================== -->
+  <!-- Help target                                                            -->
+  <!-- ====================================================================== -->
+
+  <target name="help">
+    <echo message="Please run: $ant -projecthelp"/>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Cleaning up target (except binary tools and java libs)                 -->
+  <!-- ====================================================================== -->
+
+  <target name="clean" description="Clean the output directory">
+    <delete includeemptydirs="true">
+      <fileset dir="${maven.build.dir}" excludes="ant-dependencies/ bin-tools/"/>
+    </delete>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Cleaning up java libs                                                  -->
+  <!-- ====================================================================== -->
+
+  <target name="clean-deps" description="Clean build dependencies">
+    <delete includeemptydirs="true">
+      <fileset dir="${maven.repo.local}"/>
+    </delete>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Compilation target                                                     -->
+  <!-- ====================================================================== -->
+
+  <target name="compile" depends="get-deps" description="Compile the code">
+    <mkdir dir="${maven.build.outputDir}"/>
+    <javac destdir="${maven.build.outputDir}"
+           nowarn="false"
+           debug="true"
+           target="1.6"
+           verbose="false"
+           fork="false"
+           includeAntRuntime="false"
+           source="1.6"
+           encoding="utf-8">
+      <src>
+        <pathelement location="${maven.build.srcDir.0}"/>
+      </src>
+      <classpath refid="compile.classpath"/>
+    </javac>
+    <mkdir dir="${maven.build.outputDir}/resources"/>
+    <copy todir="${maven.build.outputDir}/resources">
+      <fileset dir="${maven.build.resourceDir.0}"/>
+    </copy>
+    <copy todir="${maven.build.outputDir}">
+      <fileset dir="${maven.build.resourceDir.2}">
+        <include name="**/*.properties"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Build pms.jar with dependencies                                        -->
+  <!-- ====================================================================== -->
+
+  <target name="jar" depends="compile,test" description="Builds pms.jar with dependencies">
+    <jar jarfile="${maven.build.dir}/pms.jar"
+         compress="off"
+         basedir="${maven.build.outputDir}">
+        <zipgroupfileset refid="compile.fileset"/>
+        <manifest>
+            <attribute name="Main-Class" value="net.pms.PMS" />
+        </manifest>
+    </jar>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Download all build dependencies                                        -->
+  <!-- ====================================================================== -->
+
+  <target name="get-deps-all"
+          depends="get-deps"
+          description="Download all dependencies including dependencies that do not exist in a public Maven repositories"
+          unless="maven.mode.offline">
+
+    <mkdir dir="${maven.repo.local}"/>
+    <mkdir dir="${maven.repo.local}/com/jgoodies/common/${jgoodies-common-version}"/>
+    <get src="http://www.jgoodies.com/download/libraries/common/jgoodies-common-${jgoodies-common-version-underscore}.zip"
+         dest="${maven.repo.local}/com/jgoodies/common/${jgoodies-common-version}/jgoodies-common-${jgoodies-common-version-underscore}.zip"
+         usetimestamp="false"
+         ignoreerrors="false">
+    </get>
+    <unzip src="${maven.repo.local}/com/jgoodies/common/${jgoodies-common-version}/jgoodies-common-${jgoodies-common-version-underscore}.zip"
+        dest="${maven.repo.local}/com/jgoodies/common/${jgoodies-common-version}">
+        <patternset>
+            <include name="**/jgoodies-common-*.jar"/>
+        </patternset>
+        <mapper type="flatten"/>
+    </unzip>
+    <delete file="${maven.repo.local}/com/jgoodies/common/${jgoodies-common-version}/jgoodies-common-${jgoodies-common-version-underscore}.zip"/>
+
+    <mkdir dir="${maven.repo.local}/com/jgoodies/forms/${jgoodies-forms-version}"/>
+    <get src="http://www.jgoodies.com/download/libraries/forms/jgoodies-forms-${jgoodies-forms-version-underscore}.zip"
+         dest="${maven.repo.local}/com/jgoodies/forms/${jgoodies-forms-version}/jgoodies-forms-${jgoodies-forms-version-underscore}.zip"
+         usetimestamp="false"
+         ignoreerrors="false">
+    </get>
+    <unzip src="${maven.repo.local}/com/jgoodies/forms/${jgoodies-forms-version}/jgoodies-forms-${jgoodies-forms-version-underscore}.zip"
+        dest="${maven.repo.local}/com/jgoodies/forms/${jgoodies-forms-version}">
+        <patternset>
+            <include name="**/jgoodies-forms-*.jar"/>
+        </patternset>
+        <mapper type="flatten"/>
+    </unzip>
+    <delete file="${maven.repo.local}/com/jgoodies/forms/${jgoodies-forms-version}/jgoodies-forms-${jgoodies-forms-version-underscore}.zip"/>
+
+    <mkdir dir="${maven.repo.local}/com/jgoodies/looks/${jgoodies-looks-version}"/>
+    <get src="http://www.jgoodies.com/download/libraries/looks/jgoodies-looks-${jgoodies-looks-version-underscore}.zip"
+         dest="${maven.repo.local}/com/jgoodies/looks/${jgoodies-looks-version}/jgoodies-looks-${jgoodies-looks-version-underscore}.zip"
+         usetimestamp="false"
+         ignoreerrors="false">
+    </get>
+    <unzip src="${maven.repo.local}/com/jgoodies/looks/${jgoodies-looks-version}/jgoodies-looks-${jgoodies-looks-version-underscore}.zip"
+        dest="${maven.repo.local}/com/jgoodies/looks/${jgoodies-looks-version}">
+        <patternset>
+            <include name="**/jgoodies-looks-*.jar"/>
+        </patternset>
+        <mapper type="flatten"/>
+    </unzip>
+    <delete file="${maven.repo.local}/com/jgoodies/looks/${jgoodies-looks-version}/jgoodies-looks-${jgoodies-looks-version-underscore}.zip"/>
+
+    <mkdir dir="${maven.repo.local}/de/innosystec/java-unrar/${junrar-version}"/>
+    <get src="http://cloud.github.com/downloads/edmund-wagner/junrar/java-unrar-${junrar-version}.zip"
+         dest="${maven.repo.local}/de/innosystec/java-unrar/${junrar-version}/java-unrar-${junrar-version}.zip"
+         usetimestamp="false"
+         ignoreerrors="false">
+    </get>
+    <unzip src="${maven.repo.local}/de/innosystec/java-unrar/${junrar-version}/java-unrar-${junrar-version}.zip"
+        dest="${maven.repo.local}/de/innosystec/java-unrar/${junrar-version}">
+        <patternset>
+            <include name="**/java-unrar-*.jar"/>
+        </patternset>
+        <mapper type="flatten"/>
+    </unzip>
+    <delete file="${maven.repo.local}/de/innosystec/java-unrar/${junrar-version}/java-unrar-${junrar-version}.zip"/>
+
+    <mkdir dir="${maven.repo.local}/jwbroek/cuelib/cuelib/${cuelib-version}"/>
+    <get src="http://cuelib.googlecode.com/files/cuelib-${cuelib-version}.jar"
+         dest="${maven.repo.local}/jwbroek/cuelib/cuelib/${cuelib-version}/cuelib-${cuelib-version}.jar"
+         usetimestamp="false"
+         ignoreerrors="false">
+    </get>
+
+    <mkdir dir="${maven.repo.local}/mediautil/mediautil/${mediautil-version}"/>
+    <get src="http://downloads.sourceforge.net/project/mediachest/MediaUtil/Version%201.0/mediautil-1.zip"
+         dest="${maven.repo.local}/mediautil/mediautil/${mediautil-version}/mediautil-${mediautil-version}.zip"
+         usetimestamp="false"
+         ignoreerrors="false">
+    </get>
+    <unzip src="${maven.repo.local}/mediautil/mediautil/${mediautil-version}/mediautil-${mediautil-version}.zip"
+        dest="${maven.repo.local}/mediautil/mediautil/${mediautil-version}">
+        <patternset>
+            <include name="**/mediautil-*.jar"/>
+        </patternset>
+        <mapper type="flatten"/>
+    </unzip>
+    <delete file="${maven.repo.local}/mediautil/mediautil/${mediautil-version}/mediautil-${mediautil-version}.zip"/>
+  </target>
+
+</project>
