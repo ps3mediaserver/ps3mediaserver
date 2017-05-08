@@ -31,7 +31,7 @@ class LinuxDefaultPaths implements ProgramPaths {
 
 	@Override
 	public String getTsmuxerPath() {
-		return getBinaryPath("tsMuxeR");
+		return getBinaryPath("linux/tsMuxeR");
 	}
 
 	@Override
