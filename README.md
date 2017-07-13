@@ -2,6 +2,8 @@
 
 by shagrath
 
+WARNING : This project may still work, but is not maintained since 2016.
+
 [![Build Status](http://pms.smoeller.de/buildStatus/icon?job=pms+%28trunk%29)](http://pms.smoeller.de/job/pms%20%28trunk%29/)
 
 - [Links](#links)
